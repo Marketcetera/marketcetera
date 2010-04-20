@@ -54,8 +54,8 @@
     -->
     <!-- The routing filter. -->
     <!--
-    <property
-     name="routes"
+<property
+name="routes"
      ref="metc_routes"/>
     -->
     <!-- The pre-sending message modifiers. -->

@@ -37,12 +37,12 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
     public void emptyViewer()
         throws Exception
     {
-        PersistentReport.save
+        sServices.save
             (createExecReport
              ("o1",null, getInstrument(),Side.Buy,OrderStatus.PartiallyFilled,
               BigDecimal.TEN,BigDecimal.TEN,BigDecimal.ONE,BigDecimal.ONE,
               BROKER,null,null));
-        PersistentReport.save
+        sServices.save
             (createExecReport
              ("o1",null, getInstrument(),Side.Buy,OrderStatus.PartiallyFilled,
               BigDecimal.TEN,BigDecimal.TEN,BigDecimal.ONE,BigDecimal.ONE));
@@ -66,7 +66,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
     @Test
     public void rejectNotSaved() throws Exception {
         OrderCancelReject reject = createCancelReject();
-        PersistentReport.save(reject);
+        sServices.save(reject);
         //report got saved
         assertEquals(1, MultiPersistentReportQuery.all().fetchCount());
         //but the summary didn't
@@ -94,7 +94,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         ExecutionReport report1 = createExecReport(orderID1, null, instrument,
                 Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
-        PersistentReport.save(report1);
+        sServices.save(report1);
         //report got saved
         MultiPersistentReportQuery reportQuery = MultiPersistentReportQuery.all();
         assertEquals(1, reportQuery.fetchCount());
@@ -117,7 +117,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         ExecutionReport report2 = createExecReport(orderID2, orderID1,
                 instrument, Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
-        PersistentReport.save(report2);
+        sServices.save(report2);
         //report got saved
         assertEquals(2, reportQuery.fetchCount());
         //and so did the summary
@@ -137,7 +137,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         ExecutionReport report3 = createExecReport(orderID3, orderID2,
                 instrument, Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
-        PersistentReport.save(report3);
+        sServices.save(report3);
         //report3 got saved
         assertEquals(3, reportQuery.fetchCount());
         //and so did the summary
@@ -167,7 +167,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         ExecutionReport report = createExecReport("ord1", "ord2",
                 instrument, Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
-        PersistentReport.save(report);
+        sServices.save(report);
         //report got saved
         MultiPersistentReportQuery reportQuery = MultiPersistentReportQuery.all();
         assertEquals(1, reportQuery.fetchCount());
@@ -193,7 +193,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         assertNull(report.getAveragePrice());
         nonNullCVCheck("avgPrice", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(report);
+                sServices.save(report);
                 return null;
             }
         });
@@ -206,7 +206,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         assertNull(report.getCumulativeQuantity());
         nonNullCVCheck("cumQuantity", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(report);
+                sServices.save(report);
                 return null;
             }
         });
@@ -219,7 +219,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         assertNull(report.getOrderID());
         nonNullCVCheck("orderID", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(report);
+                sServices.save(report);
                 return null;
             }
         });
@@ -232,7 +232,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         assertNull(report.getOrderStatus());
         nonNullCVCheck("orderStatus", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(report);
+                sServices.save(report);
                 return null;
             }
         });
@@ -244,7 +244,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
                 createDummyExecReport());
         nonNullCVCheck("sendingTime", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(report);
+                sServices.save(report);
                 return null;
             }
         });
@@ -257,7 +257,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         assertNull(report.getSide());
         nonNullCVCheck("side", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(report);
+                sServices.save(report);
                 return null;
             }
         });
@@ -270,7 +270,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         assertNull(report.getInstrument());
         nonNullCVCheck("symbol", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(report);
+                sServices.save(report);
                 return null;
             }
         });

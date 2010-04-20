@@ -1112,6 +1112,33 @@ default setting should suffice for most installations.</p>
 </tr>
 </table>
 
+<p>Another aspect of the database operations concerns storage and
+retrieval of historical data. This retrieval is made by default using
+a simple and relatively reliable synchronous provider; alternative
+providers, with different tradeoffs between performance and stability,
+can be composed and deployed by the end-user.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.reportHistoryServices</code></td>
+<td><code>server.xml</code></td>
+</tr>
+</table>
+
+<p>Yet another aspect of the database operations is the caching
+mechanism used to associate orders with actor and viewer IDs. Multiple
+caching strategies are possible, and the default one provides a
+reasonable balance between memory usage and performance.</p>
+
+<table border="1">
+<tr>
+<td>Spring</td>
+<td><code>SpringConfig.orderInfoCache</code></td>
+<td><code>server.xml</code></td>
+</tr>
+</table>
+
 
 <hr/><a name="logging"/>
 <h2>Logging</h2>

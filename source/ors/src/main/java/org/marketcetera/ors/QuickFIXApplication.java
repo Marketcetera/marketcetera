@@ -181,7 +181,7 @@ public class QuickFIXApplication
         if (admin) {
             principals=Principals.UNKNOWN;
         } else {
-            principals=getPersister().getPrincipals(msg);
+            principals=getPersister().getPrincipals(msg,false);
         }
 
         // Apply message modifiers.

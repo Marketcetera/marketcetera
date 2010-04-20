@@ -2,12 +2,14 @@ package org.marketcetera.ors.config;
 
 import javax.jms.ConnectionFactory;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.ors.OrderInfoCache;
 import org.marketcetera.ors.brokers.SpringBrokers;
 import org.marketcetera.ors.brokers.SpringSelector;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.filters.MessageFilterNoop;
 import org.marketcetera.ors.filters.OrderFilter;
 import org.marketcetera.ors.filters.OrderFilterNoop;
+import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.SessionManager;
@@ -50,6 +52,8 @@ public class SpringConfig
     private ConnectionFactory mIncomingCF;
     private ConnectionFactory mOutgoingCF;
     private IDFactory mIDFactory;
+    private ReportHistoryServices mReportHistoryServices;
+    private OrderInfoCache mOrderInfoCache;
 
 
     // CONSTRUCTORS.
@@ -84,6 +88,8 @@ public class SpringConfig
      * @param incomingCF The connection factory for incoming connections.
      * @param outgoingCF The connection factory for outgoing connections.
      * @param idFactory The ID generation factory.
+     * @param reportHistoryServices The report history services provider.
+     * @param orderInfoCache The order info cache.
      */
 
     public SpringConfig
@@ -96,7 +102,9 @@ public class SpringConfig
          long serverSessionLife,
          ConnectionFactory incomingCF,
          ConnectionFactory outgoingCF,
-         IDFactory idFactory)
+         IDFactory idFactory,
+         ReportHistoryServices reportHistoryServices,
+         OrderInfoCache orderInfoCache)
         throws I18NException
     {
         setBrokers(brokers);
@@ -109,6 +117,8 @@ public class SpringConfig
         setIncomingConnectionFactory(incomingCF);
         setOutgoingConnectionFactory(outgoingCF);
         setIDFactory(idFactory);
+        setReportHistoryServices(reportHistoryServices);
+        setOrderInfoCache(orderInfoCache);
         afterPropertiesSet();
         setSingleton(this);
     }
@@ -395,6 +405,56 @@ public class SpringConfig
         return mIDFactory;
     }
 
+    /**
+     * Sets the receiver's report history services provider to the
+     * given one. A non-null value should be set during the receiver's
+     * initialization.
+     *
+     * @param reportHistoryServices The provider.
+     */
+
+    public void setReportHistoryServices
+        (ReportHistoryServices reportHistoryServices)
+    {
+        mReportHistoryServices=reportHistoryServices;
+    }
+
+    /**
+     * Returns the receiver's report history services provider.
+     *
+     * @return The provider.
+     */
+
+    public ReportHistoryServices getReportHistoryServices()
+    {
+        return mReportHistoryServices;
+    }
+
+    /**
+     * Sets the receiver's order information cache to the given one. A
+     * non-null value should be set during the receiver's
+     * initialization.
+     *
+     * @param orderInfoCache The cache.
+     */
+
+    public void setOrderInfoCache
+        (OrderInfoCache orderInfoCache)
+    {
+        mOrderInfoCache=orderInfoCache;
+    }
+
+    /**
+     * Returns the receiver's order information cache.
+     *
+     * @return The cache.
+     */
+
+    public OrderInfoCache getOrderInfoCache()
+    {
+        return mOrderInfoCache;
+    }
+
 
     // InitializingBean.
 
@@ -416,6 +476,12 @@ public class SpringConfig
         }
         if (getIDFactory()==null) {
             throw new I18NException(Messages.NO_ID_FACTORY);
+        }
+        if (getReportHistoryServices()==null) {
+            throw new I18NException(Messages.NO_REPORT_HISTORY_SERVICES);
+        }
+        if (getOrderInfoCache()==null) {
+            throw new I18NException(Messages.NO_ORDER_INFO_CACHE);
         }
     }
 }
