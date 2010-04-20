@@ -1,8 +1,7 @@
 package org.marketcetera.ors;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.marketcetera.ors.history.ReportHistoryServices;
+import org.marketcetera.ors.history.ReportSavedListener;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
@@ -12,13 +11,13 @@ import org.marketcetera.util.misc.ClassVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
+import quickfix.field.OrdStatus;
 import quickfix.field.OrigClOrdID;
 
 /**
  * A persister of trade messages (replies) sent by the ORS to
  * clients. It also handles mapping of messages to actors/viewers, via
- * either replies previously persisted, or via an in-memory map (used
- * only until the replies are persisted).
+ * either replies previously persisted, or via an in-memory cache.
  *
  * @author tlerios@marketcetera.com
  * @since 1.0.0
@@ -29,81 +28,13 @@ import quickfix.field.OrigClOrdID;
 
 @ClassVersion("$Id$")
 public class ReplyPersister
+    implements ReportSavedListener
 {
-
-    // CLASS DATA.
-
-    /**
-     * The information maintained within the in-memory map for each
-     * order (until a reply is persisted). Upon construction, the
-     * viewer ID is either marked unknown-at-present (if this order is
-     * a child of an earlier one), or set to the actor ID (if it's the
-     * root of a chain). A boolean is used to distinguish
-     * unknown-at-present (to be lazily researched when needed)
-     * vs. unknown-upon-investigation (research could not deduce a
-     * viewer).
-     */
-
-    private static final class OrderInfo
-    {
-        private final OrderID mOrderID;
-        private final OrderID mOrigOrderID;
-        private final UserID mActorID;
-        private boolean mViewerSet;
-        private UserID mViewerID;
-
-        OrderInfo
-            (OrderID orderID,
-             OrderID origOrderID,
-             UserID actorID)
-        {
-             mOrderID=orderID;
-             mOrigOrderID=origOrderID;
-             mActorID=actorID;
-             if (getOrigOrderID()==null) {
-                 setViewerID(getActorID());
-             }
-        }
-
-        OrderID getOrderID()
-        {
-            return mOrderID;
-        }
-
-        OrderID getOrigOrderID()
-        {
-            return mOrigOrderID;
-        }
-
-        UserID getActorID()
-        {
-            return mActorID;
-        }
-
-        boolean getViewerSet()
-        {
-            return mViewerSet;
-        }
-
-        UserID getViewerID()
-        {
-            return mViewerID;
-        }
-
-        void setViewerID
-            (UserID viewerID)
-        {
-            mViewerSet=true;
-            mViewerID=viewerID;
-        }
-    }
-
 
     // INSTANCE DATA.
 
     private final ReportHistoryServices mHistoryServices; 
-    private final Map<OrderID,OrderInfo> mMap=
-        new ConcurrentHashMap<OrderID,OrderInfo>();
+    private final OrderInfoCache mCache;
 
 
     // CONSTRUCTORS.
@@ -116,11 +47,32 @@ public class ReplyPersister
      */    
 
     public ReplyPersister
-        (ReportHistoryServices historyServices)
+        (ReportHistoryServices historyServices,
+         OrderInfoCache cache)
     {
         mHistoryServices=historyServices;
+        mCache=cache;
     }
 
+
+    // ReportSavedListener.
+
+    @Override
+    public void reportSaved
+        (ReportBase report,
+         boolean status)
+    {
+        OrderID orderID=report.getOrderID();
+        if (orderID==null) {
+            return;
+        }
+        OrderInfo info=getCache().get(orderID);
+        if (info==null) {
+            return;
+        }
+        info.setERPersisted(status);
+    }
+    
 
     // INSTANCE METHODS.
 
@@ -136,25 +88,25 @@ public class ReplyPersister
     }
 
     /**
-     * Returns the receiver's in-memory map of order ID to order
-     * information.
+     * Returns the receiver's cache of order information.
      *
-     * @return The map.
+     * @return The cache.
      */
 
-    private Map<OrderID,OrderInfo> getMap()
+    private OrderInfoCache getCache()
     {
-        return mMap;
+        return mCache;
     }
 
     /**
      * Persists the given message, which, while doing so, may be
-     * modified.
+     * modified. Persistence may be effected synchronously or
+     * asynchronously.
      *
      * @param msg The message.
      */
 
-    public synchronized void persistReply
+    public void persistReply
         (TradeMessage msg)
     {
         if (!(msg instanceof ReportBase)) {
@@ -166,22 +118,20 @@ public class ReplyPersister
             Messages.RP_PERSIST_ERROR.error(this,ex,msg);
             return;
         }
-        Messages.RP_PERSISTED_REPLY.info(this,msg);
-        OrderID orderID=((ReportBase)msg).getOrderID();
-        if (orderID!=null) {
-            getMap().remove(orderID);
-        }
     }
 
     /**
      * Adds the given outgoing order message, with the given actorID,
-     * to the receiver's in-memory map.
+     * to the receiver's cache, and returns the new cache entry.
      *
      * @param msg The message.
      * @param actorID The actor ID.
+     *
+     * @return The new cache entry, or null if one could not be
+     * created.
      */
 
-    public void addOutgoingOrder
+    public OrderInfo addOutgoingOrder
         (Message msg,
          UserID actorID)
     {
@@ -189,8 +139,8 @@ public class ReplyPersister
         try {
             orderID=new OrderID(msg.getString(ClOrdID.FIELD));
         } catch(FieldNotFound ex) {
-            Messages.RP_ADD_TO_MAP_FAILED.warn(this,ex,actorID,msg);
-            return;
+            Messages.RP_ADD_TO_CACHE_FAILED.warn(this,ex,actorID,msg);
+            return null;
         }
         OrderID origOrderID;
         try {
@@ -198,25 +148,24 @@ public class ReplyPersister
         } catch(FieldNotFound ex) {
             origOrderID=null;
         }
-        // Using a ConcurrentHashMap eliminates the need to sychronize
-        // here, which is essential to keep this method efficient as
-        // it is on the execution path where we need to minimize
-        // latency.
-        getMap().put(orderID,new OrderInfo(orderID,origOrderID,actorID));
+        return getCache().put(orderID,origOrderID,actorID);
     }
 
     /**
      * Returns the principals associated with the given message.
      *
      * @param msg The message.
+     * @param isAck True if the request is made for the purposes of
+     * processing an ORS ack.
      *
      * @return The principals. Any of its properties may be null if
      * the associated principal cannot be determined; that includes
      * the special case of returning {@link Principals#UNKNOWN}.
      */
 
-    public synchronized Principals getPrincipals
-        (Message msg)
+    public Principals getPrincipals
+        (Message msg,
+         boolean isAck)
     {
         OrderID orderID;
         try {
@@ -224,7 +173,7 @@ public class ReplyPersister
         } catch(FieldNotFound ex) {
             return Principals.UNKNOWN;
         }
-        OrderInfo info=getMap().get(orderID);
+        OrderInfo info=getCache().get(orderID);
 
         // The map entry has been removed hence the actor/view
         // information has moved into the database.
@@ -245,18 +194,18 @@ public class ReplyPersister
         // this method is invoked at least once on the parent prior to
         // sending the parent to the ORS client.
 
-        if (!info.getViewerSet()) {
+        if (!info.isViewerIDSet()) {
             orderID=info.getOrigOrderID();
             // orderID cannot be null because, if it were, the viewer
             // would have been set to the actor.
             if (orderID==null) {
                 throw new IllegalStateException();
             }
-            OrderInfo parentInfo=getMap().get(orderID);
+            OrderInfo parentInfo=getCache().get(orderID);
             UserID viewerID;
             if (parentInfo!=null) {
                 // The parent's viewer should have been set.
-                if (!parentInfo.getViewerSet()) {
+                if (!parentInfo.isViewerIDSet()) {
                     throw new IllegalStateException();
                 }
                 viewerID=parentInfo.getViewerID();
@@ -271,6 +220,15 @@ public class ReplyPersister
             }
             info.setViewerID(viewerID);
         }
+
+        // Update cache entry flags.
+
+        if (isAck) {
+            info.setAckProcessed(true);
+        } else {
+            info.setResponseProcessed(true);
+        }
+        info.setMessageProcessed(msg);
 
         // Return result.
 

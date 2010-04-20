@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.marketcetera.client.jms.JmsManager;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.position.PositionKey;
 
 /* $License$ */
 /**
@@ -20,7 +22,29 @@ import org.marketcetera.core.position.PositionKey;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class ReportHistoryServices {
+public interface ReportHistoryServices {
+
+    /**
+     * Initializes the receiver with the given system resources.
+     *
+     * @param idFactory The ID factory to be used for report ID
+     * generation.
+     * @param jmsManager The JMS manager used for asychronous
+     * persistence of reports. Null may be acceptable to certain
+     * implementations.
+     * @param reportSavedListener The listener notified after a report
+     * has been saved (successfully or not). It may be null if no
+     * notifications are needed.
+     *
+     * @throws ReportPersistenceException Thrown if initialization
+     * cannot complete.
+     */
+    public void init
+        (IDFactory idFactory,
+         JmsManager jmsManager,
+         ReportSavedListener reportSavedListener)
+        throws ReportPersistenceException;
+
     /**
      * Returns all the reports received after the supplied date-time
      * value, and which are visible to the given user.
@@ -39,22 +63,7 @@ public class ReportHistoryServices {
     public ReportBaseImpl[] getReportsSince
         (SimpleUser inUser,
          Date inDate)
-            throws PersistenceException, ReportPersistenceException {
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        query.setSendingTimeAfterFilter(inDate);
-        if (!inUser.isSuperuser()) {
-            query.setViewerFilter(inUser);
-        }
-        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
-
-        List<PersistentReport> reportList = query.fetch();
-        ReportBaseImpl [] reports = new ReportBaseImpl[reportList.size()];
-        int i = 0;
-        for(PersistentReport report: reportList) {
-            reports[i++] = (ReportBaseImpl) report.toReport();
-        }
-        return reports;
-    }
+        throws PersistenceException, ReportPersistenceException;
 
     /**
      * Returns the position of the equity based on all reports
@@ -77,11 +86,8 @@ public class ReportHistoryServices {
         (SimpleUser inUser,
          Date inDate,
          Equity inEquity)
-        throws PersistenceException
-    {
-        return ExecutionReportSummary.getEquityPositionAsOf
-            (inUser,inDate,inEquity);
-    }
+        throws PersistenceException;
+
     /**
      * Returns the aggregate position of each (equity,account,actor)
      * tuple based on all reports received for each tuple on or before
@@ -100,10 +106,7 @@ public class ReportHistoryServices {
     public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
         (SimpleUser inUser,
          Date inDate)
-        throws PersistenceException
-    {
-        return ExecutionReportSummary.getAllEquityPositionsAsOf(inUser,inDate);
-    }
+        throws PersistenceException;
 
     /**
      * Gets the current aggregate position for the option instrument based on
@@ -128,10 +131,7 @@ public class ReportHistoryServices {
         (final SimpleUser inUser,
          final Date inDate,
          final Option inOption)
-        throws PersistenceException {
-        return ExecutionReportSummary.getOptionPositionAsOf(inUser,
-                inDate, inOption);
-    }
+        throws PersistenceException;
 
     /**
      * Returns the aggregate position of each option
@@ -155,9 +155,7 @@ public class ReportHistoryServices {
     public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
         (final SimpleUser inUser,
          final Date inDate)
-        throws PersistenceException {
-        return ExecutionReportSummary.getAllOptionPositionsAsOf(inUser, inDate);
-    }
+        throws PersistenceException;
 
     /**
      * Returns the aggregate position of each option
@@ -183,21 +181,20 @@ public class ReportHistoryServices {
         (final SimpleUser inUser,
          final Date inDate,
          final String... inSymbols)
-        throws PersistenceException {
-        return ExecutionReportSummary.getOptionPositionsAsOf(inUser, inDate, inSymbols);
-    }
+        throws PersistenceException;
 
     /**
-     * Saves the supplied report to the database.
+     * Saves the supplied report to the database. Saving may be
+     * immediate or delayed; in either case the report ID is set
+     * before this method returns.
      *
-     * @param inReport the report to be saved. Cannot be null.
+     * @param report the report to be saved. Cannot be null.
      *
      * @throws org.marketcetera.persist.PersistenceException if there
      * were errors saving the report.
      */
-    public void save(ReportBase inReport) throws PersistenceException {
-        PersistentReport.save(inReport);
-    }
+    public void save(ReportBase report)
+        throws PersistenceException;
 
     /**
      * Returns the principals associated with the report with given
@@ -215,8 +212,5 @@ public class ReportHistoryServices {
 
     public Principals getPrincipals
         (OrderID orderID)
-        throws PersistenceException
-    {
-        return PersistentReport.getPrincipals(orderID);
-    }
+        throws PersistenceException;
 }

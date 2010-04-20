@@ -1,5 +1,6 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.util.misc.ClassVersion;
@@ -47,7 +48,11 @@ public class ReportsTestBase extends TestCaseBase {
         throws Exception {
         PersistTestBase.springSetup(getSpringFiles());
         sMessageFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
-        sServices = new ReportHistoryServices();
+
+        InMemoryIDFactory idFactory=new InMemoryIDFactory(0);
+        idFactory.init();
+        sServices=new BasicReportHistoryServices();
+        sServices.init(idFactory,null,null);
 
         sActor=new SimpleUser();
         sActor.setName("actor");

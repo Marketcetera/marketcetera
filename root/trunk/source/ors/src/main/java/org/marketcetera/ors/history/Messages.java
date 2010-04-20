@@ -31,4 +31,16 @@ public interface Messages {
     static final I18NMessage1P ERROR_RECONSTITUTE_FIX_MSG =
             new I18NMessage1P(LOGGER, "error_reconstitute_fix_msg");   //$NON-NLS-1$
 
+    static final I18NMessage0P RHS_CANNOT_CREATE_QUEUE =
+        new I18NMessage0P(LOGGER, "rhs_cannot_create_queue"); //$NON-NLS-1$
+    static final I18NMessage0P RHS_NO_MORE_IDS =
+        new I18NMessage0P(LOGGER, "rhs_no_more_ids"); //$NON-NLS-1$
+    static final I18NMessage1P RHS_ENQUEUED_REPLY=
+        new I18NMessage1P(LOGGER,"rhs_enqueued_reply"); //$NON-NLS-1$
+    static final I18NMessage1P RHS_DEQUEUED_REPLY=
+        new I18NMessage1P(LOGGER,"rhs_dequeued_reply"); //$NON-NLS-1$
+    static final I18NMessage1P RHS_PERSISTED_REPLY=
+        new I18NMessage1P(LOGGER,"rhs_persisted_reply"); //$NON-NLS-1$
+    static final I18NMessage1P RHS_PERSIST_ERROR=
+        new I18NMessage1P(LOGGER,"rhs_persist_error"); //$NON-NLS-1$
 }

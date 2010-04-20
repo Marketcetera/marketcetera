@@ -91,6 +91,18 @@
          ref="metc_sql_pool"/>
       </bean>
     </property>
+  <!-- The report history services provider. -->
+    <property
+     name="reportHistoryServices">
+      <bean
+       class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
+    </property>
+    <!-- The order information cache. -->
+    <property
+     name="orderInfoCache">
+      <bean
+       class="org.marketcetera.ors.SimpleOrderInfoCache"/>
+    </property>
   </bean>
   <bean
    class="org.marketcetera.ors.OptionRootUnderlyingMap">

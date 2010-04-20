@@ -49,4 +49,8 @@ public interface Messages
         (LOGGER,"no_outgoing_connection_factory"); //$NON-NLS-1$
     static final I18NMessage0P NO_ID_FACTORY=
         new I18NMessage0P(LOGGER,"no_id_factory"); //$NON-NLS-1$
+    static final I18NMessage0P NO_REPORT_HISTORY_SERVICES=
+        new I18NMessage0P(LOGGER,"no_report_history_services"); //$NON-NLS-1$
+    static final I18NMessage0P NO_ORDER_INFO_CACHE=
+        new I18NMessage0P(LOGGER,"no_order_info_cache"); //$NON-NLS-1$
 }

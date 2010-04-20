@@ -130,24 +130,23 @@ public class OrderRoutingSystem
 
         // Create resource managers.
 
-        ReportHistoryServices historyServices=new ReportHistoryServices();
-        systemInfo.setValue
-            (SystemInfo.HISTORY_SERVICES,historyServices);
         SpringConfig cfg=SpringConfig.getSingleton();
         if (cfg==null) {
             throw new I18NException(Messages.APP_NO_CONFIGURATION);
         }
+        cfg.getIDFactory().init();
         JmsManager jmsMgr=new JmsManager
             (cfg.getIncomingConnectionFactory(),
              cfg.getOutgoingConnectionFactory());
+        ReportHistoryServices historyServices=cfg.getReportHistoryServices();
+        systemInfo.setValue
+            (SystemInfo.HISTORY_SERVICES,historyServices);
         mBrokers=new Brokers(cfg.getBrokers(),historyServices);
         Selector selector=new Selector(getBrokers(),cfg.getSelector());
-        cfg.getIDFactory().init();
-        LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
-        localIdFactory.init();
         UserManager userManager=new UserManager();
         ReplyPersister persister=new ReplyPersister
-            (historyServices);
+            (historyServices,cfg.getOrderInfoCache());
+        historyServices.init(cfg.getIDFactory(),jmsMgr,persister);
 
         // Set dictionary for all QuickFIX/J messages we generate.
 
@@ -176,6 +175,8 @@ public class OrderRoutingSystem
         // Initiate JMS.
 
         QuickFIXSender qSender=new QuickFIXSender();
+        LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
+        localIdFactory.init();
         RequestHandler handler=new RequestHandler
             (getBrokers(),selector,cfg.getAllowedOrders(),
              persister,qSender,userManager,localIdFactory);

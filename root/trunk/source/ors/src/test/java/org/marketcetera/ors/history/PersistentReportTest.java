@@ -93,7 +93,7 @@ public class PersistentReportTest extends ReportsTestBase {
         //Create order cancel reject, save and retrieve it.
         OrderCancelReject reject = createCancelReject();
         assertNull(reject.getReportID());
-        PersistentReport.save(reject);
+        sServices.save(reject);
         assertNotNull(reject.getReportID());
         MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
         assertEquals(1, query.fetchCount());
@@ -122,7 +122,7 @@ public class PersistentReportTest extends ReportsTestBase {
                 Side.Buy, OrderStatus.New, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE);
         assertNull(report.getReportID());
-        PersistentReport.save(report);
+        sServices.save(report);
         assertNotNull(report.getReportID());
         MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
         assertEquals(1, query.fetchCount());
@@ -148,7 +148,7 @@ public class PersistentReportTest extends ReportsTestBase {
         //null sending time in cancel reject
         nonNullCVCheck("sendingTime", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(removeSendingTime(
+                sServices.save(removeSendingTime(
                         createCancelReject()));
                 return null;
             }
@@ -156,7 +156,7 @@ public class PersistentReportTest extends ReportsTestBase {
         //null sending time in exec report
         nonNullCVCheck("sendingTime", new Callable<Object>(){
             public Object call() throws Exception {
-                PersistentReport.save(removeSendingTime(createExecReport("o1",
+                sServices.save(removeSendingTime(createExecReport("o1",
                         null, getInstrument(), Side.Buy, OrderStatus.DoneForDay,
                         BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
                         BigDecimal.ONE)));
@@ -187,10 +187,10 @@ public class PersistentReportTest extends ReportsTestBase {
                 BigDecimal.ONE, BigDecimal.ONE);
         OrderCancelReject reject4 = createCancelReject();
         //Save 'em
-        PersistentReport.save(reject1);
-        PersistentReport.save(report2);
-        PersistentReport.save(report3);
-        PersistentReport.save(reject4);
+        sServices.save(reject1);
+        sServices.save(report2);
+        sServices.save(report3);
+        sServices.save(reject4);
         //Verify that their IDs are assigned in ascending order
         assertTrue(reject4.getReportID().compareTo(report3.getReportID()) > 0);
         assertTrue(report3.getReportID().compareTo(report2.getReportID()) > 0);
@@ -233,10 +233,10 @@ public class PersistentReportTest extends ReportsTestBase {
         sleepForSignificantTime();
         Date time5 = new Date();
         //Save 'em
-        PersistentReport.save(reject1);
-        PersistentReport.save(report2);
-        PersistentReport.save(report3);
-        PersistentReport.save(reject4);
+        sServices.save(reject1);
+        sServices.save(report2);
+        sServices.save(report3);
+        sServices.save(reject4);
         //Retrieve them and verify that they're retrieved in order
         MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
         //Retrieve all reports
@@ -278,13 +278,13 @@ public class PersistentReportTest extends ReportsTestBase {
     {
         OrderCancelReject r1=
             createCancelReject();
-        PersistentReport.save(r1);
+        sServices.save(r1);
         OrderCancelReject r2=
             createCancelReject(BROKER,sActorID,null);
-        PersistentReport.save(r2);
+        sServices.save(r2);
         OrderCancelReject r3=
             createCancelReject(BROKER,sActorID,sExtraUserID);
-        PersistentReport.save(r3);
+        sServices.save(r3);
 
         MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
         assertRetrievedReports(query.fetch(),r1,r2,r3);

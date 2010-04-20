@@ -89,9 +89,9 @@ public class RequestHandler
         '\u0001';
     private static final char SOH_REPLACE=
         '|';
-    private static final Callable<Boolean> METRIC_CONDITION=
+    private static final Callable<Boolean> METRIC_CONDITION_RH=
         ConditionsFactory.createSamplingCondition
-        (100,"metc.metrics.ors.sampling.interval"); //$NON-NLS-1$
+        (100,"metc.metrics.ors.rh.sampling.interval"); //$NON-NLS-1$
 
 
     // INSTANCE DATA.
@@ -447,6 +447,8 @@ public class RequestHandler
         Message qMsg=null;
         Message qMsgToSend=null;
         Message qMsgReply=null;
+        boolean responseExpected=false;
+        OrderInfo orderInfo=null;
         try {
 
             // Reject null message envelopes.
@@ -473,6 +475,8 @@ public class RequestHandler
             }
             actorID=(UserID)sessionInfo.getValue(SessionInfo.ACTOR_ID);
             RequestInfo requestInfo=new RequestInfoImpl(sessionInfo);
+            ThreadedMetric.event
+                ("requestHandler.sessionInfoObtained"); //$NON-NLS-1$
 
             // Reject messages of unsupported types.
 
@@ -506,6 +510,8 @@ public class RequestHandler
                 (RequestInfo.BROKER,b);
             requestInfo.setValue
                 (RequestInfo.FIX_MESSAGE_FACTORY,b.getFIXMessageFactory());
+            ThreadedMetric.event
+                ("requestHandler.brokerSelected"); //$NON-NLS-1$
 
             // Convert to a QuickFIX/J message.
 
@@ -515,8 +521,10 @@ public class RequestHandler
             } catch (I18NException ex) {
                 throw new I18NException(ex,Messages.RH_CONVERSION_FAILED);
             }
-            getPersister().addOutgoingOrder(qMsg,actorID);
+            orderInfo=getPersister().addOutgoingOrder(qMsg,actorID);
             b.logMessage(qMsg);
+            ThreadedMetric.event
+                ("requestHandler.orderConverted"); //$NON-NLS-1$
 
             // Ensure broker is available.
 
@@ -531,6 +539,8 @@ public class RequestHandler
             } catch (CoreException ex) {
                 throw new I18NException(ex,Messages.RH_ORDER_DISALLOWED);
             }
+            ThreadedMetric.event
+                ("requestHandler.orderAllowed"); //$NON-NLS-1$
 
             // Apply message modifiers.
 
@@ -544,6 +554,8 @@ public class RequestHandler
                 qMsg=requestInfo.getValueIfInstanceOf
                     (RequestInfo.CURRENT_MESSAGE,Message.class);
             }
+            ThreadedMetric.event
+                ("requestHandler.modifiersApplied"); //$NON-NLS-1$
 
             // Apply order routing.
 
@@ -555,6 +567,8 @@ public class RequestHandler
                     throw new I18NException(ex,Messages.RH_ROUTING_FAILED);
                 }
             }
+            ThreadedMetric.event
+                ("requestHandler.orderRoutingApplied"); //$NON-NLS-1$
 
             // Apply pre-sending message modifiers.
 
@@ -576,6 +590,8 @@ public class RequestHandler
             } else {
                 qMsgToSend=qMsg;
             }
+            ThreadedMetric.event
+                ("requestHandler.preSendModifiersApplied"); //$NON-NLS-1$
 
             // Send message to QuickFIX/J.
 
@@ -584,7 +600,9 @@ public class RequestHandler
             } catch (SessionNotFound ex) {
                 throw new I18NException(ex,Messages.RH_UNAVAILABLE_BROKER);
             }
-            ThreadedMetric.event("orderSent"); //$NON-NLS-1$
+            responseExpected=true;
+            ThreadedMetric.event
+                ("requestHandler.orderSent"); //$NON-NLS-1$
 
             // Compose ACK execution report (with pending status).
 
@@ -604,7 +622,17 @@ public class RequestHandler
                 (this,ex,msg,qMsg,qMsgToSend,
                  ObjectUtils.toString(b,ObjectUtils.toString(bID)));
             qMsgReply=createRejection(ex,b,msg);
+        } finally {
+            if (orderInfo!=null) {
+                orderInfo.setResponseExpected(responseExpected);
+            }
         }
+        ThreadedMetric.event
+            ("requestHandler.replyComposed"); //$NON-NLS-1$
+
+        boolean msgAckExpected=false;
+        Principals principals;
+        try {
 
         // If the reply could not be created, we are done (a
         // warning/error has already been reported).
@@ -620,8 +648,16 @@ public class RequestHandler
 
         // Convert reply to FIX Agnostic messsage.
 
-        ThreadedMetric.event("fetchPrincipals"); //$NON-NLS-1$
-        Principals principals=getPersister().getPrincipals(qMsgReply);
+            principals=getPersister().getPrincipals(qMsgReply,true);
+            msgAckExpected=true;
+            ThreadedMetric.event
+                ("requestHandler.principalsFetched"); //$NON-NLS-1$
+        } finally {
+            if (orderInfo!=null) {
+                orderInfo.setAckExpected(msgAckExpected);
+            }
+        }
+
         TradeMessage reply;
         try {
             reply=FIXConverter.fromQMessage
@@ -631,14 +667,16 @@ public class RequestHandler
             Messages.RH_REPORT_FAILED.error(this,ex,qMsgReply);
             return;
         }
+        ThreadedMetric.event
+            ("requestHandler.replyConverted"); //$NON-NLS-1$
 
         // Persist and send reply.
         
-        ThreadedMetric.event("prePersist"); //$NON-NLS-1$
         getPersister().persistReply(reply);
         Messages.RH_SENDING_REPLY.info(this,reply);
-        ThreadedMetric.event("postPersist"); //$NON-NLS-1$
+        ThreadedMetric.event
+            ("requestHandler.replyPersisted"); //$NON-NLS-1$
         getUserManager().convertAndSend(reply);
-        ThreadedMetric.end(METRIC_CONDITION);
+        ThreadedMetric.end(METRIC_CONDITION_RH);
 	}
 }

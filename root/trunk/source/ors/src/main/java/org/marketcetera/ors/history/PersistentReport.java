@@ -47,8 +47,6 @@ class PersistentReport extends EntityBase {
     static void save(ReportBase inReport) throws PersistenceException {
         PersistentReport report = new PersistentReport(inReport);
         report.saveRemote(null);
-        ReportBaseImpl.assignReportID((ReportBaseImpl) inReport,
-                new ReportID(report.getId()));
     }
 
     /**
@@ -109,6 +107,7 @@ class PersistentReport extends EntityBase {
         }
         setOriginator(inReport.getOriginator());
         setOrderID(inReport.getOrderID());
+        setReportID(inReport.getReportID());
         if (inReport.getActorID()!=null) {
             setActor(new SingleSimpleUserQuery
                      (inReport.getActorID().getValue()).fetch());
@@ -160,7 +159,7 @@ class PersistentReport extends EntityBase {
                     throw new IllegalArgumentException();
             }
             ReportBaseImpl.assignReportID((ReportBaseImpl)returnValue,
-                    new ReportID(getId()));
+                                          getReportID());
             return returnValue;
         } catch (InvalidMessage e) {
             throw new ReportPersistenceException(e, new I18NBoundMessage1P(
@@ -260,6 +259,22 @@ class PersistentReport extends EntityBase {
                 : new BrokerID(inValue));
     }
 
+    @Transient
+    ReportID getReportID() {
+        return mReportID;
+    }
+
+    private void setReportID(ReportID inReportID) {
+        mReportID = inReportID;
+    }
+    @Column(name = "reportID", nullable = false)
+    private long getReportIDAsLong() {
+        return getReportID().longValue();
+    }
+    private void setReportIDAsLong(long inValue) {
+        setReportID(new ReportID(inValue));
+    }
+
     @Lob
     @Column(nullable = false)
     private String getFixMessage() {
@@ -316,6 +331,7 @@ class PersistentReport extends EntityBase {
     private SimpleUser mActor; 
     private SimpleUser mViewer; 
     private BrokerID mBrokerID;
+    private ReportID mReportID;
     private String mFixMessage;
     private Date mSendingTime;
     private ReportType mReportType;
