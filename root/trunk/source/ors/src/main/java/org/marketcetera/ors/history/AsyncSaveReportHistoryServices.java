@@ -29,7 +29,7 @@ public class AsyncSaveReportHistoryServices
     private static final String PERSIST_QUEUE=
         "persist-queue"; //$NON-NLS-1$
 
-    private class QueueHandler
+    public class QueueHandler
         implements ReceiveOnlyHandler<TradeMessage>
     {
         @Override
