@@ -2,11 +2,11 @@ package org.marketcetera.marketdata.csv;
 
 import static org.marketcetera.marketdata.Capability.LATEST_TICK;
 import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.csv.Messages.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -31,6 +31,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since $Release$
  * @version $Id: CSVFeed.java 4348 2009-09-24 02:33:11Z toli $
  */
 @ClassVersion("$Id: CSVFeed.java 4348 2009-09-24 02:33:11Z toli $")
@@ -83,6 +84,7 @@ public class CSVFeed
         }
         SLF4JLoggerProxy.debug(CSVFeed.class,
                                "CSVFeed starting"); //$NON-NLS-1$
+        requestExecutor = Executors.newCachedThreadPool();
         super.start();
 	}
     /* (non-Javadoc)
@@ -92,6 +94,7 @@ public class CSVFeed
     public synchronized void stop() {
         SLF4JLoggerProxy.debug(CSVFeed.class,
                                "CSVFeed stopping..."); //$NON-NLS-1$
+        requestExecutor.shutdownNow();
         super.stop();
     }
     /* (non-Javadoc)
@@ -110,9 +113,8 @@ public class CSVFeed
     {
         CsvFeedRequest request = requests.remove(inHandle);
         if(request == null) {
-            SLF4JLoggerProxy.warn(CSVFeed.class,
-                                  "Cannot cancel request for handle: {}", // TODO
-                                  inHandle);
+            CANCEL_REQUEST_FAILED_HANDLE_NOT_FOUND.warn(CSVFeed.class,
+                                                        inHandle);
             return;
         }
         request.stop();
@@ -136,7 +138,9 @@ public class CSVFeed
             }
             return handleList;
         } catch (FileNotFoundException e) {
-            throw new FeedException(e);
+            CSV_FILE_DNE.error(CSVFeed.class,
+                               e);
+            throw new FeedException(CSV_FILE_DNE);
         }
     }
     /* (non-Javadoc)
@@ -217,7 +221,7 @@ public class CSVFeed
                 }
             }
             if(marketDataHandleClass == null) {
-                throw new NullPointerException();  // TODO
+                throw new NullPointerException();
             } else {
                 Field handleHolderField = thisClass.getDeclaredField("mHandleHolder");
                 handleHolderField.setAccessible(true);
@@ -242,7 +246,7 @@ public class CSVFeed
                                            request,
                                            actualHandle);
                     if(request == null) {
-                        throw new NullPointerException();  // TODO
+                        throw new NullPointerException();
                     } else {
                         SLF4JLoggerProxy.debug(CSVFeed.class,
                                                "Submitting {}",
@@ -252,7 +256,8 @@ public class CSVFeed
                 }
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException(e);  // TODO
+            throw new IllegalArgumentException(FAILED_TO_START_REQUEST.getText(),
+                                               e);
         }
     }
     /**
@@ -269,7 +274,7 @@ public class CSVFeed
      */
     private boolean mLoggedIn;
     /**
-     * 
+     * the credentials object used to initiate the feed
      */
     private CSVFeedCredentials credentials;
     /**
@@ -277,9 +282,9 @@ public class CSVFeed
      */
     private final Map<String,CsvFeedRequest> requests = new HashMap<String,CsvFeedRequest>();
     /**
-     * 
+     * executes and manages market data requests
      */
-    private final ExecutorService requestExecutor = Executors.newCachedThreadPool();
+    private ExecutorService requestExecutor;
     /**
      * capabilities for CSVFeed - note that these are not dynamic as Bogus requires no provisioning
      */
@@ -317,17 +322,20 @@ public class CSVFeed
                 while(isRunning.get()) {
                     String[] line = parser.getLine();
                     if(line == null) {
-                        SLF4JLoggerProxy.debug(CSVFeed.class,
-                                               "Request {} is complete",
-                                               this);
+                        END_OF_DATA_REACHED.info(CSVFeed.class);
                         break;
                     }
                     dataReceived(handle,
                                  CSVQuantum.getQuantum(line,
                                                        request));
+                    if(credentials.getMillisecondDelay() > 0) {
+                        Thread.sleep(credentials.getMillisecondDelay());
+                    }
                 }
-            } catch (IOException e) {
-                throw new IllegalArgumentException(e);  // TODO
+            } catch (Exception e) {
+                REQUEST_FAILED.warn(CSVFeed.class,
+                                    e,
+                                    this);
             } finally {
                 isRunning.set(false);
             }
@@ -358,172 +366,39 @@ public class CSVFeed
             request = inRequest;
         }
         /**
-         * 
-         *
-         *
+         * Stops the currently running request as soon as possible. 
          */
         private void stop()
         {
             if(!isRunning.get()) {
-                // TODO warn
                 return;
             }
             isRunning.set(false);
         }
         /**
-         * 
+         * Gets the request handle. 
          *
-         *
-         * @return
+         * @return a <code>String</code> value
          */
         private String getHandle()
         {
             return handle;
         }
         /**
-         * 
+         * the CSV file parser
          */
         private final CSVParser parser;
         /**
-         * 
+         * the original request
          */
         private final MarketDataRequest request;
         /**
-         * 
+         * the handle assigned to this request 
          */
         private final String handle = Long.toHexString(counter.incrementAndGet());
         /**
-         * 
+         * indicates if the request is running or not
          */
         private final AtomicBoolean isRunning = new AtomicBoolean(false);
-//        /**
-//         * Executes the given <code>MarketDataRequest</code> and returns
-//         * a handle corresponding to the request.
-//         *
-//         * @param inRequest a <code>MarketDataRequest</code> value
-//         * @param inParentFeed a <code>CSVFeed</code> value
-//         * @param delayInSeconds optional delay to wait between sending market data in
-//         * @return a <code>String</code> value
-//         */
-//        private static String execute(MarketDataRequest inRequest,
-//                                      CSVFeed inParentFeed,
-//                                      Queue<CSVReaderRunnable> queue,
-//                                      long delayInSeconds)
-//                throws FileNotFoundException
-//        {
-//            CsvFeedRequest request = new CsvFeedRequest(inRequest,
-//                                                        inParentFeed);
-//            request.execute(queue,
-//                            delayInSeconds);
-//            return request.getIDAsString();
-//        }
-//        /**
-//         * Create a new Request instance.
-//         *
-//         * @param inRequest a <code>MarketDataRequest</code> value
-//         * @param inFeed a <code>CSVFeed</code> value
-//         */
-//        private CsvFeedRequest(MarketDataRequest inRequest,
-//                               CSVFeed inFeed)
-//        {
-//            request = inRequest;
-//            feed = inFeed;
-//            subscriber = new ISubscriber() {
-//                @Override
-//                public boolean isInteresting(Object inData)
-//                {
-//                    return true;
-//                }
-//                @Override
-//                public void publishTo(Object inData)
-//                {
-//                    SLF4JLoggerProxy.debug(CSVFeed.class,
-//                                           "CSVFeed publishing {}", //$NON-NLS-1$
-//                                           inData);
-//                    feed.dataReceived(getIDAsString(),
-//                                      inData);
-//                }
-//            };
-//        }
-//        /**
-//         * Executes the market data request associated with this object.
-//         * 
-//         * @throws IllegalStateException if this method has already been executed for this object
-//         * @param queue
-//         * @param dataDir Location of CSV file
-//         * @param delayInSecs   Seconds to wait between sending each event
-//         */
-//        private synchronized void execute(Queue<CSVReaderRunnable> queue,
-//                                          long delayInSecs)
-//                throws FileNotFoundException
-//        {
-//            if(executed) {
-//                throw new IllegalStateException();
-//            }
-//            try {
-//                List<Instrument> symbols = new ArrayList<Instrument>();
-//                for(String symbol : request.getSymbols()) {
-//                    symbols.add(new Equity(symbol));
-//                }
-//                for(Instrument symbol : symbols) {
-//                    // all symbols for which we want data are collected in the symbols list
-//                    // each type of subscription is managed differently
-//                    CSVParser parser;
-//                    for(Content content : request.getContent()) {
-//                        parser = new CSVParser(new FileReader(new File(dataDir, symbol.getSymbol() + EXTENSION)),
-//                                               CSVStrategy.EXCEL_STRATEGY);
-//                        switch(content) {
-//                            case TOP_OF_BOOK :
-//                                // TOP_OF_BOOK from the specified exchange only
-//                                queue.add(new CSVReaderRunnable(parser,
-//                                                                symbol.getSymbol(),
-//                                                                Content.TOP_OF_BOOK,
-//                                                                subscriber,
-//                                                                delayInSecs));
-//                                break;
-//                            case LATEST_TICK :
-//                                // LATEST_TICK is the most recent trade
-//                                queue.add(new CSVReaderRunnable(parser, symbol.getSymbol(),
-//                                          Content.LATEST_TICK, subscriber, delayInSecs));
-//                                break;
-//                            default:
-//                                throw new UnsupportedOperationException();
-//                        }
-//                    }
-//                }
-//            } finally {
-//                executed = true;
-//            }
-//        }
-//        /**
-//         * Returns the request ID as a <code>String</code>. 
-//         *
-//         * @return a <code>String</code> value
-//         */
-//        private String getIDAsString()
-//        {
-//            return Long.toHexString(id);
-//        }
-//        /**
-//         * the market data request associated with this object
-//         */
-//        private final MarketDataRequest request;
-//        /**
-//         * the unique identifier of this request
-//         */
-//        private final long id = counter.incrementAndGet();
-//        /**
-//         * the parent object for this request
-//         */
-//        private final CSVFeed feed;
-//        /**
-//         * the bridge object which receives responses from the parent's nested exchanges
-//         * and forwards them to the submitter of the request
-//         */
-//        private final ISubscriber subscriber;
-//        /**
-//         * indicates whether this object has been executed yet or not
-//         */
-//        private boolean executed = false;
     }
 }

@@ -9,7 +9,10 @@ import org.marketcetera.core.CoreException;
 
 /**
  * <code>ModuleFactory</code> implementation for the <code>CSVFeed</code> market data provider.
+ * 
  * @author toli kuznets
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since $Release$
  * @version $Id: CSVFeedModuleFactory.java 4348 2009-09-24 02:33:11Z toli $
  */
 @ClassVersion("$Id: CSVFeedModuleFactory.java 4348 2009-09-24 02:33:11Z toli $")

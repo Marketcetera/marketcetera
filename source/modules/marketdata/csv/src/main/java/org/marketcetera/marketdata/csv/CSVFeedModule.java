@@ -9,6 +9,7 @@ import org.marketcetera.core.CoreException;
  * 
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since $Release$
  * @version $Id: CSVFeedModule.java 4348 2009-09-24 02:33:11Z toli $
  */
 @ClassVersion("$Id: CSVFeedModule.java 4348 2009-09-24 02:33:11Z toli $")
@@ -17,27 +18,6 @@ public class CSVFeedModule
                                          CSVFeedCredentials>
         implements CSVFeedMXBean
 {
-    /**
-     * Create a new CSVFeedModule instance.
-     * 
-     * @throws org.marketcetera.core.CoreException 
-     */
-    CSVFeedModule()
-        throws CoreException
-    {
-        super(CSVFeedModuleFactory.INSTANCE_URN,
-              CSVFeedFactory.getInstance().getMarketDataFeed());
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataModule#getCredentials()
-     */
-    @Override
-    protected CSVFeedCredentials getCredentials()
-        throws CoreException
-    {
-        return CSVFeedCredentials.getInstance(getDelay(),
-                                              getEventTranslatorClassName());
-    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getDelay()
      */
@@ -71,11 +51,32 @@ public class CSVFeedModule
         eventTranslatorClassname = inEventTranslatorClassname;
     }
     /**
+     * Create a new CSVFeedModule instance.
      * 
+     * @throws org.marketcetera.core.CoreException 
+     */
+    CSVFeedModule()
+        throws CoreException
+    {
+        super(CSVFeedModuleFactory.INSTANCE_URN,
+              CSVFeedFactory.getInstance().getMarketDataFeed());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModule#getCredentials()
+     */
+    @Override
+    protected CSVFeedCredentials getCredentials()
+        throws CoreException
+    {
+        return CSVFeedCredentials.getInstance(getDelay(),
+                                              getEventTranslatorClassName());
+    }
+    /**
+     * the delay value to use 
      */
     private volatile long delay = 0;
     /**
-     * 
+     * the event translator classname to use
      */
     private volatile String eventTranslatorClassname = CSVFeedEventTranslator.class.getName();
 }
