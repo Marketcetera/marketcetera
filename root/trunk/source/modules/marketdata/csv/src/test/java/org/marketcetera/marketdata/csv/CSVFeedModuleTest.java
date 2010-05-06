@@ -84,7 +84,7 @@ public class CSVFeedModuleTest extends MarketDataModuleTestBase {
         });
         CSVFeed feed = CSVFeedFactory.getInstance().getMarketDataFeed();
         feed.doLogin(CSVFeedCredentials.getInstance(0,
-                                                    MockCsvFeedEventTranslator.class.getName()));
+                                                    MockCSVFeedEventTranslator.class.getName()));
         MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest();
         DataFlowID dfid = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                            builder.withSymbols(DATA_DIR + "GOOG.csv")
@@ -121,7 +121,7 @@ public class CSVFeedModuleTest extends MarketDataModuleTestBase {
         });
         CSVFeed feed = CSVFeedFactory.getInstance().getMarketDataFeed();
         feed.doLogin(CSVFeedCredentials.getInstance(0,
-                                                    MockCsvFeedEventTranslator.class.getName()));
+                                                    MockCSVFeedEventTranslator.class.getName()));
         DataFlowID dfid = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                           MarketDataRequestBuilder.newRequest().withSymbols(DATA_DIR + "GOOG.csv")
                                                                                                                                .withContent("TOP_OF_BOOK").create()) });

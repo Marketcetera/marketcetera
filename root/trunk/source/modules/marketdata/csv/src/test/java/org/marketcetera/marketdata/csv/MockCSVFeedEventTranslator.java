@@ -26,7 +26,7 @@ import org.marketcetera.trade.Equity;
  * @version $Id$
  * @since $Release$
  */
-public class MockCsvFeedEventTranslator
+public class MockCSVFeedEventTranslator
         extends CSVFeedEventTranslator
 {
     /* (non-Javadoc)

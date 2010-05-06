@@ -11,6 +11,7 @@ import javax.management.MXBean;
  * 
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since $Release$
  * @version $Id: CSVFeedMXBean.java 4348 2009-09-24 02:33:11Z toli $
  */
 @MXBean(true)
@@ -20,31 +21,30 @@ public interface CSVFeedMXBean
         extends AbstractMarketDataModuleMXBean
 {
     /**
-     * 
+     * Gets the number of milliseconds to delay between market data events.
      *
-     *
-     * @return
+     * @return a <code>long</code> value
      */
     @DisplayName("Delay in milliseconds")
     public long getDelay();
     /**
-     * 
+     * Sets the number of milliseconds to delay between market data events.
      *
-     *
-     * @param inDelay
+     * @param inDelay a <code>long</code> value
      */
     @DisplayName("Delay in milliseconds")
     public void setDelay(long inDelay);
     /**
-     * 
+     * Gets the fully-qualified class name of the CSV event translator.
+     *
+     * @return a <code>String</code> value
      */
     @DisplayName("The fully-qualified class name of the CSV event translator to use")
     public String getEventTranslatorClassName();
     /**
-     * 
+     * Sets the fully-qualified class name of the CSV event translator.
      *
-     *
-     * @param inEventTranslatorClassname
+     * @param inEventTranslatorClassname a <code>String</code> value
      */
     @DisplayName("The fully-qualified class name of the CSV event translator to use")
     public void setEventTranslatorClassName(@DisplayName("The fully-qualified class name of the CSV event translator to use")String inEventTranslatorClassname);

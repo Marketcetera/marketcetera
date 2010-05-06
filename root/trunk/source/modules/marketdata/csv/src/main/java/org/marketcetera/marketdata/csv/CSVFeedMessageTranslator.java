@@ -13,22 +13,30 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
- * CSV reader implementation of {@link DataRequestTranslator}
- * Can support bid,ask,trade events
- * Since we create Marketcetera-based request manually to begin with,
- * no translation needs to be done here
+ * Translates {@link MarketDataRequest} objects to a format that the {@link CSVFeed} can understand.
+ * 
  * @author toli kuznets
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since $Release$
  * @version $Id: CSVFeedMessageTranslator.java 4348 2009-09-24 02:33:11Z toli $
  */
-
 @ClassVersion("$Id: CSVFeedMessageTranslator.java 4348 2009-09-24 02:33:11Z toli $")
 public class CSVFeedMessageTranslator     
         implements DataRequestTranslator<MarketDataRequest>
 {
-    /**
-     * static instance
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.marketdata.DataRequest)
      */
-    private static final CSVFeedMessageTranslator sInstance = new CSVFeedMessageTranslator();
+    @Override
+    public MarketDataRequest fromDataRequest(MarketDataRequest inRequest)
+            throws CoreException
+    {
+        if(inRequest.validateWithCapabilities(TOP_OF_BOOK,LATEST_TICK,DIVIDEND,MARKET_STAT)) {
+            return inRequest;
+        }
+        throw new CoreException(new I18NBoundMessage1P(UNSUPPORTED_REQUEST,
+                                                       String.valueOf(inRequest.getContent())));
+    }
     /**
      * Gets a <code>CSVFeedMessageTranslator</code> instance.
      * 
@@ -45,17 +53,8 @@ public class CSVFeedMessageTranslator
     private CSVFeedMessageTranslator()
     {
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.marketdata.DataRequest)
+    /**
+     * static instance
      */
-    @Override
-    public MarketDataRequest fromDataRequest(MarketDataRequest inRequest)
-            throws CoreException
-    {
-        if(inRequest.validateWithCapabilities(TOP_OF_BOOK,LATEST_TICK,DIVIDEND,MARKET_STAT)) {
-            return inRequest;
-        }
-        throw new CoreException(new I18NBoundMessage1P(UNSUPPORTED_REQUEST,
-                                                       String.valueOf(inRequest.getContent())));
-    }
+    private static final CSVFeedMessageTranslator sInstance = new CSVFeedMessageTranslator();
 }
