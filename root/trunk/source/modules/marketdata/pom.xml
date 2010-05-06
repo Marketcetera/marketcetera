@@ -28,5 +28,6 @@
   <modules>
     <module>bogus</module>
     <module>marketcetera</module>
+    <module>csv</module>
   </modules>
 </project>
