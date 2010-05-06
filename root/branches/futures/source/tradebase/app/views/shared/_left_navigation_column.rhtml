@@ -1,0 +1,63 @@
+        <div class="left_column">
+          <ul id="navigation">
+            <li class="display" title="trades"><a title="Trades" href="#trades">Trades</a>
+              <ul class="stretcher">
+                <li><%= link_to "List Trades", {:action => 'list', :controller => 'trades'}, :title => "List Trades" %></li>
+                <li><%= link_to "New Trade", {:action => 'new', :controller => 'trades'}, :title => "New Trade" %></li>
+                <li><%= link_to "List Unparseable Messages", {:action => 'list', :controller => 'message_logs'},
+                                                                       :title => "List Unparseable Messages" %></li>
+              </ul>
+            </li>
+            <li class="display" title="position"><a title="Positions" href="#positions">Positions</a>
+              <ul class="stretcher">
+                <li><%= link_to "All Positions", {:action => 'list', :controller => 'positions'}, :title => "All Positions" %></li>
+                <li><%= link_to "Positions as of", {:action => 'positions', :controller => 'queries'}, :title => "Positions as Of" %></li>
+                <li><%= link_to "Positions by Account", {:action => 'positions', :controller => 'queries'}, :title => "Positions by Account" %></li>
+              </ul>
+            </li>
+            <li class="display" title="reports"><a title="Reports" href="#reports">Reports</a>
+              <ul class="stretcher">
+                <li><%= link_to "Search for Trades", {:controller => 'queries'}, :title => "Search for Trades"%></li>
+                <li><%= link_to "Positions as of", {:action => 'positions', :controller => 'queries'}, :title => "Positions as Of" %></li>
+                <li><%= link_to "Positions by Account", {:action => 'positions', :controller => 'queries'}, :title => "Positions by Account" %></li>
+              </ul>
+            </li>
+            <li class="display" title="pnl"><a title="P &amp; L" href="#pnl">P &amp; L</a>
+              <ul class="stretcher">
+                <li><%= link_to "P &amp; L", {:controller => "pnl"}, :title => "P &amp; L"%></li>
+                <li><%= link_to "List Marks for Symbol", {:controller => "marks"}, :title => "List Marks for Symbol" %></li>
+                <li><%= link_to "List Marks on Date", {:controller => "marks"}, :title => "List Marks on Date"  %></li>
+                <li><%= link_to "New Mark", {:controller => "marks", :action => "new"}, :title =>"New Mark"%></li>
+                <li><%= link_to "Import Marks", {:controller => "import_marks"}, :title =>"Import Marks"%></li>
+              </ul>
+            </li>
+            <li class="display" title="db_maintenance"><a title="DB Maintenance" href="#db_maintenance">DB Maintenance</a>
+              <ul class="stretcher">
+                <li><%= link_to "List Accounts", {:action => 'list', :controller => 'accounts'}, :title => "List Accounts" %></li>
+                <li><%= link_to "New Account", {:action => 'new', :controller => 'accounts'}, :title => "New Account" %></li>
+                <li><%= link_to "List Equities", {:action => 'list', :controller => 'equities'}, :title => "List Equities" %></li>
+                <li><%= link_to "New Equity", {:action => 'new', :controller => 'equities'}, :title => "New Equity" %></li>
+                <li><%= link_to "List Symbols", {:action => 'list', :controller => 'm_symbols'}, :title => "List Symbols" %></li>
+                <li><%= link_to "New Symbol", {:action => 'new', :controller => 'm_symbols'}, :title => "New Symbol" %></li>
+                <li><%= link_to "List Dividends", {:action => 'list', :controller => 'dividends'}, :title => "List Dividends" %></li>
+                <li><%= link_to "New Dividend", {:action => 'new', :controller => 'dividends'}, :title => "New Dividend" %></li>
+                <li><%= link_to "List Currencies", {:action => 'list', :controller => 'currencies'}, :title => "List Currencies" %></li>
+                <li><%= link_to "List Currency Pairs", {:action => 'list', :controller => 'currency_pairs'}, :title => "List Currency Pairs" %></li>
+                <li><%= link_to "New Currency Pair", {:action => 'new', :controller => 'currency_pairs'}, :title => "New Currency Pair" %></li>
+              </ul>
+            </li>
+
+            <li class="display" title="help"><a title="Help" href="#help">Help</a>
+              <ul class="stretcher">
+                <li><a title="Documentation" href="http://www.marketcetera.com/masha/docs?qualifier=tradebase&version=<%= RELEASE_VERSION %>">Documentation</a></li>
+                <li><a title="Report Bug" href="http://www.marketcetera.org/jira">Report a Bug</a></li>
+                <li><a title="About Marketcetera" href="http://www.marketcetera.com">About Marketcetera</a></li>
+                <%  if(RUN_ON_APPLIANCE) %>
+                  <li><%= link_to "Server Diagnostics", {:action => 'server_info', :controller => 'diagnostics'}, :title => "Server Diagnostics" %></li>
+                  <li><%= link_to "ORS Log", {:action => 'ors_log_display', :controller => 'diagnostics'}, :title => "ORS Log" %></li>
+                <% end %>
+                <li><%= link_to "Tradebase Log", {:action => 'tradebase_log_display', :controller => 'diagnostics'}, :title => "Tradebase Log" %></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
