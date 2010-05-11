@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -74,6 +75,7 @@ public class SimulatedExchangeTest
                                                 OptionType.Call);
     private BidEvent bid;
     private AskEvent ask;
+    private static final AtomicLong counter = new AtomicLong(0);
     /**
      * Executed once before all tests.
      *
@@ -97,14 +99,14 @@ public class SimulatedExchangeTest
        exchange = new SimulatedExchange("Test exchange",
                                         "TEST");
        assertFalse(metc.equals(goog));
-       bid = EventTestBase.generateEquityBidEvent(System.nanoTime(),
+       bid = EventTestBase.generateEquityBidEvent(counter.incrementAndGet(),
                                                   System.currentTimeMillis(),
                                                   metc,
                                                   exchange.getCode(),
                                                   new BigDecimal("100"),
                                                   new BigDecimal("1000"));
        // intentionally creating a large spread to make sure no trades get executed
-       ask = EventTestBase.generateEquityAskEvent(System.nanoTime(),
+       ask = EventTestBase.generateEquityAskEvent(counter.incrementAndGet(),
                                                   System.currentTimeMillis(),
                                                   metc,
                                                   exchange.getCode(),
@@ -325,13 +327,13 @@ public class SimulatedExchangeTest
                         null);
         exchange.stop();
         // start the exchange again in scripted mode, this time with events in opposition to each other
-        script.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
+        script.add(EventTestBase.generateEquityBidEvent(counter.incrementAndGet(),
                                                         System.currentTimeMillis(),
                                                         metc,
                                                         exchange.getCode(),
                                                         ask.getPrice(),
                                                         ask.getSize()));
-        script.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
+        script.add(EventTestBase.generateEquityAskEvent(counter.incrementAndGet(),
                                                         System.currentTimeMillis(),
                                                         metc,
                                                         exchange.getCode(),
@@ -709,7 +711,7 @@ public class SimulatedExchangeTest
             public Boolean call()
                     throws Exception
             {
-                Equity e = new Equity("e-" + System.nanoTime());
+                Equity e = new Equity("e-" + counter.incrementAndGet());
                 exchange.getDividends(ExchangeRequestBuilder.newRequest().withInstrument(e).create(),
                                       dividendStream);
                 return dividendStream.events.size() >= 20;
@@ -759,7 +761,7 @@ public class SimulatedExchangeTest
         List<BidEvent> bids = new ArrayList<BidEvent>();
         List<AskEvent> asks = new ArrayList<AskEvent>();
         for(int i=0;i<5;i++) {
-            bids.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
+            bids.add(EventTestBase.generateEquityBidEvent(counter.incrementAndGet(),
                                                           System.currentTimeMillis(),
                                                           metc,
                                                           exchange.getCode(),
@@ -767,7 +769,7 @@ public class SimulatedExchangeTest
                                                           bidSize));
         }
         for(int i=4;i>=0;i--) {
-            asks.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
+            asks.add(EventTestBase.generateEquityAskEvent(counter.incrementAndGet(),
                                                           System.currentTimeMillis(),
                                                           metc,
                                                           exchange.getCode(),
@@ -777,7 +779,7 @@ public class SimulatedExchangeTest
         script.addAll(bids);
         script.addAll(asks);
         // add one outrageous ask to make the book interesting
-        AskEvent bigAsk = EventTestBase.generateEquityAskEvent(System.nanoTime(),
+        AskEvent bigAsk = EventTestBase.generateEquityAskEvent(counter.incrementAndGet(),
                                                                System.currentTimeMillis(),
                                                                metc,
                                                                exchange.getCode(),
@@ -1155,14 +1157,14 @@ public class SimulatedExchangeTest
         exchange2.getTopOfBook(ExchangeRequestBuilder.newRequest().withInstrument(metc).create(),
                                sub2);
         // create an event targeted to the second exchange
-        AskEvent ask2 = EventTestBase.generateEquityAskEvent(System.nanoTime(),
+        AskEvent ask2 = EventTestBase.generateEquityAskEvent(counter.incrementAndGet(),
                                                                      System.currentTimeMillis(),
                                                                      metc,
                                                                      exchange2.getCode(),
                                                                      new BigDecimal("150"),
                                                                      new BigDecimal("500"));
         // create an event targeted to the second exchange but with the wrong symbol
-        AskEvent ask3 = EventTestBase.generateEquityAskEvent(System.nanoTime(),
+        AskEvent ask3 = EventTestBase.generateEquityAskEvent(counter.incrementAndGet(),
                                                                      System.currentTimeMillis(),
                                                                      goog,
                                                                      exchange2.getCode(),
@@ -1210,13 +1212,13 @@ public class SimulatedExchangeTest
        List<AskEvent> asks = new ArrayList<AskEvent>();
        List<BidEvent> bids = new ArrayList<BidEvent>();
        for(int i=0;i<3;i++) {
-           bids.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
+           bids.add(EventTestBase.generateEquityBidEvent(counter.incrementAndGet(),
                                                          System.currentTimeMillis(),
                                                          metc,
                                                          exchange.getCode(),
                                                          new BigDecimal(10-i),
                                                          new BigDecimal("1000")));
-           asks.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
+           asks.add(EventTestBase.generateEquityAskEvent(counter.incrementAndGet(),
                                                          System.currentTimeMillis(),
                                                          metc,
                                                          exchange.getCode(),

@@ -23,11 +23,10 @@ import com.google.common.collect.ImmutableList;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class OptionObservable extends
-        CompoundObservableManager<ITypedObservableValue<Instrument>> {
+public class OptionObservable
+        extends ExpirableInstrumentObservableManager<Option>
+{
 
-    private final ITypedObservableValue<String> mSymbol;
-    private final ITypedObservableValue<String> mExpiry;
     private final ITypedObservableValue<BigDecimal> mStrikePrice;
     private final ITypedObservableValue<OptionType> mOptionType;
 
@@ -37,27 +36,22 @@ public class OptionObservable extends
      * @param instrument
      *            the instrument to observe
      */
-    public OptionObservable(ITypedObservableValue<Instrument> instrument) {
+    public OptionObservable(ITypedObservableValue<Option> instrument) {
         super(instrument);
-        mSymbol = TypedObservableValueDecorator.create(String.class);
-        mExpiry = TypedObservableValueDecorator.create(String.class);
         mStrikePrice = TypedObservableValueDecorator.create(BigDecimal.class);
         mOptionType = TypedObservableValueDecorator.create(OptionType.class);
-        init(ImmutableList.of(mSymbol, mExpiry, mStrikePrice, mOptionType));
+        init(ImmutableList.of(getSymbol(), getExpiry(), mStrikePrice, mOptionType));
     }
 
     @Override
     protected void updateChildren() {
+        super.updateChildren();
         Instrument instrument = getParent().getTypedValue();
         if (instrument instanceof Option) {
             Option option = (Option) instrument;
-            setIfChanged(mSymbol, option.getSymbol());
-            setIfChanged(mExpiry, option.getExpiry());
             setIfChanged(mStrikePrice, option.getStrikePrice());
             setIfChanged(mOptionType, option.getType());
         } else {
-            setIfChanged(mSymbol, null);
-            setIfChanged(mExpiry, null);
             setIfChanged(mStrikePrice, null);
             setIfChanged(mOptionType, null);
         }
@@ -65,8 +59,8 @@ public class OptionObservable extends
 
     @Override
     protected void updateParent() {
-        String symbol = mSymbol.getTypedValue();
-        String expiry = mExpiry.getTypedValue();
+        String symbol = getSymbol().getTypedValue();
+        String expiry = getExpiry().getTypedValue();
         BigDecimal strike = mStrikePrice.getTypedValue();
         OptionType type = mOptionType.getTypedValue();
         Option newValue = null;
@@ -74,26 +68,9 @@ public class OptionObservable extends
                 && strike != null && type != null) {
             newValue = new Option(symbol, expiry, strike, type);
         }
-        ITypedObservableValue<Instrument> instrument = getParent();
-        setIfChanged(instrument, newValue);
-    }
-
-    /**
-     * Observes the option symbol.
-     * 
-     * @return the option symbol observable
-     */
-    public ITypedObservableValue<String> observeSymbol() {
-        return mSymbol;
-    }
-
-    /**
-     * Observes the option expiry.
-     * 
-     * @return the option expiry observable
-     */
-    public ITypedObservableValue<String> observeExpiry() {
-        return mExpiry;
+        ITypedObservableValue<Option> option = getParent();
+        setIfChanged(option,
+                     newValue);
     }
 
     /**

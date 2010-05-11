@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.marketcetera.event.DividendEvent;
@@ -590,7 +591,7 @@ public class DividendEventTest
         inBuilder.withEquity(equity);
         inBuilder.withExecutionDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*2)));
         inBuilder.withFrequency(DividendFrequency.ANNUALLY);
-        inBuilder.withMessageId(System.nanoTime());
+        inBuilder.withMessageId(idCounter.incrementAndGet());
         inBuilder.withPaymentDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*3)));
         inBuilder.withRecordDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*4)));
         inBuilder.withSource(this);
@@ -612,4 +613,8 @@ public class DividendEventTest
      * test instrument
      */
     private Equity equity = new Equity("METC");
+    /**
+     * id counter used to guarantee unique events
+     */
+    private static final AtomicLong idCounter = new AtomicLong(0);
 }

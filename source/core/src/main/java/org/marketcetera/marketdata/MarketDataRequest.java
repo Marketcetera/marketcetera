@@ -1,7 +1,6 @@
 package org.marketcetera.marketdata;
 
 import static org.marketcetera.marketdata.AssetClass.EQUITY;
-import static org.marketcetera.marketdata.AssetClass.OPTION;
 import static org.marketcetera.marketdata.Content.DIVIDEND;
 import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.Messages.*;
@@ -274,11 +273,11 @@ public class MarketDataRequest
         if(getAssetClass() == null) {
             throw new IllegalArgumentException(MISSING_ASSET_CLASS.getText());
         }
-        // if underlying symbols are specified then OPTION is required
+        // if underlying symbols are specified then OPTION or FUTURE is required
         if(!getUnderlyingSymbols().isEmpty() &&
-           getAssetClass() != OPTION) {
-            throw new IllegalArgumentException(OPTION_ASSET_CLASS_REQUIRED.getText(this,
-                                                                                   getAssetClass()));
+           !getAssetClass().isValidForUnderlyingSymbols()) {
+            throw new IllegalArgumentException(VALID_UNDERLYING_ASSET_CLASS_REQUIRED.getText(this,
+                                                                                             getAssetClass()));
         }
     }
     /**

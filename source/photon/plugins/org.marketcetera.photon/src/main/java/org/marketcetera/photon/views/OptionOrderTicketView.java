@@ -175,7 +175,7 @@ public class OptionOrderTicketView extends
          */
         final IObservableValue target = SWTObservables.observeText(ticket
                 .getOptionExpiryText(), SWT.Modify);
-        Binding binding = dbc.bindValue(target, model.getOptionExpiry());
+        Binding binding = dbc.bindValue(target, model.getExpiry());
         setRequired(binding, Messages.OPTION_ORDER_TICKET_VIEW_EXPIRY__LABEL
                 .getText());
         MultiValidator expiryValidator = new MultiValidator() {

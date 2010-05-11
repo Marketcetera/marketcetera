@@ -229,10 +229,6 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
     {
         mNotificationDelegate.removeNotificationListener(inListener);
     }
-    /**
-     * used to indicate unknown capabilities of a provider
-     */
-    private static final Set<Capability> unknownCapabilities = EnumSet.of(Capability.UNKNOWN);
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCapabilities()
      */
@@ -245,6 +241,19 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
             return unknownCapabilities;
         }
         return capabilities;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getAssetClasses()
+     */
+    @Override
+    public Set<AssetClass> getAssetClasses()
+    {
+        Set<AssetClass> assetClasses;
+        if(feed == null ||
+           (assetClasses = feed.getSupportedAssetClasses()) == null) {
+            return unknownAssetClasses;
+        }
+        return assetClasses;
     }
     /**
      * Create a new AbstractMarketDataModule instance.
@@ -353,4 +362,12 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
      * the feed status of the underlying feed object 
      */
     private FeedStatus feedStatus;
+    /**
+     * used to indicate unknown capabilities of a provider
+     */
+    private static final Set<Capability> unknownCapabilities = EnumSet.of(Capability.UNKNOWN);
+    /**
+     * used to indicate unknown supported asset classes of a provider
+     */
+    private static final Set<AssetClass> unknownAssetClasses = EnumSet.noneOf(AssetClass.class);
 }

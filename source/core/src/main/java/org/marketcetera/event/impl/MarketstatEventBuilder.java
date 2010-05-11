@@ -11,6 +11,7 @@ import org.marketcetera.event.beans.MarketstatBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -51,6 +52,8 @@ public abstract class MarketstatEventBuilder
             return equityMarketstat().withInstrument(inInstrument);
         } else if(inInstrument instanceof Option) {
             return optionMarketstat().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Future) {
+            return futureMarketstat().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -97,6 +100,27 @@ public abstract class MarketstatEventBuilder
                                                      getOption(),
                                                      getVolumeChange(),
                                                      getInterestChange());
+            }
+        };
+    }
+    /**
+     * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object
+     * of type <code>Future</code>.
+     *
+     * @return a <code>MarketstatEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Future}
+     */
+    public static MarketstatEventBuilder futureMarketstat()
+    {
+        return new MarketstatEventBuilder()
+        {
+            @Override
+            public MarketstatEvent create()
+            {
+                if(!(getMarketstat().getInstrument() instanceof Future)) {
+                    throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
+                }
+                return new FutureMarketstatEventImpl(getMarketstat());
             }
         };
     }

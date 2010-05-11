@@ -1,10 +1,10 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import quickfix.Message;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.DataDictionary;
+import quickfix.Message;
 import quickfix.field.Symbol;
 
 /* $License$ */
@@ -25,7 +25,7 @@ public class EquityToMessage extends InstrumentToMessage<Equity> {
     }
 
     @Override
-    public void set(Instrument inInstrument, String inBeginString, Message inMessage) {
+    public void set(Equity inInstrument, String inBeginString, Message inMessage) {
         setSecurityType(inInstrument, inBeginString, inMessage);
         inMessage.setField(new Symbol(inInstrument.getSymbol()));
     }
@@ -36,7 +36,7 @@ public class EquityToMessage extends InstrumentToMessage<Equity> {
     }
 
     @Override
-    public void set(Instrument inInstrument, DataDictionary inDictionary,
+    public void set(Equity inInstrument, DataDictionary inDictionary,
                     String inMsgType, Message inMessage) {
         setSecurityType(inInstrument, inDictionary, inMsgType, inMessage);
         setSymbol(inInstrument, inDictionary, inMsgType, inMessage);
