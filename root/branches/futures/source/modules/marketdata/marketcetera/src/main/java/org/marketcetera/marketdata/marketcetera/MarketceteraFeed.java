@@ -16,18 +16,13 @@ import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
 
+import static org.marketcetera.marketdata.AssetClass.*;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
-import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
-import org.marketcetera.marketdata.FeedException;
-import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.*;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -99,6 +94,10 @@ public class MarketceteraFeed
      * static capabilities for this data feed
      */
     private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(Capability.TOP_OF_BOOK,Capability.LATEST_TICK));
+    /**
+     * static supported asset classes for this data feed
+     */
+    private static final Set<AssetClass> assetClasses = Collections.unmodifiableSet(EnumSet.of(EQUITY,OPTION));
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataFeed#getCapabilities()
      */
@@ -106,6 +105,14 @@ public class MarketceteraFeed
     public Set<Capability> getCapabilities()
     {
         return capabilities;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataFeed#getSupportedAssetClasses()
+     */
+    @Override
+    public Set<AssetClass> getSupportedAssetClasses()
+    {
+        return assetClasses;
     }
 	private FIXCorrelationFieldSubscription doQuery(Message query) {
 		try {

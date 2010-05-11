@@ -28,7 +28,11 @@ public enum SecurityType {
     /**
      * Options
      */
-    Option(quickfix.field.SecurityType.OPTION);
+    Option(quickfix.field.SecurityType.OPTION),
+    /**
+     * Future
+     */
+    Future(quickfix.field.SecurityType.FUTURE);
 
     /**
      * The FIX text value for this instance.

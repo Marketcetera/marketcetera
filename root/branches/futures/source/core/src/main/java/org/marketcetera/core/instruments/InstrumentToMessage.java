@@ -1,10 +1,11 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.Instrument;
 import org.marketcetera.quickfix.FIXVersion;
-import quickfix.Message;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.DataDictionary;
+import quickfix.Message;
 import quickfix.field.SecurityType;
 import quickfix.field.Symbol;
 
@@ -49,7 +50,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      * @param inBeginString the begin string value of the FIX message
      * @param inMessage the FIX message
      */
-    public abstract void set(Instrument inInstrument,
+    public abstract void set(I inInstrument,
                              String inBeginString,
                              Message inMessage);
 
@@ -74,7 +75,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      * @param inMsgType the FIX message type
      * @param inMessage the FIX message
      */
-    public abstract void set(Instrument inInstrument,
+    public abstract void set(I inInstrument,
                              DataDictionary inDictionary,
                              String inMsgType,
                              Message inMessage);
@@ -96,9 +97,9 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      * @param inBeginString the begin string (fix version) value of the FIX message
      * @param inMessage the FIX message.
      */
-    protected static void setSecurityType(Instrument inInstrument,
-                                          String inBeginString,
-                                          Message inMessage) {
+    protected static <I extends Instrument> void setSecurityType(I inInstrument,
+                                                                 String inBeginString,
+                                                                 Message inMessage) {
         if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) &&
                 inInstrument.getSecurityType() != null &&
                 org.marketcetera.trade.SecurityType.Unknown != inInstrument.getSecurityType()) {
@@ -149,6 +150,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      * The factory that provides the handler instance for the specified
      * instrument. 
      */
+    @SuppressWarnings("unchecked")
     public static final StaticInstrumentFunctionSelector<InstrumentToMessage> SELECTOR =
             new StaticInstrumentFunctionSelector<InstrumentToMessage>(InstrumentToMessage.class);
 }

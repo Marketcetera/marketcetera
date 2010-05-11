@@ -15,6 +15,7 @@ import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
@@ -164,5 +165,13 @@ public class MockMarketDataModuleFactory extends ModuleFactory {
 		public Set<Capability> getCapabilities() {
 			return EnumSet.complementOf(EnumSet.of(Capability.UNKNOWN));
 		}
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getAssetClasses()
+         */
+        @Override
+        public Set<AssetClass> getAssetClasses()
+        {
+            return EnumSet.allOf(AssetClass.class);
+        }
 	}
 }

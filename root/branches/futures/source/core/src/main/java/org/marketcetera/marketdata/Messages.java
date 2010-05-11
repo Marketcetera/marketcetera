@@ -1,11 +1,6 @@
 package org.marketcetera.marketdata;
 
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessage2P;
-import org.marketcetera.util.log.I18NMessage4P;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.log.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -80,8 +75,8 @@ public interface Messages
                                                                                                  "both_symbols_and_underlying_symbols_specified"); //$NON-NLS-1$
     static final I18NMessage1P NEITHER_SYMBOLS_NOR_UNDERLYING_SYMBOLS_SPECIFIED = new I18NMessage1P(LOGGER,
                                                                                                     "neither_symbols_nor_underlying_symbols_specified"); //$NON-NLS-1$
-    static final I18NMessage2P OPTION_ASSET_CLASS_REQUIRED = new I18NMessage2P(LOGGER,
-                                                                               "option_asset_class_required"); //$NON-NLS-1$
+    static final I18NMessage2P VALID_UNDERLYING_ASSET_CLASS_REQUIRED = new I18NMessage2P(LOGGER,
+                                                                                         "valid_underlying_asset_class_required"); //$NON-NLS-1$
     static final I18NMessage1P DIVIDEND_REQUIRES_SYMBOLS = new I18NMessage1P(LOGGER,
                                                                              "dividend_requires_symbols"); //$NON-NLS-1$
     static final I18NMessage1P EQUITY_REQUIRES_SYMBOLS = new I18NMessage1P(LOGGER,
@@ -142,4 +137,6 @@ public interface Messages
                                                                                          "option_requires_underlying_instrument"); //$NON-NLS-1$
     static final I18NMessage1P DIVIDEND_REQUEST_MISSING_INSTRUMENT = new I18NMessage1P(LOGGER,
                                                                                        "dividend_request_missing_instrument"); //$NON-NLS-1$
+    static final I18NMessage3P UNSUPPORTED_ASSET_CLASS = new I18NMessage3P(LOGGER,
+                                                                           "unsupported_asset_class"); //$NON-NLS-1$
 }

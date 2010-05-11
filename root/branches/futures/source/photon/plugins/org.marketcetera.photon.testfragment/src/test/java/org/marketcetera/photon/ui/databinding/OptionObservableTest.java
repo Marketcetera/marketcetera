@@ -42,8 +42,8 @@ public class OptionObservableTest {
         protected OptionType mType = OptionType.Put;
 
         public TestTemplate() {
-            ITypedObservableValue<Instrument> instrument = TypedObservableValueDecorator
-                    .create(Instrument.class);
+            ITypedObservableValue<Option> instrument = TypedObservableValueDecorator
+                    .create(Option.class);
             Option option = new Option(mSymbol, mExpiry, mStrike, mType);
             instrument.setValue(option);
             OptionObservable optionObservable = new OptionObservable(instrument);
@@ -105,7 +105,7 @@ public class OptionObservableTest {
         protected abstract T changeAgain();
 
         protected void additionalTests(
-                ITypedObservableValue<Instrument> instrument,
+                ITypedObservableValue<Option> instrument,
                 ITypedObservableValue<T> child) {
         }
     }
@@ -137,7 +137,7 @@ public class OptionObservableTest {
 
             @Override
             protected void additionalTests(
-                    ITypedObservableValue<Instrument> instrument,
+                    ITypedObservableValue<Option> instrument,
                     ITypedObservableValue<String> child) {
                 child.setValue("X");
                 Instrument option = new Option("X", mExpiry, mStrike, mType);
@@ -179,7 +179,7 @@ public class OptionObservableTest {
 
             @Override
             protected void additionalTests(
-                    ITypedObservableValue<Instrument> instrument,
+                    ITypedObservableValue<Option> instrument,
                     ITypedObservableValue<String> child) {
                 child.setValue("200912");
                 Instrument option = new Option(mSymbol, "200912", mStrike, mType);
@@ -252,9 +252,9 @@ public class OptionObservableTest {
     @UI
     public void testOtherObservablesPreservedWhenOptionInvalid()
             throws Exception {
-        ITypedObservableValue<Instrument> instrument = TypedObservableValueDecorator
-                .create(Instrument.class);
-        Instrument option = new Option("ABC", "200910", BigDecimal.ONE,
+        ITypedObservableValue<Option> instrument = TypedObservableValueDecorator
+                .create(Option.class);
+        Option option = new Option("ABC", "200910", BigDecimal.ONE,
                 OptionType.Put);
         instrument.setValue(option);
         OptionObservable optionObservable = new OptionObservable(instrument);

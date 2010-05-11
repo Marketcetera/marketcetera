@@ -5,11 +5,7 @@ import java.util.EnumSet;
 
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.ui.databinding.OptionObservable;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.OrderCapacity;
-import org.marketcetera.trade.PositionEffect;
-import org.marketcetera.trade.Side;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ObjectArrays;
@@ -25,7 +21,7 @@ import com.google.common.collect.ObjectArrays;
  * @since 1.0.0
  */
 @ClassVersion("$Id")
-public class OptionOrderTicketModel extends OrderTicketModel {
+public class OptionOrderTicketModel extends ExpirableInstrumentOrderTicketModel {
 
     private final ITypedObservableValue<OrderCapacity> mOrderCapacity;
     private final ITypedObservableValue<PositionEffect> mPositionEffect;
@@ -37,10 +33,11 @@ public class OptionOrderTicketModel extends OrderTicketModel {
     /**
      * Constructor.
      */
+    @SuppressWarnings("unchecked")
     public OptionOrderTicketModel() {
-        ITypedObservableValue<Instrument> instrument = getOrderObservable()
+        ITypedObservableValue<? extends Instrument> instrument = getOrderObservable()
                 .observeInstrument();
-        OptionObservable optionObservable = new OptionObservable(instrument);
+        OptionObservable optionObservable = new OptionObservable((ITypedObservableValue<Option>) instrument);
         mSymbol = optionObservable.observeSymbol();
         mOptionExpiry = optionObservable.observeExpiry();
         mStrikePrice = optionObservable.observeStrikePrice();
@@ -54,12 +51,12 @@ public class OptionOrderTicketModel extends OrderTicketModel {
         return mSymbol;
     }
 
-    /**
-     * Returns an observable that tracks the expiry of the current order.
-     * 
-     * @return the option expiry observable
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.views.ExpirableOrderTicketModel#getExpiry()
      */
-    public final ITypedObservableValue<String> getOptionExpiry() {
+    @Override
+    public ITypedObservableValue<String> getExpiry()
+    {
         return mOptionExpiry;
     }
 

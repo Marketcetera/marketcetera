@@ -11,6 +11,7 @@ import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -52,6 +53,9 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         }
         if(inInstrument instanceof Option) {
             return optionTradeEvent().withInstrument(inInstrument);
+        }
+        if(inInstrument instanceof Future) {
+            return futureTradeEvent().withInstrument(inInstrument);
         }
         throw new UnsupportedOperationException();
     }
@@ -98,6 +102,28 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         };
     }
     /**
+     * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Future <code>TradeEvent</code> object.
+     *
+     * @return a <code>TradeEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Future}
+     */
+    public static TradeEventBuilder<TradeEvent> futureTradeEvent()
+    {
+        return new TradeEventBuilder<TradeEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public TradeEvent create()
+            {
+                if(getMarketData().getInstrument() instanceof Future) {
+                    return new FutureTradeEventImpl(getMarketData());
+                }
+                throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
+            }
+        };
+    }
+    /**
      * Sets the message id to use with the new event. 
      *
      * @param inMessageId a <code>long</code> value
@@ -139,7 +165,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public TradeEventBuilder<E> withInstrument(Instrument inInstrument)
     {
         marketData.setInstrument(inInstrument);
-        if(inInstrument instanceof Option) {
+        if(inInstrument instanceof Option){
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument == null) {
             option.setInstrument(null);

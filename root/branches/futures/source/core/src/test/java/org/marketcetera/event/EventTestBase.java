@@ -15,6 +15,7 @@ import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.SecurityType;
@@ -192,6 +193,40 @@ public class EventTestBase
                                                  .withQuoteDate(DateUtils.dateToString(new Date()))
                                                  .withExpirationType(ExpirationType.AMERICAN)
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
+    }
+    /**
+     * Generates a future <code>BidEvent</code> with the given values.
+     *
+     * @param inInstrument a <code>Future</code> value
+     * @param inAction a <code>QuoteAction</code> value
+     * @return a <code>BidEvent</code> value
+     */
+    public static BidEvent generateFutureBidEvent(Future inInstrument,
+                                                  QuoteAction inAction)
+    {
+        return QuoteEventBuilder.futureBidEvent().withInstrument(inInstrument)
+                                                 .withAction(inAction)
+                                                 .withExchange("exchange")
+                                                 .withPrice(generateDecimalValue())
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+    }
+    /**
+     * Generates a future <code>AskEvent</code> with the given values.
+     *
+     * @param inInstrument a <code>Future</code> value
+     * @param inAction a <code>QuoteAction</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateFutureAskEvent(Future inInstrument,
+                                                  QuoteAction inAction)
+    {
+        return QuoteEventBuilder.futureAskEvent().withInstrument(inInstrument)
+                                                 .withAction(inAction)
+                                                 .withExchange("exchange")
+                                                 .withPrice(generateDecimalValue())
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
     /**
      * Generates an equity <code>BidEvent</code> with the given values.

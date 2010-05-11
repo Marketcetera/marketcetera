@@ -36,6 +36,7 @@ public class MockMarketDataFeed
 {
     private final int mDelay;
     private Set<Capability> capabilities = EnumSet.noneOf(Capability.class);
+    private Set<AssetClass> assetClasses = EnumSet.allOf(AssetClass.class);
     private int mCounter = 0;
     
     private enum State { 
@@ -110,6 +111,14 @@ public class MockMarketDataFeed
     {
         return capabilities;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataFeed#getSupportedAssetClasses()
+     */
+    @Override
+    public Set<AssetClass> getSupportedAssetClasses()
+    {
+        return assetClasses;
+    }
     /**
      * Sets the capabilities to use for this feed. 
      *
@@ -118,6 +127,15 @@ public class MockMarketDataFeed
     public void setCapabilities(Set<Capability> inCapabilities)
     {
         capabilities = inCapabilities;
+    }
+    /**
+     * Sets the supported asset classes for this feed.
+     *
+     * @param inAssetClasses a <code>Set&lt;AssetClass&gt</code> value
+     */
+    public void setAssetClasses(Set<AssetClass> inAssetClasses)
+    {
+        assetClasses = inAssetClasses;
     }
     /**
      * Sets the events to return for a market data request.
