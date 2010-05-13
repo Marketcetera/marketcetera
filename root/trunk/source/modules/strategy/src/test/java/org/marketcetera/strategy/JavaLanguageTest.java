@@ -3,6 +3,8 @@ package org.marketcetera.strategy;
 import java.io.File;
 
 import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleException;
 
 /* $License$ */
 
@@ -72,6 +74,9 @@ public class JavaLanguageTest
     public static final File POSITIONS_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                            "Positions.java");
     public static final String POSITIONS_NAME = "Positions";
+    public static final File DEPENDING_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                           "StrategyA.java");
+    public static final String DEPENDING_NAME = "StrategyA";
     /**
      * Tests that a strategy declared in a package other than the default package works as expected.
      *
@@ -89,6 +94,49 @@ public class JavaLanguageTest
                                                            null,
                                                            null,
                                                            null));
+        verifyPropertyNonNull("onStart");
+    }
+    /**
+     * Tests the ability to bring in adjunct classes from the auxiliary classpath. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void strategyAgentClasspath()
+            throws Exception
+    {
+        final StrategyCoordinates strategy = StrategyCoordinates.get(DEPENDING_STRATEGY,
+                                                                     DEPENDING_NAME);
+        verifyNullProperties();
+        // strategy won't start - won't compile
+        new ExpectedFailure<ModuleException>(FAILED_TO_START) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                createStrategy(strategy.getName(),
+                               getLanguage(),
+                               strategy.getFile(),
+                               null,
+                               null,
+                               null);
+            }
+        };
+        // verify it didn't start
+        verifyPropertyNull("onStart");
+        // still nothing up my sleeve...
+        verifyNullProperties();
+        // set the classpath this time
+        System.setProperty(Strategy.CLASSPATH_PROPERTYNAME,
+                           StrategyTestBase.SAMPLE_STRATEGY_DIR.getCanonicalPath() + File.separator + "subfolder");
+        // start strategy again
+        doSuccessfulStartTestNoVerification(createStrategy(strategy.getName(),
+                                                           getLanguage(),
+                                                           strategy.getFile(),
+                                                           null,
+                                                           null,
+                                                           null));
+        // verify it actually started
         verifyPropertyNonNull("onStart");
     }
     /* (non-Javadoc)
