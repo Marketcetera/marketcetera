@@ -149,8 +149,15 @@ public class JavaCompilerExecutionEngine
             String[] entries = customPath.split(File.pathSeparator);
             classpathEntries.addAll(Arrays.asList(entries));
         }
+        String strategyPath = System.getProperty(Strategy.CLASSPATH_PROPERTYNAME);
+        if(strategyPath != null) {
+            String[] entries = strategyPath.split(File.pathSeparator);
+            classpathEntries.addAll(Arrays.asList(entries));
+        }
         // put the classpath string in place with the classpath command-line option
         List<String> options = new ArrayList<String>();
+        // make debug symbols available in the compiled strategy
+        options.add("-g"); //$NON-NLS-1$
         options.add("-cp"); //$NON-NLS-1$
         StringBuilder classpathString = new StringBuilder();
         for(String entry : classpathEntries) {
