@@ -60,6 +60,14 @@ public class CSVFeed
         sInstance = new CSVFeed(inProviderName);
         return sInstance;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return String.format("CSVFeed"); //$NON-NLS-1$
+    }
     /**
      * Create a new CSVFeed instance.
      *
@@ -216,40 +224,40 @@ public class CSVFeed
         try {
             Class<?> marketDataHandleClass = null;
             for(Class<?> innerClass : thisClass.getDeclaredClasses()) {
-                if(innerClass.getName().contains("MarketDataHandle")) {
+                if(innerClass.getName().contains("MarketDataHandle")) { //$NON-NLS-1$
                     marketDataHandleClass = innerClass;
                 }
             }
             if(marketDataHandleClass == null) {
                 throw new NullPointerException();
             } else {
-                Field handleHolderField = thisClass.getDeclaredField("mHandleHolder");
+                Field handleHolderField = thisClass.getDeclaredField("mHandleHolder"); //$NON-NLS-1$
                 handleHolderField.setAccessible(true);
                 Object handleHolder = handleHolderField.get(this);
-                Method getHandlesMethod = handleHolder.getClass().getDeclaredMethod("getHandles",
+                Method getHandlesMethod = handleHolder.getClass().getDeclaredMethod("getHandles", //$NON-NLS-1$
                                                                                     AbstractMarketDataFeedToken.class);
                 getHandlesMethod.setAccessible(true);
                 List<Object> handles = (List<Object>)getHandlesMethod.invoke(handleHolder,
                                                                              inToken);
                 SLF4JLoggerProxy.debug(CSVFeed.class,
-                                       "Found {} for token {}",
+                                       "Found {} for token {}", //$NON-NLS-1$
                                        handles,
                                        inToken);
                 for(Object handle : handles) {
                     // almost there, the handle isn't in quite the right format
-                    Field actualHandleField = handle.getClass().getDeclaredField("mProtoHandle");
+                    Field actualHandleField = handle.getClass().getDeclaredField("mProtoHandle"); //$NON-NLS-1$
                     actualHandleField.setAccessible(true);
                     String actualHandle = (String)actualHandleField.get(handle);
                     CsvFeedRequest request = requests.get(actualHandle);
                     SLF4JLoggerProxy.debug(CSVFeed.class,
-                                           "Found request {} for handle {}",
+                                           "Found request {} for handle {}", //$NON-NLS-1$
                                            request,
                                            actualHandle);
                     if(request == null) {
                         throw new NullPointerException();
                     } else {
                         SLF4JLoggerProxy.debug(CSVFeed.class,
-                                               "Submitting {}",
+                                               "Submitting {}", //$NON-NLS-1$
                                                request);
                         requestExecutor.submit(request);
                     }
@@ -315,7 +323,7 @@ public class CSVFeed
         public void run()
         {
             SLF4JLoggerProxy.debug(CSVFeed.class,
-                                   "Beggining request {}",
+                                   "Beggining request {}", //$NON-NLS-1$
                                    this);
             isRunning.set(true);
             try {
@@ -346,7 +354,7 @@ public class CSVFeed
         @Override
         public String toString()
         {
-            return String.format("CsvFeedRequest [handle=%s, request=%s ]",
+            return String.format("CsvFeedRequest [handle=%s, request=%s ]", //$NON-NLS-1$
                                  handle,
                                  request);
         }

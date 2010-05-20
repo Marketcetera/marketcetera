@@ -1,10 +1,7 @@
 package org.marketcetera.marketdata.csv;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.log.*;
 
 /* $License$ */
 
@@ -44,4 +41,36 @@ public interface Messages
                                                                               "invalid_event_delay"); //$NON-NLS-1$
     public static final I18NMessage1P INVALID_EVENT_TRANSLATOR = new I18NMessage1P(LOGGER,
                                                                                    "invalid_event_translator"); //$NON-NLS-1$
+    public static final I18NMessage2P UNKNOWN_BASIC_EVENT_TYPE = new I18NMessage2P(LOGGER,
+                                                                                   "unknown_basic_event_type"); //$NON-NLS-1$
+    public static final I18NMessage1P CANNOT_GUESS_BIG_DECIMAL = new I18NMessage1P(LOGGER,
+                                                                                   "cannot_guess_big_decimal"); //$NON-NLS-1$
+    public static final I18NMessage1P CANNOT_GUESS_DATE = new I18NMessage1P(LOGGER,
+                                                                            "cannot_guess_date"); //$NON-NLS-1$
+    public static final I18NMessage2P CANNOT_INTERPRET_DIVIDEND_FREQUENCY = new I18NMessage2P(LOGGER,
+                                                                                              "cannot_interpret_dividend_frequency"); //$NON-NLS-1$
+    public static final I18NMessage2P CANNOT_INTERPRET_DIVIDEND_STATUS = new I18NMessage2P(LOGGER,
+                                                                                           "cannot_interpret_dividend_status"); //$NON-NLS-1$
+    public static final I18NMessage2P CANNOT_INTERPRET_DIVIDEND_TYPE = new I18NMessage2P(LOGGER,
+                                                                                         "cannot_interpret_dividend_type"); //$NON-NLS-1$
+    public static final I18NMessage3P UNSUPPORTED_CFI_CODE = new I18NMessage3P(LOGGER,
+                                                                               "unsupported_cfi_code"); //$NON-NLS-1$
+    public static final I18NMessage3P INVALID_CFI_CODE = new I18NMessage3P(LOGGER,
+                                                                           "invalid_cfi_code"); //$NON-NLS-1$
+    public static final I18NMessage2P NOT_OSI_COMPLIANT = new I18NMessage2P(LOGGER,
+                                                                            "not_osi_compliant"); //$NON-NLS-1$
+    public static final I18NMessage1P UNKNOWN_SYMBOL_FORMAT = new I18NMessage1P(LOGGER,
+                                                                                "unknown_symbol_format"); //$NON-NLS-1$
+    public static final I18NMessage2P LINE_MISSING_REQUIRED_FIELDS = new I18NMessage2P(LOGGER,
+                                                                                       "line_missing_required_fields"); //$NON-NLS-1$
+    public static final I18NMessage1P UNABLE_TO_CONSTRUCT_DIVIDEND = new I18NMessage1P(LOGGER,
+                                                                                       "unable_to_construct_dividend"); //$NON-NLS-1$
+    public static final I18NMessage1P UNABLE_TO_CONSTRUCT_QUOTE = new I18NMessage1P(LOGGER,
+                                                                                    "unable_to_construct_quote"); //$NON-NLS-1$
+    public static final I18NMessage1P UNABLE_TO_CONSTRUCT_TRADE = new I18NMessage1P(LOGGER,
+                                                                                    "unable_to_construct_trade"); //$NON-NLS-1$
+    public static final I18NMessage1P UNABLE_TO_CONSTRUCT_MARKETSTAT = new I18NMessage1P(LOGGER,
+                                                                                         "unable_to_construct_marketstat"); //$NON-NLS-1$
+    public static final I18NMessage0P EMPTY_LINE = new I18NMessage0P(LOGGER,
+                                                                     "empty_line"); //$NON-NLS-1$
 }

@@ -28,7 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id: CSVFeedEventTranslator.java 4348 2009-09-24 02:33:11Z toli $")
 public class CSVFeedEventTranslator
-        implements EventTranslator, Messages
+        implements EventTranslator
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)

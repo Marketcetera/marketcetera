@@ -50,6 +50,15 @@ public class CSVFeedModule
     {
         eventTranslatorClassname = inEventTranslatorClassname;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return String.format("CSVFeedModule [translator: %s]", //$NON-NLS-1$
+                             eventTranslatorClassname);
+    }
     /**
      * Create a new CSVFeedModule instance.
      * 
