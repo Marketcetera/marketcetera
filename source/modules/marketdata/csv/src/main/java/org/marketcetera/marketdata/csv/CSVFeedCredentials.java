@@ -27,7 +27,7 @@ public final class CSVFeedCredentials
     @Override
     public String toString()
     {
-        return String.format("CSVFeedCredentials [eventTranslator=%s, millisecondDelay=%s]",
+        return String.format("CSVFeedCredentials [eventTranslator=%s, millisecondDelay=%s]", //$NON-NLS-1$
                              eventTranslator,
                              millisecondDelay);
     }
@@ -44,7 +44,7 @@ public final class CSVFeedCredentials
             throws FeedException
     {
         SLF4JLoggerProxy.debug(CSVFeedCredentials.class,
-                               "Creating credentials with delay of {}ms and event translator classname {}",
+                               "Creating credentials with delay of {}ms and event translator classname {}", //$NON-NLS-1$
                                inDelay,
                                inEventTranslatorClassname);
         try {
@@ -74,7 +74,7 @@ public final class CSVFeedCredentials
             throws FeedException
     {
         SLF4JLoggerProxy.debug(CSVFeedCredentials.class,
-                               "Creating credentials with delay of {}ms and event translator {}",
+                               "Creating credentials with delay of {}ms and event translator {}", //$NON-NLS-1$
                                inDelay,
                                inEventTranslator);
         try {

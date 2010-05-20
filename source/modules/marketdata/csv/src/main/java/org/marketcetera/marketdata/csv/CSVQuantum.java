@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata.csv;
 
+import java.util.Arrays;
+
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -50,6 +52,14 @@ public class CSVQuantum
     public MarketDataRequest getRequest()
     {
         return request;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return Arrays.toString(line);
     }
     /**
      * Create a new CSVQuantum instance.
