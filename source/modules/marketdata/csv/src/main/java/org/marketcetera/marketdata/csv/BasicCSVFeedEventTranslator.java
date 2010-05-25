@@ -87,20 +87,20 @@ public class BasicCSVFeedEventTranslator
         if(data.getLine().length == 0) {
             throw new CoreException(EMPTY_LINE);
         }
-        String type = data.getLine()[0].toUpperCase();
-        if(type.equals("BID")) { //$NON-NLS-1$
+        EventType type = guessEventType(data);
+        if(type.equals(EventType.BID)) {
             validateBid(data);
             events.add(processBid(data));
-        } else if(type.equals("ASK")) { //$NON-NLS-1$
+        } else if(type.equals(EventType.ASK)) {
             validateAsk(data);
             events.add(processAsk(data));
-        } else if(type.equals("TRADE")) { //$NON-NLS-1$
+        } else if(type.equals(EventType.TRADE)) {
             validateTrade(data);
             events.add(processTrade(data));
-        } else if(type.equals("DIVIDEND")) { //$NON-NLS-1$
+        } else if(type.equals(EventType.DIVIDEND)) {
             validateDividend(data);
             events.add(processDividend(data));
-        } else if(type.equals("STAT")) { //$NON-NLS-1$
+        } else if(type.equals(EventType.STAT)) {
             validateMarketstat(data);
             events.add(processMarketstat(data));
         } else {
@@ -402,6 +402,26 @@ public class BasicCSVFeedEventTranslator
                                                          option));
         }
         return inBuilder.create();
+    }
+    /**
+     * Guesses the event type from the given line.
+     *
+     * @param inData a <code>CSVQuantum</code> value
+     * @return a <code>Type</code> value
+     * @throws CoreException if the type cannot be determined
+     */
+    protected EventType guessEventType(CSVQuantum inData)
+            throws CoreException
+    {
+        String type = guessString(inData,
+                                  0);
+        try {
+            return EventType.valueOf(type.toUpperCase());
+        } catch (Exception e) {
+            throw new CoreException(new I18NBoundMessage2P(UNKNOWN_BASIC_EVENT_TYPE,
+                                                           inData.toString(),
+                                                           type));
+        }
     }
     /**
      * Guesses the dividend type from the given data line.
@@ -1150,4 +1170,19 @@ public class BasicCSVFeedEventTranslator
      * default fields required for market stat events
      */
     protected static final Set<Integer> requiredMarketstatFields = new HashSet<Integer>(Arrays.asList(new Integer[] { 0,1,2 }));
+    /**
+     * The event type of a CSV event.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public static enum EventType
+    {
+        BID,
+        ASK,
+        TRADE,
+        DIVIDEND,
+        STAT;
+    }
 }
