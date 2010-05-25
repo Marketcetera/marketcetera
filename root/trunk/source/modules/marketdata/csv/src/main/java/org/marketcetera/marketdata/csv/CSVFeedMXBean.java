@@ -23,17 +23,17 @@ public interface CSVFeedMXBean
     /**
      * Gets the number of milliseconds to delay between market data events.
      *
-     * @return a <code>long</code> value
+     * @return a <code>String</code> value
      */
     @DisplayName("Delay in milliseconds")
-    public long getDelay();
+    public String getDelay();
     /**
      * Sets the number of milliseconds to delay between market data events.
      *
-     * @param inDelay a <code>long</code> value
+     * @param inDelay a <code>String</code> value
      */
     @DisplayName("Delay in milliseconds")
-    public void setDelay(long inDelay);
+    public void setDelay(String inDelay);
     /**
      * Gets the fully-qualified class name of the CSV event translator.
      *

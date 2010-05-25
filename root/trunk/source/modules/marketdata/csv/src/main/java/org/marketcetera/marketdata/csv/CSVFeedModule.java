@@ -22,17 +22,17 @@ public class CSVFeedModule
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getDelay()
      */
     @Override
-    public long getDelay()
+    public String getDelay()
     {
-        return delay;
+        return Long.toString(delay);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setDelay(long)
+     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setDelay(java.lang.String)
      */
     @Override
-    public void setDelay(long inDelay)
+    public void setDelay(String inDelay)
     {
-        delay = inDelay;
+        delay = Long.parseLong(inDelay);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getEventTranslatorClassName()
@@ -77,7 +77,7 @@ public class CSVFeedModule
     protected CSVFeedCredentials getCredentials()
         throws CoreException
     {
-        return CSVFeedCredentials.getInstance(getDelay(),
+        return CSVFeedCredentials.getInstance(delay,
                                               getEventTranslatorClassName());
     }
     /**
@@ -87,5 +87,5 @@ public class CSVFeedModule
     /**
      * the event translator classname to use
      */
-    private volatile String eventTranslatorClassname = CSVFeedEventTranslator.class.getName();
+    private volatile String eventTranslatorClassname = BasicCSVFeedEventTranslator.class.getName();
 }
