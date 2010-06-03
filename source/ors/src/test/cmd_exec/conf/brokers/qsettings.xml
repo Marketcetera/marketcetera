@@ -59,11 +59,14 @@
          key="ReconnectInterval"
          value="15"/>
         <entry
+         key="SendResetSeqNumFlag"
+         value="N"/>
+        <entry
          key="ResetOnLogout"
          value="N"/>
         <entry
          key="ResetOnDisconnect"
-         value="Y"/>
+         value="N"/>
         <entry
          key="SLF4JLogHeartbeats"
          value="N"/>

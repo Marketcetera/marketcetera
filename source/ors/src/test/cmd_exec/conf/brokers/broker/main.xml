@@ -42,6 +42,10 @@
     <property
      name="id"
      value="${metc.broker.id}"/>
+    <!-- Indicates if the broker requires a FIX Logout message on disconnect -->
+    <property
+     name="fixLogoutRequired"
+     value="${metc.broker.fixlogoutrequired}"/>
     <!-- The QuickFIX/J session descriptor. -->
     <property
      name="descriptor"
