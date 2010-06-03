@@ -27,6 +27,7 @@ public class SpringBroker
     private SpringSessionDescriptor mSessionDescriptor;
     private String mName;
     private String mId;
+    private boolean mFixLogoutRequired;
     private MessageModifierManager mModifiers;
     private MessageRouteManager mRoutes;
     private MessageModifierManager mPreSendModifiers;
@@ -104,6 +105,26 @@ public class SpringBroker
     public String getId()
     {
         return mId;
+    }
+
+    /**
+     * Indicates if the broker requires FIX logout on disconnect.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean getFixLogoutRequired()
+    {
+        return mFixLogoutRequired;
+    }
+
+    /**
+     * Sets if the broker requires FIX logout on disconnect.
+     *
+     * @param a <code>boolean</code> value
+     */
+    public void setFixLogoutRequired(boolean inLogout)
+    {
+        mFixLogoutRequired = inLogout;
     }
 
     /**

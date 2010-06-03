@@ -21,7 +21,6 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <import resource="broker/main.xml"/>
-  <import resource="fiximulator/main.xml"/>
   <import
    resource="qsettings.xml"/>
   <import
