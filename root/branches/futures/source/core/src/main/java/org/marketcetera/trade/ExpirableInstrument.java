@@ -4,6 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.util.misc.ClassVersion;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /* $License$ */
 
 /**
@@ -50,6 +52,7 @@ public abstract class ExpirableInstrument
         symbol = inSymbol;
         inExpiry = StringUtils.trimToNull(inExpiry);
         expiry = inExpiry;
+        Validate.notNull(expiry);
     }
     /**
      * Create a new ExpirableInstrument instance.
@@ -61,13 +64,13 @@ public abstract class ExpirableInstrument
         expiry = null;
         symbol = null;
     }
-    /**
-     * 
-     */
-    private final String expiry;
-    /**
-     * 
-     */
-    private final String symbol;
+
+    /** Explicitly add these to JAXB marshalling/unmarshalling */
+    @XmlAttribute
+    protected final String expiry;
+
+    /** Explicitly add these to JAXB marshalling/unmarshalling */
+    @XmlAttribute
+    protected final String symbol;
     private static final long serialVersionUID = 1L;
 }

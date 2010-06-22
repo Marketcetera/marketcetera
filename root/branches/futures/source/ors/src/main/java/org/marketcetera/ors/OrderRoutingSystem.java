@@ -261,7 +261,6 @@ public class OrderRoutingSystem
                 // set mandatory fields
                 logout.getHeader().setField(new SenderCompID(broker.getSpringBroker().getDescriptor().getDictionary().get("SenderCompID")));
                 logout.getHeader().setField(new TargetCompID(broker.getSpringBroker().getDescriptor().getDictionary().get("TargetCompID")));
-                logout.getHeader().setField(new MsgSeqNum(counter.incrementAndGet())); // TODO is this valid?
                 logout.getHeader().setField(new SendingTime(new Date()));
                 logout.toString();
                 try {

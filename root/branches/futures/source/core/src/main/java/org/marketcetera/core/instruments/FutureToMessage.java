@@ -52,7 +52,7 @@ public class FutureToMessage
     {
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) {
             throw new IllegalArgumentException(
-                    Messages.OPTION_NOT_SUPPORTED_FOR_FIX_VERSION.getText(inBeginString));
+                    Messages.FUTURES_NOT_SUPPORTED_FOR_FIX_VERSION.getText(inBeginString));
         }
         inMessage.setField(new Symbol(inInstrument.getSymbol()));
         setSecurityTypeAndExpiry(inInstrument,

@@ -38,8 +38,13 @@ public class OptionToMessage
         setSecurityTypeAndExpiry(inInstrument,
                                  inBeginString,
                                  inMessage);
-        if(FIXVersion.getFIXVersion(inBeginString) == FIXVersion.FIX42) {
-            inMessage.setField(new PutOrCall(inInstrument.getType().getFIXValue()));
+        switch(FIXVersion.getFIXVersion(inBeginString)) {
+            case FIX_SYSTEM: //fall through
+            case FIX41: //fall through
+            case FIX42:
+               inMessage.setField(new PutOrCall(inInstrument.getType().getFIXValue()));
+                break;
+            // do nothing on default
         }
     }
     @Override

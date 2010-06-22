@@ -1,5 +1,6 @@
 package org.marketcetera.trade;
 
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
@@ -44,10 +45,14 @@ class FactoryImpl extends Factory {
             order.setAccount(inLatestReport.getAccount());
             order.setBrokerID(inLatestReport.getBrokerID());
             order.setBrokerOrderID(inLatestReport.getBrokerOrderID());
-            order.setOriginalOrderID(inLatestReport.getOrderID());
             order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
             order.setInstrument(inLatestReport.getInstrument());
+            addCustomFieldsFromReport(inLatestReport, order, SystemFIXMessageFactory.EXECUTION_REPORT_FIELDS);
+
+            // set this manually after the customFields are copied, so that we take the OrigClOrdId from the report itself,
+            // not from the custom field of the report
+            order.setOriginalOrderID(inLatestReport.getOrderID());
         }
         return order;
     }
@@ -61,7 +66,6 @@ class FactoryImpl extends Factory {
             order.setBrokerID(inLatestReport.getBrokerID());
             order.setBrokerOrderID(inLatestReport.getBrokerOrderID());
             order.setOrderType(inLatestReport.getOrderType());
-            order.setOriginalOrderID(inLatestReport.getOrderID());
             order.setPrice(inLatestReport.getPrice());
             order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
@@ -69,8 +73,25 @@ class FactoryImpl extends Factory {
             order.setTimeInForce(inLatestReport.getTimeInForce());
             order.setOrderCapacity(inLatestReport.getOrderCapacity());
             order.setPositionEffect(inLatestReport.getPositionEffect());
+            addCustomFieldsFromReport(inLatestReport, order, SystemFIXMessageFactory.CANCEL_REPLACE_EXCLUSION_FIELDS);
+
+            // set this manually after the customFields are copied, so that we take the OrigClOrdId from the report itself,
+            // not from the custom field of the report 
+            order.setOriginalOrderID(inLatestReport.getOrderID());
         }
         return order;
+    }
+
+    /** Extracts the FIX message from the incoming ER, pulls the custom fields out of it, and sets it on the specified order */
+    protected void addCustomFieldsFromReport(ExecutionReport inLatestReport, RelatedOrder order, Set<Integer> inExcludeFields) {
+        if(inLatestReport instanceof HasFIXMessage) {
+            Message msg = ((HasFIXMessage) inLatestReport).getMessage();
+            try {
+                order.setCustomFields(getFieldMap(msg, inExcludeFields));
+            } catch (MessageCreationException e) {
+                // ignore: unable to insert custom fields
+            }
+        }
     }
 
     @Override

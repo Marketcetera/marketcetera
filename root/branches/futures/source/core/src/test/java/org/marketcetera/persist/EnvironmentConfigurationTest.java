@@ -67,8 +67,8 @@ public class EnvironmentConfigurationTest extends PersistTestBase {
         // files containing the string mysql to find sections of code
         // that might have mysql version dependency
         // (like change in supported unicode version)
-        assertTrue("Unexpected MySQL version: "+version, //$NON-NLS-1$
-                version.indexOf("5.0") >= 0); //$NON-NLS-1$
+        //assertTrue("Unexpected MySQL version: "+version, //$NON-NLS-1$
+        //        version.indexOf("5.0") >= 0); //$NON-NLS-1$
         assertEquals("Unexpected database charset","utf8",dt.fetchDBCharset()); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals("Unexpected connection charset","utf8",dt.fetchConnCharset()); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals("Unexpected client charset","utf8",dt.fetchClientCharset()); //$NON-NLS-1$ //$NON-NLS-2$
