@@ -1,17 +1,15 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.quickfix.messagefactory.SystemMessageFactory;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_44;
-import quickfix.MessageFactory;
+import org.marketcetera.quickfix.messagefactory.SystemMessageFactory;
+import org.marketcetera.util.misc.ClassVersion;
 import quickfix.Message;
 import quickfix.field.*;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /* $License$ */
 /**
@@ -68,6 +66,9 @@ public class SystemFIXMessageFactory extends FIXMessageFactory {
     public static final Set<Integer> ORDER_SINGLE_FIELDS;
     public static final Set<Integer> ORDER_CANCEL_FIELDS;
     public static final Set<Integer> ORDER_REPLACE_FIELDS;
+    public static final Set<Integer> EXECUTION_REPORT_FIELDS;
+    public static final Set<Integer> CANCEL_REPLACE_EXCLUSION_FIELDS;
+
     static {
         Set<Integer> tmp = new HashSet<Integer>();
         tmp.addAll(Arrays.asList(
@@ -84,6 +85,33 @@ public class SystemFIXMessageFactory extends FIXMessageFactory {
                 quickfix.field.PositionEffect.FIELD
         ));
         ORDER_SINGLE_FIELDS = Collections.unmodifiableSet(tmp);
+
+        // Create the ER fields - everything that goes into OrderSingle, and some fields that come back
+        tmp = new HashSet<Integer>();
+        tmp.addAll(Arrays.asList(
+                ExecID.FIELD,
+                ExecTransType.FIELD,
+                ExecType.FIELD,
+                OrdStatus.FIELD,
+                LeavesQty.FIELD,
+                CumQty.FIELD,
+                LastShares.FIELD,
+                LastPx.FIELD,
+                OrderID.FIELD,
+                OrigClOrdID.FIELD,
+                HandlInst.FIELD,
+                TransactTime.FIELD,
+                AvgPx.FIELD
+        ));
+        tmp.addAll(ORDER_SINGLE_FIELDS);
+        EXECUTION_REPORT_FIELDS = Collections.unmodifiableSet(tmp);
+
+        // create a CxR exclusion set - same as ER but preserving HandlInst
+        HashSet<Integer> forCancelExclusion = new HashSet<Integer>(tmp);
+        forCancelExclusion.remove(HandlInst.FIELD);
+        CANCEL_REPLACE_EXCLUSION_FIELDS = Collections.unmodifiableSet(forCancelExclusion);
+
+        // list of fields for cancel
         tmp = new HashSet<Integer>();
         tmp.addAll(Arrays.asList(
                 ClOrdID.FIELD,

@@ -1,5 +1,6 @@
 package org.marketcetera.client.instruments;
 
+import org.marketcetera.trade.Future;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.trade.Equity;
@@ -34,6 +35,13 @@ public class InstrumentValidationHandlerTest {
     public void equity() throws Exception {
         Equity equity = new Equity("WIU");
         InstrumentValidationHandler.SELECTOR.forInstrument(equity).validate(equity);
+    }
+
+    @Test
+    public void future() throws Exception {
+        Future future = new Future("XEURFDAX0F2010U", "201009");
+        InstrumentValidationHandler.SELECTOR.forInstrument(future).validate(future);
+        // todo: we may need to do better expiry validation?
     }
 
     @Test

@@ -20,8 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
-public class Future
-        extends ExpirableInstrument
+public class Future extends ExpirableInstrument
 {
     /**
      * Create a new Future instance.

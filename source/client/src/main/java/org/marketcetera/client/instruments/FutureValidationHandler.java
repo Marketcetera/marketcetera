@@ -23,13 +23,12 @@ public class FutureValidationHandler
     public void validate(Instrument inInstrument)
             throws OrderValidationException
     {
+        // todo: i imagine this needs to validate the expiry somehow?
     }
     /**
      * Create a new FutureValidationHandler instance.
-     *
-     * @param inInstrument
      */
-    protected FutureValidationHandler()
+    public FutureValidationHandler()
     {
         super(Future.class);
     }
