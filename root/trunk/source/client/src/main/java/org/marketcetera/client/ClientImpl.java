@@ -9,6 +9,7 @@ import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.Util;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.*;
@@ -371,8 +372,39 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     {
         return ((!mClosed) && mServerAlive);
     }
-
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getUserData()
+     */
+    @Override
+    public Properties getUserData()
+            throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return Util.propertiesFromString(mService.getUserData(getServiceContext()));
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#setUserData(java.util.Properties)
+     */
+    @Override
+    public void setUserData(Properties inProperties)
+            throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            mService.setUserData(getServiceContext(),
+                                 Util.propertiesToString(inProperties));
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
     /**
      * Creates an instance given the parameters and connects to the server.
      *

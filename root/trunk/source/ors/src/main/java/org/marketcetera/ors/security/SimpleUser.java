@@ -1,19 +1,25 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.trade.UserID;
-import org.marketcetera.persist.*;
-import org.marketcetera.persist.PersistenceException;
+import static org.marketcetera.ors.security.Messages.CANNOT_SET_PASSWORD;
+import static org.marketcetera.ors.security.Messages.EMPTY_PASSWORD;
+import static org.marketcetera.ors.security.Messages.INVALID_PASSWORD;
+import static org.marketcetera.ors.security.Messages.SIMPLE_USER_NAME;
 import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NMessage0P;
-import static org.marketcetera.ors.security.Messages.*;
 
-import javax.persistence.*;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.math.BigInteger;
-import java.io.UnsupportedEncodingException;
+
+import javax.persistence.*;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.persist.NDEntityBase;
+import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.persist.ValidationException;
+import org.marketcetera.trade.UserID;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessage0P;
 
 /* $License$ */
 /**
@@ -74,7 +80,52 @@ public class SimpleUser extends NDEntityBase {
     }
 
     private boolean active = true;
-
+    /**
+     * Gets the user data as a <code>String</code>.
+     *
+     * @return a <code>String</code> value or <code>null</code>
+     */
+    @Column(nullable = true,columnDefinition="text")
+    public String getUserData()
+    {
+        return userData;
+    }
+    /**
+     * Sets the user data.
+     * 
+     * @param inUserData a <code>String</code> value
+     */
+    public void setUserData(String inUserData)
+    {
+        userData = inUserData;
+    }
+    /**
+     * the user data associated with this used - may be <code>null</code>
+     */
+    private String userData;
+    /**
+     * Gets the system data as a <code>String</code>.
+     *
+     * @return a <code>String</code> value or <code>null</code>
+     */
+    @Column(nullable = true,columnDefinition="text")
+    public String getSystemData()
+    {
+        return systemData;
+    }
+    /**
+     * Sets the system data.
+     * 
+     * @param inSystemData a <code>String</code> value
+     */
+    public void setSystemData(String inSystemData)
+    {
+        systemData = inSystemData;
+    }
+    /**
+     * the system data associated with this used - may be <code>null</code>
+     */
+    private String systemData;
     /**
      * The UserID of this user.
      * @return The UserID.
@@ -266,6 +317,7 @@ public class SimpleUser extends NDEntityBase {
      *
      * @return custom localized name for users.
      */
+    @SuppressWarnings("unused")
     private static I18NMessage0P getUserFriendlyName() {
         return SIMPLE_USER_NAME;
     }

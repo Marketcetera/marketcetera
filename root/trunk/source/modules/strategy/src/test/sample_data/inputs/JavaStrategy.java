@@ -1,5 +1,6 @@
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Properties;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.event.AskEvent;
@@ -120,6 +121,10 @@ public class JavaStrategy
                             broker.toString());
             }
         }
+        Properties userdata = getUserData();
+        userdata.setProperty("onStart",
+                             Long.toString(System.currentTimeMillis()));
+        setUserData(userdata);
         setProperty("onStart",
                     Long.toString(System.currentTimeMillis()));
     }

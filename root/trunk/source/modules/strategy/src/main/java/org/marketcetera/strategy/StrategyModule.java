@@ -750,6 +750,25 @@ final class StrategyModule
         }
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getUserData()
+     */
+    @Override
+    public Properties getUserData()
+            throws ConnectionException, ClientInitException
+    {
+        Properties data = clientFactory.getClient().getUserData();
+        return data == null ? new Properties() : data;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#setUserData(java.util.Properties)
+     */
+    @Override
+    public void setUserData(Properties inData)
+            throws ConnectionException, ClientInitException
+    {
+        clientFactory.getClient().setUserData(inData);
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

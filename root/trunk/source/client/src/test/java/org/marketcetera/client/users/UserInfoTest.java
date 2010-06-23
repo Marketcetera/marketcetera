@@ -26,11 +26,12 @@ public class UserInfoTest
     public void all()
         throws Exception
     {
-        UserInfo s=new UserInfo(TEST_NAME,TEST_USER_ID,true,false);
+        UserInfo s=new UserInfo(TEST_NAME,TEST_USER_ID,true,false,null,null);
         assertEquals(TEST_NAME,s.getName());
         assertEquals(TEST_USER_ID,s.getId());
         assertTrue(s.getActive());
         assertFalse(s.getSuperuser());
-        assertEquals("User: metc(2,true,false)",s.toString());
+        assertNull(s.getUserData());
+        assertEquals("User: metc(2,true,false,null)",s.toString());
     }
 }

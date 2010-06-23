@@ -297,6 +297,8 @@ public class ClientTest
         assertEquals(id, info.getId());
         assertFalse(info.getActive());
         assertFalse(info.getSuperuser());
+        assertNull(info.getUserData());
+        assertNull(info.getSystemData());
 
         MockServiceImpl.sActive = true;
         // cache contains old value.
@@ -319,7 +321,20 @@ public class ClientTest
                 getClient().getUserInfo(null, false);
             }
         };
-
+        // set user data
+        getClient().setUserData(null);
+        assertNull(getClient().getUserData());
+        Properties userData = new Properties();
+        getClient().setUserData(userData);
+        assertNull(getClient().getUserData());
+        userData.setProperty("key1",
+                             "value1");
+        userData.setProperty("key2",
+                             "value2");
+        getClient().setUserData(userData);
+        assertEquals(userData,
+                     getClient().getUserData());
+        
         Factory f=Factory.getInstance();
         BrokerID dID=new BrokerID("me");
         quickfix.fix44.ExecutionReport er=new quickfix.fix44.ExecutionReport();

@@ -1303,6 +1303,39 @@ public abstract class AbstractRunningStrategy
         return strategy.getServicesProvider().getURN();
     }
     /**
+     * Gets the user data associated with the current user. 
+     *
+     * @return a <code>Properties</code> value
+     */
+    protected final Properties getUserData()
+    {
+        try {
+            return strategy.getServicesProvider().getUserData();
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(FAILED_TO_RETRIEVE_USER_DATA,
+                                                                  String.valueOf(strategy))
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Sets the user data associated with the current user.
+     *
+     * @param inData a <code>Properties</code> value
+     */
+    protected final void setUserData(Properties inUserData)
+    {
+        try {
+            strategy.getServicesProvider().setUserData(inUserData);
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(FAILED_TO_SET_USER_DATA,
+                                                                  String.valueOf(strategy))
+                                                     .withException(e).create(),
+                               strategy);
+        }
+    }
+    /**
      * Emits the given debug message to the strategy log output.
      *
      * @param inMessage a <code>String</code> value

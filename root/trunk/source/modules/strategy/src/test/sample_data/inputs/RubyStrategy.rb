@@ -79,6 +79,9 @@ class RubyStrategy < Strategy
         counter = 0
         brokers.each { |broker| set_property counter.to_s, broker.toString; counter += 1 }
      end
+     userdata = get_user_data
+     userdata.setProperty "onStart", Long.toString(System.currentTimeMillis())
+     set_user_data userdata
      set_property("onStart",
                    Long.toString(System.currentTimeMillis()))
   end

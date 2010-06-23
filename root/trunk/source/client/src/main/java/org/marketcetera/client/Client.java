@@ -1,16 +1,17 @@
 package org.marketcetera.client;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.*;
+import java.beans.ExceptionListener;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
+
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
-
-import java.util.Date;
-import java.util.Map;
-import java.util.Collection;
-import java.math.BigDecimal;
-import java.beans.ExceptionListener;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -461,4 +462,20 @@ public interface Client {
      * @return true, if the connection to the server is alive.
      */
     boolean isServerAlive();
+    /**
+     * Sets the user data associated with the current user.
+     *
+     * @param inProperties a <code>Properties</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
+     */
+    void setUserData(Properties inProperties)
+            throws ConnectionException;
+    /**
+     * Gets the user data associated with the current user.
+     *
+     * @return a <code>Properties</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
+     */
+    Properties getUserData()
+            throws ConnectionException;
 }

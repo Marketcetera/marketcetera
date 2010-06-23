@@ -66,7 +66,7 @@ public class MockServiceImpl
         if (id==null) {
             throw new NullPointerException();
         }
-        return new UserInfo("bob",id,sActive,false);
+        return new UserInfo("bob",id,sActive,false,null,null);
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
@@ -367,7 +367,26 @@ public class MockServiceImpl
         }
         mHeartbeatCount++;
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#getUserData(org.marketcetera.util.ws.stateful.ClientContext)
+     */
+    @Override
+    public String getUserData(final ClientContext inContext)
+            throws RemoteException
+    {
+        return userdata;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#setUserData(org.marketcetera.util.ws.stateful.ClientContext, java.util.Properties)
+     */
+    @Override
+    public void setUserData(ClientContext inContext,
+                            String inData)
+            throws RemoteException
+    {
+        userdata = inData;
+    }
+    private String userdata;
     static final String ID_PREFIX = "MyID";
 
     // Mocking interface.
