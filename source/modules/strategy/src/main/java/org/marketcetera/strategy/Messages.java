@@ -227,4 +227,8 @@ public interface Messages
                                                                                           "wrong_dividend_for_option_chain"); //$NON-NLS-1$
     static final I18NMessage2P WRONG_EQUITY_FOR_OPTION_CHAIN = new I18NMessage2P(LOGGER,
                                                                                  "wrong_equity_for_option_chain"); //$NON-NLS-1$
+    static final I18NMessage1P FAILED_TO_RETRIEVE_USER_DATA = new I18NMessage1P(LOGGER,
+                                                                                "failed_to_retrieve_user_data"); //$NON-NLS-1$
+    static final I18NMessage1P FAILED_TO_SET_USER_DATA = new I18NMessage1P(LOGGER,
+                                                                           "failed_to_set_user_data"); //$NON-NLS-1$
 }

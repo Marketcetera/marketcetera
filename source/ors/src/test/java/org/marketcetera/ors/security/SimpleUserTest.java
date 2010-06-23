@@ -1,22 +1,23 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.MultipleEntityQuery;
-import org.marketcetera.persist.MultiQueryFilterTestHelper;
-import org.marketcetera.persist.NDEntityTestBase;
-import org.marketcetera.persist.ValidationException;
-import static org.marketcetera.persist.Messages.*;
+import static org.junit.Assert.*;
+import static org.marketcetera.ors.security.Messages.CANNOT_SET_PASSWORD;
 import static org.marketcetera.ors.security.Messages.EMPTY_PASSWORD;
 import static org.marketcetera.ors.security.Messages.INVALID_PASSWORD;
-import static org.marketcetera.ors.security.Messages.CANNOT_SET_PASSWORD;
-import org.marketcetera.ors.OrderRoutingSystem;
-import org.marketcetera.util.log.I18NMessage;
+import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
+
+import java.util.List;
+import java.util.Properties;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import java.util.List;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.Util;
+import org.marketcetera.persist.MultiQueryFilterTestHelper;
+import org.marketcetera.persist.MultipleEntityQuery;
+import org.marketcetera.persist.NDEntityTestBase;
+import org.marketcetera.persist.ValidationException;
+import org.marketcetera.util.log.I18NMessage;
 
 /* $License$ */
 /**
@@ -49,7 +50,57 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         u.save();
         u.delete();
     }
-
+    /**
+     * Tests the behavior of user properties.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void userProperties()
+            throws Exception
+    {
+        // null user data
+        SimpleUser u = new SimpleUser();
+        final String name = "colin-" + System.nanoTime();
+        u.setName(name);
+        u.setPassword("password".toCharArray());
+        u.setUserData((String)null);
+        assertNull(u.getUserData());
+        u.validate();
+        u.save();
+        u = fetchByName(name);
+        assertNull(u.getUserData());
+        u.delete();
+        // empty userdata
+        u = new SimpleUser();
+        u.setName(name);
+        u.setPassword("password".toCharArray());
+        u.setUserData("");
+        assertEquals("",
+                     u.getUserData());
+        u.validate();
+        u.save();
+        u = fetchByName(name);
+        assertEquals("",
+                     u.getUserData());
+        u.delete();
+        // non-empty userdata
+        Properties properties = new Properties();
+        properties.setProperty("key1",
+                               "value1");
+        properties.setProperty("key2",
+                               "value2");
+        u = new SimpleUser();
+        u.setName(name);
+        u.setPassword("password".toCharArray());
+        u.setUserData(Util.propertiesToString(properties));
+        assertEquals(properties,
+                     Util.propertiesFromString(u.getUserData()));
+        u.validate();
+        u.save();
+        u = fetchByName(name);
+        u.delete();
+    }
     /**
      * Validates the update behavior of the superuser flag
      *

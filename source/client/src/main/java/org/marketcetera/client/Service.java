@@ -2,6 +2,7 @@ package org.marketcetera.client;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+
 import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -10,7 +11,10 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.ServiceBase;
@@ -279,4 +283,23 @@ public interface Service
     void heartbeat
         (@WebParam(name= "context")ClientContext context)
         throws RemoteException;
+    /**
+     * Gets the user data associated with the current user. 
+     *
+     * @param inContext a <code>ClientContent</code> value
+     * @return a <code>String</code> value
+     * @throws RemoteException if the operation cannot be completed
+     */
+    String getUserData(@WebParam(name= "context")ClientContext inContext)
+            throws RemoteException;
+    /**
+     * Sets the user data associated with the current user.
+     *
+     * @param inContext a <code>ClientContent</code> value
+     * @param inData a <code>String</code> value 
+     * @throws RemoteException if the operation cannot be completed
+     */
+    void setUserData(@WebParam(name= "context")ClientContext inContext,
+                     @WebParam(name = "userData")String inData)
+            throws RemoteException;
 }

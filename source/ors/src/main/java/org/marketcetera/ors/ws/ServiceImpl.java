@@ -1,31 +1,30 @@
 package org.marketcetera.ors.ws;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Collection;
+import java.util.Date;
 
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.Util;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.ors.OptionRootUnderlyingMap;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.ors.OptionRootUnderlyingMap;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.ClientContext;
-import org.marketcetera.util.ws.stateful.RemoteCaller;
-import org.marketcetera.util.ws.stateful.RemoteRunner;
-import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
-import org.marketcetera.util.ws.stateful.SessionHolder;
-import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.stateful.*;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -127,7 +126,7 @@ public class ServiceImpl
     {
         SimpleUser u=(new SingleSimpleUserQuery(id.getValue())).fetch();
         return new UserInfo
-            (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser());
+            (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()),Util.propertiesFromString(u.getSystemData()));
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
@@ -208,8 +207,33 @@ public class ServiceImpl
         OptionRootUnderlyingMap map = OptionRootUnderlyingMap.getInstance();
         return map == null? null: map.getOptionRoots(inUnderlying);
     }
-
-
+    /**
+     * Gets the user data associated with the given username.
+     *
+     * @param inUsername a <code>String</code> value
+     * @return a <code>String</code> value
+     * @throws PersistenceException if an error occurs retrieving the user data
+     */
+    private String getUserDataImpl(String inUsername)
+            throws PersistenceException
+    {
+        return new SingleSimpleUserQuery(inUsername).fetch().getUserData();
+    }
+    /**
+     * Sets the user data associated with the given username.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inUserData a <code>String</code> value
+     * @throws PersistenceException if an error occurs saving the user data
+     */
+    private void setUserDataImpl(String inUsername,
+                                 String inUserData)
+            throws PersistenceException
+    {
+        SimpleUser user = new SingleSimpleUserQuery(inUsername).fetch();
+        user.setUserData(inUserData);
+        user.save();
+    }
     // Service.
 
     @Override
@@ -440,5 +464,40 @@ public class ServiceImpl
                     (this,"Received heartbeat for: {}", //$NON-NLS-1$
                      context.getSessionId());
             }}).execute(context);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#getUserData(org.marketcetera.util.ws.stateful.ClientContext)
+     */
+    @Override
+    public String getUserData(final ClientContext inContext)
+            throws RemoteException
+    {
+        String userData = (new RemoteCaller<ClientSession,String>(getSessionManager()) {
+            @Override
+            protected String call(ClientContext context,
+                                  SessionHolder<ClientSession> sessionHolder)
+                    throws CoreException, PersistenceException
+            {
+                return getUserDataImpl(getSessionManager().get(inContext.getSessionId()).getSession().getUser().getName());
+        }}).execute(inContext);
+        return userData;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#setUserData(org.marketcetera.util.ws.stateful.ClientContext, java.util.Properties)
+     */
+    @Override
+    public void setUserData(final ClientContext inContext,
+                            final String inData)
+            throws RemoteException
+    {
+        (new RemoteRunner<ClientSession>(getSessionManager()) {
+            @Override
+            protected void run(ClientContext context,
+                               SessionHolder<ClientSession> sessionHolder)
+                    throws PersistenceException
+            {
+                setUserDataImpl(getSessionManager().get(inContext.getSessionId()).getSession().getUser().getName(),
+                                inData);
+            }}).execute(inContext);
     }
 }

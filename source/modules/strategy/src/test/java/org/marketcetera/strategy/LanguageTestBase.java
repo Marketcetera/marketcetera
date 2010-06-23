@@ -16,6 +16,7 @@ import java.util.concurrent.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.marketcetera.client.Client;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
@@ -3639,6 +3640,30 @@ public abstract class LanguageTestBase
                                  PERMUTATIONS,
                                  version);
         }
+    }
+    /**
+     * Tests the ability to set and retrieve user data.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void userdata()
+            throws Exception
+    {
+        Client testClient = StrategyModule.clientFactory.getClient();
+        assertNull(testClient.getUserData());
+        StrategyCoordinates strategy = getStrategyCompiles();
+        ModuleURN strategyModule = createStrategy(strategy.getName(),
+                                                  getLanguage(),
+                                                  strategy.getFile(),
+                                                  null,
+                                                  null,
+                                                  null);
+        verifyPropertyNonNull("onStart");
+        doSuccessfulStartTest(strategyModule);
+        Properties userdata = testClient.getUserData();
+        assertNotNull(userdata);
+        assertNotNull(userdata.getProperty("onStart"));
     }
     /**
      * Gets the language to use for this test.

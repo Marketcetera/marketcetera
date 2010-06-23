@@ -153,7 +153,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
         callbackException = null;
     }
 
-    static void springSetup()
+    public static void springSetup()
         throws Exception {
         PersistTestBase.springSetup(getSpringFiles()); //$NON-NLS-1$
     }

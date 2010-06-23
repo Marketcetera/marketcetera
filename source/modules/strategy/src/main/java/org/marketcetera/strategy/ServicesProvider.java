@@ -1,10 +1,7 @@
 package org.marketcetera.strategy;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ConnectionException;
@@ -14,19 +11,8 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.module.DataEmitter;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataFlowNotFoundException;
-import org.marketcetera.module.DataFlowSupport;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.Suggestion;
+import org.marketcetera.module.*;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
@@ -286,4 +272,22 @@ interface ServicesProvider
      * @return a <code>ModuleURN</code> value
      */
     ModuleURN getURN();
+    /**
+     * Gets the user data associated with the current user. 
+     *
+     * @return a <code>Properties</code> value
+     * @throws ClientInitException if an error occurred contacting the client
+     * @throws ConnectionException if an error occurred contacting the server
+     */
+    Properties getUserData()
+            throws ConnectionException, ClientInitException;
+    /**
+     * Sets the user data associated with the current user.
+     *
+     * @param inData a <code>Properties</code> value
+     * @throws ClientInitException if an error occurred contacting the client
+     * @throws ConnectionException if an error occurred contacting the server
+     */
+    void setUserData(Properties inData)
+            throws ConnectionException, ClientInitException;
 }

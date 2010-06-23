@@ -4,17 +4,13 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataFlowSupport;
@@ -22,16 +18,7 @@ import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderCancelReject;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.*;
 
 import quickfix.Message;
 
@@ -761,5 +748,23 @@ public class Strategy
     public final ModuleURN get_urn()
     {
         return getURN();
+    }
+    /**
+     * Gets the user data associated with the current user. 
+     *
+     * @return a <code>Properties</code> value
+     */
+    public final Properties get_user_data()
+    {
+        return getUserData();
+    }
+    /**
+     * Sets the user data associated with the current user.
+     *
+     * @param inData a <code>Properties</code> value
+     */
+    public final void set_user_data(Properties inProperties)
+    {
+        setUserData(inProperties);
     }
 }

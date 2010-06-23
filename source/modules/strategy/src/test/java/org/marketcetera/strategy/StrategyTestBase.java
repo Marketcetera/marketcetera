@@ -944,6 +944,25 @@ public class StrategyTestBase
         {
             throw new UnsupportedOperationException();
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getUserData()
+         */
+        @Override
+        public Properties getUserData()
+                throws ConnectionException
+        {
+            return userdata;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#setUserData(java.util.Properties)
+         */
+        @Override
+        public void setUserData(Properties inProperties)
+                throws ConnectionException
+        {
+            userdata = inProperties;
+        }
+        public Properties userdata;
     }
     /**
      * Generates a random set of broker status objects.

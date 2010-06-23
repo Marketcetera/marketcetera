@@ -1,9 +1,12 @@
 package org.marketcetera.client.users;
 
 import java.io.Serializable;
+import java.util.Properties;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -35,6 +38,8 @@ public class UserInfo
     private final UserID mId;
     private final boolean mActive;
     private final boolean mSuperuser;
+    private final Properties mUserData;
+    private final Properties mSystemData;
 
 
     // CONSTRUCTORS.
@@ -47,18 +52,24 @@ public class UserInfo
      * @param id The user ID.
      * @param active The active flag.
      * @param superuser The superuser flag.
+     * @param userdata The user data
+     * @param systemdata The system data
      */
 
     public UserInfo
         (String name,
          UserID id,
          boolean active,
-         boolean superuser)
+         boolean superuser,
+         Properties userdata,
+         Properties systemdata)
     {
         mName=name;
         mId=id;
         mActive=active;
         mSuperuser=superuser;
+        mUserData=userdata;
+        mSystemData=systemdata;
     }
 
     /**
@@ -72,6 +83,8 @@ public class UserInfo
         mId=null;
         mActive=false;
         mSuperuser=false;
+        mUserData=null;
+        mSystemData=null;
     }
 
 
@@ -121,6 +134,25 @@ public class UserInfo
         return mSuperuser;
     }
 
+    /**
+     * Returns the receiver's user data.
+     *
+     * @return The Properties.
+     */
+    public Properties getUserData()
+    {
+        return mUserData;
+    }
+
+    /**
+     * Returns the receiver's system data.
+     *
+     * @return The Properties.
+     */
+    public Properties getSystemData()
+    {
+        return mSystemData;
+    }
 
     // Object.
 
@@ -128,8 +160,8 @@ public class UserInfo
     public String toString()
     {
         return String.format
-            ("User: %s(%s,%s,%s)", //$NON-NLS-1$
+            ("User: %s(%s,%s,%s,%s)", //$NON-NLS-1$
              String.valueOf(getName()),String.valueOf(getId()),
-             getActive(),getSuperuser());
+             getActive(),getSuperuser(),getUserData());
     }
 }
