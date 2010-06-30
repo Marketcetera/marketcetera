@@ -2,13 +2,17 @@ package org.marketcetera.core.instruments;
 
 import org.junit.Test;
 import org.junit.BeforeClass;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import org.marketcetera.trade.*;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /* $License$ */
 /**
@@ -60,6 +64,17 @@ public class StaticInstrumentFunctionSelectorTest {
                 new StaticInstrumentFunctionSelector(null);
             }
         };
+    }
+
+    @Test
+    public void testHandlers() throws Exception {
+        StaticInstrumentFunctionSelector<InstrumentToMessage> selector = InstrumentToMessage.SELECTOR;
+        Map<Class<?>, InstrumentToMessage> handlers = selector.getHandlers();
+
+        assertEquals("Should load 3 handlers", 3, selector.getHandlers().size());
+        assertThat(handlers.get(Equity.class), instanceOf(EquityToMessage.class));
+        assertThat(handlers.get(Option.class), instanceOf(OptionToMessage.class));
+        assertThat(handlers.get(Future.class), instanceOf(FutureToMessage.class));
     }
 
     /**

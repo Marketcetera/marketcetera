@@ -7,12 +7,11 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -52,6 +51,9 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         }
         if(inInstrument instanceof Option) {
             return optionTradeEvent().withInstrument(inInstrument);
+        }
+        if(inInstrument instanceof Future) {
+            return futureTradeEvent().withInstrument(inInstrument);
         }
         throw new UnsupportedOperationException();
     }
@@ -94,6 +96,29 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
                                                     getOption());
                 }
                 throw new IllegalArgumentException(VALIDATION_OPTION_REQUIRED.getText());
+            }
+        };
+    }
+    /**
+     * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Future <code>TradeEvent</code> object.
+     *
+     * @return a <code>TradeEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Future}
+     */
+    public static TradeEventBuilder<TradeEvent> futureTradeEvent()
+    {
+        return new TradeEventBuilder<TradeEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public TradeEvent create()
+            {
+                if(getMarketData().getInstrument() instanceof Future) {
+                    return new FutureTradeEventImpl(getMarketData(),
+                                                    getFuture());
+                }
+                throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
             }
         };
     }
@@ -141,8 +166,12 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         marketData.setInstrument(inInstrument);
         if(inInstrument instanceof Option) {
             option.setInstrument((Option)inInstrument);
-        } else if(inInstrument == null) {
+        } else if(inInstrument instanceof Future) {
+            future.setInstrument((Future)inInstrument);
+        }
+        if(inInstrument == null) {
             option.setInstrument(null);
+            future.setInstrument(null);
         }
         return this;
     }
@@ -235,6 +264,50 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         return this;
     }
     /**
+     * Sets the <code>DeliveryType</code> value.
+     *
+     * @param inDeliveryType a <code>DeliveryType</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder<E> withDeliveryType(DeliveryType inDeliveryType)
+    {
+        future.setDeliveryType(inDeliveryType);
+        return this;
+    }
+    /**
+     * Sets the <code>StandardType</code> value.
+     *
+     * @param inStandardType a <code>StandardType</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder<E> withStandardType(StandardType inStandardType)
+    {
+        future.setStandardType(inStandardType);
+        return this;
+    }
+    /**
+     * Sets the <code>FutureType</code> value.
+     *
+     * @param inFutureType a <code>FutureType</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder<E> withFutureType(FutureType inFutureType)
+    {
+        future.setType(inFutureType);
+        return this;
+    }
+    /**
+     * Sets the <code>FutureUnderlyingAssetType</code> value.
+     *
+     * @param inUnderlyingAssetType an <code>UnderlyingFutureAssetType</code> value
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public final TradeEventBuilder<E> withUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
+    {
+        future.setUnderlyingAssetType(inUnderlyingAssetType);
+        return this;
+    }
+    /**
      * Sets the provider symbol value.
      *
      * @param inProviderSymbol a <code>String</code> value
@@ -251,9 +324,10 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public String toString()
     {
-        return String.format("TradeEventBuilder [marketData=%s, option=%s]", //$NON-NLS-1$
+        return String.format("TradeEventBuilder [marketData=%s, option=%s, future=%s]", //$NON-NLS-1$
                              marketData,
-                             option);
+                             option,
+                             future);
     }
     /**
      * Get the marketData value.
@@ -274,6 +348,15 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         return option;
     }
     /**
+     * Gets the future value.
+     *
+     * @return a <code>FutureBean</code> value
+     */
+    protected final FutureBean getFuture()
+    {
+        return future;
+    }
+    /**
      * the market data attributes 
      */
     private final MarketDataBean marketData = new MarketDataBean();
@@ -281,4 +364,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * the option attributes
      */
     private final OptionBean option = new OptionBean();
+    /**
+     * the future attributes
+     */
+    private final FutureBean future = new FutureBean();
 }

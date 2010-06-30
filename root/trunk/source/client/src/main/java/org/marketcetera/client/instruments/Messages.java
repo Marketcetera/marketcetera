@@ -36,5 +36,7 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "invalid_option_expiry_week");   //$NON-NLS-1$
     static final I18NMessage1P INVALID_OPTION_EXPIRY_DAY =
             new I18NMessage1P(LOGGER, "invalid_option_expiry_day");   //$NON-NLS-1$
+    static final I18NMessage1P INVALID_FUTURE_EXPIRATION_YEAR_FORMAT = new I18NMessage1P(LOGGER,
+                                                                                         "invalid_future_expiration_year_format");   //$NON-NLS-1$
 
 }

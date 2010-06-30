@@ -8,16 +8,16 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EquityEvent;
+import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.event.beans.QuoteBean;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -70,6 +70,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                               option);
             }
         }
+        if(inEvent instanceof FutureEvent) {
+            FutureBean future = FutureBean.getFutureBeanFromEvent((FutureEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return new FutureAskEventImpl(quote,
+                                              future);
+            } else {
+                return new FutureBidEventImpl(quote,
+                                              future);
+            }
+        }
         // from an asset class that is neither equity nor option
         throw new UnsupportedOperationException();
     }
@@ -109,6 +119,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  option);
             }
         }
+        if(inEvent instanceof FutureEvent) {
+            FutureBean future = FutureBean.getFutureBeanFromEvent((FutureEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new FutureAskEventImpl(quote,
+                                                 future);
+            } else {
+                return (E)new FutureBidEventImpl(quote,
+                                                 future);
+            }
+        }
         // from an asset class that is neither equity nor option
         throw new UnsupportedOperationException();
     }
@@ -144,6 +164,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  option);
             }
         }
+        if(inEvent instanceof FutureEvent) {
+            FutureBean future = FutureBean.getFutureBeanFromEvent((FutureEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new FutureAskEventImpl(quote,
+                                                 future);
+            } else {
+                return (E)new FutureBidEventImpl(quote,
+                                                 future);
+            }
+        }
         // from an asset class that is neither equity nor option
         throw new UnsupportedOperationException();
     }
@@ -164,6 +194,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             return equityAskEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Option) {
             return optionAskEvent().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Future) {
+                return futureAskEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -185,6 +217,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             return equityBidEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Option) {
             return optionBidEvent().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Future) {
+            return futureBidEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -280,6 +314,52 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         };
     }
     /**
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Future <code>AskEvent</code> object.
+     *
+     * @return a <code>QuoteEventBuilder&lt;AskEvent&gt;</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Future}
+     */
+    public static QuoteEventBuilder<AskEvent> futureAskEvent()
+    {
+        return new QuoteEventBuilder<AskEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public AskEvent create()
+            {
+                if(getQuote().getInstrument() instanceof Future) {
+                    return new FutureAskEventImpl(getQuote(),
+                                                  getFuture());
+                }
+                throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
+            }
+        };
+    }
+    /**
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Future <code>BidEvent</code> object.
+     *
+     * @return a <code>QuoteEventBuilder&lt;BidEvent&gt;</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Future}
+     */
+    public static QuoteEventBuilder<BidEvent> futureBidEvent()
+    {
+        return new QuoteEventBuilder<BidEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public BidEvent create()
+            {
+                if(getQuote().getInstrument() instanceof Future) {
+                    return new FutureBidEventImpl(getQuote(),
+                                                  getFuture());
+                }
+                throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
+            }
+        };
+    }
+    /**
      * Sets the message id to use with the new event. 
      *
      * @param inMessageId a <code>long</code> value
@@ -323,8 +403,12 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         quote.setInstrument(inInstrument);
         if(inInstrument instanceof Option) {
             option.setInstrument((Option)inInstrument);
-        } else if(inInstrument == null) {
+        } else if(inInstrument instanceof Future) {
+            future.setInstrument((Future)inInstrument);
+        }
+        if(inInstrument == null) {
             option.setInstrument(null);
+            future.setInstrument(null);
         }
         return this;
     }
@@ -428,6 +512,50 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         return this;
     }
     /**
+     * Sets the <code>DeliveryType</code> value.
+     *
+     * @param inDeliveryType a <code>DeliveryType</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public final QuoteEventBuilder<E> withDeliveryType(DeliveryType inDeliveryType)
+    {
+        future.setDeliveryType(inDeliveryType);
+        return this;
+    }
+    /**
+     * Sets the <code>StandardType</code> value.
+     *
+     * @param inStandardType a <code>StandardType</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public final QuoteEventBuilder<E> withStandardType(StandardType inStandardType)
+    {
+        future.setStandardType(inStandardType);
+        return this;
+    }
+    /**
+     * Sets the <code>FutureType</code> value.
+     *
+     * @param inFutureType a <code>FutureType</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public final QuoteEventBuilder<E> withFutureType(FutureType inFutureType)
+    {
+        future.setType(inFutureType);
+        return this;
+    }
+    /**
+     * Sets the <code>FutureUnderlyingAssetType</code> value.
+     *
+     * @param inUnderlyingAssetType an <code>UnderlyingFutureAssetType</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public final QuoteEventBuilder<E> withUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
+    {
+        future.setUnderlyingAssetType(inUnderlyingAssetType);
+        return this;
+    }
+    /**
      * Sets the provider symbol value.
      *
      * @param inProviderSymbol a <code>String</code> value
@@ -444,9 +572,10 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     @Override
     public String toString()
     {
-        return String.format("QuoteEventBuilder [option=%s, quote=%s]", //$NON-NLS-1$
+        return String.format("QuoteEventBuilder [option=%s, quote=%s, future=%s]", //$NON-NLS-1$
                              option,
-                             quote);
+                             quote,
+                             future);
     }
     /**
      * Get the quote value.
@@ -460,11 +589,20 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     /**
      * Get the option value.
      *
-     * @return a <code>OptionBean</code> value
+     * @return an <code>OptionBean</code> value
      */
     protected final OptionBean getOption()
     {
         return option;
+    }
+    /**
+     * Gets the future value.
+     *
+     * @return a <code>FutureBean</code> value
+     */
+    protected final FutureBean getFuture()
+    {
+        return future;
     }
     /**
      * the quote attributes
@@ -474,4 +612,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * the option attributes
      */
     private final OptionBean option = new OptionBean();
+    /**
+     * the future attributes
+     */
+    private final FutureBean future = new FutureBean();
 }

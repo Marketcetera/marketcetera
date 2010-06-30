@@ -1,23 +1,26 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.quickfix.*;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.Test;
-import org.junit.BeforeClass;
 import static org.junit.Assert.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import quickfix.Message;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.quickfix.*;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.FieldNotFound;
-import quickfix.fix44.OrderCancelRequest;
+import quickfix.Message;
 import quickfix.field.*;
-import quickfix.field.converter.UtcTimestampConverter;
 import quickfix.field.converter.BooleanConverter;
+import quickfix.field.converter.UtcTimestampConverter;
+import quickfix.fix44.OrderCancelRequest;
 
 /* $License$ */
 /**
@@ -274,6 +277,45 @@ public class OrderCancelTest extends TypesTestBase {
                 sFactory.createOrderCancel(incorrectType, null);
             }
         };
+    }
+
+    /** verify custom fields are preserved, and that nothing else is added from the execution report */
+    @Test
+    public void testSecurityExchangePreserved() throws Exception {
+        Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderID", "clOrderID", "execID", //$NON-NLS-1$
+                OrdStatus.NEW, Side.Buy.getFIXValue(), new BigDecimal("10"), new BigDecimal("100.23"),
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), //$NON-NLS-1$
+                "accountName"); //$NON-NLS-1$
+        erMsg.setString(SecurityExchange.FIELD, "box");
+
+        ExecutionReport er = sFactory.createExecutionReport(erMsg, null, Originator.Server, null, null);
+
+        OrderCancel cancel = sFactory.createOrderCancel(er);
+        assertNotNull("didn't get custom fields", cancel.getCustomFields());
+        // basically, should only have 1 field: SecurityExchange
+        assertEquals("has extra fields: "+ Arrays.toString(cancel.getCustomFields().keySet().toArray()), 1, cancel.getCustomFields().size());
+    }
+
+    @Test
+    /** Create ER for previous order that has OrderID of 12345
+     * Set an OrigClOrdID on it of 12222
+     * Create a replace form this ER, the OrigClOrdID should be 12345, not the "very original" of 12222
+     */
+    public void testCreateOrderCancel() throws Exception {
+        Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("7600", "12345", "execID", //$NON-NLS-1$
+                OrdStatus.NEW, Side.Buy.getFIXValue(), new BigDecimal("10"), new BigDecimal("100.23"),
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), //$NON-NLS-1$
+                "accountName"); //$NON-NLS-1$
+        erMsg.setString(OrigClOrdID.FIELD, "12222");
+        erMsg.setInt(HandlInst.FIELD, HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE);
+        ExecutionReport er = Factory.getInstance().createExecutionReport(erMsg, new BrokerID("broker"), Originator.Server, new UserID(7600L), new UserID(7500L));
+        assertEquals("12222", er.getOriginalOrderID().getValue());
+        assertEquals("12222", ((HasFIXMessage) er).getMessage().getString(OrigClOrdID.FIELD));
+
+        // now create a cancel, shouldn't have the "very original" order id of 12222
+        OrderCancel cancel = Factory.getInstance().createOrderCancel(er);
+        assertEquals("12345", cancel.getOriginalOrderID().getValue());
+        assertNull("shouldn't get any custom fields", cancel.getCustomFields());
     }
 
     /**

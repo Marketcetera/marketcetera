@@ -31,8 +31,9 @@ import java.util.HashMap;
       OrderReplaceImpl.class,
       OrderSingleImpl.class,
       Equity.class,
-      Option.class})
-//figure out a way to dynamic add instrument types to the XmlSeeAlso list
+      Option.class,
+      Future.class})
+//todo: figure out a way to dynamic add instrument types to the XmlSeeAlso list
 public class OrderBaseImpl implements OrderBase {
     @Override
     public OrderID getOrderID() {

@@ -141,7 +141,8 @@ public class JMSXMLConverterTest {
     }
     private static Instrument[] sInstruments = new Instrument[]{
             new Equity("sym"),
-            new Option("sym", "20101010", BigDecimal.TEN, OptionType.Call)
+            new Option("sym", "20101010", BigDecimal.TEN, OptionType.Call),
+            new Future("rama", FutureExpirationMonth.AUGUST,2010)
     };
 
     private static JMSXMLMessageConverter sConverter;

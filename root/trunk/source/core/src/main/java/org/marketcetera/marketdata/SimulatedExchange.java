@@ -25,12 +25,16 @@ import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.event.util.PriceAndSizeComparator;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 /* $License$ */
 
@@ -282,6 +286,9 @@ public class SimulatedExchange
                            .withUnderlyingInstrument(sharedInfo.getUnderlyingInstrument())
                            .withInterestChange(randomInteger(1000))
                            .withVolumeChange(randomInteger(1000));
+                }
+                if(requestInstrument instanceof Future) {
+                    // TODO
                 }
                 results.add(builder.create());
             }

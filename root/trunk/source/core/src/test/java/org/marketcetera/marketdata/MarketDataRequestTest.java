@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.marketdata.AssetClass.FUTURE;
 import static org.marketcetera.marketdata.AssetClass.OPTION;
 import static org.marketcetera.marketdata.Content.*;
 import static org.marketcetera.marketdata.MarketDataRequestBuilder.SYMBOL_DELIMITER;
@@ -150,71 +151,11 @@ public class MarketDataRequestTest
     public void newRequestFromStringUnderlyingSymbols()
             throws Exception
     {
-        AssetClass defaultAssetClass = OPTION;
-        // empty underlying symbol list
-        new ExpectedFailure<IllegalArgumentException>(new I18NBoundMessage1P(INVALID_UNDERLYING_SYMBOLS,
-                                                                             String.valueOf(Arrays.asList(new String[] { "" } ))).getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                MarketDataRequestBuilder.newRequestFromString("underlyingsymbols=:assetClass=OPTION");
+        for(AssetClass assetClass : AssetClass.values()) {
+            if(assetClass.isValidForUnderlyingSymbols()) {
+                doUnderlyingSymbolTest(assetClass);
             }
-        };
-        // single underlying symbol list
-        verifyRequest(MarketDataRequestBuilder.newRequestFromString("underlyingsymbols=GOOG:assetClass=OPTION"),
-                      null,
-                      null,
-                      defaultContent,
-                      defaultAssetClass,
-                      new HashMap<String,String>(),
-                      new HashSet<String>(),
-                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG" })));
-        // multiple underlying symbol list
-        verifyRequest(MarketDataRequestBuilder.newRequestFromString("underlyingsymbols=GOOG,ORCL:assetClass=OPTION"),
-                      null,
-                      null,
-                      defaultContent,
-                      defaultAssetClass,
-                      new HashMap<String,String>(),
-                      new HashSet<String>(),
-                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG", "ORCL" })));
-        // duplicate underlying symbol list
-        verifyRequest(MarketDataRequestBuilder.newRequestFromString("underlyingsymbols=GOOG,ORCL,GOOG:assetClass=OPTION"),
-                      null,
-                      null,
-                      defaultContent,
-                      defaultAssetClass,
-                      new HashMap<String,String>(),
-                      new HashSet<String>(),
-                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG", "ORCL" })));
-        // UPPER case key
-        verifyRequest(MarketDataRequestBuilder.newRequestFromString("UNDERLYINGSYMBOLS=GOOG:assetClass=OPTION"),
-                      null,
-                      null,
-                      defaultContent,
-                      defaultAssetClass,
-                      new HashMap<String,String>(),
-                      new HashSet<String>(),
-                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG" })));
-        // MiXeD case key
-        verifyRequest(MarketDataRequestBuilder.newRequestFromString("UnDeRlYiNgSyMbOlS=GOOG:assetClass=OPTION"),
-                      null,
-                      null,
-                      defaultContent,
-                      defaultAssetClass,
-                      new HashMap<String,String>(),
-                      new HashSet<String>(),
-                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG" })));
-        // extra whitespace, both key and value
-        verifyRequest(MarketDataRequestBuilder.newRequestFromString("  underlyingsymbols  =  GOOG  :assetClass=OPTION"),
-                      null,
-                      null,
-                      defaultContent,
-                      defaultAssetClass,
-                      new HashMap<String,String>(),
-                      new HashSet<String>(),
-                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG" })));
+        }
     }
     /**
      * Tests building <code>MarketDataRequest</code> objects from String
@@ -743,109 +684,11 @@ public class MarketDataRequestTest
     public void withUnderlyingSymbols()
             throws Exception
     {
-        final MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest();
-        // set defaults to make our "toString" look like the "toString" with defaults
-        builder.withContent(defaultContent);
-        // the first conditions are going to test the ability to set the symbol list to empty in various ways
-        // in order to test this without triggering an error condition, since the symbol list will be empty,
-        //  set symbols and asset class
-        Set<String> symbolSet = new LinkedHashSet<String>(Arrays.asList(new String[] { "METC", "GOOG" } ));
-        builder.withSymbols(symbolSet).withAssetClass(OPTION);
-        // test null array
-        builder.withUnderlyingSymbols((String[])null);
-        verifyRequest(builder.create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      symbolSet,
-                      null);
-        // test empty array
-        builder.withUnderlyingSymbols(new String[0]);
-        verifyRequest(builder.create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      symbolSet,
-                      null);
-        // test null string
-        builder.withUnderlyingSymbols((String)null);
-        verifyRequest(builder.create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      symbolSet,
-                      null);
-        // test empty string
-        builder.withUnderlyingSymbols("");
-        verifyRequest(builder.create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      symbolSet,
-                      null);
-        // test null collection
-        builder.withUnderlyingSymbols((Collection<String>)null);
-        verifyRequest(builder.create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      symbolSet,
-                      null);
-        // test empty collection
-        builder.withUnderlyingSymbols(new ArrayList<String>());
-        verifyRequest(builder.create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      symbolSet,
-                      null);
-        // test non-empty versions
-        builder.withSymbols("");
-        // array version
-        verifyRequest(builder.withUnderlyingSymbols(symbolSet.toArray(new String[0])).create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      null,
-                      symbolSet);
-        builder.withUnderlyingSymbols("");
-        // string version
-        StringBuilder symbolString = new StringBuilder();
-        for(String symbol : symbolSet) {
-            symbolString.append(symbol).append(SYMBOL_DELIMITER);
+        for(AssetClass assetClass : AssetClass.values()) {
+            if(assetClass.isValidForUnderlyingSymbols()) {
+                doWithUnderlyingSymbolTest(assetClass);
+            }
         }
-        verifyRequest(builder.withUnderlyingSymbols(symbolString.toString()).create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      null,
-                      symbolSet);
-        // collection version
-        builder.withUnderlyingSymbols("");
-        verifyRequest(builder.withUnderlyingSymbols(symbolSet).create(),
-                      null,
-                      null,
-                      defaultContent,
-                      OPTION,
-                      new HashMap<String,String>(),
-                      null,
-                      symbolSet);
     }
     /**
      * Tests {@link MarketDataRequestBuilder#withProvider(String)}.
@@ -990,6 +833,14 @@ public class MarketDataRequestTest
                       new HashMap<String,String>(),
                       symbols,
                       null);
+        verifyRequest(builder.withAssetClass(FUTURE).create(),
+                      null,
+                      null,
+                      defaultContent,
+                      FUTURE,
+                      new HashMap<String,String>(),
+                      symbols,
+                      null);
         // non-null exchange (invalid String)
         new ExpectedFailure<IllegalArgumentException>(new I18NBoundMessage1P(INVALID_ASSET_CLASS,
                                                                              String.valueOf("not-an-asset-class")).getText()) {
@@ -1000,7 +851,7 @@ public class MarketDataRequestTest
                 MarketDataRequestBuilder.newRequestFromString("symbols=METC:assetclass=not-an-asset-class");
             }
         };
-        // non-null exchange (lower-case String)
+        // non-null asset class (lower-case String)
         verifyRequest(builder.withAssetClass(OPTION.toString().toLowerCase()).create(),
                       null,
                       null,
@@ -1009,7 +860,15 @@ public class MarketDataRequestTest
                       new HashMap<String,String>(),
                       symbols,
                       null);
-        // non-null exchange (upper-case String)
+        verifyRequest(builder.withAssetClass(FUTURE.toString().toLowerCase()).create(),
+                      null,
+                      null,
+                      defaultContent,
+                      FUTURE,
+                      new HashMap<String,String>(),
+                      symbols,
+                      null);
+        // non-null asset class (upper-case String)
         verifyRequest(builder.withAssetClass(EQUITY.toString().toUpperCase()).create(),
                       null,
                       null,
@@ -1018,12 +877,20 @@ public class MarketDataRequestTest
                       new HashMap<String,String>(),
                       symbols,
                       null);
-        // non-null exchange (mixed-case String)
+        // non-null asset class (mixed-case String)
         verifyRequest(builder.withAssetClass("OpTiOn").create(),
                       null,
                       null,
                       defaultContent,
                       OPTION,
+                      new HashMap<String,String>(),
+                      symbols,
+                      null);
+        verifyRequest(builder.withAssetClass("FuTuRe").create(),
+                      null,
+                      null,
+                      defaultContent,
+                      FUTURE,
                       new HashMap<String,String>(),
                       symbols,
                       null);
@@ -1372,7 +1239,7 @@ public class MarketDataRequestTest
         // can't test missing asset class because it has a default value
         // underlying symbols and asset class equity
         builder.withUnderlyingSymbols(symbolSet).withAssetClass(EQUITY);
-        new ExpectedFailure<IllegalArgumentException>(new I18NBoundMessage2P(OPTION_ASSET_CLASS_REQUIRED,
+        new ExpectedFailure<IllegalArgumentException>(new I18NBoundMessage2P(VALID_UNDERLYING_ASSET_CLASS_REQUIRED,
                                                                              builder.toString(),
                                                                              EQUITY).getText()) {
             @Override
@@ -1501,6 +1368,194 @@ public class MarketDataRequestTest
                 builder.create();
             }
         };
+    }
+    /**
+     * Executes a single iteration of the underlying symbol test with the given asset class.
+     *
+     * @param inAssetClass an <code>AssetClass</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doUnderlyingSymbolTest(AssetClass inAssetClass)
+            throws Exception
+    {
+        final String assetClassAsString = inAssetClass.name();
+        // empty underlying symbol list
+        new ExpectedFailure<IllegalArgumentException>(new I18NBoundMessage1P(INVALID_UNDERLYING_SYMBOLS,
+                                                                             String.valueOf(Arrays.asList(new String[] { "" } ))).getText()) {
+            @Override
+            protected void run()
+            throws Exception
+            {
+                MarketDataRequestBuilder.newRequestFromString("underlyingsymbols=:assetClass=" + assetClassAsString);
+            }
+        };
+        // single underlying symbol list
+        verifyRequest(MarketDataRequestBuilder.newRequestFromString("underlyingsymbols=GOOG:assetClass=" + assetClassAsString),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      new HashSet<String>(),
+                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG" })));
+        // multiple underlying symbol list
+        verifyRequest(MarketDataRequestBuilder.newRequestFromString("underlyingsymbols=GOOG,ORCL:assetClass=" + assetClassAsString),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      new HashSet<String>(),
+                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG", "ORCL" })));
+        // duplicate underlying symbol list
+        verifyRequest(MarketDataRequestBuilder.newRequestFromString("underlyingsymbols=GOOG,ORCL,GOOG:assetClass=" + assetClassAsString),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      new HashSet<String>(),
+                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG", "ORCL" })));
+        // UPPER case key
+        verifyRequest(MarketDataRequestBuilder.newRequestFromString("UNDERLYINGSYMBOLS=GOOG:assetClass=" + assetClassAsString),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      new HashSet<String>(),
+                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG" })));
+        // MiXeD case key
+        verifyRequest(MarketDataRequestBuilder.newRequestFromString("UnDeRlYiNgSyMbOlS=GOOG:assetClass=" + assetClassAsString),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      new HashSet<String>(),
+                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG" })));
+        // extra whitespace, both key and value
+        verifyRequest(MarketDataRequestBuilder.newRequestFromString("  underlyingsymbols  =  GOOG  :assetClass=" + assetClassAsString),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      new HashSet<String>(),
+                      new LinkedHashSet<String>(Arrays.asList(new String[] { "GOOG" })));
+    }
+    /**
+     * Executes one permutation of <code>withUnderlyingSymbolTest</code> with the given asset class.
+     *
+     * @param inAssetClass an <code>AssetClass</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doWithUnderlyingSymbolTest(AssetClass inAssetClass)
+            throws Exception
+    {
+        final MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest();
+        // set defaults to make our "toString" look like the "toString" with defaults
+        builder.withContent(defaultContent);
+        // the first conditions are going to test the ability to set the symbol list to empty in various ways
+        // in order to test this without triggering an error condition, since the symbol list will be empty,
+        //  set symbols and asset class
+        Set<String> symbolSet = new LinkedHashSet<String>(Arrays.asList(new String[] { "METC", "GOOG" } ));
+        builder.withSymbols(symbolSet).withAssetClass(inAssetClass);
+        // test null array
+        builder.withUnderlyingSymbols((String[])null);
+        verifyRequest(builder.create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      symbolSet,
+                      null);
+        // test empty array
+        builder.withUnderlyingSymbols(new String[0]);
+        verifyRequest(builder.create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      symbolSet,
+                      null);
+        // test null string
+        builder.withUnderlyingSymbols((String)null);
+        verifyRequest(builder.create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      symbolSet,
+                      null);
+        // test empty string
+        builder.withUnderlyingSymbols("");
+        verifyRequest(builder.create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      symbolSet,
+                      null);
+        // test null collection
+        builder.withUnderlyingSymbols((Collection<String>)null);
+        verifyRequest(builder.create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      symbolSet,
+                      null);
+        // test empty collection
+        builder.withUnderlyingSymbols(new ArrayList<String>());
+        verifyRequest(builder.create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      symbolSet,
+                      null);
+        // test non-empty versions
+        builder.withSymbols("");
+        // array version
+        verifyRequest(builder.withUnderlyingSymbols(symbolSet.toArray(new String[0])).create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      null,
+                      symbolSet);
+        builder.withUnderlyingSymbols("");
+        // string version
+        StringBuilder symbolString = new StringBuilder();
+        for(String symbol : symbolSet) {
+            symbolString.append(symbol).append(SYMBOL_DELIMITER);
+        }
+        verifyRequest(builder.withUnderlyingSymbols(symbolString.toString()).create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      null,
+                      symbolSet);
+        // collection version
+        builder.withUnderlyingSymbols("");
+        verifyRequest(builder.withUnderlyingSymbols(symbolSet).create(),
+                      null,
+                      null,
+                      defaultContent,
+                      inAssetClass,
+                      new HashMap<String,String>(),
+                      null,
+                      symbolSet);
     }
     /**
      * Verifies that the given <code>MarketDataRequest</code> matches the expected attributes.

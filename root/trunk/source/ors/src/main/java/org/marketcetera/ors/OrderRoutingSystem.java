@@ -2,13 +2,18 @@ package org.marketcetera.ors;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.client.Service;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.config.SpringConfig;
@@ -27,6 +32,7 @@ import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.util.auth.StandardAuthentication;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.SpringSessionSettings;
 import org.marketcetera.util.spring.SpringUtils;
@@ -37,8 +43,12 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
+
 import quickfix.DefaultMessageFactory;
+import quickfix.Message;
+import quickfix.SessionNotFound;
 import quickfix.SocketInitiator;
+import quickfix.field.*;
 
 /**
  * The main application. See {@link SpringConfig} for configuration
@@ -77,6 +87,7 @@ public class OrderRoutingSystem
     private final QuickFIXApplication mQFApp;
     private SimpleMessageListenerContainer mListener;
     private SocketInitiator mInitiator;
+    private final QuickFIXSender qSender;
 
     // CONSTRUCTORS.
 
@@ -174,7 +185,7 @@ public class OrderRoutingSystem
 
         // Initiate JMS.
 
-        QuickFIXSender qSender=new QuickFIXSender();
+        qSender=new QuickFIXSender();
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
         localIdFactory.init();
         RequestHandler handler=new RequestHandler
@@ -208,7 +219,6 @@ public class OrderRoutingSystem
              new ObjectName(JMX_NAME));
     }
 
-
     // INSTANCE METHODS.
 
     /**
@@ -238,9 +248,40 @@ public class OrderRoutingSystem
      *
      * @return The context.
      */
-
+    private static final AtomicInteger counter = new AtomicInteger(0);
     synchronized void stop()
     {
+        Brokers brokers = getBrokers();
+        for(Broker broker : brokers.getBrokers()) {
+            if(broker.getSpringBroker().getFixLogoutRequired()) {
+                SLF4JLoggerProxy.debug(OrderRoutingSystem.class,
+                                       "Broker {} requires FIX logout", //$NON-NLS-1$
+                                       broker.getBrokerID());
+                Message logout = broker.getFIXMessageFactory().createMessage(MsgType.LOGOUT);
+                // set mandatory fields
+                logout.getHeader().setField(new SenderCompID(broker.getSpringBroker().getDescriptor().getDictionary().get("SenderCompID")));
+                logout.getHeader().setField(new TargetCompID(broker.getSpringBroker().getDescriptor().getDictionary().get("TargetCompID")));
+                logout.getHeader().setField(new SendingTime(new Date()));
+                logout.toString();
+                try {
+                    SLF4JLoggerProxy.debug(OrderRoutingSystem.class,
+                                           "Sending logout message {} to broker {}", //$NON-NLS-1$
+                                           logout,
+                                           broker.getBrokerID());
+                    qSender.sendToTarget(logout,
+                                         broker.getSessionID());
+                } catch (SessionNotFound e) {
+                    SLF4JLoggerProxy.warn(OrderRoutingSystem.class,
+                                          e,
+                                          "Unable to logout from {}", // TODO
+                                          broker.getBrokerID());
+                }
+            } else {
+                SLF4JLoggerProxy.debug(OrderRoutingSystem.class,
+                                       "Broker {} does not require FIX logout", //$NON-NLS-1$
+                                       broker.getBrokerID());
+            }
+        }
         if (mInitiator!=null) {
             mInitiator.stop();
             mInitiator=null;

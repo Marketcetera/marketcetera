@@ -96,4 +96,6 @@ public interface Messages
                                                                               "validation_equity_required"); //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_OPTION_REQUIRED = new I18NMessage0P(LOGGER,
                                                                               "validation_option_required"); //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_FUTURE_REQUIRED = new I18NMessage0P(LOGGER,
+                                                                              "validation_future_required"); //$NON-NLS-1$
 }

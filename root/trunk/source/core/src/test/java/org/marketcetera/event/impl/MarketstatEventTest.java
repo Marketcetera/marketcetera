@@ -1,20 +1,25 @@
 package org.marketcetera.event.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.*;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.Messages;
+import org.marketcetera.event.OptionMarketstatEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -38,7 +43,7 @@ public class MarketstatEventTest
     public void setup()
             throws Exception
     {
-        useEquity = true;
+        instrument = equity;
         useInstrument = false;
     }
     /**
@@ -50,12 +55,17 @@ public class MarketstatEventTest
     public void builderTypes()
             throws Exception
     {
-       useEquity = false;
+       instrument = option;
        useInstrument = false;
        verify(setDefaults(getBuilder()));
        useInstrument = true;
        verify(setDefaults(getBuilder()));
-       useEquity = true;
+       instrument = equity;
+       useInstrument = false;
+       verify(setDefaults(getBuilder()));
+       useInstrument = true;
+       verify(setDefaults(getBuilder()));
+       instrument = future;
        useInstrument = false;
        verify(setDefaults(getBuilder()));
        useInstrument = true;
@@ -103,6 +113,18 @@ public class MarketstatEventTest
         };
         optionBuilder.withInstrument(option);
         assertNotNull(optionBuilder.create());
+        final MarketstatEventBuilder futureBuilder = setDefaults(MarketstatEventBuilder.futureMarketstat());
+        futureBuilder.withInstrument(equity);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                futureBuilder.create();
+            }
+        };
+        futureBuilder.withInstrument(future);
+        assertNotNull(futureBuilder.create());
     }
     /**
      * Tests {@link MarketstatEventBuilder#withMessageId(long)}.
@@ -370,7 +392,7 @@ public class MarketstatEventTest
             throws Exception
     {
         MarketstatEventBuilder builder = setDefaults(getBuilder());
-        Instrument instrument = null;
+        instrument = null;
         builder.withInstrument(instrument);
         assertEquals(instrument,
                      builder.getMarketstat().getInstrument());
@@ -382,9 +404,8 @@ public class MarketstatEventTest
                      builder.getMarketstat().getInstrument());
         assertEquals(instrument.getSymbol(),
                      builder.getMarketstat().getInstrumentAsString());
-        useEquity = false;
-        builder = setDefaults(getBuilder());
         instrument = option;
+        builder = setDefaults(getBuilder());
         builder.withInstrument(instrument);
         assertEquals(instrument,
                      builder.getMarketstat().getInstrument());
@@ -710,7 +731,6 @@ public class MarketstatEventTest
             throws Exception
     {
         MarketstatEventBuilder builder = setDefaults(getBuilder());
-        Instrument instrument = null;
         builder.withUnderlyingInstrument(instrument);
         assertEquals(instrument,
                      builder.getOption().getUnderlyingInstrument());
@@ -718,9 +738,8 @@ public class MarketstatEventTest
         builder.withUnderlyingInstrument(instrument);
         assertEquals(instrument,
                      builder.getOption().getUnderlyingInstrument());
-        useEquity = false;
-        builder = setDefaults(getBuilder());
         instrument = option;
+        builder = setDefaults(getBuilder());
         builder.withUnderlyingInstrument(instrument);
         assertEquals(instrument,
                      builder.getOption().getUnderlyingInstrument());
@@ -811,7 +830,7 @@ public class MarketstatEventTest
             }
         };
         final MarketstatEventBuilder optionBuilder = MarketstatEventBuilder.optionMarketstat();
-        useEquity = false;
+        instrument = option;
         setDefaults(optionBuilder).withInstrument(null);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_OPTION_REQUIRED.getText()) {
             @Override
@@ -828,6 +847,26 @@ public class MarketstatEventTest
                     throws Exception
             {
                 optionBuilder.create();
+            }
+        };
+        final MarketstatEventBuilder futureBuilder = MarketstatEventBuilder.futureMarketstat();
+        instrument = future;
+        setDefaults(futureBuilder).withInstrument(null);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                futureBuilder.create();
+            }
+        };
+        setDefaults(futureBuilder).withInstrument(equity);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                futureBuilder.create();
             }
         };
     }
@@ -951,10 +990,10 @@ public class MarketstatEventTest
         inBuilder.withExpirationType(ExpirationType.AMERICAN);
         inBuilder.withHighExchange("high exchange");
         inBuilder.withHighPrice(new BigDecimal(counter++));
-        inBuilder.withInstrument(useEquity ? equity : option);
+        inBuilder.withInstrument(instrument);
         inBuilder.withLowExchange("low exchange");
         inBuilder.withLowPrice(new BigDecimal(counter++));
-        inBuilder.withMessageId(System.nanoTime());
+        inBuilder.withMessageId(idCounter.incrementAndGet());
         inBuilder.withMultiplier(BigDecimal.ZERO);
         inBuilder.withOpenExchange("open exchange");
         inBuilder.withOpenPrice(new BigDecimal(counter++));
@@ -965,7 +1004,7 @@ public class MarketstatEventTest
         inBuilder.withTimestamp(new Date());
         inBuilder.withTradeHighTime(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withTradeLowTime(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
-        inBuilder.withUnderlyingInstrument(useEquity ? equity : option);
+        inBuilder.withUnderlyingInstrument(instrument);
         inBuilder.withVolume(new BigDecimal(counter++));
         inBuilder.withVolumeChange(EventTestBase.generateDecimalValue());
         inBuilder.withInterestChange(EventTestBase.generateDecimalValue());
@@ -978,28 +1017,27 @@ public class MarketstatEventTest
      */
     private MarketstatEventBuilder getBuilder()
     {
-        if(useEquity) {
-            if(useInstrument) {
-                return MarketstatEventBuilder.marketstat(equity);
-            } else {
-                return MarketstatEventBuilder.equityMarketstat();
-            }
+        if(useInstrument) {
+            return MarketstatEventBuilder.marketstat(instrument);
         } else {
-            if(useInstrument) {
-                return MarketstatEventBuilder.marketstat(option);
-            } else {
+            if(instrument instanceof Equity) {
+                return MarketstatEventBuilder.equityMarketstat();
+            } else if(instrument instanceof Option) {
                 return MarketstatEventBuilder.optionMarketstat();
+            } else if(instrument instanceof Future) {
+                return MarketstatEventBuilder.futureMarketstat();
             }
         }
+        throw new UnsupportedOperationException();
     }
     /**
      * if set to true, will cause the builder to be created with {@link MarketstatEventBuilder#marketstat(org.marketcetera.trade.Instrument)}
      */
     private boolean useInstrument;
     /**
-     * indicates whether to use an equity builder or an option builder
+     * indicates what instrument to use during tests
      */
-    private boolean useEquity;
+    private Instrument instrument;
     /**
      * test instrument
      */
@@ -1011,4 +1049,14 @@ public class MarketstatEventTest
                                              "20100319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
+    /**
+     * test future
+     */
+    private final Future future = new Future("AAPL",
+                                             FutureExpirationMonth.APRIL,
+                                             12);
+    /**
+     * counter used to guarantee unique events
+     */
+    private static final AtomicLong idCounter = new AtomicLong(0);
 }
