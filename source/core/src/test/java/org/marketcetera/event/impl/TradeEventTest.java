@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,10 +19,7 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -45,7 +43,7 @@ public class TradeEventTest
     public void setup()
             throws Exception
     {
-        useEquity = true;
+        instrument = equity;
         useInstrument = false;
     }
     /**
@@ -57,13 +55,17 @@ public class TradeEventTest
     public void builderTypes()
             throws Exception
     {
-       useEquity = false; useInstrument = false;
+       instrument = option; useInstrument = false;
        verify(setDefaults(getBuilder()));
-       useEquity = false; useInstrument = true;
+       instrument = option; useInstrument = true;
        verify(setDefaults(getBuilder()));
-       useEquity = true; useInstrument = false;
+       instrument = equity; useInstrument = false;
        verify(setDefaults(getBuilder()));
-       useEquity = true; useInstrument = true;
+       instrument = equity; useInstrument = true;
+       verify(setDefaults(getBuilder()));
+       instrument = future; useInstrument = false;
+       verify(setDefaults(getBuilder()));
+       instrument = future; useInstrument = true;
        verify(setDefaults(getBuilder()));
        // create a new kind of instrument
        new ExpectedFailure<UnsupportedOperationException>() {
@@ -104,6 +106,16 @@ public class TradeEventTest
             }
         };
         verify(setDefaults(TradeEventBuilder.optionTradeEvent()).withInstrument(option));
+        // now check future builders with an equity instrument
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                setDefaults(TradeEventBuilder.futureTradeEvent()).withInstrument(equity).create();
+            }
+        };
+        verify(setDefaults(TradeEventBuilder.futureTradeEvent()).withInstrument(future));
     }
     /**
      * Tests {@link TradeEventBuilder#hasDeliverable(boolean)}.
@@ -200,7 +212,7 @@ public class TradeEventTest
             throws Exception
     {
         TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
-        Instrument instrument = null;
+        instrument = null;
         builder.withInstrument(instrument);
         assertEquals(instrument,
                      builder.getMarketData().getInstrument());
@@ -215,9 +227,8 @@ public class TradeEventTest
         assertEquals(instrument.getSymbol(),
                      builder.getMarketData().getInstrumentAsString());
         assertFalse(instrument.equals(builder.getOption().getInstrument()));
-        useEquity = false;
-        builder = setDefaults(getBuilder());
         instrument = option;
+        builder = setDefaults(getBuilder());
         builder.withInstrument(instrument);
         assertEquals(instrument,
                      builder.getMarketData().getInstrument());
@@ -225,6 +236,14 @@ public class TradeEventTest
                      builder.getMarketData().getInstrumentAsString());
         assertEquals(instrument,
                      builder.getOption().getInstrument());
+        verify(builder);
+        instrument = future;
+        builder = setDefaults(getBuilder());
+        builder.withInstrument(instrument);
+        assertEquals(instrument,
+                     builder.getMarketData().getInstrument());
+        assertEquals(instrument.getSymbol(),
+                     builder.getMarketData().getInstrumentAsString());
         verify(builder);
     }
     /**
@@ -410,7 +429,7 @@ public class TradeEventTest
             throws Exception
     {
         TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
-        Instrument instrument = null;
+        instrument = null;
         builder.withUnderlyingInstrument(instrument);
         assertEquals(instrument,
                      builder.getOption().getUnderlyingInstrument());
@@ -418,12 +437,15 @@ public class TradeEventTest
         builder.withUnderlyingInstrument(instrument);
         assertEquals(instrument,
                      builder.getOption().getUnderlyingInstrument());
-        useEquity = false;
-        builder = setDefaults(getBuilder());
         instrument = option;
+        builder = setDefaults(getBuilder());
         builder.withUnderlyingInstrument(instrument);
         assertEquals(instrument,
                      builder.getOption().getUnderlyingInstrument());
+        verify(builder);
+        instrument = future;
+        builder = setDefaults(getBuilder());
+        builder.withUnderlyingInstrument(instrument);
         verify(builder);
     }
     /**
@@ -542,15 +564,15 @@ public class TradeEventTest
         inBuilder.hasDeliverable(false);
         inBuilder.withExchange("exchange");
         inBuilder.withExpirationType(ExpirationType.AMERICAN);
-        inBuilder.withInstrument(useEquity ? equity : option);
-        inBuilder.withMessageId(System.nanoTime());
+        inBuilder.withInstrument(instrument);
+        inBuilder.withMessageId(idCounter.incrementAndGet());
         inBuilder.withMultiplier(BigDecimal.ZERO);
         inBuilder.withProviderSymbol("MSQ/K/X");
         inBuilder.withPrice(BigDecimal.ONE);
         inBuilder.withTradeDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withSize(BigDecimal.TEN);
         inBuilder.withTimestamp(new Date());
-        inBuilder.withUnderlyingInstrument(useEquity ? equity : option);
+        inBuilder.withUnderlyingInstrument(instrument);
         return inBuilder;
     }
     /**
@@ -560,28 +582,23 @@ public class TradeEventTest
      */
     private TradeEventBuilder<TradeEvent> getBuilder()
     {
-        if(useEquity) {
-            if(useInstrument) {
-                return TradeEventBuilder.tradeEvent(equity);
-            } else {
-                return TradeEventBuilder.equityTradeEvent();
-            }
+        if(useInstrument) {
+            return TradeEventBuilder.tradeEvent(instrument);
         } else {
-            if(useInstrument) {
-                return TradeEventBuilder.tradeEvent(option);
-            } else {
+            if(instrument instanceof Equity) {
+                return TradeEventBuilder.equityTradeEvent();
+            } else if(instrument instanceof Option) {
                 return TradeEventBuilder.optionTradeEvent();
+            } else if(instrument instanceof Future) {
+                return TradeEventBuilder.futureTradeEvent();
             }
         }
+        throw new UnsupportedOperationException();
     }
     /**
      * if set to true, will cause the builder to be created
      */
     private boolean useInstrument;
-    /**
-     * indicates whether to use an equity builder or an option builder
-     */
-    private boolean useEquity;
     /**
      * test instrument with {@link TradeEventBuilder#tradeEvent(Instrument)}.
      */
@@ -593,4 +610,18 @@ public class TradeEventTest
                                              "20100319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
+    /**
+     * test instrument with {@link TradeEventBuilder#tradeEvent(Instrument)}.
+     */
+    private final Future future = new Future("METC",
+                                             FutureExpirationMonth.MARCH,
+                                             15);
+    /**
+     * instrument used during tests
+     */
+    private Instrument instrument = equity;
+    /**
+     * id counter used to guarantee unique events
+     */
+    private static final AtomicLong idCounter = new AtomicLong(0);
 }

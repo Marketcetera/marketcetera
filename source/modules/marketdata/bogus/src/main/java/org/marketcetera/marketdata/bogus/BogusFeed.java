@@ -1,5 +1,8 @@
 package org.marketcetera.marketdata.bogus;
 
+import static org.marketcetera.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.marketdata.AssetClass.OPTION;
 import static org.marketcetera.marketdata.Capability.*;
 import static org.marketcetera.marketdata.bogus.Messages.UNSUPPORTED_OPTION_SPECIFICATION;
 
@@ -119,6 +122,14 @@ public class BogusFeed
         return capabilities;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataFeed#getSupportedAssetClasses()
+     */
+    @Override
+    public Set<AssetClass> getSupportedAssetClasses()
+    {
+        return assetClasses;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doCancel(java.lang.String)
      */
     @Override
@@ -219,6 +230,10 @@ public class BogusFeed
      * capabilities for BogusFeed - note that these are not dynamic as Bogus requires no provisioning
      */
     private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LEVEL_2,OPEN_BOOK,TOTAL_VIEW,LATEST_TICK,MARKET_STAT,DIVIDEND));
+    /**
+     * supported asset classes
+     */
+    private static final Set<AssetClass> assetClasses = EnumSet.of(EQUITY,OPTION,FUTURE);
     /**
      * indicates if the feed has been logged in to
      */

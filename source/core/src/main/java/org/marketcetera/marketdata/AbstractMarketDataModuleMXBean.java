@@ -47,4 +47,11 @@ public interface AbstractMarketDataModuleMXBean
      */
     @DisplayName("The set of capabilities for this feed")
     public Set<Capability> getCapabilities();
+    /**
+     * Gets the set of supported asset classes for this market data feed.
+     *
+     * @return a <code>Set&lt;AssetClass&gt;</code> value
+     */
+    @DisplayName("The set of supported asset classes for this feed")
+    public Set<AssetClass> getAssetClasses();
 }

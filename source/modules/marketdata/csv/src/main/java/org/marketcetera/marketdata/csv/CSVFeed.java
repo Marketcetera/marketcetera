@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.csv;
 
+import static org.marketcetera.marketdata.AssetClass.*;
 import static org.marketcetera.marketdata.Capability.LATEST_TICK;
 import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.csv.Messages.*;
@@ -112,6 +113,14 @@ public class CSVFeed
     public Set<Capability> getCapabilities()
     {
         return capabilities;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataFeed#getSupportedAssetClasses()
+     */
+    @Override
+    public Set<AssetClass> getSupportedAssetClasses()
+    {
+        return assetClasses;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doCancel(java.lang.String)
@@ -297,6 +306,10 @@ public class CSVFeed
      * capabilities for CSVFeed - note that these are not dynamic as Bogus requires no provisioning
      */
     private static final Set<Capability> capabilities = Collections.unmodifiableSet(EnumSet.of(TOP_OF_BOOK,LATEST_TICK));
+    /**
+     * supported asset classes
+     */
+    private static final Set<AssetClass> assetClasses = EnumSet.of(EQUITY,OPTION,FUTURE);
     /**
      * static instance of <code>CSVFeed</code>
      */

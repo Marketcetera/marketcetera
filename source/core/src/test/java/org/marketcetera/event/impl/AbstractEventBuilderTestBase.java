@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.marketcetera.event.Event;
@@ -179,7 +180,7 @@ public abstract class AbstractEventBuilderTestBase<E extends Event,B extends Abs
     protected B setDefaults(B inBuilder)
             throws Exception
     {
-        inBuilder.withMessageId(System.nanoTime());
+        inBuilder.withMessageId(counter.incrementAndGet());
         inBuilder.withTimestamp(new Date());
         inBuilder.withSource(this);
         return inBuilder;
@@ -250,4 +251,8 @@ public abstract class AbstractEventBuilderTestBase<E extends Event,B extends Abs
                      event.getSource());
         return event;
     }
+    /**
+     * counter used to guarantee unique events
+     */
+    private static final AtomicLong counter = new AtomicLong(0);
 }

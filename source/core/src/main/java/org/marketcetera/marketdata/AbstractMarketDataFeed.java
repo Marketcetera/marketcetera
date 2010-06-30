@@ -1,16 +1,7 @@
 package org.marketcetera.marketdata;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
+import java.util.concurrent.*;
 
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
@@ -25,6 +16,7 @@ import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.metrics.ConditionsFactory;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
@@ -179,6 +171,13 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         //  ready to be used
         if(!getFeedStatus().isRunning()) {
             throw new FeedException(new I18NBoundMessage1P(Messages.MARKET_DATA_FEED_CANNOT_EXEC_REQUESTS, getFeedStatus()));
+        }
+        // check to see if the asset class is supported by the feed
+        if(!getSupportedAssetClasses().contains(inTokenSpec.getDataRequest().getAssetClass())) {
+            throw new FeedException(new I18NBoundMessage3P(Messages.UNSUPPORTED_ASSET_CLASS,
+                                                           String.valueOf(this),
+                                                           inTokenSpec.getDataRequest().getAssetClass(),
+                                                           inTokenSpec.getDataRequest()));
         }
         // these subscribers are all the ones that are interested in the results
         //  of the query we're about to execute - this list may be empty or null

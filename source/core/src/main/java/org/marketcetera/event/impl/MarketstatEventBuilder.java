@@ -7,12 +7,11 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.Messages;
+import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.MarketstatBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -51,6 +50,8 @@ public abstract class MarketstatEventBuilder
             return equityMarketstat().withInstrument(inInstrument);
         } else if(inInstrument instanceof Option) {
             return optionMarketstat().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Future) {
+            return futureMarketstat().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -101,6 +102,28 @@ public abstract class MarketstatEventBuilder
         };
     }
     /**
+     * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object
+     * of type <code>Future</code>.
+     *
+     * @return a <code>MarketstatEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Future}
+     */
+    public static MarketstatEventBuilder futureMarketstat()
+    {
+        return new MarketstatEventBuilder()
+        {
+            @Override
+            public MarketstatEvent create()
+            {
+                if(!(getMarketstat().getInstrument() instanceof Future)) {
+                    throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
+                }
+                return new FutureMarketstatEventImpl(getMarketstat(),
+                                                     getFuture());
+            }
+        };
+    }
+    /**
      * Sets the message id to use with the new event. 
      *
      * @param inMessageId a <code>long</code> value
@@ -142,10 +165,14 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withInstrument(Instrument inInstrument)
     {
         marketstat.setInstrument(inInstrument);
-        if(inInstrument instanceof Option){
+        if(inInstrument instanceof Option) {
             option.setInstrument((Option)inInstrument);
-        } else if(inInstrument == null) {
+        } else if(inInstrument instanceof Future) {
+            future.setInstrument((Future)inInstrument);
+        }
+        if(inInstrument == null) {
             option.setInstrument(null);
+            future.setInstrument(null);
         }
         return this;
     }
@@ -348,6 +375,50 @@ public abstract class MarketstatEventBuilder
         return this;
     }
     /**
+     * Sets the <code>DeliveryType</code> value.
+     *
+     * @param inDeliveryType a <code>DeliveryType</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withDeliveryType(DeliveryType inDeliveryType)
+    {
+        future.setDeliveryType(inDeliveryType);
+        return this;
+    }
+    /**
+     * Sets the <code>StandardType</code> value.
+     *
+     * @param inStandardType a <code>StandardType</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withStandardType(StandardType inStandardType)
+    {
+        future.setStandardType(inStandardType);
+        return this;
+    }
+    /**
+     * Sets the <code>FutureType</code> value.
+     *
+     * @param inFutureType a <code>FutureType</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withFutureType(FutureType inFutureType)
+    {
+        future.setType(inFutureType);
+        return this;
+    }
+    /**
+     * Sets the <code>FutureUnderlyingAssetType</code> value.
+     *
+     * @param inUnderlyingAssetType an <code>UnderlyingFutureAssetType</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
+    {
+        future.setUnderlyingAssetType(inUnderlyingAssetType);
+        return this;
+    }
+    /**
      * Sets the provider symbol value.
      *
      * @param inProviderSymbol a <code>String</code> value
@@ -386,9 +457,10 @@ public abstract class MarketstatEventBuilder
     @Override
     public String toString()
     {
-        return String.format("MarketstatEventBuilder [marketstat=%s, option=%s]", //$NON-NLS-1$
+        return String.format("MarketstatEventBuilder [marketstat=%s, option=%s, future=%s]", //$NON-NLS-1$
                              marketstat,
-                             option);
+                             option,
+                             future);
     }
     /**
      * Get the marketstat value.
@@ -407,6 +479,15 @@ public abstract class MarketstatEventBuilder
     protected final OptionBean getOption()
     {
         return option;
+    }
+    /**
+     * Gets the future value.
+     *
+     * @return a <code>FutureBean</code> value
+     */
+    protected final FutureBean getFuture()
+    {
+        return future;
     }
     /**
      * Gets the volume change value.
@@ -434,6 +515,10 @@ public abstract class MarketstatEventBuilder
      *  the option attributes
      */
     private final OptionBean option = new OptionBean();
+    /**
+     * the future attributes
+     */
+    private final FutureBean future = new FutureBean();
     /**
      * the change in volume since the previous close, may be <code>null</code> 
      */

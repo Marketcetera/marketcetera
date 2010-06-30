@@ -1,6 +1,9 @@
 package org.marketcetera.marketdata;
 
 import static org.junit.Assert.*;
+import static org.marketcetera.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.marketdata.AssetClass.OPTION;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -476,6 +479,49 @@ public class AbstractMarketDataFeedTest
                      token.getStatus());
         assertEquals(Status.ACTIVE,
                      token2.getStatus());
+    }
+    /**
+     * Tests the ability of a feed to reject a request for an unsupported asset class.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void unsupportedAssetClass()
+            throws Exception
+    {
+        final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
+        feed.start();
+        feed.login(new MockMarketDataFeedCredentials());
+        // feed supports no asset classes
+        feed.setAssetClasses(EnumSet.noneOf(AssetClass.class));
+        assertTrue(feed.getSupportedAssetClasses().isEmpty());
+        final MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest().withSymbols("COLIN");
+        assertNotNull(builder.create().getAssetClass());
+        new ExpectedFailure<FeedException>(Messages.UNSUPPORTED_ASSET_CLASS) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(builder.create()));
+            }
+        };
+        // feed supports some asset classes, but not all
+        feed.setAssetClasses(EnumSet.of(FUTURE, EQUITY));
+        builder.withAssetClass(OPTION);
+        new ExpectedFailure<FeedException>(Messages.UNSUPPORTED_ASSET_CLASS) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(builder.create()));
+            }
+        };
+        // feed supports all asset classes
+        feed.setAssetClasses(EnumSet.allOf(AssetClass.class));
+        for(AssetClass asset : AssetClass.values()) {
+            builder.withAssetClass(asset);
+            feed.execute(MarketDataFeedTokenSpec.generateTokenSpec(builder.create()));
+        }
     }
     private static class TestFeedComponentListener
     	implements IFeedComponentListener

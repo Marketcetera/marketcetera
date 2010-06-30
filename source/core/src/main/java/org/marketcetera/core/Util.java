@@ -1,11 +1,12 @@
 package org.marketcetera.core;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Properties;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.File;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.AppId;
@@ -182,14 +183,13 @@ public class Util
     private static Pair<String,String> tokenizeEscapedDelimiters(String inSource,
                                                                  String inEscapedDelimiter)
     {
-        long counter = System.nanoTime();
         String generatedToken = String.format(PROCESSING_TOKEN,
-                                              ++counter);
+                                              counter.incrementAndGet());
         String result = inSource;
         // create a token that is guaranteed not to be in the source
         while(inSource.contains(generatedToken)) {
             generatedToken = String.format(PROCESSING_TOKEN,
-                                           ++counter);
+                                           counter.incrementAndGet());
         }
         result = inSource.replace(inEscapedDelimiter,
                                   generatedToken);
@@ -330,4 +330,8 @@ public class Util
      */
 
     private static final String APP_ID_VERSION_SEPARATOR="/"; //$NON-NLS-1$
+    /**
+     * counter used to guarantee unique tokens
+     */
+    private static final AtomicLong counter = new AtomicLong(0);
 }

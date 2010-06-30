@@ -69,6 +69,10 @@ public final class StaticInstrumentFunctionSelector<T extends InstrumentFunction
         return t;
     }
 
+    protected Map<Class<?>, T> getHandlers() {
+        return mHandlers;
+    }
+
     private final Class<T> mClass;
     private final Map<Class<?>, T> mHandlers;
 }

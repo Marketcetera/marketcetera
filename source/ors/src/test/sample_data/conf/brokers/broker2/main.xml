@@ -44,6 +44,9 @@
      value="${metc.broker2.id}"/>
     <!-- The QuickFIX/J session descriptor. -->
     <property
+     name="fixLogoutRequired"
+     value="${metc.broker2.fixlogoutrequired}"/>
+    <property
      name="descriptor"
      ref="metc_broker2_qdescriptor"/>
     <!-- The message modifiers. -->

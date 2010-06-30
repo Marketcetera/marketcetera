@@ -108,9 +108,10 @@ public class DynamicInstrumentFunctionSelectorTest {
         final DynamicInstrumentFunctionSelector<Message, InstrumentFromMessage> selector =
                 InstrumentFromMessage.SELECTOR;
         List<InstrumentFromMessage> handlers = selector.getHandlers();
-        assertEquals(2, handlers.size());
+        assertEquals(3, handlers.size());
         assertThat(handlers.get(0), instanceOf(EquityFromMessage.class));
         assertThat(handlers.get(1), instanceOf(OptionFromMessage.class));
+        assertThat(handlers.get(2), instanceOf(FutureFromMessage.class));
     }
 
     /**

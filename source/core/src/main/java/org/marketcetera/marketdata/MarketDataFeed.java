@@ -57,4 +57,10 @@ public interface MarketDataFeed<T extends MarketDataFeedToken,
      * @return a <code>Set&lt;Capability&gt;</code> value
      */
     public Set<Capability> getCapabilities();
+    /**
+     * Gets the set of asset classes supported by this market data feed. 
+     *
+     * @return a <code>Set&lt;AssetClass&gt;</code> value
+     */
+    public Set<AssetClass> getSupportedAssetClasses();
 }

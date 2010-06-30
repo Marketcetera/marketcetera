@@ -4,12 +4,7 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
-import org.marketcetera.photon.views.AveragePriceView;
-import org.marketcetera.photon.views.FIXMessagesView;
-import org.marketcetera.photon.views.FillsView;
-import org.marketcetera.photon.views.OpenOrdersView;
-import org.marketcetera.photon.views.OptionOrderTicketView;
-import org.marketcetera.photon.views.StockOrderTicketView;
+import org.marketcetera.photon.views.*;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
 
 /**
@@ -46,9 +41,11 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 		layout.setEditorAreaVisible(false);
 
 		layout.addPerspectiveShortcut(EquityPerspectiveFactory.ID);
+        layout.addPerspectiveShortcut(FuturePerspectiveFactory.ID);
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		layout.addShowViewShortcut(StockOrderTicketView.ID);
 		layout.addShowViewShortcut(OptionOrderTicketView.ID);
+        layout.addShowViewShortcut(FutureOrderTicketView.ID);
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
 				0.7f, editorArea);

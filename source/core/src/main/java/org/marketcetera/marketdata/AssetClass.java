@@ -19,5 +19,20 @@ public enum AssetClass
     /**
      * options
      */
-    OPTION
+    OPTION,
+    /**
+     * futures
+     */
+    FUTURE;
+    /**
+     * Indicates if the asset class is an appropriate match for a request
+     * by underlying symbols.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isValidForUnderlyingSymbols()
+    {
+        return this == OPTION ||
+               this == FUTURE;
+    }
 }

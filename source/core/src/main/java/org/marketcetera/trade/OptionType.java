@@ -15,20 +15,25 @@ import java.util.Collections;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public enum OptionType {
+public enum OptionType
+        implements HasCFICode
+{
     /**
      * Sentinel value for OptionType that the system is not currently
      * aware of.
      */
-    Unknown(Integer.MIN_VALUE),
+    Unknown(Integer.MIN_VALUE,
+            'X'),
     /**
      * Indicates that an option is a Put option.
      */
-    Put(quickfix.field.PutOrCall.PUT),
+    Put(quickfix.field.PutOrCall.PUT,
+        'P'),
     /**
      * Indicates that an option is a Call option.
      */
-    Call(quickfix.field.PutOrCall.CALL);
+    Call(quickfix.field.PutOrCall.CALL,
+         'C');
 
     /**
      * The FIX char value for this instance.
@@ -38,7 +43,15 @@ public enum OptionType {
     public int getFIXValue() {
         return mFIXValue;
     }
-
+    /**
+     * Get the cfiCode value.
+     *
+     * @return a <code>char</code> value
+     */
+    public char getCfiCode()
+    {
+        return cfiCode;
+    }
     /**
      * Gets the OptionType instance.
      *
@@ -58,11 +71,15 @@ public enum OptionType {
      *
      * @param inFIXValue the FIX int value for this instance.
      */
-    private OptionType(int inFIXValue) {
+    private OptionType(int inFIXValue,
+                       char inCfiCode)
+    {
         mFIXValue = inFIXValue;
+        cfiCode = inCfiCode;
     }
 
     private final int mFIXValue;
+    private final char cfiCode;
     private static final Map<Integer, OptionType> mFIXValueMap;
 
     static {
