@@ -62,7 +62,7 @@
                     <label text="ExpirationMonth"/>
                     <label text=""/>
                     <label text=""/>
-                    <text x:style="SINGLE|BORDER" x:id="ExpirationYearText" text=""><layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+                    <text x:style="SINGLE|BORDER" x:id="ExpirationYearText" text=""><layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
                         horizontalAlignment="GridData.FILL" 
                         verticalAlignment="GridData.CENTER"/></text>
                     <combo x:style="BORDER|READ_ONLY" x:id="ExpirationMonthCombo"/>

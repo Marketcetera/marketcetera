@@ -50,9 +50,9 @@ public class FutureOrderTicketModel
     /**
      * Gets an <code>ITypedObservalbleValue</code> that tracks the expiration year of the current order.
      *
-     * @return an <code>ITypedObservableValue&lt;Integer&gt;</code> value
+     * @return an <code>ITypedObservableValue&lt;String&gt;</code> value
      */
-    public ITypedObservableValue<Integer> getFutureExpirationYear()
+    public ITypedObservableValue<String> getFutureExpirationYear()
     {
         return mExpirationYear;
     }
@@ -67,5 +67,5 @@ public class FutureOrderTicketModel
     /**
      * the expiration year of the current order
      */
-    private final ITypedObservableValue<Integer> mExpirationYear;
+    private final ITypedObservableValue<String> mExpirationYear;
 }

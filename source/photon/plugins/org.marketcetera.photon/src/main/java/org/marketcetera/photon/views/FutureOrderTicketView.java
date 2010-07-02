@@ -149,7 +149,7 @@ public class FutureOrderTicketView
         super.customizeWidgets(inTicket);
         // the default size is wrong, set it manually
         updateSize(inTicket.getExpirationYearText(),
-                   5);
+                   20);
         // selects the text in the widget upon focus to facilitate easy editing
         selectOnFocus(inTicket.getExpirationYearText());
         // enter in either of these fields will send the order (assuming there are no errors)
@@ -158,7 +158,7 @@ public class FutureOrderTicketView
     }
     public static final String ID = "org.marketcetera.photon.views.FutureOrderTicketView"; //$NON-NLS-1$
     /**
-     * 
+     * the expiration month combo dropdown
      */
     private ComboViewer expirationMonthComboViewer;
 }
