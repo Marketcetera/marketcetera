@@ -90,7 +90,7 @@ public class Future
      */
     public MaturityMonthYear getExpiryAsMaturityMonthYear()
     {
-        return new MaturityMonthYear(String.format("%1$4d%2$2d",
+        return new MaturityMonthYear(String.format("%1$4d%2$s",
                                                    getExpirationYear(),
                                                    getExpirationMonth().getMonthOfYear()));
     }

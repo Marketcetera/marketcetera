@@ -1,23 +1,29 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.Instrument;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import quickfix.*;
-import quickfix.field.*;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.*;
+import quickfix.field.*;
+import quickfix.field.SecurityType;
 
 /* $License$ */
 /**
@@ -82,12 +88,12 @@ public class InstrumentFromMessageTest {
         String expectedExpiry = expectedMY + expectedDay;
         BigDecimal expectedStrike = BigDecimal.TEN;
         //Test all permutations of fields.
-        for (Field secType : new Field[]{null, new SecurityType(SecurityType.OPTION), new CFICode("O")}) {
-            for (Field symbol : new Field[]{null, new Symbol(expectedSymbol)}) {
-                for (Field optType : new Field[]{null, new PutOrCall(), new PutOrCall(PutOrCall.CALL), new PutOrCall(PutOrCall.PUT), new CFICode("O"), new CFICode("OC"), new CFICode("OP")}) {
-                    for (Field strikePrice : new Field[]{null, new StrikePrice(expectedStrike)}) {
-                        for (Field expiry : new Field[]{null, new MaturityMonthYear(expectedMY), new MaturityDate(expectedExpiry)}) {
-                            for(Field expiryDay: new Field[]{null, new MaturityDay(expectedDay)}) {
+        for (Field<?> secType : new Field[]{null, new SecurityType(SecurityType.OPTION), new CFICode("O")}) {
+            for (Field<?> symbol : new Field[]{null, new Symbol(expectedSymbol)}) {
+                for (Field<?> optType : new Field[]{null, new PutOrCall(), new PutOrCall(PutOrCall.CALL), new PutOrCall(PutOrCall.PUT), new CFICode("O"), new CFICode("OC"), new CFICode("OP")}) {
+                    for (Field<?> strikePrice : new Field[]{null, new StrikePrice(expectedStrike)}) {
+                        for (Field<?> expiry : new Field[]{null, new MaturityMonthYear(expectedMY), new MaturityDate(expectedExpiry)}) {
+                            for(Field<?> expiryDay: new Field[]{null, new MaturityDay(expectedDay)}) {
                                 Message m = FIX_VERSION.getMessageFactory().newBasicOrder();
                                 setFields(m, secType, symbol, optType, strikePrice, expiry, expiryDay);
                                 SLF4JLoggerProxy.debug(this,"{},{},{},{},{},{}",secType,symbol,optType,strikePrice,expiry,expiryDay);
@@ -127,6 +133,59 @@ public class InstrumentFromMessageTest {
         }
     }
     
+    @SuppressWarnings("unchecked")
+    @Test
+    public void future()
+            throws Exception
+    {
+        String expectedSymbol = "CLF2015";
+        FutureExpirationMonth expectedExpirationMonth = FutureExpirationMonth.JANUARY;
+        int expectedExpirationYear = 2015;
+        String expectedMY = "201501";
+        //Test all permutations of fields.
+        for (Field<?> secType : new Field[]{null, new SecurityType(SecurityType.FUTURE), new CFICode("F")}) {
+            for (Field<?> symbol : new Field[]{null, new Symbol(expectedSymbol)}) {
+                for (Field<?> expiry : new Field[]{null, new MaturityMonthYear(expectedMY)}) {
+                    Message m = FIX_VERSION.getMessageFactory().newBasicOrder();
+                    setFields(m,
+                              secType,
+                              symbol,
+                              expiry);
+                    SLF4JLoggerProxy.debug(this,
+                                           "{},{},{}",
+                                           secType,
+                                           symbol,
+                                           expiry);
+                    //figure out if we expect a value.
+                    boolean isNotFuture = (secType == null ||
+                                           symbol == null ||
+                                           expiry == null);
+                    Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(m).extract(m);
+                    if(isNotFuture) {
+                        assertThat(instrument,
+                                   anyOf(nullValue(),
+                                         not(instanceOf(Future.class))));
+                    } else {
+                        Future future = (Future)instrument;
+                        assertEquals(org.marketcetera.trade.SecurityType.Future,
+                                     future.getSecurityType());
+                        assertEquals(expectedSymbol,
+                                     future.getSymbol());
+                        if (expiry.getTag() == MaturityMonthYear.FIELD) {
+                            assertEquals(expectedMY,
+                                         future.getExpiryAsMaturityMonthYear().getValue());
+                        } else {
+                            assertEquals(expectedExpirationMonth,
+                                         future.getExpirationMonth());
+                            assertEquals(expectedExpirationYear,
+                                         future.getExpirationYear());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private static void setFields(Message inMessage, Field... inFields) {
         for(Field field:inFields) {
             if(field != null) {

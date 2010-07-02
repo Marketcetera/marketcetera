@@ -21,44 +21,13 @@ import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.ExecutionReportImpl;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.OrderCancelReject;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.*;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.AvgPx;
-import quickfix.field.ClOrdID;
-import quickfix.field.CumQty;
-import quickfix.field.CxlRejReason;
-import quickfix.field.CxlRejResponseTo;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
-import quickfix.field.LastPx;
-import quickfix.field.LastShares;
-import quickfix.field.LeavesQty;
-import quickfix.field.MsgType;
-import quickfix.field.OrdStatus;
+import quickfix.field.*;
 import quickfix.field.OrderID;
-import quickfix.field.OrderQty;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.Price;
-import quickfix.field.SendingTime;
 import quickfix.field.Side;
-import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -1031,6 +1000,29 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
             history.addIncomingMessage(createBrokerReport(message));
             assertThat(history.getAllMessagesList().get(0).getUnderlying(),
                     is("ABC"));
+        }
+    }
+
+    public void testUnderlyingSymbolSupportFuture()
+            throws Exception
+    {
+        // futures not supported in FIX 4.0
+        if (fixVersion != FIXVersion.FIX40) {
+            UnderlyingSymbolSupport mockSupport = mock(UnderlyingSymbolSupport.class);
+            TradeReportsHistory history = new TradeReportsHistory(msgFactory,
+                                                                  mockSupport);
+            Message message = createSimpleMessage(Side.BUY,
+                                                  "1");
+            Future future = new Future("XYZ",
+                                       FutureExpirationMonth.AUGUST,
+                                       15);
+            InstrumentToMessage.SELECTOR.forInstrument(future).set(future,
+                                                                   fixVersion.toString(),
+                                                                   message);
+            when(mockSupport.getUnderlying(future)).thenReturn("ABC");
+            history.addIncomingMessage(createBrokerReport(message));
+            assertThat(history.getAllMessagesList().get(0).getUnderlying(),
+                       is("ABC"));
         }
     }
 

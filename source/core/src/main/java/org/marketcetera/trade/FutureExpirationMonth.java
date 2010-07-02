@@ -22,62 +22,62 @@ public enum FutureExpirationMonth
      * contract which expires in January
      */
     JANUARY('F',
-            1),
+            "01"),
     /**
      * contract which expires in February
      */
     FEBRUARY('G',
-             2),
+             "02"),
     /**
      * contract which expires in March
      */
     MARCH('H',
-          3),
+          "03"),
     /**
      * contract which expires in April
      */
     APRIL('J',
-          4),
+          "04"),
     /**
      * contract which expires in May
      */
     MAY('K',
-        5),
+        "05"),
     /**
      * contract which expires in June
      */
     JUNE('M',
-         6),
+         "06"),
     /**
      * contract which expires in July
      */
     JULY('N',
-         7),
+         "07"),
     /**
      * contract which expires in August
      */
     AUGUST('Q',
-           8),
+           "08"),
     /**
      * contract which expires in September
      */
     SEPTEMBER('U',
-              9),
+              "09"),
     /**
      * contract which expires in October
      */
     OCTOBER('V',
-            10),
+            "10"),
     /**
      * contract which expires in November
      */
     NOVEMBER('X',
-             11),
+             "11"),
     /**
      * contract which expires in December
      */
     DECEMBER('Z',
-             12);
+             "12");
     /**
      * Get the <code>FutureExpirationMonth</code> value that corresponds to the given code.
      *
@@ -114,33 +114,34 @@ public enum FutureExpirationMonth
     /**
      * Get the monthOfYear value.
      *
-     * @return an <code>int</code> value
+     * @return a <code>String</code> value
      */
-    public int getMonthOfYear()
+    public String getMonthOfYear()
     {
         return monthOfYear;
     }
     /**
      * Gets the <code>FutureExpirationMonth</code> value associated with the given month of the year.
      *
-     * @param inMonthOfYear an <code>int</code> value
+     * @param inMonthOfYear a <code>String</code> value
      * @return a <code>FutureExpirationMonth</code> value
      * @throws IllegalArgumentException if the given monthOfYear value does not correspond to a value in [1..12]
      */
-    public static FutureExpirationMonth getByMonthOfYear(int inMonthOfYear)
+    public static FutureExpirationMonth getByMonthOfYear(String inMonthOfYear)
     {
-        Validate.isTrue(inMonthOfYear >= 1 &&
-                        inMonthOfYear <= 12);
+        int month = Integer.valueOf(inMonthOfYear);
+        Validate.isTrue(month >= 1 &&
+                        month <= 12);
         return monthsByMonthOfYear.get(inMonthOfYear);
     }
     /**
      * Create a new FutureExpirationMonth instance.
      *
      * @param inCode a <code>char</code> value
-     * @param inMonthOfYear an <code>int</code> value
+     * @param inMonthOfYear a <code>String</code> value
      */
     private FutureExpirationMonth(char inCode,
-                                  int inMonthOfYear)
+                                  String inMonthOfYear)
     {
         code = inCode;
         monthOfYear = inMonthOfYear;
@@ -152,11 +153,11 @@ public enum FutureExpirationMonth
     /**
      * the month of year in the range of [01-12]
      */
-    private final int monthOfYear;
+    private final String monthOfYear;
     /**
      * <code>FutureExpirationMonth</code> values by <code>monthOfYear</code>
      */
-    private static final Map<Integer,FutureExpirationMonth> monthsByMonthOfYear = new HashMap<Integer,FutureExpirationMonth>();
+    private static final Map<String,FutureExpirationMonth> monthsByMonthOfYear = new HashMap<String,FutureExpirationMonth>();
     /**
      * <code>FutureExpirationMonth</code> values by <code>CFI Code</code>
      */

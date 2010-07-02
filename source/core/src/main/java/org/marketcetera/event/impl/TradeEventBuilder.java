@@ -1,11 +1,14 @@
 package org.marketcetera.event.impl;
 
+import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.event.Messages;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.MarketDataBean;
@@ -31,7 +34,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class TradeEventBuilder<E extends TradeEvent>
-        implements EventBuilder<E>, Messages
+        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>
 {
     /**
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.

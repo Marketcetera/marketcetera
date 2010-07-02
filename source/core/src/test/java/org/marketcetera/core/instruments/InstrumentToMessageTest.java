@@ -1,5 +1,6 @@
 package org.marketcetera.core.instruments;
 
+import static org.marketcetera.trade.FutureExpirationMonth.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -289,7 +290,64 @@ public class InstrumentToMessageTest {
                 break;
         }
     }
-
+    /**
+     * Tests futures instrument handling without dictionary.
+     *
+     * @throws Exception if there were unexpected errors
+     */
+    @Test
+    public void futures()
+            throws Exception 
+    {
+        for (final Future future : TEST_FUTURES) {
+            final Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+            //verify FIX specific stuff
+            switch (mCurrentVersion) {
+                case FIX40:
+                    new ExpectedFailure<IllegalArgumentException>(
+                            Messages.FUTURES_NOT_SUPPORTED_FOR_FIX_VERSION.getText(mCurrentVersion.toString())) {
+                        @Override
+                        protected void run()
+                                throws Exception
+                        {
+                            InstrumentToMessage.SELECTOR.forInstrument(future).set(future,
+                                                                                   mCurrentVersion.toString(),
+                                                                                   msg);
+                        }
+                    };
+                    return;
+                case FIX_SYSTEM:
+                case FIX41:
+                case FIX42:
+                    InstrumentToMessage.SELECTOR.forInstrument(future).set(future,
+                                                                           mCurrentVersion.toString(),
+                                                                           msg);
+                    assertTrue(msg.isSetField(SecurityType.FIELD));
+                    assertEquals(future.getSecurityType().getFIXValue(),
+                                 msg.getString(SecurityType.FIELD));
+                    assertFalse(msg.isSetField(CFICode.FIELD));
+                    assertEquals(future.getExpiryAsMaturityMonthYear().getValue(),
+                                 msg.getString(MaturityMonthYear.FIELD));
+                    break;
+                default:
+                    InstrumentToMessage.SELECTOR.forInstrument(future).set(future,
+                                                                           mCurrentVersion.toString(),
+                                                                           msg);
+                    assertFalse(msg.isSetField(SecurityType.FIELD));
+                    assertTrue(msg.isSetField(CFICode.FIELD));
+                    assertEquals(future.getExpiryAsMaturityMonthYear().getValue(),
+                                 msg.getString(MaturityMonthYear.FIELD));
+                    break;
+            }
+            //verify symbol
+            assertTrue(msg.isSetField(Symbol.FIELD));
+            assertEquals(future.getSymbol(),
+                         msg.getString(Symbol.FIELD));
+            //verify equivalence with InstrumentFromMessage
+            assertEquals(future,
+                         InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+        }
+    }
     /**
      * Tests {@link InstrumentToMessage#setSecurityType(org.marketcetera.trade.Instrument, String, quickfix.Message)}.
      *
@@ -382,4 +440,10 @@ public class InstrumentToMessageTest {
             new Option("LBZ", "201010", BigDecimal.TEN, OptionType.Call),
             new Option("LBZ", "201010w2", BigDecimal.TEN, OptionType.Call),
     };
+    private static final Future[] TEST_FUTURES = {
+        new Future("LBZ", JANUARY, 2010),
+        new Future("LBZ", FEBRUARY, 2011),
+        new Future("LBZ", MARCH, 2012),
+        new Future("LBZ", APRIL, 2013),
+};
 }
