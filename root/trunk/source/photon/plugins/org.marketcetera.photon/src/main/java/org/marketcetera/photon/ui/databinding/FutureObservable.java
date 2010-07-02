@@ -34,7 +34,7 @@ public class FutureObservable
         super(inParent);
         mSymbol = TypedObservableValueDecorator.create(String.class);
         mExpirationMonth = TypedObservableValueDecorator.create(FutureExpirationMonth.class);
-        mExpirationYear = TypedObservableValueDecorator.create(Integer.class);
+        mExpirationYear = TypedObservableValueDecorator.create(String.class);
         init(ImmutableList.of(mSymbol,
                               mExpirationMonth,
                               mExpirationYear));
@@ -62,7 +62,7 @@ public class FutureObservable
      * 
      * @return an <code>ITypedObservableValue&lt;Integer&gt;</code> value
      */
-    public ITypedObservableValue<Integer> observeExpirationYear()
+    public ITypedObservableValue<String> observeExpirationYear()
     {
         return mExpirationYear;
     }
@@ -74,15 +74,18 @@ public class FutureObservable
     {
         String symbol = mSymbol.getTypedValue();
         FutureExpirationMonth expirationMonth = mExpirationMonth.getTypedValue();
-        int expirationYear = mExpirationYear.getTypedValue();
+        String expirationYear = mExpirationYear.getTypedValue();
         Future newValue = null;
-        if (StringUtils.isNotBlank(symbol) &&
+        if(StringUtils.isNotBlank(symbol) &&
             mExpirationMonth != null && 
-            mExpirationYear != null &&
-            ((Integer)mExpirationYear.getValue()).intValue() > 0) {
-            newValue = new Future(symbol,
-                                  expirationMonth,
-                                  expirationYear);
+            mExpirationYear != null) {
+            try {
+                if(Integer.parseInt(((String)mExpirationYear.getValue())) > 0) {
+                    newValue = new Future(symbol,
+                                          expirationMonth,
+                                          Integer.parseInt(expirationYear));
+                }
+            } catch (Exception ignored) {}
         }
         ITypedObservableValue<Instrument> instrument = getParent();
         setIfChanged(instrument,
@@ -102,7 +105,7 @@ public class FutureObservable
             setIfChanged(mExpirationMonth,
                          future.getExpirationMonth());
             setIfChanged(mExpirationYear,
-                         future.getExpirationYear());
+                         Integer.toString(future.getExpirationYear()));
         } else {
             setIfChanged(mSymbol,
                          null);
@@ -123,5 +126,5 @@ public class FutureObservable
     /**
      * observes the future expiration year
      */
-    private final ITypedObservableValue<Integer> mExpirationYear;
+    private final ITypedObservableValue<String> mExpirationYear;
 }
