@@ -3,11 +3,11 @@ package org.marketcetera.core.instruments;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.CFICode;
-import quickfix.field.MaturityDate;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.Symbol;
 
@@ -20,6 +20,7 @@ import quickfix.field.Symbol;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class FutureToMessage
         extends InstrumentToMessage<Future>
 {
@@ -39,10 +40,8 @@ public class FutureToMessage
     {
         // dictionary supports means to specify the 2 attributes of a future
         return (inDictionary.isMsgField(inMsgType,Symbol.FIELD)) &&
-                (inDictionary.isMsgField(inMsgType,
-                                         MaturityDate.FIELD) ||
-                 inDictionary.isMsgField(inMsgType,
-                                         MaturityMonthYear.FIELD));
+                inDictionary.isMsgField(inMsgType,
+                                        MaturityMonthYear.FIELD);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, java.lang.String, quickfix.Message)

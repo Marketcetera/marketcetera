@@ -7,6 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.field.CFICode;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.SecurityType;
 
@@ -49,7 +50,9 @@ public class FutureFromMessage
     {
         try {
             return (inValue.isSetField(SecurityType.FIELD) &&
-                    SecurityType.FUTURE.equals(inValue.getString(SecurityType.FIELD)));
+                    SecurityType.FUTURE.equals(inValue.getString(SecurityType.FIELD))) ||
+                    (inValue.isSetField(CFICode.FIELD) &&
+                            CFICodeUtils.isFuture(inValue.getString(CFICode.FIELD)));
         } catch (FieldNotFound ignore) {
             return false;
         }
@@ -72,7 +75,7 @@ public class FutureFromMessage
                         // this is an invalid MaturityMonthYear, pass
                         return null;
                     }
-                    return FutureExpirationMonth.getByMonthOfYear(Integer.parseInt(value.substring(4)));
+                    return FutureExpirationMonth.getByMonthOfYear(value.substring(4));
                 }
             } catch (Exception ignore) {
             }

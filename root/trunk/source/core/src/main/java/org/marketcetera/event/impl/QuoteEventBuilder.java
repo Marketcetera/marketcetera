@@ -1,18 +1,15 @@
 package org.marketcetera.event.impl;
 
+import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.EquityEvent;
-import org.marketcetera.event.FutureEvent;
-import org.marketcetera.event.Messages;
-import org.marketcetera.event.OptionEvent;
-import org.marketcetera.event.QuoteAction;
-import org.marketcetera.event.QuoteEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.event.beans.QuoteBean;
@@ -37,7 +34,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class QuoteEventBuilder<E extends QuoteEvent>
-        implements EventBuilder<E>, Messages
+        implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>
 {
     /**
      * Creates a <code>QuoteEvent</code> of the same type as the given event
