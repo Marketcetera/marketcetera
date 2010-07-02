@@ -26,6 +26,10 @@ public class FutureValidationHandler
     public static void validateExpirationYear(String inExpirationYear)
             throws OrderValidationException
     {
+        if(inExpirationYear == null ||
+           inExpirationYear.isEmpty()) {
+            return;
+        }
         try {
             if(Integer.parseInt(inExpirationYear) <= 0) {
                 throw new OrderValidationException(new I18NBoundMessage1P(Messages.INVALID_FUTURE_EXPIRATION_YEAR_FORMAT,
