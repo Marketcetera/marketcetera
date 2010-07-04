@@ -144,8 +144,10 @@ public abstract class MapEditor
     private void createButtons(Composite box) {
         addButton = createPushButton(box, "Add");//$NON-NLS-1$
         removeButton = createPushButton(box, "Remove");//$NON-NLS-1$
-        upButton = createPushButton(box, "Up");//$NON-NLS-1$
-        downButton = createPushButton(box, "Down");//$NON-NLS-1$
+        if(includeUpDownButtons()) {
+            upButton = createPushButton(box, "Up");//$NON-NLS-1$
+            downButton = createPushButton(box, "Down");//$NON-NLS-1$
+        }
     }
 
     /**
@@ -160,7 +162,15 @@ public abstract class MapEditor
      * @see #parseString
      */
     protected abstract String createMap(EventList<Map.Entry<String, String>> entries);
-
+    /**
+     * Indicates if the up and down buttons should be included or omitted from the dialog.
+     *
+     * @return a <code>boolean</code> value
+     */
+    protected boolean includeUpDownButtons()
+    {
+        return true;
+    }
     /**
      * Helper method to create a push button.
      * 
@@ -218,6 +228,7 @@ public abstract class MapEditor
         gd.verticalAlignment = GridData.FILL;
         gd.horizontalSpan = numColumns - 1;
         gd.grabExcessHorizontalSpace = true;
+        gd.grabExcessVerticalSpace = true;
         table.setLayoutData(gd);
 
         createTableViewer();
@@ -475,7 +486,7 @@ public abstract class MapEditor
     /**
      * Notifies that the Remove button has been pressed.
      */
-    private void removePressed() {
+    protected int removePressed() {
         setPresentsDefaultValue(false);
         int index = table.getSelectionIndex();
         
@@ -484,6 +495,7 @@ public abstract class MapEditor
         	entries.remove(index);
             selectionChanged();
         }
+        return index;
     }
 
     /**
@@ -495,8 +507,10 @@ public abstract class MapEditor
         int size = table.getItemCount();
 
         removeButton.setEnabled(index >= 0);
-        upButton.setEnabled(size > 1 && index > 0);
-        downButton.setEnabled(size > 1 && index >= 0 && index < size - 1);
+        if(includeUpDownButtons()) {
+            upButton.setEnabled(size > 1 && index > 0);
+            downButton.setEnabled(size > 1 && index >= 0 && index < size - 1);
+        }
     }
 
     /* (non-Javadoc)
@@ -545,8 +559,10 @@ public abstract class MapEditor
         getTableControl(parent).setEnabled(enabled);
         addButton.setEnabled(enabled);
         removeButton.setEnabled(enabled);
-        upButton.setEnabled(enabled);
-        downButton.setEnabled(enabled);
+        if(includeUpDownButtons()) {
+            upButton.setEnabled(enabled);
+            downButton.setEnabled(enabled);
+        }
     }
     
     
