@@ -365,7 +365,7 @@ abstract class DataFlowManager<T, K extends Key> implements
         protected final boolean validateInstrument(final Instrument expected,
                 final Instrument instrument) {
             Validate.notNull(expected);
-            if (expected.equals(instrument)) {
+            if (expected.getSymbol().equals(instrument.getSymbol())) {
                 return true;
             } else {
                 Messages.DATA_FLOW_MANAGER_EVENT_INSTRUMENT_MISMATCH.warn(
