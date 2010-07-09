@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<assembly>
+  <id>assembly</id>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+    </dependencySet>
+  </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/sample_data/conf</directory>
+      <outputDirectory>conf</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <!--
+        - Assembly 2.1 interprets default mode of 0644 as *decimal*;
+        - as a workaround, use 420 decimal which results in 0644 octal.
+        -->
+      <fileMode>420</fileMode>
+      <source>src/test/sample_data/inputs/smallMarketFIX.csv</source>
+      <outputDirectory>samples</outputDirectory>
+    </file>
+    <file>
+      <fileMode>420</fileMode>
+      <source>src/test/sample_data/inputs/smallMarketSys.csv</source>
+      <outputDirectory>samples</outputDirectory>
+    </file>
+    <file>
+      <fileMode>420</fileMode>
+      <source>src/test/sample_data/inputs/reasonableOrdersFIX.csv</source>
+      <outputDirectory>samples</outputDirectory>
+      <destName>largeMarketFIX.csv</destName>
+    </file>
+    <file>
+      <fileMode>420</fileMode>
+      <source>src/test/sample_data/inputs/reasonableOrdersSys.csv</source>
+      <outputDirectory>samples</outputDirectory>
+      <destName>largeMarketSys.csv</destName>
+    </file>
+  </files>
+</assembly>

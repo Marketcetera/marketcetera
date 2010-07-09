@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Database configuration: object-relational mapping.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_emf"
+   class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+   depends-on="metc_jpa_vendor">
+    <property
+     name="dataSource"
+     ref="metc_sql_pool"/>
+    <property
+     name="persistenceUnitName"
+     value="ors"/>
+  </bean>
+
+  <bean
+   id="metc_ers"
+   class="org.marketcetera.persist.EntityRemoteServer">
+    <constructor-arg
+     ref="metc_emf"/>
+  </bean>
+</beans>

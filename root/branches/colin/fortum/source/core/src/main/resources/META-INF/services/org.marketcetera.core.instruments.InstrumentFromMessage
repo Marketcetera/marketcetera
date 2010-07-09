@@ -1,0 +1,3 @@
+org.marketcetera.core.instruments.EquityFromMessage
+org.marketcetera.core.instruments.OptionFromMessage
+org.marketcetera.core.instruments.FutureFromMessage
