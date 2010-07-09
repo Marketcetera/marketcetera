@@ -40,10 +40,6 @@ public class FuturePositionKeyComparator
                        Future inO2)
     {
         return new CompareToBuilder().append(inO1.getSymbol(),
-                                             inO2.getSymbol())
-                                     .append(inO1.getExpirationMonth(),
-                                             inO2.getExpirationMonth())
-                                     .append(inO1.getExpirationYear(),
-                                             inO2.getExpirationYear()).toComparison();
+                                             inO2.getSymbol()).toComparison();
     }
 }

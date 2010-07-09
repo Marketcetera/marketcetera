@@ -1121,9 +1121,7 @@ public class QuoteEventTest
     /**
      * test future
      */
-    private final Future future = new Future("GOOG",
-                                             FutureExpirationMonth.DECEMBER,
-                                             2015);
+    private final Future future = new Future("BRNQ10");
     /**
      * indicates the test instrument to use
      */

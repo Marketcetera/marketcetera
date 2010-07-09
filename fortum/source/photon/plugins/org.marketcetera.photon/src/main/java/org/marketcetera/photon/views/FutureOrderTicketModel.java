@@ -2,7 +2,6 @@ package org.marketcetera.photon.views;
 
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.ui.databinding.FutureObservable;
-import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -27,8 +26,7 @@ public class FutureOrderTicketModel
         ITypedObservableValue<Instrument> instrument = getOrderObservable().observeInstrument();
         FutureObservable futureObservable = new FutureObservable(instrument);
         mSymbol = futureObservable.observeSymbol();
-        mExpirationMonth = futureObservable.observeExpirationMonth();
-        mExpirationYear = futureObservable.observeExpirationYear();
+        mCustomerInfo = futureObservable.observeCustomerInfo();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketModel#getSymbol()
@@ -39,33 +37,20 @@ public class FutureOrderTicketModel
         return mSymbol;
     }
     /**
-     * Gets an <code>ITypedObservableValue</code> that tracks the expiration month of the current order.
-     *
-     * @return an <code>ITypedObservableValue&lt;FutureExpirationMonth&gt;</code> value
-     */
-    public ITypedObservableValue<FutureExpirationMonth> getFutureExpirationMonth()
-    {
-        return mExpirationMonth;
-    }
-    /**
-     * Gets an <code>ITypedObservalbleValue</code> that tracks the expiration year of the current order.
+     * Gets an <code>ITypedObservableValue</code> that tracks the customer info of the current order.
      *
      * @return an <code>ITypedObservableValue&lt;String&gt;</code> value
      */
-    public ITypedObservableValue<String> getFutureExpirationYear()
+    public ITypedObservableValue<String> getCustomerInfo()
     {
-        return mExpirationYear;
+        return mCustomerInfo;
     }
     /**
      * the symbol of the current order
      */
     private final ITypedObservableValue<String> mSymbol;
     /**
-     * the expiration month of the current order
+     * the customer info of the current order
      */
-    private final ITypedObservableValue<FutureExpirationMonth> mExpirationMonth;
-    /**
-     * the expiration year of the current order
-     */
-    private final ITypedObservableValue<String> mExpirationYear;
+    private final ITypedObservableValue<String> mCustomerInfo;
 }

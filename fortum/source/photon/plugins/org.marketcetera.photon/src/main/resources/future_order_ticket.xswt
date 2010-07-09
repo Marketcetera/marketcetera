@@ -58,14 +58,11 @@
                 <composite>
                     <layout x:class="gridLayout" numColumns="4" marginWidth="0" marginHeight="0" verticalSpacing="1" horizontalSpacing="10"/>
                     <layoutData x:class="gridData" horizontalAlignment="SWT.FILL" horizontalSpan="5"/>
-                    <label text="ExpirationYear"/>
-                    <label text="ExpirationMonth"/>
+                    <label text="Customer Info"/>
                     <label text=""/>
                     <label text=""/>
-                    <text x:style="SINGLE|BORDER" x:id="ExpirationYearText" text=""><layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
-                        horizontalAlignment="GridData.FILL" 
-                        verticalAlignment="GridData.CENTER"/></text>
-                    <combo x:style="BORDER|READ_ONLY" x:id="ExpirationMonthCombo"/>
+                    <label text=""/>
+                    <combo x:style="BORDER|READ_ONLY" x:id="CustomerInfoCombo"/>
                 </composite>
                 <composite>
                     <layout x:class="rowLayout" x:style="HORIZONTAL"/>

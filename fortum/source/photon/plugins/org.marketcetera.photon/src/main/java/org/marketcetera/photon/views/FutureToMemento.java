@@ -34,10 +34,8 @@ public class FutureToMemento
         IMemento future = inMemento.createChild(FUTURE_TAG);
         future.putString(SYMBOL_ATTRIBUTE,
                          inFuture.getSymbol());
-        future.putString(EXPIRATION_MONTH_ATTRIBUTE,
-                         inFuture.getExpirationMonth().name());
-        future.putInteger(EXPIRATION_YEAR_ATTRIBUTE,
-                         inFuture.getExpirationYear());
+        future.putString(CUSTOMER_INFO_ATTRIBUTE,
+                         inFuture.getCustomerInfo());
     }
     /**
      * the key for future mementos 
@@ -48,11 +46,7 @@ public class FutureToMemento
      */
     static final String SYMBOL_ATTRIBUTE = "symbol"; //$NON-NLS-1$
     /**
-     * the expiration month attribute tag
+     * the customer info attribute tag
      */
-    static final String EXPIRATION_MONTH_ATTRIBUTE = "expirationMonth"; //$NON-NLS-1$
-    /**
-     * the expiration year attribute tag
-     */
-    static final String EXPIRATION_YEAR_ATTRIBUTE = "expirationYear"; //$NON-NLS-1$
+    static final String CUSTOMER_INFO_ATTRIBUTE = "customerInfo"; //$NON-NLS-1$
 }
