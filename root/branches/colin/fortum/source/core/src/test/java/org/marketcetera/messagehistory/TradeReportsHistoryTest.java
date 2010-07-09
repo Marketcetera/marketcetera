@@ -1013,9 +1013,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                                                                   mockSupport);
             Message message = createSimpleMessage(Side.BUY,
                                                   "1");
-            Future future = new Future("XYZ",
-                                       FutureExpirationMonth.AUGUST,
-                                       15);
+            Future future = new Future("CQ12");
             InstrumentToMessage.SELECTOR.forInstrument(future).set(future,
                                                                    fixVersion.toString(),
                                                                    message);

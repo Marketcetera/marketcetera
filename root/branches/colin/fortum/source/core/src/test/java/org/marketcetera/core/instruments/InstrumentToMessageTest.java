@@ -441,9 +441,9 @@ public class InstrumentToMessageTest {
             new Option("LBZ", "201010w2", BigDecimal.TEN, OptionType.Call),
     };
     private static final Future[] TEST_FUTURES = {
-        new Future("LBZ", JANUARY, 2010),
-        new Future("LBZ", FEBRUARY, 2011),
-        new Future("LBZ", MARCH, 2012),
-        new Future("LBZ", APRIL, 2013),
+        new Future("ENOYR-11"),
+        new Future("ENOYR-10"),
+        new Future("ENOQ1-11"),
+        new Future("ENOQ2-11"),
 };
 }

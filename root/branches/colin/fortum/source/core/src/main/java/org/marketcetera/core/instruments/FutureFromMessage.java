@@ -38,9 +38,8 @@ public class FutureFromMessage
            expirationYear == null) {
             return null;
         }
-        return new Future(symbol,
-                          expirationMonth,
-                          expirationYear);
+        // TODO construct symbol
+        return new Future(symbol);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)

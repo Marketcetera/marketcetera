@@ -1,26 +1,22 @@
 package org.marketcetera.photon.views;
 
 import java.io.InputStream;
-import java.util.EnumSet;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.eclipse.core.databinding.Binding;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.core.databinding.validation.MultiValidator;
-import org.eclipse.core.databinding.validation.ValidationStatus;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
-import org.marketcetera.client.OrderValidationException;
-import org.marketcetera.client.instruments.FutureValidationHandler;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.Util;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.commons.ui.databinding.DataBindingUtils;
-import org.marketcetera.trade.FutureExpirationMonth;
 
 /* $License$ */
 
@@ -60,49 +56,15 @@ public class FutureOrderTicketView
     protected void bindMessage()
     {
         super.bindMessage();
-        final DataBindingContext dbc = getDataBindingContext();
         final FutureOrderTicketModel model = getModel();
         final IFutureOrderTicket ticket = getXSWTView();
         /*
-         * Expiration year
+         * customer info
          */
-        final IObservableValue target = SWTObservables.observeText(ticket.getExpirationYearText(),
-                                                                   SWT.Modify);
-        Binding binding = dbc.bindValue(target,
-                                        model.getFutureExpirationYear());
-        setRequired(binding,
-                    Messages.FUTURE_ORDER_TICKET_VIEW_EXPIRATION_YEAR__LABEL.getText());
-        MultiValidator expirationYearValidator = new MultiValidator() {
-            @Override
-            protected IStatus validate() {
-                String expirationYear = (String)target.getValue();
-                if (expirationYear == null ||
-                    expirationYear.isEmpty()) {
-                    /*
-                     * Let required field support kick in.
-                     */
-                    return ValidationStatus.ok();
-                }
-                try {
-                    FutureValidationHandler.validateExpirationYear(expirationYear);
-                    return ValidationStatus.ok();
-                } catch (OrderValidationException e) {
-                    return ValidationStatus.error(e.getLocalizedMessage(),
-                                                  e);
-                }
-            }
-        };
-        DataBindingUtils.initControlDecorationSupportFor(expirationYearValidator,
-                                                         SWT.BOTTOM | SWT.LEFT);
-        dbc.addValidationStatusProvider(expirationYearValidator);
-        enableForNewOrderOnly(ticket.getExpirationYearText());
-        /*
-         * expiration month
-         */
-        bindRequiredCombo(expirationMonthComboViewer,
-                          model.getFutureExpirationMonth(),
-                          Messages.FUTURE_ORDER_TICKET_VIEW_EXPIRATION_MONTH__LABEL.getText());
-        enableForNewOrderOnly(ticket.getExpirationMonthCombo());
+        bindRequiredCombo(customerInfoComboViewer,
+                          model.getCustomerInfo(),
+                          Messages.FUTURE_ORDER_TICKET_VIEW_CUSTOMER_INFO__LABEL.getText());
+        enableForNewOrderOnly(ticket.getCustomerInfoCombo());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketView#initViewers(org.marketcetera.photon.views.IOrderTicket)
@@ -111,11 +73,12 @@ public class FutureOrderTicketView
     protected void initViewers(IFutureOrderTicket inTicket)
     {
         super.initViewers(inTicket);
-        // set up the combo viewer for the expiration month
-        expirationMonthComboViewer = new ComboViewer(inTicket.getExpirationMonthCombo());
-        expirationMonthComboViewer.setContentProvider(new ArrayContentProvider());
-        expirationMonthComboViewer.setInput(EnumSet.allOf(FutureExpirationMonth.class).toArray());
+        // set up the combo viewer for the customer info
+        customerInfoComboViewer = new ComboViewer(inTicket.getCustomerInfoCombo());
+        customerInfoComboViewer.setContentProvider(new ArrayContentProvider());
+        customerInfoComboViewer.setInput(emptyList);
     }
+    private static final String[] emptyList = new String[] { " " };
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketView#getNewOrderString()
      */
@@ -144,21 +107,46 @@ public class FutureOrderTicketView
      * @see org.marketcetera.photon.views.OrderTicketView#customizeWidgets(org.marketcetera.photon.views.IOrderTicket)
      */
     @Override
-    protected void customizeWidgets(IFutureOrderTicket inTicket)
+    protected void customizeWidgets(final IFutureOrderTicket inTicket)
     {
         super.customizeWidgets(inTicket);
-        // the default size is wrong, set it manually
-        updateSize(inTicket.getExpirationYearText(),
-                   20);
-        // selects the text in the widget upon focus to facilitate easy editing
-        selectOnFocus(inTicket.getExpirationYearText());
         // enter in either of these fields will send the order (assuming there are no errors)
-        addSendOrderListener(inTicket.getExpirationMonthCombo());
-        addSendOrderListener(inTicket.getExpirationYearText());
+        addSendOrderListener(inTicket.getCustomerInfoCombo());
+        inTicket.getCustomerInfoCombo().addListener(SWT.FocusIn,
+                                                    new Listener() {
+            @Override
+            public void handleEvent(Event inArg0)
+            {
+                if(Arrays.equals(inTicket.getCustomerInfoCombo().getItems(),
+                                 emptyList)) {
+                    try {
+                        Properties userdata = ClientManager.getInstance().getUserData();
+                        String rawList = userdata.getProperty(CUSTOMER_INFO_KEY);
+                        if(rawList == null) {
+                            // no customer info defined
+                            return;
+                        }
+                        Properties customerinfo = Util.propertiesFromString(rawList);
+                        Set<String> sortedCustomerInfo = new TreeSet<String>();
+                        for(Object customerinfoChunk : customerinfo.values()) {
+                            sortedCustomerInfo.add((String)customerinfoChunk);
+                        }
+                        if(sortedCustomerInfo.isEmpty()) {
+                            // no customer info defined
+                            return;
+                        }
+                        inTicket.getCustomerInfoCombo().setItems(sortedCustomerInfo.toArray(new String[sortedCustomerInfo.size()]));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
+    public static final String CUSTOMER_INFO_KEY = "com.fortum.marketcetera.customerinfo.key";
     public static final String ID = "org.marketcetera.photon.views.FutureOrderTicketView"; //$NON-NLS-1$
     /**
-     * the expiration month combo dropdown
+     * the customer info combo dropdown
      */
-    private ComboViewer expirationMonthComboViewer;
+    private ComboViewer customerInfoComboViewer;
 }

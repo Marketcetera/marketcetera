@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.trade.Future;
-import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -33,11 +32,9 @@ public class FutureObservable
     {
         super(inParent);
         mSymbol = TypedObservableValueDecorator.create(String.class);
-        mExpirationMonth = TypedObservableValueDecorator.create(FutureExpirationMonth.class);
-        mExpirationYear = TypedObservableValueDecorator.create(String.class);
+        mCustomerInfo = TypedObservableValueDecorator.create(String.class);
         init(ImmutableList.of(mSymbol,
-                              mExpirationMonth,
-                              mExpirationYear));
+                              mCustomerInfo));
     }
     /**
      * Observes the future symbol.
@@ -49,22 +46,13 @@ public class FutureObservable
         return mSymbol;
     }
     /**
-     * Observes the future expiration month.
+     * Observes the future customer info.
      * 
-     * @return an <code>ITypedObservableValue&lt;FutureExpirationMonth&gt;</code> value
+     * @return an <code>ITypedObservableValue&lt;String&gt;</code> value
      */
-    public ITypedObservableValue<FutureExpirationMonth> observeExpirationMonth()
+    public ITypedObservableValue<String> observeCustomerInfo()
     {
-        return mExpirationMonth;
-    }
-    /**
-     * Observes the future expiration year.
-     * 
-     * @return an <code>ITypedObservableValue&lt;Integer&gt;</code> value
-     */
-    public ITypedObservableValue<String> observeExpirationYear()
-    {
-        return mExpirationYear;
+        return mCustomerInfo;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.ui.databinding.CompoundObservableManager#updateParent()
@@ -73,18 +61,13 @@ public class FutureObservable
     protected void updateParent()
     {
         String symbol = mSymbol.getTypedValue();
-        FutureExpirationMonth expirationMonth = mExpirationMonth.getTypedValue();
-        String expirationYear = mExpirationYear.getTypedValue();
+        String customerInfo = mCustomerInfo.getTypedValue();
         Future newValue = null;
         if(StringUtils.isNotBlank(symbol) &&
-            mExpirationMonth != null && 
-            mExpirationYear != null) {
+                StringUtils.isNotBlank(customerInfo)) {
             try {
-                if(Integer.parseInt(((String)mExpirationYear.getValue())) > 0) {
-                    newValue = new Future(symbol,
-                                          expirationMonth,
-                                          Integer.parseInt(expirationYear));
-                }
+                newValue = new Future(symbol,
+                                      customerInfo);
             } catch (Exception ignored) {}
         }
         ITypedObservableValue<Instrument> instrument = getParent();
@@ -102,16 +85,12 @@ public class FutureObservable
             Future future = (Future)instrument;
             setIfChanged(mSymbol,
                          future.getSymbol());
-            setIfChanged(mExpirationMonth,
-                         future.getExpirationMonth());
-            setIfChanged(mExpirationYear,
-                         Integer.toString(future.getExpirationYear()));
+            setIfChanged(mCustomerInfo,
+                         future.getCustomerInfo());
         } else {
             setIfChanged(mSymbol,
                          null);
-            setIfChanged(mExpirationMonth,
-                         null);
-            setIfChanged(mExpirationYear,
+            setIfChanged(mCustomerInfo,
                          null);
         }
     }
@@ -122,9 +101,5 @@ public class FutureObservable
     /**
      * observes the future expiration month
      */
-    private final ITypedObservableValue<FutureExpirationMonth> mExpirationMonth;
-    /**
-     * observes the future expiration year
-     */
-    private final ITypedObservableValue<String> mExpirationYear;
+    private final ITypedObservableValue<String> mCustomerInfo;
 }

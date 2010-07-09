@@ -1052,9 +1052,7 @@ public class MarketstatEventTest
     /**
      * test future
      */
-    private final Future future = new Future("AAPL",
-                                             FutureExpirationMonth.APRIL,
-                                             12);
+    private final Future future = new Future("C10U");
     /**
      * counter used to guarantee unique events
      */

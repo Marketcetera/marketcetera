@@ -613,9 +613,7 @@ public class TradeEventTest
     /**
      * test instrument with {@link TradeEventBuilder#tradeEvent(Instrument)}.
      */
-    private final Future future = new Future("METC",
-                                             FutureExpirationMonth.MARCH,
-                                             15);
+    private final Future future = new Future("IBW12");
     /**
      * instrument used during tests
      */
