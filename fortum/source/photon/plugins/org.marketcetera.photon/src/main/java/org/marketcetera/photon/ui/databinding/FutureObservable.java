@@ -61,13 +61,10 @@ public class FutureObservable
     protected void updateParent()
     {
         String symbol = mSymbol.getTypedValue();
-        String customerInfo = mCustomerInfo.getTypedValue();
         Future newValue = null;
-        if(StringUtils.isNotBlank(symbol) &&
-                StringUtils.isNotBlank(customerInfo)) {
+        if(StringUtils.isNotBlank(symbol)) {
             try {
-                newValue = new Future(symbol,
-                                      customerInfo);
+                newValue = new Future(symbol);
             } catch (Exception ignored) {}
         }
         ITypedObservableValue<Instrument> instrument = getParent();
@@ -85,12 +82,8 @@ public class FutureObservable
             Future future = (Future)instrument;
             setIfChanged(mSymbol,
                          future.getSymbol());
-            setIfChanged(mCustomerInfo,
-                         future.getCustomerInfo());
         } else {
             setIfChanged(mSymbol,
-                         null);
-            setIfChanged(mCustomerInfo,
                          null);
         }
     }
@@ -99,7 +92,7 @@ public class FutureObservable
      */
     private final ITypedObservableValue<String> mSymbol;
     /**
-     * observes the future expiration month
+     * observes the future customer info
      */
     private final ITypedObservableValue<String> mCustomerInfo;
 }

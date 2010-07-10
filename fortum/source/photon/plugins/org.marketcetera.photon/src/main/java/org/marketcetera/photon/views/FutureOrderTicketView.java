@@ -6,16 +6,17 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.Util;
 import org.marketcetera.photon.PhotonPlugin;
 
 /* $License$ */
@@ -61,9 +62,8 @@ public class FutureOrderTicketView
         /*
          * customer info
          */
-        bindRequiredCombo(customerInfoComboViewer,
-                          model.getCustomerInfo(),
-                          Messages.FUTURE_ORDER_TICKET_VIEW_CUSTOMER_INFO__LABEL.getText());
+        bindCombo(customerInfoComboViewer,
+                  model.getCustomerInfo());
         enableForNewOrderOnly(ticket.getCustomerInfoCombo());
     }
     /* (non-Javadoc)
@@ -78,7 +78,6 @@ public class FutureOrderTicketView
         customerInfoComboViewer.setContentProvider(new ArrayContentProvider());
         customerInfoComboViewer.setInput(emptyList);
     }
-    private static final String[] emptyList = new String[] { " " };
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketView#getNewOrderString()
      */
@@ -110,32 +109,40 @@ public class FutureOrderTicketView
     protected void customizeWidgets(final IFutureOrderTicket inTicket)
     {
         super.customizeWidgets(inTicket);
-        // enter in either of these fields will send the order (assuming there are no errors)
-        addSendOrderListener(inTicket.getCustomerInfoCombo());
-        inTicket.getCustomerInfoCombo().addListener(SWT.FocusIn,
-                                                    new Listener() {
+        final Combo customerInfoCombo = inTicket.getCustomerInfoCombo();
+        addSendOrderListener(customerInfoCombo);
+        customerInfoCombo.addListener(SWT.FocusIn,
+                                      new Listener() {
             @Override
-            public void handleEvent(Event inArg0)
+            public void handleEvent(Event inEvent)
             {
-                if(Arrays.equals(inTicket.getCustomerInfoCombo().getItems(),
+                if(Arrays.equals(customerInfoCombo.getItems(),
                                  emptyList)) {
                     try {
                         Properties userdata = ClientManager.getInstance().getUserData();
+                        if(userdata == null) {
+                            // no customer info defined
+                            return;
+                        }
                         String rawList = userdata.getProperty(CUSTOMER_INFO_KEY);
                         if(rawList == null) {
                             // no customer info defined
                             return;
                         }
-                        Properties customerinfo = Util.propertiesFromString(rawList);
+                        String[] customerinfo = rawList.split("H@@H");
                         Set<String> sortedCustomerInfo = new TreeSet<String>();
-                        for(Object customerinfoChunk : customerinfo.values()) {
-                            sortedCustomerInfo.add((String)customerinfoChunk);
+                        for(String customerinfoChunk : customerinfo) {
+                            customerinfoChunk = StringUtils.trimToNull(customerinfoChunk);
+                            if(customerinfoChunk != null) {
+                                sortedCustomerInfo.add(customerinfoChunk);
+                            }
                         }
                         if(sortedCustomerInfo.isEmpty()) {
                             // no customer info defined
                             return;
                         }
-                        inTicket.getCustomerInfoCombo().setItems(sortedCustomerInfo.toArray(new String[sortedCustomerInfo.size()]));
+                        customerInfoCombo.setItems(sortedCustomerInfo.toArray(new String[sortedCustomerInfo.size()]));
+                        customerInfoCombo.pack(true);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -143,10 +150,17 @@ public class FutureOrderTicketView
             }
         });
     }
-    public static final String CUSTOMER_INFO_KEY = "com.fortum.marketcetera.customerinfo.key";
+    /**
+     * the key used to identify the nordpool customer info data
+     */
+    public static final String CUSTOMER_INFO_KEY = "com.fortum.marketcetera.photon.userdata.nordpool.customerinfo";
+    /**
+     * the ID to uniquely identify this view
+     */
     public static final String ID = "org.marketcetera.photon.views.FutureOrderTicketView"; //$NON-NLS-1$
     /**
      * the customer info combo dropdown
      */
     private ComboViewer customerInfoComboViewer;
+    private static final String[] emptyList = new String[] { " " };
 }

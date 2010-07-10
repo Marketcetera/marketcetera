@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import org.eclipse.core.databinding.observable.list.WritableList;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.ui.databinding.FutureObservable;
 import org.marketcetera.trade.Instrument;
@@ -27,6 +28,19 @@ public class FutureOrderTicketModel
         FutureObservable futureObservable = new FutureObservable(instrument);
         mSymbol = futureObservable.observeSymbol();
         mCustomerInfo = futureObservable.observeCustomerInfo();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.views.OrderTicketModel#completeMessage()
+     */
+    @Override
+    public void completeMessage()
+    {
+        WritableList customFields = getCustomFieldsList();
+        if(mCustomerInfo.getValue() != null) {
+            // TODO add customer info as 58
+            // TODO add SKE Trader ID as 50
+        }
+        super.completeMessage();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketModel#getSymbol()

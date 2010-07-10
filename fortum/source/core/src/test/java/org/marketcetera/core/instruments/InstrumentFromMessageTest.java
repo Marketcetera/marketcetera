@@ -138,10 +138,8 @@ public class InstrumentFromMessageTest {
     public void future()
             throws Exception
     {
-        String expectedSymbol = "CLF2015";
-        FutureExpirationMonth expectedExpirationMonth = FutureExpirationMonth.JANUARY;
-        int expectedExpirationYear = 2015;
-        String expectedMY = "201501";
+        String expectedSymbol = "BRN15U";
+        String expectedMY = "201509";
         //Test all permutations of fields.
         for (Field<?> secType : new Field[]{null, new SecurityType(SecurityType.FUTURE), new CFICode("F")}) {
             for (Field<?> symbol : new Field[]{null, new Symbol(expectedSymbol)}) {
@@ -174,12 +172,6 @@ public class InstrumentFromMessageTest {
                         if (expiry.getTag() == MaturityMonthYear.FIELD) {
                             assertEquals(expectedMY,
                                          future.getExpiryAsMaturityMonthYear().getValue());
-                        } else {
-                            // TODO
-//                            assertEquals(expectedExpirationMonth,
-//                                         future.getExpirationMonth());
-//                            assertEquals(expectedExpirationYear,
-//                                         future.getExpirationYear());
                         }
                     }
                 }

@@ -34,8 +34,6 @@ public class FutureToMemento
         IMemento future = inMemento.createChild(FUTURE_TAG);
         future.putString(SYMBOL_ATTRIBUTE,
                          inFuture.getSymbol());
-        future.putString(CUSTOMER_INFO_ATTRIBUTE,
-                         inFuture.getCustomerInfo());
     }
     /**
      * the key for future mementos 
@@ -45,8 +43,4 @@ public class FutureToMemento
      * the symbol attribute tag
      */
     static final String SYMBOL_ATTRIBUTE = "symbol"; //$NON-NLS-1$
-    /**
-     * the customer info attribute tag
-     */
-    static final String CUSTOMER_INFO_ATTRIBUTE = "customerInfo"; //$NON-NLS-1$
 }

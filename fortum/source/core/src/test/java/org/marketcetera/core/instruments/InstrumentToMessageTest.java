@@ -1,24 +1,27 @@
 package org.marketcetera.core.instruments;
 
-import static org.marketcetera.trade.FutureExpirationMonth.*;
-import org.marketcetera.util.misc.ClassVersion;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.marketcetera.util.misc.ClassVersion;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.math.BigDecimal;
-
-import quickfix.Message;
 import quickfix.DataDictionary;
+import quickfix.Message;
 import quickfix.field.*;
 import quickfix.field.SecurityType;
 

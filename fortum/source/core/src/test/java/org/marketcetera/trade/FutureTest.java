@@ -23,19 +23,19 @@ public class FutureTest extends InstrumentTestBase<Future> {
 
     @Override
     protected Future createFixture() {
-        return new Future("ABC");
+        return new Future("ENOQ1-12");
     }
 
     @Override
     protected Future createEqualFixture() {
-        return new Future("ABC");
+        return new Future("ENOQ1-12");
     }
 
     @Override
     protected List<Future> createDifferentFixtures() {
         return ImmutableList.of(
-        new Future("AAPL"),
-        new Future("METC"));
+        new Future("ENOQ2-12"),
+        new Future("ENOW01-13"));
     }
 
     @Override
@@ -48,15 +48,7 @@ public class FutureTest extends InstrumentTestBase<Future> {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new Future(null,
-                           "info");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run() throws Exception {
-                new Future("symbol",
-                           null);
+                new Future(null);
             }
         };
     }
@@ -75,26 +67,23 @@ public class FutureTest extends InstrumentTestBase<Future> {
                 new Future("   ");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run() throws Exception {
-                new Future("",
-                           "info");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run() throws Exception {
-                new Future("   ",
-                           "info");
-            }
-        };
     }
 
     @Test
     public void testToString() throws Exception {
         assertThat(
                 createFixture().toString(),
-                is("Future [symbol=ABC]"));
+                is("Future [symbol=ENOQ1-12, expiration=201203]"));
+    }
+    /**
+     * Tests Nord Pool symbol constructors.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testNordies()
+            throws Exception
+    {
+        
     }
 }

@@ -1,6 +1,5 @@
 package org.marketcetera.photon.views;
 
-import static org.marketcetera.photon.views.FutureToMemento.CUSTOMER_INFO_ATTRIBUTE;
 import static org.marketcetera.photon.views.FutureToMemento.FUTURE_TAG;
 import static org.marketcetera.photon.views.FutureToMemento.SYMBOL_ATTRIBUTE;
 
@@ -30,8 +29,7 @@ public class FutureFromMemento
     protected Instrument doRestore(IMemento inMemento)
     {
         IMemento future = inMemento.getChild(FUTURE_TAG);
-        return new Future(future.getString(SYMBOL_ATTRIBUTE),
-                          future.getString(CUSTOMER_INFO_ATTRIBUTE));
+        return new Future(future.getString(SYMBOL_ATTRIBUTE));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)
