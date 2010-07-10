@@ -201,10 +201,6 @@ public class LoginDialog
 		             IDialogConstants.OK_ID,
 		             MENU_LOGIN_LABEL.getText(),
 		             true);
-		createButton(parent,
-		             IDialogConstants.CANCEL_ID,
-		             IDialogConstants.CANCEL_LABEL,
-		             false);
 	}
 
 	protected void initializeUsers(String defaultUser) {
