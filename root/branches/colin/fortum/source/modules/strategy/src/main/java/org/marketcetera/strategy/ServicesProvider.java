@@ -211,6 +211,28 @@ interface ServicesProvider
     Map<PositionKey<Equity>,BigDecimal> getAllPositionsAsOf(Date inDate)
             throws ConnectionException, ClientInitException;
     /**
+     * Gets the position in the given <code>Future</code> at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inFuture a <code>Future</code> value
+     * @return a <code>BigDecimal</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
+     */
+    BigDecimal getFuturePositionAsOf(Date inDate,
+                                     Future inFuture)
+            throws ConnectionException, ClientInitException;
+    /**
+     * Gets all open <code>Future</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Future&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
+     */
+    Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException;
+    /**
      * Gets the position in the given <code>Option</code> at the given point in time.
      *
      * @param inDate a <code>Date</code> value

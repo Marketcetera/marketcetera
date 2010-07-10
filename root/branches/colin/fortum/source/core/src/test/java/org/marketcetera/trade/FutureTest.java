@@ -211,7 +211,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
     public void testNordieMonthlies()
             throws Exception
     {
-        // Nordies: ENOQ1-11 ENOYR-10 ENOQ4-11 ENOW32-11 ENOD1007-10 ENOW28-1 ENOMAUG-10
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
@@ -228,19 +227,105 @@ public class FutureTest extends InstrumentTestBase<Future> {
                 new Future("ENOMXXXX-10");
             }
         };
-        verifyFuture(new Future("ITWW01-09"),
-                     "ITWW01-09",
-                     "200901");
-        verifyFuture(new Future("ITWW25-25"),
-                     "ITWW25-25",
-                     "202506");
+        verifyFuture(new Future("ABCMJAN-10"),
+                     "ABCMJAN-10",
+                     "201001");
+        verifyFuture(new Future("ENOMAUG-25"),
+                     "ENOMAUG-25",
+                     "202508");
         // push the symbol envelope a little
-        verifyFuture(new Future("XW52-50"),
-                     "XW52-50",
-                     "205012");
-        verifyFuture(new Future("ABCXYZW10-50"),
-                     "ABCXYZW10-50",
+        verifyFuture(new Future("XMOCT-50"),
+                     "XMOCT-50",
+                     "205010");
+        verifyFuture(new Future("ABCXYZMJUL-50"),
+                     "ABCXYZMJUL-50",
+                     "205007");
+    }
+    /**
+     * Tests Nord Pool symbol constructors.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testNordieDaylies()
+            throws Exception
+    {
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                new Future("ENOD0100-10");
+            }
+        };
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                new Future("ENOD0113-10");
+            }
+        };
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                new Future("ENOMXXXX-10");
+            }
+        };
+        verifyFuture(new Future("ENOD1107-10"),
+                     "ENOD1107-10",
+                     "201007");
+        verifyFuture(new Future("ENOD3208-25"),
+                     "ENOD3208-25",
+                     "202508");
+        // push the symbol envelope a little
+        verifyFuture(new Future("XD0101-50"),
+                     "XD0101-50",
+                     "205001");
+        verifyFuture(new Future("ABCXYZD3103-50"),
+                     "ABCXYZD3103-50",
                      "205003");
+    }
+    /**
+     * Tests SKE symbol constructors.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testSkeMonthlies()
+            throws Exception
+    {
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                new Future("ABC10A");
+            }
+        };
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                new Future("ABC1U");
+            }
+        };
+        verifyFuture(new Future("ABC15F"),
+                     "ABC15F",
+                     "201501");
+        verifyFuture(new Future("AB25G"),
+                     "AB25G",
+                     "202502");
+        // push the symbol envelope a little
+        verifyFuture(new Future("A30H"),
+                     "A30H",
+                     "203003");
+        verifyFuture(new Future("ABCXYZ99J"),
+                     "ABCXYZ99J",
+                     "209904");
     }
     private static void verifyFuture(Future inActualFuture,
                                      String inExpectedSymbol,

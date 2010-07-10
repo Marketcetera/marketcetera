@@ -178,7 +178,42 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getAllFuturePositionsAsOf(java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+            throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.getAllFuturePositionsAsOf(getServiceContext(),
+                                                      new DateWrapper(inDate)).getMap();
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
+     */
+    @Override
+    public BigDecimal getFuturePositionAsOf(Date inDate,
+                                            Future inFuture)
+            throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.getFuturePositionAsOf(getServiceContext(),
+                                                  new DateWrapper(inDate),
+                                                  inFuture);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
     @Override
     public BigDecimal getOptionPositionAsOf(Date inDate, Option inOption)
             throws ConnectionException {

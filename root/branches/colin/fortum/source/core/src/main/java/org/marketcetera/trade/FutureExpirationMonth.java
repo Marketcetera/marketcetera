@@ -24,62 +24,62 @@ public enum FutureExpirationMonth
      * contract which expires in January
      */
     JANUARY('F',
-            "JAN"),
+            "JAN"), //$NON-NLS-1$
     /**
      * contract which expires in February
      */
     FEBRUARY('G',
-             "FEB"),
+             "FEB"), //$NON-NLS-1$
     /**
      * contract which expires in March
      */
     MARCH('H',
-          "MAR"),
+          "MAR"), //$NON-NLS-1$
     /**
      * contract which expires in April
      */
     APRIL('J',
-          "APR"),
+          "APR"), //$NON-NLS-1$
     /**
      * contract which expires in May
      */
     MAY('K',
-        "MAY"),
+        "MAY"), //$NON-NLS-1$
     /**
      * contract which expires in June
      */
     JUNE('M',
-         "JUN"),
+         "JUN"), //$NON-NLS-1$
     /**
      * contract which expires in July
      */
     JULY('N',
-         "JUL"),
+         "JUL"), //$NON-NLS-1$
     /**
      * contract which expires in August
      */
     AUGUST('Q',
-           "AUG"),
+           "AUG"), //$NON-NLS-1$
     /**
      * contract which expires in September
      */
     SEPTEMBER('U',
-              "SEP"),
+              "SEP"), //$NON-NLS-1$
     /**
      * contract which expires in October
      */
     OCTOBER('V',
-            "OCT"),
+            "OCT"), //$NON-NLS-1$
     /**
      * contract which expires in November
      */
     NOVEMBER('X',
-             "NOV"),
+             "NOV"), //$NON-NLS-1$
     /**
      * contract which expires in December
      */
     DECEMBER('Z',
-             "DEC");
+             "DEC"); //$NON-NLS-1$
     /**
      * Get the <code>FutureExpirationMonth</code> value that corresponds to the given code.
      *
@@ -87,9 +87,9 @@ public enum FutureExpirationMonth
      * @return a <code>FutureExpirationMonth</code> value
      * @throws IllegalArgumentException if the given code does not correspond to a valid expiration month
      */
-    public static FutureExpirationMonth getFutureExpirationMonth(char inCode)
+    public static FutureExpirationMonth getByCfiCode(char inCode)
     {
-        return getFutureExpirationMonth(new StringBuffer().append(Character.toUpperCase(inCode)).toString());
+        return getByCfiCode(new StringBuffer().append(Character.toUpperCase(inCode)).toString());
     }
     /**
      * Get the <code>FutureExpirationMonth</code> value that corresponds to the given code.
@@ -98,25 +98,29 @@ public enum FutureExpirationMonth
      * @return a <code>FutureExpirationMonth</code> value
      * @throws IllegalArgumentException if the given code does not correspond to a valid expiration month
      */
-    public static FutureExpirationMonth getFutureExpirationMonth(String inCode)
+    public static FutureExpirationMonth getByCfiCode(String inCode)
     {
-        Validate.notNull(StringUtils.trimToNull(inCode));
+        Validate.notNull(StringUtils.trimToNull(inCode),
+                         Messages.NULL_CFI_CODE.getText());
         FutureExpirationMonth month = monthsByCode.get(inCode.toUpperCase());
-        Validate.notNull(month);
+        Validate.notNull(month,
+                         Messages.INVALID_CFI_CODE.getText(inCode));
         return month;
     }
     /**
-     * Get the <code>FutureExpirationMonth</code> value that corresponds to the given description.
+     * Get the <code>FutureExpirationMonth</code> value that corresponds to the given month name.
      *
-     * @param inDescription a <code>String</code> value
+     * @param inMonthName a <code>String</code> value containing a short US English month name
      * @return a <code>FutureExpirationMonth</code> value
-     * @throws IllegalArgumentException if the given description does not correspond to a valid expiration month
+     * @throws IllegalArgumentException if the given month name does not correspond to a valid expiration month
      */
-    public static FutureExpirationMonth getFutureExpirationMonthByDescription(String inDescription)
+    public static FutureExpirationMonth getByMonthShortName(String inMonthName)
     {
-        Validate.notNull(StringUtils.trimToNull(inDescription));
-        FutureExpirationMonth month = monthsByDescription.get(inDescription.toUpperCase());
-        Validate.notNull(month);
+        Validate.notNull(StringUtils.trimToNull(inMonthName),
+                         Messages.NULL_MONTH.getText());
+        FutureExpirationMonth month = monthsByDescription.get(inMonthName.toUpperCase());
+        Validate.notNull(month,
+                         Messages.INVALID_MONTH.getText(inMonthName));
         return month;
     }
     /**
@@ -125,10 +129,14 @@ public enum FutureExpirationMonth
      * @param inWeekOfYear an <code>int</code> value containing the week of the year
      * @param inYear an <code>int</code> value containing the year in question
      * @return a <code>FutureExpirationMonth</code> value
+     * @throws IllegalArgumentException if the given week number is invalid
      */
-    public static FutureExpirationMonth getFutureExpirationMonthByWeek(int inWeekOfYear,
-                                                                       int inYear)
+    public static FutureExpirationMonth getByWeekOfYear(int inWeekOfYear,
+                                                        int inYear)
     {
+        Validate.isTrue(inWeekOfYear >= 1 &&
+                        inWeekOfYear <= 53,
+                        Messages.INVALID_WEEK.getText(inWeekOfYear));
         Calendar calendar = Calendar.getInstance();
         calendar.setLenient(false);
         calendar.set(Calendar.YEAR,
@@ -139,6 +147,20 @@ public enum FutureExpirationMonth
         FutureExpirationMonth month = FutureExpirationMonth.values()[numValue]; 
         Validate.notNull(month);
         return month;
+    }
+    /**
+     * Gets the <code>FutureExpirationMonth</code> value associated with the given month of the year.
+     *
+     * @param inMonthOfYear a <code>String</code> value
+     * @return a <code>FutureExpirationMonth</code> value
+     * @throws IllegalArgumentException if the given monthOfYear value does not correspond to a value in [1..12]
+     */
+    public static FutureExpirationMonth getByMonthOfYear(String inMonthOfYear)
+    {
+        int month = Integer.valueOf(inMonthOfYear);
+        Validate.isTrue(month >= 1 &&
+                        month <= 12);
+        return FutureExpirationMonth.values()[month-1];
     }
     /**
      * Gets the code that corresponds to this <code>FutureExpirationMonth</code>.
@@ -162,20 +184,6 @@ public enum FutureExpirationMonth
         }
         output.append(ordinal()+1);
         return output.toString();
-    }
-    /**
-     * Gets the <code>FutureExpirationMonth</code> value associated with the given month of the year.
-     *
-     * @param inMonthOfYear a <code>String</code> value
-     * @return a <code>FutureExpirationMonth</code> value
-     * @throws IllegalArgumentException if the given monthOfYear value does not correspond to a value in [1..12]
-     */
-    public static FutureExpirationMonth getByMonthOfYear(String inMonthOfYear)
-    {
-        int month = Integer.valueOf(inMonthOfYear);
-        Validate.isTrue(month >= 1 &&
-                        month <= 12);
-        return FutureExpirationMonth.values()[month-1];
     }
     /**
      * Create a new FutureExpirationMonth instance.

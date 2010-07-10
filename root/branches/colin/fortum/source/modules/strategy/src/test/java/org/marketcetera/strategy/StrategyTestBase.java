@@ -813,6 +813,25 @@ public class StrategyTestBase
             return result;
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getAllFuturePositionsAsOf(java.util.Date)
+         */
+        @Override
+        public Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
+         */
+        @Override
+        public BigDecimal getFuturePositionAsOf(Date inDate,
+                                                Future inEquity)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.client.Client#getOptionRoots(java.lang.String)
          */
         @Override

@@ -378,7 +378,12 @@ public class ClientTest
                      (new Date(10),null));
         assertEquals(MockServiceImpl.POSITIONS, getClient().
                 getAllEquityPositionsAsOf(new Date()));
-
+        //getFuturePositionAsOf
+        assertEquals(BigDecimal.TEN,
+                     getClient().getFuturePositionAsOf(new Date(10),
+                                                       null));
+        assertEquals(MockServiceImpl.FUTURES_POSITIONS,
+                     getClient().getAllFuturePositionsAsOf(new Date()));
         //getOptionPositionAsOf()
         Option option = new Option("XYZ", "20101010", BigDecimal.TEN, OptionType.Call);
         Date date = new Date();

@@ -16,8 +16,8 @@ import org.marketcetera.module.ExpectedFailure;
 public class FutureExpirationMonthTest
 {
     /**
-     * Tests {@link FutureExpirationMonth#getFutureExpirationMonth(char)} and
-     * {@link FutureExpirationMonth#getFutureExpirationMonth(String)}.
+     * Tests {@link FutureExpirationMonth#getByCfiCode(char)} and
+     * {@link FutureExpirationMonth#getByCfiCode(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -30,7 +30,7 @@ public class FutureExpirationMonthTest
             protected void run()
                     throws Exception
             {
-                FutureExpirationMonth.getFutureExpirationMonth(null);
+                FutureExpirationMonth.getByCfiCode(null);
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -38,7 +38,7 @@ public class FutureExpirationMonthTest
             protected void run()
                     throws Exception
             {
-                FutureExpirationMonth.getFutureExpirationMonth(' ');
+                FutureExpirationMonth.getByCfiCode(' ');
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -46,7 +46,7 @@ public class FutureExpirationMonthTest
             protected void run()
                     throws Exception
             {
-                FutureExpirationMonth.getFutureExpirationMonth("");
+                FutureExpirationMonth.getByCfiCode("");
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -54,7 +54,7 @@ public class FutureExpirationMonthTest
             protected void run()
                     throws Exception
             {
-                FutureExpirationMonth.getFutureExpirationMonth(" ");
+                FutureExpirationMonth.getByCfiCode(" ");
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -62,7 +62,7 @@ public class FutureExpirationMonthTest
             protected void run()
                     throws Exception
             {
-                FutureExpirationMonth.getFutureExpirationMonth('E');
+                FutureExpirationMonth.getByCfiCode('E');
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
@@ -70,24 +70,24 @@ public class FutureExpirationMonthTest
             protected void run()
                     throws Exception
             {
-                FutureExpirationMonth.getFutureExpirationMonth("E");
+                FutureExpirationMonth.getByCfiCode("E");
             }
         };
         int index = 0;
         for(FutureExpirationMonth expirationMonth : FutureExpirationMonth.values()) {
             assertEquals(FutureExpirationMonth.values()[index],
-                         FutureExpirationMonth.getFutureExpirationMonth(expirationMonth.getCode()));
+                         FutureExpirationMonth.getByCfiCode(expirationMonth.getCode()));
             assertEquals(FutureExpirationMonth.values()[index],
-                         FutureExpirationMonth.getFutureExpirationMonth(Character.toLowerCase(expirationMonth.getCode())));
+                         FutureExpirationMonth.getByCfiCode(Character.toLowerCase(expirationMonth.getCode())));
             assertEquals(FutureExpirationMonth.values()[index],
-                         FutureExpirationMonth.getFutureExpirationMonth(new StringBuffer().append(expirationMonth.getCode()).toString()));
+                         FutureExpirationMonth.getByCfiCode(new StringBuffer().append(expirationMonth.getCode()).toString()));
             assertEquals(FutureExpirationMonth.values()[index],
-                         FutureExpirationMonth.getFutureExpirationMonth(new StringBuffer().append(expirationMonth.getCode()).toString().toLowerCase()));
+                         FutureExpirationMonth.getByCfiCode(new StringBuffer().append(expirationMonth.getCode()).toString().toLowerCase()));
             index += 1;
         }
     }
     /**
-     * Tests {@link FutureExpirationMonth#getFutureExpirationMonthByDescription(String)}.
+     * Tests {@link FutureExpirationMonth#getByMonthShortName(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -100,7 +100,7 @@ public class FutureExpirationMonthTest
        int index = 1;
        for(String code : descriptions) {
            assertEquals(FutureExpirationMonth.values()[index-1],
-                        FutureExpirationMonth.getFutureExpirationMonthByDescription(code));
+                        FutureExpirationMonth.getByMonthShortName(code));
            index += 1;
        }
        for(final String badDescription : badDescriptions) {
@@ -109,7 +109,7 @@ public class FutureExpirationMonthTest
                protected void run()
                        throws Exception
                {
-                   FutureExpirationMonth.getFutureExpirationMonthByDescription(badDescription);
+                   FutureExpirationMonth.getByMonthShortName(badDescription);
                }
            };
        }
@@ -163,51 +163,51 @@ public class FutureExpirationMonthTest
               counter <= 52) {
                if(counter <= 5) {
                    assertEquals(FutureExpirationMonth.JANUARY,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 9) {
                    assertEquals(FutureExpirationMonth.FEBRUARY,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 13) {
                    assertEquals(FutureExpirationMonth.MARCH,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 17) {
                    assertEquals(FutureExpirationMonth.APRIL,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 22) {
                    assertEquals(FutureExpirationMonth.MAY,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 26) {
                    assertEquals(FutureExpirationMonth.JUNE,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 31) {
                    assertEquals(FutureExpirationMonth.JULY,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 35) {
                    assertEquals(FutureExpirationMonth.AUGUST,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 39) {
                    assertEquals(FutureExpirationMonth.SEPTEMBER,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 44) {
                    assertEquals(FutureExpirationMonth.OCTOBER,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 48) {
                    assertEquals(FutureExpirationMonth.NOVEMBER,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                } else if(counter <= 52) {
                    assertEquals(FutureExpirationMonth.DECEMBER,
-                                FutureExpirationMonth.getFutureExpirationMonthByWeek(counter,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
                                                                                      2010));
                }
            } else {
@@ -217,7 +217,7 @@ public class FutureExpirationMonthTest
                    protected void run()
                            throws Exception
                    {
-                       FutureExpirationMonth.getFutureExpirationMonthByWeek(value,
+                       FutureExpirationMonth.getByWeekOfYear(value,
                                                                             2010);
                    }
                };
