@@ -606,6 +606,26 @@ final class StrategyModule
         return clientFactory.getClient().getAllOptionPositionsAsOf(inDate);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getAllFuturePositionsAsOf(java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException
+    {
+        return clientFactory.getClient().getAllFuturePositionsAsOf(inDate);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
+     */
+    @Override
+    public BigDecimal getFuturePositionAsOf(Date inDate,
+                                            Future inFuture)
+            throws ConnectionException, ClientInitException
+    {
+        return clientFactory.getClient().getFuturePositionAsOf(inDate,
+                                                               inFuture);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
      */
     @Override

@@ -832,7 +832,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
             mModel.completeMessage();
             NewOrReplaceOrder orderMessage = mModel.getOrderObservable()
                     .getTypedValue();
-            System.out.println("Ordermessage is " + orderMessage);
             plugin.getPhotonController().sendOrderChecked(orderMessage);
             mModel.clearOrderMessage();
         } catch (Exception e) {

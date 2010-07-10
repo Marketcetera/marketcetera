@@ -24,6 +24,7 @@ import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnPro
 import org.marketcetera.photon.core.InstrumentPrettyPrinter;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -305,6 +306,8 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
                 return Messages.POSITIONS_TABLE_EQUITY__LABEL.getText();
             } else if (instrument instanceof Option) {
                 return Messages.POSITIONS_TABLE_OPTION__LABEL.getText();
+            } else if (instrument instanceof Future) {
+                return Messages.POSITIONS_TABLE_FUTURE__LABEL.getText();
             } else {
                 return null;
             }

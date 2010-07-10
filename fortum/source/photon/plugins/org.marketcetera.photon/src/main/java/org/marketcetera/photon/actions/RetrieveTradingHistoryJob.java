@@ -88,6 +88,8 @@ public class RetrieveTradingHistoryJob extends Job {
                                             lastOccurrence));
                     positions.putAll(ClientManager.getInstance()
                             .getAllOptionPositionsAsOf(lastOccurrence));
+                    positions.putAll(ClientManager.getInstance()
+                                     .getAllFuturePositionsAsOf(lastOccurrence));
                     PositionEngine engine = PositionEngineFactory
                             .createFromReportHolders(tradeReportsHistory
                                     .getAllMessagesList(),

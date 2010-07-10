@@ -31,12 +31,13 @@ public class Future
      * Create a new Future instance.
      *
      * @param inSymbol a <code>String</code> value containing the future symbol
-     *  @throws IllegalArgumentException if any of the parameters are invalid
+     *  @throws IllegalArgumentException if the symbol is invalid or the expiration cannot be inferred from the symbol
      */
     public Future(String inSymbol)
     {
         symbol = StringUtils.trimToNull(inSymbol);
-        Validate.notNull(symbol);
+        Validate.notNull(symbol,
+                         Messages.NULL_SYMBOL.getText());
         expiration = guessExpirationFromSymbol(symbol);
     }
     /* (non-Javadoc)
@@ -107,7 +108,7 @@ public class Future
     @Override
     public String toString()
     {
-        return String.format("Future [symbol=%s, expiration=%s]",
+        return String.format("Future [symbol=%s, expiration=%s]", //$NON-NLS-1$
                              symbol,
                              expiration);
     }
@@ -150,35 +151,35 @@ public class Future
             } else if(q == 4) {
                 month = FutureExpirationMonth.DECEMBER;
             } else {
-                throw new IllegalArgumentException("Invalid quarter: " + q + " in " + inSymbol);
+                throw new IllegalArgumentException(Messages.INVALID_QUARTER.getText(inSymbol,
+                                                                                    q));
             }
         } else if(NORD_MONTH.matcher(inSymbol).matches()) {
             partYear += Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('-')+1));
-            String monthDescription = inSymbol.substring(4,
-                                                         6);
-            month = FutureExpirationMonth.getFutureExpirationMonthByDescription(monthDescription);
+            String monthDescription = inSymbol.substring(inSymbol.lastIndexOf('M')+1,
+                                                         inSymbol.lastIndexOf('M')+4);
+            month = FutureExpirationMonth.getByMonthShortName(monthDescription);
         } else
         if(NORD_WEEK.matcher(inSymbol).matches()) {
             partYear += Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('-')+1));
             int week = Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('W')+1,
                                                            inSymbol.lastIndexOf('W')+3));
-            month = FutureExpirationMonth.getFutureExpirationMonthByWeek(week,
+            month = FutureExpirationMonth.getByWeekOfYear(week,
                                                                          partYear);
         } else
         if(NORD_DAY.matcher(inSymbol).matches()) {
             partYear += Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('-')+1));
-            int monthVal = Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('D')+1,
-                                                               inSymbol.lastIndexOf('D')+3));
-            month = FutureExpirationMonth.getFutureExpirationMonthByWeek(monthVal,
-                                                                         partYear);
+            String monthVal = inSymbol.substring(inSymbol.lastIndexOf('D')+3,
+                                                 inSymbol.lastIndexOf('D')+5);
+            month = FutureExpirationMonth.getByMonthOfYear(monthVal);
         } else
         if(SKE_MONTH.matcher(inSymbol).matches()) {
             // BRN14U
             partYear += Integer.parseInt(inSymbol.substring(inSymbol.length()-3,
                                                             inSymbol.length()-1));
-            month = FutureExpirationMonth.getFutureExpirationMonth(inSymbol.substring(inSymbol.length()-1));
+            month = FutureExpirationMonth.getByCfiCode(inSymbol.substring(inSymbol.length()-1));
         } else {
-            throw new IllegalArgumentException("Unknown symbol pattern: " + inSymbol); // TODO
+            throw new IllegalArgumentException(Messages.INVALID_SYMBOL.getText(inSymbol));
         }
         expiration.append(partYear).append(month.getMonthOfYear());
         return expiration.toString();
@@ -194,26 +195,26 @@ public class Future
     /**
      * pattern for matching nord pool year-based instruments
      */
-    private static final Pattern NORD_YEAR = Pattern.compile("[A-Z]*YR-[0-9]{2}");
+    private static final Pattern NORD_YEAR = Pattern.compile("[A-Z]*YR-[0-9]{2}"); //$NON-NLS-1$
     /**
      * pattern for matching nord pool quarter-based instruments
      */
-    private static final Pattern NORD_QUARTER = Pattern.compile("[A-Z]*Q[0-9]-[0-9]{2}");
+    private static final Pattern NORD_QUARTER = Pattern.compile("[A-Z]*Q[0-9]-[0-9]{2}"); //$NON-NLS-1$
     /**
      * pattern for matching nord pool month-based instruments
      */
-    private static final Pattern NORD_MONTH = Pattern.compile("[A-Z]*M[A-Z]{3}-[0-9]{2}");
+    private static final Pattern NORD_MONTH = Pattern.compile("[A-Z]*M[A-Z]{3}-[0-9]{2}"); //$NON-NLS-1$
     /**
      * pattern for matching nord pool week-based instruments
      */
-    private static final Pattern NORD_WEEK = Pattern.compile("[A-Z]*W[0-9]{2}-[0-9]{2}");
+    private static final Pattern NORD_WEEK = Pattern.compile("[A-Z]*W[0-9]{2}-[0-9]{2}"); //$NON-NLS-1$
     /**
      * pattern for matching nord pool day-based instruments
      */
-    private static final Pattern NORD_DAY = Pattern.compile("[A-Z]*D[0-9]{4}-[0-9]{2}");
+    private static final Pattern NORD_DAY = Pattern.compile("[A-Z]*D[0-9]{4}-[0-9]{2}"); //$NON-NLS-1$
     /**
      * pattern for matching ICE month-based instruments
      */
-    private static final Pattern SKE_MONTH = Pattern.compile("[A-Z]*[0-9]{2}[A-Z]");
+    private static final Pattern SKE_MONTH = Pattern.compile("[A-Z]*[0-9]{2}[F,G,H,J,K,M,N,Q,U,V,X,Z]"); //$NON-NLS-1$
     private static final long serialVersionUID = 1L;
 }

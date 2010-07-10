@@ -25,6 +25,7 @@ public class ServiceTest
 {
     private static final Equity TEST_EQUITY =new Equity
         ("IBM");
+    private static final Future TEST_FUTURE = new Future("BRN12J");
     private static final Option TEST_OPTION =new Option
         ("IBM", "20101010", BigDecimal.TEN, OptionType.Call);
 
@@ -51,6 +52,12 @@ public class ServiceTest
                      (new Date(), TEST_EQUITY));
 
         assertTrue(c.getAllEquityPositionsAsOf(new Date()).isEmpty());
+
+        assertEquals(BigDecimal.ZERO,
+                     c.getFuturePositionAsOf(new Date(),
+                                             TEST_FUTURE));
+
+        assertTrue(c.getAllFuturePositionsAsOf(new Date()).isEmpty());
 
         String id=Factory.getInstance().createOrderSingle().
             getOrderID().getValue();

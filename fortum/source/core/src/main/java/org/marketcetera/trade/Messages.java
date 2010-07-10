@@ -116,4 +116,20 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"unsupported_order_type"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_CONVERT=
         new I18NMessage1P(LOGGER,"cannot_convert"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_SYMBOL=
+        new I18NMessage0P(LOGGER,"null_symbol"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_SYMBOL=
+        new I18NMessage1P(LOGGER,"invalid_symbol"); //$NON-NLS-1$
+    static final I18NMessage2P INVALID_QUARTER=
+        new I18NMessage2P(LOGGER,"invalid_quarter"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_CFI_CODE=
+        new I18NMessage0P(LOGGER,"null_cfi_code"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_CFI_CODE=
+        new I18NMessage1P(LOGGER,"invalid_cfi_code"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_MONTH=
+        new I18NMessage0P(LOGGER,"null_month"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_MONTH=
+        new I18NMessage1P(LOGGER,"invalid_month"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_WEEK=
+        new I18NMessage1P(LOGGER,"invalid_week"); //$NON-NLS-1$
 }
