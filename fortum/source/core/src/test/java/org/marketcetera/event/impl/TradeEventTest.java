@@ -613,7 +613,7 @@ public class TradeEventTest
     /**
      * test instrument with {@link TradeEventBuilder#tradeEvent(Instrument)}.
      */
-    private final Future future = new Future("IBW12");
+    private final Future future = new Future("IB12N");
     /**
      * instrument used during tests
      */
