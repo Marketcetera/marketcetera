@@ -40,7 +40,7 @@ public class InstrumentValidationHandlerTest {
 
     @Test
     public void future() throws Exception {
-        Future future = new Future("XEURFDAX0F2010U");
+        Future future = new Future("BRN15U");
         InstrumentValidationHandler.SELECTOR.forInstrument(future).validate(future);
         // todo: we may need to do better expiry validation?
     }
