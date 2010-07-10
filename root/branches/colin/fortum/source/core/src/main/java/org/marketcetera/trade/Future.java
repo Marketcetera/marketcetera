@@ -56,15 +56,6 @@ public class Future
         return SecurityType.Future;
     }
     /**
-     * Get the expiration value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getExpirationMonth()
-    {
-        return expiration;
-    }
-    /**
      * Gets the future maturity as a <code>MaturityMonthYear</code> value.
      *
      * @return a <code>MaturityMonthYear</code> value
@@ -169,15 +160,15 @@ public class Future
         } else
         if(NORD_WEEK.matcher(inSymbol).matches()) {
             partYear += Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('-')+1));
-            int week = Integer.parseInt(inSymbol.substring(inSymbol.indexOf('W')+1,
-                                                           inSymbol.indexOf('W')+3));
+            int week = Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('W')+1,
+                                                           inSymbol.lastIndexOf('W')+3));
             month = FutureExpirationMonth.getFutureExpirationMonthByWeek(week,
                                                                          partYear);
         } else
         if(NORD_DAY.matcher(inSymbol).matches()) {
             partYear += Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('-')+1));
-            int monthVal = Integer.parseInt(inSymbol.substring(inSymbol.indexOf('D')+1,
-                                                               inSymbol.indexOf('D')+3));
+            int monthVal = Integer.parseInt(inSymbol.substring(inSymbol.lastIndexOf('D')+1,
+                                                               inSymbol.lastIndexOf('D')+3));
             month = FutureExpirationMonth.getFutureExpirationMonthByWeek(monthVal,
                                                                          partYear);
         } else

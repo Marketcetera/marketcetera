@@ -1121,7 +1121,7 @@ public class QuoteEventTest
     /**
      * test future
      */
-    private final Future future = new Future("BRNQ10");
+    private final Future future = new Future("BRN10Q");
     /**
      * indicates the test instrument to use
      */
