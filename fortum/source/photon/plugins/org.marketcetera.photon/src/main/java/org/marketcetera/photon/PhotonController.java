@@ -6,35 +6,24 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.WorkbenchException;
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.OrderValidationException;
-import org.marketcetera.client.ReportListener;
+import org.marketcetera.client.*;
+import org.marketcetera.client.userlimit.RiskManager;
+import org.marketcetera.client.userlimit.UserLimitViolation;
+import org.marketcetera.client.userlimit.UserLimitWarning;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.messagehistory.MessageVisitor;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.photon.notification.NotificationPlugin;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Order;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderCancelReject;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.FieldNotFound;
 
@@ -258,10 +247,34 @@ public class PhotonController
 		}
 	}
 
+    private boolean doOrderLimitsCheck(final Order inOrder)
+    {
+        NotificationPlugin notifier = NotificationPlugin.getDefault();
+        try {
+            RiskManager.INSTANCE.inspect(inOrder);
+            return true;
+        } catch (final UserLimitWarning e) {
+            notifier.getNotificationManager().publish(Notification.low("Order Limits Warning",
+                                                                       e.getLocalizedMessage(),
+                                                                       "Photon"));
+        } catch (UserLimitViolation e) {
+            notifier.getNotificationManager().publish(Notification.medium("Order Limits Violation",
+                                                                          e.getLocalizedMessage(),
+                                                                          "Photon"));
+        } catch (Exception e) {
+            SLF4JLoggerProxy.error(PhotonController.class,
+                                   e);
+        }
+        return false;
+    }
+
     public void sendOrderChecked(Order inOrder) throws I18NException {
         internalMainLogger.info(PHOTON_CONTROLLER_SENDING_MESSAGE
                 .getText(inOrder.toString()));
         try {
+            if(!doOrderLimitsCheck(inOrder)) {
+                return;
+            }
             Client client = ClientManager.getInstance();
             if (inOrder instanceof OrderSingle) {
                 client.sendOrder((OrderSingle) inOrder);

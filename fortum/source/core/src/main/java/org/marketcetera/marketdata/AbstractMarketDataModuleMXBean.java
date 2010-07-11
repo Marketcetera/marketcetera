@@ -54,4 +54,26 @@ public interface AbstractMarketDataModuleMXBean
      */
     @DisplayName("The set of supported asset classes for this feed")
     public Set<AssetClass> getAssetClasses();
+    /**
+     * Resets the system market data cache. 
+     *
+     * <p>This operation affects all market data feeds.
+     */
+    @DisplayName("Reset market data cache")
+    public void resetDataCache();
+    /**
+     * Gets the cached market data for the given symbol. 
+     *
+     * @param inSymbol a <code>String</code> value
+     * @return a <code>String</code> value or <code>null</code>
+     */
+    @DisplayName("Gets cached market data for the given symbol")
+    public String getCachedData(String inSymbol);
+    /**
+     * Displays the contents of the market data cache. 
+     *
+     * @return a <code>String</code> value
+     */
+    @DisplayName("Displays the contents of the cache")
+    public String displayCache();
 }

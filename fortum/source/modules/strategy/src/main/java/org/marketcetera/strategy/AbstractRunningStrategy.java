@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.userlimit.RiskManager;
+import org.marketcetera.client.userlimit.UserLimitViolation;
+import org.marketcetera.client.userlimit.UserLimitWarning;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.Event;
@@ -552,11 +555,88 @@ public abstract class AbstractRunningStrategy
                                    "{} created {}", //$NON-NLS-1$
                                    strategy,
                                    order);
+            if(!doOrderLimitsCheck(order)) {
+                return false;
+            }
             submittedOrderManager.add(order.getOrderID(),
                                       order);
         }
+        if(inData instanceof OrderReplace) {
+            if(!doOrderLimitsCheck((OrderReplace)inData)) {
+                return false;
+            }
+        }
         strategy.getServicesProvider().send(inData);
         return true;
+    }
+    private boolean doOrderLimitsCheck(final Order inOrder)
+    {
+        try {
+            RiskManager.INSTANCE.inspect(inOrder);
+            return true;
+        } catch (final UserLimitWarning e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(ORDER_LIMITS_WARNING,
+                                                                   String.valueOf(strategy))
+                                                      .withException(e).create(),
+                               strategy);
+            send(Notification.low("Order Limits Warning",
+                                  e.getLocalizedMessage(),
+                                  strategy.getName()));
+            if(inOrder instanceof OrderSingle) {
+                send(new OrderSingleSuggestion() {
+                    @Override
+                    public OrderSingle getOrder()
+                    {
+                        return (OrderSingle)inOrder;
+                    }
+                    @Override
+                    public void setOrder(OrderSingle inOrder)
+                    {
+                        throw new UnsupportedOperationException();
+                    }
+                    @Override
+                    public String getIdentifier()
+                    {
+                        return strategy.getName();
+                    }
+                    @Override
+                    public BigDecimal getScore()
+                    {
+                        return BigDecimal.ZERO;
+                    }
+                    @Override
+                    public void setIdentifier(String inIdentifier)
+                    {
+                        throw new UnsupportedOperationException();
+                    }
+                    @Override
+                    public void setScore(BigDecimal inScore)
+                    {
+                        throw new UnsupportedOperationException();
+                    }
+                    private static final long serialVersionUID = 1L;
+                });
+            } else if(inOrder instanceof OrderReplace) {
+                // TODO
+                throw new UnsupportedOperationException();
+            }
+            return false;
+        } catch (UserLimitViolation e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(ORDER_LIMITS_VIOLATION,
+                                                                  String.valueOf(strategy))
+                                                     .withException(e).create(),
+                               strategy);
+            send(Notification.medium("Order Limits Violation",
+                                     e.getLocalizedMessage(),
+                                     strategy.getName()));
+            return false;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.error().withMessage(ORDER_LIMITS_FAILED,
+                                                                   String.valueOf(strategy))
+                                                      .withException(e).create(),
+                               strategy);
+            return false;
+        }
     }
     /**
      * Submits a request to cancel the <code>OrderSingle</code> with the given

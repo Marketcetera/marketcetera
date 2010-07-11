@@ -173,5 +173,28 @@ public class MockMarketDataModuleFactory extends ModuleFactory {
         {
             return EnumSet.allOf(AssetClass.class);
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#resetDataCache()
+         */
+        @Override
+        public void resetDataCache()
+        {
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCachedData(java.lang.String)
+         */
+        @Override
+        public String getCachedData(String inSymbol)
+        {
+            return null;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#displayCache()
+         */
+        @Override
+        public String displayCache()
+        {
+            return null;
+        }
 	}
 }

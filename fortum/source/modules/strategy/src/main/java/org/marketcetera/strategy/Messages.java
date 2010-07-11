@@ -93,6 +93,12 @@ public interface Messages
                                                                                       "strategy_not_ready_to_receive_data"); //$NON-NLS-1$
     static final I18NMessage1P ORDER_VALIDATION_FAILED = new I18NMessage1P(LOGGER,
                                                                            "order_validation_failed"); //$NON-NLS-1$
+    static final I18NMessage1P ORDER_LIMITS_WARNING = new I18NMessage1P(LOGGER,
+                                                                        "order_limits_warning"); //$NON-NLS-1$
+    static final I18NMessage1P ORDER_LIMITS_VIOLATION = new I18NMessage1P(LOGGER,
+                                                                          "order_limits_violation"); //$NON-NLS-1$
+    static final I18NMessage1P ORDER_LIMITS_FAILED = new I18NMessage1P(LOGGER,
+                                                                       "order_limits_failed"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_CANCEL = new I18NMessage1P(LOGGER,
                                                                   "invalid_cancel"); //$NON-NLS-1$
     static final I18NMessage2P INVALID_ORDERID = new I18NMessage2P(LOGGER,
