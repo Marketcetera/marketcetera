@@ -155,7 +155,7 @@ public enum RiskManager
         // condition #4 maximum value of trade
         BigDecimal value = quantity.multiply(price); 
         if(value.compareTo(symbolData.getMaximumTradeValue()) == 1) {
-            throw new UserLimitViolation(new I18NBoundMessage3P(Messages.POSITION_LIMIT_EXCEEDED,
+            throw new UserLimitViolation(new I18NBoundMessage3P(Messages.VALUE_LIMIT_EXCEEDED,
                                                                 orderID,
                                                                 value,
                                                                 symbolData.getMaximumTradeValue()));
