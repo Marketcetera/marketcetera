@@ -185,11 +185,11 @@ public class FutureTest extends InstrumentTestBase<Future> {
             protected void run()
                     throws Exception
             {
-                new Future("ITWW53-10");
+                new Future("ITWW54-10");
             }
         };
-        verifyFuture(new Future("ITWW01-09"),
-                     "ITWW01-09",
+        verifyFuture(new Future("ITWW02-09"),
+                     "ITWW02-09",
                      "200901");
         verifyFuture(new Future("ITWW25-25"),
                      "ITWW25-25",
@@ -200,7 +200,7 @@ public class FutureTest extends InstrumentTestBase<Future> {
                      "205012");
         verifyFuture(new Future("ABCXYZW10-50"),
                      "ABCXYZW10-50",
-                     "205003");
+                     "205002");
     }
     /**
      * Tests Nord Pool symbol constructors.
