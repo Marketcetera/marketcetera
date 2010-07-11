@@ -166,6 +166,15 @@ public class TradeSuggestion {
 		return getOrder().getAccount();
 	}
 
+    /**
+     * Returns the text.
+     * 
+     * @return the account
+     */
+    public String getText() {
+        return getOrder().getText();
+    }
+
 	/**
 	 * Returns the broker ID.
 	 * 

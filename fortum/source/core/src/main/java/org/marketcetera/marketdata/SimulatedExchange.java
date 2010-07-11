@@ -319,7 +319,7 @@ public class SimulatedExchange
             if(inExchangeRequest.getInstrument() == null) {
                 throw new IllegalArgumentException(DIVIDEND_REQUEST_MISSING_INSTRUMENT.getText(inExchangeRequest.toString()));
             }
-            if(!(inExchangeRequest.getInstrument() instanceof Equity)) {
+            if(inExchangeRequest.getInstrument() instanceof Option) {
                 throw new IllegalArgumentException(DIVIDEND_REQUEST_MISSING_INSTRUMENT.getText(inExchangeRequest.toString()));
             }
             if(inExchangeRequest.getUnderlyingInstrument() != null) {
@@ -894,7 +894,7 @@ public class SimulatedExchange
         // produce statistics
         eventsToPublish.addAll(getStatistics(ExchangeRequestBuilder.newRequest().withInstrument(inBook.getBook().getInstrument())
                                                                                 .withUnderlyingInstrument(inBook.getUnderlyingInstrument()).create()));
-        if(inBook.getInstrument() instanceof Equity) {
+        if(!(inBook.getInstrument() instanceof Option)) {
             eventsToPublish.addAll(getDividends(ExchangeRequestBuilder.newRequest().withInstrument(inBook.getBook().getInstrument()).create()));
         }
         publishEvents(eventsToPublish);

@@ -51,7 +51,7 @@ public class ReportHolderTest {
                 .newExecutionReport("asdf", "asdf", "asdf", OrdStatus.CANCELED,
                         Side.BUY, BigDecimal.TEN, BigDecimal.ONE,
                         BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                        BigDecimal.ONE, new Equity("123"), "asdf");
+                        BigDecimal.ONE, new Equity("123"), "asdf", "text");
         return message;
     }
 

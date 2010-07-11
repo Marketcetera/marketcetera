@@ -451,7 +451,8 @@ public class StrategyTestBase
                                                                                                   new BigDecimal(500),
                                                                                                   new BigDecimal(600),
                                                                                                   new Equity("Symbol"),
-                                                                                                  "account");
+                                                                                                  "account",
+                                                                                                  "text");
                 dataToSend.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
                                                                                                   new BrokerID("some-broker"),
                                                                                                   Originator.Server,
@@ -1652,7 +1653,8 @@ public class StrategyTestBase
                                                                                 inOrder.getQuantity(),
                                                                                 inOrder.getPrice(),
                                                                                 inOrder.getInstrument(),
-                                                                                inOrder.getAccount());
+                                                                                inOrder.getAccount(),
+                                                                                inOrder.getText());
         exeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
         return exeReport;
     }

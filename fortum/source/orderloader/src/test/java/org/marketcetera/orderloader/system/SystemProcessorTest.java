@@ -129,11 +129,11 @@ public class SystemProcessorTest {
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(0),
                 TypesTestBase.NOT_NULL, Side.Buy, new BigDecimal("34.34"),
                 null, null, OrderType.Market, new Equity("ubm"), SecurityType.CommonStock, null,
-                null, null, null, null);
+                null, null, null, null, null);
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(1),
                 TypesTestBase.NOT_NULL, Side.Sell, new BigDecimal("12.23"),
                 null, null, OrderType.Limit, new Equity("nubm"), SecurityType.CommonStock, null,
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     /**
@@ -162,27 +162,27 @@ public class SystemProcessorTest {
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(0),
                 TypesTestBase.NOT_NULL, Side.SellShort, BigDecimal.ONE,
                 null, null, OrderType.Market, new Equity("zoog"), SecurityType.CommonStock, null,
-                null, null, null, map);
+                null, null, null, null, map);
         map.clear();
         map.put("4001", "");
         map.put("5001", "no");
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(1),
                 TypesTestBase.NOT_NULL, Side.SellShort, BigDecimal.TEN,
                 null, null, OrderType.Market, new Equity("zoo"), SecurityType.CommonStock, null,
-                null, null, null, map);
+                null, null, null, null, map);
         map.clear();
         map.put("4001", "moo");
         map.put("5001", null);
         TypesTestBase.assertOrderSingle((OrderSingle)list.get(2),
                 TypesTestBase.NOT_NULL, Side.Sell, BigDecimal.TEN,
                 null, null, OrderType.Limit, new Equity("moog"), SecurityType.CommonStock, null,
-                null, null, null, map);
+                null, null, null, null, map);
     }
     @Test
     public void allFields() throws Exception {
         BrokerID brokerID = new BrokerID("broke");
         RowProcessor processor = create(brokerID);
-        processor.initialize(FIELD_ACCOUNT, FIELD_ORDER_CAPACITY,
+        processor.initialize(FIELD_ACCOUNT, FIELD_TEXT, FIELD_ORDER_CAPACITY,
                 FIELD_ORDER_TYPE, FIELD_POSITION_EFFECT, "666",
                 FIELD_PRICE, FIELD_QUANTITY, FIELD_SECURITY_TYPE,
                 FIELD_SIDE, FIELD_SYMBOL, FIELD_TIME_IN_FORCE,
@@ -241,7 +241,7 @@ public class SystemProcessorTest {
                 TypesTestBase.NOT_NULL, Side.SellShortExempt,
                 new BigDecimal("3.33"), null, TimeInForce.Day, OrderType.Market,
                 new Equity("vsft"),
-                SecurityType.CommonStock, "mine", null, null, brokerID, map);
+                SecurityType.CommonStock, "mine", "yours", null, null, brokerID, map);
         map.clear();
         map.put("666", "number");
         map.put("2112", "of");
@@ -249,7 +249,7 @@ public class SystemProcessorTest {
                 TypesTestBase.NOT_NULL, Side.Buy, new BigDecimal("9.99"),
                 new BigDecimal("22.2"), TimeInForce.FillOrKill, OrderType.Limit,
                 new Option("soft", "20101010", new BigDecimal("12.34"), OptionType.Call),
-                SecurityType.Option, "yours", OrderCapacity.Individual,
+                SecurityType.Option, "yours", "mine", OrderCapacity.Individual,
                 PositionEffect.Close, brokerID, map);
         //Verify failures.
         List<FailedOrderInfo> failed = processor.getFailedOrders();

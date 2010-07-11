@@ -67,7 +67,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         // these should not fail
         qfApp.fromAdmin(new Message(), new SessionID("begin", "sender", "target")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         Message execReport = msgFactory.newExecutionReport("123", "456", "789", OrdStatus.FILLED, Side.BUY, new BigDecimal(100), new BigDecimal("10.10"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new Equity("XYZ"), "bob"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new Equity("XYZ"), "bob", "text");
         qfApp.fromApp(execReport, new SessionID("begin", "sender", "target")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
@@ -92,7 +92,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         QuickFIXApplication qfApp = new MockQuickFIXApplication(jmsTemplate);
 
         Message msg = msgFactory.newExecutionReport("200", "300", "400", OrdStatus.CANCELED, Side.BUY, BigDecimal.ZERO, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("BOB"), "account"); //$NON-NLS-1$ //$NON-NLS-2$
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("BOB"), "account", "text");
         msg.getHeader().setField(new MsgSeqNum(1000));
         msg.getHeader().setField(new SenderCompID("sender")); //$NON-NLS-1$
         msg.getHeader().setField(new TargetCompID("target")); //$NON-NLS-1$
@@ -139,7 +139,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         final QuickFIXApplication qfApp = new QuickFIXApplication(null, null, null, null, null, null,tradeRecorderJMS,null);
 
         Message msg = msgFactory.newExecutionReport("123", "456", "789", OrdStatus.FILLED, Side.BUY, new BigDecimal(100), new BigDecimal("10.10"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new Equity("XYZ"), "bob"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new Equity("XYZ"), "bob", "text");
 
         qfApp.fromApp(msg, new SessionID(fixVersion.toString(), "sender", "target")); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals(1, jmsTemplate.getSentMessages().size());

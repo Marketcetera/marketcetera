@@ -43,7 +43,7 @@ public class OrderCancelTest extends TypesTestBase {
         //Null report parameter defaults.
         OrderCancel order = sFactory.createOrderCancel(null);
         assertOrderCancel(order, NOT_NULL, null, null, null,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
         //Verify toString() doesn't fail
         order.toString();
 
@@ -53,7 +53,7 @@ public class OrderCancelTest extends TypesTestBase {
                 sFactory.createExecutionReport
                 (report, null, Originator.Server, null, null));
         assertOrderCancel(order, NOT_NULL, null, null, null,
-                null, null, null, null, null, null);
+                null, null, null, null, null, null, null);
         //Verify toString() doesn't fail
         order.toString();
 
@@ -63,18 +63,19 @@ public class OrderCancelTest extends TypesTestBase {
         Side side = Side.Buy;
         Instrument instrument = new Equity("IBM");
         String account = "what?";
+        String text = "why?";
         BigDecimal orderQty = new BigDecimal("34.5");
         BrokerID cID = new BrokerID("iam");
         //Create an exec report.
         report = createExecReport(orderID, side,
-                instrument, account, destOrderID, orderQty);
+                instrument, account, text, destOrderID, orderQty);
         //Create the order from the report.
         order = sFactory.createOrderCancel(
                 sFactory.createExecutionReport
                 (report, cID, Originator.Server, null, null));
         assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
                 instrument, instrument.getSecurityType(), orderQty,
-                destOrderID, account, cID, null);
+                destOrderID, account, text, cID, null);
         //Verify toString() doesn't fail
         order.toString();
 
@@ -87,7 +88,7 @@ public class OrderCancelTest extends TypesTestBase {
         //Test a cancel for a partial fill
         //Create an exec report.
         report = createExecReport(orderID, side,
-                instrument, account, destOrderID, orderQty);
+                instrument, account, text, destOrderID, orderQty);
         report.setDecimal(AvgPx.FIELD, new BigDecimal("23.2"));
         report.setDecimal(CumQty.FIELD, new BigDecimal("10"));
         report.setDecimal(LeavesQty.FIELD, new BigDecimal("9"));
@@ -99,7 +100,7 @@ public class OrderCancelTest extends TypesTestBase {
                 (report, cID, Originator.Server, null, null));
         assertOrderCancel(order, NOT_NULL, new OrderID(orderID), side,
                 instrument, instrument.getSecurityType(), orderQty,
-                destOrderID, account, cID, null);
+                destOrderID, account, text, cID, null);
         //Verify toString() doesn't fail
         order.toString();
 
@@ -142,7 +143,7 @@ public class OrderCancelTest extends TypesTestBase {
         OrderCancel order = sFactory.createOrderCancel(msg, null);
         assertOrderValues(order, null, null);
         OrderID expectedOrderID = NOT_NULL;
-        assertOrderBaseValues(order, expectedOrderID, null, null, null, null, null);
+        assertOrderBaseValues(order, expectedOrderID, null, null, null, null, null, null);
         assertRelatedOrderValues(order, null, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -156,6 +157,7 @@ public class OrderCancelTest extends TypesTestBase {
         SecurityType securityType = SecurityType.CommonStock;
         Instrument instrument = new Equity("IBM");
         String account = "nonplus";
+        String text = "some text";
         Side side = Side.Buy;
         msg = factory.newCancel("order",origOrderID,
                 side.getFIXValue(), qty, instrument, null);
@@ -163,7 +165,7 @@ public class OrderCancelTest extends TypesTestBase {
         msg.setField(new quickfix.field.OrderID(destOrderID));
         order = sFactory.createOrderCancel(msg, brokerID);
         assertOrderValues(order, brokerID, securityType);
-        assertOrderBaseValues(order, expectedOrderID, account, null,
+        assertOrderBaseValues(order, expectedOrderID, account, text, null,
                 qty, side, instrument);
         OrderID originalOrderID = new OrderID(origOrderID);
         assertRelatedOrderValues(order, originalOrderID, destOrderID);
@@ -202,7 +204,7 @@ public class OrderCancelTest extends TypesTestBase {
         order = sFactory.createOrderCancel(msg, brokerID);
 
         assertOrderCancel(order, expectedOrderID, originalOrderID, side,
-                instrument, securityType, qty, destOrderID, account,
+                instrument, securityType, qty, destOrderID, account, text,
                 brokerID, expectedMap);
 
         assertNotSame(order, sFactory.createOrderCancel(msg, brokerID));
@@ -285,7 +287,7 @@ public class OrderCancelTest extends TypesTestBase {
         Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderID", "clOrderID", "execID", //$NON-NLS-1$
                 OrdStatus.NEW, Side.Buy.getFIXValue(), new BigDecimal("10"), new BigDecimal("100.23"),
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), //$NON-NLS-1$
-                "accountName"); //$NON-NLS-1$
+                "accountName", "some other text"); //$NON-NLS-1$
         erMsg.setString(SecurityExchange.FIELD, "box");
 
         ExecutionReport er = sFactory.createExecutionReport(erMsg, null, Originator.Server, null, null);
@@ -305,7 +307,7 @@ public class OrderCancelTest extends TypesTestBase {
         Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("7600", "12345", "execID", //$NON-NLS-1$
                 OrdStatus.NEW, Side.Buy.getFIXValue(), new BigDecimal("10"), new BigDecimal("100.23"),
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), //$NON-NLS-1$
-                "accountName"); //$NON-NLS-1$
+                "accountName", "some text"); //$NON-NLS-1$
         erMsg.setString(OrigClOrdID.FIELD, "12222");
         erMsg.setInt(HandlInst.FIELD, HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE);
         ExecutionReport er = Factory.getInstance().createExecutionReport(erMsg, new BrokerID("broker"), Originator.Server, new UserID(7600L), new UserID(7500L));
@@ -336,6 +338,7 @@ public class OrderCancelTest extends TypesTestBase {
                                      Side inSide,
                                      Instrument inInstrument,
                                      String inAccount,
+                                     String inText,
                                      String inDestOrderID,
                                      BigDecimal inQty)
             throws FieldNotFound {
@@ -345,7 +348,7 @@ public class OrderCancelTest extends TypesTestBase {
                 inSide.getFIXValue(), inQty,
                 new BigDecimal("45.67"), new BigDecimal("23.53"),
                 new BigDecimal("983.43"), new BigDecimal("98.34"),
-                new BigDecimal("34.32"), inInstrument, inAccount);
+                new BigDecimal("34.32"), inInstrument, inAccount, inText);
     }
 
     private void checkSetters(OrderCancel inOrder) {

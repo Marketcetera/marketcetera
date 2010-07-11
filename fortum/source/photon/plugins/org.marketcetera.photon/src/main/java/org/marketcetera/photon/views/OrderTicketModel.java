@@ -1,26 +1,20 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
-import java.util.EnumSet;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.photon.ui.databinding.NewOrReplaceOrderObservable;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.NewOrReplaceOrder;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.*;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.ObjectArrays;
@@ -46,6 +40,7 @@ public abstract class OrderTicketModel {
     private final ITypedObservableValue<BigDecimal> mPrice;
     private final ITypedObservableValue<TimeInForce> mTimeInForce;
     private final ITypedObservableValue<String> mAccount;
+    private final ITypedObservableValue<String> mText;
     private final ITypedObservableValue<OrderType> mOrderType;
     private final ITypedObservableValue<Boolean> mIsLimitOrder;
     private final WritableList mCustomFieldsList = new WritableList();
@@ -60,6 +55,7 @@ public abstract class OrderTicketModel {
         mPrice = mOrderObservable.observePrice();
         mTimeInForce = mOrderObservable.observeTimeInForce();
         mAccount = mOrderObservable.observeAccount();
+        mText = mOrderObservable.observeText();
         mBrokerId = mOrderObservable.observeBrokerId();
 
         mIsLimitOrder = TypedObservableValueDecorator.decorate(
@@ -167,7 +163,14 @@ public abstract class OrderTicketModel {
     public final ITypedObservableValue<String> getAccount() {
         return mAccount;
     }
-
+    /**
+     * Returns an observable that tracks the text of the current order.
+     * 
+     * @return the text observable
+     */
+    public final ITypedObservableValue<String> getText() {
+        return mText;
+    }
     /**
      * Clear the existing order message and replace it with a new empty one.
      */
@@ -227,6 +230,12 @@ public abstract class OrderTicketModel {
                 map.put(key, value);
             }
         }
+        // TODO figure out why this gets rejected
+        String traderID = getSkeTraderID();
+        if(traderID != null) {
+//            map.put(String.valueOf(SenderSubID.FIELD),
+//                    traderID);
+        }
         if (!map.isEmpty()) {
             order.setCustomFields(map);
         }
@@ -269,7 +278,59 @@ public abstract class OrderTicketModel {
         return ObjectArrays.concat(BLANK, EnumSet.complementOf(
                 EnumSet.of(TimeInForce.Unknown)).toArray());
     }
-
+    /**
+     * Gets the set of account values as known at the time.
+     *
+     * @return an <code>Object[]</code> value
+     */
+    public String[] getAccountValues()
+    {
+        String[] accounts;
+        try {
+            Properties userdata = ClientManager.getInstance().getUserData();
+            String accountList = userdata.getProperty("com.fortum.marketcetera.photon.userdata.accounts");
+            if(accountList == null) {
+                accounts = new String[] { " " };
+            } else {
+                accounts = accountList.split("H@@H");
+            }
+        } catch (Exception ignored) {
+            accounts = new String[] { " " };
+        }
+        return accounts;
+    }
+    public String getSkeTraderID()
+    {
+        String traderID;
+        try {
+            Properties userdata = ClientManager.getInstance().getUserData();
+            traderID = userdata.getProperty("com.fortum.marketcetera.photon.userdata.ubs.ske_trader_id");
+        } catch (Exception ignored) {
+            traderID = null;
+        }
+        return traderID;
+    }
+    /**
+     * Gets the set of customer info values as known at the time.
+     *
+     * @return an <code>Object[]</code> value
+     */
+    public String[] getCustomerInfoValues()
+    {
+        String[] customerInfo;
+        try {
+            Properties userdata = ClientManager.getInstance().getUserData();
+            String customerInfoList = userdata.getProperty("com.fortum.marketcetera.photon.userdata.customerinfo");
+            if(customerInfoList == null) {
+                customerInfo = new String[] { " " };
+            } else {
+                customerInfo = customerInfoList.split("H@@H");
+            }
+        } catch (Exception ignored) {
+            customerInfo = new String[] { " " };
+        }
+        return customerInfo;
+    }
     /**
      * An object that can be used in place of null. It has a {@link #toString()}
      * value for display purposes, but it corresponds to a null model value.
