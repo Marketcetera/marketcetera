@@ -38,7 +38,8 @@ public interface IOrderTicket {
 
 	Combo getTifCombo();
 
-	Text getAccountText();
+	Combo getAccountCombo();
+    Combo getCustomerInfoCombo();
 
 	Label getErrorMessageLabel();
 	

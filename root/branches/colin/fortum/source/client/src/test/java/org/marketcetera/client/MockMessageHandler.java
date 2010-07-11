@@ -86,7 +86,7 @@ public class MockMessageHandler
                     new BigDecimal("4343.49"), new BigDecimal("498.34"),
                     new BigDecimal("783343.49"), new BigDecimal("598.34"),
                     new BigDecimal("234343.49"), new BigDecimal("798.34"),
-                    new Equity("IBM"), "my acc"),
+                    new Equity("IBM"), "my acc", "text"),
                     new BrokerID("bro"), Originator.Broker, null, null);
         } catch (MessageCreationException e) {
             throw new RuntimeException(e);

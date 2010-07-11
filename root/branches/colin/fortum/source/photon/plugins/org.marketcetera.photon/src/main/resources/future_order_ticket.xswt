@@ -56,17 +56,8 @@
                         verticalAlignment="GridData.CENTER"/>
                 </combo>
                 <composite>
-                    <layout x:class="gridLayout" numColumns="4" marginWidth="0" marginHeight="0" verticalSpacing="1" horizontalSpacing="10"/>
-                    <layoutData x:class="gridData" horizontalAlignment="SWT.FILL" horizontalSpan="5"/>
-                    <label text="Customer Info"/>
-                    <label text=""/>
-                    <label text=""/>
-                    <label text=""/>
-                    <combo x:style="BORDER|READ_ONLY" x:id="CustomerInfoCombo"/>
-                </composite>
-                <composite>
                     <layout x:class="rowLayout" x:style="HORIZONTAL"/>
-                    <layoutData x:class="gridData" verticalAlignment="SWT.BOTTOM" horizontalAlignment="SWT.END" horizontalSpan="2"/>
+                    <layoutData x:class="gridData" horizontalAlignment="GridData.END" horizontalSpan="7"/>
                     <button x:id="SendButton" x:style="PUSH" text="Send" enabled="false"/>
                     <button x:id="ClearButton" x:style="PUSH" text="Clear"/>
                 </composite>
@@ -78,10 +69,9 @@
                             horizontalAlignment="FILL"/>
                         <layout x:class="gridLayout" numColumns="2" marginWidth="6" marginHeight="1" verticalSpacing="1" horizontalSpacing="10"/>
                         <label text="Account:"/>
-                        <text x:style="BORDER" x:id="AccountText" text="">
-                            <layoutData x:class="gridData" verticalAlignment="BEGINNING"
-                                horizontalAlignment="FILL"/>
-                        </text>
+                        <combo x:style="BORDER|READ_ONLY" x:id="AccountCombo" text=""/>
+                        <label text="Customer Info:"/>
+                        <combo x:style="BORDER|READ_ONLY" x:id="CustomerInfoCombo" text=""/>
                     </composite>
                 </section>
                 <section x:id="CustomExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Custom fields" expanded="true" client="_custom_composite">

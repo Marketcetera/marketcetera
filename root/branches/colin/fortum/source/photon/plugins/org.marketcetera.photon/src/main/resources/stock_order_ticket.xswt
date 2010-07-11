@@ -67,11 +67,11 @@
 					<composite x:id="_other_composite">
 						<layoutData x:class="gridData" horizontalSpan="2" verticalAlignment="BEGINNING"
 							horizontalAlignment="FILL"/>
-						<layout x:class="rowLayout" x:style="HORIZONTAL"/>
+                        <layout x:class="gridLayout" numColumns="2" marginWidth="6" marginHeight="1" verticalSpacing="1" horizontalSpacing="10"/>
 						<label text="Account:"/>
-						<text x:style="BORDER" x:id="AccountText" text="">
-							<layoutData x:class="rowData" />
-						</text>
+                        <combo x:style="BORDER|READ_ONLY" x:id="AccountCombo" text=""/>
+                        <label text="Customer Info:"/>
+                        <combo x:style="BORDER|READ_ONLY" x:id="CustomerInfoCombo" text=""/>
 					</composite>
 				</section>
 				<section x:id="CustomExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Custom fields" expanded="true" client="_custom_composite">

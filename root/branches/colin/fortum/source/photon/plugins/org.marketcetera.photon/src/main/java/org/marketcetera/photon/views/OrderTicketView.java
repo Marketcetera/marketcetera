@@ -1,10 +1,8 @@
 package org.marketcetera.photon.views;
 
-import org.eclipse.core.databinding.AggregateValidationStatus;
-import org.eclipse.core.databinding.Binding;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.ObservablesManager;
-import org.eclipse.core.databinding.UpdateValueStrategy;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.eclipse.core.databinding.*;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
@@ -22,25 +20,11 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
@@ -61,6 +45,8 @@ import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.ibm.icu.text.NumberFormat;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /* $License$ */
 
@@ -100,6 +86,10 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
     private ComboViewer mTimeInForceComboViewer;
 
     private ComboViewer mOrderTypeComboViewer;
+
+    private ComboViewer mAccountComboViewer;
+    private ComboViewer mCustomerInfoComboViewer;
+    private final AtomicBoolean isAlive = new AtomicBoolean(true);
 
     private IValueChangeListener mFocusListener;
 
@@ -232,7 +222,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         updateSize(ticket.getQuantityText(), 10);
         updateSize(ticket.getSymbolText(), 10);
         updateSize(ticket.getPriceText(), 10);
-        updateSize(ticket.getAccountText(), 10);
 
         /*
          * Customize text fields to auto select the text on focus to make it
@@ -241,7 +230,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         selectOnFocus(ticket.getQuantityText());
         selectOnFocus(ticket.getSymbolText());
         selectOnFocus(ticket.getPriceText());
-        selectOnFocus(ticket.getAccountText());
 
         /*
          * If the ticket has no errors, enter on these fields will trigger a
@@ -254,7 +242,8 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         addSendOrderListener(ticket.getPriceText());
         addSendOrderListener(ticket.getBrokerCombo());
         addSendOrderListener(ticket.getTifCombo());
-        addSendOrderListener(ticket.getAccountText());
+        addSendOrderListener(ticket.getAccountCombo());
+        addSendOrderListener(ticket.getCustomerInfoCombo());
     }
 
     /**
@@ -295,7 +284,20 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         mTimeInForceComboViewer.setContentProvider(new ArrayContentProvider());
         mTimeInForceComboViewer
                 .setInput(getModel().getValidTimeInForceValues());
-
+        /*
+         * account combo based on userdata values
+         */
+        mAccountComboViewer = new ComboViewer(ticket.getAccountCombo());
+        mAccountComboViewer.setContentProvider(new ArrayContentProvider());
+        mAccountComboViewer.setInput(getModel().getAccountValues());
+        /*
+         * customer info combo based on userdata values
+         */
+        mCustomerInfoComboViewer = new ComboViewer(ticket.getCustomerInfoCombo());
+        mCustomerInfoComboViewer.setContentProvider(new ArrayContentProvider());
+        mCustomerInfoComboViewer.setInput(getModel().getCustomerInfoValues());
+        Thread updater = new Thread(new ComboUpdater());
+        updater.start();
         /*
          * Custom fields table.
          * 
@@ -311,7 +313,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                                 .getKnownElements(), CustomField.class,
                                 new String[] { "keyString", "valueString" })));//$NON-NLS-1$ //$NON-NLS-2$
     }
-
     /**
      * Get the UI string to show for a "new order" message.
      * 
@@ -518,13 +519,18 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          * Time in Force
          */
         bindCombo(mTimeInForceComboViewer, model.getTimeInForce());
-
         /*
          * Account
          */
-        bindText(getXSWTView().getAccountText(), model.getAccount());
+        bindRequiredCombo(mAccountComboViewer,
+                          model.getAccount(),
+                          Messages.ORDER_TICKET_VIEW_ACCOUNT__LABEL.getText());
+        enableForNewOrderOnly(mAccountComboViewer.getControl());
+        bindRequiredCombo(mCustomerInfoComboViewer,
+                          model.getText(),
+                          Messages.ORDER_TICKET_VIEW_CUSTOMER_INFO__LABEL.getText());
+        enableForNewOrderOnly(mCustomerInfoComboViewer.getControl());
     }
-
     /**
      * Bind the custom fields on the model to the view.
      */
@@ -918,5 +924,46 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                 mFocusListener);
         mObservablesManager.dispose();
         super.dispose();
+    }
+    private class ComboUpdater
+            implements Runnable
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run()
+        {
+            while(isAlive.get()) {
+                if(mAccountComboViewer.getCombo().isDisposed() ||
+                   mCustomerInfoComboViewer.getCombo().isDisposed()) {
+                    continue;
+                }
+                mAccountComboViewer.getCombo().getDisplay().asyncExec(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        updateValues(getModel().getAccountValues(),
+                                     mAccountComboViewer);
+                        updateValues(getModel().getCustomerInfoValues(),
+                                     mCustomerInfoComboViewer);
+                    }
+                });
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        }
+        private void updateValues(String[] inNewValues,
+                                  ComboViewer inControl)
+        {
+            String[] currentValues = (String[])inControl.getInput();
+            if(!Arrays.equals(currentValues, inNewValues)) {
+                inControl.setInput(inNewValues);
+                inControl.getCombo().pack(true);
+            }
+        }
     }
 }

@@ -49,10 +49,10 @@ public class PhotonControllerTest extends TestCase {
     public void testCancelAllOpenOrders() throws Exception {
         fixMessageHistory.addIncomingMessage(OrderManagerTest.createReport(msgFactory.newExecutionReport("123", "10001", "201", OrdStatus.NEW,
                 Side.BUY, new BigDecimal(10), new BigDecimal(10.10), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, new Equity("XYZ"), "tester")));
+                BigDecimal.ZERO, new Equity("XYZ"), "tester", "text")));
         fixMessageHistory.addIncomingMessage(OrderManagerTest.createReport(msgFactory.newExecutionReport("123", "10002", "201", OrdStatus.NEW,
                 Side.BUY, new BigDecimal(10), new BigDecimal(10.10), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, new Equity("BOB"), "tester")));
+                BigDecimal.ZERO, new Equity("BOB"), "tester", "text")));
         IProgressMonitor mockMonitor = mock(IProgressMonitor.class);
         photonController.cancelAllOpenOrders(mockMonitor);
         verify(mockMonitor).beginTask(Messages.PHOTON_CONTROLLER_CANCEL_ALL_ORDERS_TASK

@@ -78,6 +78,10 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"no_account"); //$NON-NLS-1$
     static final I18NMessage0P UNSUPPORTED_ACCOUNT=
         new I18NMessage0P(LOGGER,"unsupported_account"); //$NON-NLS-1$
+    static final I18NMessage0P NO_TEXT=
+        new I18NMessage0P(LOGGER,"no_text"); //$NON-NLS-1$
+    static final I18NMessage0P UNSUPPORTED_TEXT=
+        new I18NMessage0P(LOGGER,"unsupported_text"); //$NON-NLS-1$
     static final I18NMessage0P NO_ORDER_ID=
         new I18NMessage0P(LOGGER,"no_order_id"); //$NON-NLS-1$
     static final I18NMessage0P UNSUPPORTED_ORDER_ID=

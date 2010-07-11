@@ -97,7 +97,7 @@ public class MarketceteraFeed
     /**
      * static supported asset classes for this data feed
      */
-    private static final Set<AssetClass> assetClasses = Collections.unmodifiableSet(EnumSet.of(EQUITY,OPTION));
+    private static final Set<AssetClass> assetClasses = Collections.unmodifiableSet(EnumSet.of(EQUITY,OPTION,FUTURE));
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataFeed#getCapabilities()
      */

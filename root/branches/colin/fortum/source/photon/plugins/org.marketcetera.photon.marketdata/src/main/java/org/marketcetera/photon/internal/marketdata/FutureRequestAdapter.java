@@ -29,6 +29,6 @@ public class FutureRequestAdapter
     @Override
     public MarketDataRequestBuilder initializeRequest(Future inInstrument)
     {
-        return MarketDataRequestBuilder.newRequest().withAssetClass(AssetClass.EQUITY).withSymbols(inInstrument.getSymbol());
+        return MarketDataRequestBuilder.newRequest().withAssetClass(AssetClass.FUTURE).withSymbols(inInstrument.getSymbol());
     }
 }

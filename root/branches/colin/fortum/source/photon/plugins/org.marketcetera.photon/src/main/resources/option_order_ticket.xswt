@@ -85,10 +85,9 @@
 							horizontalAlignment="FILL"/>
 					    <layout x:class="gridLayout" numColumns="2" marginWidth="6" marginHeight="1" verticalSpacing="1" horizontalSpacing="10"/>
 						<label text="Account:"/>
-						<text x:style="BORDER" x:id="AccountText" text="">
-							<layoutData x:class="gridData" verticalAlignment="BEGINNING"
-								horizontalAlignment="FILL"/>
-						</text>
+                        <combo x:style="BORDER|READ_ONLY" x:id="AccountCombo" text=""/>
+                        <label text="Customer Info:"/>
+                        <combo x:style="BORDER|READ_ONLY" x:id="CustomerInfoCombo" text=""/>
 						<label text="Open/Close:"/>
 						<combo x:style="BORDER|READ_ONLY" x:id="OpenCloseCombo" text="">
 							<layoutData x:class="gridData" verticalAlignment="BEGINNING"

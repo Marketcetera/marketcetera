@@ -126,6 +126,17 @@ public class NewOrReplaceOrderObservable extends
     }
 
     /**
+     * Provides a detail observable value for the text field on the
+     * underlying order. The created observable will be disposed with this
+     * object.
+     * 
+     * @return an observable that tracks the order text
+     */
+    public ITypedObservableValue<String> observeText() {
+        return observeDetail("text", String.class); //$NON-NLS-1$
+    }
+
+    /**
      * Provides a detail observable value for the time in force field on the
      * underlying order. The created observable will be disposed with this
      * object.

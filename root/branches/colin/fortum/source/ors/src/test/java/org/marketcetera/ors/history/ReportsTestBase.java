@@ -188,7 +188,7 @@ public class ReportsTestBase extends TestCaseBase {
         return createExecReport
             (inOrderID, inOrigOrderID, inInstrument,
              inSide, inOrderStatus, inCumQuantity, inAvgPrice,
-             inLastQty, inLastPrice, inBrokerID, ACCOUNT,
+             inLastQty, inLastPrice, inBrokerID, ACCOUNT, TEXT,
              inActorID, inViewerID);
     }
     static ExecutionReport createExecReport(String inOrderID,
@@ -202,6 +202,7 @@ public class ReportsTestBase extends TestCaseBase {
                                             BigDecimal inLastPrice,
                                             BrokerID inBrokerID,
                                             String inAccount,
+                                            String inText,
                                             UserID inActorID,
                                             UserID inViewerID)
             throws Exception {
@@ -209,7 +210,7 @@ public class ReportsTestBase extends TestCaseBase {
                 "exec1", inOrderStatus.getFIXValue(), inSide.getFIXValue(),
                 new BigDecimal("23.234"), new BigDecimal("343.343"),
                 inLastQty, inLastPrice, inCumQuantity, inAvgPrice,
-                inInstrument, inAccount);
+                inInstrument, inAccount, inText);
         if (inOrigOrderID != null) {
             msg.setField(new OrigClOrdID(inOrigOrderID));
         }
@@ -388,7 +389,7 @@ public class ReportsTestBase extends TestCaseBase {
         ExecutionReport report = createExecReport(inOrderID, inOrigOrderID,
                 inInstrument, inSide, OrderStatus.PartiallyFilled, inCumQty,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
-                BROKER, inAccount, inActorID, inViewerID);
+                BROKER, inAccount, "text", inActorID, inViewerID);
         sServices.save(report);
         sleepForSignificantTime();
         return report;
@@ -435,6 +436,7 @@ public class ReportsTestBase extends TestCaseBase {
 
     protected static final BrokerID BROKER = new BrokerID("TestBroker");
     protected static final String ACCOUNT = "account";
+    protected static final String TEXT = "text";
     protected static SimpleUser sActor;
     protected static UserID sActorID;
     protected static SimpleUser sViewer;

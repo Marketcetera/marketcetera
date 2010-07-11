@@ -113,12 +113,29 @@ public class OrderBaseImpl implements OrderBase {
     public void setAccount(String inAccount) {
         mAccount = inAccount;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.OrderBase#getText()
+     */
+    @Override
+    public String getText()
+    {
+        return mText;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.OrderBase#setText(java.lang.String)
+     */
+    @Override
+    public void setText(String inText)
+    {
+        mText = inText;
+    }
     private OrderID mOrderID;
     private Side mSide;
     private BigDecimal mQuantity;
     private Map<String,String> mCustomFields;
     private BrokerID mBrokerID;
     private String mAccount;
+    private String mText;
     private Instrument mInstrument;
     private static final long serialVersionUID = 1L;
 }

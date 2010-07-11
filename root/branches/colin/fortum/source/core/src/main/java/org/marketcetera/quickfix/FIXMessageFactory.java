@@ -401,7 +401,8 @@ public class FIXMessageFactory {
             BigDecimal cumQty,
             BigDecimal avgPrice,
             Instrument instrument,
-            String inAccount) throws FieldNotFound {
+            String inAccount,
+            String inText) throws FieldNotFound {
         Message aMessage = msgFactory.create(beginString, MsgType.EXECUTION_REPORT);
         addTransactionTimeIfNeeded(aMessage);
         if (orderID != null) aMessage.setField(new OrderID(orderID));
@@ -421,6 +422,9 @@ public class FIXMessageFactory {
                 set(instrument, beginString, aMessage);
         if(inAccount != null) {
             aMessage.setField(new Account(inAccount));
+        }
+        if(inText != null) {
+            aMessage.setField(new Text(inText));
         }
         msgAugmentor.executionReportAugment(aMessage);
         return aMessage;
@@ -450,11 +454,12 @@ public class FIXMessageFactory {
             BigDecimal avgPrice,
             Instrument instrument,
             OrdRejReason rejReason,
-            String inAccount
+            String inAccount,
+            String inText
     ) throws FieldNotFound {
         Message execReport = newExecutionReport(orderID, clOrderID, execID,
                 OrdStatus.REJECTED, side, orderQty, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                cumQty, avgPrice, instrument, inAccount);
+                cumQty, avgPrice, instrument, inAccount, inText);
         addTransactionTimeIfNeeded(execReport);
         execReport.setField(rejReason);
         return execReport;

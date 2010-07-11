@@ -2,21 +2,17 @@ package org.marketcetera.trade;
 
 import java.math.BigDecimal;
 import java.util.Map;
+
+import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.ClOrdID;
-import quickfix.field.OrdType;
-import quickfix.field.OrderQty;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.Price;
-import quickfix.field.MsgType;
+import quickfix.field.*;
 
 /**
  * FIX conversion utilities.
@@ -60,7 +56,7 @@ public final class FIXConverter
                 throw new I18NException(new I18NBoundMessage1P(Messages.NO_INSTRUMENT,instrument));
             }
         } else{
-            InstrumentToMessage instrumentFunction=InstrumentToMessage.SELECTOR.
+            InstrumentToMessage<?> instrumentFunction=InstrumentToMessage.SELECTOR.
                     forInstrument(instrument);
             if (!instrumentFunction.isSupported(fixDictionary,msgType)) {
                 throw new I18NException(Messages.UNSUPPORTED_INSTRUMENT);
@@ -177,6 +173,41 @@ public final class FIXConverter
         }
     }
 
+    /**
+     * Adds the given text to the given QuickFIX/J message (of the
+     * given FIX dictionary).
+     *
+     * @param text The text. It may be null.
+     * @param fixDictionary The FIX dictionary. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
+     * @param required True if the account is required but is not set.
+     *
+     * @throws I18NException Thrown if the account is required but is
+     * not set.
+     */
+
+    private static void addText
+        (String text,
+         DataDictionary fixDictionary,
+         String msgType,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        boolean supported=
+            (fixDictionary.isMsgField(msgType,Text.FIELD));
+        if (text==null) {
+            if (supported && required) {
+                throw new I18NException(Messages.NO_TEXT);
+            }
+        } else{
+            if (!supported) {
+                throw new I18NException(Messages.UNSUPPORTED_TEXT);
+            }
+            msg.setField(new Text(text));
+        }
+    }
     /**
      * Adds the given order ID to the given QuickFIX/J message (of the
      * given FIX dictionary).
@@ -542,6 +573,7 @@ public final class FIXConverter
         addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
         addTimeInForce(o.getTimeInForce(),fixDictionary,msgType,msg,false);
         addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
+        addText(o.getText(),fixDictionary,msgType,msg,false);
         addPositionEffect(o.getPositionEffect(),fixDictionary,msgType,msg,false);
         addOrderCapacity(o.getOrderCapacity(),fixDictionary,msgType,msg,false);
         if (o.getOrderType()==OrderType.Limit) {
@@ -581,6 +613,7 @@ public final class FIXConverter
         addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
         addBrokerOrderID(o.getBrokerOrderID(),fixDictionary,msgType,msg,false);
         addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
+        addText(o.getText(),fixDictionary,msgType,msg,false);
         addCustomFields(o, msg);
         fixFactory.getMsgAugmentor().cancelRequestAugment(msg);
         return msg;
@@ -615,6 +648,7 @@ public final class FIXConverter
         addOrderType(o.getOrderType(),fixDictionary,msgType,msg,true);
         addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
         addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
+        addText(o.getText(),fixDictionary,msgType,msg,false);
         addPrice(o.getPrice(),fixDictionary,msgType,msg,false);
         addTimeInForce(o.getTimeInForce(),fixDictionary,msgType,msg,false);
         addPositionEffect(o.getPositionEffect(),fixDictionary,msgType,msg,false);
