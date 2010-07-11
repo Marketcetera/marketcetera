@@ -282,6 +282,30 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         });
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#resetDataCache()
+     */
+    @Override
+    public void resetDataCache()
+    {
+        AbstractMarketDataFeed.Data.clear();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getCachedData(java.lang.String)
+     */
+    @Override
+    public String getCachedData(String inSymbol)
+    {
+        return String.valueOf(AbstractMarketDataFeed.Data.get(inSymbol));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#displayCache()
+     */
+    @Override
+    public String displayCache()
+    {
+        return AbstractMarketDataFeed.Data.displayAll();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStart()
      */
     @Override

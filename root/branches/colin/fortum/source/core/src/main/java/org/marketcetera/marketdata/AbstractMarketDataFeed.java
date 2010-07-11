@@ -3,6 +3,11 @@ package org.marketcetera.marketdata;
 import java.util.*;
 import java.util.concurrent.*;
 
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
@@ -530,6 +535,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                     ThreadedMetric.event("mdata-translated");  //$NON-NLS-1$
                     // now publish the complete list of events in the proper order
                     for(Event event : actualEvents) {
+                        Data.process(event);
                         event.setSource(token);
                         token.publish(event);
                     }
@@ -1139,8 +1145,92 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             return true;
         }
     }
-    public static class Data
+    public interface DataProvider
     {
+        
+    }
+    /**
+     * Contains cached market data for a given symbol.
+     * 
+     * <p>This data is guaranteed to be the most recent received
+     * by any market data feed - it is <em>not</em> guaranteed to
+     * be accurate external to the system.
+     * 
+     * <p>This class consolidates market data from all active market data feeds.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ThreadSafe
+    public static class Data
+            implements Comparable<Data>
+    {
+        /**
+         * Retrieves the cached market data, if any, for the given symbol.
+         *
+         * @param inSymbol a <code>String</code> value
+         * @return a <code>Data</code> value
+         */
+        public static Data get(String inSymbol)
+        {
+            synchronized(dataMap) {
+                return dataMap.get(inSymbol);
+            }
+        }
+        /**
+         * Emits the contents of the cache.
+         *
+         * @return a <code>String</code> value
+         */
+        public static String displayAll()
+        {
+            Set<Data> allData;
+            synchronized(dataMap) {
+                allData = new TreeSet<Data>(dataMap.values());
+            }
+            StringBuffer output = new StringBuffer();
+            for(Data data : allData) {
+                output.append(data).append("\n");
+            }
+            return output.toString();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+            return result;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof Data)) {
+                return false;
+            }
+            Data other = (Data) obj;
+            if (symbol == null) {
+                if (other.symbol != null) {
+                    return false;
+                }
+            } else if (!symbol.equals(other.symbol)) {
+                return false;
+            }
+            return true;
+        }
         /**
          * Get the symbol value.
          *
@@ -1195,19 +1285,123 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         {
             return dividend;
         }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return new ToStringBuilder(this,
+                                       ToStringStyle.SHORT_PREFIX_STYLE).append("symbol",
+                                                                                symbol)
+                                                                        .append("bid",
+                                                                                bid)
+                                                                        .append("ask",
+                                                                                ask)
+                                                                        .append("trade",
+                                                                                trade)
+                                                                        .append("stat",
+                                                                                stat)
+                                                                        .append("dividend",
+                                                                                dividend).toString();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(Data inO)
+        {
+            return symbol.compareTo(inO.getSymbol());
+        }
+        /**
+         * Clears the market data cache.
+         * 
+         * <p>Note that this method affects all market data feeds.
+         */
+        protected static void clear()
+        {
+            synchronized(dataMap) {
+                dataMap.clear();
+            }
+        }
+        /**
+         * Create a new Data instance.
+         *
+         * @param inSymbol a <code>String</code> value
+         */
         private Data(String inSymbol)
         {
             symbol = inSymbol;
         }
-        private void set(Event inEvent)
+        /**
+         * Process a single market data event.
+         * 
+         * <p>Events that are not designed to be cached are ignored.
+         *
+         * @param inEvent an <code>Event</code> value
+         */
+        private static void process(Event inEvent)
         {
-            
+            if(inEvent instanceof HasInstrument) {
+                String inSymbol = ((HasInstrument)inEvent).getInstrumentAsString();
+                synchronized(dataMap) {
+                    Data data = dataMap.get(inSymbol);
+                    if(data == null) {
+                        data = new Data(inSymbol);
+                        dataMap.put(inSymbol,
+                                    data);
+                    }
+                    data.record(inEvent);
+                }
+            }
         }
+        /**
+         * Records the given event, if appropriate.
+         *
+         * @param inEvent an <code>Event</code> value
+         */
+        private void record(Event inEvent)
+        {
+            if(inEvent instanceof BidEvent) {
+                bid = (BidEvent)inEvent;
+            } else if(inEvent instanceof AskEvent) {
+                ask = (AskEvent)inEvent;
+            } else if(inEvent instanceof TradeEvent) {
+                trade = (TradeEvent)inEvent;
+            } else if(inEvent instanceof MarketstatEvent) {
+                stat = (MarketstatEvent)inEvent;
+            } else if(inEvent instanceof DividendEvent) {
+                dividend = (DividendEvent)inEvent;
+            }
+        }
+        /**
+         * the symbol of this market data
+         */
         private final String symbol;
+        /**
+         * the bid event or <code>null</code>
+         */
         private volatile BidEvent bid;
+        /**
+         * the ask event or <code>null</code>
+         */
         private volatile AskEvent ask;
+        /**
+         * the trade event or <code>null</code>
+         */
         private volatile TradeEvent trade;
+        /**
+         * the stat event or <code>null</code>
+         */
         private volatile MarketstatEvent stat;
+        /**
+         * the dividend event or <code>null</code>
+         */
         private volatile DividendEvent dividend;
+        /**
+         * the map in which market data is stored
+         */
+        @GuardedBy("dataMap")
+        private static final Map<String,Data> dataMap = new HashMap<String,Data>();
     }
 }

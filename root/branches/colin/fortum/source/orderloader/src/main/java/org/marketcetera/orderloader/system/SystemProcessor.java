@@ -117,10 +117,6 @@ public class SystemProcessor extends RowProcessor {
      */
     public static final String FIELD_ACCOUNT = "Account";  //$NON-NLS-1$
     /**
-     * The text field header name.
-     */
-    public static final String FIELD_TEXT = "Text";  //$NON-NLS-1$
-    /**
      * The Order Capacity field header name.
      */
     public static final String FIELD_ORDER_CAPACITY = "OrderCapacity";  //$NON-NLS-1$
