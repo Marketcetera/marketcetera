@@ -9,9 +9,7 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
-import org.marketcetera.event.AggregateEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.EventTranslator;
+import org.marketcetera.event.*;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.metrics.ConditionsFactory;
 import org.marketcetera.metrics.ThreadedMetric;
@@ -1140,5 +1138,76 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                 return false;
             return true;
         }
+    }
+    public static class Data
+    {
+        /**
+         * Get the symbol value.
+         *
+         * @return a <code>String</code> value
+         */
+        public String getSymbol()
+        {
+            return symbol;
+        }
+        /**
+         * Get the bid value.
+         *
+         * @return a <code>BidEvent</code> value
+         */
+        public BidEvent getBid()
+        {
+            return bid;
+        }
+        /**
+         * Get the ask value.
+         *
+         * @return a <code>AskEvent</code> value
+         */
+        public AskEvent getAsk()
+        {
+            return ask;
+        }
+        /**
+         * Get the trade value.
+         *
+         * @return a <code>TradeEvent</code> value
+         */
+        public TradeEvent getTrade()
+        {
+            return trade;
+        }
+        /**
+         * Get the stat value.
+         *
+         * @return a <code>MarketstatEvent</code> value
+         */
+        public MarketstatEvent getStat()
+        {
+            return stat;
+        }
+        /**
+         * Get the dividend value.
+         *
+         * @return a <code>DividendEvent</code> value
+         */
+        public DividendEvent getDividend()
+        {
+            return dividend;
+        }
+        private Data(String inSymbol)
+        {
+            symbol = inSymbol;
+        }
+        private void set(Event inEvent)
+        {
+            
+        }
+        private final String symbol;
+        private volatile BidEvent bid;
+        private volatile AskEvent ask;
+        private volatile TradeEvent trade;
+        private volatile MarketstatEvent stat;
+        private volatile DividendEvent dividend;
     }
 }

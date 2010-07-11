@@ -138,7 +138,7 @@ public enum FutureExpirationMonth
                         inWeekOfYear <= 53,
                         Messages.INVALID_WEEK.getText(inWeekOfYear));
         Calendar calendar = Calendar.getInstance();
-        calendar.setLenient(false);
+        calendar.setLenient(true);
         calendar.set(Calendar.YEAR,
                      inYear);
         calendar.set(Calendar.WEEK_OF_YEAR,

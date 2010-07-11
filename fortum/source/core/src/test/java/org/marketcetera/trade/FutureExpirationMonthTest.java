@@ -158,57 +158,61 @@ public class FutureExpirationMonthTest
     public void testGetByWeekOfYear()
             throws Exception
     {
-       for(int counter=-1;counter<=53;counter++) {
+       for(int counter=-1;counter<=54;counter++) {
            if(counter >=1 &&
-              counter <= 52) {
-               if(counter <= 5) {
+              counter <= 53) {
+               if(counter == 1) {
+                   assertEquals(FutureExpirationMonth.DECEMBER,
+                                FutureExpirationMonth.getByWeekOfYear(counter,
+                                                                      2009));
+               } else if(counter <= 6) {
                    assertEquals(FutureExpirationMonth.JANUARY,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 9) {
+                                                                      2010));
+               } else if(counter <= 10) {
                    assertEquals(FutureExpirationMonth.FEBRUARY,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 13) {
+                                                                      2010));
+               } else if(counter <= 14) {
                    assertEquals(FutureExpirationMonth.MARCH,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 17) {
+                                                                      2010));
+               } else if(counter <= 18) {
                    assertEquals(FutureExpirationMonth.APRIL,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 22) {
+                                                                      2010));
+               } else if(counter <= 23) {
                    assertEquals(FutureExpirationMonth.MAY,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 26) {
+                                                                      2010));
+               } else if(counter <= 27) {
                    assertEquals(FutureExpirationMonth.JUNE,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
+                                                                      2010));
                } else if(counter <= 31) {
                    assertEquals(FutureExpirationMonth.JULY,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 35) {
+                                                                      2010));
+               } else if(counter <= 36) {
                    assertEquals(FutureExpirationMonth.AUGUST,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 39) {
+                                                                      2010));
+               } else if(counter <= 40) {
                    assertEquals(FutureExpirationMonth.SEPTEMBER,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 44) {
+                                                                      2010));
+               } else if(counter <= 45) {
                    assertEquals(FutureExpirationMonth.OCTOBER,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 48) {
+                                                                      2010));
+               } else if(counter <= 49) {
                    assertEquals(FutureExpirationMonth.NOVEMBER,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
-               } else if(counter <= 52) {
+                                                                      2010));
+               } else if(counter <= 53) {
                    assertEquals(FutureExpirationMonth.DECEMBER,
                                 FutureExpirationMonth.getByWeekOfYear(counter,
-                                                                                     2010));
+                                                                      2010));
                }
            } else {
                final int value = counter;
@@ -218,7 +222,7 @@ public class FutureExpirationMonthTest
                            throws Exception
                    {
                        FutureExpirationMonth.getByWeekOfYear(value,
-                                                                            2010);
+                                                             2010);
                    }
                };
            }
