@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -46,6 +47,7 @@ public class RiskManagerTest
     public static void once()
             throws Exception
     {
+        LoggerConfiguration.logSetup();
         msgFactory = fixVersion.getMessageFactory();
         fixDD = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         if(fixDD == null) {
@@ -565,6 +567,152 @@ public class RiskManagerTest
                     }
                 };
             }
+        }
+    }
+    /**
+     * Tests orders which deviate from the last trade less than the allowed percentage.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMaxDeviationFromLastLessThanLimit()
+            throws Exception
+    {
+        OrderList orders = OrderList.generate(new BigDecimal("7.75"),
+                                              new BigDecimal("5"));
+        setLimits(new BigDecimal(100),
+                  new BigDecimal(100),
+                  new BigDecimal(.25),
+                  new BigDecimal(1));
+        setupMarketdata(new BigDecimal("10"),
+                        new BigDecimal("9"),
+                        new BigDecimal("11"));
+        for(final Pair<OrderAttributes,Order> orderPair : orders) {
+            RiskManager.INSTANCE.inspect(orderPair.getSecondMember());
+        }
+    }
+    /**
+     * Tests orders which deviate from the last trade equals the allowed percentage.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMaxDeviationFromLastEqualsLimit()
+            throws Exception
+    {
+        OrderList orders = OrderList.generate(new BigDecimal("7.50"),
+                                              new BigDecimal("5"));
+        setLimits(new BigDecimal(100),
+                  new BigDecimal(100),
+                  new BigDecimal(.40),
+                  new BigDecimal(1));
+        setupMarketdata(new BigDecimal("10"),
+                        new BigDecimal("10"),
+                        new BigDecimal("14"));
+        for(final Pair<OrderAttributes,Order> orderPair : orders) {
+            RiskManager.INSTANCE.inspect(orderPair.getSecondMember());
+        }
+    }
+    /**
+     * Tests orders which deviate from the last trade equals the allowed percentage.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMaxDeviationFromLastGreaterThanLimit()
+            throws Exception
+    {
+        OrderList orders = OrderList.generate(new BigDecimal("7.45"),
+                                              new BigDecimal("5"));
+        setLimits(new BigDecimal(100),
+                  new BigDecimal(100),
+                  new BigDecimal(.25),
+                  new BigDecimal(1));
+        setupMarketdata(new BigDecimal("10"),
+                        new BigDecimal("7.45"),
+                        new BigDecimal("12.55"));
+        for(final Pair<OrderAttributes,Order> orderPair : orders) {
+            new ExpectedFailure<UserLimitViolation>(Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED) {
+                @Override
+                protected void run()
+                        throws Exception
+                {
+                    RiskManager.INSTANCE.inspect(orderPair.getSecondMember());
+                }
+            };
+        }
+    }
+    /**
+     * Tests orders which deviate from the last mid-point less than the allowed percentage.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMaxDeviationFromMidLessThanLimit()
+            throws Exception
+    {
+        OrderList orders = OrderList.generate(new BigDecimal("7.75"),
+                                              new BigDecimal("5"));
+        setLimits(new BigDecimal(100),
+                  new BigDecimal(100),
+                  new BigDecimal(.41),
+                  new BigDecimal(1));
+        setupMarketdata(new BigDecimal("10"),
+                        new BigDecimal("10"),
+                        new BigDecimal("14"));
+        for(final Pair<OrderAttributes,Order> orderPair : orders) {
+            RiskManager.INSTANCE.inspect(orderPair.getSecondMember());
+        }
+    }
+    /**
+     * Tests orders which deviate from the last mid-point exactly the allowed percentage.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMaxDeviationFromMidEqualLimit()
+            throws Exception
+    {
+        OrderList orders = OrderList.generate(new BigDecimal("7.75"),
+                                              new BigDecimal("5"));
+        setLimits(new BigDecimal(100),
+                  new BigDecimal(100),
+                  new BigDecimal(1),
+                  new BigDecimal(.30));
+        setupMarketdata(new BigDecimal("11"),
+                        new BigDecimal("10"),
+                        new BigDecimal("12"));
+        for(final Pair<OrderAttributes,Order> orderPair : orders) {
+            RiskManager.INSTANCE.inspect(orderPair.getSecondMember());
+        }
+    }
+    /**
+     * Tests orders which deviate from the last mid-point more than the allowed percentage.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testMaxDeviationFromMidGreaterThanLimit()
+            throws Exception
+    {
+        OrderList orders = OrderList.generate(new BigDecimal("7.75"),
+                                              new BigDecimal("5"));
+        setLimits(new BigDecimal(100),
+                  new BigDecimal(100),
+                  new BigDecimal(1),
+                  new BigDecimal(.10));
+        setupMarketdata(new BigDecimal("11"),
+                        new BigDecimal("8"),
+                        new BigDecimal("12"));
+        for(final Pair<OrderAttributes,Order> orderPair : orders) {
+            new ExpectedFailure<UserLimitViolation>(Messages.MAX_DEVIATION_FROM_MID_EXCEEDED) {
+                @Override
+                protected void run()
+                        throws Exception
+                {
+                    RiskManager.INSTANCE.inspect(orderPair.getSecondMember());
+                }
+            };
         }
     }
     /**

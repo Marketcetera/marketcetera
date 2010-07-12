@@ -15,6 +15,7 @@ import org.marketcetera.marketdata.AbstractMarketDataFeed.Data;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.log.I18NBoundMessage5P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.FieldNotFound;
@@ -46,7 +47,6 @@ public enum RiskManager
     public void inspect(Order inOrder)
             throws UserLimitViolation,UserLimitWarning, ClientInitException, FieldNotFound, ConnectionException
     {
-        System.out.println(inOrder);
         if(inOrder == null) {
             throw new NullPointerException();
         }
@@ -149,15 +149,17 @@ public enum RiskManager
             }
         }
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "Beginning risk manager inspection of {} for {} with price={}, quantity={}, adjustedQuantity={}",
-                               orderID,
-                               instrument,
+                               "Beginning risk manager inspection of {} with price={}, quantity={}, adjustedQuantity={}",
+                               inOrder,
                                price,
                                quantity,
                                adjustedQuantity);
         SymbolDataCollection allSymbolData = new SymbolDataCollection();
         SymbolData symbolData = allSymbolData.getSymbolData(instrument.getSymbol());
         if(symbolData == null) {
+            Messages.NO_SYMBOL_DATA.error(RiskManager.class,
+                                          orderID,
+                                          instrument.getSymbol());
             throw new UserLimitViolation(new I18NBoundMessage2P(Messages.NO_SYMBOL_DATA,
                                                                 orderID,
                                                                 instrument.getSymbol()));
@@ -166,14 +168,23 @@ public enum RiskManager
                                "Using {}",
                                symbolData);
         // condition #1 - price cannot be less than 0.01 (for a limit order)
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "** Test #1 - Price cannot be less than 0.01 **");
         if(type == OrderType.Limit &&
            price.compareTo(PENNY) == -1) {
+            Messages.LESS_THAN_A_PENNY.error(RiskManager.class,
+                                             orderID,
+                                             price);
             throw new UserLimitViolation(new I18NBoundMessage2P(Messages.LESS_THAN_A_PENNY,
                                                                 orderID,
                                                                 price));
         }
-        // condition #2 - eternal loop - this is harder than it looks, skipping for now
+        // condition #2 - endless loop - this is harder than it looks, skipping for now
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "** Test #2 - Checking for endless loop **");
         // condition #3 - max position limit
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "** Test #3 - Projected position less than limit **");
         BigDecimal position;
         if(instrument instanceof Equity) {
             position = client.getEquityPositionAsOf(new Date(),
@@ -190,54 +201,98 @@ public enum RiskManager
         if(position == null) {
             position = BigDecimal.ZERO;
         }
-        System.out.println("Current position is " + position);
-        System.out.println("adjusted quantity is " + adjustedQuantity);
-        System.out.println("Maximum position is " + symbolData.getMaximumPosition());
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "Starting position of {} is {}",
+                               instrument,
+                               position);
         BigDecimal projectedAbsolutePosition = position.add(adjustedQuantity).abs();
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "Projected absolute position is {} max is {}",
+                               projectedAbsolutePosition,
+                               symbolData.getMaximumPosition());
         if(projectedAbsolutePosition.compareTo(symbolData.getMaximumPosition().abs()) == 1) {
+            Messages.POSITION_LIMIT_EXCEEDED.error(RiskManager.class,
+                                                   orderID,
+                                                   projectedAbsolutePosition,
+                                                   symbolData.getMaximumPosition());
             throw new UserLimitViolation(new I18NBoundMessage3P(Messages.POSITION_LIMIT_EXCEEDED,
                                                                 orderID,
                                                                 projectedAbsolutePosition,
                                                                 symbolData.getMaximumPosition()));
         }
-        // condition #4 maximum value of trade
-        BigDecimal value = quantity.multiply(price); 
-        System.out.println("Trade value: " + value);
-        System.out.println("Max allowed value: " + symbolData.getMaximumTradeValue());
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "** Test #4 - Total trade value less than maximum **");
+        BigDecimal value = quantity.multiply(price); // TODO multiply by contract size?
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "Total computed value is {} max is {}",
+                               value,
+                               symbolData.getMaximumTradeValue());
         if(value.compareTo(symbolData.getMaximumTradeValue()) == 1) {
+            Messages.VALUE_LIMIT_EXCEEDED.error(RiskManager.class,
+                                                orderID,
+                                                value,
+                                                symbolData.getMaximumTradeValue());
             throw new UserLimitViolation(new I18NBoundMessage3P(Messages.VALUE_LIMIT_EXCEEDED,
                                                                 orderID,
                                                                 value,
                                                                 symbolData.getMaximumTradeValue()));
         }
-        // condition #5 maximum deviation from last traded price
         TradeEvent lastTrade = marketdata.getTrade();
-        System.out.println("Last trade: " + lastTrade.getPrice());
-        System.out.println("Current price: " + price);
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "** Test #5 - Maximum deviation from last traded price **");
         BigDecimal absoluteDeviationFromLastTrade = (lastTrade.getPrice().subtract(price).abs()).divide(lastTrade.getPrice(),
+                                                                                                        4,
                                                                                                         RoundingMode.HALF_UP);
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "LastPrice: {} CurrentPrice: {} AbsoluteDeviationFromLast: {} Maximum: {}",
+                               lastTrade.getPrice(),
+                               price,
+                               absoluteDeviationFromLastTrade,
+                               symbolData.getMaximumDeviationFromLast());
         if(absoluteDeviationFromLastTrade.compareTo(symbolData.getMaximumDeviationFromLast()) == 1) {
-            throw new UserLimitWarning(new I18NBoundMessage2P(Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED,
+            Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED.warn(RiskManager.class,
+                                                           orderID,
+                                                           price,
+                                                           lastTrade.getPrice(),
+                                                           absoluteDeviationFromLastTrade,
+                                                           symbolData.getMaximumDeviationFromLast());
+            throw new UserLimitWarning(new I18NBoundMessage5P(Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED,
+                                                              orderID,
+                                                              price,
+                                                              lastTrade.getPrice(),
                                                               absoluteDeviationFromLastTrade,
                                                               symbolData.getMaximumDeviationFromLast()));
         }
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "** Test #6 - Maximum deviation from last mid quote **");
         BigDecimal lastBid = marketdata.getBid().getPrice();
         BigDecimal lastAsk = marketdata.getAsk().getPrice();
-        BigDecimal mid = lastAsk.subtract(lastBid).abs().divide(new BigDecimal(2),
-                                                                RoundingMode.HALF_UP);
-        System.out.println("Last bid: " + lastBid);
-        System.out.println("Last ask: " + lastAsk);
-        System.out.println("Mid point: " + mid);
-        if(mid.compareTo(BigDecimal.ZERO) == 0) {
-            // TODO warn?
-        } else {
-            BigDecimal absoluteDeviationFromLastMid = (mid.subtract(price).abs()).divide(mid,
-                                                                                         RoundingMode.HALF_UP);
-            if(absoluteDeviationFromLastMid.compareTo(symbolData.getMaximumDeviationFromMid()) == 1) {
-                throw new UserLimitWarning(new I18NBoundMessage2P(Messages.MAX_DEVIATION_FROM_MID_EXCEEDED,
-                                                                  absoluteDeviationFromLastMid,
-                                                                  symbolData.getMaximumDeviationFromMid()));
-            }
+        BigDecimal mid = lastAsk.add(lastBid).divide(new BigDecimal(2),
+                                                     RoundingMode.HALF_UP);
+        BigDecimal absoluteDeviationFromLastMid = (mid.subtract(price).abs()).divide(mid,
+                                                                                     4,
+                                                                                     RoundingMode.HALF_UP);
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "Last bid is {} Last ask is {} Mid is {} Price is {} AbsoluteDeviation is {} Max is {}",
+                               lastBid,
+                               lastAsk,
+                               mid,
+                               price,
+                               absoluteDeviationFromLastMid,
+                               symbolData.getMaximumDeviationFromMid());
+        if(absoluteDeviationFromLastMid.compareTo(symbolData.getMaximumDeviationFromMid()) == 1) {
+            Messages.MAX_DEVIATION_FROM_MID_EXCEEDED.warn(RiskManager.class,
+                                                          orderID,
+                                                          price,
+                                                          mid,
+                                                          absoluteDeviationFromLastMid,
+                                                          symbolData.getMaximumDeviationFromMid());
+            throw new UserLimitWarning(new I18NBoundMessage5P(Messages.MAX_DEVIATION_FROM_MID_EXCEEDED,
+                                                              orderID,
+                                                              price,
+                                                              mid,
+                                                              absoluteDeviationFromLastMid,
+                                                              symbolData.getMaximumDeviationFromMid()));
         }
     }
     /**

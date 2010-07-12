@@ -49,10 +49,10 @@ public interface Messages
                                                                   "value_limit_exceeded");  //$NON-NLS-1$
     public I18NMessage2P NO_TRADE_DATA = new I18NMessage2P(LOGGER,
                                                            "no_trade_data");  //$NON-NLS-1$
-    public I18NMessage2P MAX_DEVIATION_FROM_LAST_EXCEEDED = new I18NMessage2P(LOGGER,
+    public I18NMessage5P MAX_DEVIATION_FROM_LAST_EXCEEDED = new I18NMessage5P(LOGGER,
                                                                               "max_deviation_from_last_exceeded");  //$NON-NLS-1$
     public I18NMessage0P NO_QUOTE_DATA = new I18NMessage0P(LOGGER,
                                                            "no_quote_data");  //$NON-NLS-1$
-    public I18NMessage2P MAX_DEVIATION_FROM_MID_EXCEEDED = new I18NMessage2P(LOGGER,
+    public I18NMessage5P MAX_DEVIATION_FROM_MID_EXCEEDED = new I18NMessage5P(LOGGER,
                                                                              "max_deviation_from_mid_exceeded");  //$NON-NLS-1$
 }

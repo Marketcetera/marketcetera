@@ -1,7 +1,9 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
@@ -230,11 +232,10 @@ public abstract class OrderTicketModel {
                 map.put(key, value);
             }
         }
-        // TODO figure out why this gets rejected
         String traderID = getSkeTraderID();
         if(traderID != null) {
-//            map.put(String.valueOf(SenderSubID.FIELD),
-//                    traderID);
+            map.put(String.valueOf(65),
+                    traderID);
         }
         if (!map.isEmpty()) {
             order.setCustomFields(map);
