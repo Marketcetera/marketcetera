@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokersStatus;
@@ -78,7 +79,7 @@ public class RiskManagerTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testSmallOrder()
             throws Exception
     {
