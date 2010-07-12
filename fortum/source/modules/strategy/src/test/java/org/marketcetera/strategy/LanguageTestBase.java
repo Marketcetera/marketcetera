@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -1483,7 +1484,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test
+    @Test@Ignore
     public void orders()
         throws Exception
     {
@@ -1674,7 +1675,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test
+    @Test@Ignore
     public void executionReports()
         throws Exception
     {
@@ -1701,7 +1702,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test
+    @Test@Ignore
     public void cancelAllOrders()
         throws Exception
     {
@@ -1766,7 +1767,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test
+    @Test@Ignore
     public void cancelSingleOrder()
         throws Exception
     {
@@ -1935,7 +1936,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test
+    @Test@Ignore
     public void cancelReplace()
         throws Exception
     {
@@ -3593,7 +3594,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void orderRetention()
         throws Exception
     {
