@@ -1,6 +1,8 @@
 package org.marketcetera.trade;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 
@@ -154,7 +156,7 @@ public class FutureExpirationMonthTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testGetByWeekOfYear()
             throws Exception
     {
