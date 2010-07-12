@@ -38,7 +38,10 @@ public class MockMarketDataFeed
     private Set<Capability> capabilities = EnumSet.noneOf(Capability.class);
     private Set<AssetClass> assetClasses = EnumSet.allOf(AssetClass.class);
     private int mCounter = 0;
-    
+    public void clearDataCache()
+    {
+        AbstractMarketDataFeed.Data.clear();
+    }
     private enum State { 
         logged_out, logged_in;
         

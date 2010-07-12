@@ -158,7 +158,7 @@ public interface Client {
      * @throws ConnectionException if there were connection errors fetching
      * data from the server.
      */
-    public BigDecimal getFuturePositionAsOf(Date inDate, Future inEquity)
+    public BigDecimal getFuturePositionAsOf(Date inDate, Future inFuture)
             throws ConnectionException;
     /**
      * Returns all open future positions based on reports,

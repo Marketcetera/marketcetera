@@ -1,16 +1,18 @@
 package org.marketcetera.client.userlimit;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ConnectionException;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.AbstractMarketDataFeed.Data;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -32,16 +34,19 @@ public enum RiskManager
 {
     INSTANCE;
     /**
-     * 
+     * Inspects the given order according to established order limits.
      *
-     *
-     * @param inOrder
-     * @throws I18NException
-     * @throws FieldNotFound 
+     * @param inOrder an <code>Order</code> value
+     * @throws UserLimitViolation if a hard limit is violated
+     * @throws UserLimitWarning if a soft limit is violated
+     * @throws ClientInitException if the client is not ready to deliver data
+     * @throws FieldNotFound if a FIX order is given and a particular field is not available
+     * @throws ConnectionException if an error occured connecting to the server
      */
     public void inspect(Order inOrder)
-            throws I18NException, FieldNotFound
+            throws UserLimitViolation,UserLimitWarning, ClientInitException, FieldNotFound, ConnectionException
     {
+        System.out.println(inOrder);
         if(inOrder == null) {
             throw new NullPointerException();
         }
@@ -57,6 +62,7 @@ public enum RiskManager
         Instrument instrument;
         Side side;
         OrderID orderID;
+        OrderType type;
         if(inOrder instanceof OrderSingle) {
             OrderSingle single = (OrderSingle)inOrder;
             price = single.getPrice();
@@ -64,6 +70,7 @@ public enum RiskManager
             side = single.getSide();
             quantity = single.getQuantity();
             orderID = single.getOrderID();
+            type = single.getOrderType();
         } else if(inOrder instanceof OrderReplace) {
             OrderReplace replace = (OrderReplace)inOrder;
             price = replace.getPrice();
@@ -71,10 +78,9 @@ public enum RiskManager
             instrument = replace.getInstrument();
             side = replace.getSide();
             orderID = replace.getOrderID();
+            type = replace.getOrderType();
         } else if(inOrder instanceof FIXOrder) {
             FIXOrder order = (FIXOrder)inOrder;
-            Price priceField = new Price();
-            price = order.getMessage().getField(priceField).getValue();
             quickfix.field.Side sideField = new quickfix.field.Side();
             order.getMessage().getField(sideField);
             if(sideField.valueEquals(quickfix.field.Side.BUY)) {
@@ -85,6 +91,23 @@ public enum RiskManager
                 side = Side.SellShort;
             } else {
                 throw new UnsupportedOperationException();
+            }
+            quickfix.field.OrdType typeField = new quickfix.field.OrdType();
+            order.getMessage().getField(typeField);
+            switch(typeField.getValue()) {
+                case quickfix.field.OrdType.LIMIT:
+                    type = OrderType.Limit;
+                    break;
+                case quickfix.field.OrdType.MARKET:
+                    type = OrderType.Market;
+                    break;
+                default :
+                    throw new UnsupportedOperationException();
+            }
+            price = null;
+            if(type == OrderType.Limit) {
+                Price priceField = new Price();
+                price = order.getMessage().getField(priceField).getValue();
             }
             instrument = InstrumentFromMessage.SELECTOR.forValue(order.getMessage()).extract(order.getMessage());
             Quantity quantityField = new Quantity();
@@ -107,28 +130,50 @@ public enum RiskManager
         } else {
             adjustedQuantity = quantity;
         }
+        Data marketdata = AbstractMarketDataFeed.Data.get(instrument.getSymbol());
+        if(marketdata == null ||
+           marketdata.getTrade() == null) {
+            throw new UserLimitViolation(new I18NBoundMessage2P(Messages.NO_TRADE_DATA,
+                                                                orderID,
+                                                                instrument.getSymbol()));
+        }
+        if(marketdata.getBid() == null ||
+           marketdata.getAsk() == null) {
+            throw new UserLimitWarning(Messages.NO_QUOTE_DATA);
+        }
+        if(type == OrderType.Market) {
+            if(side == Side.Buy) {
+                price = marketdata.getAsk().getPrice();
+            } else {
+                price = marketdata.getBid().getPrice();
+            }
+        }
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "Beginning risk manager inspection of {} with price={}, quantity={}, adjustedQuantity={}",
-                               inOrder,
+                               "Beginning risk manager inspection of {} for {} with price={}, quantity={}, adjustedQuantity={}",
+                               orderID,
+                               instrument,
                                price,
                                quantity,
                                adjustedQuantity);
-        // condition #1 - price cannot be less than 0.01
-        if(price.compareTo(PENNY) == -1) {
-            throw new UserLimitViolation(new I18NBoundMessage2P(Messages.LESS_THAN_A_PENNY,
-                                                                orderID,
-                                                                price));
-        }
-        // condition #2 - eternal loop - this is harder than it looks, skipping for now
-        // further set of conditions require user limits to continue
         SymbolDataCollection allSymbolData = new SymbolDataCollection();
-        // condition #3 - max position limit
         SymbolData symbolData = allSymbolData.getSymbolData(instrument.getSymbol());
         if(symbolData == null) {
             throw new UserLimitViolation(new I18NBoundMessage2P(Messages.NO_SYMBOL_DATA,
                                                                 orderID,
                                                                 instrument.getSymbol()));
         }
+        SLF4JLoggerProxy.debug(RiskManager.class,
+                               "Using {}",
+                               symbolData);
+        // condition #1 - price cannot be less than 0.01 (for a limit order)
+        if(type == OrderType.Limit &&
+           price.compareTo(PENNY) == -1) {
+            throw new UserLimitViolation(new I18NBoundMessage2P(Messages.LESS_THAN_A_PENNY,
+                                                                orderID,
+                                                                price));
+        }
+        // condition #2 - eternal loop - this is harder than it looks, skipping for now
+        // condition #3 - max position limit
         BigDecimal position;
         if(instrument instanceof Equity) {
             position = client.getEquityPositionAsOf(new Date(),
@@ -145,6 +190,9 @@ public enum RiskManager
         if(position == null) {
             position = BigDecimal.ZERO;
         }
+        System.out.println("Current position is " + position);
+        System.out.println("adjusted quantity is " + adjustedQuantity);
+        System.out.println("Maximum position is " + symbolData.getMaximumPosition());
         BigDecimal projectedAbsolutePosition = position.add(adjustedQuantity).abs();
         if(projectedAbsolutePosition.compareTo(symbolData.getMaximumPosition().abs()) == 1) {
             throw new UserLimitViolation(new I18NBoundMessage3P(Messages.POSITION_LIMIT_EXCEEDED,
@@ -154,6 +202,8 @@ public enum RiskManager
         }
         // condition #4 maximum value of trade
         BigDecimal value = quantity.multiply(price); 
+        System.out.println("Trade value: " + value);
+        System.out.println("Max allowed value: " + symbolData.getMaximumTradeValue());
         if(value.compareTo(symbolData.getMaximumTradeValue()) == 1) {
             throw new UserLimitViolation(new I18NBoundMessage3P(Messages.VALUE_LIMIT_EXCEEDED,
                                                                 orderID,
@@ -161,32 +211,33 @@ public enum RiskManager
                                                                 symbolData.getMaximumTradeValue()));
         }
         // condition #5 maximum deviation from last traded price
-        Data marketdata = provider.getData(instrument.getSymbol());
-        if(marketdata == null ||
-           marketdata.getTrade() == null) {
-            throw new UserLimitViolation(new I18NBoundMessage2P(Messages.NO_TRADE_DATA,
-                                                                orderID,
-                                                                instrument.getSymbol()));
-        }
         TradeEvent lastTrade = marketdata.getTrade();
-        BigDecimal absoluteDeviationFromLastTrade = (lastTrade.getPrice().subtract(price).abs()).divide(lastTrade.getPrice());
+        System.out.println("Last trade: " + lastTrade.getPrice());
+        System.out.println("Current price: " + price);
+        BigDecimal absoluteDeviationFromLastTrade = (lastTrade.getPrice().subtract(price).abs()).divide(lastTrade.getPrice(),
+                                                                                                        RoundingMode.HALF_UP);
         if(absoluteDeviationFromLastTrade.compareTo(symbolData.getMaximumDeviationFromLast()) == 1) {
             throw new UserLimitWarning(new I18NBoundMessage2P(Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED,
                                                               absoluteDeviationFromLastTrade,
                                                               symbolData.getMaximumDeviationFromLast()));
         }
-        if(marketdata.getBid() == null ||
-           marketdata.getAsk() == null) {
-            throw new UserLimitWarning(Messages.NO_QUOTE_DATA);
-        }
         BigDecimal lastBid = marketdata.getBid().getPrice();
         BigDecimal lastAsk = marketdata.getAsk().getPrice();
-        BigDecimal mid = lastAsk.subtract(lastBid).abs().divide(new BigDecimal(2));
-        BigDecimal absoluteDeviationFromLastMid = (mid.subtract(price).abs()).divide(mid);
-        if(absoluteDeviationFromLastMid.compareTo(symbolData.getMaximumDeviationFromMid()) == 1) {
-            throw new UserLimitWarning(new I18NBoundMessage2P(Messages.MAX_DEVIATION_FROM_MID_EXCEEDED,
-                                                              absoluteDeviationFromLastMid,
-                                                              symbolData.getMaximumDeviationFromMid()));
+        BigDecimal mid = lastAsk.subtract(lastBid).abs().divide(new BigDecimal(2),
+                                                                RoundingMode.HALF_UP);
+        System.out.println("Last bid: " + lastBid);
+        System.out.println("Last ask: " + lastAsk);
+        System.out.println("Mid point: " + mid);
+        if(mid.compareTo(BigDecimal.ZERO) == 0) {
+            // TODO warn?
+        } else {
+            BigDecimal absoluteDeviationFromLastMid = (mid.subtract(price).abs()).divide(mid,
+                                                                                         RoundingMode.HALF_UP);
+            if(absoluteDeviationFromLastMid.compareTo(symbolData.getMaximumDeviationFromMid()) == 1) {
+                throw new UserLimitWarning(new I18NBoundMessage2P(Messages.MAX_DEVIATION_FROM_MID_EXCEEDED,
+                                                                  absoluteDeviationFromLastMid,
+                                                                  symbolData.getMaximumDeviationFromMid()));
+            }
         }
     }
     /**
@@ -194,25 +245,7 @@ public enum RiskManager
      */
     private static final BigDecimal PENNY = new BigDecimal("0.01");
     /**
-     * 
+     * client used to retrieve data
      */
     Client client;
-    MarketDataProvider provider = new MarketDataProvider() {
-        @Override
-        public Data getData(String inSymbol)
-        {
-            return AbstractMarketDataFeed.Data.get(inSymbol);
-        }
-    };
-    /**
-     *
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    interface MarketDataProvider
-    {
-        Data getData(String inSymbol); 
-    }
 }
