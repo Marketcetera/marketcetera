@@ -522,9 +522,8 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         /*
          * Account
          */
-        bindRequiredCombo(mAccountComboViewer,
-                          model.getAccount(),
-                          Messages.ORDER_TICKET_VIEW_ACCOUNT__LABEL.getText());
+        bindCombo(mAccountComboViewer,
+                  model.getAccount());
         enableForNewOrderOnly(mAccountComboViewer.getControl());
         bindRequiredCombo(mCustomerInfoComboViewer,
                           model.getText(),

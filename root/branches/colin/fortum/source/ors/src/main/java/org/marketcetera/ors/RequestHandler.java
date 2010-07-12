@@ -3,6 +3,7 @@ package org.marketcetera.ors;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.concurrent.Callable;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
@@ -21,44 +22,16 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.FIXConverter;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.Order;
-import org.marketcetera.trade.OrderBase;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
-import quickfix.ConfigError;
-import quickfix.DataDictionary;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.SessionNotFound;
-import quickfix.field.AvgPx;
-import quickfix.field.BusinessRejectReason;
-import quickfix.field.CumQty;
-import quickfix.field.CxlRejResponseTo;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.LastPx;
-import quickfix.field.LastShares;
-import quickfix.field.MsgSeqNum;
-import quickfix.field.MsgType;
-import quickfix.field.OrdStatus;
+
+import quickfix.*;
+import quickfix.field.*;
 import quickfix.field.OrderID;
-import quickfix.field.SenderCompID;
-import quickfix.field.SendingTime;
-import quickfix.field.TargetCompID;
-import quickfix.field.Text;
 
 /**
  * A handler for incoming trade requests (orders).
@@ -239,7 +212,13 @@ public class RequestHandler
         msg.getHeader().setField(new SenderCompID(SELF_SENDER_COMP_ID));
         msg.getHeader().setField(new TargetCompID(SELF_TARGET_COMP_ID));
         msg.getHeader().setField(new SendingTime(new Date()));
-
+        SymbolSfx ske = new SymbolSfx();
+        try {
+            msg.getField(ske);
+            msg.removeField(SymbolSfx.FIELD);
+            msg.getHeader().setField(new SenderSubID(ske.getValue()));
+        } catch (FieldNotFound ignored) {}
+        
         // This indirectly adds body length and checksum.
         msg.toString();
     }
