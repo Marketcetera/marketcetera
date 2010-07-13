@@ -50,4 +50,10 @@ public interface FutureEvent
      *  did not have a provider symbol
      */
     public String getProviderSymbol();
+    /**
+     * Returns the contract size.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getContractSize();
 }

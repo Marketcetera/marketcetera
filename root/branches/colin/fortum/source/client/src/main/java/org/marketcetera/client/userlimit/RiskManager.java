@@ -9,6 +9,7 @@ import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ConnectionException;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
+import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.AbstractMarketDataFeed.Data;
@@ -17,6 +18,7 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.I18NBoundMessage5P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.field.Price;
@@ -25,12 +27,13 @@ import quickfix.field.Quantity;
 /* $License$ */
 
 /**
- *
+ * Provides tools that guarantee orders are within allowable limits.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public enum RiskManager
 {
     INSTANCE;
@@ -47,6 +50,11 @@ public enum RiskManager
     public void inspect(Order inOrder)
             throws UserLimitViolation,UserLimitWarning, ClientInitException, FieldNotFound, ConnectionException
     {
+        if(SLF4JLoggerProxy.isDebugEnabled("no.risk.manager")) {
+            SLF4JLoggerProxy.warn(RiskManager.class,
+                                  "Warning - risk manager disabled");
+            return;
+        }
         if(inOrder == null) {
             throw new NullPointerException();
         }
@@ -222,7 +230,11 @@ public enum RiskManager
         }
         SLF4JLoggerProxy.debug(RiskManager.class,
                                "** Test #4 - Total trade value less than maximum **"); //$NON-NLS-1$
-        BigDecimal value = quantity.multiply(price); // TODO multiply by contract size?
+        BigDecimal value = quantity.multiply(price);
+        if(marketdata.getTrade() instanceof FutureEvent) {
+            FutureEvent futureEvent = (FutureEvent)marketdata.getTrade();
+            value = value.multiply(new BigDecimal(futureEvent.getContractSize()));
+        }
         SLF4JLoggerProxy.debug(RiskManager.class,
                                "Total computed value is {} max is {}", //$NON-NLS-1$
                                value,

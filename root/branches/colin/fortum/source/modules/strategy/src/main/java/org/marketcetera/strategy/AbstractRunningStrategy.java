@@ -569,6 +569,15 @@ public abstract class AbstractRunningStrategy
         strategy.getServicesProvider().send(inData);
         return true;
     }
+    /**
+     * Checks the order limits of the given order before sending it out.
+     * 
+     * <p>This method will issue notifications about order problems, the calling
+     * method does not need to do so.
+     *
+     * @param inOrder an <code>Order</code> value containing the order to examine
+     * @return a <code>boolean</code> value indicating whether the order should be sent on or not
+     */
     private boolean doOrderLimitsCheck(final Order inOrder)
     {
         try {
@@ -576,8 +585,8 @@ public abstract class AbstractRunningStrategy
             return true;
         } catch (final UserLimitWarning e) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(ORDER_LIMITS_WARNING,
-                                                                   String.valueOf(strategy))
-                                                      .withException(e).create(),
+                                                                  String.valueOf(strategy))
+                                                     .withException(e).create(),
                                strategy);
             send(Notification.low("Order Limits Warning",
                                   e.getLocalizedMessage(),

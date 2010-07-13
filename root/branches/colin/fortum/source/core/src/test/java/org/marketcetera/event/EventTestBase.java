@@ -245,6 +245,7 @@ public class EventTestBase
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
+                                                 .withContractSize(1)
                                                  .withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
     /**
@@ -261,6 +262,7 @@ public class EventTestBase
                                                  .withAction(QuoteAction.ADD)
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
+                                                 .withContractSize(1)
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
@@ -278,6 +280,7 @@ public class EventTestBase
                                                  .withAction(inAction)
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
+                                                 .withContractSize(1)
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
@@ -295,6 +298,7 @@ public class EventTestBase
                                                  .withAction(QuoteAction.ADD)
                                                  .withExchange("exchange")
                                                  .withPrice(inPrice)
+                                                 .withContractSize(1)
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
@@ -605,6 +609,7 @@ public class EventTestBase
         return TradeEventBuilder.futureTradeEvent().withInstrument(inInstrument)
                                                    .withExchange("Q")
                                                    .withPrice(inPrice)
+                                                   .withContractSize(1)
                                                    .withSize(generateDecimalValue())
                                                    .withTradeDate(DateUtils.dateToString(new Date())).create();
     }

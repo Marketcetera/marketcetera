@@ -72,6 +72,14 @@ final class FutureTradeEventImpl
     {
         return (Future)super.getInstrument();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.FutureEvent#getContractSize()
+     */
+    @Override
+    public int getContractSize()
+    {
+        return future.getContractSize();
+    }
     /**
      * Create a new FutureTradeEventImpl instance.
      *

@@ -88,22 +88,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
     public void testNordieQuarterlies()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ENOQ0-10");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ENOQ5-10");
-            }
-        };
         verifyFuture(new Future("ENOQ1-09"),
                      "ENOQ1-09",
                      "200903");
@@ -133,22 +117,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
     public void testNordieYearlies()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("BRNYR-1");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("BRNYR-101");
-            }
-        };
         verifyFuture(new Future("BRNYR-09"),
                      "BRNYR-09",
                      "200912");
@@ -172,22 +140,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
     public void testNordieWeeklies()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ITWW00-10");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ITWW54-10");
-            }
-        };
         verifyFuture(new Future("ITWW02-09"),
                      "ITWW02-09",
                      "200901");
@@ -198,9 +150,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
         verifyFuture(new Future("XW52-50"),
                      "XW52-50",
                      "205012");
-        verifyFuture(new Future("ABCXYZW10-50"),
-                     "ABCXYZW10-50",
-                     "205002");
     }
     /**
      * Tests Nord Pool symbol constructors.
@@ -211,22 +160,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
     public void testNordieMonthlies()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ENOMXXX-10");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ENOMXXXX-10");
-            }
-        };
         verifyFuture(new Future("ABCMJAN-10"),
                      "ABCMJAN-10",
                      "201001");
@@ -250,30 +183,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
     public void testNordieDaylies()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ENOD0100-10");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ENOD0113-10");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ENOMXXXX-10");
-            }
-        };
         verifyFuture(new Future("ENOD1107-10"),
                      "ENOD1107-10",
                      "201007");
@@ -297,22 +206,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
     public void testSkeMonthlies()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ABC10A");
-            }
-        };
-        new ExpectedFailure<IllegalArgumentException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new Future("ABC1U");
-            }
-        };
         verifyFuture(new Future("ABC15F"),
                      "ABC15F",
                      "201501");

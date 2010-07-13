@@ -7,11 +7,14 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.module.DataFlowID;
+import org.marketcetera.photon.ISuggestionReceiver;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.module.IDataFlowLabelProvider;
 import org.marketcetera.photon.module.ISinkDataHandler;
 import org.marketcetera.photon.module.ISinkDataManager;
 import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -24,7 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public final class TradeSuggestionManager implements ISinkDataHandler {
+public final class TradeSuggestionManager implements ISinkDataHandler, ISuggestionReceiver {
 
 	/**
 	 * Sink data manager
@@ -49,6 +52,7 @@ public final class TradeSuggestionManager implements ISinkDataHandler {
 	TradeSuggestionManager() {
 		mSinkDataManager = ModuleSupport.getSinkDataManager();
 		mSinkDataManager.register(this, OrderSingleSuggestion.class);
+		PhotonPlugin.getDefault().addSuggestionReceiver(this);
 	}
 
 	/**
@@ -110,5 +114,16 @@ public final class TradeSuggestionManager implements ISinkDataHandler {
         }
         return dataFlowId.getValue();
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.ISuggestionReceiver#accept(org.marketcetera.trade.Suggestion)
+     */
+    @Override
+    public void accept(Suggestion inSuggestion,
+                       String inSource)
+    {
+        if(inSuggestion instanceof OrderSingleSuggestion) {
+            addSuggestion((OrderSingleSuggestion)inSuggestion,
+                          inSource);
+        }
+    }
 }

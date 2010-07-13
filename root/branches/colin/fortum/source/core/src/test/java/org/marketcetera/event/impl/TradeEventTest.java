@@ -1,10 +1,6 @@
 package org.marketcetera.event.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,10 +8,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.*;
 import org.marketcetera.event.Messages;
-import org.marketcetera.event.OptionEvent;
-import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
@@ -192,14 +186,41 @@ public class TradeEventTest
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getFuture().getProviderSymbol());
         symbol = "";
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getFuture().getProviderSymbol());
         symbol = "MSQ/W/X";
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getFuture().getProviderSymbol());
+        verify(builder);
+    }
+    /**
+     * Tests {@link TradeEventBuilder#withContractSize(int)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withContractSize()
+            throws Exception
+    {
+        TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
+        builder.withContractSize(Integer.MIN_VALUE);
+        assertEquals(Integer.MIN_VALUE,
+                     builder.getFuture().getContractSize());
+        builder.withContractSize(0);
+        assertEquals(0,
+                     builder.getFuture().getContractSize());
+        builder.withContractSize(Integer.MAX_VALUE);
+        assertEquals(Integer.MAX_VALUE,
+                     builder.getFuture().getContractSize());
         verify(builder);
     }
     /**
@@ -542,6 +563,13 @@ public class TradeEventTest
             assertEquals(inBuilder.getOption().getProviderSymbol(),
                          optionEvent.getProviderSymbol());
         }
+        if(event instanceof FutureEvent) {
+            FutureEvent futureEvent = (FutureEvent)event;
+            assertEquals(inBuilder.getFuture().getProviderSymbol(),
+                         futureEvent.getProviderSymbol());
+            assertEquals(inBuilder.getFuture().getContractSize(),
+                         futureEvent.getContractSize());
+        }
         Object newSource = new Object();
         event.setSource(newSource);
         assertEquals(newSource,
@@ -573,6 +601,7 @@ public class TradeEventTest
         inBuilder.withSize(BigDecimal.TEN);
         inBuilder.withTimestamp(new Date());
         inBuilder.withUnderlyingInstrument(instrument);
+        inBuilder.withContractSize(3600);
         return inBuilder;
     }
     /**
