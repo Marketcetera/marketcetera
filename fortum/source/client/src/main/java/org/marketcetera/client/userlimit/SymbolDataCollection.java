@@ -88,7 +88,7 @@ public class SymbolDataCollection
     @Override
     public String toString()
     {
-        return String.format("SymbolDataCollection [%s]",
+        return String.format("SymbolDataCollection [%s]", //$NON-NLS-1$
                              symbolData);
     }
     private synchronized void populateInstrumentList(Properties inProperties)
@@ -121,7 +121,7 @@ public class SymbolDataCollection
     {
         synchronized(SymbolDataCollection.class) {
             SLF4JLoggerProxy.debug(SymbolDataCollection.class,
-                                   "Setting client implementation to {}",
+                                   "Setting client implementation to {}", //$NON-NLS-1$
                                    inClient);
             client = inClient;
         }

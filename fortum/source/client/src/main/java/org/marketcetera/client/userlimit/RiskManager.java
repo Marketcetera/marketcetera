@@ -118,7 +118,7 @@ public enum RiskManager
         } else if(inOrder instanceof OrderCancel) {
             // limits do not apply
             SLF4JLoggerProxy.debug(RiskManager.class,
-                                   "Ignoring cancel order {}",
+                                   "Ignoring cancel order {}", //$NON-NLS-1$
                                    inOrder);
             return;
         } else {
@@ -149,7 +149,7 @@ public enum RiskManager
             }
         }
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "Beginning risk manager inspection of {} with price={}, quantity={}, adjustedQuantity={}",
+                               "Beginning risk manager inspection of {} with price={}, quantity={}, adjustedQuantity={}", //$NON-NLS-1$
                                inOrder,
                                price,
                                quantity,
@@ -165,11 +165,11 @@ public enum RiskManager
                                                                 instrument.getSymbol()));
         }
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "Using {}",
+                               "Using {}", //$NON-NLS-1$
                                symbolData);
         // condition #1 - price cannot be less than 0.01 (for a limit order)
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "** Test #1 - Price cannot be less than 0.01 **");
+                               "** Test #1 - Price cannot be less than 0.01 **"); //$NON-NLS-1$
         if(type == OrderType.Limit &&
            price.compareTo(PENNY) == -1) {
             Messages.LESS_THAN_A_PENNY.error(RiskManager.class,
@@ -181,10 +181,10 @@ public enum RiskManager
         }
         // condition #2 - endless loop - this is harder than it looks, skipping for now
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "** Test #2 - Checking for endless loop **");
+                               "** Test #2 - Checking for endless loop **"); //$NON-NLS-1$
         // condition #3 - max position limit
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "** Test #3 - Projected position less than limit **");
+                               "** Test #3 - Projected position less than limit **"); //$NON-NLS-1$
         BigDecimal position;
         if(instrument instanceof Equity) {
             position = client.getEquityPositionAsOf(new Date(),
@@ -202,12 +202,12 @@ public enum RiskManager
             position = BigDecimal.ZERO;
         }
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "Starting position of {} is {}",
+                               "Starting position of {} is {}", //$NON-NLS-1$
                                instrument,
                                position);
         BigDecimal projectedAbsolutePosition = position.add(adjustedQuantity).abs();
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "Projected absolute position is {} max is {}",
+                               "Projected absolute position is {} max is {}", //$NON-NLS-1$
                                projectedAbsolutePosition,
                                symbolData.getMaximumPosition());
         if(projectedAbsolutePosition.compareTo(symbolData.getMaximumPosition().abs()) == 1) {
@@ -221,10 +221,10 @@ public enum RiskManager
                                                                 symbolData.getMaximumPosition()));
         }
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "** Test #4 - Total trade value less than maximum **");
+                               "** Test #4 - Total trade value less than maximum **"); //$NON-NLS-1$
         BigDecimal value = quantity.multiply(price); // TODO multiply by contract size?
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "Total computed value is {} max is {}",
+                               "Total computed value is {} max is {}", //$NON-NLS-1$
                                value,
                                symbolData.getMaximumTradeValue());
         if(value.compareTo(symbolData.getMaximumTradeValue()) == 1) {
@@ -239,12 +239,12 @@ public enum RiskManager
         }
         TradeEvent lastTrade = marketdata.getTrade();
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "** Test #5 - Maximum deviation from last traded price **");
+                               "** Test #5 - Maximum deviation from last traded price **"); //$NON-NLS-1$
         BigDecimal absoluteDeviationFromLastTrade = (lastTrade.getPrice().subtract(price).abs()).divide(lastTrade.getPrice(),
                                                                                                         4,
                                                                                                         RoundingMode.HALF_UP);
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "LastPrice: {} CurrentPrice: {} AbsoluteDeviationFromLast: {} Maximum: {}",
+                               "LastPrice: {} CurrentPrice: {} AbsoluteDeviationFromLast: {} Maximum: {}", //$NON-NLS-1$
                                lastTrade.getPrice(),
                                price,
                                absoluteDeviationFromLastTrade,
@@ -264,7 +264,7 @@ public enum RiskManager
                                                               symbolData.getMaximumDeviationFromLast()));
         }
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "** Test #6 - Maximum deviation from last mid quote **");
+                               "** Test #6 - Maximum deviation from last mid quote **"); //$NON-NLS-1$
         BigDecimal lastBid = marketdata.getBid().getPrice();
         BigDecimal lastAsk = marketdata.getAsk().getPrice();
         BigDecimal mid = lastAsk.add(lastBid).divide(new BigDecimal(2),
@@ -273,7 +273,7 @@ public enum RiskManager
                                                                                      4,
                                                                                      RoundingMode.HALF_UP);
         SLF4JLoggerProxy.debug(RiskManager.class,
-                               "Last bid is {} Last ask is {} Mid is {} Price is {} AbsoluteDeviation is {} Max is {}",
+                               "Last bid is {} Last ask is {} Mid is {} Price is {} AbsoluteDeviation is {} Max is {}", //$NON-NLS-1$
                                lastBid,
                                lastAsk,
                                mid,
@@ -298,7 +298,7 @@ public enum RiskManager
     /**
      * one penny
      */
-    private static final BigDecimal PENNY = new BigDecimal("0.01");
+    private static final BigDecimal PENNY = new BigDecimal("0.01"); //$NON-NLS-1$
     /**
      * client used to retrieve data
      */
