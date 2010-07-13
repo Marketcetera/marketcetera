@@ -137,26 +137,6 @@ public class FutureTest extends InstrumentTestBase<Future> {
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    public void testNordieWeeklies()
-            throws Exception
-    {
-        verifyFuture(new Future("ITWW02-09"),
-                     "ITWW02-09",
-                     "200901");
-        verifyFuture(new Future("ITWW25-25"),
-                     "ITWW25-25",
-                     "202506");
-        // push the symbol envelope a little
-        verifyFuture(new Future("XW52-50"),
-                     "XW52-50",
-                     "205012");
-    }
-    /**
-     * Tests Nord Pool symbol constructors.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Test
     public void testNordieMonthlies()
             throws Exception
     {
