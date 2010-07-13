@@ -525,10 +525,8 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         bindCombo(mAccountComboViewer,
                   model.getAccount());
         enableForNewOrderOnly(mAccountComboViewer.getControl());
-        bindRequiredCombo(mCustomerInfoComboViewer,
-                          model.getText(),
-                          Messages.ORDER_TICKET_VIEW_CUSTOMER_INFO__LABEL.getText());
-        enableForNewOrderOnly(mCustomerInfoComboViewer.getControl());
+        bindCombo(mCustomerInfoComboViewer,
+                  model.getText());
     }
     /**
      * Bind the custom fields on the model to the view.

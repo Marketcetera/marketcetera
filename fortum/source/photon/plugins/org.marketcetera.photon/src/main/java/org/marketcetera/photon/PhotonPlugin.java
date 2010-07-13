@@ -6,7 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.logging.LogManager;
+
+import javax.annotation.concurrent.GuardedBy;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -34,10 +38,7 @@ import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.*;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.strategy.Strategy;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.NewOrReplaceOrder;
-import org.marketcetera.trade.Option;
+import org.marketcetera.trade.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -176,7 +177,45 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
                 optionOrderTicketModel);
         futureOrderTicketController = new FutureOrderTicketController(futureOrderTicketModel);
     }
-
+    /**
+     * Registers the given receiver to accept suggestions.
+     *
+     * @param inReceiver an <code>ISuggestionReceiver</code> value
+     */
+    public void addSuggestionReceiver(ISuggestionReceiver inReceiver)
+    {
+        synchronized(suggestionReceivers) {
+            suggestionReceivers.add(inReceiver);
+        }
+    }
+    /**
+     * Removes the given receiver from the list of suggestion receivers.
+     *
+     * @param inReceiver an <code>ISuggestionReceiver</code> value
+     * @return a <code>boolean</code> value indicating the given receiver was in the list or not
+     */
+    public boolean removeSuggestionReceiver(ISuggestionReceiver inReceiver)
+    {
+        synchronized(suggestionReceivers) {
+            return suggestionReceivers.remove(inReceiver);
+        }
+    }
+    /**
+     * Delivers a suggestion to registered suggestion receipients. 
+     *
+     * @param inSuggestion a <code>Suggestion</code> value
+     * @param inSource a <code>String</code> value
+     */
+    public void suggest(Suggestion inSuggestion,
+                        String inSource)
+    {
+        synchronized(suggestionReceivers) {
+            for(ISuggestionReceiver receiver : suggestionReceivers) {
+                receiver.accept(inSuggestion,
+                                inSource);
+            }
+        }
+    }
     private void initPhotonController() {
         photonController = new PhotonController();
         photonController.setMessageHistory(mTradeReportsHistory);
@@ -690,4 +729,9 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
             mPositionEngineService = null;
         }
     }
+    /**
+     * this list of suggestion receivers
+     */
+    @GuardedBy("suggestionReceivers")
+    private final Set<ISuggestionReceiver> suggestionReceivers = new LinkedHashSet<ISuggestionReceiver>();
 }

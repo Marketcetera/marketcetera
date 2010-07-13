@@ -1,5 +1,6 @@
 package org.marketcetera.photon;
 
+import java.math.BigDecimal;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -246,8 +247,14 @@ public class PhotonController
 			internalMainLogger.error(CANNOT_SEND_NOT_CONNECTED.getText());
 		}
 	}
-
-    private boolean doOrderLimitsCheck(final Order inOrder)
+	/**
+	 * 
+	 *
+	 *
+	 * @param inOrder
+	 * @return
+	 */
+    private boolean doOrderLimitsCheck(Order inOrder)
     {
         NotificationPlugin notifier = NotificationPlugin.getDefault();
         try {
@@ -261,6 +268,42 @@ public class PhotonController
             notifier.getNotificationManager().publish(Notification.medium("Order Limits Violation",
                                                                           e.getLocalizedMessage(),
                                                                           "Photon"));
+            if(inOrder instanceof OrderSingle) {
+                final OrderSingle single = (OrderSingle)inOrder;
+                PhotonPlugin.getDefault().suggest(new OrderSingleSuggestion() {
+                    private static final long serialVersionUID = 1L;
+                    @Override
+                    public OrderSingle getOrder()
+                    {
+                        return single;
+                    }
+                    @Override
+                    public void setOrder(OrderSingle inOrder)
+                    {
+                        throw new UnsupportedOperationException();
+                    }
+                    @Override
+                    public String getIdentifier()
+                    {
+                        return "Photon Manual Order";
+                    }
+                    @Override
+                    public BigDecimal getScore()
+                    {
+                        return BigDecimal.ONE;
+                    }
+                    @Override
+                    public void setIdentifier(String inIdentifier)
+                    {
+                        throw new UnsupportedOperationException();
+                    }
+                    @Override
+                    public void setScore(BigDecimal inScore)
+                    {
+                        throw new UnsupportedOperationException();
+                    }
+                }, "Photon Manual Order");
+            }
         } catch (Exception e) {
             SLF4JLoggerProxy.error(PhotonController.class,
                                    e);

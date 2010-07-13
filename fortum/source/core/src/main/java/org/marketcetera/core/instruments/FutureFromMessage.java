@@ -1,7 +1,6 @@
 package org.marketcetera.core.instruments;
 
 import org.marketcetera.trade.Future;
-import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -31,15 +30,18 @@ public class FutureFromMessage
     public Instrument extract(Message inMessage)
     {
         String symbol = getSymbol(inMessage);
-        FutureExpirationMonth expirationMonth = getExpirationMonth(inMessage);
-        Integer expirationYear = getExpirationYear(inMessage);
+        String expiry = null;
+        try {
+            MaturityMonthYear mmy = new MaturityMonthYear();
+            inMessage.getField(mmy);
+            expiry = mmy.getValue();
+        } catch (FieldNotFound ignored) {}
         if(symbol == null ||
-           expirationMonth == null ||
-           expirationYear == null) {
+           expiry == null) {
             return null;
         }
-        // TODO construct symbol
-        return new Future(symbol);
+        return new Future(symbol,
+                          expiry);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)
@@ -55,72 +57,5 @@ public class FutureFromMessage
         } catch (FieldNotFound ignore) {
             return false;
         }
-    }
-    /**
-     * Returns the expiration month value from the given <code>Message</code>.
-     *
-     * @param inMessage a <code>Message</code> value
-     *
-     * @return a <code>FutureExpirationMonth</code> or <code>null</code>
-     */
-    private static FutureExpirationMonth getExpirationMonth(Message inMessage)
-    {
-        //FIX versions 4.1, 4.2, 4.3 use MaturityMonthYear
-        if (inMessage.isSetField(MaturityMonthYear.FIELD)) {
-            try {
-                String value = inMessage.getString(MaturityMonthYear.FIELD);
-                if (value != null) {
-                    if(value.length() != 6) {
-                        // this is an invalid MaturityMonthYear, pass
-                        return null;
-                    }
-                    return FutureExpirationMonth.getByMonthOfYear(value.substring(4));
-                }
-            } catch (Exception ignore) {
-            }
-        }
-        // TODO figure out if MaturityDate applies to Futures in 4.3
-//        //FIX version 4.3 uses MaturityDate
-//        if (inMessage.isSetField(MaturityDate.FIELD)) {
-//            try {
-//                return inMessage.getString(MaturityDate.FIELD);
-//            } catch (FieldNotFound ignore) {
-//            }
-//        }
-        return null;
-    }
-    /**
-     * Returns the expiration year value from the given <code>Message</code>.
-     *
-     * @param inMessage a <code>Message</code> value
-     *
-     * @return an <code>Integer</code> or <code>null</code>
-     */
-    private static Integer getExpirationYear(Message inMessage)
-    {
-        //FIX versions 4.1, 4.2, 4.3 use MaturityMonthYear
-        if (inMessage.isSetField(MaturityMonthYear.FIELD)) {
-            try {
-                String value = inMessage.getString(MaturityMonthYear.FIELD);
-                if (value != null) {
-                    if(value.length() != 6) {
-                        // this is an invalid MaturityMonthYear, pass
-                        return null;
-                    }
-                    return Integer.parseInt(value.substring(0,
-                                                            4));
-                }
-            } catch (Exception ignore) {
-            }
-        }
-        // TODO figure out if MaturityDate applies to Futures in 4.3
-//        //FIX version 4.3 uses MaturityDate
-//        if (inMessage.isSetField(MaturityDate.FIELD)) {
-//            try {
-//                return inMessage.getString(MaturityDate.FIELD);
-//            } catch (FieldNotFound ignore) {
-//            }
-//        }
-        return null;
     }
 }
