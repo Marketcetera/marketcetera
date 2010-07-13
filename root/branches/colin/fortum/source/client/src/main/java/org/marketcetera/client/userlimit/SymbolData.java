@@ -98,7 +98,7 @@ public class SymbolData
     @Override
     public String toString()
     {
-        return String.format("[symbol=%s, maxPos=%s, maxVal=%s, maxDevLast=%s, maxDevMid=%s]",
+        return String.format("[symbol=%s, maxPos=%s, maxVal=%s, maxDevLast=%s, maxDevMid=%s]", //$NON-NLS-1$
                              symbol,
                              maximumPosition,
                              maximumTradeValue,
@@ -234,23 +234,23 @@ public class SymbolData
     /**
      * key/value attribute used in consolidated format for the symbol
      */
-    private static final String SYMBOL_KEY = "symbol";
+    private static final String SYMBOL_KEY = "symbol"; //$NON-NLS-1$
     /**
      * key/value attribute used in consolidated format for the maximum position
      */
-    private static final String MAX_POS_KEY = "maxpos";
+    private static final String MAX_POS_KEY = "maxpos"; //$NON-NLS-1$
     /**
      * key/value attribute used in consolidated format for the maximum value
      */
-    private static final String MAX_VALUE_KEY = "maxval";
+    private static final String MAX_VALUE_KEY = "maxval"; //$NON-NLS-1$
     /**
      * key/value attribute used in consolidated format for the maximum deviation from the last price
      */
-    private static final String MAX_LAST_KEY = "maxlast";
+    private static final String MAX_LAST_KEY = "maxlast"; //$NON-NLS-1$
     /**
      * key/value attribute used in consolidated format for the maximum deviation from the mid-point between the last bid/ask
      */
-    private static final String MAX_MID_KEY = "maxmid";
+    private static final String MAX_MID_KEY = "maxmid"; //$NON-NLS-1$
     /**
      * the symbol for which data is stored
      */
