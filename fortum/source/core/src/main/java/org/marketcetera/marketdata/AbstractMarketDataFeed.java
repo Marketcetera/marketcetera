@@ -6,6 +6,7 @@ import java.util.concurrent.*;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.IFeedComponentListener;
@@ -18,6 +19,7 @@ import org.marketcetera.event.*;
 import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.metrics.ConditionsFactory;
 import org.marketcetera.metrics.ThreadedMetric;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -1343,15 +1345,38 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         private static void process(Event inEvent)
         {
             if(inEvent instanceof HasInstrument) {
-                String inSymbol = ((HasInstrument)inEvent).getInstrumentAsString();
+                Instrument instrument = ((HasInstrument)inEvent).getInstrument();
+                String symbol = instrument.getSymbol();
                 synchronized(dataMap) {
-                    Data data = dataMap.get(inSymbol);
+                    Data data = dataMap.get(symbol);
                     if(data == null) {
-                        data = new Data(inSymbol);
-                        dataMap.put(inSymbol,
+                        data = new Data(symbol);
+                        dataMap.put(symbol,
                                     data);
                     }
                     data.record(inEvent);
+                    if(instrument instanceof org.marketcetera.trade.Future) {
+                        org.marketcetera.trade.Future future = (org.marketcetera.trade.Future)instrument;
+                        data = dataMap.get(future.getFullSymbol());
+                        if(data == null) {
+                            data = new Data(future.getFullSymbol());
+                            dataMap.put(future.getFullSymbol(),
+                                        data);
+                        }
+                        data.record(inEvent);
+                    }
+                    if(inEvent instanceof HasProviderSymbol) {
+                        String providerSymbol = ((HasProviderSymbol)inEvent).getProviderSymbol();
+                        if(StringUtils.trimToNull(providerSymbol) != null) {
+                            data = dataMap.get(providerSymbol);
+                            if(data == null) {
+                                data = new Data(providerSymbol);
+                                dataMap.put(providerSymbol,
+                                            data);
+                            }
+                            data.record(inEvent);
+                        }
+                    }
                 }
             }
         }

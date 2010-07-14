@@ -64,6 +64,24 @@ public class Future
     {
         return symbol;
     }
+    public String getFullSymbol()
+    {
+        if(StringUtils.trimToNull(expiration) == null) {
+            return getSymbol();
+        }
+        return String.format("%s-%s",
+                             getSymbol(),
+                             getExpiration());
+    }
+    /**
+     * Get the expiration value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getExpiration()
+    {
+        return expiration;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSecurityType()
      */

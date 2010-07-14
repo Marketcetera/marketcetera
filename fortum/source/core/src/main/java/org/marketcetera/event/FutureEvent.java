@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface FutureEvent
-        extends HasFuture, Event
+        extends HasFuture, Event, HasProviderSymbol
 {
     /**
      * Gets the future type.
