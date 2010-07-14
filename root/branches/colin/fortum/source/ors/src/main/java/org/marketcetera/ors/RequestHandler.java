@@ -212,10 +212,10 @@ public class RequestHandler
         msg.getHeader().setField(new SenderCompID(SELF_SENDER_COMP_ID));
         msg.getHeader().setField(new TargetCompID(SELF_TARGET_COMP_ID));
         msg.getHeader().setField(new SendingTime(new Date()));
-        SymbolSfx ske = new SymbolSfx();
+        Issuer ske = new Issuer();
         try {
             msg.getField(ske);
-            msg.removeField(SymbolSfx.FIELD);
+            msg.removeField(Issuer.FIELD);
             msg.getHeader().setField(new SenderSubID(ske.getValue()));
         } catch (FieldNotFound ignored) {}
         

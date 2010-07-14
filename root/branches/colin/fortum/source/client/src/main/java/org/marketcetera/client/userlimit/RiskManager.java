@@ -14,10 +14,7 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.AbstractMarketDataFeed.Data;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.log.I18NBoundMessage5P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.log.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
@@ -138,16 +135,29 @@ public enum RiskManager
         } else {
             adjustedQuantity = quantity;
         }
-        Data marketdata = AbstractMarketDataFeed.Data.get(instrument.getSymbol());
-        if(marketdata == null ||
-           marketdata.getTrade() == null) {
-            throw new UserLimitViolation(new I18NBoundMessage2P(Messages.NO_TRADE_DATA,
-                                                                orderID,
-                                                                instrument.getSymbol()));
+        SymbolDataCollection allSymbolData = new SymbolDataCollection();
+        Data marketdata = null;
+        SymbolData symbolData = null;
+        // MD will be ENOYR-11, ECF10U, ECF-2010009
+        // symbol data will be ENOYR-11 or ECF-201009
+        // SYMBOL on order will be ENOYR-11, or ECF (with 201009 available as MMY)
+        if(instrument instanceof Future) {
+            // first try for MD is SYMBOL-EXPIRATION
+            String fullSymbol = ((Future)instrument).getFullSymbol();
+            marketdata = AbstractMarketDataFeed.Data.get(fullSymbol);
+            symbolData = allSymbolData.getSymbolData(fullSymbol);
         }
-        if(marketdata.getBid() == null ||
+        if(marketdata == null) {
+            marketdata = AbstractMarketDataFeed.Data.get(instrument.getSymbol());
+        }
+        if(symbolData == null) {
+            symbolData = allSymbolData.getSymbolData(instrument.getSymbol());
+        }
+        if(marketdata == null ||
+           marketdata.getBid() == null ||
            marketdata.getAsk() == null) {
-            throw new UserLimitWarning(Messages.NO_QUOTE_DATA);
+            throw new UserLimitWarning(new I18NBoundMessage1P(Messages.NO_QUOTE_DATA,
+                                                              instrument.getSymbol()));
         }
         if(type == OrderType.Market) {
             if(side == Side.Buy) {
@@ -162,8 +172,6 @@ public enum RiskManager
                                price,
                                quantity,
                                adjustedQuantity);
-        SymbolDataCollection allSymbolData = new SymbolDataCollection();
-        SymbolData symbolData = allSymbolData.getSymbolData(instrument.getSymbol());
         if(symbolData == null) {
             Messages.NO_SYMBOL_DATA.error(RiskManager.class,
                                           orderID,

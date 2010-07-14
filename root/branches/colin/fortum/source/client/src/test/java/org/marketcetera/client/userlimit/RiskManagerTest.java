@@ -6,6 +6,7 @@ import java.util.*;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokersStatus;
@@ -219,7 +220,7 @@ public class RiskManagerTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testNoTradeData()
             throws Exception
     {
@@ -765,7 +766,7 @@ public class RiskManagerTest
                                                                                        new ISubscriber[0]);
         MarketDataFeedTokenSpec optionSpec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataRequestBuilder.newRequestFromString("assetClass=OPTION:symbols=" + option.getSymbol()),
                                                                                        new ISubscriber[0]);
-        MarketDataFeedTokenSpec futureSpec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataRequestBuilder.newRequestFromString("assetClass=FUTURE:symbols=" + future.getSymbol()),
+        MarketDataFeedTokenSpec futureSpec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataRequestBuilder.newRequestFromString("assetClass=FUTURE:symbols=" + future1.getSymbol() + "," + future2.getSymbol()),
                                                                                        new ISubscriber[0]);
         equityToken = feed.execute(equitySpec);
         optionToken = feed.execute(optionSpec);
@@ -780,7 +781,11 @@ public class RiskManagerTest
                                                                 inTradePrice);
             feed.submitData(optionToken.getHandle(),
                             tradeEvent);
-            tradeEvent = EventTestBase.generateFutureTradeEvent(future,
+            tradeEvent = EventTestBase.generateFutureTradeEvent(future1,
+                                                                inTradePrice);
+            feed.submitData(futureToken.getHandle(),
+                            tradeEvent);
+            tradeEvent = EventTestBase.generateFutureTradeEvent(future2,
                                                                 inTradePrice);
             feed.submitData(futureToken.getHandle(),
                             tradeEvent);
@@ -795,7 +800,11 @@ public class RiskManagerTest
                                                             inBidPrice);
             feed.submitData(optionToken.getHandle(),
                             bidEvent);
-            bidEvent = EventTestBase.generateFutureBidEvent(future,
+            bidEvent = EventTestBase.generateFutureBidEvent(future1,
+                                                            inBidPrice);
+            feed.submitData(futureToken.getHandle(),
+                            bidEvent);
+            bidEvent = EventTestBase.generateFutureBidEvent(future2,
                                                             inBidPrice);
             feed.submitData(futureToken.getHandle(),
                             bidEvent);
@@ -810,7 +819,11 @@ public class RiskManagerTest
                                                             inAskPrice);
             feed.submitData(optionToken.getHandle(),
                             askEvent);
-            askEvent = EventTestBase.generateFutureAskEvent(future,
+            askEvent = EventTestBase.generateFutureAskEvent(future1,
+                                                            inAskPrice);
+            feed.submitData(futureToken.getHandle(),
+                            askEvent);
+            askEvent = EventTestBase.generateFutureAskEvent(future2,
                                                             inAskPrice);
             feed.submitData(futureToken.getHandle(),
                             askEvent);
@@ -1017,8 +1030,10 @@ public class RiskManagerTest
                                                     "20150319",
                                                     BigDecimal.ONE,
                                                     OptionType.Call);
-    private final static Future future = new Future("ENOYR-11");
-    private final static Instrument[] instruments = new Instrument[] { equity, option, future };
+    private final static Future future1 = new Future("ENOYR-11");
+    private final static Future future2 = new Future("ECF",
+                                                     "201209");
+    private final static Instrument[] instruments = new Instrument[] { equity, option, future1, future2 };
     public static class OrderAttributes
     {
         /**

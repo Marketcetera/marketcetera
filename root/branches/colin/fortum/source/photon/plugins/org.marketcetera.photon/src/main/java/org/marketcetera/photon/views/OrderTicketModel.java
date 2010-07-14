@@ -18,6 +18,8 @@ import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator
 import org.marketcetera.photon.ui.databinding.NewOrReplaceOrderObservable;
 import org.marketcetera.trade.*;
 
+import quickfix.field.Issuer;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.ObjectArrays;
 
@@ -234,7 +236,7 @@ public abstract class OrderTicketModel {
         }
         String traderID = getSkeTraderID();
         if(traderID != null) {
-            map.put(String.valueOf(65),
+            map.put(String.valueOf(Issuer.FIELD),
                     traderID);
         }
         if (!map.isEmpty()) {
@@ -293,7 +295,7 @@ public abstract class OrderTicketModel {
             if(accountList == null) {
                 accounts = new String[] { " " };
             } else {
-                accounts = accountList.split("H@@H");
+                accounts = accountList.split(org.marketcetera.client.userlimit.Messages.LIST_DELIMITER.getText());
             }
         } catch (Exception ignored) {
             accounts = new String[] { " " };
@@ -325,7 +327,7 @@ public abstract class OrderTicketModel {
             if(customerInfoList == null) {
                 customerInfo = new String[] { " " };
             } else {
-                customerInfo = customerInfoList.split("H@@H");
+                customerInfo = customerInfoList.split(org.marketcetera.client.userlimit.Messages.LIST_DELIMITER.getText());
             }
         } catch (Exception ignored) {
             customerInfo = new String[] { " " };
