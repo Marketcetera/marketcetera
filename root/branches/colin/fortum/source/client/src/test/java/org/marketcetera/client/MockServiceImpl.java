@@ -451,9 +451,9 @@ public class MockServiceImpl
                       BigDecimal.ONE.negate());
         POSITIONS = Collections.unmodifiableMap(positions);
         Map<PositionKey<Future>, BigDecimal> futurePositions = new HashMap<PositionKey<Future>,BigDecimal>();
-        futurePositions.put(PositionKeyFactory.createFutureKey("ENOQ1-11","acme","bob"),
+        futurePositions.put(PositionKeyFactory.createFutureKey("ENOQ1-11","201103","acme","bob"),
                             BigDecimal.TEN);
-        futurePositions.put(PositionKeyFactory.createFutureKey("BRN12N","wally","sue"),
+        futurePositions.put(PositionKeyFactory.createFutureKey("BRN12N","201207","wally","sue"),
                             BigDecimal.ONE.negate());
         FUTURES_POSITIONS = Collections.unmodifiableMap(futurePositions);
     }

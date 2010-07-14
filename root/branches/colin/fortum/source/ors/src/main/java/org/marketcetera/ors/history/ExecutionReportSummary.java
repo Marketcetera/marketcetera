@@ -44,6 +44,7 @@ import java.util.*;
    @SqlResultSetMapping(name = "futAllPositions",
                         columns = {
            @ColumnResult(name = "symbol"),
+           @ColumnResult(name = "expiry"),
            @ColumnResult(name = "account"),
            @ColumnResult(name = "actor"),
            @ColumnResult(name = "position")
@@ -95,7 +96,7 @@ import java.util.*;
             "(select max(s.id) from execreports s where s.rootID = e.rootID)",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "futAllPositions",query = "select " +
-            "e.symbol as symbol, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "e.symbol as symbol, e.expiry as expiry, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
             "from execreports e " +
             "join reports r on (e.report_id=r.id) " +
             "where e.sendingTime <= :sendingTime " +
@@ -344,18 +345,19 @@ class ExecutionReportSummary extends EntityBase {
                 Object[] columns;
                 for(Object o: list) {
                     columns = (Object[]) o;
-                    //4 columns
+                    //5 columns
                     if(columns.length > 1) {
                         //first one is the symbol
-                        //second one is the account
-                        //third one is the actor ID
-                        //fourth one is the position
-                        map.put(PositionKeyFactory.createFutureKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 ((columns[2]==null)?null:
-                                  ((BigInteger)columns[2]).toString())),
-                                 (BigDecimal)columns[3]);
+                        //second one is the expiry
+                        //third one is the account
+                        //fourth one is the actor ID
+                        //fifth one is the position
+                        map.put(PositionKeyFactory.createFutureKey((String)columns[0],
+                                                                   (String)columns[1],
+                                                                   (String)columns[2],
+                                                                   ((columns[3]==null)?null:
+                                  ((BigInteger)columns[3]).toString())),
+                                 (BigDecimal)columns[4]);
                     }
                 }
                 return map;

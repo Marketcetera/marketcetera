@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Text;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -22,4 +23,5 @@ public interface IFutureOrderTicket
      * @return a <code>Combo</code> value
      */
     Combo getCustomerInfoCombo();
+    Text getExpiryText();
 }

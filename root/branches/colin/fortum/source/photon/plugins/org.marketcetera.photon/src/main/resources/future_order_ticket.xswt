@@ -72,6 +72,8 @@
                         <combo x:style="BORDER|READ_ONLY" x:id="AccountCombo" text=""/>
                         <label text="Customer Info:"/>
                         <combo x:style="BORDER|READ_ONLY" x:id="CustomerInfoCombo" text=""/>
+                        <label text="Expiry:"/>
+                        <text x:style="SINGLE|BORDER" x:id="ExpiryText" text=""/>
                     </composite>
                 </section>
                 <section x:id="CustomExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Custom fields" expanded="true" client="_custom_composite">

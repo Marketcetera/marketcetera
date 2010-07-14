@@ -62,6 +62,18 @@ public class FutureOrderTicketView
     {
         return getClass().getResourceAsStream("/future_order_ticket.xswt"); //$NON-NLS-1$
     }
+    
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.views.OrderTicketView#bindMessage()
+     */
+    @Override
+    protected void bindMessage()
+    {
+        super.bindMessage();
+        final IFutureOrderTicket ticket = getXSWTView();
+        bindText(ticket.getExpiryText(),
+                 getModel().getExpiry());
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketView#customizeWidgets(org.marketcetera.photon.views.IOrderTicket)
      */
@@ -69,48 +81,10 @@ public class FutureOrderTicketView
     protected void customizeWidgets(final IFutureOrderTicket inTicket)
     {
         super.customizeWidgets(inTicket);
-//        final Combo customerInfoCombo = inTicket.getCustomerInfoCombo();
-//        addSendOrderListener(customerInfoCombo);
-//        customerInfoCombo.addListener(SWT.FocusIn,
-//                                      new Listener() {
-//            @Override
-//            public void handleEvent(Event inEvent)
-//            {
-//                if(Arrays.equals(customerInfoCombo.getItems(),
-//                                 emptyList)) {
-//                    try {
-//                        Properties userdata = ClientManager.getInstance().getUserData();
-//                        if(userdata == null) {
-//                            // no customer info defined
-//                            return;
-//                        }
-//                        String rawList = userdata.getProperty(CUSTOMER_INFO_KEY);
-//                        if(rawList == null) {
-//                            // no customer info defined
-//                            return;
-//                        }
-//                        String[] customerinfo = rawList.split("H@@H");
-//                        Set<String> sortedCustomerInfo = new TreeSet<String>();
-//                        for(String customerinfoChunk : customerinfo) {
-//                            customerinfoChunk = StringUtils.trimToNull(customerinfoChunk);
-//                            if(customerinfoChunk != null) {
-//                                sortedCustomerInfo.add(customerinfoChunk);
-//                            }
-//                        }
-//                        if(sortedCustomerInfo.isEmpty()) {
-//                            // no customer info defined
-//                            return;
-//                        }
-//                        customerInfoCombo.setItems(sortedCustomerInfo.toArray(new String[sortedCustomerInfo.size()]));
-//                        customerInfoCombo.pack(true);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//        });
+        selectOnFocus(inTicket.getExpiryText());
+        addSendOrderListener(inTicket.getExpiryText());
     }
-    /**
+   /**
      * the ID to uniquely identify this view
      */
     public static final String ID = "org.marketcetera.photon.views.FutureOrderTicketView"; //$NON-NLS-1$

@@ -51,6 +51,7 @@ public class PositionKeyFactory {
      *             if symbol is null or whitespace
      */
     public static PositionKey<Future> createFutureKey(String symbol,
+                                                      @Nullable String inExpry,
                                                       @Nullable String account,
                                                       @Nullable String traderId)
     {
