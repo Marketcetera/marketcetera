@@ -32,8 +32,10 @@ public class FutureObservable
     {
         super(inParent);
         mSymbol = TypedObservableValueDecorator.create(String.class);
+        mExpiry = TypedObservableValueDecorator.create(String.class);
         mCustomerInfo = TypedObservableValueDecorator.create(String.class);
         init(ImmutableList.of(mSymbol,
+                              mExpiry,
                               mCustomerInfo));
     }
     /**
@@ -44,6 +46,15 @@ public class FutureObservable
     public ITypedObservableValue<String> observeSymbol()
     {
         return mSymbol;
+    }
+    /**
+     * Observes the future expiry.
+     * 
+     * @return an <code>ITypedObservableValue&lt;String&gt;</code> value
+     */
+    public ITypedObservableValue<String> observeExpiry()
+    {
+        return mExpiry;
     }
     /**
      * Observes the future customer info.
@@ -61,10 +72,16 @@ public class FutureObservable
     protected void updateParent()
     {
         String symbol = mSymbol.getTypedValue();
+        String expiry = mExpiry.getTypedValue();
         Future newValue = null;
         if(StringUtils.isNotBlank(symbol)) {
             try {
-                newValue = new Future(symbol);
+                if(StringUtils.isNotBlank(expiry))  {
+                    newValue = new Future(symbol,
+                                          expiry);
+                } else {
+                    newValue = new Future(symbol);
+                }
             } catch (Exception ignored) {}
         }
         ITypedObservableValue<Instrument> instrument = getParent();
@@ -82,8 +99,12 @@ public class FutureObservable
             Future future = (Future)instrument;
             setIfChanged(mSymbol,
                          future.getSymbol());
+            setIfChanged(mExpiry,
+                         future.getExpiryAsMaturityMonthYear().getValue());
         } else {
             setIfChanged(mSymbol,
+                         null);
+            setIfChanged(mExpiry,
                          null);
         }
     }
@@ -91,6 +112,10 @@ public class FutureObservable
      * observes the future symbol
      */
     private final ITypedObservableValue<String> mSymbol;
+    /**
+     * observes the future expiry
+     */
+    private final ITypedObservableValue<String> mExpiry;
     /**
      * observes the future customer info
      */

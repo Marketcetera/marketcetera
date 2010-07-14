@@ -26,6 +26,7 @@ public class FutureOrderTicketModel
         ITypedObservableValue<Instrument> instrument = getOrderObservable().observeInstrument();
         FutureObservable futureObservable = new FutureObservable(instrument);
         mSymbol = futureObservable.observeSymbol();
+        mExpiry = futureObservable.observeExpiry();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketModel#getSymbol()
@@ -35,8 +36,13 @@ public class FutureOrderTicketModel
     {
         return mSymbol;
     }
+    public ITypedObservableValue<String> getExpiry()
+    {
+        return mExpiry;
+    }
     /**
      * the symbol of the current order
      */
     private final ITypedObservableValue<String> mSymbol;
+    private final ITypedObservableValue<String> mExpiry;
 }
