@@ -261,9 +261,9 @@ public class PhotonController
             RiskManager.INSTANCE.inspect(inOrder);
             return true;
         } catch (final UserLimitWarning e) {
-            notifier.getNotificationManager().publish(Notification.low("Order Limits Warning",
-                                                                       e.getLocalizedMessage(),
-                                                                       "Photon"));
+            notifier.getNotificationManager().publish(Notification.medium("Order Limits Warning",
+                                                                          e.getLocalizedMessage(),
+                                                                          "Photon"));
 //            if(inOrder instanceof OrderSingle) {
 //                final OrderSingle single = (OrderSingle)inOrder;
 //                PhotonPlugin.getDefault().suggest(new OrderSingleSuggestion() {

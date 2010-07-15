@@ -260,28 +260,30 @@ public enum RiskManager
         TradeEvent lastTrade = marketdata.getTrade();
         SLF4JLoggerProxy.debug(RiskManager.class,
                                "** Test #5 - Maximum deviation from last traded price **"); //$NON-NLS-1$
-        BigDecimal absoluteDeviationFromLastTrade = (lastTrade.getPrice().subtract(price).abs()).divide(lastTrade.getPrice(),
-                                                                                                        4,
-                                                                                                        RoundingMode.HALF_UP);
-        SLF4JLoggerProxy.debug(RiskManager.class,
-                               "LastPrice: {} CurrentPrice: {} AbsoluteDeviationFromLast: {} Maximum: {}", //$NON-NLS-1$
-                               lastTrade.getPrice(),
-                               price,
-                               absoluteDeviationFromLastTrade,
-                               symbolData.getMaximumDeviationFromLast());
-        if(absoluteDeviationFromLastTrade.compareTo(symbolData.getMaximumDeviationFromLast()) == 1) {
-            Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED.warn(RiskManager.class,
-                                                           orderID,
-                                                           price,
-                                                           lastTrade.getPrice(),
-                                                           absoluteDeviationFromLastTrade,
-                                                           symbolData.getMaximumDeviationFromLast());
-            throw new UserLimitWarning(new I18NBoundMessage5P(Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED,
-                                                              orderID,
-                                                              price,
-                                                              lastTrade.getPrice(),
-                                                              absoluteDeviationFromLastTrade,
-                                                              symbolData.getMaximumDeviationFromLast()));
+        if(lastTrade != null) {
+            BigDecimal absoluteDeviationFromLastTrade = (lastTrade.getPrice().subtract(price).abs()).divide(lastTrade.getPrice(),
+                                                                                                            4,
+                                                                                                            RoundingMode.HALF_UP);
+            SLF4JLoggerProxy.debug(RiskManager.class,
+                                   "LastPrice: {} CurrentPrice: {} AbsoluteDeviationFromLast: {} Maximum: {}", //$NON-NLS-1$
+                                   lastTrade.getPrice(),
+                                   price,
+                                   absoluteDeviationFromLastTrade,
+                                   symbolData.getMaximumDeviationFromLast());
+            if(absoluteDeviationFromLastTrade.compareTo(symbolData.getMaximumDeviationFromLast()) == 1) {
+                Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED.warn(RiskManager.class,
+                                                               orderID,
+                                                               price,
+                                                               lastTrade.getPrice(),
+                                                               absoluteDeviationFromLastTrade,
+                                                               symbolData.getMaximumDeviationFromLast());
+                throw new UserLimitWarning(new I18NBoundMessage5P(Messages.MAX_DEVIATION_FROM_LAST_EXCEEDED,
+                                                                  orderID,
+                                                                  price,
+                                                                  lastTrade.getPrice(),
+                                                                  absoluteDeviationFromLastTrade,
+                                                                  symbolData.getMaximumDeviationFromLast()));
+            }
         }
         SLF4JLoggerProxy.debug(RiskManager.class,
                                "** Test #6 - Maximum deviation from last mid quote **"); //$NON-NLS-1$
