@@ -12,10 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.event.Messages;
-import org.marketcetera.event.OptionMarketstatEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
@@ -659,6 +657,30 @@ public class MarketstatEventTest
         verify(builder);
     }
     /**
+     * Tests {@link MarketstatEventBuilder#withEventType(org.marketcetera.event.EventType)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withEventType()
+            throws Exception
+    {
+        MarketstatEventBuilder builder = setDefaults(getBuilder());
+        EventType type = null;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getMarketstat().getEventType());
+        type = EventType.UNKNOWN;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getMarketstat().getEventType());
+        type = EventType.SNAPSHOT_PART;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getMarketstat().getEventType());
+        verify(builder);
+    }
+    /**
      * Tests {@link MarketstatEventBuilder#withMultiplier(BigDecimal)}.
      *
      * @throws Exception if an unexpected error occurs
@@ -908,6 +930,12 @@ public class MarketstatEventTest
                      event.getLow());
         assertEquals(inBuilder.getMarketstat().getLowExchange(),
                      event.getLowExchange());
+        assertEquals(inBuilder.getMarketstat().getEventType(),
+                     event.getEventType());
+        assertFalse(event.getEventType() == EventType.SNAPSHOT_FINAL);
+        event.setEventType(EventType.SNAPSHOT_FINAL);
+        assertEquals(EventType.SNAPSHOT_FINAL,
+                     event.getEventType());
         // there is a special case for messageId - if equal to Long.MIN_VALUE
         //  then it will be some value >= 0
         if(inBuilder.getMarketstat().getMessageId() == Long.MIN_VALUE) {
@@ -998,6 +1026,7 @@ public class MarketstatEventTest
         inBuilder.withOpenExchange("open exchange");
         inBuilder.withOpenPrice(new BigDecimal(counter++));
         inBuilder.withProviderSymbol("MSQ/K/X");
+        inBuilder.withEventType(EventType.UNKNOWN);
         inBuilder.withPreviousCloseDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withPreviousClosePrice(new BigDecimal(counter++));
         inBuilder.withSource(this);

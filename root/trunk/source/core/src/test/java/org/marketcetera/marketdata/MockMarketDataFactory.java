@@ -10,9 +10,10 @@ import org.marketcetera.marketdata.IFeedComponent.FeedType;
  * @version $Id$
  * @since 0.5.0
  */
-public class MockMarketDataFactory
+public enum MockMarketDataFactory
         implements IMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials>
 {
+    INSTANCE;
     private AbstractMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials> mInnerFactory =
             new AbstractMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials>() {
         private static final String PROVIDER = "TEST"; //$NON-NLS-1$

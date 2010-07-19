@@ -3204,10 +3204,10 @@ public abstract class LanguageTestBase
                                                 null);
             executeProcessedMarketDataRequest(false,
                                               true);
-            // test empty market data source (uses "default" bogus source so returns data)
+            // test empty market data source (multiple matches, so fails)
             AbstractRunningStrategy.setProperty("marketDataSource",
                                                 "");
-            executeProcessedMarketDataRequest(true,
+            executeProcessedMarketDataRequest(false,
                                               true);
             // done with negative market data source, replace the value
             AbstractRunningStrategy.setProperty("marketDataSource",

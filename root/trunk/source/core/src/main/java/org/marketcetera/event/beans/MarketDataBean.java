@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketDataEvent;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.Instrument;
@@ -65,6 +66,24 @@ public class MarketDataBean
     public final void setInstrument(Instrument inInstrument)
     {
         instrument = inInstrument;
+    }
+    /**
+     * Returns the meta-type of the event.
+     *
+     * @return an <code>EventMetaType</code> value
+     */
+    public final EventType getEventType()
+    {
+        return eventType;
+    }
+    /**
+     * Sets the meta-type of the event.
+     *
+     * @param inEventType
+     */
+    public final void setEventType(EventType inEventType)
+    {
+        eventType = inEventType;
     }
     /**
      * Get the exchangeTimestamp value.
@@ -150,6 +169,7 @@ public class MarketDataBean
      * @throws IllegalArgumentException if <code>Size</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Exchange</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
+     * @throws IllegalArgumentException if <code>MetaType</code> is <code>null</code>
      */
     @Override
     public void validate()
@@ -172,6 +192,9 @@ public class MarketDataBean
            exchangeTimestamp.isEmpty()) {
             EventServices.error(VALIDATION_NULL_EXCHANGE_TIMESTAMP);
         }
+        if(eventType == null) {
+            EventServices.error(VALIDATION_NULL_META_TYPE);
+        }
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -186,6 +209,7 @@ public class MarketDataBean
         result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
         result = prime * result + ((price == null) ? 0 : price.hashCode());
         result = prime * result + ((size == null) ? 0 : size.hashCode());
+        result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -239,6 +263,13 @@ public class MarketDataBean
         } else if (!size.equals(other.size)) {
             return false;
         }
+        if (eventType == null) {
+            if (other.eventType != null) {
+                return false;
+            }
+        } else if (!eventType.equals(other.eventType)) {
+            return false;
+        }
         return true;
     }
     /* (non-Javadoc)
@@ -247,12 +278,13 @@ public class MarketDataBean
     @Override
     public String toString()
     {
-        return String.format("MarketData: %s at %s of %s on %s at %s [%s with source %s at %s]", //$NON-NLS-1$
+        return String.format("MarketData: %s at %s of %s on %s at %s %s [%s with source %s at %s]", //$NON-NLS-1$
                              size,
                              price,
                              instrument,
                              exchange,
                              exchangeTimestamp,
+                             eventType,
                              getMessageId(),
                              getSource(),
                              getTimestamp());
@@ -268,6 +300,7 @@ public class MarketDataBean
     {
         EventBean.copyAttributes(inDonor,
                                  inRecipient);
+        inRecipient.setEventType(inDonor.getEventType());
         inRecipient.setExchange(inDonor.getExchange());
         inRecipient.setExchangeTimestamp(inDonor.getExchangeTimestamp());
         inRecipient.setInstrument(inDonor.getInstrument());
@@ -294,5 +327,9 @@ public class MarketDataBean
      * the market data instrument
      */
     private Instrument instrument;
+    /**
+     * the event meta-type
+     */
+    private EventType eventType = EventType.UNKNOWN;
     private static final long serialVersionUID = 1L;
 }

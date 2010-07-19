@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
@@ -178,6 +179,22 @@ abstract class AbstractMarketstatEventImpl
     public Object getSource()
     {
         return marketstat.getSource();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getMetaType()
+     */
+    @Override
+    public EventType getEventType()
+    {
+        return marketstat.getEventType();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketstatEvent#setEventType(org.marketcetera.event.EventType)
+     */
+    @Override
+    public void setEventType(EventType inEventType)
+    {
+        marketstat.setEventType(inEventType);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getTimestamp()

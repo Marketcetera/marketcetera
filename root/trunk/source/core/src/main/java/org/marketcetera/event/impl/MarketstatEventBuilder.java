@@ -9,6 +9,7 @@ import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.MarketstatBean;
@@ -452,6 +453,17 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withInterestChange(BigDecimal inInterestChange)
     {
         interestChange = inInterestChange;
+        return this;
+    }
+    /**
+     * Sets the event type.
+     *
+     * @param inEventType an <code>EventType</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withEventType(EventType inEventType)
+    {
+        marketstat.setEventType(inEventType);
         return this;
     }
     /* (non-Javadoc)

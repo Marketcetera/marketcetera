@@ -10,11 +10,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.DividendFrequency;
-import org.marketcetera.event.DividendStatus;
-import org.marketcetera.event.DividendType;
-import org.marketcetera.event.Messages;
+import org.marketcetera.event.*;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
@@ -100,6 +96,30 @@ public class DividendEventTest
         builder.withSource(this);
         assertEquals(this,
                      builder.getDividend().getSource());
+        verify(builder);
+    }
+    /**
+     * Tests {@link DividendEventBuilder#withEventType(org.marketcetera.event.EventType)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withEventType()
+            throws Exception
+    {
+        DividendEventBuilder builder = setDefaults(getBuilder());
+        EventType type = null;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getDividend().getEventType());
+        type = EventType.UNKNOWN;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getDividend().getEventType());
+        type = EventType.SNAPSHOT_PART;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getDividend().getEventType());
         verify(builder);
     }
     /**
@@ -539,6 +559,12 @@ public class DividendEventTest
                      event.getFrequency());
         assertEquals(inBuilder.getDividend().getInstrumentAsString(),
                      event.getInstrumentAsString());
+        assertEquals(inBuilder.getDividend().getEventType(),
+                     event.getEventType());
+        assertFalse(event.getEventType() == EventType.SNAPSHOT_FINAL);
+        event.setEventType(EventType.SNAPSHOT_FINAL);
+        assertEquals(EventType.SNAPSHOT_FINAL,
+                     event.getEventType());
         // there is a special case for messageId - if equal to Long.MIN_VALUE
         //  then it will be some value >= 0
         if(inBuilder.getDividend().getMessageId() == Long.MIN_VALUE) {
@@ -589,6 +615,7 @@ public class DividendEventTest
         inBuilder.withCurrency("US Dollars");
         inBuilder.withDeclareDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*1)));
         inBuilder.withEquity(equity);
+        inBuilder.withEventType(EventType.UPDATE_FINAL);
         inBuilder.withExecutionDate(DateUtils.dateToString(new Date(timestampMillis + (1000 * 60 * 60 * 24)*2)));
         inBuilder.withFrequency(DividendFrequency.ANNUALLY);
         inBuilder.withMessageId(idCounter.incrementAndGet());

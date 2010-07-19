@@ -1,5 +1,6 @@
 package org.marketcetera.module;
 
+import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.CollectionAssert;
 import org.marketcetera.core.Pair;
@@ -38,7 +39,7 @@ public class ModuleTestBase {
      * @param inProviders the actual set of provider URNs found.
      */
     protected static void checkAllProviders(List<ModuleURN> inProviders) {
-        assertEquals(13, inProviders.size());
+        assertEquals(14, inProviders.size());
         CollectionAssert.assertArrayPermutation(new ModuleURN[]{
                 SinkModuleFactory.PROVIDER_URN,
                 SingleModuleFactory.PROVIDER_URN,
@@ -52,7 +53,8 @@ public class ModuleTestBase {
                 SingleParmModuleFactory.PROVIDER_URN,
                 CopierModuleFactory.PROVIDER_URN,
                 ConcurrentTestFactory.PROVIDER_URN,
-                DynamicBeanModuleFactory.PROVIDER_URN
+                DynamicBeanModuleFactory.PROVIDER_URN,
+                MockMarketDataFeedModuleFactory.PROVIDER_URN
         }, inProviders.toArray(new ModuleURN[inProviders.size()]));
     }
 
@@ -391,7 +393,7 @@ public class ModuleTestBase {
         if (inSimpleType) {
             Object value = inDescriptor.getFieldValue("openType");
             assertNotNull(value);
-            assertTrue(value.getClass().toString(), value instanceof SimpleType);
+            assertTrue(value.getClass().toString(), value instanceof SimpleType<?>);
         }
         assertNotNull(inDescriptor.getFieldValue("name"));
     }

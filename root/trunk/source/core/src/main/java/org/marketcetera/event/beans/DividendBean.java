@@ -4,10 +4,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.DividendFrequency;
-import org.marketcetera.event.DividendStatus;
-import org.marketcetera.event.DividendType;
+import org.marketcetera.event.*;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
@@ -68,6 +65,24 @@ public final class DividendBean
     public void setEquity(Equity inEquity)
     {
         equity = inEquity;
+    }
+    /**
+     * Returns the type of the event.
+     *
+     * @return an <code>EventType</code> value
+     */
+    public final EventType getEventType()
+    {
+        return eventType;
+    }
+    /**
+     * Sets the type of the event.
+     *
+     * @param inEventType
+     */
+    public final void setEventType(EventType inEventType)
+    {
+        eventType = inEventType;
     }
     /**
      * Get the amount value.
@@ -249,6 +264,7 @@ public final class DividendBean
         result = prime * result + ((recordDate == null) ? 0 : recordDate.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -337,6 +353,13 @@ public final class DividendBean
         } else if (!type.equals(other.type)) {
             return false;
         }
+        if (eventType == null) {
+            if (other.eventType != null) {
+                return false;
+            }
+        } else if (!eventType.equals(other.eventType)) {
+            return false;
+        }
         return true;
     }
     /**
@@ -353,6 +376,7 @@ public final class DividendBean
      * @throws IllegalArgumentException if <code>Frequency</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Status</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Type</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>MetaType</code> is <code>null</code>
      */
     @Override
     public void validate()
@@ -381,6 +405,9 @@ public final class DividendBean
         if(type == null) {
             EventServices.error(VALIDATION_NULL_TYPE);
         }
+        if(eventType == null) {
+            EventServices.error(VALIDATION_NULL_META_TYPE);
+        }
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -388,7 +415,8 @@ public final class DividendBean
     @Override
     public String toString()
     {
-        return String.format("%s %s %s Dividend %s %s(%s) executionDate=%s declareDate=%s paymentDate=%s recordDate=%s [%s with source %s at %s]]", //$NON-NLS-1$
+        return String.format("%s %s %s %s Dividend %s %s(%s) executionDate=%s declareDate=%s paymentDate=%s recordDate=%s [%s with source %s at %s]]", //$NON-NLS-1$
+                             eventType,
                              type,
                              status,
                              frequency,
@@ -414,6 +442,7 @@ public final class DividendBean
     {
         EventBean.copyAttributes(inDonor,
                                  inRecipient);
+        inRecipient.setEventType(inDonor.getEventType());
         inRecipient.setAmount(inDonor.getAmount());
         inRecipient.setCurrency(inDonor.getCurrency());
         inRecipient.setDeclareDate(inDonor.getDeclareDate());
@@ -465,5 +494,9 @@ public final class DividendBean
      * the type of the dividend that was or will be issued 
      */
     private DividendType type;
+    /**
+     * the event meta-type
+     */
+    private EventType eventType = EventType.UNKNOWN;
     private static final long serialVersionUID = 1L;
 }

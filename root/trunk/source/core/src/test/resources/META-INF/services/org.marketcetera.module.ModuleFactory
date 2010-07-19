@@ -11,3 +11,4 @@ org.marketcetera.module.SingleParmModuleFactory
 org.marketcetera.module.CopierModuleFactory
 org.marketcetera.module.ConcurrentTestFactory
 org.marketcetera.module.DynamicBeanModuleFactory
+org.marketcetera.marketdata.MockMarketDataFeedModuleFactory

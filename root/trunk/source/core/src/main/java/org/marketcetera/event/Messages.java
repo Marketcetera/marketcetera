@@ -44,6 +44,8 @@ public interface Messages
                                                                            "invalid_event_timestamp"); //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_NULL_TIMESTAMP = new I18NMessage0P(LOGGER,
                                                                              "validation_null_timestamp"); //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_NULL_META_TYPE = new I18NMessage0P(LOGGER,
+                                                                             "validation_null_meta_type"); //$NON-NLS-1$
     static final I18NMessage1P VALIDATION_INVALID_MESSAGEID = new I18NMessage1P(LOGGER,
                                                                                 "validation_invalid_messageid"); //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_NULL_EQUITY = new I18NMessage0P(LOGGER,

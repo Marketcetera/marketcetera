@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
+import org.marketcetera.event.EventType;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
@@ -91,6 +92,10 @@ public class MarketDataBeanTest
         assertNull(bean2.getPrice());
         assertNull(bean1.getSize());
         assertNull(bean2.getSize());
+        assertEquals(EventType.UNKNOWN,
+                     bean1.getEventType());
+        assertEquals(EventType.UNKNOWN,
+                     bean2.getEventType());
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       this,
@@ -131,6 +136,14 @@ public class MarketDataBeanTest
         // set bean3 to non-null
         assertNull(bean1.getSize());
         bean3.setSize(BigDecimal.TEN);
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
+        // test meta-type
+        // set bean3 to non-null
+        assertEquals(EventType.UNKNOWN,
+                     bean1.getEventType());
+        bean3.setEventType(EventType.UPDATE_FINAL);
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -210,6 +223,16 @@ public class MarketDataBeanTest
             }
         };
         inBean.setExchangeTimestamp(DateUtils.dateToString(new Date()));
+        inBean.setEventType(null);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_META_TYPE.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                inBean.validate();
+            }
+        };
+        inBean.setEventType(EventType.UPDATE_PART);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.beans.AbstractEventBeanTestBase#constructBean()
@@ -233,37 +256,43 @@ public class MarketDataBeanTest
                              null,
                              null,
                              null,
-                             null);
+                             null,
+                             EventType.UNKNOWN);
         MarketDataBean newBean = MarketDataBean.copy(inBean);
         verifyMarketDataBean(newBean,
                              null,
                              null,
                              null,
                              null,
-                             null);
+                             null,
+                             EventType.UNKNOWN);
         String exchange = "test exchange";
         String exchangeTimestamp = DateUtils.dateToString(new Date());
         Instrument instrument = new Equity("GOOG");
         BigDecimal price = BigDecimal.ONE;
         BigDecimal size = BigDecimal.TEN;
+        EventType metaType = EventType.UPDATE_FINAL;
         inBean.setExchange(exchange);
         inBean.setExchangeTimestamp(exchangeTimestamp);
         inBean.setInstrument(instrument);
         inBean.setPrice(price);
         inBean.setSize(size);
+        inBean.setEventType(metaType);
         verifyMarketDataBean(inBean,
                              exchange,
                              exchangeTimestamp,
                              instrument,
                              price,
-                             size);
+                             size,
+                             metaType);
         newBean = MarketDataBean.copy(inBean);
         verifyMarketDataBean(newBean,
                              exchange,
                              exchangeTimestamp,
                              instrument,
                              price,
-                             size);
+                             size,
+                             metaType);
     }
     /**
      * Verifies that the given <code>MarketDataBean</code> contains the given attributes.
@@ -274,6 +303,7 @@ public class MarketDataBeanTest
      * @param inExpectedInstrument an <code>Instrument</code> value
      * @param inExpectedPrice a <code>BigDecimal</code> value
      * @param inExpectedSize a <code>BigDecimal</code> value
+     * @param inExpectedMetaType an <code>EventMetaType</code> value
      * @throws Exception if an unexpected error occurs
      */
     static void verifyMarketDataBean(MarketDataBean inBean,
@@ -281,7 +311,8 @@ public class MarketDataBeanTest
                                      String inExpectedExchangeTimestamp,
                                      Instrument inExpectedInstrument,
                                      BigDecimal inExpectedPrice,
-                                     BigDecimal inExpectedSize)
+                                     BigDecimal inExpectedSize,
+                                     EventType inExpectedMetaType)
             throws Exception
     {
         assertEquals(inExpectedExchange,
@@ -294,5 +325,7 @@ public class MarketDataBeanTest
                      inBean.getPrice());
         assertEquals(inExpectedSize,
                      inBean.getSize());
+        assertEquals(inExpectedMetaType,
+                     inBean.getEventType());
     }
 }

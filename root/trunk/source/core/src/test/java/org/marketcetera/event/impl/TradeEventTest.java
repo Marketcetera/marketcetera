@@ -12,10 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.*;
 import org.marketcetera.event.Messages;
-import org.marketcetera.event.OptionEvent;
-import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
@@ -200,6 +198,30 @@ public class TradeEventTest
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
+        verify(builder);
+    }
+    /**
+     * Tests {@link TradeEventBuilder#withEventType(org.marketcetera.event.EventType)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withEventType()
+            throws Exception
+    {
+        TradeEventBuilder<TradeEvent> builder = setDefaults(getBuilder());
+        EventType type = null;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getMarketData().getEventType());
+        type = EventType.UNKNOWN;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getMarketData().getEventType());
+        type = EventType.SNAPSHOT_PART;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getMarketData().getEventType());
         verify(builder);
     }
     /**
@@ -514,6 +536,12 @@ public class TradeEventTest
                      event.getSize());
         assertEquals(inBuilder.getMarketData().getSource(),
                      event.getSource());
+        assertEquals(inBuilder.getMarketData().getEventType(),
+                     event.getEventType());
+        assertFalse(event.getEventType() == EventType.SNAPSHOT_FINAL);
+        event.setEventType(EventType.SNAPSHOT_FINAL);
+        assertEquals(EventType.SNAPSHOT_FINAL,
+                     event.getEventType());
         // there's a special case for timestamp, too
         if(inBuilder.getMarketData().getTimestamp() == null) {
             assertNotNull(event.getTimestamp());
@@ -568,6 +596,7 @@ public class TradeEventTest
         inBuilder.withMessageId(idCounter.incrementAndGet());
         inBuilder.withMultiplier(BigDecimal.ZERO);
         inBuilder.withProviderSymbol("MSQ/K/X");
+        inBuilder.withEventType(EventType.UPDATE_FINAL);
         inBuilder.withPrice(BigDecimal.ONE);
         inBuilder.withTradeDate(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withSize(BigDecimal.TEN);

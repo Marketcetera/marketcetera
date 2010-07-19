@@ -5,10 +5,7 @@ import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.DividendFrequency;
-import org.marketcetera.event.DividendStatus;
-import org.marketcetera.event.DividendType;
+import org.marketcetera.event.*;
 import org.marketcetera.event.beans.DividendBean;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
@@ -78,6 +75,17 @@ public abstract class DividendEventBuilder
     public DividendEventBuilder withSource(Object inSource)
     {
         dividend.setSource(inSource);
+        return this;
+    }
+    /**
+     * Sets the event type.
+     *
+     * @param inEventType an <code>EventType</code> value
+     * @return a <code>DividendEventBuilder</code> value
+     */
+    public final DividendEventBuilder withEventType(EventType inEventType)
+    {
+        dividend.setEventType(inEventType);
         return this;
     }
     /**
