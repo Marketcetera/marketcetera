@@ -563,6 +563,17 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         option.setProviderSymbol(inProviderSymbol);
         return this;
     }
+    /**
+     * Sets the event type.
+     *
+     * @param inEventType an <code>EventMetaType</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public final QuoteEventBuilder<E> withEventType(EventType inEventType)
+    {
+        quote.setEventType(inEventType);
+        return this;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

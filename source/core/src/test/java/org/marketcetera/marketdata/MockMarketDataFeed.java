@@ -34,6 +34,7 @@ public class MockMarketDataFeed
                                    String,
                                    MockMarketDataFeed>
 {
+    public static MockMarketDataFeed instance;
     private final int mDelay;
     private Set<Capability> capabilities = EnumSet.noneOf(Capability.class);
     private Set<AssetClass> assetClasses = EnumSet.allOf(AssetClass.class);
@@ -102,6 +103,7 @@ public class MockMarketDataFeed
               inProviderName);
         mDelay = inDelay;
         setState(State.logged_out);
+        instance = this;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataFeed#getCapabilities()

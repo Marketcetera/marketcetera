@@ -5,10 +5,7 @@ import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.DividendFrequency;
-import org.marketcetera.event.DividendStatus;
-import org.marketcetera.event.DividendType;
+import org.marketcetera.event.*;
 import org.marketcetera.event.beans.DividendBean;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
@@ -53,6 +50,22 @@ final class DividendEventImpl
     public Object getSource()
     {
         return dividend.getSource();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getEventType()
+     */
+    @Override
+    public EventType getEventType()
+    {
+        return dividend.getEventType();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.DividendEvent#setEventType(org.marketcetera.event.EventType)
+     */
+    @Override
+    public void setEventType(EventType inEventType)
+    {
+        dividend.setEventType(inEventType);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getTimestamp()

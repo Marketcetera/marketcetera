@@ -1,17 +1,19 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.*;
-
-import javax.management.*;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
-import java.lang.management.ManagementFactory;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.io.IOException;
+
+import javax.annotation.concurrent.GuardedBy;
+import javax.management.*;
+
+import org.marketcetera.util.log.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -63,6 +65,21 @@ import java.io.IOException;
 @ClassVersion("$Id$")  //$NON-NLS-1$
 public final class ModuleManager {
     /**
+     * Gets the singleton instance of <code>ModuleManager</code> if one
+     * has been created.
+     * 
+     * <p>This method makes no guarantee that a <code>ModuleManager</code> exists
+     * or has been initialized.
+     *
+     * @return a <code>ModuleManager</code> value or <code>null</code>
+     */
+    public static ModuleManager getInstance()
+    {
+        synchronized(ModuleManager.class) {
+            return instance;
+        }
+    }
+    /**
      * Creates an instance that uses the same classloader as this class
      * to load module providers.
      */
@@ -83,6 +100,9 @@ public final class ModuleManager {
         mClassLoader = inClassLoader;
         mLoader = ServiceLoader.load(ModuleFactory.class,
                 inClassLoader);
+        synchronized(ModuleManager.class) {
+            instance = this;
+        }
     }
 
     /**
@@ -770,7 +790,7 @@ public final class ModuleManager {
             parameters = parameterList.split(",");  //$NON-NLS-1$
         }
         Object[] params = null;
-        Class[] parameterTypes = factory.getParameterTypes();
+        Class<?>[] parameterTypes = factory.getParameterTypes();
         if(parameterTypes != null &&
                 parameterTypes.length != 0 &&
                 parameters != null &&
@@ -780,7 +800,7 @@ public final class ModuleManager {
                     parameterTypes.length)];
 
             for(int i= 0; i < params.length; i++) {
-                Class type = parameterTypes[i];
+                Class<?> type = parameterTypes[i];
                 if(StringToTypeConverter.isSupported(type)) {
                     //convert parameters whose conversion is supported
                     try {
@@ -1124,7 +1144,7 @@ public final class ModuleManager {
         }
 
         //Verify if the parameter types match the advertised types
-        Class[] paramTypes = factory.getParameterTypes();
+        Class<?>[] paramTypes = factory.getParameterTypes();
         //deal with nulls an empty arrays.
         if(
                 // No parameters are needed but some are provided
@@ -1145,7 +1165,7 @@ public final class ModuleManager {
         }
         //Verify if the correct parameter types have been supplied
         int i = 0;
-        for(Class c: paramTypes) {
+        for(Class<?> c: paramTypes) {
             if(inParameters[i] != null && !c.isInstance(inParameters[i])
                     && !isPrimitiveMatch(c, inParameters[i])) {
                 throw new ModuleCreationException(new I18NBoundMessage4P(
@@ -1170,7 +1190,7 @@ public final class ModuleManager {
      *
      * @return if the supplied parameter is of the boxed primitive type.
      */
-    private boolean isPrimitiveMatch(Class inClass, Object inParameter) {
+    private boolean isPrimitiveMatch(Class<?> inClass, Object inParameter) {
         if(inClass.isPrimitive()) {
             if(Boolean.TYPE.equals(inClass)) {
                 return Boolean.class.isInstance(inParameter);
@@ -1536,7 +1556,7 @@ public final class ModuleManager {
                 inFactory.isAutoInstantiate()) {
             //verify that it only needs ModuleURN parameter to create
             //new instances
-            Class[] list = inFactory.getParameterTypes();
+            Class<?>[] list = inFactory.getParameterTypes();
             if(list == null || list.length != 1 ||
                     (!ModuleURN.class.equals(list[0]))) {
                 throw new ModuleException(new I18NBoundMessage1P(
@@ -1938,11 +1958,11 @@ public final class ModuleManager {
      * @return if the object is an MXBean.
      */
     private static boolean isMXBean(Object inObject) {
-        for (Class c = inObject.getClass();
+        for (Class<?> c = inObject.getClass();
              !Object.class.equals(c);
              c = c.getSuperclass()) {
 
-            for(Class intf: c.getInterfaces()) {
+            for(Class<?> intf: c.getInterfaces()) {
                 if(JMX.isMXBeanInterface(intf) ||
                         DynamicMBean.class.equals(intf)) {
                     return true;
@@ -2034,4 +2054,9 @@ public final class ModuleManager {
      */
     private MBeanServer mMBeanServer =
             ManagementFactory.getPlatformMBeanServer();
+    /**
+     * singleton ModuleManager instance
+     */
+    @GuardedBy("ModuleManager.class")
+    private static ModuleManager instance;
 }

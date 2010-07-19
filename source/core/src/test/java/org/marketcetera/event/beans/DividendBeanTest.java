@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.marketcetera.event.DividendFrequency;
 import org.marketcetera.event.DividendStatus;
 import org.marketcetera.event.DividendType;
+import org.marketcetera.event.EventType;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
@@ -342,6 +343,18 @@ public class DividendBeanTest
             }
         };
         inBean.setType(DividendType.FUTURE);
+        // null meta type
+        inBean.setEventType(null);
+        assertNull(inBean.getEventType());
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_META_TYPE.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                inBean.validate();
+            }
+        };
+        inBean.setEventType(EventType.SNAPSHOT_FINAL);
     }
     /**
      * Tests {@link DividendBean#hashCode()} and {@link DividendBean#equals(Object)}.
@@ -378,6 +391,10 @@ public class DividendBeanTest
         assertNull(bean2.getStatus());
         assertNull(bean1.getType());
         assertNull(bean2.getType());
+        assertEquals(EventType.UNKNOWN,
+                     bean1.getEventType());
+        assertEquals(EventType.UNKNOWN,
+                     bean2.getEventType());
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       this,
@@ -471,6 +488,14 @@ public class DividendBeanTest
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
+        // test meta type
+        // set bean3 to non-null
+        assertEquals(EventType.UNKNOWN,
+                     bean1.getEventType());
+        bean3.setEventType(EventType.UPDATE_FINAL);
+        EqualityAssert.assertEquality(bean1,
+                                      bean2,
+                                      bean3);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.beans.AbstractEventBeanTestBase#constructBean()
@@ -499,7 +524,8 @@ public class DividendBeanTest
                            null,
                            null,
                            null,
-                           null);
+                           null,
+                           EventType.UNKNOWN);
         DividendBean newBean = DividendBean.copy(inBean);
         verifyDividendBean(newBean,
                            null,
@@ -511,7 +537,8 @@ public class DividendBeanTest
                            null,
                            null,
                            null,
-                           null);
+                           null,
+                           EventType.UNKNOWN);
         BigDecimal amount = BigDecimal.ONE;
         String currency = "US Dollars";
         long useThisTimestamp = System.currentTimeMillis();
@@ -524,6 +551,7 @@ public class DividendBeanTest
         String recordDate = DateUtils.dateToString(new Date(useThisTimestamp + (oneDay * 3)));
         DividendStatus status = DividendStatus.OFFICIAL;
         DividendType type = DividendType.FUTURE;
+        EventType metaType = EventType.SNAPSHOT_PART;
         inBean.setAmount(amount);
         inBean.setCurrency(currency);
         inBean.setDeclareDate(declareDate);
@@ -534,6 +562,7 @@ public class DividendBeanTest
         inBean.setRecordDate(recordDate);
         inBean.setStatus(status);
         inBean.setType(type);
+        inBean.setEventType(metaType);
         verifyDividendBean(inBean,
                            amount,
                            currency,
@@ -544,7 +573,8 @@ public class DividendBeanTest
                            paymentDate,
                            recordDate,
                            status,
-                           type);
+                           type,
+                           metaType);
         newBean = DividendBean.copy(inBean);
         verifyDividendBean(newBean,
                            amount,
@@ -556,7 +586,8 @@ public class DividendBeanTest
                            paymentDate,
                            recordDate,
                            status,
-                           type);
+                           type,
+                           metaType);
     }
     /**
      * Verifies that the given <code>DividendBean</code> contains the given attributes.
@@ -572,6 +603,7 @@ public class DividendBeanTest
      * @param inExpectedRecordDate a <code>String</code> value
      * @param inExpectedStatus a <code>DividendStatus</code> value
      * @param inExpectedType a <code>DividendType</code> value
+     * @param inExpectedMetaType an <code>EventMetaType</code> value
      * @throws Exception if an unexpected error occurs
      */
     static void verifyDividendBean(DividendBean inBean,
@@ -584,7 +616,8 @@ public class DividendBeanTest
                                    String inExpectedPaymentDate,
                                    String inExpectedRecordDate,
                                    DividendStatus inExpectedStatus,
-                                   DividendType inExpectedType)
+                                   DividendType inExpectedType,
+                                   EventType inExpectedMetaType)
             throws Exception
     {
         assertEquals(inExpectedAmount,
@@ -607,5 +640,7 @@ public class DividendBeanTest
                      inBean.getStatus());
         assertEquals(inExpectedType,
                      inBean.getType());
+        assertEquals(inExpectedMetaType,
+                     inBean.getEventType());
     }
 }

@@ -1,5 +1,6 @@
 package org.marketcetera.module;
 
+import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
 import org.junit.Test;
 import org.junit.After;
@@ -132,12 +133,13 @@ public class ProviderLoadTest extends ModuleTestBase {
         //Should see all the providers now
         ModuleTestBase.checkAllProviders(mManager.getProviders());
 
-        assertEquals(4, mManager.getModuleInstances(null).size());
+        assertEquals(5, mManager.getModuleInstances(null).size());
         assertContains(mManager.getModuleInstances(null),new ModuleURN[]{
                 SinkModuleFactory.INSTANCE_URN,
                 EmitterModuleFactory.INSTANCE_URN,
                 SingleModuleFactory.INSTANCE_URN,
-                CopierModuleFactory.INSTANCE_URN});
+                CopierModuleFactory.INSTANCE_URN,
+                MockMarketDataFeedModuleFactory.INSTANCE_URN});
     }
     private ModuleManager mManager;
     private static class Refresher implements RefreshListener {

@@ -1,10 +1,6 @@
 package org.marketcetera.event.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,11 +8,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.*;
 import org.marketcetera.event.Messages;
-import org.marketcetera.event.OptionEvent;
-import org.marketcetera.event.QuoteAction;
-import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
@@ -425,6 +418,30 @@ public class QuoteEventTest
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
+        verify(builder);
+    }
+    /**
+     * Tests {@link QuoteEventBuilder#withEventType(org.marketcetera.event.EventType)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withEventType()
+            throws Exception
+    {
+        QuoteEventBuilder<?> builder = setDefaults(getBuilder());
+        EventType type = null;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getQuote().getEventType());
+        type = EventType.UNKNOWN;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getQuote().getEventType());
+        type = EventType.SNAPSHOT_PART;
+        builder.withEventType(type);
+        assertEquals(type,
+                     builder.getQuote().getEventType());
         verify(builder);
     }
     /**
@@ -915,6 +932,12 @@ public class QuoteEventTest
                      event.getSize());
         assertEquals(inBuilder.getQuote().getSource(),
                      event.getSource());
+        assertEquals(inBuilder.getQuote().getEventType(),
+                     event.getEventType());
+        assertFalse(event.getEventType() == EventType.SNAPSHOT_FINAL);
+        event.setEventType(EventType.SNAPSHOT_FINAL);
+        assertEquals(EventType.SNAPSHOT_FINAL,
+                     event.getEventType());
         // there's a special case for timestamp, too
         if(inBuilder.getQuote().getTimestamp() == null) {
             assertNotNull(event.getTimestamp());
@@ -967,6 +990,7 @@ public class QuoteEventTest
         inBuilder.withExchange("exchange");
         inBuilder.withExpirationType(ExpirationType.AMERICAN);
         inBuilder.withProviderSymbol("MSQ/K/X");
+        inBuilder.withEventType(EventType.UPDATE_FINAL);
         inBuilder.withInstrument(instrument);
         inBuilder.withMessageId(idCounter.incrementAndGet());
         inBuilder.withMultiplier(BigDecimal.ZERO);
@@ -1048,6 +1072,8 @@ public class QuoteEventTest
                      inGeneratedEvent.getSource());
         assertEquals(inExpectedTimestamp,
                      inGeneratedEvent.getTimestamp());
+        assertEquals(inSourceEvent.getEventType(),
+                     inGeneratedEvent.getEventType());
         if(inSourceEvent instanceof OptionEvent) {
             OptionEvent expectedOptionEvent = (OptionEvent)inSourceEvent;
             OptionEvent actualOptionEvent = (OptionEvent)inGeneratedEvent;

@@ -10,6 +10,7 @@ import java.util.Date;
 import org.junit.Test;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
@@ -146,7 +147,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
-                            action);
+                            action,
+                            ask.getEventType());
         // change to non-null source
         ask.setSource(this);
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
@@ -159,7 +161,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
-                            action);
+                            action,
+                            ask.getEventType());
         // use odd timestamp
         timestamp = new Date(-1);
         assertTrue(timestamp.getTime() < 0);
@@ -175,7 +178,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             size,
-                            action);
+                            action,
+                            ask.getEventType());
         timestamp = new Date();
         // use negative size
         size = new BigDecimal("-10");
@@ -192,7 +196,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             size,
-                            action);
+                            action,
+                            ask.getEventType());
         // use zero size
         size = BigDecimal.ZERO;
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
@@ -207,7 +212,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             size,
-                            action);
+                            action,
+                            ask.getEventType());
         // now try varying the inputs to the event itself
         // some can't be done (it might look like we're testing the event impl validation here, but
         //  what's really being accomplished is verifying that behavior the quotebean depends on remains
@@ -310,7 +316,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
-                            action);
+                            action,
+                            ask.getEventType());
         equityAskBuilder.withPrice(BigDecimal.ZERO);
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
                                                             action),
@@ -322,7 +329,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
-                            action);
+                            action,
+                            ask.getEventType());
         equityAskBuilder.withPrice(BigDecimal.TEN);
         // event size
         equityAskBuilder.withSize(new BigDecimal("-20"));
@@ -336,7 +344,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
-                            action);
+                            action,
+                            ask.getEventType());
         equityAskBuilder.withSize(BigDecimal.ZERO);
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
                                                             action),
@@ -348,7 +357,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
-                            action);
+                            action,
+                            ask.getEventType());
         // this seems odd, but it is valid
         equityAskBuilder.withQuoteDate("this-is-not-a-date");
         verifyQuoteBeanFull(QuoteBean.getQuoteBeanFromEvent(ask,
@@ -361,7 +371,8 @@ public class QuoteBeanTest
                             ask.getInstrument(),
                             ask.getPrice(),
                             ask.getSize(),
-                            action);
+                            action,
+                            ask.getEventType());
         // last, show that it doesn't have to be either an ask or an equity
         Instrument option = new Option("MSFT",
                                        "20100319",
@@ -390,7 +401,8 @@ public class QuoteBeanTest
                             bid.getInstrument(),
                             bid.getPrice(),
                             bid.getSize(),
-                            action);
+                            action,
+                            ask.getEventType());
     }
     /**
      * Tests {@link QuoteBean#getAction()} and {@link QuoteBean#setAction(QuoteAction)}.
@@ -546,7 +558,8 @@ public class QuoteBeanTest
                                     Instrument inExpectedInstrument,
                                     BigDecimal inExpectedPrice,
                                     BigDecimal inExpectedSize,
-                                    QuoteAction inExpectedAction)
+                                    QuoteAction inExpectedAction,
+                                    EventType inExpectedMetaType)
             throws Exception
     {
         verifyQuoteBean(inBean,
@@ -556,7 +569,8 @@ public class QuoteBeanTest
                              inExpectedExchangeTimestamp,
                              inExpectedInstrument,
                              inExpectedPrice,
-                             inExpectedSize);
+                             inExpectedSize,
+                             inExpectedMetaType);
         EventBeanTest.verifyEventBean(inBean,
                                       inExpectedMessageId,
                                       inExpectedTimestamp,

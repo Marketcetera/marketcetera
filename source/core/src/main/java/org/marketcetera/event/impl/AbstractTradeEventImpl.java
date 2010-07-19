@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
@@ -92,6 +93,22 @@ public abstract class AbstractTradeEventImpl
         return marketData.getSource();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getMetaType()
+     */
+    @Override
+    public EventType getEventType()
+    {
+        return marketData.getEventType();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setEventType(org.marketcetera.event.EventType)
+     */
+    @Override
+    public void setEventType(EventType inEventType)
+    {
+        marketData.setEventType(inEventType);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketData.Event#getTimestamp()
      */
     @Override
@@ -155,7 +172,7 @@ public abstract class AbstractTradeEventImpl
     public final String toString()
     {
         StringBuffer output = new StringBuffer();
-        output.append(getDescription()).append("(").append(getMessageId()).append(") for ").append(getInstrument()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        output.append(getDescription()).append("(").append(getMessageId()).append(" ").append(getEventType()).append(" ) for ").append(getInstrument()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         output.append(" ").append(getInstrument()).append(" ").append(getExchange()).append(" at ").append(getExchangeTimestamp()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
     }

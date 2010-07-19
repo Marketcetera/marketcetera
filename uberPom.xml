@@ -56,6 +56,11 @@
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
+        <artifactId>marketdata-csv</artifactId>
+        <version>[${mvn.project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
         <artifactId>misc</artifactId>
         <version>[${mvn.project.version}]</version>
       </dependency>

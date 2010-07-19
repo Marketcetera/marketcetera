@@ -9,6 +9,7 @@ import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.MarketDataBean;
@@ -319,6 +320,17 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public final TradeEventBuilder<E> withProviderSymbol(String inProviderSymbol)
     {
         option.setProviderSymbol(inProviderSymbol);
+        return this;
+    }
+    /**
+     * Sets the event type.
+     *
+     * @param inEventType an <code>EventMetaType</code> value
+     * @return a <code>TradeEventBuilderr&lt;E&gt;</code> value
+     */
+    public final TradeEventBuilder<E> withEventType(EventType inEventType)
+    {
+        marketData.setEventType(inEventType);
         return this;
     }
     /* (non-Javadoc)

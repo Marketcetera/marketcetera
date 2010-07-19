@@ -71,6 +71,7 @@ public final class QuoteBean
         quote.setExchangeTimestamp(inQuoteEvent.getExchangeTimestamp());
         quote.setAction(inQuoteAction);
         quote.setSource(inQuoteEvent.getSource());
+        quote.setEventType(inQuoteEvent.getEventType());
         return quote;
     }
     /**

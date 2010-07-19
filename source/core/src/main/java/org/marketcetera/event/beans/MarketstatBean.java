@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.Instrument;
@@ -319,6 +320,24 @@ public final class MarketstatBean
         instrument = inInstrument;
     }
     /**
+     * Returns the type of the event.
+     *
+     * @return an <code>EventType</code> value
+     */
+    public final EventType getEventType()
+    {
+        return eventType;
+    }
+    /**
+     * Sets the type of the event.
+     *
+     * @param inEventType
+     */
+    public final void setEventType(EventType inEventType)
+    {
+        eventType = inEventType;
+    }
+    /**
      * Performs validation of the attributes.
      *
      * <p>Subclasses should override this method to validate
@@ -326,6 +345,7 @@ public final class MarketstatBean
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
+     * @throws IllegalArgumentException if <code>MetaType</code> is <code>null</code>
      */
     @Override
     public void validate()
@@ -333,6 +353,9 @@ public final class MarketstatBean
         super.validate();
         if(instrument == null) {
             EventServices.error(VALIDATION_NULL_INSTRUMENT);
+        }
+        if(eventType == null) {
+            EventServices.error(VALIDATION_NULL_META_TYPE);
         }
     }
     /* (non-Javadoc)
@@ -358,6 +381,7 @@ public final class MarketstatBean
         result = prime * result + ((tradeHighTime == null) ? 0 : tradeHighTime.hashCode());
         result = prime * result + ((tradeLowTime == null) ? 0 : tradeLowTime.hashCode());
         result = prime * result + ((volume == null) ? 0 : volume.hashCode());
+        result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -481,6 +505,13 @@ public final class MarketstatBean
         } else if (!volume.equals(other.volume)) {
             return false;
         }
+        if (eventType == null) {
+            if (other.eventType != null) {
+                return false;
+            }
+        } else if (!eventType.equals(other.eventType)) {
+            return false;
+        }
         return true;
     }
     /* (non-Javadoc)
@@ -489,7 +520,7 @@ public final class MarketstatBean
     @Override
     public String toString()
     {
-        return String.format("Marketstat: [closeDate=%s, closeExchange=%s, closePrice=%s, highExchange=%s, highPrice=%s, instrument=%s, lowExchange=%s, lowPrice=%s, openExchange=%s, openPrice=%s, previousCloseDate=%s, previousClosePrice=%s, tradeHighTime=%s, tradeLowTime=%s, volume=%s [%s with source %s at %s]]", //$NON-NLS-1$
+        return String.format("Marketstat: [closeDate=%s, closeExchange=%s, closePrice=%s, highExchange=%s, highPrice=%s, instrument=%s, lowExchange=%s, lowPrice=%s, openExchange=%s, openPrice=%s, previousCloseDate=%s, previousClosePrice=%s, tradeHighTime=%s, tradeLowTime=%s, volume=%s, eventType=%s [%s with source %s at %s]]", //$NON-NLS-1$
                              closeDate,
                              closeExchange,
                              closePrice,
@@ -505,6 +536,7 @@ public final class MarketstatBean
                              tradeHighTime,
                              tradeLowTime,
                              volume,
+                             eventType,
                              getMessageId(),
                              getSource(),
                              getTimestamp());
@@ -520,6 +552,7 @@ public final class MarketstatBean
     {
         EventBean.copyAttributes(inDonor,
                                  inRecipient);
+        inRecipient.setEventType(inDonor.getEventType());
         inRecipient.setClose(inDonor.getClose());
         inRecipient.setCloseDate(inDonor.getCloseDate());
         inRecipient.setCloseExchange(inDonor.getCloseExchange());
@@ -596,5 +629,9 @@ public final class MarketstatBean
      * the instrument
      */
     private Instrument instrument;
+    /**
+     * the event meta-type
+     */
+    private EventType eventType = EventType.UNKNOWN;
     private static final long serialVersionUID = 1L;
 }

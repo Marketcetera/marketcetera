@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.event.EventType;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.beans.EventBean;
@@ -142,6 +143,22 @@ public abstract class AbstractQuoteEventImpl
         quote.setSource(inSource);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getMetaType()
+     */
+    @Override
+    public EventType getEventType()
+    {
+        return quote.getEventType();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketDataEvent#setEventType(org.marketcetera.event.EventType)
+     */
+    @Override
+    public void setEventType(EventType inEventType)
+    {
+        quote.setEventType(inEventType);
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -165,7 +182,7 @@ public abstract class AbstractQuoteEventImpl
     public final String toString()
     {
         StringBuffer output = new StringBuffer();
-        output.append(getDescription()).append("(").append(getAction()).append("-").append(getMessageId()).append(") for ").append(getInstrument()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        output.append(getDescription()).append("(").append(getAction()).append("-").append(getMessageId()).append(" ").append(getEventType()).append(" ) for ").append(getInstrument()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         output.append(" ").append(getInstrument()).append(" ").append(getExchange()).append(" at ").append(getExchangeTimestamp()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
     }
