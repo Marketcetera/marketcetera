@@ -87,6 +87,18 @@
       <artifactId>protobuf-java</artifactId>
     </dependency>
     <dependency>
+      <groupId>colt</groupId>
+      <artifactId>colt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nocrala</groupId>
+      <artifactId>tools</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>joda-primatives</groupId>
+      <artifactId>joda-primatives</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jparsec</groupId>
       <artifactId>jparsec</artifactId>
     </dependency>
