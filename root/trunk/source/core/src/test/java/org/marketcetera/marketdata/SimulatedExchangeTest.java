@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -1430,39 +1429,6 @@ public class SimulatedExchangeTest
         //  makes this test effective enough.
         assertTrue(((MarketDataEvent)top1.get(0)).getPrice().subtract(((MarketDataEvent)top2.get(0)).getPrice()).abs().intValue() < 3);
         assertTrue(((MarketDataEvent)top1.get(0)).getPrice().subtract(((MarketDataEvent)top3.get(0)).getPrice()).abs().intValue() < 3);
-    }
-    /**
-     * Tests that the exchange data structures are protected against concurrent access violations.
-     *
-     * @throws Exception if an error occurs
-     */
-    @Test
-    public void concurrency()
-        throws Exception
-    {
-        try {
-            TestCaseBase.setLevel(SimulatedExchange.class.getName(),
-                                  Level.WARN);
-            // start the exchange in random mode
-            exchange.start();
-            // execute a number of data requests, making sure that the requests span a few tick executions
-            long startTime = System.currentTimeMillis();
-            long currentTime = System.currentTimeMillis();
-            int counter = 0;
-            while(currentTime-startTime < 10000) {
-                Equity symbol = new Equity(String.format("symbol-%d",
-                                                           counter++));
-                exchange.getStatistics(ExchangeRequestBuilder.newRequest().withInstrument(symbol).create());
-                exchange.getDepthOfBook(ExchangeRequestBuilder.newRequest().withInstrument(symbol).create());
-                exchange.getLatestTick(ExchangeRequestBuilder.newRequest().withInstrument(symbol).create());
-                exchange.getTopOfBook(ExchangeRequestBuilder.newRequest().withInstrument(symbol).create());
-                currentTime = System.currentTimeMillis();
-            }
-            assertNoEvents();
-        } finally {
-            TestCaseBase.setLevel(SimulatedExchange.class.getName(),
-                                  Level.INFO);
-        }
     }
     /**
      * Tests the output of the exchange in random mode.
