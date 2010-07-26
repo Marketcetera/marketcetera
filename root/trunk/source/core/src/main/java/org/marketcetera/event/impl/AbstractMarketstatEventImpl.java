@@ -165,6 +165,14 @@ abstract class AbstractMarketstatEventImpl
         return marketstat.getVolume();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.MarketstatEvent#getValue()
+     */
+    @Override
+    public BigDecimal getValue()
+    {
+        return marketstat.getValue();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.event.Event#getMessageId()
      */
     @Override
@@ -228,7 +236,7 @@ abstract class AbstractMarketstatEventImpl
     {
         String closeDateString = getCloseDate() == null ? "---" : getCloseDate(); //$NON-NLS-1$
         String previousCloseDateString = getPreviousCloseDate() == null ? "---" : getPreviousCloseDate(); //$NON-NLS-1$
-        return String.format("Statistics for %s -> Open: %s High: %s Low: %s Close: %s (%s) Previous Close: %s (%s) %s %s %s %s Volume: %s", //$NON-NLS-1$
+        return String.format("Statistics for %s -> Open: %s High: %s Low: %s Close: %s (%s) Previous Close: %s (%s) %s %s %s %s Volume: %s Value: %s", //$NON-NLS-1$
                              getInstrument().getSymbol(),
                              getOpen(),
                              getHigh(),
@@ -241,7 +249,8 @@ abstract class AbstractMarketstatEventImpl
                              getHighExchange(),
                              getLowExchange(),
                              getCloseExchange(),
-                             getVolume());
+                             getVolume(),
+                             getValue());
     }
    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

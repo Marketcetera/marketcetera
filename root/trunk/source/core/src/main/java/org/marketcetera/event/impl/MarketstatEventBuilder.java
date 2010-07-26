@@ -247,6 +247,17 @@ public abstract class MarketstatEventBuilder
         return this;
     }
     /**
+     * Sets the value value.
+     *
+     * @param inValue a <code>BigDecimal</code> value or <code>null</code>
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public final MarketstatEventBuilder withValue(BigDecimal inValue)
+    {
+        marketstat.setValue(inValue);
+        return this;
+    }
+    /**
      * Sets the closeDate value.
      *
      * @param inCloseDate a <code>String</code> value or <code>null</code>

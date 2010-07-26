@@ -269,6 +269,7 @@ public class SimulatedExchange
                        .withClosePrice(closePrice)
                        .withPreviousClosePrice(previousClosePrice)
                        .withVolume(randomInteger(100000))
+                       .withValue(randomInteger(100000))
                        .withCloseDate(DateUtils.dateToString(new Date(startingTime-(HOURms*8))))
                        .withPreviousCloseDate(DateUtils.dateToString(new Date(startingTime-(DAYms))))
                        .withTradeHighTime(DateUtils.dateToString(new Date(startingTime-(HOURms*4))))

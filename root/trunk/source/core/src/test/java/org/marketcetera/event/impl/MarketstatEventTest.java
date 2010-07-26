@@ -596,6 +596,33 @@ public class MarketstatEventTest
         verify(builder);
     }
     /**
+     * Tests {@link MarketstatEventBuilder#withValue(BigDecimal)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withValue()
+            throws Exception
+    {
+        MarketstatEventBuilder builder = setDefaults(getBuilder());
+        BigDecimal value = null;
+        builder.withValue(value);
+        assertNull(builder.getMarketstat().getValue());
+        value = new BigDecimal(-10);
+        builder.withValue(value);
+        assertEquals(value,
+                     builder.getMarketstat().getValue());
+        value = BigDecimal.ZERO;
+        builder.withValue(value);
+        assertEquals(value,
+                     builder.getMarketstat().getValue());
+        value = BigDecimal.TEN;
+        builder.withValue(value);
+        assertEquals(value,
+                     builder.getMarketstat().getValue());
+        verify(builder);
+    }
+    /**
      * Tests {@link MarketstatEventBuilder#hasDeliverable(boolean)}.
      *
      * @throws Exception if an unexpected error occurs
@@ -971,6 +998,8 @@ public class MarketstatEventTest
         }
         assertEquals(inBuilder.getMarketstat().getVolume(),
                      event.getVolume());
+        assertEquals(inBuilder.getMarketstat().getValue(),
+                     event.getValue());
         if(event instanceof OptionMarketstatEvent) {
             OptionMarketstatEvent optionEvent = (OptionMarketstatEvent)event;
             assertEquals(inBuilder.getOption().getExpirationType(),
@@ -1035,6 +1064,7 @@ public class MarketstatEventTest
         inBuilder.withTradeLowTime(DateUtils.dateToString(new Date(millis + (millisInADay * counter++))));
         inBuilder.withUnderlyingInstrument(instrument);
         inBuilder.withVolume(new BigDecimal(counter++));
+        inBuilder.withValue(new BigDecimal(counter++));
         inBuilder.withVolumeChange(EventTestBase.generateDecimalValue());
         inBuilder.withInterestChange(EventTestBase.generateDecimalValue());
         return inBuilder;
