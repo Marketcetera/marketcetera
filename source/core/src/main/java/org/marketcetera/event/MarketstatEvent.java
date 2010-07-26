@@ -62,6 +62,12 @@ public interface MarketstatEvent
      */
     public BigDecimal getVolume();
     /**
+     * Gets the cumulative value for the session. 
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getValue();
+    /**
      * Gets the close date of the most recent session.
      *
      * <p>The format of the date returned is dependent on the market data

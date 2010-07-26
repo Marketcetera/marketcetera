@@ -146,6 +146,24 @@ public final class MarketstatBean
         volume = inVolume;
     }
     /**
+     * Get the value value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getValue()
+    {
+        return value;
+    }
+    /**
+     * Sets the value value.
+     *
+     * @param inValue a <code>BigDecimal</code> value
+     */
+    public void setValue(BigDecimal inValue)
+    {
+        value = inValue;
+    }
+    /**
      * Get the closeDate value.
      *
      * @return a <code>String</code> value
@@ -381,6 +399,7 @@ public final class MarketstatBean
         result = prime * result + ((tradeHighTime == null) ? 0 : tradeHighTime.hashCode());
         result = prime * result + ((tradeLowTime == null) ? 0 : tradeLowTime.hashCode());
         result = prime * result + ((volume == null) ? 0 : volume.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
         result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
         return result;
     }
@@ -505,6 +524,13 @@ public final class MarketstatBean
         } else if (!volume.equals(other.volume)) {
             return false;
         }
+        if (value == null) {
+            if (other.value != null) {
+                return false;
+            }
+        } else if (!value.equals(other.value)) {
+            return false;
+        }
         if (eventType == null) {
             if (other.eventType != null) {
                 return false;
@@ -520,7 +546,7 @@ public final class MarketstatBean
     @Override
     public String toString()
     {
-        return String.format("Marketstat: [closeDate=%s, closeExchange=%s, closePrice=%s, highExchange=%s, highPrice=%s, instrument=%s, lowExchange=%s, lowPrice=%s, openExchange=%s, openPrice=%s, previousCloseDate=%s, previousClosePrice=%s, tradeHighTime=%s, tradeLowTime=%s, volume=%s, eventType=%s [%s with source %s at %s]]", //$NON-NLS-1$
+        return String.format("Marketstat: [closeDate=%s, closeExchange=%s, closePrice=%s, highExchange=%s, highPrice=%s, instrument=%s, lowExchange=%s, lowPrice=%s, openExchange=%s, openPrice=%s, previousCloseDate=%s, previousClosePrice=%s, tradeHighTime=%s, tradeLowTime=%s, volume=%s, value=%s, eventType=%s [%s with source %s at %s]]", //$NON-NLS-1$
                              closeDate,
                              closeExchange,
                              closePrice,
@@ -536,6 +562,7 @@ public final class MarketstatBean
                              tradeHighTime,
                              tradeLowTime,
                              volume,
+                             value,
                              eventType,
                              getMessageId(),
                              getSource(),
@@ -568,6 +595,7 @@ public final class MarketstatBean
         inRecipient.setTradeHighTime(inDonor.getTradeHighTime());
         inRecipient.setTradeLowTime(inDonor.getTradeLowTime());
         inRecipient.setVolume(inDonor.getVolume());
+        inRecipient.setValue(inDonor.getValue());
     }
     /**
      * the open price for the current or most recent session
@@ -593,6 +621,10 @@ public final class MarketstatBean
      * the cumulative volume for the current or most recent session
      */
     private BigDecimal volume;
+    /**
+     * the cumulative value for the current or most recent session
+     */
+    private BigDecimal value;
     /**
      * the market close date - format is dependent on the market data provider
      */
