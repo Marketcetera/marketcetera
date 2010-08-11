@@ -39,4 +39,14 @@ public enum EventType
      * indicates that the event type is not known
      */
     UNKNOWN;
+    /**
+     * Indicates if the underlying event represents a consistent state or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isComplete()
+    {
+        return equals(SNAPSHOT_FINAL) ||
+               equals(UPDATE_FINAL);
+    }
 }
