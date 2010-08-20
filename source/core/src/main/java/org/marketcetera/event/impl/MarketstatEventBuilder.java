@@ -35,7 +35,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class MarketstatEventBuilder
-        implements EventBuilder<MarketstatEvent>, OptionEventBuilder<MarketstatEventBuilder>
+        implements EventBuilder<MarketstatEvent>, OptionEventBuilder<MarketstatEventBuilder>, FutureEventBuilder<MarketstatEventBuilder>
 {
     /**
      * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object.
@@ -442,6 +442,18 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withProviderSymbol(String inProviderSymbol)
     {
         option.setProviderSymbol(inProviderSymbol);
+        future.setProviderSymbol(inProviderSymbol);
+        return this;
+    }
+    /**
+     * Sets the contract size.
+     *
+     * @param inContractSize an <code>int</code> value
+     * @return a <code>MarketstatEventBuilder&lt;E&gt;</code> value
+     */
+    public final MarketstatEventBuilder withContractSize(int inContractSize)
+    {
+        future.setContractSize(inContractSize);
         return this;
     }
     /**

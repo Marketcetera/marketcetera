@@ -43,7 +43,8 @@ public class OrderSingleImpl extends NewOrReplaceOrderImpl implements OrderSingl
                 String.valueOf(getSecurityType()),
                 String.valueOf(getSide()),
                 String.valueOf(getInstrument()),
-                String.valueOf(getTimeInForce())
+                String.valueOf(getTimeInForce()),
+                String.valueOf(getText())
         );
     }
 

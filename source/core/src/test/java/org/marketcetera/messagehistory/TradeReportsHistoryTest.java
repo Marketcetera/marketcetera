@@ -75,7 +75,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
         Message message = msgFactory.newExecutionReport(orderID1, clOrderID1,
                 execID, ordStatus, side, orderQty, orderPrice, lastQty,
-                lastPrice, cumQty, avgPrice, instrument, null);
+                lastPrice, cumQty, avgPrice, instrument, null, null);
 
         {
             history.addIncomingMessage(createServerReport(message));
@@ -107,7 +107,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
             String clOrderID2 = "1002"; //$NON-NLS-1$
             Message message2 = msgFactory.newExecutionReport(orderID2,
                     clOrderID2, execID, ordStatus, side, orderQty, orderPrice,
-                    lastQty, lastPrice, cumQty, avgPrice, instrument, null);
+                    lastQty, lastPrice, cumQty, avgPrice, instrument, null, null);
             history.addIncomingMessage(createServerReport(message2));
             EventList<ReportHolder> historyList = history.getAllMessagesList();
             assertEquals(2, historyList.size());
@@ -138,7 +138,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         TradeReportsHistory history = createMessageHistory();
         Message executionReportForOrder1 = msgFactory
                 .newExecutionReport(
-                        "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
         executionReportForOrder1.getHeader().setField(
                 new SendingTime(new Date(currentTime - 10000)));
         Message order2 = msgFactory
@@ -146,12 +146,12 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                         "3", Side.SELL, new BigDecimal(2000), new Equity("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         Message executionReportForOrder2 = msgFactory
                 .newExecutionReport(
-                        "1003", "3", "2003", OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("QWER"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "1003", "3", "2003", OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("QWER"), null, null);
         executionReportForOrder2.getHeader().setField(
                 new SendingTime(new Date(currentTime - 8000)));
         Message secondExecutionReportForOrder1 = msgFactory
                 .newExecutionReport(
-                        "1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new Equity("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                        "1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new Equity("ASDF"), null, null);
         secondExecutionReportForOrder1.getHeader().setField(
                 new SendingTime(new Date(currentTime - 7000)));
 
@@ -199,7 +199,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         TradeReportsHistory history = createMessageHistory();
         Message executionReportForOrder1 = msgFactory
                 .newExecutionReport(
-                        "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
         executionReportForOrder1.getHeader().setField(
                 new SendingTime(new Date(currentTime - 10000)));
         Message order2 = msgFactory
@@ -207,12 +207,12 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                         "3", Side.SELL, new BigDecimal(2000), new Equity("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         Message executionReportForOrder2 = msgFactory
                 .newExecutionReport(
-                        "1003", "3", "2003", OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("QWER"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "1003", "3", "2003", OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("QWER"), null, null);
         executionReportForOrder2.getHeader().setField(
                 new SendingTime(new Date(currentTime - 8000)));
         Message secondExecutionReportForOrder1 = msgFactory
                 .newExecutionReport(
-                        "1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new Equity("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+                        "1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new Equity("ASDF"), null, null);
         secondExecutionReportForOrder1.getHeader().setField(
                 new SendingTime(new Date(currentTime - 7000)));
 
@@ -313,16 +313,16 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "NONE", "1", "2001", OrdStatus.PENDING_NEW, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         history.addIncomingMessage(createBrokerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.NEW, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // replace quantity to 900 and price to 800
         Message pendingReplace = msgFactory.newExecutionReport(
                 "1", "2", "2001", OrdStatus.PENDING_REPLACE, Side.BUY,
                 new BigDecimal(900), new BigDecimal(800), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null);
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
         pendingReplace.setString(OrigClOrdID.FIELD, "1");
         history.addIncomingMessage(createServerReport(pendingReplace));
         assertEquals(OrderStatus.PendingReplace, ((ExecutionReport) history
@@ -352,7 +352,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
         Message executionReportForOrder1 = msgFactory
                 .newExecutionReport(
-                        "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
 
         ListEventListener<ReportHolder> fixMessageListener = new ListEventListener<ReportHolder>() {
             public int numIncomingMessages = 0;
@@ -394,7 +394,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
         Message executionReportForOrder1 = msgFactory
                 .newExecutionReport(
-                        "1", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "1", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
 
         ListEventListener<ReportHolder> fixMessageListener = new ListEventListener<ReportHolder>() {
             public int numIncomingMessages = 0;
@@ -445,7 +445,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
         Message message = msgFactory.newExecutionReport(orderID1, clOrderID1,
                 execID, ordStatus, side, orderQty, orderPrice, lastQty,
-                lastPrice, cumQty, avgPrice, instrument, null);
+                lastPrice, cumQty, avgPrice, instrument, null, null);
         messageHistory.addIncomingMessage(createServerReport(message));
 
         orderID1 = "1"; //$NON-NLS-1$
@@ -458,7 +458,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
         message = msgFactory.newExecutionReport(orderID1, clOrderID1, execID,
                 ordStatus, side, orderQty, orderPrice, lastQty, lastPrice,
-                cumQty, avgPrice, instrument, null);
+                cumQty, avgPrice, instrument, null, null);
         messageHistory.addIncomingMessage(createServerReport(message));
 
         EventList<ReportHolder> averagePriceList = messageHistory
@@ -488,7 +488,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
         message = msgFactory.newExecutionReport(orderID1, clOrderID1, execID,
                 ordStatus, side, orderQty, orderPrice, lastQty, lastPrice,
-                cumQty, avgPrice, instrument, null);
+                cumQty, avgPrice, instrument, null, null);
         messageHistory.addIncomingMessage(createServerReport(message));
 
         assertEquals(2, messageHistory.getAveragePricesList().size());
@@ -513,7 +513,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
         message = msgFactory.newExecutionReport(orderID1, clOrderID1, execID,
                 ordStatus, side, orderQty, orderPrice, lastQty, lastPrice,
-                cumQty, avgPrice, instrument, null);
+                cumQty, avgPrice, instrument, null, null);
         messageHistory.addIncomingMessage(createServerReport(message));
 
         assertEquals(2, messageHistory.getAveragePricesList().size());
@@ -537,7 +537,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 "execid1", OrdStatus.PARTIALLY_FILLED, Side.BUY,
                 new BigDecimal(100), null, new BigDecimal(91), new BigDecimal(
                         82), new BigDecimal(91), new BigDecimal(3),
-                new Equity("symbol1"), "account");
+                new Equity("symbol1"), "account", "text");
 
         fill.setField(new ExecTransType(ExecTransType.STATUS));
         fill.setField(new ExecType(ExecType.PARTIAL_FILL));
@@ -549,7 +549,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000),
                 null, new BigDecimal(91), new BigDecimal(80),
                 new BigDecimal(91), new BigDecimal(6), new Equity("symbol1"),
-                "account");
+                "account", "text");
 
         fill.setField(new ExecTransType(ExecTransType.STATUS));
         fill.setField(new ExecType(ExecType.PARTIAL_FILL));
@@ -561,7 +561,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000),
                 null, new BigDecimal(909), new BigDecimal(808), new BigDecimal(
                         1000), new BigDecimal(6), new Equity("symbol3"),
-                "account");
+                "account", "text");
 
         fill.setField(new ExecTransType(ExecTransType.STATUS));
         fill.setField(new ExecType(ExecType.PARTIAL_FILL));
@@ -595,19 +595,19 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
         Message message1 = msgFactory.newExecutionReport(null, clOrderID1,
                 execID, ordStatus, side, orderQty, orderPrice, lastQty,
-                lastPrice, cumQty, avgPrice, instrument, null);
+                lastPrice, cumQty, avgPrice, instrument, null, null);
         message1.getHeader().setField(stField);
 
         lastQty = new BigDecimal(200);
         Message message2 = msgFactory.newExecutionReport(orderID1, clOrderID1,
                 execID, ordStatus, side, orderQty, orderPrice, lastQty,
-                lastPrice, cumQty, avgPrice, instrument, null);
+                lastPrice, cumQty, avgPrice, instrument, null, null);
         message2.getHeader().setField(stField);
 
         lastQty = new BigDecimal(300);
         Message message3 = msgFactory.newExecutionReport(orderID1, clOrderID1,
                 execID, ordStatus, side, orderQty, orderPrice, lastQty,
-                lastPrice, cumQty, avgPrice, instrument, null);
+                lastPrice, cumQty, avgPrice, instrument, null, null);
         message3.getHeader().setField(stFieldLater);
 
         TradeReportsHistory history = createMessageHistory();
@@ -685,7 +685,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     }
 
     String[] messageStrings = {
-            "8=FIX.4.29=14135=86=011=1171508063701-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1039=044=1054=155=R60=20070215-02:54:27150=0151=1010=237", //$NON-NLS-1$
+            "8=FIX.4.29=14135=86=011=1171508063701-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1039=044=1054=155=R60=20070215-02:54:27150=0151=1010=237",
             "8=FIX.4.29=20635=834=449=MRKTC-EXCH52=20070215-02:54:29.43056=sender-2026-ORS6=011=1171508063701-server02/127.0.0.114=017=1203720=331=032=037=732438=1039=044=1054=155=R60=20070215-02:54:29150=0151=1010=201", //$NON-NLS-1$
             "8=FIX.4.29=14335=86=011=1171508063702-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1239=044=10.154=155=R60=20070215-02:55:06150=0151=1210=081", //$NON-NLS-1$
             "8=FIX.4.29=20835=834=649=MRKTC-EXCH52=20070215-02:55:09.08456=sender-2026-ORS6=011=1171508063702-server02/127.0.0.114=017=1203820=331=032=037=732538=1239=044=10.154=155=R60=20070215-02:55:09150=0151=1210=054", //$NON-NLS-1$
@@ -715,7 +715,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(
                         1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // Only PENDING NEW or PENDING REPLACE should be considered the first
         // report
         assertNull(history.getFirstReport(new org.marketcetera.trade.OrderID(
@@ -723,35 +723,35 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         Message report = msgFactory.newExecutionReport("1001", "1", "2001",
                 OrdStatus.PENDING_NEW, Side.BUY, new BigDecimal(1000),
                 new BigDecimal(789), null, null, BigDecimal.ZERO,
-                BigDecimal.ZERO, new Equity("ASDF"), null);
+                BigDecimal.ZERO, new Equity("ASDF"), null, null);
         history.addIncomingMessage(createServerReport(report));
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.REPLACED, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null,null)));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.PENDING_REPLACE, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.PENDING_NEW, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.REJECTED, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
@@ -769,7 +769,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.REPLACED, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // Only PENDING NEW or PENDING REPLACE should be considered the first
         // report
         assertNull(history.getFirstReport(new org.marketcetera.trade.OrderID(
@@ -777,28 +777,28 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         Message report = msgFactory.newExecutionReport("1001", "1", "2001",
                 OrdStatus.PENDING_REPLACE, Side.BUY, new BigDecimal(1000),
                 new BigDecimal(789), null, null, BigDecimal.ZERO,
-                BigDecimal.ZERO, new Equity("ASDF"), null);
+                BigDecimal.ZERO, new Equity("ASDF"), null, null);
         history.addIncomingMessage(createServerReport(report));
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.REPLACED, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.PENDING_NEW, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
         history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport(
                 "1001", "1", "2001", OrdStatus.REJECTED, Side.BUY,
                 new BigDecimal(1000), new BigDecimal(789), null, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null)));
+                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null)));
         // first report should not change
         assertSame(report, history.getFirstReport(
                 new org.marketcetera.trade.OrderID("1")).getMessage());
@@ -819,21 +819,21 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                                 "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                 new BigDecimal(789), null, null,
                                 BigDecimal.ZERO, BigDecimal.ZERO, new Equity(
-										        "ASDF"), null))); //$NON-NLS-1$
+										        "ASDF"), null, null))); //$NON-NLS-1$
         history
                 .addIncomingMessage(createServerReport(msgFactory
                         .newExecutionReport(
                                 "1002", "2", "2002", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                 new BigDecimal(789), null, null,
                                 BigDecimal.ZERO, BigDecimal.ZERO, new Equity(
-										        "LERA"), null))); //$NON-NLS-1$
+										        "LERA"), null, null))); //$NON-NLS-1$
         history
                 .addIncomingMessage(createServerReport(msgFactory
                         .newExecutionReport(
                                 "1003", "3", "2003", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                 new BigDecimal(789), null, null,
                                 BigDecimal.ZERO, BigDecimal.ZERO, new Equity(
-										        "FRED"), null))); //$NON-NLS-1$
+										        "FRED"), null, null))); //$NON-NLS-1$
 
         final Vector<ReportBase> visited = new Vector<ReportBase>();
         MessageVisitor visitor = new MessageVisitor() {
@@ -869,17 +869,17 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     public void testChainReplaces() throws Exception {
         Message executionReportA = msgFactory
                 .newExecutionReport(
-                        "ORD1", "A", "EXEC1", OrdStatus.NEW, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "ORD1", "A", "EXEC1", OrdStatus.NEW, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null, null);
         Message executionReportB = msgFactory
                 .newExecutionReport(
-                        "ORD2", "B", "EXEC2", OrdStatus.NEW, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "ORD2", "B", "EXEC2", OrdStatus.NEW, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null, null);
         Message executionReportC = msgFactory
                 .newExecutionReport(
-                        "ORD1", "C", "EXEC3", OrdStatus.REPLACED, Side.BUY, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "ORD1", "C", "EXEC3", OrdStatus.REPLACED, Side.BUY, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null, null);
         executionReportC.setField(new OrigClOrdID("A")); //$NON-NLS-1$
         Message executionReportD = msgFactory
                 .newExecutionReport(
-                        "ORD2", "D", "EXEC4", OrdStatus.REPLACED, Side.BUY, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "ORD2", "D", "EXEC4", OrdStatus.REPLACED, Side.BUY, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null, null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         executionReportD.setField(new OrigClOrdID("C")); //$NON-NLS-1$
 
         TradeReportsHistory history = createMessageHistory();
@@ -910,10 +910,10 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     public void testMerrillPAXIgnoreLastShares() throws Exception {
         Message executionReportA = msgFactory
                 .newExecutionReport(
-                        "ORD1", "A", "EXEC1", OrdStatus.CANCELED, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "ORD1", "A", "EXEC1", OrdStatus.CANCELED, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null, null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         Message executionReportB = msgFactory
                 .newExecutionReport(
-                        "ORD2", "B", "EXEC2", OrdStatus.FILLED, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        "ORD2", "B", "EXEC2", OrdStatus.FILLED, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ABC"), null, null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         TradeReportsHistory history = createMessageHistory();
         history.addIncomingMessage(createServerReport(executionReportA));
@@ -1090,7 +1090,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
             String price) throws FieldNotFound {
         return msgFactory.newExecutionReport("brokerOrderId", orderId, "execId",
                 type, side, new BigDecimal(quantity), new BigDecimal(price), BigDecimal.ZERO,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity(symbol), null);
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity(symbol), null, null);
     }
 
     private Message createSimpleMessage(char type, String orderId) throws FieldNotFound {
@@ -1113,7 +1113,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
 
     private Message getTestableExecutionReport(String orderId) throws FieldNotFound {
         return msgFactory.newExecutionReport("456", orderId, "987", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
-                        new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal("12.3"), new Equity("IBM"), null);
+                        new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal("12.3"), new Equity("IBM"), null, null);
     }
 
     private Message getTestableExecutionReport() throws FieldNotFound {

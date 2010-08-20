@@ -92,12 +92,12 @@ class CFICodeUtils {
     static String getCFICode(Option inInstrument)
     {
         StringBuffer code = new StringBuffer();
-        code.append("O"); // indicates option
+        code.append("O"); // indicates option //$NON-NLS-1$
         code.append(inInstrument.getType().getCfiCode()); // put or call
-        code.append("X"); // exercise style is not captured in our instrument
-        code.append("X"); // underlying asset type not captured
-        code.append("X"); // delivery
-        code.append("X"); // standard/non-standard
+        code.append("X"); // exercise style is not captured in our instrument //$NON-NLS-1$
+        code.append("X"); // underlying asset type not captured //$NON-NLS-1$
+        code.append("X"); // delivery //$NON-NLS-1$
+        code.append("X"); // standard/non-standard //$NON-NLS-1$
         return code.toString();
     }
     /**
@@ -110,12 +110,12 @@ class CFICodeUtils {
     static String getCFICode(Future inInstrument)
     {
         StringBuffer code = new StringBuffer();
-        code.append("F"); // indicates future
-        code.append("X"); // financial or commodity
-        code.append("X"); // underlying asset type
-        code.append("X"); // delivery
-        code.append("X"); // standard/non-standard
-        code.append("X"); // not used
+        code.append("F"); // indicates future //$NON-NLS-1$
+        code.append("X"); // financial or commodity //$NON-NLS-1$
+        code.append("X"); // underlying asset type //$NON-NLS-1$
+        code.append("X"); // delivery //$NON-NLS-1$
+        code.append("X"); // standard/non-standard //$NON-NLS-1$
+        code.append("X"); // not used //$NON-NLS-1$
         return code.toString();
     }
     /**

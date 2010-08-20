@@ -204,6 +204,7 @@ public class TypesTestBase {
                                                 boolean inIgnoreOrderID) {
         assertOrderEquals(inOrder1, inOrder2);
         assertEquals(inOrder1.getAccount(), inOrder2.getAccount());
+        assertEquals(inOrder1.getText(), inOrder2.getText());
         assertEquals(inOrder1.getCustomFields(), inOrder2.getCustomFields());
         assertEquals(inOrder1.getBrokerID(), inOrder2.getBrokerID());
         if (!inIgnoreOrderID) {
@@ -289,6 +290,12 @@ public class TypesTestBase {
         assertEquals(account, inOrder.getAccount());
         inOrder.setAccount(null);
         assertEquals(null, inOrder.getAccount());
+
+        String text = "my text";
+        inOrder.setText(text);
+        assertEquals(text, inOrder.getText());
+        inOrder.setText(null);
+        assertEquals(null, inOrder.getText());
 
         Map<String,String> custom = new HashMap<String, String>();
         custom.put("yes","no");
@@ -391,6 +398,7 @@ public class TypesTestBase {
                                                 //Supply NOT_NULL value to test if it's not null
                                                 OrderID inOrderID,
                                                 String inAccount,
+                                                String inText,
                                                 Map<String, String> inCustomFields,
                                                 BigDecimal inQuantity,
                                                 Side inSide,
@@ -401,6 +409,7 @@ public class TypesTestBase {
             assertEquals(inOrderID, inOrder.getOrderID());
         }
         assertEquals(inAccount, inOrder.getAccount());
+        assertEquals(inText, inOrder.getText());
         Map<String, String> map = inOrder.getCustomFields();
         if (map != null) {
             for(int ignoreField: MAP_COMPARE_IGNORE_FIELDS) {
@@ -591,13 +600,14 @@ public class TypesTestBase {
                                          Instrument inSymbol,
                                          SecurityType inSecurityType,
                                          String inAccount,
+                                         String inText,
                                          OrderCapacity inOrderCapacity,
                                          PositionEffect inPositionEffect,
                                          BrokerID inBrokerID,
                                          Map<String, String> inCustomFields) {
         assertNotNull(inOrder);
         assertOrderValues(inOrder, inBrokerID, inSecurityType);
-        assertOrderBaseValues(inOrder, inOrderID, inAccount, inCustomFields, inQty,
+        assertOrderBaseValues(inOrder, inOrderID, inAccount, inText, inCustomFields, inQty,
                 inSide, inSymbol);
         assertNROrderValues(inOrder, inOrderType, inPrice,
                 inTimeInForce, inOrderCapacity,
@@ -613,11 +623,12 @@ public class TypesTestBase {
                                          BigDecimal inQty,
                                          String inDestOrderID,
                                          String inAccount,
+                                         String inText,
                                          BrokerID inBrokerID,
                                          Map<String, String> inCustomFields) {
         assertNotNull(inOrder);
         assertOrderValues(inOrder, inBrokerID, inSecurityType);
-        assertOrderBaseValues(inOrder, inOrderID, inAccount,
+        assertOrderBaseValues(inOrder, inOrderID, inAccount, inText,
                 inCustomFields, inQty, inSide, inInstrument);
         assertRelatedOrderValues(inOrder, inOriginalOrderID, inDestOrderID);
     }
@@ -634,12 +645,13 @@ public class TypesTestBase {
                                           SecurityType inSecurityType,
                                           TimeInForce inTif,
                                           String inAccount,
+                                          String inText,
                                           BrokerID inBrokerID,
                                           PositionEffect inPositionEffect,
                                           OrderCapacity inOrderCapacity,
                                           Map<String, String> inCustomFields) {
         assertOrderValues(inOrder, inBrokerID, inSecurityType);
-        assertOrderBaseValues(inOrder, inOrderID, inAccount, inCustomFields, inQty,
+        assertOrderBaseValues(inOrder, inOrderID, inAccount, inText, inCustomFields, inQty,
                 inSide, inInstrument);
         assertNROrderValues(inOrder, inOrderType,
                 inPrice,

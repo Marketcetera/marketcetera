@@ -741,6 +741,40 @@ public class Strategy
         return getOptionRoots(inUnderlying);
     }
     /**
+     * Gets all open <code>Future</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Option&gt;,BigDecimal&gt;</code> value
+     */
+    public final Map<PositionKey<Future>,BigDecimal> get_all_future_positions_as_of(Date inDate)
+    {
+        return getAllFuturePositionsAsOf(inDate);
+    }
+    /**
+     * Gets the position in the given <code>Future</code> at the given point in time.
+     *
+     * <p>Note that this method will not retrieve <code>Option</code> or <code>Equity</code> positions.  To retrieve
+     * <code>Option</code> positions, use {@link #getOptionPositionAsOf(Date, String, String, BigDecimal, OptionType)}.
+     *   To retrieve
+     * <code>Equity</code> positions, use {@link #getPositionAsOf(Date, String)}.
+     * 
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inUnderlyingSymbol a <code>String</code> value containing the underlying <code>Future</code> symbol
+     * @param inExpirationMonth a <code>FutureExpirationMonth</code> value
+     * @param inExpirationYear an <code>int</code> value
+     * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found 
+     */
+    public final BigDecimal get_future_position_as_of(Date inDate,
+                                                      String inUnderlyingSymbol,
+                                                      FutureExpirationMonth inExpirationMonth,
+                                                      int inExpirationYear)
+    {
+        return getFuturePositionAsOf(inDate,
+                                     inUnderlyingSymbol,
+                                     inExpirationMonth,
+                                     inExpirationYear);
+    }
+    /**
      * Gets the {@link ModuleURN} of this strategy.
      *
      * @return a <code>ModuleURN</code> value

@@ -96,6 +96,7 @@ public class ExecutionReportTest extends TypesTestBase {
         BigDecimal avgPrice = new BigDecimal("34.234");
         Instrument instrument = new Equity("METC");
         String account= "yes";
+        String text= "some text";
         UserID actorID = new UserID(2);
         UserID viewerID = new UserID(3);
 
@@ -103,7 +104,7 @@ public class ExecutionReportTest extends TypesTestBase {
         msg = getSystemMessageFactory().newExecutionReport(destOrderID,
                 orderID.getValue(), execID, orderStatus.getFIXValue(),
                 side.getFIXValue(), orderQty, orderPrice, lastShares,
-                lastPrice, cumQty, avgPrice, instrument, account );
+                lastPrice, cumQty, avgPrice, instrument, account, text );
         OrderID origOrderID = new OrderID("or1");
         ExecutionType execType = ExecutionType.PendingNew;
         String lastMarket = "XDES";
@@ -112,7 +113,7 @@ public class ExecutionReportTest extends TypesTestBase {
         Date sendingTime = new Date();
         TimeInForce timeInForce = TimeInForce.Day;
         Date transactTime = new Date();
-        String text = "show me the money";
+        text = "show me the money";
         msg.setField(new OrigClOrdID(origOrderID.getValue()));
         msg.setField(new ExecType(execType.getFIXValue()));
         msg.setField(new LastMkt(lastMarket));

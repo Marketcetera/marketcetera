@@ -128,6 +128,6 @@ public class DynamicInstrumentFunctionSelectorTest {
         return FIXVersion.FIX42.getMessageFactory().newExecutionReport("o1",
                 "o2", "o3", OrdStatus.NEW, Side.BUY, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE, inInstrument, "");
+                BigDecimal.ONE, inInstrument, "", "text");
     }
 }

@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface FutureEvent
-        extends HasFuture, Event
+        extends HasFuture, Event, HasProviderSymbol
 {
     /**
      * Gets the future type.
@@ -50,4 +50,10 @@ public interface FutureEvent
      *  did not have a provider symbol
      */
     public String getProviderSymbol();
+    /**
+     * Returns the contract size.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getContractSize();
 }

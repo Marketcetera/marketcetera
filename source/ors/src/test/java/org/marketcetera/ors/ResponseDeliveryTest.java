@@ -136,6 +136,6 @@ public class ResponseDeliveryTest
         return getSystemMessageFactory().newExecutionReport("o1","o2",
                 "o3", OrdStatus.FILLED, Side.BUY,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
-                BigDecimal.TEN, BigDecimal.TEN, inInstrument, "acc");
+                BigDecimal.TEN, BigDecimal.TEN, inInstrument, "acc", "text");
     }
 }

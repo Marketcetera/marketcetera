@@ -410,14 +410,20 @@ public class QuoteEventTest
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getFuture().getProviderSymbol());
         symbol = "";
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getFuture().getProviderSymbol());
         symbol = "MSQ/W/X";
         builder.withProviderSymbol(symbol);
         assertEquals(symbol,
                      builder.getOption().getProviderSymbol());
+        assertEquals(symbol,
+                     builder.getFuture().getProviderSymbol());
         verify(builder);
     }
     /**
@@ -442,6 +448,27 @@ public class QuoteEventTest
         builder.withEventType(type);
         assertEquals(type,
                      builder.getQuote().getEventType());
+        verify(builder);
+    }
+    /**
+     * Tests {@link QuoteEventBuilder#withContractSize(int)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void withContractSize()
+            throws Exception
+    {
+        QuoteEventBuilder<?> builder = setDefaults(getBuilder());
+        builder.withContractSize(Integer.MIN_VALUE);
+        assertEquals(Integer.MIN_VALUE,
+                     builder.getFuture().getContractSize());
+        builder.withContractSize(0);
+        assertEquals(0,
+                     builder.getFuture().getContractSize());
+        builder.withContractSize(Integer.MAX_VALUE);
+        assertEquals(Integer.MAX_VALUE,
+                     builder.getFuture().getContractSize());
         verify(builder);
     }
     /**
@@ -966,6 +993,13 @@ public class QuoteEventTest
             assertEquals(inBuilder.getOption().getProviderSymbol(),
                          optionEvent.getProviderSymbol());
         }
+        if(event instanceof FutureEvent) {
+            FutureEvent futureEvent = (FutureEvent)event;
+            assertEquals(inBuilder.getFuture().getProviderSymbol(),
+                         futureEvent.getProviderSymbol());
+            assertEquals(inBuilder.getFuture().getContractSize(),
+                         futureEvent.getContractSize());
+        }
         Object newSource = new Object();
         event.setSource(newSource);
         assertEquals(newSource,
@@ -999,6 +1033,7 @@ public class QuoteEventTest
         inBuilder.withSize(BigDecimal.TEN);
         inBuilder.withTimestamp(new Date());
         inBuilder.withUnderlyingInstrument(instrument);
+        inBuilder.withContractSize(3600);
         return inBuilder;
     }
     /**
@@ -1087,6 +1122,14 @@ public class QuoteEventTest
                          actualOptionEvent.getUnderlyingInstrument());
             assertEquals(expectedOptionEvent.getProviderSymbol(),
                          actualOptionEvent.getProviderSymbol());
+        }
+        if(inSourceEvent instanceof FutureEvent)  {
+            FutureEvent expectedFutureEvent = (FutureEvent)inSourceEvent;
+            FutureEvent actualFutureEvent = (FutureEvent)inGeneratedEvent;
+            assertEquals(expectedFutureEvent.getProviderSymbol(),
+                         actualFutureEvent.getProviderSymbol());
+            assertEquals(expectedFutureEvent.getContractSize(),
+                         actualFutureEvent.getContractSize());
         }
     }
     /**

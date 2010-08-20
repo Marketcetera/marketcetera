@@ -80,6 +80,7 @@ public class InstrumentFromMessageTest {
         assertEquals(new Equity("PQR"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void option() throws Exception {
         String expectedSymbol = "PQR";
@@ -138,7 +139,7 @@ public class InstrumentFromMessageTest {
     public void future()
             throws Exception
     {
-        String expectedSymbol = "CLF2015";
+        String expectedSymbol = "CLF-201501";
         FutureExpirationMonth expectedExpirationMonth = FutureExpirationMonth.JANUARY;
         int expectedExpirationYear = 2015;
         String expectedMY = "201501";
@@ -158,8 +159,7 @@ public class InstrumentFromMessageTest {
                                            expiry);
                     //figure out if we expect a value.
                     boolean isNotFuture = (secType == null ||
-                                           symbol == null ||
-                                           expiry == null);
+                                           symbol == null);
                     Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(m).extract(m);
                     if(isNotFuture) {
                         assertThat(instrument,
@@ -171,7 +171,8 @@ public class InstrumentFromMessageTest {
                                      future.getSecurityType());
                         assertEquals(expectedSymbol,
                                      future.getSymbol());
-                        if (expiry.getTag() == MaturityMonthYear.FIELD) {
+                        if (expiry != null &&
+                            expiry.getTag() == MaturityMonthYear.FIELD) {
                             assertEquals(expectedMY,
                                          future.getExpiryAsMaturityMonthYear().getValue());
                         } else {
@@ -186,8 +187,8 @@ public class InstrumentFromMessageTest {
         }
     }
 
-    private static void setFields(Message inMessage, Field... inFields) {
-        for(Field field:inFields) {
+    private static void setFields(Message inMessage, Field<?>... inFields) {
+        for(Field<?> field:inFields) {
             if(field != null) {
                 if (field instanceof StringField) {
                     inMessage.setField((StringField) field);

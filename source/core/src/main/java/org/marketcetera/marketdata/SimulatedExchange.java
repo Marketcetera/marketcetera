@@ -320,7 +320,7 @@ public class SimulatedExchange
             if(inExchangeRequest.getInstrument() == null) {
                 throw new IllegalArgumentException(DIVIDEND_REQUEST_MISSING_INSTRUMENT.getText(inExchangeRequest.toString()));
             }
-            if(!(inExchangeRequest.getInstrument() instanceof Equity)) {
+            if(inExchangeRequest.getInstrument() instanceof Option) {
                 throw new IllegalArgumentException(DIVIDEND_REQUEST_MISSING_INSTRUMENT.getText(inExchangeRequest.toString()));
             }
             if(inExchangeRequest.getUnderlyingInstrument() != null) {

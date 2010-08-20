@@ -45,7 +45,7 @@ public class OptionUtils {
                     Calendar cal = getSaturdayAfterThirdFriday(expiryMonth - 1,
                             expiryYear);
                     int expiryDay = cal.get(Calendar.DAY_OF_MONTH);
-                    return String.format("%s%02d", expiry, expiryDay);
+                    return String.format("%s%02d", expiry, expiryDay); //$NON-NLS-1$
                 }
             } catch (NumberFormatException e) {
                 // unsupported format, return expiry as is

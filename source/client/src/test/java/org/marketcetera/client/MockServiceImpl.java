@@ -88,7 +88,15 @@ public class MockServiceImpl
     {
         return new MapWrapper<PositionKey<Equity>, BigDecimal>(POSITIONS);
     }
-
+    private BigDecimal getFuturePositionAsOfImpl(Date inDate,
+                                                 Future inFuture)
+    {
+        return new BigDecimal(inDate.getTime());
+    }
+    private MapWrapper<PositionKey<Future>,BigDecimal> getFuturePositionsAsOfImpl(Date date)
+    {
+        return new MapWrapper<PositionKey<Future>, BigDecimal>(FUTURES_POSITIONS);
+    }
     private BigDecimal getOptionPositionAsOfImpl
         (Date inRaw,
          Option inOption)
@@ -253,7 +261,42 @@ public class MockServiceImpl
                 return getPositionsAsOfImpl(date.getRaw());
             }}).execute(context);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#getAllFuturePositionsAsOf(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.util.ws.wrappers.DateWrapper)
+     */
+    @Override
+    public MapWrapper<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(ClientContext inContext,
+                                                                                 final DateWrapper inDate)
+            throws RemoteException
+    {
+        return (new RemoteCaller<Object,MapWrapper<PositionKey<Future>,BigDecimal>>
+        (getSessionManager()) {
+            @Override
+            protected MapWrapper<PositionKey<Future>,BigDecimal> call
+            (ClientContext context,
+             SessionHolder<Object> sessionHolder)
+             {
+                return getFuturePositionsAsOfImpl(inDate.getRaw());
+             }}).execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#getFuturePositionAsOf(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.util.ws.wrappers.DateWrapper, org.marketcetera.trade.Future)
+     */
+    @Override
+    public BigDecimal getFuturePositionAsOf(ClientContext inContext,
+                                            final DateWrapper inDate,
+                                            final Future inFuture)
+            throws RemoteException
+    {
+        return (new RemoteCaller<Object,BigDecimal>(getSessionManager()) {
+            @Override
+            protected BigDecimal call(ClientContext context,
+                                      SessionHolder<Object> sessionHolder)
+            {
+                return getFuturePositionAsOfImpl(inDate.getRaw(),
+                                                 inFuture);
+            }}).execute(inContext);
+    }
     @Override
     public BigDecimal getOptionPositionAsOf
             (ClientContext context,
@@ -398,6 +441,7 @@ public class MockServiceImpl
     static ReportBaseImpl[] sReports = null;
     static boolean sActive = true;
     static final Map<PositionKey<Equity>, BigDecimal> POSITIONS;
+    static final Map<PositionKey<Future>,BigDecimal> FUTURES_POSITIONS;
     static {
         Map<PositionKey<Equity>, BigDecimal> positions =
             new HashMap<PositionKey<Equity>, BigDecimal>();
@@ -406,5 +450,11 @@ public class MockServiceImpl
         positions.put(PositionKeyFactory.createEquityKey("B","wally","sue"),
                       BigDecimal.ONE.negate());
         POSITIONS = Collections.unmodifiableMap(positions);
+        Map<PositionKey<Future>, BigDecimal> futurePositions = new HashMap<PositionKey<Future>,BigDecimal>();
+        futurePositions.put(PositionKeyFactory.createFutureKey("ENOQ1-11","201103","acme","bob"),
+                            BigDecimal.TEN);
+        futurePositions.put(PositionKeyFactory.createFutureKey("BRN12N","201207","wally","sue"),
+                            BigDecimal.ONE.negate());
+        FUTURES_POSITIONS = Collections.unmodifiableMap(futurePositions);
     }
 }

@@ -351,7 +351,7 @@ abstract class DataFlowManager<T, K extends Key> implements
         }
 
         /**
-         * Utility method to validates that a received event instrument against
+         * Utility method to validate a received event instrument against
          * an expected one.
          * 
          * @param expected
@@ -365,13 +365,18 @@ abstract class DataFlowManager<T, K extends Key> implements
         protected final boolean validateInstrument(final Instrument expected,
                 final Instrument instrument) {
             Validate.notNull(expected);
-            if (expected.getSymbol().equals(instrument.getSymbol())) {
-                return true;
-            } else {
-                Messages.DATA_FLOW_MANAGER_EVENT_INSTRUMENT_MISMATCH.warn(
-                        DataFlowManager.this, instrument, expected);
-                return false;
-            }
+            return true;
+//            String symbol = instrument.getSymbol();
+//            if(instrument instanceof HasProviderSymbol) {
+//                symbol = ((HasProviderSymbol)instrument).getProviderSymbol();
+//            }
+//            if (expected.getSymbol().equals(symbol)) {
+//                return true;
+//            } else {
+//                Messages.DATA_FLOW_MANAGER_EVENT_INSTRUMENT_MISMATCH.warn(
+//                        DataFlowManager.this, instrument, expected);
+//                return false;
+//            }
         }
     }
 }

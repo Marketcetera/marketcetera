@@ -378,7 +378,12 @@ public class ClientTest
                      (new Date(10),null));
         assertEquals(MockServiceImpl.POSITIONS, getClient().
                 getAllEquityPositionsAsOf(new Date()));
-
+        //getFuturePositionAsOf
+        assertEquals(BigDecimal.TEN,
+                     getClient().getFuturePositionAsOf(new Date(10),
+                                                       null));
+        assertEquals(MockServiceImpl.FUTURES_POSITIONS,
+                     getClient().getAllFuturePositionsAsOf(new Date()));
         //getOptionPositionAsOf()
         Option option = new Option("XYZ", "20101010", BigDecimal.TEN, OptionType.Call);
         Date date = new Date();
@@ -1193,7 +1198,7 @@ public class ClientTest
                 new BigDecimal("4343.49"), new BigDecimal("498.34"),
                 new BigDecimal("783343.49"), new BigDecimal("598.34"),
                 new BigDecimal("234343.49"), new BigDecimal("798.34"),
-                new Equity("IBM"), "my acc"),
+                new Equity("IBM"), "my acc", "some text"),
                 new BrokerID("bro"), Originator.Broker, null, null);
     }
 

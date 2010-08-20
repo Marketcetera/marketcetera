@@ -105,6 +105,22 @@ public class EventTestBase
      * Generates an equity <code>AskEvent</code> with the given values.
      *
      * @param inInstrument an <code>Equity</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateEquityAskEvent(Equity inInstrument,
+                                                  BigDecimal inPrice)
+    {
+        return QuoteEventBuilder.equityAskEvent().withInstrument(inInstrument)
+                                                 .withExchange("exchange")
+                                                 .withPrice(inPrice)
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+    }
+    /**
+     * Generates an equity <code>AskEvent</code> with the given values.
+     *
+     * @param inInstrument an <code>Equity</code> value
      * @param inAction a <code>QuoteAction</code> value
      * @return an <code>AskEvent</code> value
      */
@@ -195,6 +211,26 @@ public class EventTestBase
                                                  .withUnderlyingInstrument(inUnderlyingInstrument).create();
     }
     /**
+     * Generates an option <code>AskEvent</code> with the given values.
+     *
+     * @param inInstrument an <code>Option</code> value
+     * @param inUnderlyingInstrument an <code>Instrument</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateOptionAskEvent(Option inInstrument,
+                                                  Instrument inUnderlyingInstrument,
+                                                  BigDecimal inPrice)
+    {
+        return QuoteEventBuilder.optionAskEvent().withInstrument(inInstrument)
+                                                 .withExchange("exchange")
+                                                 .withPrice(inPrice)
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withExpirationType(ExpirationType.AMERICAN)
+                                                 .withUnderlyingInstrument(inUnderlyingInstrument).create();
+    }
+    /**
      * Generates a future <code>BidEvent</code> with the given values.
      *
      * @param inInstrument a <code>Future</code> value
@@ -208,6 +244,25 @@ public class EventTestBase
                                                  .withAction(inAction)
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
+                                                 .withSize(generateDecimalValue())
+                                                 .withContractSize(1)
+                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+    }
+    /**
+     * Generates a future <code>BidEvent</code> with the given values.
+     *
+     * @param inInstrument a <code>Future</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return a <code>BidEvent</code> value
+     */
+    public static BidEvent generateFutureBidEvent(Future inInstrument,
+                                                  BigDecimal inPrice)
+    {
+        return QuoteEventBuilder.futureBidEvent().withInstrument(inInstrument)
+                                                 .withAction(QuoteAction.ADD)
+                                                 .withExchange("exchange")
+                                                 .withPrice(inPrice)
+                                                 .withContractSize(1)
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
@@ -225,6 +280,25 @@ public class EventTestBase
                                                  .withAction(inAction)
                                                  .withExchange("exchange")
                                                  .withPrice(generateDecimalValue())
+                                                 .withContractSize(1)
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+    }
+    /**
+     * Generates a future <code>AskEvent</code> with the given values.
+     *
+     * @param inInstrument a <code>Future</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateFutureAskEvent(Future inInstrument,
+                                                  BigDecimal inPrice)
+    {
+        return QuoteEventBuilder.futureAskEvent().withInstrument(inInstrument)
+                                                 .withAction(QuoteAction.ADD)
+                                                 .withExchange("exchange")
+                                                 .withPrice(inPrice)
+                                                 .withContractSize(1)
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
@@ -332,6 +406,22 @@ public class EventTestBase
                                                  .withQuoteDate(DateUtils.dateToString(new Date())).create();
     }
     /**
+     * Generates an equity <code>BidEvent</code> with the given values.
+     *
+     * @param inInstrument an <code>Equity</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return a <code>BidEvent</code> value
+     */
+    public static BidEvent generateEquityBidEvent(Equity inInstrument,
+                                                  BigDecimal inPrice)
+    {
+        return QuoteEventBuilder.equityBidEvent().withInstrument(inInstrument)
+                                                 .withExchange("exchange")
+                                                 .withPrice(inPrice)
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date())).create();
+    }
+    /**
      * Generates an option <code>BidEvent</code> with the given values.
      *
      * @param inInstrument an <code>Option</code> value
@@ -384,6 +474,26 @@ public class EventTestBase
         return QuoteEventBuilder.optionBidEvent().withInstrument(inInstrument)
                                                  .withExchange(inExchange)
                                                  .withPrice(generateDecimalValue())
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(DateUtils.dateToString(new Date()))
+                                                 .withExpirationType(ExpirationType.AMERICAN)
+                                                 .withUnderlyingInstrument(inUnderlyingInstrument).create();
+    }
+    /**
+     * Generates an option <code>BidEvent</code> with the given values.
+     *
+     * @param inInstrument an <code>Option</code> value
+     * @param inUnderlyingInstrument an <code>Instrument</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return a <code>BidEvent</code> value
+     */
+    public static BidEvent generateOptionBidEvent(Option inInstrument,
+                                                  Instrument inUnderlyingInstrument,
+                                                  BigDecimal inPrice)
+    {
+        return QuoteEventBuilder.optionBidEvent().withInstrument(inInstrument)
+                                                 .withExchange("exchange")
+                                                 .withPrice(inPrice)
                                                  .withSize(generateDecimalValue())
                                                  .withQuoteDate(DateUtils.dateToString(new Date()))
                                                  .withExpirationType(ExpirationType.AMERICAN)
@@ -451,6 +561,23 @@ public class EventTestBase
                                         generateDecimalValue());
     }
     /**
+     * Generates an equity <code>TradeEvent</code> with the given value.
+     *
+     * @param inInstrument an <code>Equity</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return a <code>TradeEvent</code> value
+     */
+    public static TradeEvent generateEquityTradeEvent(Equity inInstrument,
+                                                      BigDecimal inPrice)
+    {
+        return generateEquityTradeEvent(System.nanoTime(),
+                                        System.currentTimeMillis(),
+                                        inInstrument,
+                                        "Q",
+                                        inPrice,
+                                        generateDecimalValue());
+    }
+    /**
      * Generates an option <code>TradeEvent</code> with the given value.
      *
      * @param inInstrument an <code>Option</code> value
@@ -463,6 +590,44 @@ public class EventTestBase
         return TradeEventBuilder.optionTradeEvent().withInstrument(inInstrument)
                                                    .withExchange("Q")
                                                    .withPrice(generateDecimalValue())
+                                                   .withSize(generateDecimalValue())
+                                                   .withExpirationType(ExpirationType.AMERICAN)
+                                                   .withMultiplier(BigDecimal.ZERO)
+                                                   .withUnderlyingInstrument(inUnderlyingInstrument)
+                                                   .withTradeDate(DateUtils.dateToString(new Date())).create();
+    }
+    /**
+     * Generates a future <code>TradeEvent</code> with the given value.
+     *
+     * @param inInstrument a <code>Future</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return a <code>TradeEvent</code> value
+     */
+    public static TradeEvent generateFutureTradeEvent(Future inInstrument,
+                                                      BigDecimal inPrice)
+    {
+        return TradeEventBuilder.futureTradeEvent().withInstrument(inInstrument)
+                                                   .withExchange("Q")
+                                                   .withPrice(inPrice)
+                                                   .withContractSize(1)
+                                                   .withSize(generateDecimalValue())
+                                                   .withTradeDate(DateUtils.dateToString(new Date())).create();
+    }
+    /**
+     * Generates an option <code>TradeEvent</code> with the given value.
+     *
+     * @param inInstrument an <code>Option</code> value
+     * @param inUnderlyingInstrument an <code>Instrument</code> value
+     * @param inPrice a <code>BigDecimal</code> value
+     * @return a <code>TradeEvent</code> value
+     */
+    public static TradeEvent generateOptionTradeEvent(Option inInstrument,
+                                                      Instrument inUnderlyingInstrument,
+                                                      BigDecimal inPrice)
+    {
+        return TradeEventBuilder.optionTradeEvent().withInstrument(inInstrument)
+                                                   .withExchange("Q")
+                                                   .withPrice(inPrice)
                                                    .withSize(generateDecimalValue())
                                                    .withExpirationType(ExpirationType.AMERICAN)
                                                    .withMultiplier(BigDecimal.ZERO)
