@@ -1,21 +1,18 @@
 package org.marketcetera.client.instruments;
 
-import org.marketcetera.trade.Future;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.FutureExpirationMonth;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.client.OrderValidationException;
-import static org.marketcetera.client.instruments.OptionValidationHandler.validateExpiryDate;
 import static org.marketcetera.client.instruments.OptionValidationHandler.validateExpiry;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Test;
-import org.junit.BeforeClass;
+import static org.marketcetera.client.instruments.OptionValidationHandler.validateExpiryDate;
 
 import java.math.BigDecimal;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.client.OrderValidationException;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**

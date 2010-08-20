@@ -41,6 +41,14 @@ import java.util.*;
                 @ColumnResult(name = "actor"),
                 @ColumnResult(name = "position")
                     }),
+   @SqlResultSetMapping(name = "futAllPositions",
+                        columns = {
+           @ColumnResult(name = "symbol"),
+           @ColumnResult(name = "expiry"),
+           @ColumnResult(name = "account"),
+           @ColumnResult(name = "actor"),
+           @ColumnResult(name = "position")
+   }),
     @SqlResultSetMapping(name = "optAllPositions",
             columns = {
                 @ColumnResult(name = "symbol"),
@@ -77,6 +85,27 @@ import java.util.*;
             "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
             "group by symbol, account, actor having position <> 0",
             resultSetMapping = "eqAllPositions"),
+    @NamedNativeQuery(name = "futPositionForSymbol",query = "select " +
+            "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "where e.symbol = :symbol " +
+            "and e.securityType = :securityType " +
+            "and e.sendingTime <= :sendingTime " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID)",
+            resultSetMapping = "positionForSymbol"),
+    @NamedNativeQuery(name = "futAllPositions",query = "select " +
+            "e.symbol as symbol, e.expiry as expiry, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "join reports r on (e.report_id=r.id) " +
+            "where e.sendingTime <= :sendingTime " +
+            "and e.securityType = :securityType " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
+            "group by symbol, account, actor having position <> 0",
+            resultSetMapping = "futAllPositions"),
     @NamedNativeQuery(name = "optPositionForTuple",query = "select " +
             "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
             "from execreports e " +
@@ -225,8 +254,115 @@ class ExecutionReportSummary extends EntityBase {
         }, null);
 
     }
-
-
+    /**
+     * Gets the current aggregate position for the future based on
+     * execution reports received on or before the supplied time, and which
+     * are visible to the given user.
+     *
+     * <p>
+     * Buy trades result in positive positions. All other kinds of trades
+     * result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the time. execution reports with sending time values less
+     * than or equal to this time are included in this calculation.
+     * @param inFuture the future for which this position needs to be computed
+     *
+     * @return the aggregate position for the future.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position.
+     */
+    static BigDecimal getFuturePositionAsOf(final SimpleUser inUser,
+                                            final Date inDate,
+                                            final Future inFuture)
+            throws PersistenceException
+    {
+        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public BigDecimal execute(EntityManager em,
+                                      PersistContext context)
+            {
+                Query query = em.createNamedQuery("futPositionForSymbol");  //$NON-NLS-1$
+                query.setParameter("viewerID",  //$NON-NLS-1$
+                                   inUser.getUserID().getValue());
+                query.setParameter("allViewers",  //$NON-NLS-1$
+                                   inUser.isSuperuser());
+                query.setParameter("sideBuy",  //$NON-NLS-1$
+                                   Side.Buy.ordinal());
+                query.setParameter("symbol",  //$NON-NLS-1$
+                                   inFuture.getSymbol());
+                query.setParameter("securityType",  //$NON-NLS-1$
+                                   SecurityType.Future.ordinal());
+                query.setParameter("sendingTime",  //$NON-NLS-1$
+                                   inDate,
+                        TemporalType.TIMESTAMP);
+                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
+            }
+        }, null);
+        return position == null? BigDecimal.ZERO: position;
+    }
+    /**
+     * Returns the aggregate position of each (future,account,actor)
+     * tuple based on all reports received for each tuple on or before
+     * the supplied date, and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
+     *
+     * @return the position map.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
+     */
+    static Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(final SimpleUser inUser,
+                                                                          final Date inDate)
+            throws PersistenceException
+    {
+        return executeRemote(new Transaction<Map<PositionKey<Future>, BigDecimal>>() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public Map<PositionKey<Future>,BigDecimal> execute(EntityManager em,
+                                                               PersistContext context)
+            {
+                Query query = em.createNamedQuery("futAllPositions");  //$NON-NLS-1$
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.Future.ordinal());  //$NON-NLS-1$
+                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+                        TemporalType.TIMESTAMP);
+                HashMap<PositionKey<Future>, BigDecimal> map =
+                        new HashMap<PositionKey<Future>, BigDecimal>();
+                List<?> list = query.getResultList();
+                Object[] columns;
+                for(Object o: list) {
+                    columns = (Object[]) o;
+                    //5 columns
+                    if(columns.length > 1) {
+                        //first one is the symbol
+                        //second one is the expiry
+                        //third one is the account
+                        //fourth one is the actor ID
+                        //fifth one is the position
+                        map.put(PositionKeyFactory.createFutureKey((String)columns[0],
+                                                                   (String)columns[1],
+                                                                   (String)columns[2],
+                                                                   ((columns[3]==null)?null:
+                                  ((BigInteger)columns[3]).toString())),
+                                 (BigDecimal)columns[4]);
+                    }
+                }
+                return map;
+            }
+        }, null);
+    }
     /**
      * Gets the current aggregate position for the option tuple based on
      * execution reports received on or before the supplied time, and which

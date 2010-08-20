@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public interface OptionEvent
-        extends HasUnderlyingInstrument, HasOption, Event
+        extends HasUnderlyingInstrument, HasOption, Event, HasProviderSymbol
 {
     /**
      * Gets the expiration type of the event. 

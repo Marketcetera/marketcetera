@@ -113,4 +113,17 @@ public interface OrderBase extends Order {
      * @param inAccount the account.
      */
     void setAccount(String inAccount);
+    /**
+     * Gets the text for the order. Text may be optionally
+     * specified for an order.
+     *
+     * @return the text.
+     */
+    String getText();
+    /**
+     * Sets the text for the order.
+     *
+     * @param inText the text.
+     */
+    void setText(String inText);
 }

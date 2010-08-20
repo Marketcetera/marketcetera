@@ -3,7 +3,9 @@ package org.marketcetera.photon.core;
 import org.marketcetera.core.instruments.InstrumentFunctionHandler;
 import org.marketcetera.core.instruments.StaticInstrumentFunctionSelector;
 import org.marketcetera.photon.commons.Validate;
+import org.marketcetera.photon.internal.core.FuturePrettyPrinter;
 import org.marketcetera.photon.internal.core.OptionPrettyPrinter;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -78,6 +80,17 @@ public abstract class InstrumentPrettyPrinter<I extends Instrument> extends
      */
     public static String printOptionExpiry(Option option) {
         return OptionPrettyPrinter.printExpiry(option);
+    }
+    /**
+     * Prints a future expiry.
+     *
+     * @param inFuture a <code>Future</code> value
+     * @return a <code>String</code> value
+     * @throws IllegalArgumentException if the parameter is <code>null</code>
+     */
+    public static String printFutureExpiry(Future inFuture)
+    {
+        return FuturePrettyPrinter.printExpiry(inFuture);
     }
 
     @SuppressWarnings("unchecked")

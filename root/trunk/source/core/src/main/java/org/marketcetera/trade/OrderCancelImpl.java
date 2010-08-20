@@ -48,7 +48,8 @@ public class OrderCancelImpl extends OrderBaseImpl implements OrderCancel {
                 String.valueOf(getSecurityType()),
                 String.valueOf(getSide()),
                 String.valueOf(getInstrument()),
-                String.valueOf(getBrokerOrderID())
+                String.valueOf(getBrokerOrderID()),
+                String.valueOf(getText())
         );
     }
 

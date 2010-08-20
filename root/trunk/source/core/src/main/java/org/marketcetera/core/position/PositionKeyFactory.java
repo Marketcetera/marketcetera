@@ -5,10 +5,7 @@ import java.math.BigDecimal;
 import javax.annotation.Nullable;
 
 import org.marketcetera.core.position.impl.PositionKeyImpl;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -40,7 +37,26 @@ public class PositionKeyFactory {
             @Nullable String account, @Nullable String traderId) {
         return createKey(new Equity(symbol), account, traderId);
     }
-
+    /**
+     * Creates a future position key. Note that account and traderId are
+     * converted to null if they only contain whitespace.
+     * 
+     * @param inSymbol a <code>String</code> value
+     * @param inExpiry a <code>String</code> value
+     * @param inAccount a <code>String</code> value
+     * @param inTraderId a <code>String</code> value
+     * @throws IllegalArgumentException if one of the given parameters are invalid
+     */
+    public static PositionKey<Future> createFutureKey(String inSymbol,
+                                                      @Nullable String inExpiry,
+                                                      @Nullable String inAccount,
+                                                      @Nullable String inTraderId)
+    {
+        return createKey(new Future(inSymbol,
+                                    inExpiry),
+                         inAccount,
+                         inTraderId);
+    }
     /**
      * Creates an option position key. Note that account and traderId are
      * converted to null if they only contain whitespace.

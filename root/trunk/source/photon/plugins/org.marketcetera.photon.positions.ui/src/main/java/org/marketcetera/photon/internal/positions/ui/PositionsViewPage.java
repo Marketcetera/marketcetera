@@ -24,6 +24,7 @@ import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnPro
 import org.marketcetera.photon.core.InstrumentPrettyPrinter;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -268,14 +269,27 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
             Instrument instrument = baseObject.getInstrument();
             Option option = (instrument instanceof Option) ? (Option) instrument
                     : null;
+            Future future = (instrument instanceof Future) ? (Future)instrument : null;
             PositionMetrics metrics = baseObject.getPositionMetrics();
             switch (column - mOffset) {
             case 0:
                 return getInstrumentLabel(instrument);
             case 1:
-                return option == null ? null : option.getSymbol();
+                if(option != null) {
+                    return option.getSymbol();
+                }
+                if(future != null) {
+                    return future.getSymbol();
+                }
+                return null;
             case 2:
-                return option == null ? null : InstrumentPrettyPrinter.printOptionExpiry(option);
+                if(option != null) {
+                    return InstrumentPrettyPrinter.printOptionExpiry(option);
+                }
+                if(future != null) {
+                    return InstrumentPrettyPrinter.printFutureExpiry(future);
+                }
+                return null;
             case 3:
                 return option == null ? null : option.getType();
             case 4:
@@ -300,11 +314,13 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
         }
 
         private String getInstrumentLabel(Instrument instrument) {
-            // TODO: instrument specific functionality that can be abstraced
+            // TODO: instrument specific functionality that can be abstracted
             if (instrument instanceof Equity) {
                 return Messages.POSITIONS_TABLE_EQUITY__LABEL.getText();
             } else if (instrument instanceof Option) {
                 return Messages.POSITIONS_TABLE_OPTION__LABEL.getText();
+            } else if (instrument instanceof Future) {
+                return Messages.POSITIONS_TABLE_FUTURE__LABEL.getText();
             } else {
                 return null;
             }

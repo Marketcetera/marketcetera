@@ -61,7 +61,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(10), null,
                 new BigDecimal(10), new BigDecimal(11), new BigDecimal(10),
-                new BigDecimal(11), new Equity("IBM"), "account");
+                new BigDecimal(11), new Equity("IBM"), "account", "text");
         message.setField(new LeavesQty(90.0));
         source.add(new ReportHolder(createReport(message), "IBM"));
 
@@ -76,7 +76,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 "clordid1", "execido1", OrdStatus.NEW, Side.BUY,
                 new BigDecimal(10), null, new BigDecimal(110), new BigDecimal(
                         111), new BigDecimal(110), new BigDecimal(111),
-                new Equity("IBM"), "account");
+                new Equity("IBM"), "account", "text");
         message2.setField(new LeavesQty(190.0));
         source.add(new ReportHolder(createReport(message2), "IBM"));
 
@@ -91,7 +91,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 "clordid1", "execido1", OrdStatus.PENDING_NEW, Side.BUY,
                 new BigDecimal(1000), null, new BigDecimal(0), null,
                 new BigDecimal(100), new BigDecimal(3), new Equity("IBM"),
-                "account");
+                "account", "text");
         message3.setField(new OrderQty(1000));
         source.add(new ReportHolder(createReport(message3), "IBM"));
 
@@ -112,7 +112,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.PENDING_NEW, Side.BUY, new BigDecimal(
                         1000), null, new BigDecimal(0), null, new BigDecimal(
-                        100), new BigDecimal(3), new Equity("IBM"), "account");
+                        100), new BigDecimal(3), new Equity("IBM"), "account", "text");
         message.setField(new LeavesQty(0));
         message.setField(new ExecTransType(ExecTransType.NEW));
         message.setField(new ExecType(ExecType.NEW));
@@ -132,10 +132,10 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
         Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
-                        10), new BigDecimal(11), new Equity("IBM"), "account");
+                        10), new BigDecimal(11), new Equity("IBM"), "account", "text");
         Message message2 = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
-                        10), new BigDecimal(11), new Equity("MSFT"), "account");
+                        10), new BigDecimal(11), new Equity("MSFT"), "account", "text");
         message.setField(new LeavesQty(90.0));
         source.add(new ReportHolder(createReport(message), "IBM"));
         source.add(new ReportHolder(createReport(message2), "MSFT"));
@@ -155,7 +155,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
                 FIXVersion.FIX_SYSTEM.getMessageFactory(), source);
         final Message message = msgFactory.newExecutionReport("clordid1", "clordid1",
                 "execido1", OrdStatus.NEW, Side.BUY, new BigDecimal(0), null, new BigDecimal(10), new BigDecimal(11), new BigDecimal(
-                        10), new BigDecimal(11), new Equity("IBM"), "account");
+                        10), new BigDecimal(11), new Equity("IBM"), "account", "text");
         message.setField(new LeavesQty(90.0));
         source.add(new ReportHolder(createReport(message), "IBM"));
 
@@ -179,7 +179,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
             Message message = msgFactory.newExecutionReport("clordid1",
                     "clordid1", "execido1", OrdStatus.PENDING_NEW, Side.BUY,
                     new BigDecimal(1000), null, new BigDecimal(0), null,
-                    new BigDecimal(100), new BigDecimal(3), option, "account");
+                    new BigDecimal(100), new BigDecimal(3), option, "account", "text");
             message.setField(new LeavesQty(0));
             message.setField(new ExecTransType(ExecTransType.NEW));
             message.setField(new ExecType(ExecType.NEW));

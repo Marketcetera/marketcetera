@@ -78,6 +78,10 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"no_account"); //$NON-NLS-1$
     static final I18NMessage0P UNSUPPORTED_ACCOUNT=
         new I18NMessage0P(LOGGER,"unsupported_account"); //$NON-NLS-1$
+    static final I18NMessage0P NO_TEXT=
+        new I18NMessage0P(LOGGER,"no_text"); //$NON-NLS-1$
+    static final I18NMessage0P UNSUPPORTED_TEXT=
+        new I18NMessage0P(LOGGER,"unsupported_text"); //$NON-NLS-1$
     static final I18NMessage0P NO_ORDER_ID=
         new I18NMessage0P(LOGGER,"no_order_id"); //$NON-NLS-1$
     static final I18NMessage0P UNSUPPORTED_ORDER_ID=
@@ -116,4 +120,18 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"unsupported_order_type"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_CONVERT=
         new I18NMessage1P(LOGGER,"cannot_convert"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_SYMBOL=
+        new I18NMessage0P(LOGGER,"null_symbol"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_SYMBOL=
+        new I18NMessage1P(LOGGER,"invalid_symbol"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_MONTH=
+        new I18NMessage0P(LOGGER,"null_month"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_MONTH=
+        new I18NMessage1P(LOGGER,"invalid_month"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_YEAR=
+        new I18NMessage1P(LOGGER,"invalid_year"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_EXPIRY=
+        new I18NMessage0P(LOGGER,"null_expiry"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_EXPIRY=
+        new I18NMessage1P(LOGGER,"invalid_expiry"); //$NON-NLS-1$
 }

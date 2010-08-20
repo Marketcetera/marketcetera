@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -14,6 +15,7 @@ import org.marketcetera.trade.Instrument;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface OptionEventBuilder<B>
 {
     /**

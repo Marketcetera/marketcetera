@@ -34,7 +34,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class QuoteEventBuilder<E extends QuoteEvent>
-        implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>
+        implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>, FutureEventBuilder<QuoteEventBuilder<E>>
 {
     /**
      * Creates a <code>QuoteEvent</code> of the same type as the given event
@@ -561,6 +561,7 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public final QuoteEventBuilder<E> withProviderSymbol(String inProviderSymbol)
     {
         option.setProviderSymbol(inProviderSymbol);
+        future.setProviderSymbol(inProviderSymbol);
         return this;
     }
     /**
@@ -572,6 +573,17 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     public final QuoteEventBuilder<E> withEventType(EventType inEventType)
     {
         quote.setEventType(inEventType);
+        return this;
+    }
+    /**
+     * Sets the contract size.
+     *
+     * @param inContractSize an <code>int</code> value
+     * @return a <code>QuoteEventBuilder&lt;E&gt;</code> value
+     */
+    public final QuoteEventBuilder<E> withContractSize(int inContractSize)
+    {
+        future.setContractSize(inContractSize);
         return this;
     }
     /* (non-Javadoc)

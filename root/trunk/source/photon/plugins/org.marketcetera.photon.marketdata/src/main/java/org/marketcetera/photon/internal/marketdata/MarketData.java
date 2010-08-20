@@ -11,12 +11,9 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
-import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
-import org.marketcetera.photon.model.marketdata.MDItem;
-import org.marketcetera.photon.model.marketdata.MDLatestTick;
-import org.marketcetera.photon.model.marketdata.MDMarketstat;
-import org.marketcetera.photon.model.marketdata.MDTopOfBook;
+import org.marketcetera.photon.model.marketdata.*;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -151,7 +148,8 @@ public class MarketData implements IMarketData {
      * flow for the underlying.
      */
     private boolean canRequestFineGrainedMarketData(Instrument instrument) {
-        return (instrument instanceof Equity)
+        return (instrument instanceof Equity ||
+                instrument instanceof Future)
                 || mUseFineGrainedMarketDataForOptions;
     }
 

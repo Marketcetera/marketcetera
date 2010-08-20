@@ -15,6 +15,7 @@ import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.*;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -354,6 +355,10 @@ public class BogusFeed
                     if(marketDataRequest.getAssetClass() == AssetClass.EQUITY) {
                         for(String symbol : symbols) {
                             exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(new Equity(symbol)).create());
+                        }
+                    } else if(marketDataRequest.getAssetClass() == AssetClass.FUTURE) {
+                        for(String symbol : symbols) {
+                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(Future.fromString(symbol)).create());
                         }
                     } else if(marketDataRequest.getAssetClass() == AssetClass.OPTION) {
                         for(String symbol : symbols) {

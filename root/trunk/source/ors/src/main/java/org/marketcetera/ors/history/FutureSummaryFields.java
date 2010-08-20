@@ -29,7 +29,7 @@ public class FutureSummaryFields
 
     @Override
     public String getExpiry(Instrument inInstrument) {
-        return ((Future)inInstrument).getExpiryAsMaturityMonthYear().toString();
+        return ((Future)inInstrument).getExpiryAsMaturityMonthYear().getValue();
     }
 
     @Override

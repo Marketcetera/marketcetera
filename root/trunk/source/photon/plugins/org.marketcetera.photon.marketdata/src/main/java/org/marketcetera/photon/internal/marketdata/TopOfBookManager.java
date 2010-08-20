@@ -6,6 +6,7 @@ import java.util.concurrent.Executor;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.QuoteAction;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
@@ -95,12 +96,22 @@ public class TopOfBookManager extends
                     }
                     if (inData instanceof BidEvent) {
                         BidEvent event = (BidEvent) inData;
-                        item.setBidPrice(event.getPrice());
-                        item.setBidSize(event.getSize());
+                        if(event.getAction() == QuoteAction.DELETE) {
+                            item.setBidPrice(null);
+                            item.setBidSize(null);
+                        } else {
+                            item.setBidPrice(event.getPrice());
+                            item.setBidSize(event.getSize());
+                        }
                     } else if (inData instanceof AskEvent) {
                         AskEvent event = (AskEvent) inData;
-                        item.setAskPrice(event.getPrice());
-                        item.setAskSize(event.getSize());
+                        if(event.getAction() == QuoteAction.DELETE) {
+                            item.setAskPrice(null);
+                            item.setAskSize(null);
+                        } else {
+                            item.setAskPrice(event.getPrice());
+                            item.setAskSize(event.getSize());
+                        }
                     } else {
                         reportUnexpectedData(inData);
                     }

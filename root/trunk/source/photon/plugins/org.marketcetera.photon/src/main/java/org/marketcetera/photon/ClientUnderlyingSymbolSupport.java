@@ -3,6 +3,7 @@ package org.marketcetera.photon;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -38,6 +39,8 @@ public final class ClientUnderlyingSymbolSupport implements
                         Messages.CLIENT_UNDERLYING_SYMBOL_SUPPORT_MAPPING_ERROR
                                 .getText(), e);
             }
+        } else if(instrument instanceof Future) {
+            return ((Future)instrument).getUnderlying();
         }
         return instrument.getSymbol();
     }

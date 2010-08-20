@@ -14,19 +14,19 @@ import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ConnectionException;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.ImmutablePositionSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionEngineFactory;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.photon.Messages;
-import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.PhotonPositionMarketData;
-import org.marketcetera.photon.PhotonPreferences;
-import org.marketcetera.photon.TimeOfDay;
+import org.marketcetera.photon.*;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+
+import ca.odell.glazedlists.EventList;
 
 import com.google.common.collect.Maps;
 
@@ -88,16 +88,15 @@ public class RetrieveTradingHistoryJob extends Job {
                                             lastOccurrence));
                     positions.putAll(ClientManager.getInstance()
                             .getAllOptionPositionsAsOf(lastOccurrence));
-                    PositionEngine engine = PositionEngineFactory
-                            .createFromReportHolders(tradeReportsHistory
-                                    .getAllMessagesList(),
-                                    new ImmutablePositionSupport(positions),
-                                    new PhotonPositionMarketData(PhotonPlugin
-                                            .getDefault()
-                                            .getMarketDataManager()
-                                            .getMarketData()), PhotonPlugin
-                                            .getDefault()
-                                            .getUnderlyingSymbolSupport());
+                    positions.putAll(ClientManager.getInstance().getAllFuturePositionsAsOf(lastOccurrence));
+                    EventList<ReportHolder> messages = tradeReportsHistory.getAllMessagesList();
+                    ImmutablePositionSupport positionSupport = new ImmutablePositionSupport(positions);
+                    PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(PhotonPlugin.getDefault().getMarketDataManager().getMarketData());
+                    UnderlyingSymbolSupport underlyingSymbolSupport = PhotonPlugin.getDefault().getUnderlyingSymbolSupport();
+                    PositionEngine engine = PositionEngineFactory.createFromReportHolders(messages,
+                                                                                          positionSupport,
+                                                                                          positionMarketData,
+                                                                                          underlyingSymbolSupport);
 					PhotonPlugin.getDefault().registerPositionEngine(engine);
 				} catch (Exception e) {
 					if (e instanceof RuntimeException) {

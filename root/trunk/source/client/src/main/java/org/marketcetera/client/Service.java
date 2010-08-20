@@ -11,10 +11,7 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.ServiceBase;
@@ -154,7 +151,40 @@ public interface Service
         (@WebParam(name= "context")ClientContext context,
          @WebParam(name= "date")DateWrapper date)
         throws RemoteException;
-
+    /**
+     * Returns the position of the supplied future instrument based on reports,
+     * generated and received on or before the supplied date in UTC to the
+     * client with the given context.
+     *
+     * @param inContext The context.
+     * @param inDate The date, in UTC.
+     * @param inFuture The equity instrument.
+     *
+     * @return The position.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+    BigDecimal getFuturePositionAsOf(@WebParam(name= "context")ClientContext inContext,
+                                     @WebParam(name= "date")DateWrapper inDate,
+                                     @WebParam(name= "future")Future inFuture)
+        throws RemoteException;
+    /**
+     * Returns all the open positions for future instruments based on reports,
+     * generated and received on or before the supplied date in UTC to the client
+     * with the given context.
+     *
+     * @param inContext The context.
+     * @param inDate The date, in UTC.
+     *
+     * @return The open positions.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+    MapWrapper<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(@WebParam(name= "context")ClientContext inContext,
+                                                                         @WebParam(name= "date")DateWrapper inDate)
+            throws RemoteException;
     /**
      * Gets the current aggregate position for the option instrument  based on
      * execution reports received on or before the supplied date in UTC, and which

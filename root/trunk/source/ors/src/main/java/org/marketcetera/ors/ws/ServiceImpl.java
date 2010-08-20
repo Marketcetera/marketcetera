@@ -18,10 +18,7 @@ import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.ReportBaseImpl;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.*;
@@ -157,16 +154,47 @@ public class ServiceImpl
         return new MapWrapper<PositionKey<Equity>, BigDecimal>(
                 getHistoryServices().getAllEquityPositionsAsOf(session.getUser(),date));
     }
-    
-    private BigDecimal getOptionPositionAsOfImpl
-        (ClientSession session,
-         Date date,
-         Option inOption) throws PersistenceException
+    /**
+     * Gets the position for the given future.
+     *
+     * @param inSession a <code>ClientSession</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inFuture a <code>Future</code> value
+     * @return a <code>BigDecimal</code> value
+     * @throws PersistenceException if an error occurs
+     */
+    private BigDecimal getFuturePositionAsOfImpl(ClientSession inSession,
+                                                 Date inDate,
+                                                 Future inFuture)
+            throws PersistenceException
     {
-        return getHistoryServices().getOptionPositionAsOf(session.getUser(),
-                date, inOption);
+        return getHistoryServices().getFuturePositionAsOf(inSession.getUser(),
+                                                          inDate,
+                                                          inFuture);
     }
-
+    /**
+     * Gets all future positions as of the given date.
+     *
+     * @param inSession a <code>ClientSession</code> value
+     * @param inDate a <code>Date</code> value
+     * @return a <code>MapWrapper&lt;PositionKey&lt;Future&gt;,BigDecimal&gt;</code> value
+     * @throws PersistenceException if an error occurs
+     */
+    private MapWrapper<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOfImpl(ClientSession inSession,
+                                                                                     Date inDate)
+            throws PersistenceException
+    {
+        return new MapWrapper<PositionKey<Future>,BigDecimal>(getHistoryServices().getAllFuturePositionsAsOf(inSession.getUser(),
+                                                                                                             inDate));
+    }
+    private BigDecimal getOptionPositionAsOfImpl
+    (ClientSession session,
+     Date date,
+     Option inOption) throws PersistenceException
+     {
+        return getHistoryServices().getOptionPositionAsOf(session.getUser(),
+                                                          date, inOption);
+     }
     private MapWrapper<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOfImpl
         (ClientSession session,
          Date date)
@@ -329,7 +357,44 @@ public class ServiceImpl
                     (sessionHolder.getSession(),date.getRaw());
             }}).execute(context);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#getAllFuturePositionsAsOf(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.util.ws.wrappers.DateWrapper)
+     */
+    @Override
+    public MapWrapper<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(ClientContext inContext,
+                                                                                 final DateWrapper inDate)
+            throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,MapWrapper<PositionKey<Future>,BigDecimal>>(getSessionManager()) {
+            @Override
+            protected MapWrapper<PositionKey<Future>,BigDecimal> call(ClientContext context,
+                                                                      SessionHolder<ClientSession> sessionHolder)
+                     throws PersistenceException
+             {
+                return getAllFuturePositionsAsOfImpl(sessionHolder.getSession(),
+                                                     inDate.getRaw());
+             }}).execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#getFuturePositionAsOf(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.util.ws.wrappers.DateWrapper, org.marketcetera.trade.Future)
+     */
+    @Override
+    public BigDecimal getFuturePositionAsOf(ClientContext inContext,
+                                            final DateWrapper inDate,
+                                            final Future inFuture)
+            throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,BigDecimal>(getSessionManager()) {
+            @Override
+            protected BigDecimal call(ClientContext context,
+                                      SessionHolder<ClientSession> sessionHolder)
+                    throws PersistenceException
+            {
+                return getFuturePositionAsOfImpl(sessionHolder.getSession(),
+                                                 inDate.getRaw(),
+                                                 inFuture);
+            }}).execute(inContext);
+    }
     @Override
     public BigDecimal getOptionPositionAsOf
         (ClientContext context,

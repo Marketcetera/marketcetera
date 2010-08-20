@@ -146,7 +146,33 @@ public interface Client {
      */
     public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf(Date inDate)
             throws ConnectionException;
-
+    /**
+     * Returns the position of the supplied future based on reports,
+     * generated and received on or before the supplied date in UTC.
+     *
+     * @param inDate the date in UTC. Cannot be null.
+     * @param inFuture The future. Cannot be null.
+     *
+     * @return the current position of the future.
+     *
+     * @throws ConnectionException if there were connection errors fetching
+     * data from the server.
+     */
+    public BigDecimal getFuturePositionAsOf(Date inDate, Future inFuture)
+            throws ConnectionException;
+    /**
+     * Returns all open future positions based on reports,
+     * generated and received on or before the supplied date in UTC.
+     *
+     * @param inDate the date in UTC. Cannot be null.
+     *
+     * @return the open future positions. Includes non-zero positions only.
+     *
+     * @throws ConnectionException if there were connection errors fetching
+     * data from the server.
+     */
+    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+            throws ConnectionException;
     /**
      * Gets the current aggregate position for the option instrument based on
      * execution reports received on or before the supplied date in UTC, and which

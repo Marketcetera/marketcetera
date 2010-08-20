@@ -98,7 +98,30 @@ public class BasicReportHistoryServices
     {
         return ExecutionReportSummary.getAllEquityPositionsAsOf(inUser,inDate);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.history.ReportHistoryServices#getAllFuturePositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(SimpleUser inUser,
+                                                                         Date inDate)
+            throws PersistenceException
+    {
+        return ExecutionReportSummary.getAllFuturePositionsAsOf(inUser,
+                                                                inDate);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.history.ReportHistoryServices#getFuturePositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Future)
+     */
+    @Override
+    public BigDecimal getFuturePositionAsOf(SimpleUser inUser,
+                                            Date inDate,
+                                            Future inFuture)
+            throws PersistenceException
+    {
+        return ExecutionReportSummary.getFuturePositionAsOf(inUser,
+                                                            inDate,
+                                                            inFuture);
+    }     
     @Override
     public BigDecimal getOptionPositionAsOf
         (final SimpleUser inUser,
@@ -125,7 +148,6 @@ public class BasicReportHistoryServices
         throws PersistenceException {
         return ExecutionReportSummary.getOptionPositionsAsOf(inUser, inDate, inSymbols);
     }
-
     @Override
     public void save
         (ReportBase report)
@@ -225,5 +247,5 @@ public class BasicReportHistoryServices
         if (getReportSavedListener()!=null) {
             getReportSavedListener().reportSaved(report,status);
         }
-    }     
+    }
 }

@@ -2,8 +2,8 @@ package org.marketcetera.ors.history;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
+
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.position.PositionKey;
@@ -156,7 +156,51 @@ public interface ReportHistoryServices {
         (final SimpleUser inUser,
          final Date inDate)
         throws PersistenceException;
-
+    /**
+     * Gets the current aggregate position for the future instrument based on
+     * execution reports received before or on the supplied date, and which
+     * are visible to the given user.
+     *
+     * <p>
+     * Buy trades result in positive positions. All other kinds of trades
+     * result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the time. execution reports with sending time values less
+     * than or equal to this time are included in this calculation.
+     * @param inFuture The future instrument
+     *
+     * @return the aggregate position for the symbol.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position.
+     */
+    public BigDecimal getFuturePositionAsOf(final SimpleUser inUser,
+                                            final Date inDate,
+                                            final Future inFuture)
+        throws PersistenceException;
+    /**
+     * Returns the aggregate position of each future
+     * (future,account,actor)
+     * tuple based on all reports received for each future instrument on or before
+     * the supplied date, and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
+     *
+     * @return the position map.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
+     */
+    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(final SimpleUser inUser,
+                                                                         final Date inDate)
+            throws PersistenceException;
     /**
      * Returns the aggregate position of each option
      * (option,account,actor)

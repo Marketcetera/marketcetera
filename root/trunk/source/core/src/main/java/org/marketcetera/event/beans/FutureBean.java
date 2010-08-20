@@ -51,6 +51,7 @@ public class FutureBean
         future.setUnderlyingAssetType(inFutureEvent.getUnderylingAssetType());
         future.setInstrument(inFutureEvent.getInstrument());
         future.setProviderSymbol(inFutureEvent.getProviderSymbol());
+        future.setContractSize(inFutureEvent.getContractSize());
         return future;
     }
     /**
@@ -255,7 +256,7 @@ public class FutureBean
     @Override
     public String toString()
     {
-        return String.format("Future [instrument=%s, futureType=%s, underlyingAssetType=%s, deliveryType=%s, standardType=%s, providerSymbol=%s]",
+        return String.format("Future [instrument=%s, futureType=%s, underlyingAssetType=%s, deliveryType=%s, standardType=%s, providerSymbol=%s]", //$NON-NLS-1$
                              instrument,
                              futureType,
                              underlyingAssetType,
@@ -278,6 +279,52 @@ public class FutureBean
         inRecipient.setStandardType(inDonor.getStandardType());
         inRecipient.setType(inDonor.getType());
         inRecipient.setUnderlyingAssetType(inDonor.getUnderlyingAssetType());
+        inRecipient.setContractSize(inDonor.getContractSize());
+    }
+    /**
+     * Get the futureType value.
+     *
+     * @return a <code>FutureType</code> value
+     */
+    public FutureType getFutureType()
+    {
+        return futureType;
+    }
+    /**
+     * Sets the futureType value.
+     *
+     * @param a <code>FutureType</code> value
+     */
+    public void setFutureType(FutureType inFutureType)
+    {
+        futureType = inFutureType;
+    }
+    /**
+     * Get the contractSize value.
+     *
+     * @return a <code>int</code> value
+     */
+    public int getContractSize()
+    {
+        return contractSize;
+    }
+    /**
+     * Sets the contractSize value.
+     *
+     * @param a <code>int</code> value
+     */
+    public void setContractSize(int inContractSize)
+    {
+        contractSize = inContractSize;
+    }
+    /**
+     * Sets the instrument value.
+     *
+     * @param a <code>Instrument</code> value
+     */
+    public void setInstrument(Instrument inInstrument)
+    {
+        instrument = inInstrument;
     }
     /**
      * the future type value 
@@ -303,5 +350,9 @@ public class FutureBean
      * the instrument of the future
      */
     private Instrument instrument;
+    /**
+     * the contract size
+     */
+    private int contractSize = 1;
     private final static long serialVersionUID = 1L;
 }

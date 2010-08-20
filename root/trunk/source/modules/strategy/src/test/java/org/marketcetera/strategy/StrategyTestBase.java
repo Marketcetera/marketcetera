@@ -451,7 +451,8 @@ public class StrategyTestBase
                                                                                                   new BigDecimal(500),
                                                                                                   new BigDecimal(600),
                                                                                                   new Equity("Symbol"),
-                                                                                                  "account");
+                                                                                                  "account",
+                                                                                                  "text");
                 dataToSend.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
                                                                                                   new BrokerID("some-broker"),
                                                                                                   Originator.Server,
@@ -811,6 +812,25 @@ public class StrategyTestBase
                 }
             }
             return result;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getAllFuturePositionsAsOf(java.util.Date)
+         */
+        @Override
+        public Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
+         */
+        @Override
+        public BigDecimal getFuturePositionAsOf(Date inDate,
+                                                Future inEquity)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#getOptionRoots(java.lang.String)
@@ -1633,7 +1653,8 @@ public class StrategyTestBase
                                                                                 inOrder.getQuantity(),
                                                                                 inOrder.getPrice(),
                                                                                 inOrder.getInstrument(),
-                                                                                inOrder.getAccount());
+                                                                                inOrder.getAccount(),
+                                                                                inOrder.getText());
         exeReport.setField(new TransactTime(extractTransactTimeFromRunningStrategy()));
         return exeReport;
     }

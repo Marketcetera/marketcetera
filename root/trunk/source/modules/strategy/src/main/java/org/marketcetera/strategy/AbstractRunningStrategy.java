@@ -988,6 +988,102 @@ public abstract class AbstractRunningStrategy
         }
     }
     /**
+     * Gets the position in the given <code>Future</code> at the given point in time.
+     *
+     * <p>Note that this method will not retrieve <code>Option</code> or <code>Equity</code> positions.  To retrieve
+     * <code>Option</code> positions, use {@link #getOptionPositionAsOf(Date, String, String, BigDecimal, OptionType)}.
+     *   To retrieve
+     * <code>Equity</code> positions, use {@link #getPositionAsOf(Date, String)}.
+     * 
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inUnderlyingSymbol a <code>String</code> value containing the underlying <code>Future</code> symbol
+     * @param inExpirationMonth a <code>FutureExpirationMonth</code> value
+     * @param inExpirationYear an <code>int</code> value
+     * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found 
+     */
+    protected final BigDecimal getFuturePositionAsOf(Date inDate,
+                                                     String inUnderlyingSymbol,
+                                                     FutureExpirationMonth inExpirationMonth,
+                                                     int inExpirationYear)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inDate == null ||
+           inUnderlyingSymbol == null ||
+           inUnderlyingSymbol.isEmpty()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_FUTURE_POSITION_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inDate,
+                                                                  inUnderlyingSymbol).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            BigDecimal result = strategy.getServicesProvider().getFuturePositionAsOf(inDate,
+                                                                                     new Future(inUnderlyingSymbol,
+                                                                                                inExpirationMonth,
+                                                                                                inExpirationYear)); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITION,
+                                                                   String.valueOf(strategy),
+                                                                   result,
+                                                                   inDate,
+                                                                   inUnderlyingSymbol).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_FUTURE_POSITION,
+                                                                  String.valueOf(strategy),
+                                                                  inUnderlyingSymbol,
+                                                                  inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
+     * Gets all open <code>Future</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Equity&gt;,BigDecimal&gt;</code> value
+     */
+    protected final Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inDate == null) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_POSITIONS_REQUEST,
+                                                                  String.valueOf(strategy)).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            Map<PositionKey<Future>,BigDecimal> result = strategy.getServicesProvider().getAllFuturePositionsAsOf(inDate); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITIONS,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(result),
+                                                                   inDate).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_POSITIONS,
+                                                                  String.valueOf(strategy),
+                                                                  inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    /**
      * Gets the position in the given <code>Option</code> at the given point in time.
      *
      * @param inDate a <code>Date</code> value indicating the point in time for which to search

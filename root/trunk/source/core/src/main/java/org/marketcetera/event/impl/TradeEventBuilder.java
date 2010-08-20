@@ -35,7 +35,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class TradeEventBuilder<E extends TradeEvent>
-        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>
+        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>, FutureEventBuilder<TradeEventBuilder<E>>
 {
     /**
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
@@ -320,6 +320,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public final TradeEventBuilder<E> withProviderSymbol(String inProviderSymbol)
     {
         option.setProviderSymbol(inProviderSymbol);
+        future.setProviderSymbol(inProviderSymbol);
         return this;
     }
     /**
@@ -331,6 +332,18 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     public final TradeEventBuilder<E> withEventType(EventType inEventType)
     {
         marketData.setEventType(inEventType);
+        return this;
+    }
+    /**
+     * Sets the contract size.
+     *
+     * @param inContractSize an <code>int</code> value
+     * @return a <code>TradeEventBuilder&lt;E&gt;</code> value
+     */
+    @Override
+    public final TradeEventBuilder<E> withContractSize(int inContractSize)
+    {
+        future.setContractSize(inContractSize);
         return this;
     }
     /* (non-Javadoc)

@@ -22,62 +22,62 @@ public enum FutureExpirationMonth
      * contract which expires in January
      */
     JANUARY('F',
-            "01"),
+            "01"), //$NON-NLS-1$
     /**
      * contract which expires in February
      */
     FEBRUARY('G',
-             "02"),
+             "02"), //$NON-NLS-1$
     /**
      * contract which expires in March
      */
     MARCH('H',
-          "03"),
+          "03"), //$NON-NLS-1$
     /**
      * contract which expires in April
      */
     APRIL('J',
-          "04"),
+          "04"), //$NON-NLS-1$
     /**
      * contract which expires in May
      */
     MAY('K',
-        "05"),
+        "05"), //$NON-NLS-1$
     /**
      * contract which expires in June
      */
     JUNE('M',
-         "06"),
+         "06"), //$NON-NLS-1$
     /**
      * contract which expires in July
      */
     JULY('N',
-         "07"),
+         "07"), //$NON-NLS-1$
     /**
      * contract which expires in August
      */
     AUGUST('Q',
-           "08"),
+           "08"), //$NON-NLS-1$
     /**
      * contract which expires in September
      */
     SEPTEMBER('U',
-              "09"),
+              "09"), //$NON-NLS-1$
     /**
      * contract which expires in October
      */
     OCTOBER('V',
-            "10"),
+            "10"), //$NON-NLS-1$
     /**
      * contract which expires in November
      */
     NOVEMBER('X',
-             "11"),
+             "11"), //$NON-NLS-1$
     /**
      * contract which expires in December
      */
     DECEMBER('Z',
-             "12");
+             "12"); //$NON-NLS-1$
     /**
      * Get the <code>FutureExpirationMonth</code> value that corresponds to the given code.
      *
@@ -131,7 +131,8 @@ public enum FutureExpirationMonth
     {
         int month = Integer.valueOf(inMonthOfYear);
         Validate.isTrue(month >= 1 &&
-                        month <= 12);
+                        month <= 12,
+                        Messages.INVALID_MONTH.getText(inMonthOfYear));
         return monthsByMonthOfYear.get(inMonthOfYear);
     }
     /**
@@ -170,7 +171,7 @@ public enum FutureExpirationMonth
         for(FutureExpirationMonth month : FutureExpirationMonth.values()) {
             monthsByMonthOfYear.put(month.getMonthOfYear(),
                                     month);
-            monthsByCode.put("" + month.getCode(),
+            monthsByCode.put("" + month.getCode(), //$NON-NLS-1$
                              month);
         }
     }
