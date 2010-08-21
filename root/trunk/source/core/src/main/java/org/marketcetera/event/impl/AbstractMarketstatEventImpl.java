@@ -236,8 +236,9 @@ abstract class AbstractMarketstatEventImpl
     {
         String closeDateString = getCloseDate() == null ? "---" : getCloseDate(); //$NON-NLS-1$
         String previousCloseDateString = getPreviousCloseDate() == null ? "---" : getPreviousCloseDate(); //$NON-NLS-1$
-        return String.format("Statistics for %s -> Open: %s High: %s Low: %s Close: %s (%s) Previous Close: %s (%s) %s %s %s %s Volume: %s Value: %s", //$NON-NLS-1$
+        return String.format("Statistics for %s [%s] -> Open: %s High: %s Low: %s Close: %s (%s) Previous Close: %s (%s) %s %s %s %s Volume: %s Value: %s", //$NON-NLS-1$
                              getInstrument().getSymbol(),
+                             getEventType(),
                              getOpen(),
                              getHigh(),
                              getLow(),

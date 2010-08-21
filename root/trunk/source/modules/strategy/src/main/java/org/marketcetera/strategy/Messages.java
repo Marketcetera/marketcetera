@@ -235,4 +235,14 @@ public interface Messages
                                                                                 "failed_to_retrieve_user_data"); //$NON-NLS-1$
     static final I18NMessage1P FAILED_TO_SET_USER_DATA = new I18NMessage1P(LOGGER,
                                                                            "failed_to_set_user_data"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_ORDER = new I18NMessage0P(LOGGER,
+                                                              "null_order"); //$NON-NLS-1$
+    static final I18NMessage1P NO_ORDER_ID = new I18NMessage1P(LOGGER,
+                                                               "no_order_id"); //$NON-NLS-1$
+    static final I18NMessage1P UNKNOWN_ORDER_TYPE = new I18NMessage1P(LOGGER,
+                                                                      "unknown_order_type"); //$NON-NLS-1$
+    static final I18NMessage1P NULL_ORDER_ID = new I18NMessage1P(LOGGER,
+                                                                 "null_order_id"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_REPORT = new I18NMessage0P(LOGGER,
+                                                               "null_report"); //$NON-NLS-1$
 }
