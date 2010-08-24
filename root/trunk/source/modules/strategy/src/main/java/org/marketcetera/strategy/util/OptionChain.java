@@ -294,21 +294,30 @@ public final class OptionChain
             String symbol;
             String expiry;
             String strike;
+            String providerSymbol = null;
             if(put != null) {
                 symbol = put.getInstrument().getSymbol();
                 expiry = put.getInstrument().getExpiry();
                 strike = put.getInstrument().getStrikePrice().toPlainString();
+                if(put.getProviderSymbol() != null) {
+                    providerSymbol = put.getProviderSymbol();
+                }
             } else if(call != null) {
                 symbol = call.getInstrument().getSymbol();
                 expiry = call.getInstrument().getExpiry();
                 strike = call.getInstrument().getStrikePrice().toPlainString();
+                if(call.getProviderSymbol() != null) {
+                    providerSymbol = call.getProviderSymbol();
+                }
             } else {
                 continue;
             }
-            table.addCell(String.format("%s %s %s", //$NON-NLS-1$
-                                         symbol,
-                                         expiry,
-                                         strike));
+            StringBuilder cell = new StringBuilder();
+            cell.append(symbol).append(" ").append(expiry).append(" ").append(strike);
+            if(providerSymbol != null) {
+                cell.append(" (").append(providerSymbol).append(")");
+            }
+            table.addCell(cell.toString());
             if(put != null &&
                put.getLatestBid() != null) {
                 BidEvent bid = put.getLatestBid();

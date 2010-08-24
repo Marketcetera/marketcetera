@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.apache.commons.lang.StringUtils;
 import org.marketcetera.event.*;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.event.util.MarketstatEventCache;
@@ -108,6 +109,15 @@ public final class OptionContract
         return latestMarketstat.get();
     }
     /**
+     * Get the providerSymbol value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getProviderSymbol()
+    {
+        return providerSymbol;
+    }
+    /**
      * Create a new OptionContract instance.
      * 
      * @param inUnderlyingInstrument an <code>Instrument</code> value
@@ -116,6 +126,7 @@ public final class OptionContract
      * @param inExpirationType an <code>ExpirationType</code> value
      * @param inHasDeliverable a <code>boolean</code> value
      * @param inMultiplier a <code>BigDecimal</code> value
+     * @param inProviderSymbol a <code>String</code> value or <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>UnderlyingInstrument</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>ExpirationType</code> is <code>null</code>
@@ -125,7 +136,8 @@ public final class OptionContract
                    OptionType inType,
                    ExpirationType inExpirationType,
                    boolean inHasDeliverable,
-                   BigDecimal inMultiplier)
+                   BigDecimal inMultiplier,
+                   String inProviderSymbol)
     {
         latestMarketstat = new MarketstatEventCache(inInstrument);
         option.setInstrument(new Option(inInstrument.getSymbol(),
@@ -137,6 +149,7 @@ public final class OptionContract
         option.setHasDeliverable(inHasDeliverable);
         option.setMultiplier(inMultiplier);
         option.validate();
+        providerSymbol = StringUtils.trimToNull(inProviderSymbol);
     }
     /**
      * Processes the given <code>OptionEvent</code> for market data.
@@ -226,4 +239,8 @@ public final class OptionContract
      * the latest marketstat for this contract, may be <code>null</code>
      */
     private final MarketstatEventCache latestMarketstat;
+    /**
+     * the actual symbol used by the provider, may be <code>null</code>
+     */
+    private final String providerSymbol;
 }

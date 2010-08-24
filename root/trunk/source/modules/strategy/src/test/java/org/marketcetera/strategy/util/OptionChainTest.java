@@ -680,13 +680,15 @@ public class OptionChainTest
                                                          OptionType.Call,
                                                          ExpirationType.AMERICAN,
                                                          true,
-                                                         BigDecimal.TEN);
+                                                         BigDecimal.TEN,
+                                                         callOption.getSymbol());
         OptionContract expectedPut = new OptionContract(equity,
                                                         putOption,
                                                         OptionType.Put,
                                                         ExpirationType.AMERICAN,
                                                         true,
-                                                        BigDecimal.TEN);
+                                                        BigDecimal.TEN,
+                                                        null);
         // create a few events for a given option contract
         assertTrue(optionChain.isEmpty());
         QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.optionAskEvent();
@@ -699,6 +701,7 @@ public class OptionChainTest
                                  .withPrice(EventTestBase.generateDecimalValue())
                                  .withQuoteDate(DateUtils.dateToString(new Date()))
                                  .withSize(EventTestBase.generateDecimalValue())
+                                 .withProviderSymbol(callOption.getSymbol())
                                  .withUnderlyingInstrument(equity).create();
         BidEvent bid = bidBuilder.withExchange("X")
                                  .withExpirationType(ExpirationType.AMERICAN)
@@ -708,6 +711,7 @@ public class OptionChainTest
                                  .withPrice(EventTestBase.generateDecimalValue())
                                  .withQuoteDate(DateUtils.dateToString(new Date()))
                                  .withSize(EventTestBase.generateDecimalValue())
+                                 .withProviderSymbol(callOption.getSymbol())
                                  .withUnderlyingInstrument(equity).create();
         TradeEvent trade = EventTestBase.generateOptionTradeEvent(callOption,
                                                                   equity);
@@ -746,6 +750,7 @@ public class OptionChainTest
                         .withPrice(EventTestBase.generateDecimalValue())
                         .withQuoteDate(DateUtils.dateToString(new Date()))
                         .withSize(EventTestBase.generateDecimalValue())
+                        .withProviderSymbol(putOption.getSymbol())
                         .withUnderlyingInstrument(equity).create();
         bid = bidBuilder.withExchange("X")
                         .withExpirationType(ExpirationType.AMERICAN)
@@ -755,6 +760,7 @@ public class OptionChainTest
                         .withPrice(EventTestBase.generateDecimalValue())
                         .withQuoteDate(DateUtils.dateToString(new Date()))
                         .withSize(EventTestBase.generateDecimalValue())
+                        .withProviderSymbol(putOption.getSymbol())
                         .withUnderlyingInstrument(equity).create();
         trade = EventTestBase.generateOptionTradeEvent(putOption,
                                                        equity);
@@ -960,6 +966,7 @@ public class OptionChainTest
             verifyOptionContract(inActualContractPair.getPut(),
                                  inExpectedPut.getUnderlyingInstrument(),
                                  inExpectedPut.getInstrument(),
+                                 inExpectedPut.getInstrument().getSymbol(),
                                  inExpectedPut.getExpirationType(),
                                  inExpectedPut.getMultiplier(),
                                  inExpectedPut.hasDeliverable(),
@@ -974,6 +981,7 @@ public class OptionChainTest
             verifyOptionContract(inActualContractPair.getCall(),
                                  inExpectedCall.getUnderlyingInstrument(),
                                  inExpectedCall.getInstrument(),
+                                 inExpectedCall.getInstrument().getSymbol(),
                                  inExpectedCall.getExpirationType(),
                                  inExpectedCall.getMultiplier(),
                                  inExpectedCall.hasDeliverable(),
@@ -990,6 +998,7 @@ public class OptionChainTest
      * @param inActualContract an <code>OptionContract</code> value
      * @param inExpectedUnderlyingInstrument an <code>Instrument</code> value
      * @param inExpectedOption an <code>Option</code> value
+     * @param inExpectedProviderSymbol a <code>String</code> value
      * @param inExpectedExpirationType an <code>ExpirationType</code> value
      * @param inExpectedMultiplier a <code>BigDecimal</code> value
      * @param inExpectedHasDeliverable a <code>boolean</code> value
@@ -1002,6 +1011,7 @@ public class OptionChainTest
     private static void verifyOptionContract(OptionContract inActualContract,
                                              Instrument inExpectedUnderlyingInstrument,
                                              Option inExpectedOption,
+                                             String inExpectedProviderSymbol,
                                              ExpirationType inExpectedExpirationType,
                                              BigDecimal inExpectedMultiplier,
                                              boolean inExpectedHasDeliverable,
@@ -1029,6 +1039,8 @@ public class OptionChainTest
                      inActualContract.getLatestTrade());
         assertEquals(inExpectedLatestMarketstat,
                      inActualContract.getLatestMarketstat());
+        assertEquals(inExpectedProviderSymbol,
+                     inActualContract.getProviderSymbol());
     }
     /**
      * Verifies that the given <code>OptionChain</code> object contains the given expected values.
