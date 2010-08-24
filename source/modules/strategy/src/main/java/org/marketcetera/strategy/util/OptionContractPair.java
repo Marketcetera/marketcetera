@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.event.HasProviderSymbol;
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -117,7 +118,8 @@ public final class OptionContractPair
                                           inOptionEvent.getInstrument().getType(),
                                           inOptionEvent.getExpirationType(),
                                           inOptionEvent.hasDeliverable(),
-                                          inOptionEvent.getMultiplier());
+                                          inOptionEvent.getMultiplier(),
+                                          inOptionEvent instanceof HasProviderSymbol ? ((HasProviderSymbol)inOptionEvent).getProviderSymbol() : null);
             }
             return call.process(inOptionEvent);
         }
@@ -128,7 +130,8 @@ public final class OptionContractPair
                                          inOptionEvent.getInstrument().getType(),
                                          inOptionEvent.getExpirationType(),
                                          inOptionEvent.hasDeliverable(),
-                                         inOptionEvent.getMultiplier());
+                                         inOptionEvent.getMultiplier(),
+                                         inOptionEvent instanceof HasProviderSymbol ? ((HasProviderSymbol)inOptionEvent).getProviderSymbol() : null);
             }
             return put.process(inOptionEvent);
         }
