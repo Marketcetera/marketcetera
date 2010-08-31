@@ -13,9 +13,7 @@ import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.*;
 
 /* $License$ */
 
@@ -72,8 +70,10 @@ public class MarketstatEventCacheTest
     {
         final MarketstatEventBuilder equityBuilder = MarketstatEventBuilder.marketstat(equity);
         final MarketstatEventBuilder optionBuilder = MarketstatEventBuilder.marketstat(option);
+        final MarketstatEventBuilder futureBuilder = MarketstatEventBuilder.marketstat(future);
         final MarketstatEventCache equityCache = new MarketstatEventCache(equity);
         final MarketstatEventCache optionCache = new MarketstatEventCache(option);
+        final MarketstatEventCache futureCache = new MarketstatEventCache(future);
         new ExpectedFailure<IllegalArgumentException>()
         {
             @Override
@@ -92,6 +92,15 @@ public class MarketstatEventCacheTest
                 equityCache.cache(optionBuilder.create());
             }
         };
+        new ExpectedFailure<IllegalArgumentException>()
+        {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                futureCache.cache(equityBuilder.create());
+            }
+        };
         // these values are not nullable, so set them up now
         optionBuilder.withExpirationType(ExpirationType.EUROPEAN);
         optionBuilder.withUnderlyingInstrument(equity);
@@ -99,6 +108,8 @@ public class MarketstatEventCacheTest
                     equityCache);
         doCacheTest(optionBuilder,
                     optionCache);
+        doCacheTest(futureBuilder,
+                    futureCache);
     }
     /**
      * Executes a set of cache tests with the given builder and cache.
@@ -291,6 +302,17 @@ public class MarketstatEventCacheTest
         verifyCache(inCache,
                     event);
         inBuilder.withVolume(amount);
+        // trade value
+        assertNull(event.getValue());
+        event = inBuilder.withValue(EventTestBase.generateDecimalValue()).create();
+        inCache.cache(event);
+        verifyCache(inCache,
+                    event);
+        amount = event.getValue();
+        inCache.cache(inBuilder.withValue(null).create());
+        verifyCache(inCache,
+                    event);
+        inBuilder.withValue(amount);
         if(event instanceof OptionMarketstatEvent) {
             OptionMarketstatEvent optionEvent = (OptionMarketstatEvent)event;
             // deliverable
@@ -395,6 +417,8 @@ public class MarketstatEventCacheTest
                      actualEvent.getTradeLowTime());
         assertEquals(inExpectedEvent.getVolume(),
                      actualEvent.getVolume());
+        assertEquals(inExpectedEvent.getValue(),
+                     actualEvent.getValue());
         if(inExpectedEvent instanceof OptionMarketstatEvent) {
             assertTrue(actualEvent instanceof OptionMarketstatEvent);
             OptionMarketstatEvent expectedOptionEvent = (OptionMarketstatEvent)inExpectedEvent;
@@ -426,4 +450,10 @@ public class MarketstatEventCacheTest
                                              DateUtils.dateToString(new Date()),
                                              EventTestBase.generateDecimalValue(),
                                              OptionType.Call);
+    /**
+     * test future
+     */
+    private final Future future = new Future("IB",
+                                             FutureExpirationMonth.FEBRUARY,
+                                             2012);
 }
