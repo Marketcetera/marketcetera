@@ -28,11 +28,23 @@ public class FutureFromMessage
     @Override
     public Instrument extract(Message inMessage)
     {
-        String fullSymbol = getSymbol(inMessage);
-        if(fullSymbol == null) {
+        // if the symbol already contains the expiry information, go ahead and create it
+        // if it doesn't, piece the expiry onto the symbol and use that
+        String symbol = getSymbol(inMessage);
+        if(symbol == null) {
             return null;
         }
-        Future future = Future.fromString(fullSymbol);
+        if(Future.FUTURE_STRING.matcher(symbol).matches()) {
+            return Future.fromString(symbol);
+        }
+        // assume the symbol is the underlying, not the full symbol (this is the common case, it seems)
+        // therefore, use the multi-argument constructor instead
+        String expiry = OptionFromMessage.getExpiry(inMessage);
+        if(expiry == null) {
+            return null;
+        }
+        Future future = new Future(symbol,
+                                   expiry);
         return future;
     }
     /* (non-Javadoc)

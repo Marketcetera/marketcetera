@@ -62,8 +62,8 @@ public class Future
                   FutureExpirationMonth inExpirationMonth,
                   int inExpirationYear)
     {
-        inSymbol = StringUtils.trimToNull(inSymbol);
-        Validate.notNull(inSymbol,
+        symbol = StringUtils.trimToNull(inSymbol);
+        Validate.notNull(symbol,
                          Messages.NULL_SYMBOL.getText());
         Validate.notNull(inExpirationMonth,
                          Messages.NULL_MONTH.getText());
@@ -74,10 +74,6 @@ public class Future
         }
         expirationMonth = inExpirationMonth;
         expirationYear = inExpirationYear;
-        underlying = inSymbol;
-        symbol = String.format("%s-%s", //$NON-NLS-1$
-                               inSymbol,
-                               renderYYYYMM());
     }
     /**
      * Create a new Future instance.
@@ -90,8 +86,8 @@ public class Future
     public Future(String inSymbol,
                   String inExpiry)
     {
-        inSymbol = StringUtils.trimToNull(inSymbol); 
-        Validate.notNull(inSymbol,
+        symbol = StringUtils.trimToNull(inSymbol); 
+        Validate.notNull(symbol,
                          Messages.NULL_SYMBOL.getText());
         inExpiry = StringUtils.trimToNull(inExpiry);
         Validate.notNull(inExpiry,
@@ -108,10 +104,6 @@ public class Future
         }
         expirationYear = year;
         expirationMonth = FutureExpirationMonth.getByMonthOfYear(month);
-        underlying = inSymbol;
-        symbol = String.format("%s-%s", //$NON-NLS-1$
-                               inSymbol,
-                               renderYYYYMM());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSymbol()
@@ -128,6 +120,21 @@ public class Future
     public SecurityType getSecurityType()
     {
         return SecurityType.Future;
+    }
+    /**
+     * Gets the symbol in the form SYMBOL-YYYYMM.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getFullSymbol()
+    {
+        String symbol = getSymbol();
+        if(FUTURE_STRING.matcher(symbol).matches()) {
+            return symbol;
+        }
+        return String.format("%s-%s", //$NON-NLS-1$
+                             symbol,
+                             getExpiryAsString());
     }
     /**
      * Get the expirationMonth value.
@@ -148,24 +155,24 @@ public class Future
         return expirationYear;
     }
     /**
-     * Get the root value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getUnderlying()
-    {
-        return underlying;
-    }
-    /**
      * Gets the future maturity as a <code>MaturityMonthYear</code> value.
      *
      * @return a <code>MaturityMonthYear</code> value
      */
     public final MaturityMonthYear getExpiryAsMaturityMonthYear()
     {
-        return new MaturityMonthYear(String.format("%1$4d%2$s", //$NON-NLS-1$
-                                                   getExpirationYear(),
-                                                   getExpirationMonth().getMonthOfYear()));
+        return new MaturityMonthYear(getExpiryAsString());
+    }
+    /**
+     * Gets the instrument expiry as a <code>String</code> in the format <code>YYYYMM</code>.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getExpiryAsString()
+    {
+        return String.format("%1$4d%2$s", //$NON-NLS-1$
+                             getExpirationYear(),
+                             getExpirationMonth().getMonthOfYear());
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -175,6 +182,8 @@ public class Future
     {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((expirationMonth == null) ? 0 : expirationMonth.hashCode());
+        result = prime * result + expirationYear;
         result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
         return result;
     }
@@ -191,6 +200,10 @@ public class Future
         if (getClass() != obj.getClass())
             return false;
         Future other = (Future) obj;
+        if (expirationMonth != other.expirationMonth)
+            return false;
+        if (expirationYear != other.expirationYear)
+            return false;
         if (symbol == null) {
             if (other.symbol != null)
                 return false;
@@ -204,9 +217,8 @@ public class Future
     @Override
     public String toString()
     {
-        return String.format("Future %s [%s %s(%s) %s]", //$NON-NLS-1$
+        return String.format("Future %s [%s(%s) %s]", //$NON-NLS-1$
                              symbol,
-                             underlying,
                              expirationMonth,
                              expirationMonth.getCode(),
                              expirationYear);
@@ -219,32 +231,13 @@ public class Future
     protected Future()
     {
         symbol = null;
-        underlying = null;
         expirationMonth = null;
         expirationYear = -1;
-    }
-    /**
-     * Returns the MMY in the format YYYYMM; 
-     *
-     * @return a <code>String</code> value
-     */
-    private String renderYYYYMM()
-    {
-        String value = getExpiryAsMaturityMonthYear().getValue().trim();
-        while(value.length() < 6) {
-            value = String.format("0%s", //$NON-NLS-1$
-                                  value);
-        }
-        return value;
     }
     /**
      * the full symbol
      */
     private final String symbol;
-    /**
-     * the symbol root
-     */
-    private final String underlying;
     /**
      * the expiration month
      */
@@ -260,6 +253,6 @@ public class Future
     /**
      * regex that tries to find a future symbol of an arbitrarily chosen format
      */
-    private static final Pattern FUTURE_STRING = Pattern.compile(".*-[0-9]{6}?"); //$NON-NLS-1$
+    public static final Pattern FUTURE_STRING = Pattern.compile(".*-[0-9]{6}?"); //$NON-NLS-1$
     private static final long serialVersionUID = 1L;
 }
