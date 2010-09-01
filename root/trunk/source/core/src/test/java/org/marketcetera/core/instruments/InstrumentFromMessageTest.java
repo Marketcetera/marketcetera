@@ -139,7 +139,7 @@ public class InstrumentFromMessageTest {
     public void future()
             throws Exception
     {
-        String expectedSymbol = "CLF-201501";
+        String expectedSymbol = "CLF";
         FutureExpirationMonth expectedExpirationMonth = FutureExpirationMonth.JANUARY;
         int expectedExpirationYear = 2015;
         String expectedMY = "201501";
@@ -159,7 +159,8 @@ public class InstrumentFromMessageTest {
                                            expiry);
                     //figure out if we expect a value.
                     boolean isNotFuture = (secType == null ||
-                                           symbol == null);
+                                           symbol == null ||
+                                           expiry == null);
                     Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(m).extract(m);
                     if(isNotFuture) {
                         assertThat(instrument,

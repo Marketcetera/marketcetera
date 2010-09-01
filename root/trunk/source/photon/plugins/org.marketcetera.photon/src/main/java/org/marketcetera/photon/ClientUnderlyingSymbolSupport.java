@@ -40,7 +40,7 @@ public final class ClientUnderlyingSymbolSupport implements
                                 .getText(), e);
             }
         } else if(instrument instanceof Future) {
-            return ((Future)instrument).getUnderlying();
+            return ((Future)instrument).getSymbol();
         }
         return instrument.getSymbol();
     }

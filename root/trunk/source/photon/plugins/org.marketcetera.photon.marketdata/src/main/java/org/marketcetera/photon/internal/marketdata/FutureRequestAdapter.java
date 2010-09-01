@@ -31,7 +31,10 @@ public class FutureRequestAdapter
     @Override
     public MarketDataRequestBuilder initializeRequest(Future inInstrument)
     {
+        // this is a bit of a hack, but until MDRs take instruments, it will have to do
+        // essentially, we're going to send the future request always as SYMBOL-YYYYMM and demand that the
+        //  market data adapter figure it out
         return MarketDataRequestBuilder.newRequest().withAssetClass(AssetClass.FUTURE)
-                                                    .withSymbols(inInstrument.getSymbol());
+                                                    .withSymbols(inInstrument.getFullSymbol());
     }
 }

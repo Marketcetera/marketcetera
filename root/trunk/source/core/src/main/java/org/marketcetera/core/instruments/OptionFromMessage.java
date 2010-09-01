@@ -104,7 +104,7 @@ public class OptionFromMessage extends InstrumentFromMessage {
      *
      * @return the expiry value, if available, null otherwise.
      */
-    private static String getExpiry(Message inMessage) {
+    static String getExpiry(Message inMessage) {
         //FIX versions 4.1, 4.2, 4.3 use MaturityMonthYear
         if (inMessage.isSetField(MaturityMonthYear.FIELD)) {
             try {

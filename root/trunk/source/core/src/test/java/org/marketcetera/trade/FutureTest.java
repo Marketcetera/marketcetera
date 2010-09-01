@@ -181,7 +181,7 @@ public class FutureTest extends InstrumentTestBase<Future> {
     {
         Future future = new Future("ABC",
                                    "000101");
-        assertEquals("ABC-200101",
+        assertEquals("ABC",
                      future.getSymbol());
         assertEquals(2001,
                      future.getExpirationYear());
@@ -189,7 +189,7 @@ public class FutureTest extends InstrumentTestBase<Future> {
                      future.getExpirationMonth());
         future = new Future("ABC",
                             "010012");
-        assertEquals("ABC-010012",
+        assertEquals("ABC",
                      future.getSymbol());
         assertEquals(100,
                      future.getExpirationYear());
@@ -197,7 +197,7 @@ public class FutureTest extends InstrumentTestBase<Future> {
                      future.getExpirationMonth());   
         future = new Future("ABC",
                             "009912");
-        assertEquals("ABC-209912",
+        assertEquals("ABC",
                      future.getSymbol());
         assertEquals(2099,
                      future.getExpirationYear());
@@ -206,7 +206,7 @@ public class FutureTest extends InstrumentTestBase<Future> {
         for(FutureExpirationMonth month : FutureExpirationMonth.values()) {
             future = new Future("ABC",
                                 "2010" + month.getMonthOfYear());
-            assertEquals("ABC-2010" + month.getMonthOfYear(),
+            assertEquals("ABC",
                          future.getSymbol());
             assertEquals(2010,
                          future.getExpirationYear());
@@ -264,7 +264,7 @@ public class FutureTest extends InstrumentTestBase<Future> {
             }
         };
         Future future = Future.fromString("SYMBOL-WITH-MULTIPLE_PARTS-IN-IT-201010");
-        assertEquals("SYMBOL-WITH-MULTIPLE_PARTS-IN-IT-201010",
+        assertEquals("SYMBOL-WITH-MULTIPLE_PARTS-IN-IT",
                      future.getSymbol());
         assertEquals(2010,
                      future.getExpirationYear());
@@ -275,13 +275,13 @@ public class FutureTest extends InstrumentTestBase<Future> {
     public void testToString() throws Exception {
         assertThat(
                 createFixture().toString(),
-                is("Future ABC-201807 [ABC JULY(N) 2018]"));
+                is("Future ABC [JULY(N) 2018]"));
         assertThat(
                 new Future("ABC", FutureExpirationMonth.JULY, 18).toString(),
-                is("Future ABC-201807 [ABC JULY(N) 2018]"));
+                is("Future ABC [JULY(N) 2018]"));
         assertThat(
                 new Future("ABC",
                            "201010").toString(),
-                is("Future ABC-201010 [ABC OCTOBER(V) 2010]"));
+                is("Future ABC [OCTOBER(V) 2010]"));
     }
 }
