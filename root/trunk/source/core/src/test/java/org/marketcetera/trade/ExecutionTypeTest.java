@@ -43,6 +43,8 @@ public class ExecutionTypeTest extends FIXCharEnumTestBase<ExecutionType> {
     protected List<Pair<ExecutionType,Character>> knownValues() {
         return Arrays.asList(
                 new Pair<ExecutionType, Character>(New, ExecType.NEW),
+                new Pair<ExecutionType, Character>(PartialFill, ExecType.PARTIAL_FILL),
+                new Pair<ExecutionType, Character>(Fill, ExecType.FILL),
                 new Pair<ExecutionType, Character>(DoneForDay, ExecType.DONE_FOR_DAY),
                 new Pair<ExecutionType, Character>(Canceled, ExecType.CANCELED),
                 new Pair<ExecutionType, Character>(Replace, ExecType.REPLACE),

@@ -24,6 +24,8 @@ public enum ExecutionType {
      */
     Unknown(Character.MIN_VALUE),
     New(ExecType.NEW),
+    PartialFill(ExecType.PARTIAL_FILL),
+    Fill(ExecType.FILL),
     DoneForDay(ExecType.DONE_FOR_DAY),
     Canceled(ExecType.CANCELED),
     Replace(ExecType.REPLACE),
