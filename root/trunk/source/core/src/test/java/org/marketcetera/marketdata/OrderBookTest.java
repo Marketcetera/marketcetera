@@ -1,31 +1,16 @@
 package org.marketcetera.marketdata;
 
 import static java.math.BigDecimal.TEN;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.DepthOfBookEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.event.MarketDataEvent;
-import org.marketcetera.event.QuantityTuple;
-import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.TopOfBookEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
@@ -508,6 +493,43 @@ public class OrderBookTest
                    asks,
                    2,
                    book);
+    }
+    @Test
+    public void bookPerformance()
+            throws Exception
+    {
+        Random random = new Random(System.nanoTime());
+        // the purpose of this test is to measure the performance of the order book as the depth increases
+        OrderBook book = new OrderBook(symbol);
+        // generate 10000 unique events
+        List<QuoteEvent> bids = new ArrayList<QuoteEvent>();
+        QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(symbol);
+        builder.withSize(TEN)
+               .withExchange("some exchange")
+               .withQuoteDate(DateUtils.dateToString(new Date()));
+        for(int i=0;i<10000;i++) {
+            builder.withMessageId(i+1)
+                   .withPrice(new BigDecimal(random.nextLong()));
+            bids.add(builder.create());
+        }
+        BigDecimal firstAggregate = BigDecimal.ZERO;
+        BigDecimal lastAggregate = BigDecimal.ZERO;
+        long counter = 0;
+        for(QuoteEvent quote : bids) {
+            counter += 1;
+            long start = System.nanoTime();
+            book.process(quote);
+            book.getBidBook();
+            long complete = System.nanoTime() - start;
+            if(counter <= 100) {
+                firstAggregate = firstAggregate.add(new BigDecimal(complete));
+            }
+            if(counter >= 9900) {
+                lastAggregate = lastAggregate.add(new BigDecimal(complete));
+            }
+        }
+        System.out.println("First: " + firstAggregate.divide(new BigDecimal(100)));
+        System.out.println("Last: " + lastAggregate.divide(new BigDecimal(100)));
     }
     /**
      * Verifies that the given {@link OrderBook} contains the given expected values.
