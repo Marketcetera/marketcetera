@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @Immutable
 @ClassVersion("$Id$")
 public final class BookPriceComparator
-    implements Comparator<QuoteEvent>
+        implements Comparator<QuoteEvent>
 {
     /**
      * a <code>Comparator</code> suitable for sorting bids in an order book
@@ -58,7 +58,15 @@ public final class BookPriceComparator
         if(result == 0) {
             // prices are equal
             // secondary sort should be on the timestamp
-            result = new Long(inO1.getTimeMillis()).compareTo(inO2.getTimeMillis());
+            long o1time = inO1.getTimeMillis();
+            long o2time = inO2.getTimeMillis();
+            if(o1time < o2time) {
+                result = -1;
+            } else if(o1time > o2time) {
+                result = 1;
+            } else {
+                result = 0;
+            }
         }
         // invert the result to be returned if necessary to get a descending sort 
         return result * (mIsAscending ? 1 : -1);
