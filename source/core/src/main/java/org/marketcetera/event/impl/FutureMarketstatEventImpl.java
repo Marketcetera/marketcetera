@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: FutureMarketstatEventImpl.java 10885 2009-11-17 19:22:56Z klim $
- * @since $Release$
+ * @since 2.1.0
  */
 @ThreadSafe
 @ClassVersion("$Id$")

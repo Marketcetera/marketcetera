@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @since $Release$
+ * @since 2.1.0
  * @version $Id: CSVFeedCredentials.java 4348 2009-09-24 02:33:11Z toli $
  */
 @ClassVersion("$Id: CSVFeedCredentials.java 4348 2009-09-24 02:33:11Z toli $")

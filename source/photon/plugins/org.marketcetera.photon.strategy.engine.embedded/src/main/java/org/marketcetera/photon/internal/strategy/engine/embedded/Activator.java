@@ -13,7 +13,7 @@ import org.osgi.framework.BundleContext;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
 public class Activator implements BundleActivator {

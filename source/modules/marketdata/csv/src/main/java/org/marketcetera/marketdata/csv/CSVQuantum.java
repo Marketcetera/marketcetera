@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>Objects of this type are passed to {@link CSVFeedEventTranslator#toEvent(Object, String)} implementations.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @since $Release$
+ * @since 2.1.0
  * @version $Id$
  */
 @ClassVersion("$Id$")

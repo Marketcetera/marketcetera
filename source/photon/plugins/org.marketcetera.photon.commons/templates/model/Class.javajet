@@ -71,7 +71,7 @@ package <%=genPackage.getClassPackageName()%>;
  * @extends <%=genModel.getImportedName(genModel.getRootExtendsInterface())%>
 <%}%>
  * @generated
- * @since $Release$
+ * @since 2.1.0
  */
 <%} else {%>
 /**
@@ -90,7 +90,7 @@ package <%=genPackage.getClassPackageName()%>;
  * </p>
  *
  * @generated
- * @since $Release$
+ * @since 2.1.0
  */
 <%}%>
 @<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")

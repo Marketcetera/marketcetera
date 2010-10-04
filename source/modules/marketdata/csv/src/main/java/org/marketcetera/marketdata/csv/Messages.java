@@ -9,7 +9,7 @@ import org.marketcetera.util.log.*;
  * Messages for CSVFeed module.
  *
  * @author <a href="mailto:colin@marketcetera.com">Toli Kuznets</a>
- * @since $Release$
+ * @since 2.1.0
  * @version $Id: Messages.java 4348 2009-09-24 02:33:11Z toli $
  */
 @ClassVersion("$Id: Messages.java 4348 2009-09-24 02:33:11Z toli $") //$NON-NLS-1$

@@ -19,7 +19,7 @@ import quickfix.field.MaturityMonthYear;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.1.0
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -13,7 +13,7 @@ import org.springframework.jms.core.JmsOperations;
  * Provides services to save and query reports with asynchronous saving.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.1.0
  * @version $Id$
  */
 
