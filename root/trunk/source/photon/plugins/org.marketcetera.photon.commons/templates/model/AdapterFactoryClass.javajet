@@ -36,7 +36,7 @@ package <%=genPackage.getUtilitiesPackageName()%>;
  * <!-- end-user-doc -->
  * @see <%=genPackage.getQualifiedPackageInterfaceName()%>
  * @generated
- * @since $Release$
+ * @since 2.1.0
  */
 @<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")
 public class <%=genPackage.getAdapterFactoryClassName()%> extends AdapterFactoryImpl

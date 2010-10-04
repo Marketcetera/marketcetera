@@ -65,7 +65,7 @@ package <%=genPackage.getReflectionPackageName()%>;
  * @model
   <%}}%>
  * @generated
- * @since $Release$
+ * @since 2.1.0
  */
 <%} else {%>
 
@@ -74,7 +74,7 @@ package <%=genPackage.getReflectionPackageName()%>;
  * An implementation of the model <b>Package</b>.
  * <!-- end-user-doc -->
  * @generated
- * @since $Release$
+ * @since 2.1.0
  */
 <%}%>
 @<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")

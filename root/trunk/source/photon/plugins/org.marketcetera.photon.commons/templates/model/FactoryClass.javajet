@@ -44,7 +44,7 @@ package <%=genPackage.getClassPackageName()%>;
  * @see <%=genPackage.getQualifiedPackageInterfaceName()%>
 <%}%>
  * @generated
- * @since $Release$
+ * @since 2.1.0
  */
 <%} else {%>
 /**
@@ -52,7 +52,7 @@ package <%=genPackage.getClassPackageName()%>;
  * An implementation of the model <b>Factory</b>.
  * <!-- end-user-doc -->
  * @generated
- * @since $Release$
+ * @since 2.1.0
  */
 <%}%>
 @<%=genModel.getImportedName("org.marketcetera.util.misc.ClassVersion")%>("$Id$")

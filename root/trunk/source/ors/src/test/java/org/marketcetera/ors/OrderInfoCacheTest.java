@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.1.0
  * @version $Id$
  */
 

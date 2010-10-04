@@ -9,7 +9,7 @@ import quickfix.Message;
  * An entry for order information in a {@link OrderInfoCache} cache.
  *
  * @author tlerios@marketcetera.com
- * @since $Release$
+ * @since 2.1.0
  * @version $Id$
  */
 

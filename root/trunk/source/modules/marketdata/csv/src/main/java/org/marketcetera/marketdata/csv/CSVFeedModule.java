@@ -9,7 +9,7 @@ import org.marketcetera.core.CoreException;
  * 
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @since $Release$
+ * @since 2.1.0
  * @version $Id: CSVFeedModule.java 4348 2009-09-24 02:33:11Z toli $
  */
 @ClassVersion("$Id: CSVFeedModule.java 4348 2009-09-24 02:33:11Z toli $")
