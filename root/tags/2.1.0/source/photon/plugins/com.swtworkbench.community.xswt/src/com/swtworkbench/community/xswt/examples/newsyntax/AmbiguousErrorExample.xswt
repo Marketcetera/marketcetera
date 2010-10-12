@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <x:import>
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets"/>
+        <package name="org.eclipse.swt.layout"/>
+    </x:import>
+
+	<!--
+		An example showing what happens in the parse if you have an ambiguous node.  In
+		the code below, the "text" node will be interpreted as a getText() method call on
+		the parent Shell, with the subnodes being applied to the resulting java.lang.String.  
+		Since there is no LayoutData property on a java.lang.String, an error will be flagged.
+		
+		This uses the new XSWT syntax with x:children nodes left out.  They are optional now
+		except in situations like this one where they must be used to disambiguate if a 
+		node is intended to be a property setter/getter or an object constructor.
+		
+		Thanks to Peng Yi for this example.
+	-->
+	    
+	<layout x:class="formLayout"/>
+
+	<x:children>
+	<label x:id="firstColLabel" text="First column">
+		<layoutData x:class="formData">
+			<left x:p0="10"/>
+			<top x:p0="5"/>
+		</layoutData>
+	</label>
+	
+	<button x:id="secondCol" text="Second column">
+		<layoutData x:class="formData">
+			<left x:p0="firstColLabel" offset="10"/>
+			<top x:p0="firstColLabel" offset="0" alignment="TOP"/>
+			<right x:p0="90"/>
+		</layoutData>
+	</button>
+	</x:children>
+
+	<text> 
+		<layoutData x:class="formData">
+		   <left x:p0="firstColLabel" alignment="LEFT"/>
+		   <top x:p0="firstColLabel" offset="10"/>
+		   <right x:p0="secondCol" alignment="RIGHT"/>
+		   <bottom x:p0="90"/>
+		</layoutData>
+	</text>
+</xswt>

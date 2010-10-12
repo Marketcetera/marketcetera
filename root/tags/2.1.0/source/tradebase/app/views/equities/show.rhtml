@@ -1,0 +1,23 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Equities", :action_name => "Show Equity", :top_level_controller => @controller.controller_name } %>
+<h1>Show Equity</h1>
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <label for="symbol" class="view_background">Symbol</label>
+            <div id="symbol" class="data view_data"><%= @equity.m_symbol == nil ? '' : equity_symbol_link(@equity) %></div>
+            
+            <label for="description" class="view_background">Description</label>
+            <div id="description" class="data view_data"><%=df @equity.description %></div>
+       </div>      
+        <div class="form_right">    
+            <label for="created_on" class="view_background">Created On</label>
+            <div id="created_on" class="data view_data"><%=df @equity.created_on %></div>
+
+            <label for="updated_on" class="view_background">Updated On</label>
+            <div id="updated_on" class="data view_data"><%=df @equity.updated_on %></div>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
+<%= button_to "Edit", {:action => 'edit', :id => @equity}, {:class => "submit floatright"} %>

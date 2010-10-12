@@ -1,0 +1,23 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+GOOG:
+  id: 1
+  root: GOOG
+  bloomberg: GOOG Equity
+  reuters: GOOG
+SUNW:
+  id: 2
+  root: SUNW
+  bloomberg: SUNW Equity
+  reuters: SUWN
+  
+TOLI:
+  id: 3
+  root: TOLI
+  bloomberg: TOLI
+  reuters: TOLI
+  
+BEER:
+  id: 4
+  root: BEER
+  bloomberg: BEER
+  reuters: BEER

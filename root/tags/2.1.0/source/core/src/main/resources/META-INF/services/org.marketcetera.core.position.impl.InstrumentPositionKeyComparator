@@ -1,0 +1,4 @@
+org.marketcetera.core.position.impl.EquityPositionKeyComparator
+org.marketcetera.core.position.impl.OptionPositionKeyComparator
+org.marketcetera.core.position.impl.FuturePositionKeyComparator
+
