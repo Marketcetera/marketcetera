@@ -490,11 +490,11 @@ public class MarketDataRequestBeanTest
     /**
      * test content values (contain duplicates and null) 
      */
-    private static Content[] contents = new Content[] { LEVEL_2, DIVIDEND, LATEST_TICK, LATEST_TICK, OPEN_BOOK, null };
+    private static Content[] contents = new Content[] { BBO10, LEVEL_2, DIVIDEND, LATEST_TICK, LATEST_TICK, OPEN_BOOK, null };
     /**
      * expected content values (same as {@link #contents} except duplicates removed)
      */
-    private static Content[] expectedContents = new Content[] { LEVEL_2, DIVIDEND, LATEST_TICK, OPEN_BOOK, null };
+    private static Content[] expectedContents = new Content[] { BBO10, LEVEL_2, DIVIDEND, LATEST_TICK, OPEN_BOOK, null };
     /**
      * test symbols (contain duplicates, null, and empty)
      */

@@ -35,6 +35,10 @@ public enum Capability
      */
     LEVEL_2,
     /**
+     * the market data feed is able to return top 10 aggregated quotes
+     */
+    BBO10,
+    /**
      * the market data feed is able to return statistical data
      */
     MARKET_STAT,
