@@ -36,6 +36,10 @@ public enum Content
      */
     LEVEL_2,
     /**
+     * Top 10 aggregated quote levels
+     */
+    BBO10,
+    /**
      * latest trade
      */
     LATEST_TICK,
@@ -68,6 +72,8 @@ public enum Content
                 return QuoteEvent.class.isAssignableFrom(inEventClass);
             case LEVEL_2 :
                 return QuoteEvent.class.isAssignableFrom(inEventClass);
+            case BBO10 :
+                return QuoteEvent.class.isAssignableFrom(inEventClass);
             case LATEST_TICK :
                 return (inEventClass.equals(TradeEvent.class));
             case DIVIDEND :
@@ -89,6 +95,7 @@ public enum Content
             case OPEN_BOOK : return Capability.OPEN_BOOK;
             case TOTAL_VIEW : return Capability.TOTAL_VIEW;
             case LEVEL_2 : return Capability.LEVEL_2;
+            case BBO10 : return Capability.BBO10;
             case MARKET_STAT : return Capability.MARKET_STAT;
             case LATEST_TICK : return Capability.LATEST_TICK;
             case DIVIDEND : return Capability.DIVIDEND;

@@ -1072,12 +1072,14 @@ public class MarketDataRequestTest
         // test non-null content collection (with duplicates)
         builder.withContent(EnumSet.of(LATEST_TICK,
                                        MARKET_STAT,
-                                       LATEST_TICK));
+                                       LATEST_TICK,
+                                       BBO10));
         verifyRequest(builder.create(),
                       null,
                       null,
                       EnumSet.of(LATEST_TICK,
-                                 MARKET_STAT),
+                                 MARKET_STAT,
+                                 BBO10),
                       OPTION,
                       new HashMap<String,String>(),
                       symbolSet,

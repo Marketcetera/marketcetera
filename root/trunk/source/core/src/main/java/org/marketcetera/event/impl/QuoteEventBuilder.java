@@ -132,6 +132,60 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     /**
      * Creates a <code>QuoteEvent</code> of the same type as the given event
      * with the same attributes except for the {@link QuoteAction} which
+     * will always be {@link QuoteAction#CHANGE}.
+     *
+     * @param inEvent a <code>QuoteEvent</code> value
+     * @param inNewPrice a <code>BigDecimal</code> value
+     * @param inNewSize a <code>BigDecimal</code> value
+     * @param inNewQuoteDate a <code>String</code> value
+     * @return a <code>QuoteEvent</code> value
+     * @throws UnsupportedOperationException if the given <code>QuoteEvent</code> is for
+     *  an unsupported asset class
+     */
+    @SuppressWarnings("unchecked")
+    public static <E extends QuoteEvent> E change(E inEvent,
+                                                  BigDecimal inNewPrice,
+                                                  BigDecimal inNewSize,
+                                                  String inNewQuoteDate)
+    {
+        QuoteBean quote = QuoteBean.getQuoteBeanFromEvent(inEvent,
+                                                          QuoteAction.CHANGE);
+        quote.setPrice(inNewPrice);
+        quote.setSize(inNewSize);
+        quote.setExchangeTimestamp(inNewQuoteDate);
+        if(inEvent instanceof EquityEvent) {
+            if(inEvent instanceof AskEvent) {
+                return (E)new EquityAskEventImpl(quote);
+            } else {
+                return (E)new EquityBidEventImpl(quote);
+            }
+        }
+        if(inEvent instanceof OptionEvent) {
+            OptionBean option = OptionBean.getOptionBeanFromEvent((OptionEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new OptionAskEventImpl(quote,
+                                                 option);
+            } else {
+                return (E)new OptionBidEventImpl(quote,
+                                                 option);
+            }
+        }
+        if(inEvent instanceof FutureEvent) {
+            FutureBean future = FutureBean.getFutureBeanFromEvent((FutureEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new FutureAskEventImpl(quote,
+                                                 future);
+            } else {
+                return (E)new FutureBidEventImpl(quote,
+                                                 future);
+            }
+        }
+        // from an asset class that is neither equity nor option
+        throw new UnsupportedOperationException();
+    }
+    /**
+     * Creates a <code>QuoteEvent</code> of the same type as the given event
+     * with the same attributes except for the {@link QuoteAction} which
      * will always be {@link QuoteAction#DELETE}.
      *
      * @param inEvent a <code>QuoteEvent</code> value
