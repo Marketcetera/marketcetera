@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.stateful;
 
+import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
@@ -150,7 +151,7 @@ public class ClientServerTest
         try {
             c.login(TEST_USER,TEST_PASSWORD);
             fail();
-        } catch (SOAPFaultException ex) {
+        } catch (WebServiceException ex) {
             // Desired.
         }
     }
