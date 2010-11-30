@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.ui.workbench.ws;singleton:=true
-Bundle-Version: 2.1.0
+Bundle-Version: 2.1.2
 Bundle-Vendor: %bundleVendor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.core.resources,

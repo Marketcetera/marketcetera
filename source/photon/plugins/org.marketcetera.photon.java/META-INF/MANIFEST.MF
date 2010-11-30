@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: org.marketcetera.photon.java;singleton:=true
-Bundle-Version: 2.1.0
+Bundle-Version: 2.1.2
 Bundle-Activator: org.marketcetera.photon.java.internal.Activator
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
