@@ -30,7 +30,7 @@ public class BogusFeedMessageTranslatorTest
     @Override
     protected Set<Content> getCapabilities()
     {
-        return Collections.unmodifiableSet(EnumSet.allOf(Content.class));
+        return Collections.unmodifiableSet(EnumSet.complementOf(EnumSet.of(Content.BBO10)));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase#getTranslator()

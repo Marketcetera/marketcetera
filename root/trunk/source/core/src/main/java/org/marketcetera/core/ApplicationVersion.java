@@ -92,4 +92,6 @@ public class ApplicationVersion {
         "2.0.0"; //$NON-NLS-1$
     public static final String VERSION_2_1_0 =
         "2.1.0"; //$NON-NLS-1$
+    public static final String VERSION_2_1_1 = "2.1.1"; //$NON-NLS-1$
+    public static final String VERSION_2_1_2 = "2.1.2"; //$NON-NLS-1$
 }

@@ -17,7 +17,7 @@
 
   <groupId>org.marketcetera</groupId>
   <artifactId>declarations</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.2</version>
   <packaging>pom</packaging>
 
   <name>Declarations</name>
@@ -25,7 +25,7 @@
 
   <properties>
     <mvn.public.package>org.marketcetera</mvn.public.package>
-    <mvn.project.version>2.1.0</mvn.project.version>
+    <mvn.project.version>2.1.2</mvn.project.version>
     <mvn.javase.version>6</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
     <mvn.spring.version>2.5.2</mvn.spring.version>
