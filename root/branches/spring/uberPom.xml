@@ -28,10 +28,12 @@
     <mvn.project.version>2.1.0</mvn.project.version>
     <mvn.javase.version>6</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>2.5.2</mvn.spring.version>
-    <mvn.cxf.version>2.1.2</mvn.cxf.version>
+    <mvn.spring.version>3.0.1.RELEASE</mvn.spring.version>
+    <mvn.cxf.version>2.2.11</mvn.cxf.version>
     <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
+<!--
     <mvn.xjc.version>2.1.7</mvn.xjc.version>
+-->
     <mvn.eclipse.version>3.5</mvn.eclipse.version>
   </properties>
 
@@ -107,27 +109,63 @@
         <version>[1.3.3-bd]</version>
       </dependency>
 
-      <!-- Compile: other. -->
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        <version>[${mvn.cxf.version}]</version>
-        <exclusions>
-          <!-- Exclude jaxb-xjc: nonessential and confuses photon bundle. -->
-          <exclusion>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-xjc</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-transports-http</artifactId>
-        <version>[${mvn.cxf.version}]</version>
-      </dependency>
+        <!-- Compile: other. -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>[${mvn.cxf.version}]</version>
+            <exclusions>
+                <!-- Exclude jaxb-xjc: nonessential and confuses photon bundle. -->
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-xjc</artifactId>
+                </exclusion>
+                <!-- exclude Spring, cxf has older version 2.5.6 -->
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>[${mvn.cxf.version}]</version>
+            <exclusions>
+                <!-- exclude Spring, cxf has older version 2.5.6 -->
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
-        <artifactId>spring</artifactId>
+        <artifactId>spring-jms</artifactId>
         <version>[${mvn.spring.version}]</version>
       </dependency>
       <dependency>
@@ -282,6 +320,22 @@
         <artifactId>protobuf-java</artifactId>
         <version>[2.3.0]</version>
        </dependency>
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+          <version>[${mvn.spring.version}]</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+          <version>[${mvn.spring.version}]</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+          <version>[${mvn.spring.version}]</version>
+        </dependency>
+
       <!-- Runtime. -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
@@ -291,25 +345,13 @@
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
-        <artifactId>spring-beans</artifactId>
-        <version>[${mvn.spring.version}]</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>[${mvn.spring.version}]</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>[${mvn.spring.version}]</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
+        <version>[${mvn.spring.version}]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
         <version>[${mvn.spring.version}]</version>
         <scope>runtime</scope>
       </dependency>
@@ -496,7 +538,7 @@
         <artifactId>hamcrest-library</artifactId>
         <version>[1.1]</version>
         <scope>test</scope>
-      </dependency> 
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -562,7 +604,7 @@
         <!-- mvn dependency:* -->
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.0</version>
+          <version>2.1</version>
         </plugin>
 
         <!-- mvn eclipse:* -->
@@ -574,7 +616,7 @@
         <!-- mvn clean -->
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.4.1</version>
         </plugin>
 
         <!-- mvn antrun:* -->
@@ -674,6 +716,8 @@
         <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <artifactId>maven-jaxb2-plugin</artifactId>
+            <version>0.6.3</version>
+<!--
           <version>0.5</version>
           <executions>
             <execution>
@@ -694,6 +738,7 @@
               <version>[${mvn.xjc.version}]</version>
             </dependency>
           </dependencies>
+-->
         </plugin>
       </plugins>
     </pluginManagement>
