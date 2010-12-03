@@ -1,0 +1,62 @@
+<h1>Getting Started with Marketcetera Tradebase</h1>
+<p>Marketcetera Tradebase is a web-based reporting application for all of your trading activity. <br/>
+It can be used to view, create and modify positions, trades, accounts and equities.</p>
+<p><em>Happy Trading!</em></p>
+
+<div id="dashboard">
+    <h1>Dashboard</h1>
+    <form action="">
+        <fieldset>
+            <div class="form_left">
+              <label for="number_of_trades_today" class="view_background">Number of Trades Today</label>
+              <div id="number_of_trades_today" class="data view_data">
+                <%= link_to(@num_trades_today, :controller=>'queries', :action=>'trade_search',
+                           :params => { "from_date" => Date.today , "to_date" => Date.today, :all_dates => "no"}) %></div>
+    
+              <label for="open_positions" class="view_background">Open Positions</label>
+              <div id="open_positions" class="data view_data">
+                <%= link_to @num_positions, :action => 'list', :controller => 'positions' %></div>
+            </div>
+            <div class="form_right">
+              <label class="view_background">Top 3 Traded Accounts</label>
+              <ul class="dash_board_list data">
+                <% @top_positioned_accounts.each{ |acct, num_pos| %>
+                 <li><%=link_to(acct.nickname, :action => 'show', :controller => 'accounts', :id => acct) %>&nbsp;&nbsp;<%= pluralize(num_pos, " position")%></li>
+                 <%
+                    }
+                 %>
+              </ul>
+            </div>
+            <div class="clear"></div>
+        </fieldset>
+    </form>
+</div>
+
+<div class="tile_row">
+    <div class="tile">
+      <h2>Trade Management</h2>
+        <div><%= link_to({image_tag("/images/icons/money.png", :width => "16", :height => "16", :alt => "list trades"), " List"}, {:action => 'list', :controller => 'trades'}, :title => "")%> - List all trades, most recent first</div>
+        <div><%= link_to({image_tag("/images/icons/money_add.png", :width => "16", :height => "16", :alt => "new trade"), " New"}, {:action => 'new', :controller => 'trades'}, :title => "")%> - Enter new trade report</div>
+    </div>
+    <div class="tile norightmargin">
+      <h2>Position Management</h2>
+        <div><%= link_to({image_tag("/images/icons/text_list_numbers.png", :width => "16", :height => "16", :alt => "list positions"), " List"}, {:action => 'list', :controller => 'positions'}, :title => "")%> - List all positions</div>
+        <div><%= link_to({image_tag("/images/icons/date.png", :width => "16", :height => "16", :alt => "positions as of"), " As Of"}, {:action => 'index', :controller => 'positions_queries'}, :title => "")%> - List all positions as of specific date</div>
+    </div>
+    <div class="clear"></div>
+</div>
+
+<div class="tile_row">
+    <div class="tile">
+      <h2>Account</h2>
+        <div><%= link_to({image_tag("/images/icons/vcard.png", :width => "16", :height => "16", :alt => "list accounts"), " List"}, {:action => 'list', :controller => 'accounts'}, :title => "")%> - List all accounts</div>
+        <div><%= link_to({image_tag("/images/icons/vcard_add.png", :width => "16", :height => "16", :alt => "new account"), " New"}, {:action => 'new', :controller => 'accounts'}, :title => "")%> - Create new account</div>
+    </div>
+
+    <div class="tile norightmargin">
+      <h2>Equities</h2>
+        <div><%= link_to({image_tag("/images/icons/medal_gold_2.png", :width => "16", :height => "16", :alt => "list trades"), " List"}, {:action => 'list', :controller => 'equities'}, :title => "")%> - List all equities</div>
+        <div><%= link_to({image_tag("/images/icons/medal_gold_2_add.png", :width => "16", :height => "16", :alt => "new trade"), " New"}, {:action => 'new', :controller => 'equities'}, :title => "")%> - Create new equity</div>
+    </div>
+    <div class="clear"></div>
+</div>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Made by Yi Peng -->
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+        <import xmlns="http://sweet_swt.sf.net/xswt">
+                <package name="org.eclipse.swt.widgets"/>
+                <package name="org.eclipse.swt.layout"/>
+                <package name="org.eclipse.swt.custom"/>
+                <package name="org.eclipse.swt.graphics"/>
+        </import>
+        <x:children>
+                <composite>
+                        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="gridData.FILL"/>
+                        <layout x:class="gridLayout" numColumns="2"/>
+                        <x:children>
+                                <viewForm x:id="certInfoView" x:style="FLAT |BORDER">
+                                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="gridData.FILL" heightHint="120" widthHint="400" horizontalSpan="2"/>
+                                        
+                                        <topLeft x:class="cLabel" x:p0="certInfoView" x:p1="SWT.NONE" text="Certificate Information"/>
+                                        <content x:class="composite" x:p0="certInfoView" x:p1="NONE">
+                                                <layout x:class="formLayout"/>
+                                                <x:children>
+                                                        <cLabel x:id="certIDLabel" text="Cert ID">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="0" x:p1="100"/>
+                                                                        <left x:class="formAttachment" x:p0="0" x:p1="10"/>
+                                                                        <top x:class="formAttachment" x:p0="0" x:p1="20"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="certID" x:style="SHADOW_IN" text="100001">
+                                                                <layoutData x:class="formData">
+                                                                		<right x:class="formAttachment" x:p0="0" x:p1="390"/>
+                                                                        <left x:class="formAttachment" x:p0="certIDLabel" x:p1="5" x:p2="SWT.RIGHT"/>
+                                                                        <top x:class="formAttachment" x:p0="certIDLabel" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="certTypeLabel" text="Type">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="certIDLabel" x:p1="0" x:p2="SWT.RIGHT"/>
+                                                                        <left x:class="formAttachment" x:p0="certIDLabel" x:p1="0" x:p2="SWT.LEFT"/>
+                                                                        <top x:class="formAttachment" x:p0="0" x:p1="55"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="certType" x:style="SHADOW_IN" text="Original">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="certID" x:p1="0" x:p2="SWT.RIGHT"/>
+                                                                        <left x:class="formAttachment" x:p0="certIDLabel" x:p1="5" x:p2="SWT.RIGHT"/>
+                                                                        <top x:class="formAttachment" x:p0="certTypeLabel" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="certStatusLabel" text="CertStatus">
+                                                                <layoutData x:class="formData">
+                                                                        <left x:class="formAttachment" x:p0="0" x:p1="400"/>
+                                                                        <top x:class="formAttachment" x:p0="certID" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="certStatus" x:style="SHADOW_IN" text="New">
+                                                                <layoutData x:class="formData">
+                                                                <right x:class="formAttachment" x:p0="0" x:p1="790"/>
+                                                                        <left x:class="formAttachment" x:p0="0" x:p1="490"/>
+                                                                        <top x:class="formAttachment" x:p0="certStatusLabel" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="originLabel" text="Origin">
+                                                                <layoutData x:class="formData">
+                                                                        <left x:class="formAttachment" x:p0="certStatusLabel" x:p1="0" x:p2="SWT.LEFT"/>
+                                                                        <top x:class="formAttachment" x:p0="certType" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="origin" x:style="SHADOW_IN" text="Original">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="certStatus" x:p1="0" x:p2="SWT.RIGHT"/>
+                                                                        <left x:class="formAttachment" x:p0="certStatus" x:p1="0" x:p2="SWT.LEFT"/>
+                                                                        <top x:class="formAttachment" x:p0="originLabel" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        
+                                                </x:children>
+                                        </content>
+                                </viewForm>
+                                
+                                <viewForm x:id="productInfoView" x:style="FLAT | BORDER">
+                                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="gridData.FILL" heightHint="120" widthHint="400"/>
+                                        <layout x:class="formLayout"/>
+                                        
+                                        <topLeft x:class="cLabel" x:p0="productInfoView" x:p1="SWT.NONE">
+                                                <setText x:p0="Product Infomation"/>
+                                        </topLeft>
+                                        <content x:class="composite" x:p0="productInfoView" x:p1="NONE">
+                                                <layout x:class="formLayout"/>
+                                                <x:children>
+                                                        <cLabel x:id="nameLabel" text="Name">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="0" x:p1="100"/>
+                                                                        <left x:class="formAttachment" x:p0="0" x:p1="10"/>
+                                                                        <top x:class="formAttachment" x:p0="0" x:p1="20"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="productName" x:style="SHADOW_IN" text="Computer">
+                                                                <layoutData x:class="formData">
+                                                                <right x:class="formAttachment" x:p0="0" x:p1="390"/>
+                                                                        <left x:class="formAttachment" x:p0="nameLabel" x:p1="5" x:p2="SWT.RIGHT"/>
+                                                                        <top x:class="formAttachment" x:p0="nameLabel" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="manufactorLabel" text="Manufactor">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="nameLabel" x:p1="0" x:p2="SWT.RIGHT"/>
+                                                                        <left x:class="formAttachment" x:p0="nameLabel" x:p1="0" x:p2="SWT.LEFT"/>
+                                                                        <top x:class="formAttachment" x:p0="0" x:p1="55"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="manufactor" x:style="SHADOW_IN" text="Sun">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="productName" x:p1="0" x:p2="SWT.RIGHT"/>
+                                                                        <left x:class="formAttachment" x:p0="nameLabel" x:p1="5" x:p2="SWT.RIGHT"/>
+                                                                        <top x:class="formAttachment" x:p0="manufactorLabel" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                </x:children>
+                                        </content>
+                                </viewForm>
+                                
+                                <viewForm x:id="entInfoView" x:style="FLAT | BORDER">
+                                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="gridData.FILL" heightHint="120" widthHint="400"/>
+                                        <layout x:class="formLayout"/>
+                                        
+                                        <topLeft x:class="cLabel" x:p0="entInfoView" x:p1="SWT.NONE">
+                                                <setText x:p0="Enterprise Infomation"/>
+                                        </topLeft>
+                                        <content x:class="composite" x:p0="entInfoView" x:p1="NONE">
+                                                <layout x:class="formLayout"/>
+                                                <x:children>
+                                                        <cLabel x:id="entNameLabel" text="Name">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="0" x:p1="100"/>
+                                                                        <left x:class="formAttachment" x:p0="0" x:p1="10"/>
+                                                                        <top x:class="formAttachment" x:p0="0" x:p1="20"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="entName" x:style="SHADOW_IN" text="Sun">
+                                                                <layoutData x:class="formData">
+                                                                <right x:class="formAttachment" x:p0="0" x:p1="390"/>
+                                                                        <left x:class="formAttachment" x:p0="entNameLabel" x:p1="5" x:p2="SWT.RIGHT"/>
+                                                                        <top x:class="formAttachment" x:p0="entNameLabel" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="entTypeLabel" text="Type">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="entNameLabel" x:p1="0" x:p2="SWT.RIGHT"/>
+                                                                        <left x:class="formAttachment" x:p0="entNameLabel" x:p1="0" x:p2="SWT.LEFT"/>
+                                                                        <top x:class="formAttachment" x:p0="0" x:p1="55"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                        <cLabel x:id="entType" x:style="SHADOW_IN" text="Exporter">
+                                                                <layoutData x:class="formData">
+                                                                        <right x:class="formAttachment" x:p0="entName" x:p1="0" x:p2="SWT.RIGHT"/>
+                                                                        <left x:class="formAttachment" x:p0="entNameLabel" x:p1="5" x:p2="SWT.RIGHT"/>
+                                                                        <top x:class="formAttachment" x:p0="entTypeLabel" x:p1="0" x:p2="SWT.TOP"/>
+                                                                </layoutData>
+                                                        </cLabel>
+                                                </x:children>
+                                        </content>
+                                </viewForm>
+                                
+                                <viewForm x:id="actionView" x:style="FLAT | BORDER">
+                                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="gridData.FILL" heightHint="25" widthHint="400"  horizontalSpan="2"/>
+                                        <content x:class="composite" x:p0="actionView" x:p1="NONE">
+                                                <layout x:class="fillLayout" spacing="2"/>
+                                                <x:children>
+                                                        <button x:id="getCertInfo" text="Get Certificate"/>
+                                                        <button x:id="getProductInfo" text="Get Product"/>
+                                                        <button x:id="getEnterpriseInfo" text="Get Enterprise"/>
+                                                        <button x:id="getInfo" text="Get All"/>
+                                                        <button x:id="approve" text="Approve"/>
+                                                </x:children>
+                                        </content>
+                                </viewForm>
+                        </x:children>
+                </composite>
+        </x:children>
+</xswt>
