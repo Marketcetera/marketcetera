@@ -193,13 +193,13 @@ public class OrderRoutingSystem
              persister,qSender,userManager,localIdFactory);
         mListener=jmsMgr.getIncomingJmsFactory().registerHandlerOEX
             (handler,Service.REQUEST_QUEUE,false);
-        mQFApp=new QuickFIXApplication
-            (systemInfo,getBrokers(),cfg.getSupportedMessages(),
-             persister,qSender,userManager,
-             jmsMgr.getOutgoingJmsFactory().createJmsTemplateX
-             (Service.BROKER_STATUS_TOPIC,true),
-             jmsMgr.getOutgoingJmsFactory().createJmsTemplateQ
-             (TRADE_RECORDER_QUEUE,false));
+        mQFApp=new QuickFIXApplication(systemInfo,getBrokers(),cfg.getSupportedMessages(),
+                                       persister,
+                                       qSender,
+                                       userManager,
+                                       jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
+                                                                                         true),
+                                       null); // CD 20101202 - Removed as I don't think this is used any more and just consumes memory
 
         // Initiate broker connections.
 
