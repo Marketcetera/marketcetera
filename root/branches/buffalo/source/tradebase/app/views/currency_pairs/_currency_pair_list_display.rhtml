@@ -1,0 +1,16 @@
+<table>
+  <tr>
+    <th>Symbol</th>
+    <th>Description</th>
+    <th colspan="3"/>
+  </tr>
+  
+<% i=0
+for currency_pair in @currency_pairs %>
+  <tr <%= ((i+=1)%2)==1 ? 'class="odd"':''%> >
+    <td><%=h currency_pair %></td>
+    <td><%=h shorten_string(currency_pair.description) %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => currency_pair, :controller_name => 'currency_pairs'} %>
+  </tr>
+<% end %>
+</table>
