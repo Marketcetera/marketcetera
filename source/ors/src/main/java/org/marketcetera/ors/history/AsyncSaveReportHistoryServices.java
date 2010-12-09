@@ -71,7 +71,7 @@ public class AsyncSaveReportHistoryServices
             mToPersistQueue=getJmsManager().getOutgoingJmsFactory().
                 createJmsTemplateX(PERSIST_QUEUE,false);
             getJmsManager().getIncomingJmsFactory().registerHandlerTMX
-                (new QueueHandler(),PERSIST_QUEUE,false);
+                (new QueueHandler(),PERSIST_QUEUE,false).start();
         } catch (JAXBException ex) {
             throw new ReportPersistenceException
                 (ex,Messages.RHS_CANNOT_CREATE_QUEUE);

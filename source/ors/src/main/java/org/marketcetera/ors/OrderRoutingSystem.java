@@ -193,6 +193,7 @@ public class OrderRoutingSystem
              persister,qSender,userManager,localIdFactory);
         mListener=jmsMgr.getIncomingJmsFactory().registerHandlerOEX
             (handler,Service.REQUEST_QUEUE,false);
+        mListener.start();
         mQFApp=new QuickFIXApplication
             (systemInfo,getBrokers(),cfg.getSupportedMessages(),
              persister,qSender,userManager,

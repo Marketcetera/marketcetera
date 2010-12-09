@@ -108,9 +108,9 @@ public class JmsManagerTest
         SampleReceiveOnlyHandler<Integer> receiveOnly=
             new SampleReceiveOnlyHandler<Integer>();
         mgr.getIncomingJmsFactory().registerHandler
-            (reply,senderName,false,replyName,false);
+            (reply,senderName,false,replyName,false).start();
         mgr.getIncomingJmsFactory().registerHandler
-            (receiveOnly,replyName,false);
+            (receiveOnly,replyName,false).start();
         single(mgr.getOutgoingJmsFactory().createJmsTemplate
                (senderName,false),reply,receiveOnly);
 
@@ -121,16 +121,26 @@ public class JmsManagerTest
         SampleReceiveOnlyHandler[] receivers=new SampleReceiveOnlyHandler[] {
             new SampleReceiveOnlyHandler<Integer>(),
             new SampleReceiveOnlyHandler<Integer>()};            
-        mgr.getIncomingJmsFactory().registerHandler
-            (replies[0],senderName,true,replyName,true);
-        mgr.getIncomingJmsFactory().registerHandler
-            (replies[1],senderName,true,TEST_REPLY_IGNORED,true);
-        mgr.getIncomingJmsFactory().registerHandler
-            (receivers[0],replyName,true);
-        mgr.getIncomingJmsFactory().registerHandler
-            (receivers[1],replyName,true);
-        single(mgr.getOutgoingJmsFactory().createJmsTemplate
-               (senderName,true),replies,receivers);
+        mgr.getIncomingJmsFactory().registerHandler(replies[0],
+                                                    senderName,
+                                                    true,
+                                                    replyName,
+                                                    true).start();
+        mgr.getIncomingJmsFactory().registerHandler(replies[1],
+                                                    senderName,
+                                                    true,
+                                                    TEST_REPLY_IGNORED,
+                                                    true).start();
+        mgr.getIncomingJmsFactory().registerHandler(receivers[0],
+                                                    replyName,
+                                                    true).start();
+        mgr.getIncomingJmsFactory().registerHandler(receivers[1],
+                                                    replyName,
+                                                    true).start();
+        single(mgr.getOutgoingJmsFactory().createJmsTemplate(senderName,
+                                                             true),
+               replies,
+               receivers);
 
         // QUICKFIX/J CONVERTER.
 
@@ -138,17 +148,20 @@ public class JmsManagerTest
         replyName=TEST_REPLY_DEST+TEST_Q_EXT;
 
         // Queues.
-        SampleQMessageReplyHandler replyQ=
-            new SampleQMessageReplyHandler();
-        SampleReceiveOnlyHandler<Message> receiveOnlyQ=
-            new SampleReceiveOnlyHandler<Message>();
-        mgr.getIncomingJmsFactory().registerHandlerQ
-            (replyQ,senderName,false,replyName,false);
-        mgr.getIncomingJmsFactory().registerHandlerQ
-            (receiveOnlyQ,replyName,false);
-        single(mgr.getOutgoingJmsFactory().createJmsTemplateQ
-               (senderName,false),replyQ,receiveOnlyQ);
-
+        SampleQMessageReplyHandler replyQ = new SampleQMessageReplyHandler();
+        SampleReceiveOnlyHandler<Message> receiveOnlyQ = new SampleReceiveOnlyHandler<Message>();
+        mgr.getIncomingJmsFactory().registerHandlerQ(replyQ,
+                                                     senderName,
+                                                     false,
+                                                     replyName,
+                                                     false).start();
+        mgr.getIncomingJmsFactory().registerHandlerQ(receiveOnlyQ,
+                                                     replyName,
+                                                     false).start();
+        single(mgr.getOutgoingJmsFactory().createJmsTemplateQ(senderName,
+                                                              false),
+               replyQ,
+               receiveOnlyQ);
         // Topics.
         SampleQMessageReplyHandler[] repliesQ=new SampleQMessageReplyHandler[] {
             new SampleQMessageReplyHandler(),
@@ -156,17 +169,26 @@ public class JmsManagerTest
         SampleReceiveOnlyHandler[] receiversQ=new SampleReceiveOnlyHandler[] {
             new SampleReceiveOnlyHandler<Message>(),
             new SampleReceiveOnlyHandler<Message>()};            
-        mgr.getIncomingJmsFactory().registerHandlerQ
-            (repliesQ[0],senderName,true,replyName,true);
-        mgr.getIncomingJmsFactory().registerHandlerQ
-            (repliesQ[1],senderName,true,TEST_REPLY_IGNORED,true);
-        mgr.getIncomingJmsFactory().registerHandlerQ
-            (receiversQ[0],replyName,true);
-        mgr.getIncomingJmsFactory().registerHandlerQ
-            (receiversQ[1],replyName,true);
-        single(mgr.getOutgoingJmsFactory().createJmsTemplateQ
-               (senderName,true),repliesQ,receiversQ);
-
+        mgr.getIncomingJmsFactory().registerHandlerQ(repliesQ[0],
+                                                     senderName,
+                                                     true,
+                                                     replyName,
+                                                     true).start();
+        mgr.getIncomingJmsFactory().registerHandlerQ(repliesQ[1],
+                                                     senderName,
+                                                     true,
+                                                     TEST_REPLY_IGNORED,
+                                                     true).start();
+        mgr.getIncomingJmsFactory().registerHandlerQ(receiversQ[0],
+                                                     replyName,
+                                                     true).start();
+        mgr.getIncomingJmsFactory().registerHandlerQ(receiversQ[1],
+                                                     replyName,
+                                                     true).start();
+        single(mgr.getOutgoingJmsFactory().createJmsTemplateQ(senderName,
+                                                              true),
+               repliesQ,
+               receiversQ);
         // FIX AGNOSTIC XML CONVERTER: TRADE MESSAGES.
 
         senderName=TEST_SEND_DEST+TEST_TMX_EXT;
@@ -177,13 +199,18 @@ public class JmsManagerTest
             new SampleOrderReplyHandler();
         SampleReceiveOnlyHandler<TradeMessage> receiveOnlyTMX=
             new SampleReceiveOnlyHandler<TradeMessage>();
-        mgr.getIncomingJmsFactory().registerHandlerTMX
-            (replyTMX,senderName,false,replyName,false);
-        mgr.getIncomingJmsFactory().registerHandlerTMX
-            (receiveOnlyTMX,replyName,false);
-        single(mgr.getOutgoingJmsFactory().createJmsTemplateX
-               (senderName,false),replyTMX,receiveOnlyTMX);
-
+        mgr.getIncomingJmsFactory().registerHandlerTMX(replyTMX,
+                                                       senderName,
+                                                       false,
+                                                       replyName,
+                                                       false).start();
+        mgr.getIncomingJmsFactory().registerHandlerTMX(receiveOnlyTMX,
+                                                       replyName,
+                                                       false).start();
+        single(mgr.getOutgoingJmsFactory().createJmsTemplateX(senderName,
+                                                              false),
+               replyTMX,
+               receiveOnlyTMX);
         // Topics.
         SampleOrderReplyHandler[] repliesTMX=new SampleOrderReplyHandler[] {
             new SampleOrderReplyHandler(),
@@ -191,16 +218,26 @@ public class JmsManagerTest
         SampleReceiveOnlyHandler[] receiversTMX=new SampleReceiveOnlyHandler[] {
             new SampleReceiveOnlyHandler<TradeMessage>(),
             new SampleReceiveOnlyHandler<TradeMessage>()};            
-        mgr.getIncomingJmsFactory().registerHandlerTMX
-            (repliesTMX[0],senderName,true,replyName,true);
-        mgr.getIncomingJmsFactory().registerHandlerTMX
-            (repliesTMX[1],senderName,true,TEST_REPLY_IGNORED,true);
-        mgr.getIncomingJmsFactory().registerHandlerTMX
-            (receiversTMX[0],replyName,true);
-        mgr.getIncomingJmsFactory().registerHandlerTMX
-            (receiversTMX[1],replyName,true);
-        single(mgr.getOutgoingJmsFactory().createJmsTemplateX
-               (senderName,true),repliesTMX,receiversTMX);
+        mgr.getIncomingJmsFactory().registerHandlerTMX(repliesTMX[0],
+                                                       senderName,
+                                                       true,
+                                                       replyName,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerTMX(repliesTMX[1],
+                                                       senderName,
+                                                       true,
+                                                       TEST_REPLY_IGNORED,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerTMX(receiversTMX[0],
+                                                       replyName,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerTMX(receiversTMX[1],
+                                                       replyName,
+                                                       true).start();
+        single(mgr.getOutgoingJmsFactory().createJmsTemplateX(senderName,
+                                                              true),
+               repliesTMX,
+               receiversTMX);
 
         // FIX AGNOSTIC XML CONVERTER: ORDER ENVELOPES.
 
@@ -212,13 +249,18 @@ public class JmsManagerTest
             new SampleEnvelopeReplyHandler();
         SampleReceiveOnlyHandler<OrderEnvelope> receiveOnlyOEX=
             new SampleReceiveOnlyHandler<OrderEnvelope>();
-        mgr.getIncomingJmsFactory().registerHandlerOEX
-            (replyOEX,senderName,false,replyName,false);
-        mgr.getIncomingJmsFactory().registerHandlerOEX
-            (receiveOnlyOEX,replyName,false);
-        single(mgr.getOutgoingJmsFactory().createJmsTemplateX
-               (senderName,false),replyOEX,receiveOnlyOEX);
-
+        mgr.getIncomingJmsFactory().registerHandlerOEX(replyOEX,
+                                                       senderName,
+                                                       false,
+                                                       replyName,
+                                                       false).start();
+        mgr.getIncomingJmsFactory().registerHandlerOEX(receiveOnlyOEX,
+                                                       replyName,
+                                                       false).start();
+        single(mgr.getOutgoingJmsFactory().createJmsTemplateX(senderName,
+                                                              false),
+               replyOEX,
+               receiveOnlyOEX);
         // Topics.
         SampleEnvelopeReplyHandler[] repliesOEX=
             new SampleEnvelopeReplyHandler[] {
@@ -227,14 +269,22 @@ public class JmsManagerTest
         SampleReceiveOnlyHandler[] receiversOEX=new SampleReceiveOnlyHandler[] {
             new SampleReceiveOnlyHandler<OrderEnvelope>(),
             new SampleReceiveOnlyHandler<OrderEnvelope>()};            
-        mgr.getIncomingJmsFactory().registerHandlerOEX
-            (repliesOEX[0],senderName,true,replyName,true);
-        mgr.getIncomingJmsFactory().registerHandlerOEX
-            (repliesOEX[1],senderName,true,TEST_REPLY_IGNORED,true);
-        mgr.getIncomingJmsFactory().registerHandlerOEX
-            (receiversOEX[0],replyName,true);
-        mgr.getIncomingJmsFactory().registerHandlerOEX
-            (receiversOEX[1],replyName,true);
+        mgr.getIncomingJmsFactory().registerHandlerOEX(repliesOEX[0],
+                                                       senderName,
+                                                       true,
+                                                       replyName,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerOEX(repliesOEX[1],
+                                                       senderName,
+                                                       true,
+                                                       TEST_REPLY_IGNORED,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerOEX(receiversOEX[0],
+                                                       replyName,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerOEX(receiversOEX[1],
+                                                       replyName,
+                                                       true).start();
         single(mgr.getOutgoingJmsFactory().createJmsTemplateX
                (senderName,true),repliesOEX,receiversOEX);
 
@@ -248,10 +298,14 @@ public class JmsManagerTest
             new SampleBrokerStatusHandler();
         SampleReceiveOnlyHandler<BrokerStatus> receiveOnlyBSX=
             new SampleReceiveOnlyHandler<BrokerStatus>();
-        mgr.getIncomingJmsFactory().registerHandlerBSX
-            (replyBSX,senderName,false,replyName,false);
-        mgr.getIncomingJmsFactory().registerHandlerBSX
-            (receiveOnlyBSX,replyName,false);
+        mgr.getIncomingJmsFactory().registerHandlerBSX(replyBSX,
+                                                       senderName,
+                                                       false,
+                                                       replyName,
+                                                       false).start();
+        mgr.getIncomingJmsFactory().registerHandlerBSX(receiveOnlyBSX,
+                                                       replyName,
+                                                       false).start();
         single(mgr.getOutgoingJmsFactory().createJmsTemplateX
                (senderName,false),replyBSX,receiveOnlyBSX);
 
@@ -263,14 +317,22 @@ public class JmsManagerTest
         SampleReceiveOnlyHandler[] receiversBSX=new SampleReceiveOnlyHandler[] {
             new SampleReceiveOnlyHandler<BrokerStatus>(),
             new SampleReceiveOnlyHandler<BrokerStatus>()};            
-        mgr.getIncomingJmsFactory().registerHandlerBSX
-            (repliesBSX[0],senderName,true,replyName,true);
-        mgr.getIncomingJmsFactory().registerHandlerBSX
-            (repliesBSX[1],senderName,true,TEST_REPLY_IGNORED,true);
-        mgr.getIncomingJmsFactory().registerHandlerBSX
-            (receiversBSX[0],replyName,true);
-        mgr.getIncomingJmsFactory().registerHandlerBSX
-            (receiversBSX[1],replyName,true);
+        mgr.getIncomingJmsFactory().registerHandlerBSX(repliesBSX[0],
+                                                       senderName,
+                                                       true,
+                                                       replyName,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerBSX(repliesBSX[1],
+                                                       senderName,
+                                                       true,
+                                                       TEST_REPLY_IGNORED,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerBSX(receiversBSX[0],
+                                                       replyName,
+                                                       true).start();
+        mgr.getIncomingJmsFactory().registerHandlerBSX(receiversBSX[1],
+                                                       replyName,
+                                                       true).start();
         single(mgr.getOutgoingJmsFactory().createJmsTemplateX
                (senderName,true),repliesBSX,receiversBSX);
     }
