@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.modules.remote.emitter;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Remote Emitter Module
-Bundle-Version: 2.1.2
+Bundle-Version: 2.1.3
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional,

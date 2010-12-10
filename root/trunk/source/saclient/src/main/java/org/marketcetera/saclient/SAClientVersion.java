@@ -27,7 +27,7 @@ public interface SAClientVersion {
      * The SA client's application ID: the version.
      */
 
-    static final String APP_ID_VERSION = ApplicationVersion.VERSION_2_1_2;
+    static final String APP_ID_VERSION = ApplicationVersion.VERSION_2_1_3;
 
     /**
      * The client's application ID: the ID.

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Tests
 Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.tests;singleton:=true
 Fragment-Host: org.marketcetera.photon.strategy.engine
-Bundle-Version: 2.1.2
+Bundle-Version: 2.1.3
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: org.marketcetera.photon.strategy.engine.model.core.test,
