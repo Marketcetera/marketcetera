@@ -290,10 +290,6 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
         assertTrue(adapter.toString(), adapter.hasNoObjects());
         assertTrue(adapter.toString(), adapter.hasNoStatus());
         // verify the logged warning.
-        mAssist.assertLastEvent(Level.WARN,
-                RemoteDataEmitter.class.getName(),
-                Messages.LOG_ERROR_CLOSING_CONNECTION.getText(),
-                null);
 
         //Start receiver
         mManager.start(ReceiverFactory.INSTANCE_URN);

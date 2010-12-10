@@ -36,9 +36,8 @@ public final class DataFlowID implements Serializable {
      * Constructor for use by JAXB during serialization. It's not meant
      * to be used for any other purpose.
      */
-    private DataFlowID() {
-        this(null);
-    }
+    @SuppressWarnings("unused")
+    private DataFlowID() {}
 
     /**
      * The string value of the ID.
