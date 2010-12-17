@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Market Data UI Test Fragment
+Bundle-SymbolicName: org.marketcetera.photon.marketdata.ui.tests;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Marketcetera, Inc
+Fragment-Host: org.marketcetera.photon.marketdata.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.junit4,
+ org.marketcetera.util-test,
+ org.marketcetera.photon.test
+Export-Package: org.marketcetera.photon.marketdata.ui.tests

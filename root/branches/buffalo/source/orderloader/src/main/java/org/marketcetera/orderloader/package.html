@@ -1,0 +1,156 @@
+<body>
+<p>
+    A tool to send orders based on a CSV (Comma Separated Values) File input.
+    The tool accepts a CSV file that specifies the orders that need to be sent,
+    one per row, and sends those orders out to the Server.
+</p>
+<h3>Usage</h3>
+<p>
+    The tool operates in two modes.
+</p>
+<ol>
+    <a name="system"/>
+    <li><b>System Mode</b> : This is the default mode. The orders sent are
+        agnostic of the specific protocol or its version used by the
+        broker. Orders sent in this mode can be sent to
+        any broker that the Server is connected to.</li>
+    <a name="fix"/>
+    <li><b>FIX Mode</b> : In this mode, the orders are sent in as FIX messages,
+        encoded in a specific FIX Version. Orders sent in this mode can
+        only be sent to a specific broker that the Server
+        is connected to. Moreover, the messages need to contain all the
+        fields that the targeted broker needs the message to have in
+        order to process it.</li>
+</ol>
+<h4>Syntax</h4>
+<pre>
+    runOrderloader [-m {sys|<i>fix_version_num</i> }] [-b <i>broker ID</i> ] [-u <i>username</i> ] [-p <i>password</i> ] <i>csv_file_path</i>
+</pre>
+<p>
+    The options have the following purpose:
+</p>
+<ul>
+    <li><b>-m</b>: Specifies the mode of operation. If unspecified, it
+        defaults to <a href="#sys">system</a> mode.</li>
+    <ul>
+        <li><b>sys</b>: Specifies that the order messages be sent in
+            <a href="#system">system</a> mode.</li>
+        <li><b>fix_version_num</b>: Specifies that the order messages be sent
+            in <a href="#fix">FIX</a> mode. Valid values are
+            <code>FIX.4.0, FIX.4.1, FIX.4.2, FIX.4.3, FIX.4.4</code>.
+            The brokerID has to be supplied in this mode. </li>
+    </ul>
+    <li><b>-b broker ID</b>: Specifies the broker to which the
+        orders should be sent. This parameter is optional in
+        <a href="#system">system</a> mode but is required in
+        <a href="#fix">FIX</a> mode.</li>
+    <li><b>-u username</b>: The user name to authenticate to server.</li>
+    <li><b>-p password</b>: The password to authenticate to server.</li>
+    <li><b>csv_file_path</b>: The path to the csv file that has the
+        order information.</li>
+</ul>
+<h3>CSV Input Syntax</h3>
+<p>
+    The expected input is a csv (comma separated values) file. The file can
+    have any number of blank or commented lines. It is expected to have one
+    header row that identifies the order in which various order field values
+    exist within the file, followed by any number of lines, each specifying
+    one order per line.
+</p>
+<p>
+    A blank line is a line that only has whitespace characters. A comment line
+    is a line that has '#' as the first character on the line.
+</p>
+<p>
+    The fields on each line are separate by commas. Whitespace is significant,
+    ie. all the text between commas is interpreted as field value including
+    surrouding whitespace.
+</p>
+<p>
+    Each line of the file is expected to have the same number of fields as
+    the header. It's an error if a line does not have the same number of fields
+    as the header.
+</p>
+<h4>System Mode</h4>
+<p>
+    The system mode supports a pre-defined set of fields for every order and
+    any number of custom fields. A custom field is a field that is not a
+    pre-defined field and has a numeric header value.
+</p>
+<p>
+    The pre-defined fields can be identified as the values of constants with
+    the prefix <code>FIELD</code> in the class
+    {@link org.marketcetera.orderloader.system.SystemProcessor}.
+</p>
+<p>
+    Here is a list of pre-defined field headers.
+</p>
+<table>
+    <thead>
+        <tr><td>Field Header</td><td>Required/Optional</td><td>data type</td></tr>
+    </thead>
+    <tbody>
+        <tr><td>Account</td><td>Optional</td><td>text</td></tr>
+        <tr><td>OrderCapacity</td><td>Optional</td><td>Enumeration. See {@link org.marketcetera.trade.OrderCapacity}</td></tr>
+        <tr><td>OrderType</td><td>Required</td><td>Enumeration. See {@link org.marketcetera.trade.OrderType}</td></tr>
+        <tr><td>PositionEffect</td><td>Optional</td><td>Enumeration. See {@link org.marketcetera.trade.PositionEffect}</td></tr>
+        <tr><td>Price</td><td>Optional</td><td>decimal</td></tr>
+        <tr><td>Quantity</td><td>Required</td><td>decimal</td></tr>
+        <tr><td>Side</td><td>Required</td><td>Enumeration. See {@link org.marketcetera.trade.Side}</td></tr>
+        <tr><td>Symbol</td><td>Required</td><td>text</td></tr>
+        <tr><td>SecurityType</td><td>Optional</td><td>Enumeration. See {@link org.marketcetera.trade.SecurityType}</td></tr>
+        <tr><td>TimeInForce</td><td>Optional</td><td>Enumeration. See {@link org.marketcetera.trade.TimeInForce}</td></tr>
+        <tr><td>Expiry</td><td>Optional, required for Option.</td><td>Expiry date in format: <code>YYYYMM</code> or <code>YYYYMMDD</code> or <code>YYYYMMwN</code></td></tr>
+        <tr><td>StrikePrice</td><td>Optional, required for Option.</td><td>decimal</td></tr>
+        <tr><td>OptionType</td><td>Optional, required for Option.</td><td>Enumeration. See {@link org.marketcetera.trade.OptionType</td></tr>
+    </tbody>
+</table>
+<p>
+    Here's a sample csv input for system mode.
+</p>
+<pre>
+Symbol,Side,Quantity,Price,OrderType,TimeInForce,Account
+AAPL,SellShort,4000,4.26,Limit,Day,Account1
+GOOG,Buy,2000,,Market,Day,Account2
+GOOG,SellShort,4000,408.18,Limit,Day,Account1
+MSFT,Sell,2000,22.81,Limit,Day,Account2
+IBM,Buy,5000,77.65,Limit,Day,Account1
+</pre>
+<h4>FIX Mode</h4>
+<p>
+    The FIX mode supports any FIX field supported by the FIX data dictionary.
+    The header name for every FIX field is the same as the its simple class name
+    in the package {@link quickfix.field} (that is, without the package name).
+</p>
+<p>
+    The value supplied for each FIX field in each row is directly set
+    as the value of the FIX field. Following fields have special interpretation.
+</p>
+<p>
+    The valid values for Side field are: B, S, SS, & SSE that stand for
+    Buy, Sell, Sell Short and Sell Short Exempt respectively.
+</p>
+<p>
+    Price should be a valid decimal value greater than zero.
+    The sentinel value <code>MKT</code> can be specified as price for Market
+    orders.
+</p>
+<p>
+    Quantity should be a valid integer value greater than zero.
+</p>
+<p>
+    Time in Force values should be the same as the name of char constant fields
+    specified in the class {@link quickfix.field.TimeInForce} to represent
+    the valid time in force enum values. For example, DAY, FILL_OR_KILL, etc.
+</p>
+<p>
+    Here's a sample csv input for FIX mode.
+</p>
+<pre>
+Symbol,Side,OrderQty,Price,TimeInForce,Account
+IBM,B,100,12.1,DAY,123-ASDF-234
+IBM,SS,100,12.22,DAY,123-ASDF-234
+EFA,SSE,100,MKT,DAY,9182379812
+EFA,SSE,100,MKT,FILL_OR_KILL,9182379812
+</pre>
+</body>
