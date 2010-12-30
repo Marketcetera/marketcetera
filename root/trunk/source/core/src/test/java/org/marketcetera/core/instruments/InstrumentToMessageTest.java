@@ -1,6 +1,8 @@
 package org.marketcetera.core.instruments;
 
 import static org.marketcetera.trade.FutureExpirationMonth.*;
+
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -301,6 +303,10 @@ public class InstrumentToMessageTest {
     {
         for (final Future future : TEST_FUTURES) {
             final Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+            SLF4JLoggerProxy.debug(InstrumentToMessageTest.class,
+                                   "{} creates {}",
+                                   future,
+                                   msg);
             //verify FIX specific stuff
             switch (mCurrentVersion) {
                 case FIX40:
@@ -445,5 +451,7 @@ public class InstrumentToMessageTest {
         new Future("LBZ", FEBRUARY, 2011),
         new Future("LBZ", MARCH, 2012),
         new Future("LBZ", APRIL, 2013),
-};
+        Future.fromString("LBZ-201101"),
+        Future.fromString("LBZ-20110130"),
+    };
 }

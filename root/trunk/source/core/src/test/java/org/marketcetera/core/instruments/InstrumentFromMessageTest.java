@@ -144,43 +144,50 @@ public class InstrumentFromMessageTest {
         int expectedExpirationYear = 2015;
         String expectedMY = "201501";
         //Test all permutations of fields.
-        for (Field<?> secType : new Field[]{null, new SecurityType(SecurityType.FUTURE), new CFICode("F")}) {
-            for (Field<?> symbol : new Field[]{null, new Symbol(expectedSymbol)}) {
-                for (Field<?> expiry : new Field[]{null, new MaturityMonthYear(expectedMY)}) {
-                    Message m = FIX_VERSION.getMessageFactory().newBasicOrder();
-                    setFields(m,
-                              secType,
-                              symbol,
-                              expiry);
-                    SLF4JLoggerProxy.debug(this,
-                                           "{},{},{}",
-                                           secType,
-                                           symbol,
-                                           expiry);
-                    //figure out if we expect a value.
-                    boolean isNotFuture = (secType == null ||
-                                           symbol == null ||
-                                           expiry == null);
-                    Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(m).extract(m);
-                    if(isNotFuture) {
-                        assertThat(instrument,
-                                   anyOf(nullValue(),
-                                         not(instanceOf(Future.class))));
-                    } else {
-                        Future future = (Future)instrument;
-                        assertEquals(org.marketcetera.trade.SecurityType.Future,
-                                     future.getSecurityType());
-                        assertEquals(expectedSymbol,
-                                     future.getSymbol());
-                        if (expiry != null &&
-                            expiry.getTag() == MaturityMonthYear.FIELD) {
-                            assertEquals(expectedMY,
-                                         future.getExpiryAsMaturityMonthYear().getValue());
+        for(Field<?> secType : new Field[]{null, new SecurityType(SecurityType.FUTURE), new CFICode("F")}) {
+            for(Field<?> symbol : new Field[]{null, new Symbol(expectedSymbol)}) {
+                for(Field<?> expiry : new Field[]{null, new MaturityMonthYear(expectedMY)}) {
+                    for(Field<?> day : new Field[] { null, new MaturityDay("10") }) {
+                        Message m = FIX_VERSION.getMessageFactory().newBasicOrder();
+                        setFields(m,
+                                  secType,
+                                  symbol,
+                                  expiry,
+                                  day);
+                        SLF4JLoggerProxy.debug(this,
+                                               "{} - {},{},{},{}",
+                                               m,
+                                               secType,
+                                               symbol,
+                                               expiry,
+                                               day);
+                        //figure out if we expect a value.
+                        boolean isNotFuture = (secType == null ||
+                                               symbol == null ||
+                                               expiry == null);
+                        Instrument instrument = InstrumentFromMessage.SELECTOR.forValue(m).extract(m);
+                        if(isNotFuture) {
+                            assertThat(instrument,
+                                       anyOf(nullValue(),
+                                             not(instanceOf(Future.class))));
                         } else {
-                            assertEquals(expectedExpirationMonth,
-                                         future.getExpirationMonth());
-                            assertEquals(expectedExpirationYear,
-                                         future.getExpirationYear());
+                            Future future = (Future)instrument;
+                            assertEquals(org.marketcetera.trade.SecurityType.Future,
+                                         future.getSecurityType());
+                            assertEquals(expectedSymbol,
+                                         future.getSymbol());
+                            if(expiry != null) {
+                                assertEquals(expectedMY,
+                                             future.getExpiryAsMaturityMonthYear().getValue());
+                                assertEquals(expectedExpirationMonth,
+                                             future.getExpirationMonth());
+                                assertEquals(expectedExpirationYear,
+                                             future.getExpirationYear());
+                            }
+                            if(day != null) {
+                                assertEquals(10,
+                                             future.getExpirationDay());
+                            }
                         }
                     }
                 }
