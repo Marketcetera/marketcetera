@@ -8,6 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.CFICode;
+import quickfix.field.MaturityDay;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.Symbol;
 
@@ -57,6 +58,7 @@ public class FutureToMessage
         }
         inMessage.setField(new Symbol(inInstrument.getSymbol()));
         Future future = (Future)inInstrument;
+        int maturityDay = future.getExpirationDay();
         switch(FIXVersion.getFIXVersion(inBeginString)){
             case FIX_SYSTEM: //fall through
             case FIX41: //fall through
@@ -65,10 +67,23 @@ public class FutureToMessage
                                 inBeginString,
                                 inMessage);
                 inMessage.setField(future.getExpiryAsMaturityMonthYear());
+                if(maturityDay != -1) {
+                    inMessage.setField(new MaturityDay(String.valueOf(maturityDay)));
+                }
                 break;
             case FIX43:
                 setCFICode(inMessage,
                            future);
+                if(maturityDay != -1) {
+                    inMessage.setField(new MaturityDay(String.valueOf(maturityDay)));
+                }
+                break;
+            case FIX44:
+                setCFICode(inMessage,
+                           future);
+                if(maturityDay != -1) {
+                    inMessage.setField(new MaturityDay(String.valueOf(maturityDay)));
+                }
                 break;
             default:
                 setCFICode(inMessage,

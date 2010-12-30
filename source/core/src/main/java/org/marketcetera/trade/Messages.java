@@ -128,6 +128,8 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"null_month"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_MONTH=
         new I18NMessage1P(LOGGER,"invalid_month"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_DAY = new I18NMessage1P(LOGGER,
+                                                               "invalid_day"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_YEAR=
         new I18NMessage1P(LOGGER,"invalid_year"); //$NON-NLS-1$
     static final I18NMessage0P NULL_EXPIRY=

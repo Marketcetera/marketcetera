@@ -34,9 +34,9 @@ public class FutureFromMessage
         if(symbol == null) {
             return null;
         }
-        if(Future.FUTURE_STRING.matcher(symbol).matches()) {
+        try {
             return Future.fromString(symbol);
-        }
+        } catch (IllegalArgumentException ignored) {}
         // assume the symbol is the underlying, not the full symbol (this is the common case, it seems)
         // therefore, use the multi-argument constructor instead
         String expiry = OptionFromMessage.getExpiry(inMessage);
