@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.strategyagent;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Marketcetera Server
+Bundle-Version: 3.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-RegisterBuddy: org.marketcetera.core
+Import-Package: 
+ org.junit;version="4.5.0"
+Export-Package: org.marketcetera.strategyagent
