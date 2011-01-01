@@ -12,3 +12,4 @@ Require-Bundle: org.marketcetera.core,
  org.marketcetera.modules.remote.receiver;resolution:=optional
 Eclipse-RegisterBuddy: org.marketcetera.core
 Export-Package: org.marketcetera.modules.remote.emitter
+Import-Package: org.marketcetera.util.test
