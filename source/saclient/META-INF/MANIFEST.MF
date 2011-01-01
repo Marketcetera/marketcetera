@@ -12,4 +12,5 @@ Require-Bundle: org.marketcetera.core,
  org.marketcetera.modules.remote.receiver;resolution:=optional
 Export-Package: org.marketcetera.saclient
 Import-Package: org.hamcrest;resolution:=optional,
- org.junit;resolution:=optional
+ org.junit;resolution:=optional,
+ org.marketcetera.util.test

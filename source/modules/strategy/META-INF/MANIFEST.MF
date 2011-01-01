@@ -6,7 +6,6 @@ Bundle-Name: Strategy Module
 Bundle-Version: 3.0.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.core,
- org.marketcetera.core.tests;resolution:=optional,
  org.junit4;resolution:=optional,
  org.marketcetera.modules.mdata.bogus;resolution:=optional,
  org.marketcetera.client,
@@ -15,3 +14,4 @@ Require-Bundle: org.marketcetera.core,
 Eclipse-RegisterBuddy: org.marketcetera.core
 Export-Package: org.marketcetera.strategy,
  org.marketcetera.strategy.java
+Import-Package: org.marketcetera.util.test
