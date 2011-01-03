@@ -38,6 +38,10 @@
     </dependency>
     <dependency>
       <groupId>${mvn.public.package}</groupId>
+      <artifactId>strategyagent</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>ors</artifactId>
     </dependency>
 
@@ -90,4 +94,28 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <!-- Command-line execution of the server -->
+    <profile>
+      <id>execute</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.server.ServerApp</mainClass>
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

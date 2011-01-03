@@ -2,6 +2,7 @@ package org.marketcetera.server;
 
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.strategyagent.StrategyAgent;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -34,31 +35,38 @@ public class ServerApp
      *
      * @param inArgs
      */
-    public static void main(String[] inArgs)
+    public static void main(final String[] inArgs)
     {
-        OrderRoutingSystem.main(inArgs);
-        StrategyAgent.main(inArgs);
-    }
-    /**
-     * Create a new ServerApp instance.
-     *
-     * @param inOrsApp
-     * @param inSaApp
-     */
-    private ServerApp(OrderRoutingSystem inOrsApp,
-                      StrategyAgent inSaApp)
-    {
-        orsApp = inOrsApp;
-        saApp = inSaApp;
+        // TODO register shutdown hook?
+        orsThread = new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+                SLF4JLoggerProxy.info(ServerApp.class,
+                                      "Starting ORS Node");
+                OrderRoutingSystem.main(inArgs);
+            }
+        },
+                               "Server ORS Thread");
+        orsThread.start();
+        saThread = new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+                StrategyAgent.main(inArgs);
+            }
+        },
+                              "Server SA Thread");
+//        saThread.start();
     }
     /**
      * 
      */
-    private final OrderRoutingSystem orsApp;
+    private static Thread orsThread;
     /**
      * 
      */
-    private final StrategyAgent saApp;
+    private static Thread saThread;
     /**
      * the singleton instance of the server
      */
