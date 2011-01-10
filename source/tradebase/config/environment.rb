@@ -32,7 +32,7 @@ RUN_ON_APPLIANCE = false
 JAVA_JMX_CONNECTOR_LIB='lib/marketcetera-jmx-connector-1.0.jar'
 
 # Version of the application
-RELEASE_VERSION = "2.1.3"
+RELEASE_VERSION = "2.1.4"
 
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence those specified here

@@ -80,7 +80,7 @@ my(%patternsCustom)=(
 	'public/source/photon/features/org.marketcetera.photon.feature'
 	  => ['plugin_customization.ini'],
 	'public/source/photon/plugins/org.marketcetera.core.tests'
-	  => ['core-2.1.3-tests.jar'],
+	  => ['core-2.1.4-tests.jar'],
 	'public/source/strategyagent/src/test/sample_data/modules/jars'
 	  => ['*.jar'],
 	'public/source/strategyagent/src/test/sample_data/modules/conf'

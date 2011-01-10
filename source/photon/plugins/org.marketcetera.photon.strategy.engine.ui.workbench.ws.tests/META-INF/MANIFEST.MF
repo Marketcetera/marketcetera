@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Strategy Engine Resource Enhancements Tests
 Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.ui.workbench.ws.tests
-Bundle-Version: 2.1.3
+Bundle-Version: 2.1.4
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon.strategy.engine.ui.workbench.ws
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
