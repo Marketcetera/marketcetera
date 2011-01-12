@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Remote receiver jms broker configuration.
+  -
+  - Author: anshul@marketcetera.com
+  - Since: 1.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- Configure the broker -->
+  <bean id="broker" class="org.apache.activemq.broker.BrokerService"
+        init-method="start" destroy-method="stop">
+    <property name="brokerName" value="REMOTING_BROKER"/>
+    <property name="useJmx" value="true"/>
+    <property name="useShutdownHook" value="false"/>
+    <property name="persistent" value="false"/>
+    <property name="plugins">
+      <bean class="org.apache.activemq.security.JaasAuthenticationPlugin">
+        <property name="configuration" value="remoting-amq-domain"/>
+      </bean>
+    </property>
+    <property name="transportConnectors">
+      <list>
+        <bean class="org.apache.activemq.broker.TransportConnector">
+          <property name="uri" ref="brokerURI"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+
+  <!-- The topic on which all the objects are emitted -->
+  <bean id="topic" class="org.apache.activemq.command.ActiveMQTopic">
+    <property name="physicalName" value="remote-flow"/>
+  </bean>
+
+  <!-- Connection factories -->
+  <bean id="connectionFactory"
+        class="org.apache.activemq.ActiveMQConnectionFactory"
+        depends-on="broker">
+    <property name="brokerURL" value="vm://REMOTING_BROKER?create=false"/>
+    <property name="userName" ref="userName"/>
+    <property name="password" ref="password"/>
+  </bean>
+  <bean id="pooledConnectionFactory"
+        class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property name="connectionFactory" ref="connectionFactory"/>
+  </bean>
+
+  <!-- The sender for sending objects on the topic -->
+  <bean id="sender" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory" ref="pooledConnectionFactory"/>
+    <property name="defaultDestination" ref="topic"/>
+    <property name="messageConverter">
+      <bean class="org.marketcetera.jms.JMSSerMessageConverter"/>
+    </property>
+  </bean>
+</beans>
