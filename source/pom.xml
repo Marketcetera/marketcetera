@@ -28,6 +28,7 @@
   <modules>
     <module>client</module>
     <module>core</module>
+    <module>eclipse</module>
     <module>modules</module>
     <module>orderloader</module>
     <module>ors</module>

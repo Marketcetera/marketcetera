@@ -27,8 +27,8 @@
         <mvn.jvm.locale.language></mvn.jvm.locale.language>
         <mvn.jvm.locale.country></mvn.jvm.locale.country>
         <mvn.jvm.locale.variant></mvn.jvm.locale.variant>
-        <!-- Required for Photon: directory to install RCP target. --> 
-        <mvn.photon.target>C:\photon-target</mvn.photon.target>
+        <!-- Required for Eclipse: directory to install RCP target. --> 
+        <mvn.eclipse.target>C:\eclipse-target</mvn.eclipse.target>
         <!-- Command-line options for the JVM during unit test execution. -->
         <mvn.test.options>-Xmx512m -Xms128m -XX:MaxPermSize=512m</mvn.test.options>
         <!-- Build Number. -->

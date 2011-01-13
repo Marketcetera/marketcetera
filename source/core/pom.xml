@@ -195,30 +195,6 @@
           </componentProperties>
         </configuration>
       </plugin>
-      
-      <!-- Copy generated test jar into the corresponding photon plugin. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <configuration>
-              <tasks>
-                <property
-                 name="targetDirTests"
-                 value="../photon/plugins/org.marketcetera.core.tests/" />
-                <copy
-                 file="target/core-${project.version}-tests.jar"
-                 todir="${targetDirTests}" />
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>
