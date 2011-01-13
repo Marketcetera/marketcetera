@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: will@marketcetera.com
+  - Since: 0.8.0
+  - Version: $Id: pom.xml 15806 2011-01-10 18:46:25Z colin $
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>eclipse</artifactId>
+    <version>3.0.0</version>
+  </parent>
+  <artifactId>eclipse-maven</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Eclipse Maven Components</name>
+
+  <modules>
+    <module>app</module>
+    <module>bundle</module>
+    <module>rcptarget</module>
+    <module>test-bundle</module>
+  </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>eclipse-bundle</artifactId>
+        <version>[${mvn.project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>eclipse-rcptarget</artifactId>
+        <version>[${mvn.project.version}]</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>eclipse-test-bundle</artifactId>
+        <version>[${mvn.project.version}]</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+</project>

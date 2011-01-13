@@ -1,5 +1,6 @@
 package org.marketcetera.server;
 
+import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.strategyagent.StrategyAgent;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -16,6 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class ServerApp
+        extends ApplicationBase
 {
     /**
      * Gets the <code>Server</code> instance.
@@ -59,6 +61,10 @@ public class ServerApp
                               "Server SA Thread");
 //        saThread.start();
     }
+    /**
+     * 
+     */
+    private static final String APP_CONTEXT_CFG_BASE= "file:" + CONF_DIR + "properties.xml";
     /**
      * 
      */
