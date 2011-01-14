@@ -3,7 +3,6 @@ package org.marketcetera.ors;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -48,7 +47,10 @@ import quickfix.DefaultMessageFactory;
 import quickfix.Message;
 import quickfix.SessionNotFound;
 import quickfix.SocketInitiator;
-import quickfix.field.*;
+import quickfix.field.MsgType;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.TargetCompID;
 
 /**
  * The main application. See {@link SpringConfig} for configuration
@@ -249,7 +251,6 @@ public class OrderRoutingSystem
      *
      * @return The context.
      */
-    private static final AtomicInteger counter = new AtomicInteger(0);
     synchronized void stop()
     {
         Brokers brokers = getBrokers();
