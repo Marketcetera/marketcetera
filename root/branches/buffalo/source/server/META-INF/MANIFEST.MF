@@ -20,4 +20,6 @@ Import-Package:
  org.marketcetera.util.misc,
  org.marketcetera.util.ws.stateful,
  org.marketcetera.util.ws.wrappers
-Require-Bundle: org.marketcetera.util
+Require-Bundle: org.marketcetera.util,
+ org.marketcetera.ors,
+ org.marketcetera.core

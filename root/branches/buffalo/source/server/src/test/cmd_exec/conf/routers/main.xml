@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main router configuration.
+  -
+  - Author: colin@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+  <!-- include a main.xml for each order router (each in a separate subdirectory -->
+  <!-- import resource="default/main.xml"/-->
+  <!-- explicitly list each router (order may or may not be significant depending on the balancing algo -->
+  <bean id="metc_routers" class="org.marketcetera.server.config.OrderRouter.OrderRouters">
+    <constructor-arg>
+      <set>
+        <!-- ref bean="default_router"/-->
+      </set>
+    </constructor-arg>
+  </bean>
+  <!-- define the routing algorithm for orders -->
+  <bean id="metc_routing_selector" class="org.marketcetera.server.RoundRobinRoutingSelector"/>
+</beans>
