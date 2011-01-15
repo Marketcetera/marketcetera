@@ -24,7 +24,7 @@ public class DefaultSessionIDTest extends TestCase {
     }
 
     public void testDefaultSessionIDTest() throws Exception {
-        Class aClass = quickfix.SessionSettings.class;
+        Class<?> aClass = quickfix.SessionSettings.class;
         Field theField = aClass.getDeclaredField("DEFAULT_SESSION_ID"); //$NON-NLS-1$
         theField.setAccessible(true);
         Object defaultSessionID = theField.get(null);

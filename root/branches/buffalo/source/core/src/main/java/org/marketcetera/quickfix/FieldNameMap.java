@@ -17,7 +17,7 @@ import java.util.Map;
 public class FieldNameMap<T> {
 
     /** Creates a new instance of NameManager */
-    public FieldNameMap(int fieldID, Class fieldClass) {
+    public FieldNameMap(int fieldID, Class<?> fieldClass) {
         addNames(fieldID, fieldClass);
     }
 
@@ -38,8 +38,8 @@ public class FieldNameMap<T> {
         return newString.toString();
     }
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
-    private void addNames(int fieldID, Class fieldClass) {
+    @SuppressWarnings("unchecked")
+    private void addNames(int fieldID, Class<?> fieldClass) {
         Field [] fields = fieldClass.getFields();
         for (Field aField : fields) {
             String fieldName = aField.getName();

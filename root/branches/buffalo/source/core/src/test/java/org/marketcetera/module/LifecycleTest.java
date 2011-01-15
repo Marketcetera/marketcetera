@@ -665,7 +665,7 @@ public class LifecycleTest extends ModuleTestBase {
     private void assertProviderInfo(
             ModuleURN inURN,
             String[] parameterTypeNames,
-            Class[] parameterTypes, String description,
+            Class<?>[] parameterTypes, String description,
             boolean autoInstantiate,
             boolean multipleInstances) throws Exception {
         assertProviderInfo(sManager, inURN, parameterTypeNames, parameterTypes,

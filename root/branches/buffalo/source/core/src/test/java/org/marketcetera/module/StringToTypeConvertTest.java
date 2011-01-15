@@ -228,7 +228,7 @@ public class StringToTypeConvertTest {
      *
      * @throws Exception if there were unexpected errors.
      */
-    private static void verifyConvertFail(final Class inType,
+    private static void verifyConvertFail(final Class<?> inType,
                                           final String inValue)
             throws Exception {
         new ExpectedFailure<IllegalArgumentException>(
@@ -254,7 +254,7 @@ public class StringToTypeConvertTest {
      * @param inValue the string value.
      * @param inExpected the expected value.
      */
-    private static void verifyConversion(Class inType,
+    private static void verifyConversion(Class<?> inType,
                                          String inValue,
                                          Object inExpected) {
         assertEquals(inExpected, StringToTypeConverter.convert(
@@ -268,7 +268,7 @@ public class StringToTypeConvertTest {
      *
      * @param inType if the specified java type is supported
      */
-    private static void assertSupported(Class inType) {
+    private static void assertSupported(Class<?> inType) {
         assertTrue(StringToTypeConverter.isSupported(inType));
         assertTrue(StringToTypeConverter.isSupported(inType.getName()));
     }
@@ -277,7 +277,7 @@ public class StringToTypeConvertTest {
      *
      * @param inType if the specified java type is not supported
      */
-    private static void assertNotSupported(Class inType) {
+    private static void assertNotSupported(Class<?> inType) {
         assertFalse(StringToTypeConverter.isSupported(inType));
         assertFalse(StringToTypeConverter.isSupported(inType.getName()));
     }

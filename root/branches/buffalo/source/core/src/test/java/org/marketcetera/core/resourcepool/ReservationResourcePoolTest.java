@@ -522,7 +522,7 @@ public class ReservationResourcePoolTest
                                     MockResource inResource,
                                     MockResource inReturnedResource,
                                     STATE inReturnedResourceState, 
-                                    Class inExceptionClass)
+                                    Class<?> inExceptionClass)
     throws Exception
     {
         ResourceRequester requester = new ResourceRequester(inReservation);

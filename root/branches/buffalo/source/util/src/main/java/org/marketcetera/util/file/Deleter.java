@@ -54,7 +54,7 @@ public class Deleter
          * @see DirectoryWalker#handleDirectoryEnd(File,int,Collection)
          */
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         @Override
         protected void handleDirectoryEnd
             (File directory,
@@ -71,7 +71,7 @@ public class Deleter
          * @see DirectoryWalker#handleFile(File,int,Collection)
          */
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("rawtypes")
         @Override
         protected void handleFile
             (File file,

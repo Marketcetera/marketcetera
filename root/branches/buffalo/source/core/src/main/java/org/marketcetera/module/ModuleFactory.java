@@ -79,7 +79,7 @@ public abstract class ModuleFactory {
      *
      * @return the list of parameter types, cannot be null.
      */
-    public final Class[] getParameterTypes() {
+    public final Class<?>[] getParameterTypes() {
         return mParameterTypes.clone();
     }
 
@@ -156,7 +156,7 @@ public abstract class ModuleFactory {
                             I18NBoundMessage inDescription,
                             boolean inMultipleInstances,
                             boolean inAutoInstantiate,
-                            Class... inParameterTypes) {
+                            Class<?>... inParameterTypes) {
         mURN = inURN;
         mDescription = inDescription;
         mMultipleInstances = inMultipleInstances;
@@ -199,5 +199,5 @@ public abstract class ModuleFactory {
     private final I18NBoundMessage mDescription;
     private final boolean mMultipleInstances;
     private final boolean mAutoInstantiate;
-    private final Class[] mParameterTypes;
+    private final Class<?>[] mParameterTypes;
 }
