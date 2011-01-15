@@ -10,9 +10,9 @@ import java.lang.reflect.InvocationTargetException;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class AccessViolator {
-    Class violatedClass;
+    Class<?> violatedClass;
 
-    public AccessViolator(Class violatedClass) {
+    public AccessViolator(Class<?> violatedClass) {
         this.violatedClass = violatedClass;
     }
 

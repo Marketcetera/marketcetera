@@ -28,7 +28,7 @@ public final class ProviderInfo implements Serializable {
      * @throws ClassNotFoundException if there were errors finding
      * the classes for the parameter type names.
      */
-    public Class[] parameterTypes() throws ClassNotFoundException {
+    public Class<?>[] parameterTypes() throws ClassNotFoundException {
         if(mParameterTypes == null) {
             mParameterTypes = new Class[mParameterTypeNames.size()];
             int i = 0;
@@ -165,7 +165,7 @@ public final class ProviderInfo implements Serializable {
      * the factory lock.
      */
     public ProviderInfo(ModuleURN inURN,
-                        Class[] inParameterTypes,
+                        Class<?>[] inParameterTypes,
                         boolean inMultipleInstances,
                         boolean inAutoInstantiate,
                         String inDescription,
@@ -179,12 +179,12 @@ public final class ProviderInfo implements Serializable {
         mLocked = inLocked;
         mLockQueueLength = inLockQueueLength;
         mParameterTypeNames = new ArrayList<String>(mParameterTypes.length);
-        for(Class c: mParameterTypes) {
+        for(Class<?> c: mParameterTypes) {
             mParameterTypeNames.add(c.getName());
         }
     }
 
-    private transient Class[] mParameterTypes;
+    private transient Class<?>[] mParameterTypes;
     private final ModuleURN mURN;
     private final List<String> mParameterTypeNames;
     private final boolean mMultipleInstances;

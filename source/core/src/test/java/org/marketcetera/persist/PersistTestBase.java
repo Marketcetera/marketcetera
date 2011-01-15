@@ -151,7 +151,7 @@ public class PersistTestBase {
      * wasn't found.
      */
     public static PropertyDescriptor getPropertyDescriptor(
-            Class clazz, String attributeName) throws IntrospectionException {
+            Class<?> clazz, String attributeName) throws IntrospectionException {
         PropertyDescriptor pd = null;
         BeanInfo info= Introspector.getBeanInfo(clazz,
                 Introspector.IGNORE_ALL_BEANINFO);

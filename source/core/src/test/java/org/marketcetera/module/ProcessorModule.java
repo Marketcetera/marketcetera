@@ -40,7 +40,7 @@ public class ProcessorModule extends ModuleBase
         }
         //boolean data is transmitted without filtering to all requests
         if(data instanceof Boolean) {
-            for(Pair<Class,DataEmitterSupport> p:mTable.values()) {
+            for(Pair<Class<?>,DataEmitterSupport> p:mTable.values()) {
                 p.getSecondMember().send(data);
             }
             return;
@@ -49,7 +49,7 @@ public class ProcessorModule extends ModuleBase
             //throw an error every other time just for testing error reporting
             throw new UnsupportedDataTypeException(TestMessages.BAD_DATA);
         }
-        for(Pair<Class,DataEmitterSupport> p:mTable.values()) {
+        for(Pair<Class<?>,DataEmitterSupport> p:mTable.values()) {
             if(p.getFirstMember().isInstance(data)) {
                 p.getSecondMember().send(data);
             }
@@ -76,9 +76,9 @@ public class ProcessorModule extends ModuleBase
             mPassThruID = inSupport.getRequestID();
         } else {
             try {
-                Class filter = Class.forName(obj.toString());
+                Class<?> filter = Class.forName(obj.toString());
                 mTable.put(inSupport.getRequestID(),
-                        new Pair<Class,DataEmitterSupport>(
+                        new Pair<Class<?>,DataEmitterSupport>(
                         filter,inSupport));
                 mFlows.add(inSupport.getFlowID());
             } catch (ClassNotFoundException e) {
@@ -93,7 +93,7 @@ public class ProcessorModule extends ModuleBase
         if (inRequestID.equals(mPassThruID)) {
             mPassThru = null;
         }
-        Pair<Class, DataEmitterSupport> pair = mTable.remove(inRequestID);
+        Pair<Class<?>, DataEmitterSupport> pair = mTable.remove(inRequestID);
         if(pair != null) {
             mFlows.remove(pair.getSecondMember().getFlowID());
         }
@@ -120,7 +120,7 @@ public class ProcessorModule extends ModuleBase
 
     private DataEmitterSupport mPassThru = null;
     private RequestID mPassThruID;
-    private Hashtable<RequestID, Pair<Class,DataEmitterSupport>> mTable =
-            new Hashtable<RequestID, Pair<Class, DataEmitterSupport>>();
+    private Hashtable<RequestID, Pair<Class<?>,DataEmitterSupport>> mTable =
+            new Hashtable<RequestID, Pair<Class<?>, DataEmitterSupport>>();
     private HashSet<DataFlowID> mFlows = new HashSet<DataFlowID>();
 }

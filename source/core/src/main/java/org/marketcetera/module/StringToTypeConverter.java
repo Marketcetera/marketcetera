@@ -65,7 +65,7 @@ class StringToTypeConverter {
      * @return true if the converter supports conversion of strings
      * to instances of the supplied type.
      */
-    public static boolean isSupported(Class inType) {
+    public static boolean isSupported(Class<?> inType) {
         return sConverter.lookup(inType) != null;
     }
 
@@ -108,7 +108,7 @@ class StringToTypeConverter {
      * not supported OR if there were errors converting
      * the string to a numeric type.
      */
-    public static Object convert(Class inType, String inValue)
+    public static Object convert(Class<?> inType, String inValue)
             throws IllegalArgumentException {
         try {
             return sConverter.convert(inValue, inType);
@@ -145,18 +145,19 @@ class StringToTypeConverter {
      *
      * @param inClass the primitive type class to register. 
      */
-    private static void registerPrimitive(Class inClass) {
+    private static void registerPrimitive(Class<?> inClass) {
         sPrimitiveTypeMap.put(inClass.getName(), inClass);
     }
 
     private static final ConvertUtilsBean sConverter = new ConvertUtilsBean();
-    private static final  Hashtable<String,Class> sPrimitiveTypeMap =
-            new Hashtable<String, Class>();
+    private static final  Hashtable<String,Class<?>> sPrimitiveTypeMap =
+            new Hashtable<String, Class<?>>();
 
     /**
      * A converter class for converting string to module URN.
      */
     private static final class ModuleURNConverter implements Converter {
+        @SuppressWarnings("rawtypes")
         public Object convert(Class inClass, Object o) {
             if(ModuleURN.class.equals(inClass)) {
                 try {
@@ -181,6 +182,7 @@ class StringToTypeConverter {
         }
     }
     private static final class PropertiesConverter implements Converter {
+        @SuppressWarnings("rawtypes")
         public Object convert(Class inClass, Object o) {
             if(Properties.class.equals(inClass)) {
                 if(o instanceof Properties) {

@@ -17,7 +17,7 @@ public class MarketceteraTestSuite extends TestSuite {
         init();
     }
 
-    public MarketceteraTestSuite(Class aClass) {
+    public MarketceteraTestSuite(Class<?> aClass) {
         super(aClass);
         init();
     }

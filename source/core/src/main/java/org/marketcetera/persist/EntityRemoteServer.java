@@ -1,21 +1,23 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
 import static org.marketcetera.persist.Messages.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessage0P;
 
-import javax.persistence.*;
-import javax.persistence.PersistenceException;
-import java.util.List;
-import java.util.Hashtable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-/* $License$ */
+import java.util.Hashtable;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
  * Provides services to persist entities to a local database.
@@ -331,12 +333,12 @@ class EntityRemoteServer extends EntityRemoteServices {
      */
     static String getEntityName(Object o) {
         String entityName = null;
-        Class clazz = null;
+        Class<?> clazz = null;
         if (o != null) {
             if(o instanceof EntityBase) {
                 clazz = o.getClass();
             } else if (o instanceof Class) {
-                clazz = (Class) o;
+                clazz = (Class<?>) o;
             } else if (o instanceof String) {
                 try {
                     clazz = Class.forName((String)o);

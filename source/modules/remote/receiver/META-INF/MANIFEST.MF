@@ -7,7 +7,6 @@ Bundle-Version: 3.0.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.core,
  org.marketcetera.client,
- org.marketcetera.core.tests;resolution:=optional,
  org.junit4;resolution:=optional
 Export-Package: org.marketcetera.modules.remote.receiver
 Import-Package: org.marketcetera.util.test

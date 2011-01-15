@@ -21,13 +21,13 @@ import junit.framework.Assert;
 public abstract class ExpectedTestFailure
 {
     private String mContains;
-    private Class mThrowable;
+    private Class<?> mThrowable;
 
-    public ExpectedTestFailure(Class inThrowable) {
+    public ExpectedTestFailure(Class<?> inThrowable) {
         this(inThrowable, null);
     }
 
-    public ExpectedTestFailure(Class inThrowable, String inContains)
+    public ExpectedTestFailure(Class<?> inThrowable, String inContains)
     {
         mThrowable = inThrowable;
         mContains = inContains;
