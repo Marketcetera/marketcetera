@@ -23,3 +23,7 @@ Import-Package:
 Require-Bundle: org.marketcetera.util,
  org.marketcetera.ors,
  org.marketcetera.core
+Export-Package: org.marketcetera.server,
+ org.marketcetera.server.config,
+ org.marketcetera.server.ws,
+ org.marketcetera.server.ws.impl

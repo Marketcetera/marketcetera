@@ -5,7 +5,6 @@ import java.util.Set;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.commons.lang.Validate;
 import org.marketcetera.server.RoutingSelector;
 import org.marketcetera.util.misc.ClassVersion;
 
