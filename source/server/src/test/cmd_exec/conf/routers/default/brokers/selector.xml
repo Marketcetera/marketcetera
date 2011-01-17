@@ -8,20 +8,14 @@
   - Version: $Id: selector.xml 15771 2010-11-30 05:05:53Z toli $
   - $License$
   -->
-
-<!--
-  - See '../README.html' for detailed documentation.
-  -->
-
+<!-- See '../README.html' for detailed documentation -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
   <bean id="metc_selector" class="org.marketcetera.ors.brokers.SpringSelector">
     <!-- Selector entries. -->
-    <!--
-    <property
-     name="entries">
+    <!-- <property name="entries">
       <list>
         <bean
          class="org.marketcetera.ors.brokers.SpringSelectorEntry">
@@ -39,8 +33,7 @@
            value="true"/>
         </bean>
       </list>
-    </property>
-    -->
+    </property> -->
     <!-- Default broker. -->
     <property name="defaultBroker" ref="metc_broker"/>
   </bean>
