@@ -22,6 +22,4 @@
 
   <import
    resource="properties.xml"/>
-  <import
-   resource="db/main.xml"/>
 </beans>

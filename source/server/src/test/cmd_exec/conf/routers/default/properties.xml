@@ -31,7 +31,7 @@
     -->
 
   <util:list
-   id="propertiesFiles">
+   id="default_router_propertiesFiles">
     <value>file:${org.marketcetera.appDir}/conf/routers/default/default.properties</value>
     <value>file:${org.marketcetera.appDir}/conf/routers/default/user.properties</value>
   </util:list>
@@ -46,7 +46,7 @@
     "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
     <property
      name="locations"
-     ref="propertiesFiles">
+     ref="default_router_propertiesFiles">
     </property>
   </bean>
 </beans>
