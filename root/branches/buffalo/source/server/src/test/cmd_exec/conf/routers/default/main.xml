@@ -18,10 +18,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
   <import resource="properties.xml"/>
-  <import resource="messaging/main.xml"/>
   <import resource="brokers/main.xml"/>
   <import resource="filters/main.xml"/>
-  <import resource="db/main.xml"/>
   <bean id="default_router" class="org.marketcetera.ors.config.SpringConfig">
     <!-- The brokers. -->
     <property name="brokers" ref="metc_brokers"/>
