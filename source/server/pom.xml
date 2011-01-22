@@ -30,6 +30,10 @@
     <!-- Compile. -->
     <dependency>
       <groupId>${mvn.public.package}</groupId>
+      <artifactId>api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>client</artifactId>
     </dependency>
     <dependency>

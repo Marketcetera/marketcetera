@@ -17,18 +17,16 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation= "http://www.springframework.org/schema/beans
                             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-  <!-- include site-specific parameters -->                            
-  <import resource="properties.xml"/>
-  <!-- include order routing nodes -->
-  <import resource="routers/main.xml"/>
+  <!-- import node definitions -->                            
+  <import resource="nodes/main.xml"/>
   <!-- build configuration for server -->
-  <bean id="serverConfig" class="org.marketcetera.server.config.ServerConfig">
-    <!-- The order routing nodes -->
-    <constructor-arg ref="metc_routers"/>
-    <constructor-arg ref="metc_routing_selector"/>
-  </bean>
-  <bean class="org.marketcetera.ors.OptionRootUnderlyingMap">
-    <property name="filename" value="${metc.optionroot.map.file}"/>
-    <property name="includeTypes" value="EU,EL"/>
+  <bean id="serverConfig" class="org.marketcetera.server.config.ServerConfigImpl">
+    <constructor-arg name="id" value="MetcServer"/>
+    <constructor-arg name="description" value="Provides core Marketcetera services"/>
+    <constructor-arg name="nodes">
+      <set>
+        <ref bean="default_ors"/>
+      </set>
+    </constructor-arg>
   </bean>
 </beans>

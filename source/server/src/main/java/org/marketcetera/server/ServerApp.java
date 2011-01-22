@@ -1,15 +1,20 @@
 package org.marketcetera.server;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.marketcetera.api.nodes.Node;
+import org.marketcetera.api.nodes.NodeCapability;
+import org.marketcetera.api.nodes.NodeID;
+import org.marketcetera.api.server.Server;
+import org.marketcetera.api.server.ServerConfig;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.server.config.ServerConfig;
+import org.marketcetera.server.config.ServerConfigImpl;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.context.Lifecycle;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -26,7 +31,7 @@ import org.springframework.context.support.StaticApplicationContext;
 @ClassVersion("$Id$")
 public class ServerApp
         extends ApplicationBase
-        implements Lifecycle
+        implements Server
 {
     /**
      * Gets the <code>Server</code> instance.
@@ -104,6 +109,41 @@ public class ServerApp
         Messages.APP_STOP_SUCCESS.info(LOGGER_CATEGORY);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.api.server.Server#addNode(org.marketcetera.api.nodes.Node)
+     */
+    @Override
+    public void addNode(Node inNode)
+    {
+        // TODO Auto-generated method stub
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.server.Server#removeNode(org.marketcetera.api.nodes.NodeID)
+     */
+    @Override
+    public void removeNode(NodeID inNodeID)
+            throws IllegalArgumentException
+    {
+        // TODO Auto-generated method stub
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.server.Server#getNodes()
+     */
+    @Override
+    public List<Node> getNodes()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.server.Server#getNodesFor(org.marketcetera.api.nodes.NodeCapability)
+     */
+    @Override
+    public List<Node> getNodesFor(NodeCapability inRequestedCapability)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
      */
     @Override
@@ -141,19 +181,16 @@ public class ServerApp
             printUsage(Messages.APP_NO_ARGS_ALLOWED);
         }
         // build base Spring configuration
-        StaticApplicationContext parentContext = new StaticApplicationContext(new FileSystemXmlApplicationContext(APP_CONTEXT_CFG_BASE));
-        parentContext.refresh();
-        // read the configuration specified in server.xml
-        context = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+ //$NON-NLS-1$
-                                                                      "server.xml"}, //$NON-NLS-1$
-                                                       parentContext);
+        context = new StaticApplicationContext(new FileSystemXmlApplicationContext(APP_CONTEXT_CFG_BASE));
+        context.refresh();
         // instantiate the objects specified in the configuration
         context.start();
         // create resource managers
-        ServerConfig cfg = ServerConfig.getInstance();
+        ServerConfig cfg = ServerConfigImpl.getInstance();
         if(cfg == null) {
             throw new I18NException(Messages.APP_NO_CONFIGURATION);
         }
+        System.out.println("Server started with: " + cfg);
     }
     /**
      * Prints the given message alongside usage information on the
@@ -180,7 +217,7 @@ public class ServerApp
     /**
      * 
      */
-    private static final String APP_CONTEXT_CFG_BASE= "file:" + CONF_DIR + "properties.xml";
+    private static final String APP_CONTEXT_CFG_BASE= "file:" + CONF_DIR + "server.xml";
     /**
      * the singleton instance of the server
      */
