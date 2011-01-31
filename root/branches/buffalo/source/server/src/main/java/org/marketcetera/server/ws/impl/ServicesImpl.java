@@ -2,18 +2,21 @@ package org.marketcetera.server.ws.impl;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.marketcetera.api.server.ClientContext;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.saclient.CreateStrategyParameters;
-import org.marketcetera.server.ws.ServerServices;
+import org.marketcetera.server.ServerApp;
+import org.marketcetera.server.ws.Services;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -28,8 +31,8 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-class ServerServicesImpl
-        implements ServerServices
+public class ServicesImpl
+        implements Services
 {
     /* (non-Javadoc)
      * @see org.marketcetera.server.Services#getProviders(org.marketcetera.util.ws.stateful.ClientContext)
@@ -101,7 +104,6 @@ class ServerServicesImpl
                                                    ModuleURN inURN)
             throws RemoteException
     {
-        // TODO Auto-generated method stub
         return null;
     }
     /* (non-Javadoc)
@@ -163,8 +165,8 @@ class ServerServicesImpl
      * @see org.marketcetera.server.Services#getReportsSince(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.util.ws.wrappers.DateWrapper)
      */
     @Override
-    public List<ReportBase> getReportsSince(ClientContext inContext,
-                                            DateWrapper inDate)
+    public List<ReportBaseImpl> getReportsSince(ClientContext inContext,
+                                                DateWrapper inDate)
             throws RemoteException
     {
         // TODO Auto-generated method stub
@@ -300,8 +302,8 @@ class ServerServicesImpl
     public String getUserData(ClientContext inContext)
             throws RemoteException
     {
-        // TODO Auto-generated method stub
-        return null;
+        ServerApp.getInstance().getContextValidator().validate(inContext);
+        return "This is only a test";
     }
     /* (non-Javadoc)
      * @see org.marketcetera.server.Services#setUserData(org.marketcetera.util.ws.stateful.ClientContext, java.lang.String)

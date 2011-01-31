@@ -1,20 +1,18 @@
 package org.marketcetera.server;
 
 import java.io.File;
-import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.api.nodes.Node;
-import org.marketcetera.api.nodes.NodeCapability;
-import org.marketcetera.api.nodes.NodeID;
-import org.marketcetera.api.server.Server;
-import org.marketcetera.api.server.ServerConfig;
+import org.marketcetera.api.server.*;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.server.config.ServerConfigImpl;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.server.ws.Services;
+import org.marketcetera.server.ws.impl.ServicesImpl;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateless.StatelessServer;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.Lifecycle;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -31,7 +29,7 @@ import org.springframework.context.support.StaticApplicationContext;
 @ClassVersion("$Id$")
 public class ServerApp
         extends ApplicationBase
-        implements Server
+        implements Lifecycle, InitializingBean, Server
 {
     /**
      * Gets the <code>Server</code> instance.
@@ -65,20 +63,15 @@ public class ServerApp
                                         ApplicationVersion.getBuildNumber());
         Messages.APP_START.info(LOGGER_CATEGORY);
         // Start application
-        final ServerApp app;
-        try {
-            app = new ServerApp(inArgs);
-        } catch(Exception t) {
-            try {
-                Messages.APP_STOP_ERROR.error(LOGGER_CATEGORY,
-                                              t);
-            } catch (Throwable t2) {
-                System.err.println("Reporting failed"); //$NON-NLS-1$
-                System.err.println("Reporting failure"); //$NON-NLS-1$
-                t2.printStackTrace();
-                System.err.println("Original failure"); //$NON-NLS-1$
-                t.printStackTrace();
-            }
+        // build base Spring configuration
+        context = new StaticApplicationContext(new FileSystemXmlApplicationContext(APP_CONTEXT_CFG_BASE));
+        context.refresh();
+        // instantiate the objects specified in the configuration
+        context.start();
+        // the App instance is created by the Spring config
+        final ServerApp app = ServerApp.getInstance();
+        if(app == null) {
+            Messages.APP_STOP_ERROR.error(LOGGER_CATEGORY);
             return;
         }
         Messages.APP_STARTED.info(LOGGER_CATEGORY);
@@ -92,56 +85,18 @@ public class ServerApp
         });
         // Execute application.
         try {
+            app.start();
             app.startWaitingForever();
         } catch(Exception t) {
             try {
                 Messages.APP_STOP_ERROR.error(LOGGER_CATEGORY,
                                               t);
-            } catch (Throwable t2) {
-                System.err.println("Reporting failed"); //$NON-NLS-1$
-                System.err.println("Reporting failure"); //$NON-NLS-1$
-                t2.printStackTrace();
-                System.err.println("Original failure"); //$NON-NLS-1$
-                t.printStackTrace();
+            } finally {
+                app.stop();
             }
             return;
         }
         Messages.APP_STOP_SUCCESS.info(LOGGER_CATEGORY);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.server.Server#addNode(org.marketcetera.api.nodes.Node)
-     */
-    @Override
-    public void addNode(Node inNode)
-    {
-        // TODO Auto-generated method stub
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.server.Server#removeNode(org.marketcetera.api.nodes.NodeID)
-     */
-    @Override
-    public void removeNode(NodeID inNodeID)
-            throws IllegalArgumentException
-    {
-        // TODO Auto-generated method stub
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.server.Server#getNodes()
-     */
-    @Override
-    public List<Node> getNodes()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.server.Server#getNodesFor(org.marketcetera.api.nodes.NodeCapability)
-     */
-    @Override
-    public List<Node> getNodesFor(NodeCapability inRequestedCapability)
-    {
-        // TODO Auto-generated method stub
-        return null;
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
@@ -149,67 +104,115 @@ public class ServerApp
     @Override
     public boolean isRunning()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return super.isWaitingForever();
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#start()
      */
     @Override
-    public void start()
+    public synchronized void start()
     {
-        // TODO Auto-generated method stub
+        webServicesProvider = new StatelessServer(config.getHostname(),
+                                                  config.getPort());
+        webServicesProvider.publish(servicesImpl,
+                                    Services.class);
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#stop()
      */
     @Override
-    public void stop()
+    public synchronized void stop()
     {
-        // TODO Auto-generated method stub
+        if(webServicesProvider != null) {
+            webServicesProvider.stop();
+            webServicesProvider = null;
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    @Override
+    public void afterPropertiesSet()
+            throws Exception
+    {
+        Validate.notNull(servicesImpl,
+                         "Must provide a valid services implementation");
+        Validate.notNull(config,
+                         "Must provide a valid server configuration");
+        Validate.notNull(validator,
+                         "Must provide a valid context validator");
+    }
+    /**
+     * 
+     *
+     *
+     * @param inServicesProvider
+     */
+    public void setServicesProvider(Services inServicesProvider)
+    {
+        servicesImpl = inServicesProvider;
+    }
+    /**
+     * 
+     *
+     *
+     * @param inConfig
+     */
+    public void setServerConfig(ServerConfig inConfig)
+    {
+        config = inConfig;
+    }
+    /**
+     * 
+     *
+     *
+     * @param inValidator
+     */
+    public void setContextValidator(ContextValidator inValidator)
+    {
+        validator = inValidator;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.server.Server#getContextValidator()
+     */
+    @Override
+    public ContextValidator getContextValidator()
+    {
+        return validator;
     }
     /**
      * Create a new ServerApp instance.
-     *
-     * @param inArguments
-     * @throws Exception 
      */
-    private ServerApp(String[] inArguments)
+    public ServerApp()
             throws Exception
     {
-        if(inArguments.length != 0) {
-            printUsage(Messages.APP_NO_ARGS_ALLOWED);
-        }
-        // build base Spring configuration
-        context = new StaticApplicationContext(new FileSystemXmlApplicationContext(APP_CONTEXT_CFG_BASE));
-        context.refresh();
-        // instantiate the objects specified in the configuration
-        context.start();
-        // create resource managers
-        ServerConfig cfg = ServerConfigImpl.getInstance();
-        if(cfg == null) {
-            throw new I18NException(Messages.APP_NO_CONFIGURATION);
-        }
-        System.out.println("Server started with: " + cfg);
+        servicesImpl = new ServicesImpl();
+        validator = new ContextValidator() {
+            @Override
+            public void validate(ClientContext inContext)
+            {
+                System.out.println("Validating: " + inContext);
+                // do nothing
+            }
+        };
+        instance = this;
     }
     /**
-     * Prints the given message alongside usage information on the
-     * standard error stream, and throws an exception.
-     *
-     * @param message The message.
-     *
-     * @throws IllegalStateException Always thrown.
+     * 
      */
-    private void printUsage(I18NBoundMessage message)
-            throws I18NException
-    {
-        System.err.println(message.getText());
-        System.err.println(Messages.APP_USAGE.getText
-                           (ServerApp.class.getName()));
-        System.err.println(Messages.APP_AUTH_OPTIONS.getText());
-        System.err.println();
-        throw new I18NException(message);
-    }
+    private volatile ContextValidator validator;
+    /**
+     * 
+     */
+    private volatile ServerConfig config;
+    /**
+     * 
+     */
+    private volatile Services servicesImpl;
+    /**
+     * 
+     */
+    private volatile StatelessServer webServicesProvider;
     /**
      * 
      */
@@ -217,10 +220,13 @@ public class ServerApp
     /**
      * 
      */
-    private static final String APP_CONTEXT_CFG_BASE= "file:" + CONF_DIR + "server.xml";
+    private static final String APP_CONTEXT_CFG_BASE = "file:" + CONF_DIR + "server.xml";
     /**
      * the singleton instance of the server
      */
     private static volatile ServerApp instance;
-    private final AbstractApplicationContext context;
+    /**
+     * the Spring context which with the App was constructed
+     */
+    private static volatile AbstractApplicationContext context;
 }

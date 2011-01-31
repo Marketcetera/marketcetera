@@ -8,5 +8,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.core;visibility:=reexport
 Eclipse-RegisterBuddy: org.marketcetera.core
 Export-Package: org.marketcetera.api,
- org.marketcetera.api.nodes,
  org.marketcetera.api.server

@@ -1,0 +1,12 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           targetNamespace="http://marketcetera.com/server/schemas"
+           xmlns:hr="http://marketcetera.com/server/schemas">
+    <xs:element name="ModuleURN">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Value" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

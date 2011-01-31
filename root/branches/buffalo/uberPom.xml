@@ -28,7 +28,7 @@
     <mvn.project.version>3.0.0</mvn.project.version>
     <mvn.javase.version>6</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>3.0.1.RELEASE</mvn.spring.version>
+    <mvn.spring.version>3.0.5.RELEASE</mvn.spring.version>
     <mvn.cxf.version>2.2.11</mvn.cxf.version>
     <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
 <!--
@@ -43,7 +43,17 @@
       <!-- Compile: local modules. -->
       <dependency>
         <groupId>${mvn.public.package}</groupId>
+        <artifactId>api</artifactId>
+        <version>[${mvn.project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
         <artifactId>client</artifactId>
+        <version>[${mvn.project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>server</artifactId>
         <version>[${mvn.project.version}]</version>
       </dependency>
       <dependency>

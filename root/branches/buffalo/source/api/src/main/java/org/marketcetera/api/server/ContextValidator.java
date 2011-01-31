@@ -1,7 +1,5 @@
 package org.marketcetera.api.server;
 
-import org.marketcetera.api.Config;
-
 /* $License$ */
 
 /**
@@ -11,21 +9,13 @@ import org.marketcetera.api.Config;
  * @version $Id$
  * @since $Release$
  */
-public interface ServerConfig
-        extends Config
+public interface ContextValidator
 {
     /**
      * 
      *
      *
-     * @return
+     * @param inContext
      */
-    public String getHostname();
-    /**
-     * 
-     *
-     *
-     * @return
-     */
-    public int getPort();
+    public void validate(ClientContext inContext);
 }
