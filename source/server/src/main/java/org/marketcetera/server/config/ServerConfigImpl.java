@@ -1,16 +1,11 @@
 package org.marketcetera.server.config;
 
-import java.util.Set;
-
-import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.nodes.Node;
-import org.marketcetera.api.nodes.NodeConfig;
 import org.marketcetera.api.server.ServerConfig;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.InitializingBean;
 
 /* $License$ */
 
@@ -24,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @ClassVersion("$Id$")
 public class ServerConfigImpl
-        implements ServerConfig
+        implements ServerConfig, InitializingBean
 {
     /* (non-Javadoc)
      * @see org.marketcetera.api.Config#getID()
@@ -43,21 +38,81 @@ public class ServerConfigImpl
         return description;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.api.server.ServerConfig#getNodes()
+     * @see org.marketcetera.api.server.ServerConfig#getHostname()
      */
     @Override
-    public Set<Node> getNodes()
+    public String getHostname()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return hostname;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.api.server.ServerConfig#setNodes(java.util.Set)
+     * @see org.marketcetera.api.server.ServerConfig#getPort()
      */
     @Override
-    public void setNodes(Set<Node> inNodes)
+    public int getPort()
     {
-        // TODO Auto-generated method stub
+        return port;
+    }
+    /**
+     * Get the id value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getId()
+    {
+        return id;
+    }
+    /**
+     * Sets the id value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setId(String inId)
+    {
+        id = inId;
+    }
+    /**
+     * Sets the description value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
+    }
+    /**
+     * Sets the hostname value.
+     *
+     * @param a <code>String</code> value
+     */
+    public void setHostname(String inHostname)
+    {
+        hostname = inHostname;
+    }
+    /**
+     * Sets the port value.
+     *
+     * @param a <code>int</code> value
+     */
+    public void setPort(int inPort)
+    {
+        port = inPort;
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    @Override
+    public void afterPropertiesSet()
+            throws Exception
+    {
+        Validate.notNull(id,
+                         "Server name must not be null");
+        Validate.notNull(description,
+                         "Server description must not be null");
+        Validate.notNull(hostname,
+                         "Server hostname must not be null");
+        // TODO validate port
+        // TODO resolve hostname?
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -65,41 +120,26 @@ public class ServerConfigImpl
     @Override
     public String toString()
     {
-        return String.format("ServerConfig [id=%s, description=%s]",
+        return String.format("ServerConfig [%s %s %s:%s]",
                              id,
-                             description);
-    }
-    /**
-     * 
-     *
-     *
-     * @return
-     */
-    public static ServerConfigImpl getInstance()
-    {
-        synchronized(ServerConfigImpl.class) {
-            return instance;
-        }
-    }
-    public ServerConfigImpl(String id,
-                            String description,
-                            Set<NodeConfig> nodes)
-    {
-        this.id = StringUtils.trimToNull(id);
-        this.description = StringUtils.trimToNull(description);
-        Validate.notNull(this.id,
-                         "Server name must not be null");
-        Validate.notNull(this.description,
-                         "Server description must not be null");
-        synchronized(ServerConfigImpl.class) {
-            instance = this;
-        }
+                             description,
+                             getHostname(),
+                             port);
     }
     /**
      * 
      */
-    @GuardedBy("SpringConfig.class")
-    private static ServerConfigImpl instance;
-    private final String id;
-    private final String description;
+    private volatile String id;
+    /**
+     * 
+     */
+    private volatile String description;
+    /**
+     * 
+     */
+    private volatile String hostname;
+    /**
+     * 
+     */
+    private volatile int port;
 }

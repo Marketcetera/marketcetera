@@ -7,6 +7,7 @@ import java.util.List;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
+import org.marketcetera.api.server.ClientContext;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.Util;
@@ -16,7 +17,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.saclient.CreateStrategyParameters;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.ClientContext;
+import org.marketcetera.util.ws.stateless.StatelessServiceBase;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -32,7 +33,8 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  */
 @WebService(targetNamespace="http://marketcetera.org/services")
 @ClassVersion("$Id$")
-public interface ServerServices
+public interface Services
+        extends StatelessServiceBase
 {
     /**
      * Returns the list of available module providers.
@@ -168,11 +170,11 @@ public interface ServerServices
      *
      * @param inContext a <code>ClientContent</code> value providing the caller's session information
      * @param inDate a <code>DateWrapper</code> value
-     * @return a <code>List&lt;ReportBase&gt;</code> value
+     * @return a <code>List&lt;ReportBaseImpl&gt;</code> value
      * @throws RemoteException if there were errors communicating with the server
      */
-    public List<ReportBase> getReportsSince(@WebParam(name="context")ClientContext inContext,
-                                            @WebParam(name="date")DateWrapper inDate)
+    public List<ReportBaseImpl> getReportsSince(@WebParam(name="context")ClientContext inContext,
+                                                @WebParam(name="date")DateWrapper inDate)
             throws RemoteException;
     /**
      * Returns the position of the given <code>Equity</code> instrument.
