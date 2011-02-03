@@ -182,7 +182,7 @@
          </property>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0A;&#x0A;Version: 2.1.4&#x0A;Build: metc.build.number&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2010.  All rights reserved.&#x0A;Visit http://www.marketcetera.org">
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 2.1.4&#x0A;Build: metc.build.number&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2011.  All rights reserved.&#x0A;Visit http://www.marketcetera.org">
          </property>
       </product>
    </extension>
