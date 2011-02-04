@@ -50,7 +50,7 @@ public interface RunningStrategy
      *
      * @param inDividend a <code>DividendEvent</code> value
      */
-    public void onDividend(DividendEvent inStatistics);
+    public void onDividend(DividendEvent inDividend);
     /**
      * Indicates an <code>ExecutionReport</code> has been received.
      * 

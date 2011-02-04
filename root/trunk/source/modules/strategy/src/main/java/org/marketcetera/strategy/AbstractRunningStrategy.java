@@ -1090,7 +1090,7 @@ public abstract class AbstractRunningStrategy
      * @param inOptionRoot a <code>String</code> value
      * @param inExpiry a <code>String</code> value
      * @param inStrikePrice a <code>BigDecimal</code> value
-     * @param inOptionType an <code>OptionType</code> value
+     * @param inType an <code>OptionType</code> value
      * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found
      */
     protected final BigDecimal getOptionPositionAsOf(Date inDate,
@@ -1418,7 +1418,7 @@ public abstract class AbstractRunningStrategy
     /**
      * Sets the user data associated with the current user.
      *
-     * @param inData a <code>Properties</code> value
+     * @param inUserData a <code>Properties</code> value
      */
     protected final void setUserData(Properties inUserData)
     {
