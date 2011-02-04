@@ -48,7 +48,7 @@ public class ExchangeRequestBuilder
     /**
      * Sets the underlying instrument value.
      *
-     * @param an <code>Instrument</code> value
+     * @param inUnderlyingInstrument an <code>Instrument</code> value
      */
     public ExchangeRequestBuilder withUnderlyingInstrument(Instrument inUnderlyingInstrument)
     {
@@ -58,7 +58,7 @@ public class ExchangeRequestBuilder
     /**
      * Sets the instrument value.
      *
-     * @param an <code>Instrument</code> value
+     * @param inInstrument an <code>Instrument</code> value
      */
     public ExchangeRequestBuilder withInstrument(Instrument inInstrument)
     {

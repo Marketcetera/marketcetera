@@ -680,7 +680,7 @@ public class Strategy
      * @param inOptionRoot a <code>String</code> value
      * @param inExpiry a <code>String</code> value
      * @param inStrikePrice a <code>BigDecimal</code> value
-     * @param inOptionType an <code>OptionType</code> value
+     * @param inType an <code>OptionType</code> value
      * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found
      */
     public final BigDecimal get_option_position_as_of(Date inDate,
@@ -797,8 +797,8 @@ public class Strategy
      *
      * @param inData a <code>Properties</code> value
      */
-    public final void set_user_data(Properties inProperties)
+    public final void set_user_data(Properties inData)
     {
-        setUserData(inProperties);
+        setUserData(inData);
     }
 }

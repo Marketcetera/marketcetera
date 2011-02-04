@@ -56,7 +56,7 @@ public class Future
      * Create a new Future instance.
      *
      * @param inSymbol a <code>String</code> value containing the future symbol
-     * @param inExpirationQuarter a <code>FutureExpirationMonth</code> value containing the future expiry month
+     * @param inExpirationMonth a <code>FutureExpirationMonth</code> value containing the future expiry month
      * @param inExpirationYear an <code>int</code> value containing the future expiration year (values &lt; 100 will be considered years
      *  in the 21st century)
      * @throws IllegalArgumentException if any of the parameters are invalid

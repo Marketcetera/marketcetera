@@ -84,7 +84,7 @@ public class FutureBean
     /**
      * Sets the futureType value.
      *
-     * @param a <code>FutureType</code> value
+     * @param inFutureType a <code>FutureType</code> value
      */
     public void setType(FutureType inFutureType)
     {
@@ -102,7 +102,7 @@ public class FutureBean
     /**
      * Sets the underlyingAssetType value.
      *
-     * @param a <code>FutureUnderlyingAssetType</code> value
+     * @param inUnderlyingAssetType a <code>FutureUnderlyingAssetType</code> value
      */
     public void setUnderlyingAssetType(FutureUnderlyingAssetType inUnderlyingAssetType)
     {
@@ -120,7 +120,7 @@ public class FutureBean
     /**
      * Sets the deliveryType value.
      *
-     * @param a <code>DeliveryType</code> value
+     * @param inDeliveryType a <code>DeliveryType</code> value
      */
     public void setDeliveryType(DeliveryType inDeliveryType)
     {
@@ -138,7 +138,7 @@ public class FutureBean
     /**
      * Sets the standardType value.
      *
-     * @param a <code>StandardType</code> value
+     * @param inStandardType a <code>StandardType</code> value
      */
     public void setStandardType(StandardType inStandardType)
     {
@@ -293,7 +293,7 @@ public class FutureBean
     /**
      * Sets the futureType value.
      *
-     * @param a <code>FutureType</code> value
+     * @param inFutureType a <code>FutureType</code> value
      */
     public void setFutureType(FutureType inFutureType)
     {
@@ -311,7 +311,7 @@ public class FutureBean
     /**
      * Sets the contractSize value.
      *
-     * @param a <code>int</code> value
+     * @param inContractSize an <code>int</code> value
      */
     public void setContractSize(int inContractSize)
     {
@@ -320,7 +320,7 @@ public class FutureBean
     /**
      * Sets the instrument value.
      *
-     * @param a <code>Instrument</code> value
+     * @param inInstrument an <code>Instrument</code> value
      */
     public void setInstrument(Instrument inInstrument)
     {

@@ -195,7 +195,7 @@ public abstract class AbstractQuoteEventImpl
     /**
      * Create a new QuoteEventImpl instance.
      *
-     * @param inQuoteBean a <code>QuoteBean</code> value
+     * @param inQuote a <code>QuoteBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>

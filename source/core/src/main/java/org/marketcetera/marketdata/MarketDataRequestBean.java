@@ -41,7 +41,7 @@ public final class MarketDataRequestBean
     /**
      * Sets the provider value.
      *
-     * @param a <code>String</code> value
+     * @param inProvider a <code>String</code> value
      */
     public void setProvider(String inProvider)
     {
@@ -59,7 +59,7 @@ public final class MarketDataRequestBean
     /**
      * Sets the exchange value.
      *
-     * @param a <code>String</code> value
+     * @param inExchange a <code>String</code> value
      */
     public void setExchange(String inExchange)
     {
@@ -77,7 +77,7 @@ public final class MarketDataRequestBean
     /**
      * Sets the assetClass value.
      *
-     * @param a <code>AssetClass</code> value
+     * @param inAssetClass a <code>AssetClass</code> value
      */
     public void setAssetClass(AssetClass inAssetClass)
     {
@@ -195,7 +195,7 @@ public final class MarketDataRequestBean
      * are discarded.  The values will be retained in their given order.
      * Null values are allowed.
      *
-     * @param inUnderlyingSymbols a <code>Collection&lt;Content&gt;</code> value
+     * @param inContent a <code>Collection&lt;Content&gt;</code> value
      */
     public void setContent(Collection<Content> inContent)
     {

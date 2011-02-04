@@ -751,7 +751,7 @@ public class BasicCSVFeedEventTranslator
      * 
      * <p>The line must contain at least three elements with the symbol in the third element.
      * 
-     * @param inSymbol a <code>String</code> value containing the symbol from the CSV file - this may be a compound type or a simple type
+     * @param inData a <code>CSVQuantum</code> value containing an element of data from the CSV file
      * @return an <code>Instrument</code> value
      * @throws CoreException if an error occurs parsing the symbol string
      * @throws ArrayIndexOutOfBoundsException if the given data does not contain symbol information at the expected position
@@ -834,7 +834,7 @@ public class BasicCSVFeedEventTranslator
      *
      * <p>The exchange is assumed to be the fifth element in the line.
      *
-     * @param inExchangeChunk a <code>String</code> value
+     * @param inData a <code>CSVQuantum</code> value
      * @return a <code>String</code> value or <code>null</code>
      */
     protected String guessExchange(CSVQuantum inData)
@@ -851,7 +851,7 @@ public class BasicCSVFeedEventTranslator
      *
      * <p>The event timestamp is assumed to be the second element in the line.
      *
-     * @param inTimestampChunk a <code>String</code> value
+     * @param inData a <code>CSVQuantum</code> value
      * @return a <code>Date</code> value containing the timestamp for the event or <code>null</code>
      * @throws CoreException if the event could not be parsed
      */
