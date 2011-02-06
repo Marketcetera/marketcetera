@@ -78,20 +78,20 @@ public class ORSTestBase
 
         // Create and start ORS in a separate thread.
 
-        sORS =new OrderRoutingSystem(args);
+        sORS =new OrderRoutingSystem();
         sORSThread =new Thread("testThread") {
             @Override
             public void run() {
-                getORS().startWaitingForever();
+//                getORS().startWaitingForever(); // TODO the ORS runs as a standalone app?
             }
         };
         sORSThread.start();
 
         // Wait for ORS initialization to complete.
 
-        while (!getORS().isWaitingForever()) {
-            Thread.sleep(1000);
-        }
+//        while (!getORS().isWaitingForever()) { // TODO the ORS runs as a standalone app?
+//            Thread.sleep(1000);
+//        }
 
         // Wait for exchange connections (from both brokers) to be
         // set up.

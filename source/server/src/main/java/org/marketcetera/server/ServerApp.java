@@ -4,11 +4,16 @@ import java.io.File;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.api.server.*;
+import org.marketcetera.api.server.ClientContext;
+import org.marketcetera.api.server.ContextValidator;
+import org.marketcetera.api.server.Server;
+import org.marketcetera.api.server.ServerConfig;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.server.ws.Services;
 import org.marketcetera.server.ws.impl.ServicesImpl;
+import org.marketcetera.strategyagent.StrategyAgent;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.StatelessServer;
 import org.springframework.beans.factory.InitializingBean;
@@ -112,6 +117,7 @@ public class ServerApp
     @Override
     public synchronized void start()
     {
+        getOrsNode().start();
         webServicesProvider = new StatelessServer(config.getHostname(),
                                                   config.getPort());
         webServicesProvider.publish(servicesImpl,
@@ -127,6 +133,11 @@ public class ServerApp
             webServicesProvider.stop();
             webServicesProvider = null;
         }
+        OrderRoutingSystem ors = getOrsNode();
+        if(ors != null) {
+            ors.stop();
+        }
+        // TODO stop SA node
     }
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -141,6 +152,8 @@ public class ServerApp
                          "Must provide a valid server configuration");
         Validate.notNull(validator,
                          "Must provide a valid context validator");
+        Validate.notNull(getOrsNode(),
+                         "Must provide an order routing node");
     }
     /**
      * 
@@ -181,6 +194,24 @@ public class ServerApp
         return validator;
     }
     /**
+     * Get the orsNode value.
+     *
+     * @return an <code>OrderRoutingSystem</code> value
+     */
+    public OrderRoutingSystem getOrsNode()
+    {
+        return orsNode;
+    }
+    /**
+     * Sets the orsNode value.
+     *
+     * @param an <code>OrderRoutingSystem</code> value
+     */
+    public void setOrsNode(OrderRoutingSystem inOrsNode)
+    {
+        orsNode = inOrsNode;
+    }
+    /**
      * Create a new ServerApp instance.
      */
     public ServerApp()
@@ -197,6 +228,14 @@ public class ServerApp
         };
         instance = this;
     }
+    /**
+     * routing node
+     */
+    private volatile OrderRoutingSystem orsNode;
+    /**
+     * 
+     */
+    private volatile StrategyAgent saNode;
     /**
      * 
      */

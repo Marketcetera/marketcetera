@@ -17,15 +17,18 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation= "http://www.springframework.org/schema/beans
                             http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-  <!-- configuration for the primary server node -->
+  <!--  include resources for the ORS component of the server node -->
+  <import resource="ors/main.xml"/>
+  <!-- configuration for the server node -->
   <bean id="serverConfiguration" class="org.marketcetera.server.config.ServerConfigImpl">
     <property name="description" value="Marketcetera Primary Host"/>
     <property name="id" value="metc-host1"/>
     <property name="hostname" value="localhost"/>
     <property name="port" value="9000"/>
   </bean>
-  <!-- construct the primary server -->
+  <!-- construct the server -->
   <bean id="server" class="org.marketcetera.server.ServerApp">
     <property name="serverConfig" ref="serverConfiguration"/>
+    <property name="orsNode" ref="orsNode"/>
   </bean>
 </beans>

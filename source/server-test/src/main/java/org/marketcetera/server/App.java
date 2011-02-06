@@ -12,7 +12,7 @@ public class App
         StatelessClient client = new StatelessClient();
         Services marketceteraServices = client.getService(Services.class);
         try {
-            System.out.println("GOT: " + marketceteraServices.getUserData(new ClientContext(){}));
+            System.out.println("GOT: " + marketceteraServices.getBrokersStatus(new ClientContext(){}));
         } catch (RemoteException e) {
             e.printStackTrace();
         }
