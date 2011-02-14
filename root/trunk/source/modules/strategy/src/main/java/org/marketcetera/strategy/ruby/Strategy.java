@@ -278,6 +278,31 @@ public class Strategy
                              inData);
     }
     /**
+     * Requests a callback periodically after a specified period in milliseconds.
+     *
+     * <p>The callback will be executed as close to the specified millisecond
+     * as possible.  There is no guarantee that the timing will be exact.  If
+     * more than one callback is requested by the same {@link RunningStrategy}
+     * for the same millisecond, the requests will be processed serially in
+     * FIFO order.  This implies that a long-running callback request may
+     * delay other callbacks from the same {@link RunningStrategy} unless the
+     * caller takes steps to mitigate the bottleneck.
+     * @param inDelay a <code>long</code> value indicating how many milliseconds
+     *   to wait before executing the first callback. A value <= 0 will be interpreted
+     *   as a request for an immediate callback.
+     * @param inPeriod a <code>long</code> value indicating how many milliseconds
+     *   to wait before executing the second callback, and thereafter repeatedly
+     *   The value must be > 0.
+     * @param inData an <code>Object</code> value to deliver along with the callback,
+     *   may be null
+     */
+    public final void request_callback_every(long inDelay,
+                                             long inPeriod,
+                                             Object inData)
+    {
+        requestCallbackEvery(inDelay, inPeriod, inData);
+    }
+    /**
      * Requests a callback at a specific point in time.
      *
      * <p>The callback will be executed as close to the specified millisecond

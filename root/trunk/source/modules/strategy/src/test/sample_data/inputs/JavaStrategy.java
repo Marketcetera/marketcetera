@@ -290,17 +290,20 @@ public class JavaStrategy
     private void doRequestParameterCallbacks()
     {
         doCallbacks(getParameter("shouldRequestCallbackAfter"),
-                    getParameter("shouldRequestCallbackAt"));
+                    getParameter("shouldRequestCallbackAt"),
+                    getParameter("shouldRequestCallbackEvery"));
     }
     
     private void doRequestPropertiesCallbacks()
     {
         doCallbacks(getProperty("shouldRequestCallbackAfter"),
-                    getProperty("shouldRequestCallbackAt"));
+                    getProperty("shouldRequestCallbackAt"),
+                    getProperty("shouldRequestCallbackEvery"));
     }
     
     private void doCallbacks(String callbackAfter,
-                             String callbackAt)
+                             String callbackAt,
+                             String callbackEvery)
     {
         String shouldDoubleCallbacks = getParameter("shouldDoubleCallbacks");
         int multiplier;
@@ -320,6 +323,12 @@ public class JavaStrategy
                     requestCallbackAt(new Date(Long.parseLong(callbackAt)),
                                       null);
                 }
+                if(callbackEvery != null) {
+                    String[] params = callbackEvery.split(",");
+                    requestCallbackEvery(Long.parseLong(params[0]),
+                                         Long.parseLong(params[1]),
+                                         this);
+                }
             } else {
                 if(callbackAfter != null) {
                     requestCallbackAfter(Long.parseLong(callbackAfter),
@@ -329,6 +338,17 @@ public class JavaStrategy
                     requestCallbackAt(new Date(Long.parseLong(callbackAt)),
                                       this);
                 }
+                if(callbackEvery != null) {
+                    try {
+                           String[] params = callbackEvery.split(",");
+                           requestCallbackEvery(Long.parseLong(params[0]),
+                                                Long.parseLong(params[1]),
+                                               this);
+                     } catch (Exception ex) {
+                           ex.printStackTrace();
+                           setProperty("callbackEveryException", ex.getClass().getName());
+                     }
+                }                
             }
         }
     }
