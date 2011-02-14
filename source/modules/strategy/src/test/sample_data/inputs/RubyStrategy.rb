@@ -196,14 +196,17 @@ class RubyStrategy < Strategy
   end
   def do_request_parameter_callbacks
     do_callbacks(get_parameter("shouldRequestCallbackAfter"),
-                 get_parameter("shouldRequestCallbackAt"))
+                 get_parameter("shouldRequestCallbackAt"),
+                 get_parameter("shouldRequestCallbackEvery"))
   end
   def do_request_properties_callbacks
     do_callbacks(get_property("shouldRequestCallbackAfter"),
-                 get_property("shouldRequestCallbackAt"))
+                 get_property("shouldRequestCallbackAt"),
+                 get_property("shouldRequestCallbackEvery"))
   end
   def do_callbacks(callbackAfter,
-                   callbackAt)
+                   callbackAt,
+                   callbackEvery)
     shouldDoubleCallbacks = get_parameter("shouldDoubleCallbacks")
     if(shouldDoubleCallbacks != nil)
       multiplier = 2
@@ -221,6 +224,10 @@ class RubyStrategy < Strategy
             request_callback_at(Date.new(Long.parseLong(callbackAt)),
                                 nil)
         end
+        if(callbackEvery != nil)
+            request_callback_every(Long.parseLong(callbackEvery),
+                                nil)                              
+        end
       else
         if(callbackAfter != nil)
           request_callback_after(Long.parseLong(callbackAfter),
@@ -230,6 +237,16 @@ class RubyStrategy < Strategy
           request_callback_at(Date.new(Long.parseLong(callbackAt)),
                               self)
         end
+        if(callbackEvery != nil)
+          params = callbackEvery.split(',')
+          begin
+            request_callback_every(Long.parseLong(params[0]),
+                                Long.parseLong(params[1]), self)
+          rescue Exception=>e
+            print e.backtrace.join("\n"),"\n"
+            set_property("callbackEveryException",e.cause.class.name)
+          end            
+        end        
       end
     end
   end

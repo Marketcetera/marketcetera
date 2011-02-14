@@ -717,6 +717,32 @@ public abstract class LanguageTestBase
         verifyPropertyNonNull("onCallback");
     }
     /**
+     * Tests a strategy's ability to request and receive a callback periodically.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackEvery()
+            throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestCallbackEvery",
+                               "1000,2000");   // callback every 2s, initial delay 1s
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null));
+        // make sure to wait until at least 5000ms after start
+        Thread.sleep(4000);
+        String numberOfCalls = verifyPropertyNonNull("onCallback");
+        assertEquals("2", numberOfCalls);  // 2 callbacks expected
+    }        
+    /**
      * Tests a strategy's ability to request and receive a callback at a certain time.
      *
      * @throws Exception if an error occurs
@@ -743,7 +769,7 @@ public abstract class LanguageTestBase
         verifyPropertyNonNull("onCallback");
     }
     /**
-     * Tests a strategy's ability to request and receive a callback after a negative interval.
+     * Tests a strategy's ability to request and receive a callback after an initial delay.
      *
      * @throws Exception if an error occurs
      */
@@ -765,9 +791,35 @@ public abstract class LanguageTestBase
                                              null));
         // make sure to wait until at least 1000ms after start
         Thread.sleep(1000);
-        String callbackTime = verifyPropertyNonNull("onCallback");
-        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+        String numberOfCalls = verifyPropertyNonNull("onCallback");
+        assertEquals("1", numberOfCalls);
     }
+    /**
+     * Tests a strategy's ability to request and receive a callback after an initial delay.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackEveryEarlier()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestCallbackEvery",
+                               "-1000,2000");  // callback every 2s, initial delay 1s
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null));
+        // make sure to wait until at least 5000ms after start
+        Thread.sleep(3000);
+        String numberOfCalls = verifyPropertyNonNull("onCallback");
+        assertEquals("2", numberOfCalls);  // 2 callbacks expected
+    }    
     /**
      * Tests a strategy's ability to request and receive a callback before the current time.
      *
@@ -818,9 +870,35 @@ public abstract class LanguageTestBase
                                              null));
         // make sure to wait until at least 1000ms after start
         Thread.sleep(1000);
-        String callbackTime = verifyPropertyNonNull("onCallback");
-        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+        String numberOfCalls = verifyPropertyNonNull("onCallback");
+        assertEquals("1", numberOfCalls);
     }
+    /**
+     * Tests a strategy's ability to request and receive a callback after a zero interval.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackEveryZero()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestCallbackEvery",
+                               "0,2000");  // callback every 2s, initial delay 1s
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null));
+        // make sure to wait until at least 5000ms after start
+        Thread.sleep(3000);
+        String numberOfCalls = verifyPropertyNonNull("onCallback");
+        assertEquals("2", numberOfCalls);  // 2 callbacks expected
+    }        
     /**
      * Tests a strategy's ability to request and receive a callback at the current time.
      *
@@ -845,9 +923,35 @@ public abstract class LanguageTestBase
                                              null));
         // callback should happen immediately, but wait a second or so
         Thread.sleep(1000);
-        String callbackTime = verifyPropertyNonNull("onCallback");
-        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+        String numberOfCalls = verifyPropertyNonNull("onCallback");
+        assertEquals("1", numberOfCalls);
     }
+    /**
+     * A strategy's callback request should fails if a negative interval is passed in. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackEveryNegativeInterval()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestCallbackEvery",
+                               "1000,-2000");  // negative interval
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null));
+        // make sure to wait until at least 5000ms after start
+        Thread.sleep(3000);
+        verifyPropertyNonNull("callbackEveryException"); // should cause IllegalArgumentException on request, no callback is run
+        verifyPropertyNull("onCallback");
+    }    
     /**
      * Tests what happens when a strategy commits a run-time error during a callback.
      *
@@ -906,8 +1010,8 @@ public abstract class LanguageTestBase
                                              null));
         // callback should happen immediately, but wait a second or so
         Thread.sleep(1000);
-        String callbackTime = verifyPropertyNonNull("onCallback");
-        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+        String numberOfCalls = verifyPropertyNonNull("onCallback");
+        assertEquals("1", numberOfCalls);
     }
     /**
      * Tests that simultaneous callbacks are executed properly.
