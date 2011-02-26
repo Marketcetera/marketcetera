@@ -47,7 +47,7 @@ public class EventLog implements quickfix.Log {
     private void openLogStreams(boolean append) throws FileNotFoundException {
         events = new FileOutputStream(eventFileName, append); ///i18n_streams
     }
-
+    @Override
     public void onEvent(String message) {
         try {
             writeTimeStamp(events);
@@ -60,6 +60,17 @@ public class EventLog implements quickfix.Log {
         } catch (IOException e) {
             LogUtil.logThrowable(sessionID, Messages.ERROR_WRITING_EVENT_TO_LOG.getText(), e);
         }
+    }
+    /* (non-Javadoc)
+     * @see quickfix.Log#onErrorEvent(java.lang.String)
+     */
+    @Override
+    public void onErrorEvent(String inErrorMessage)
+    {
+        onEvent(inErrorMessage);
+        LogUtil.logThrowable(sessionID,
+                             inErrorMessage,
+                             null);
     }
 
     private void writeTimeStamp(OutputStream out) throws IOException {
@@ -106,6 +117,4 @@ public class EventLog implements quickfix.Log {
                 + (pathPrefix.endsWith(File.separator) ? "" : File.separator) //$NON-NLS-1$
                 + pathSuffix;
     }
-
-
 }

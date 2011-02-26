@@ -33,8 +33,16 @@
       <artifactId>client</artifactId>
     </dependency>
     <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>util</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.mina</groupId>
+      <artifactId>mina-core</artifactId>
     </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
