@@ -126,7 +126,7 @@
       <dependency>
         <groupId>quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
-        <version>[1.4-bd]</version>
+        <version>[1.5.0-bd]</version>
       </dependency>
 
         <!-- Compile: other. -->
@@ -194,6 +194,11 @@
         <version>[${mvn.spring.version}]</version>
       </dependency>
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>[${mvn.spring.version}]</version>
+      </dependency>
+      <dependency>
         <groupId>org.skife.kasparov</groupId>
         <artifactId>csv</artifactId>
         <version>[1.0]</version>
@@ -223,6 +228,12 @@
         <artifactId>commons-lang</artifactId>
         <version>[2.4]</version>
       </dependency>
+      <!--dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>[1.1.1]</version>
+	<scope>runtime</scope>
+      </dependency-->
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
@@ -357,6 +368,12 @@
         </dependency>
 
       <!-- Runtime. -->
+        <dependency>
+          <groupId>org.apache.mina</groupId>
+          <artifactId>mina-core</artifactId>
+          <version>[1.1.7]</version>
+          <scope>runtime</scope>
+        </dependency>
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
