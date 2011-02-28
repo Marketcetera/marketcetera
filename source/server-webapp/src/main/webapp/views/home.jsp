@@ -6,5 +6,6 @@
     </head>
     <body>
         <h1>Hello world!</h1>
+        Hello <security:authentication property="principal.username" />
     </body>
 </html>
