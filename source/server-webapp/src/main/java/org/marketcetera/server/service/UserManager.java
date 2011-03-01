@@ -26,6 +26,14 @@ public interface UserManager
      * 
      *
      *
+     * @param inUsername
+     * @return
+     */
+    public User getByName(String inUsername);
+    /**
+     * 
+     *
+     *
      * @param inUser
      */
     public void write(User inUser);

@@ -17,4 +17,11 @@ public interface UserDao
 {
     public List<User> getAll();
     public void write(User inUser);
+    /**
+     *
+     *
+     * @param inUsername
+     * @return
+     */
+    public User getByName(String inUsername);
 }

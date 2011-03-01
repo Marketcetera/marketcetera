@@ -3,8 +3,10 @@ package org.marketcetera.systemmodel.persistence;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.marketcetera.systemmodel.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -50,6 +52,17 @@ public class HibernateUserDao
     public void write(User inUser)
     {
         currentSession().saveOrUpdate(inUser);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.systemmodel.persistence.UserDao#getByName(java.lang.String)
+     */
+    @Override
+    public User getByName(String inUsername)
+    {
+        Criteria criteria = currentSession().createCriteria(User.class);
+        criteria.add(Restrictions.eq("name",
+                                     inUsername));
+        return (User)criteria.uniqueResult();
     }
     /**
      *
