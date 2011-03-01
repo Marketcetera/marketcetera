@@ -3,6 +3,7 @@ package org.marketcetera.server.webapp;
 import java.util.Comparator;
 import java.util.List;
 
+import org.marketcetera.server.security.PasswordManager;
 import org.marketcetera.server.service.UserManager;
 import org.marketcetera.systemmodel.User;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -28,7 +29,8 @@ public class HomeController
         test.setName("colin");
         test.setDescription("colin's user");
         test.setActive(true);
-        test.setHashedPassword("password".toCharArray());
+        test.setHashedPassword(passwordManager.encodePassword(test,
+                                                              "password"));
         userManager.write(test);
         List<User> users = userManager.getUsers();
         System.out.println("Found: " + users);
@@ -51,4 +53,6 @@ public class HomeController
     Comparator<String> comparator;
     @Autowired
     private UserManager userManager;
+    @Autowired
+    private PasswordManager passwordManager;
 }

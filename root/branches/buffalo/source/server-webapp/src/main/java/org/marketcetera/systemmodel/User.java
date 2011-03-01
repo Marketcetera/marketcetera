@@ -5,6 +5,9 @@ import java.util.Properties;
 
 import javax.persistence.*;
 
+import org.marketcetera.server.security.PasswordManager;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /* $License$ */
 
 /**
@@ -96,19 +99,19 @@ public class User
     /**
      * Get the hashedPassword value.
      *
-     * @return a <code>char[]</code> value
+     * @return a <code>String</code> value
      */
     @Column(nullable=false,length=255)
-    public char[] getHashedPassword()
+    public String getHashedPassword()
     {
         return hashedPassword;
     }
     /**
      * Sets the hashedPassword value.
      *
-     * @param a <code>char[]</code> value
+     * @param a <code>String</code> value
      */
-    public void setHashedPassword(char[] inHashedPassword)
+    public void setHashedPassword(String inHashedPassword)
     {
         hashedPassword = inHashedPassword;
     }
@@ -154,10 +157,15 @@ public class User
     /**
      * 
      */
-    private char[] hashedPassword;
+    private String hashedPassword;
     /**
      * 
      */
     private Properties userData;
+    /**
+     * 
+     */
+    @Autowired
+    transient private PasswordManager passwordManager;
     private static final long serialVersionUID = 1L;
 }

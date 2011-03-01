@@ -40,6 +40,15 @@ public class UserManagerImpl
     {
         userDao.write(inUser);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.server.service.UserManager#getByName(java.lang.String)
+     */
+    @Override
+    @Transactional(propagation=Propagation.SUPPORTS,readOnly=true)
+    public User getByName(String inUsername)
+    {
+        return userDao.getByName(inUsername);
+    }
     /**
      * data access object to use for access to persistent users
      */
