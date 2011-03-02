@@ -17,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id$
  * @since $Release$
  */
-@Entity(name="users")
+@Entity
+@Table(name="users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 public class User
         implements Serializable
 {
