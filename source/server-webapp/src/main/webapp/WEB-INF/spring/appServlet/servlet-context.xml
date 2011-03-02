@@ -34,4 +34,12 @@
 		<constructor-arg value="localhost" />
 		<constructor-arg value="9000" />
 	</bean>
+	<bean id="databaseInitializer" class="org.marketcetera.server.security.DatabaseInitializer">
+		<property name="users">
+			<map>
+				<entry key="admin" value="group list" />
+                <entry key="user" value="group list" />
+			</map>
+		</property>
+	</bean>
 </beans>

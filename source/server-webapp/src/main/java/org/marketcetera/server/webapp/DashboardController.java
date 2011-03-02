@@ -1,13 +1,12 @@
 package org.marketcetera.server.webapp;
 
 import java.util.Comparator;
-import java.util.List;
 
 import org.marketcetera.server.security.PasswordManager;
 import org.marketcetera.server.service.UserManager;
-import org.marketcetera.systemmodel.User;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,23 +17,25 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Handles requests for the application home page.
  */
 @Controller
-public class HomeController
+public class DashboardController
 {
     @RequestMapping(value = "/")
     public String home()
     {
-        SLF4JLoggerProxy.info(HomeController.class,
-                              "HomeController: Passing through...");
-        User test = new User();
-        test.setName("colin");
-        test.setDescription("colin's user");
-        test.setActive(true);
-        test.setHashedPassword(passwordManager.encodePassword(test,
-                                                              "password"));
-        userManager.write(test);
-        List<User> users = userManager.getUsers();
-        System.out.println("Found: " + users);
-        return "home";
+        final String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        SLF4JLoggerProxy.info(DashboardController.class,
+                              "DashboardController: Passing through: {}",
+                              currentUser);
+//        User test = new User();
+//        test.setName("colin");
+//        test.setDescription("colin's user");
+//        test.setActive(true);
+//        test.setHashedPassword(passwordManager.encodePassword(test,
+//                                                              "password"));
+//        userManager.write(test);
+//        List<User> users = userManager.getUsers();
+//        System.out.println("Found: " + users);
+        return "dashboard";
     }
     @RequestMapping(value = "/compare", method = RequestMethod.GET)
     public String compare(@RequestParam("input1") String input1,
