@@ -12,6 +12,7 @@ import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.saclient.SAService;
 import org.marketcetera.saclient.CreateStrategyParameters;
+import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleManager;
@@ -19,6 +20,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.modules.remote.receiver.ReceiverFactory;
 
 import javax.management.*;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.io.File;
@@ -33,243 +35,211 @@ import java.lang.management.ManagementFactory;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-class SAServiceImpl extends ServiceBaseImpl<ClientSession> implements SAService {
-
+class SAServiceImpl
+        extends ServiceBaseImpl<ClientSession>
+        implements SAService
+{
     @Override
     public List<ModuleURN> getProviders(ClientContext inCtx)
-            throws RemoteException {
-        return new RemoteCaller<ClientSession, List<ModuleURN>>(
-                getSessionManager()){
-            @Override
-            protected List<ModuleURN> call(
-                    ClientContext context,
-                    SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                return mManager.getProviders();
-            }
-        }.execute(inCtx);
+            throws RemoteException
+    {
+        return mManager.getProviders();
     }
-
     @Override
     public List<ModuleURN> getInstances(ClientContext inCtx,
                                         final ModuleURN inProviderURN)
-            throws RemoteException {
-        return new RemoteCaller<ClientSession, List<ModuleURN>>(
-                getSessionManager()){
-            @Override
-            protected List<ModuleURN> call(
-                    ClientContext context,
-                    SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                return mManager.getModuleInstances(inProviderURN);
-            }
-        }.execute(inCtx);
+            throws RemoteException
+    {
+        try {
+            return mManager.getModuleInstances(inProviderURN);
+        } catch (InvalidURNException e) {
+            throw new RemoteException(e);
+        }
     }
-
     @Override
     public ModuleInfo getModuleInfo(ClientContext inCtx,
                                     final ModuleURN inURN)
-            throws RemoteException {
-        return new RemoteCaller<ClientSession, ModuleInfo>(
-                getSessionManager()){
-            @Override
-            protected ModuleInfo call(
-                    ClientContext context,
-                    SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                failOnNullURN(inURN);
-                return mManager.getModuleInfo(inURN);
-            }
-        }.execute(inCtx);
+            throws RemoteException
+    {
+        try {
+            failOnNullURN(inURN);
+            return mManager.getModuleInfo(inURN);
+        } catch (I18NException e) {
+            throw new RemoteException(e);
+        }
     }
-
     @Override
     public void start(ClientContext inCtx,
                       final ModuleURN inURN) 
-            throws RemoteException {
-        new RemoteCaller<ClientSession, Void>(getSessionManager()){
-            @Override
-            protected Void call(ClientContext context,
-                                SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                failOnNullURN(inURN);
-                failIfNotStrategy(inURN, Messages.START_MODULE_NOT_STRATEGY);
-                mManager.start(inURN);
-                return null;
-            }
-        }.execute(inCtx);
+            throws RemoteException
+    {
+        try {
+            failOnNullURN(inURN);
+            failIfNotStrategy(inURN,
+                              Messages.START_MODULE_NOT_STRATEGY);
+            mManager.start(inURN);
+        } catch (I18NException e) {
+            throw new RemoteException(e);
+        }
     }
-
     @Override
     public void stop(ClientContext inCtx,
                      final ModuleURN inURN) 
-            throws RemoteException {
-        new RemoteCaller<ClientSession, Void>(getSessionManager()){
-            @Override
-            protected Void call(ClientContext context,
-                                SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                failOnNullURN(inURN);
-                failIfNotStrategy(inURN, Messages.STOP_MODULE_NOT_STRATEGY);
-                mManager.stop(inURN);
-                return null;
-            }
-        }.execute(inCtx);
+            throws RemoteException
+    {
+        try {
+            failOnNullURN(inURN);
+            failIfNotStrategy(inURN,
+                              Messages.STOP_MODULE_NOT_STRATEGY);
+            mManager.stop(inURN);
+        } catch (I18NException e) {
+            throw new RemoteException(e);
+        }
     }
-
     @Override
-    public void delete(ClientContext inCtx, final ModuleURN inURN)
-            throws RemoteException {
-        new RemoteCaller<ClientSession, Void>(getSessionManager()){
-            @Override
-            protected Void call(ClientContext context,
-                                SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                failOnNullURN(inURN);
-                failIfNotStrategy(inURN, Messages.DELETE_MODULE_NOT_STRATEGY);
-                mManager.deleteModule(inURN);
-                //Remove the strategy create parameter value.
-                mStrategies.remove(inURN);
-                return null;
-            }
-        }.execute(inCtx);
+    public void delete(ClientContext inCtx,
+                       final ModuleURN inURN)
+            throws RemoteException
+    {
+        try {
+            failOnNullURN(inURN);
+            failIfNotStrategy(inURN,
+                              Messages.DELETE_MODULE_NOT_STRATEGY);
+            mManager.deleteModule(inURN);
+            //Remove the strategy create parameter value.
+            mStrategies.remove(inURN);
+        } catch (I18NException e) {
+            throw new RemoteException(e);
+        }
     }
-
     @Override
     public MapWrapper<String,Object> getProperties(ClientContext inCtx,
                                                    final ModuleURN inURN)
-            throws RemoteException {
-        return new RemoteCaller<ClientSession, MapWrapper<String,Object>>(
-                getSessionManager()){
-            @Override
-            protected MapWrapper<String,Object> call(
-                    ClientContext context,
-                    SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                failOnNullURN(inURN);
+            throws RemoteException
+    {
+        try {
+            failOnNullURN(inURN);
+            ObjectName on = inURN.toObjectName();
+            MBeanServer beanServer = getMBeanServer();
+            List<String> attribs = new ArrayList<String>();
+            for(MBeanAttributeInfo info: beanServer.getMBeanInfo(on).getAttributes()) {
+                attribs.add(info.getName());
+            }
+            AttributeList values = beanServer.getAttributes(on,
+                                                            attribs.toArray(new String[attribs.size()]));
+            Map<String,Object> props = new HashMap<String, Object>();
+            for(Attribute a: values.asList()) {
+                props.put(a.getName(),
+                          a.getValue());
+            }
+            return new MapWrapper<String,Object>(props);
+        } catch (Exception e) {
+            throw new RemoteException(e);
+        }
+    }
+    @Override
+    public MapWrapper<String,Object> setProperties(ClientContext inCtx,
+                                                   final ModuleURN inURN,
+                                                   final MapWrapper<String,Object> inProperties)
+            throws RemoteException
+    {
+        try {
+            failOnNullURN(inURN);
+            failIfNotStrategy(inURN,
+                              Messages.SET_PROPERTY_MODULE_NOT_STRATEGY);
+            AttributeList list = new AttributeList();
+            Map<String,Object> output = new HashMap<String,Object>();
+            Map<String,Object> map = inProperties.getMap();
+            if(map != null) {
+                for(String key: map.keySet()) {
+                    if(!EDITABLE_STRATEGY_PROPERTIES.contains(key)) {
+                        throw new I18NException(new I18NBoundMessage3P(Messages.UNEDITABLE_STRATEGY_PROPERTY,
+                                                                       key, 
+                                                                       inURN,
+                                                                       EDITABLE_STRATEGY_PROPERTIES.toString()));
+                    }
+                }
                 ObjectName on = inURN.toObjectName();
                 MBeanServer beanServer = getMBeanServer();
-                List<String> attribs = new ArrayList<String>();
-                for(MBeanAttributeInfo info: beanServer.getMBeanInfo(on).getAttributes()) {
-                    attribs.add(info.getName());
-                }
-                AttributeList values = beanServer.getAttributes(on, attribs.toArray(
-                        new String[attribs.size()]));
-                Map<String,Object> props = new HashMap<String, Object>();
-                for(Attribute a: values.asList()) {
-                    props.put(a.getName(), a.getValue());
-                }
-                return new MapWrapper<String,Object>(props);
-            }
-        }.execute(inCtx);
-    }
-
-    @Override
-    public MapWrapper<String, Object> setProperties(ClientContext inCtx,
-                              final ModuleURN inURN,
-                              final MapWrapper<String, Object> inProperties)
-            throws RemoteException {
-        return new RemoteCaller<ClientSession, MapWrapper<String,Object>>(
-                getSessionManager()){
-            @Override
-            protected MapWrapper<String, Object> call(
-                    ClientContext context,
-                    SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                failOnNullURN(inURN);
-                failIfNotStrategy(inURN, Messages.SET_PROPERTY_MODULE_NOT_STRATEGY);
-                AttributeList list = new AttributeList();
-                Map<String,Object> output = new HashMap<String, Object>();
-                Map<String, Object> map = inProperties.getMap();
-                if (map != null) {
-                    for(String key: map.keySet()) {
-                        if(!EDITABLE_STRATEGY_PROPERTIES.contains(key)) {
-                            throw new I18NException(new I18NBoundMessage3P(
-                                    Messages.UNEDITABLE_STRATEGY_PROPERTY, key, 
-                                    inURN, EDITABLE_STRATEGY_PROPERTIES.toString()));
-                        }
-                    }
-                    ObjectName on = inURN.toObjectName();
-                    MBeanServer beanServer = getMBeanServer();
-                    beanServer.setAttributes(on, list);
-                    for(String key: map.keySet()) {
-                        try {
-                            Object value = map.get(key);
-                            beanServer.setAttribute(on, new Attribute(key, value));
-                            output.put(key, value);
-                        } catch (Exception e) {
-                            output.put(key, new RemoteProperties(e));
-                            Messages.LOG_ERROR_SET_ATTRIBUTE.error(this, e, key, inURN);
-                        }
+                beanServer.setAttributes(on,
+                                         list);
+                for(String key: map.keySet()) {
+                    try {
+                        Object value = map.get(key);
+                        beanServer.setAttribute(on, new Attribute(key, value));
+                        output.put(key, value);
+                    } catch (Exception e) {
+                        output.put(key, new RemoteProperties(e));
+                        Messages.LOG_ERROR_SET_ATTRIBUTE.error(this, e, key, inURN);
                     }
                 }
-                return new MapWrapper<String, Object>(output);
             }
-        }.execute(inCtx);
+            return new MapWrapper<String, Object>(output);
+        } catch (Exception e) {
+            throw new RemoteException(e);
+        }
     }
 
     @Override
     public ModuleURN createStrategy(ClientContext inCtx,
                                     final CreateStrategyParameters inParameters)
-            throws RemoteException {
-        return new RemoteCaller<ClientSession, ModuleURN>(getSessionManager()){
-            @Override
-            protected ModuleURN call(ClientContext context,
-                                      SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                if(inParameters == null) {
-                    throw new I18NException(Messages.NO_STRATEGY_CREATE_PARMS_SPECIFIED);
-                }
-                //copy the input stream to file.
-                File file = File.createTempFile("strat", ".tmp");  //$NON-NLS-1$ $NON-NLS-2$
-                file.deleteOnExit();
-                CopyBytesUtils.copy(inParameters.getStrategySource(), false, file.getAbsolutePath());
-                //Generate the strategy creation parameter referencing the local copy
-                CreateStrategyParameters sp = new CreateStrategyParameters(
-                        inParameters.getInstanceName(),
-                        inParameters.getStrategyName(),
-                        inParameters.getLanguage(),
-                        file,
-                        inParameters.getParameters(),
-                        inParameters.isRouteOrdersToServer());
-                ModuleURN urn = null;
-                try {
-                    urn = mManager.createModule(STRATEGY_PROVIDER,
-                            inParameters.getInstanceName(),
-                            inParameters.getStrategyName(),
-                            inParameters.getLanguage(),
-                            file,
-                            Util.propertiesFromString(inParameters.getParameters()),
-                            inParameters.isRouteOrdersToServer(),
-                            REMOTE_RECEIVER);
-                    return urn;
-                } finally {
-                    if(urn != null) {
-                        mStrategies.put(urn, sp);
-                    }
+            throws RemoteException
+    {
+        try {
+            if(inParameters == null) {
+                throw new I18NException(Messages.NO_STRATEGY_CREATE_PARMS_SPECIFIED);
+            }
+            //copy the input stream to file.
+            File file = File.createTempFile("strat",  //$NON-NLS-1$
+                                            ".tmp");  //$NON-NLS-2$
+            file.deleteOnExit();
+            CopyBytesUtils.copy(inParameters.getStrategySource(),
+                                false,
+                                file.getAbsolutePath());
+            //Generate the strategy creation parameter referencing the local copy
+            CreateStrategyParameters sp = new CreateStrategyParameters(inParameters.getInstanceName(),
+                                                                       inParameters.getStrategyName(),
+                                                                       inParameters.getLanguage(),
+                                                                       file,
+                                                                       inParameters.getParameters(),
+                                                                       inParameters.isRouteOrdersToServer());
+            ModuleURN urn = null;
+            try {
+                urn = mManager.createModule(STRATEGY_PROVIDER,
+                                            inParameters.getInstanceName(),
+                                            inParameters.getStrategyName(),
+                                            inParameters.getLanguage(),
+                                            file,
+                                            Util.propertiesFromString(inParameters.getParameters()),
+                                            inParameters.isRouteOrdersToServer(),
+                                            REMOTE_RECEIVER);
+                return urn;
+            } finally {
+                if(urn != null) {
+                    mStrategies.put(urn,
+                                    sp);
                 }
             }
-        }.execute(inCtx);
+        } catch (Exception e) {
+            throw new RemoteException(e);
+        }
     }
-
     @Override
     public CreateStrategyParameters getStrategyCreateParms(ClientContext inCtx,
                                                            final ModuleURN inURN) 
-            throws RemoteException {
-        return new RemoteCaller<ClientSession, CreateStrategyParameters>(getSessionManager()){
-            @Override
-            protected CreateStrategyParameters call(ClientContext context,
-                                      SessionHolder<ClientSession> sessionHolder)
-                    throws Exception {
-                failOnNullURN(inURN);
-                CreateStrategyParameters parameters = mStrategies.get(inURN);
-                if(parameters == null) {
-                    throw new I18NException(new I18NBoundMessage1P(
-                            Messages.NO_CREATE_PARAMETERS_FOR_STRATEGY, inURN));
-                }
-                return parameters;
+            throws RemoteException
+    {
+        try {
+            failOnNullURN(inURN);
+            CreateStrategyParameters parameters = mStrategies.get(inURN);
+            if(parameters == null) {
+                throw new I18NException(new I18NBoundMessage1P(Messages.NO_CREATE_PARAMETERS_FOR_STRATEGY,
+                                                               inURN));
             }
-        }.execute(inCtx);
+            return parameters;
+        } catch (Exception e) {
+            throw new RemoteException(e);
+        }
     }
     /**
      * Creates an instance.

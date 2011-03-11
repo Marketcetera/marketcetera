@@ -73,10 +73,10 @@
       <groupId>asm</groupId>
       <artifactId>asm</artifactId>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>asm</groupId>
       <artifactId>asm-attrs</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>

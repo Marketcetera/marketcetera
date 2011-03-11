@@ -46,7 +46,7 @@ public class ServiceInterface
      * @return The representation.
      */
 
-    private Server getServer()
+    public Server getServer()
     {
         return mServer;
     }

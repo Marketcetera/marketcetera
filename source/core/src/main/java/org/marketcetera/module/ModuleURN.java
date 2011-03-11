@@ -1,14 +1,15 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.beans.ConstructorProperties;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
