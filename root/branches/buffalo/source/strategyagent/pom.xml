@@ -44,6 +44,10 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>remote-receiver</artifactId>
     </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm-attrs</artifactId>
+    </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>

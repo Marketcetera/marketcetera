@@ -1,5 +1,6 @@
 package org.marketcetera.util.ws.stateless;
 
+import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -67,7 +68,8 @@ public class StatelessServer
         f.setServiceClass(iface);
         f.setAddress(getConnectionUrl(iface));
         f.setServiceBean(impl);
-        return new ServiceInterface(f.create());
+        server = f.create();
+        return new ServiceInterface(server);
     }
 
     /**
@@ -75,4 +77,8 @@ public class StatelessServer
      */
 
     public void stop() {}
+    /**
+     * the server object created when the server is published
+     */
+    private volatile Server server;
 }

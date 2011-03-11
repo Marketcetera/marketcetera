@@ -42,7 +42,23 @@ import java.util.*;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-class JarClassLoader extends URLClassLoader implements RefreshListener {
+class JarClassLoader
+        extends URLClassLoader
+        implements RefreshListener
+{
+    /**
+     * Create a new JarClassLoader instance.
+     *
+     * @param inJarDir
+     * @throws MalformedURLException
+     * @throws FileNotFoundException
+     */
+    public JarClassLoader(File inJarDir)
+            throws MalformedURLException, FileNotFoundException
+    {
+        this(inJarDir,
+             JarClassLoader.class.getClassLoader());
+    }
     /**
      * Creates an instance that loads classes from all the jars in the
      * supplied directory. When refreshed, the classloader will discover

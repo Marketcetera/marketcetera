@@ -27,11 +27,10 @@
     <module>orderloader</module>
     <module>ors</module>
     <module>saclient</module>
-    <module>server</module>
-    <module>server-webapp</module>
     <module>strategyagent</module>
     <module>util</module>
     <module>util-test</module>
     <module>server-test</module>
+    <module>buffalo</module>
   </modules>
 </project>

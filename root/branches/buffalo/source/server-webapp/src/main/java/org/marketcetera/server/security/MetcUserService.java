@@ -30,7 +30,7 @@ public class MetcUserService
         System.out.println("Validating " + inUsername);
         User user = userManager.getByName(inUsername);
         if(user != null) {
-            System.out.println("Found: " + user);
+            System.out.println("Found: " + user + " " + user.getHashedPassword());
             return new MetcUserDetails(user);
         } else {
             System.out.println("Current users are: " + userManager.getUsers());

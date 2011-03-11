@@ -240,12 +240,12 @@ public class StrategyAgentTestBase extends TestCaseBase {
             mExitCode = inExitCode;
         }
 
-        @Override
-        public void startWaitingForever() {
-            if (mWaitForever) {
-                super.startWaitingForever();
-            }
-        }
+//        @Override
+//        public void startWaitingForever() {
+//            if (mWaitForever) {
+//                super.startWaitingForever();
+//            }
+//        }
 
         private final boolean mWaitForever;
         private int mExitCode;

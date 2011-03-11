@@ -85,6 +85,17 @@ public class Node
     {
         mHost=host;
     }
+    
+    /**
+     * 
+     *
+     *
+     * @param inPort
+     */
+    public void setPort(int inPort)
+    {
+        mPort = inPort;
+    }
  
     /**
      * Returns the receiver's host name.

@@ -106,11 +106,11 @@
       <artifactId>asm</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>asm</groupId>
       <artifactId>asm-attrs</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
