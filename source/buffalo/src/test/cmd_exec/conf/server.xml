@@ -28,4 +28,40 @@
 		<property name="moduleManager" ref="moduleManager" />
 		<property name="currentLoader" ref="moduleLoader" />
 	</bean>
+	<!-- the bean responsible for selecting order managers -->
+	<bean id="orderManagerSelector" class="org.marketcetera.server.service.impl.RoundRobinOrderManagerSelector">
+		<property name="orderManagers">
+			<list>
+				<ref bean="orderManager1" />
+				<ref bean="orderManager2" />
+			</list>
+		</property>
+	</bean>
+	<!-- create as many order managers as needed -->
+	<bean id="orderManager1" class="org.marketcetera.server.service.impl.OrderManagerImpl" init-method="start"
+		destroy-method="stop" lazy-init="true" />
+	<bean id="orderManager2" class="org.marketcetera.server.service.impl.OrderManagerImpl" init-method="start"
+		destroy-method="stop" lazy-init="true" />
+	<!-- the bean responsible for creating order validators as needed -->
+	<bean id="orderValidatorFactory" class="org.marketcetera.server.service.impl.OrderValidatorFactoryImpl" />
+	<!-- define set of order destinations -->
+	<bean id="metcOrderDestination" class="org.marketcetera.server.service.impl.OrderDestinationImpl">
+		<constructor-arg index="0" value="Marketcetera Simulated Exchange" />
+		<constructor-arg index="1" value="metc" />
+		<constructor-arg index="2" ref="orderDestinationIdFactory"/>
+	</bean>
+	<bean id="orderDestinations" class="org.marketcetera.server.service.impl.OrderDestinationManagerImpl">
+		<constructor-arg>
+			<set>
+				<ref bean="metcOrderDestination" />
+			</set>
+		</constructor-arg>
+	</bean>
+	<!-- define the destination selector, this one includes a default destination if none is specified -->
+	<bean id="orderDestinationSelector" class="org.marketcetera.server.service.impl.DefaultOrderDestinationSelector">
+		<property name="defaultDestination" ref="metcOrderDestination" />
+	</bean>
+	<!-- systemmodel factories -->
+	<bean id="userFactory" class="org.marketcetera.systemmodel.impl.UserFactoryImpl" />
+    <bean id="orderDestinationIdFactory" class="org.marketcetera.systemmodel.impl.OrderDestinationIdFactoryImpl" />
 </beans>

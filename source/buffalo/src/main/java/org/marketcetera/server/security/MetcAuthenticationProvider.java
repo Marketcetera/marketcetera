@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.CredentialsContainer;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /* $License$ */
 
@@ -38,6 +39,10 @@ public class MetcAuthenticationProvider
             inAuthentication.setAuthenticated(passwordManager.isPasswordValid(user.getHashedPassword(),
                                                                               (String)inAuthentication.getCredentials(),
                                                                               user));
+            if(inAuthentication.isAuthenticated()) {
+                SecurityContextHolder.getContext().setAuthentication(inAuthentication);
+                ((MetcAuthentication)inAuthentication).setUser(user);
+            }
             return inAuthentication;
         } finally {
             if(inAuthentication instanceof CredentialsContainer) {

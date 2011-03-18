@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.marketcetera.systemmodel.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
@@ -73,7 +74,7 @@ public class MetcAuthentication
     public Object getPrincipal()
     {
         System.out.println("MetcAuthentication:getPrincipal invoked");
-        return null;
+        return getUser();
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.Authentication#isAuthenticated()
@@ -110,6 +111,28 @@ public class MetcAuthentication
                              username,
                              authenticated);
     }
+    /**
+     * Get the user value.
+     *
+     * @return a <code>User</code> value
+     */
+    public User getUser()
+    {
+        return user;
+    }
+    /**
+     *
+     *
+     * @param inUser
+     */
+    void setUser(User inUser)
+    {
+        user = inUser;
+    }
+    /**
+     * 
+     */
+    private volatile User user;
     /**
      * 
      */

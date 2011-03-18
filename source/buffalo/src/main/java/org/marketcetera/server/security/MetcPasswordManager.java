@@ -103,9 +103,9 @@ public class MetcPasswordManager
      *
      * @return
      */
-    private Object getSalt(User inUser)
+    private Object getSalt(User inUserImpl)
     {
-        return saltSource == null ? null : saltSource.getSalt(new MetcUserDetails(inUser));
+        return saltSource == null ? null : saltSource.getSalt(new MetcUserDetails(inUserImpl));
     }
     /**
      * 

@@ -15,8 +15,20 @@ import org.marketcetera.systemmodel.User;
  */
 public interface UserDao
 {
+    /**
+     * 
+     *
+     *
+     * @return
+     */
     public List<User> getAll();
-    public void write(User inUser);
+    /**
+     * 
+     *
+     *
+     * @param inUserImpl
+     */
+    public void write(User inUserImpl);
     /**
      *
      *

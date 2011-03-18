@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
  * @since $Release$
  */
 @Service
-public class StrategyAgentManagerImpl
+class StrategyAgentManagerImpl
         implements StrategyAgentManager
 {
     /* (non-Javadoc)

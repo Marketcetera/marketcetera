@@ -1,9 +1,7 @@
 package org.marketcetera.server.service;
 
-import java.util.List;
-
-import org.marketcetera.systemmodel.User;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.context.Lifecycle;
 
 /* $License$ */
 
@@ -15,28 +13,25 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface UserManager
+public interface OrderDestinationPort
+        extends Lifecycle
 {
     /**
      * 
      *
      *
-     * @return
      */
-    public List<User> getUsers();
+    public void login();
     /**
      * 
      *
      *
-     * @param inUsername
-     * @return
      */
-    public User getByName(String inUsername);
+    public void logout();
     /**
      * 
      *
      *
-     * @param inUserImpl
      */
-    public void write(User inUserImpl);
+    public void send();
 }
