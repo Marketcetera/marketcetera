@@ -10,7 +10,7 @@
                            http://www.springframework.org/schema/tx/spring-tx.xsd">
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
 	<!-- @Controller, @Service, @Configuration, etc. -->
-	<context:component-scan base-package="org.marketcetera.systemmodel,org.marketcetera.server.service" />
+	<context:component-scan base-package="org.marketcetera.systemmodel.persistence,org.marketcetera.server.service" />
 
 	<!-- Enables annotation-driven transactions -->
 	<tx:annotation-driven />
@@ -28,7 +28,8 @@
 
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-		<property name="url" value="jdbc:hsqldb:mem:marketcetera" />
+		<!-- property name="url" value="jdbc:hsqldb:mem:marketcetera" /-->
+        <property name="url" value="jdbc:hsqldb:file:target/marketcetera" />
 		<property name="username" value="sa" />
 		<property name="password" value="" />
 	</bean>
@@ -39,12 +40,12 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	
-	<bean id="databaseInitializer" class="org.marketcetera.server.security.DatabaseInitializer">
+	<!-- bean id="databaseInitializer" class="org.marketcetera.server.security.DatabaseInitializer">
 		<property name="users">
 			<map>
 				<entry key="admin" value="group list" />
 				<entry key="user" value="group list" />
 			</map>
 		</property>
-	</bean>
+	</bean-->
 </beans>

@@ -1,4 +1,4 @@
-package org.marketcetera.systemmodel.persistence;
+package org.marketcetera.systemmodel.persistence.impl;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.marketcetera.systemmodel.User;
+import org.marketcetera.systemmodel.persistence.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,7 +44,7 @@ public class HibernateUserDao
     @Override
     public List<User> getAll()
     {
-        return currentSession().createQuery("from " + User.class.getName()).list();
+        return currentSession().createQuery("from " + PersistentUser.class.getName()).list();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.systemmodel.persistence.UserDao#save(org.marketcetera.systemmodel.User)
@@ -51,7 +52,13 @@ public class HibernateUserDao
     @Override
     public void write(User inUser)
     {
-        currentSession().saveOrUpdate(inUser);
+        PersistentUser pUser;
+        if(inUser instanceof PersistentUser) {
+            pUser = (PersistentUser)inUser;
+        } else {
+            pUser = new PersistentUser(inUser);
+        }
+        currentSession().saveOrUpdate(pUser);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.systemmodel.persistence.UserDao#getByName(java.lang.String)
@@ -59,7 +66,7 @@ public class HibernateUserDao
     @Override
     public User getByName(String inUsername)
     {
-        Criteria criteria = currentSession().createCriteria(User.class);
+        Criteria criteria = currentSession().createCriteria(PersistentUser.class);
         criteria.add(Restrictions.eq("name",
                                      inUsername));
         return (User)criteria.uniqueResult();

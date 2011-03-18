@@ -22,11 +22,11 @@ public class MetcUserDetails
     /**
      * Create a new MetcUserDetails instance.
      *
-     * @param inUser
+     * @param inUserImpl
      */
-    public MetcUserDetails(User inUser)
+    public MetcUserDetails(User inUserImpl)
     {
-        user = inUser;
+        user = inUserImpl;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getAuthorities()
@@ -90,7 +90,7 @@ public class MetcUserDetails
      *
      * @return
      */
-    public long getId()
+    public Long getId()
     {
         return user.getId();
     }

@@ -1,21 +1,21 @@
 package org.marketcetera.server.service;
 
-import java.util.List;
+import java.util.Set;
 
-import org.marketcetera.systemmodel.User;
+import org.marketcetera.trade.Order;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Manages the order destinations known to the system.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface UserManager
+public interface OrderDestinationManager
 {
     /**
      * 
@@ -23,20 +23,12 @@ public interface UserManager
      *
      * @return
      */
-    public List<User> getUsers();
+    public Set<OrderDestination> getDestinations();
     /**
      * 
      *
      *
-     * @param inUsername
-     * @return
+     * @param inOrder
      */
-    public User getByName(String inUsername);
-    /**
-     * 
-     *
-     *
-     * @param inUserImpl
-     */
-    public void write(User inUserImpl);
+    public void send(Order inOrder);
 }
