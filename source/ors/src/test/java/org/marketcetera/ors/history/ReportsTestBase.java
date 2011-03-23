@@ -205,18 +205,91 @@ public class ReportsTestBase extends TestCaseBase {
                                             String inText,
                                             UserID inActorID,
                                             UserID inViewerID)
-            throws Exception {
-        Message msg = sMessageFactory.newExecutionReport("ord1", inOrderID,
-                "exec1", inOrderStatus.getFIXValue(), inSide.getFIXValue(),
-                new BigDecimal("23.234"), new BigDecimal("343.343"),
-                inLastQty, inLastPrice, inCumQuantity, inAvgPrice,
-                inInstrument, inAccount, inText);
+            throws Exception
+    {
+        return createExecReport(inOrderID,
+                                inOrigOrderID,
+                                "exec1",
+                                inInstrument,
+                                inSide,
+                                inOrderStatus,
+                                new BigDecimal("23.234"),
+                                new BigDecimal("343.343"),
+                                inCumQuantity,
+                                inAvgPrice,
+                                inLastQty,
+                                inLastPrice,
+                                inBrokerID,
+                                inAccount,
+                                inText,
+                                inActorID,
+                                inViewerID);
+    }
+    /**
+     * Creates an <code>ExecutionReport</code> with the given attributes. 
+     *
+     * @param inOrderID a <code>String</code> value
+     * @param inOrigOrderID a <code>String</code> value or <code>null</code>
+     * @param inExecID a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inSide a <code>Side</code> value
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @param inOrderQty a <code>BigDecimal</code> value
+     * @param inOrderPrice a <code>BigDecimal</code> value
+     * @param inCumQuantity a <code>BigDecimal</code> value
+     * @param inAvgPrice a <code>BigDecimal</code> value
+     * @param inLastQty a <code>BigDecimal</code> value
+     * @param inLastPrice a <code>BigDecimal</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inAccount a <code>BigDecimal</code> value
+     * @param inText a <code>BigDecimal</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     * @return an <code>ExecutionReport</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    static ExecutionReport createExecReport(String inOrderID,
+                                            String inOrigOrderID,
+                                            String inExecID,
+                                            Instrument inInstrument,
+                                            Side inSide,
+                                            OrderStatus inOrderStatus,
+                                            BigDecimal inOrderQty,
+                                            BigDecimal inOrderPrice,
+                                            BigDecimal inCumQuantity,
+                                            BigDecimal inAvgPrice,
+                                            BigDecimal inLastQty,
+                                            BigDecimal inLastPrice,
+                                            BrokerID inBrokerID,
+                                            String inAccount,
+                                            String inText,
+                                            UserID inActorID,
+                                            UserID inViewerID)
+            throws Exception
+    {
+        Message msg = sMessageFactory.newExecutionReport(inOrderID,
+                                                         inOrderID,
+                                                         inExecID,
+                                                         inOrderStatus.getFIXValue(),
+                                                         inSide.getFIXValue(),
+                                                         inOrderQty,
+                                                         inOrderPrice,
+                                                         inLastQty,
+                                                         inLastPrice,
+                                                         inCumQuantity,
+                                                         inAvgPrice,
+                                                         inInstrument,
+                                                         inAccount,
+                                                         inText);
         if (inOrigOrderID != null) {
             msg.setField(new OrigClOrdID(inOrigOrderID));
         }
         setSendingTime(msg);
-        return Factory.getInstance().createExecutionReport
-            (msg, inBrokerID, Originator.Server, inActorID, inViewerID);
+        return Factory.getInstance().createExecutionReport(msg,
+                                                           inBrokerID,
+                                                           Originator.Server,
+                                                           inActorID,
+                                                           inViewerID);
     }
 
     private static void setSendingTime(Message inMsg) {

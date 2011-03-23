@@ -160,30 +160,43 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
      * @throws Exception if there were errors.
      */
     @Test
-    public void execReportOrigOrderNotPresent() throws Exception {
+    public void execReportOrigOrderNotPresent()
+            throws Exception
+    {
         //Create a report with orig orderID value such that no
         //record of an exec report with that order ID value exists
         I instrument = getInstrument();
-        ExecutionReport report = createExecReport("ord1", "ord2",
-                instrument, Side.Buy, OrderStatus.PartiallyFilled,
-                BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
+        ExecutionReport report = createExecReport("ord1",
+                                                  "ord2",
+                                                  instrument,
+                                                  Side.Buy,
+                                                  OrderStatus.Replaced,
+                                                  BigDecimal.TEN,
+                                                  BigDecimal.TEN,
+                                                  BigDecimal.ONE,
+                                                  BigDecimal.ONE);
         sServices.save(report);
         //report got saved
         MultiPersistentReportQuery reportQuery = MultiPersistentReportQuery.all();
         assertEquals(1, reportQuery.fetchCount());
         //and so did the summary
         MultiExecReportSummary query = MultiExecReportSummary.all();
-
         assertEquals(1, query.fetchCount());
         List<ExecutionReportSummary> summary = query.fetch();
         assertEquals(1, summary.size());
-        assertSummary(summary.get(0), report.getAveragePrice(),
-                report.getCumulativeQuantity(), report.getLastPrice(),
-                report.getLastQuantity(), report.getOrderID(),
-                report.getOrderStatus(), report.getOriginalOrderID(),
-                reportQuery.fetch().get(0),
-                report.getOriginalOrderID(), report.getSendingTime(),
-                report.getSide(), instrument);
+        assertSummary(summary.get(0),
+                      report.getAveragePrice(),
+                      report.getCumulativeQuantity(),
+                      report.getLastPrice(),
+                      report.getLastQuantity(),
+                      report.getOrderID(),
+                      report.getOrderStatus(),
+                      report.getOriginalOrderID(),
+                      reportQuery.fetch().get(0),
+                      report.getOrderID(),
+                      report.getSendingTime(),
+                      report.getSide(),
+                      instrument);
     }
     
     @Test

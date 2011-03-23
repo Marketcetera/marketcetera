@@ -1,17 +1,21 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.persist.*;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.*;
-
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+
+import javax.persistence.*;
+
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.PositionKeyFactory;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.EntityBase;
+import org.marketcetera.persist.PersistContext;
+import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.persist.Transaction;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -601,22 +605,43 @@ class ExecutionReportSummary extends EntityBase {
     protected void preSaveLocal(EntityManager em, PersistContext context)
             throws PersistenceException {
         super.preSaveLocal(em, context);
-        //Set the root ID on the object.
+        // CD 17-Mar-2011 ORS-79
+        // we need to find the correct root ID of the incoming ER. for cancels and cancel/replaces,
+        //  this is easy - we can look up the root ID from the origOrderID. for a partial fill or fill
+        //  of an original order, this is also easy - the rootID is just the orderID. the difficult case
+        //  is a partial fill or fill of a replaced order. the origOrderID won't be present (not required)
+        //  but there still exists an order chain to be respected or position reporting will be broken.
+        //  therefore, the algorithm should be:
+        // if the original orderID is present, use the root from that order
+        // if it's not present, look for the rootID of an existing record with the same orderID
+        Query query = em.createNamedQuery("rootIDForOrderID");  //$NON-NLS-1$
+        SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+                               "Searching for rootID for {}",  //$NON-NLS-1$
+                               getOrderID());
         if(getOrigOrderID() == null) {
-            //This is the first order in this chain
+            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+                                   "No origOrderID present, using orderID for query");  //$NON-NLS-1$
+            query.setParameter("orderID",  //$NON-NLS-1$
+                               getOrderID());
+        } else {
+            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+                                   "Using origOrderID {} for query",  //$NON-NLS-1$
+                                   getOrigOrderID());
+            query.setParameter("orderID",  //$NON-NLS-1$
+                               getOrigOrderID());
+        }
+        List<?> list = query.getResultList();
+        if(list.isEmpty()) {
+            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+                                   "No other orders match this orderID - this must be the first in the order chain");  //$NON-NLS-1$
+            // this is the first order in this chain
             setRootID(getOrderID());
         } else {
-            //fetch the rootID from the original order
-            Query query = em.createNamedQuery("rootIDForOrderID");  //$NON-NLS-1$
-            query.setParameter("orderID", getOrigOrderID());  //$NON-NLS-1$
-            List<?> list = query.getResultList();
-            if (!list.isEmpty()) {
-                setRootID((OrderID) list.get(0));
-            } else {
-                Messages.LOG_ROOT_ID_NOT_FOUND.warn(this, getOrderID(),
-                        getOrigOrderID());
-                setRootID(getOrigOrderID());
-            }
+            OrderID rootID = (OrderID)list.get(0);
+            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+                                   "Using {} for rootID",  //$NON-NLS-1$
+                                   rootID);
+            setRootID(rootID);
         }
     }
 
