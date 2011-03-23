@@ -1,20 +1,22 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.*;
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.ors.security.SimpleUser;
-import org.junit.Test;
-import static org.junit.Assert.assertThat;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Map;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -297,7 +299,139 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
                 hasEntry(pos(getInstrumentA()), positionA.setScale(SCALE)),
                 hasEntry(pos(getInstrumentB()), positionB.setScale(SCALE))));
     }
-
+    /**
+     * Tests the position reporting for a replaced order that is partially filled.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void partialFillOfReplaced()
+            throws Exception
+    {
+        assertBigDecimalEquals(BigDecimal.ZERO,
+                               getInstrumentPosition(new Date(),
+                                                     getInstrument()));
+        // simulate the creation of a new order
+        String ordId1 = "order-" + System.nanoTime();
+        ExecutionReport newReport = createExecReport(ordId1,
+                                                     null,
+                                                     "execId",
+                                                     getInstrument(),
+                                                     Side.Buy,
+                                                     OrderStatus.New,
+                                                     BigDecimal.TEN, // ordQty
+                                                     BigDecimal.ONE, // ordPrice
+                                                     BigDecimal.ZERO, // cumQty
+                                                     BigDecimal.ZERO, // avgPx
+                                                     BigDecimal.ZERO, // lastQty
+                                                     BigDecimal.ZERO, // lastPrice
+                                                     BROKER,
+                                                     ACCOUNT,
+                                                     "text",
+                                                     sActorID,
+                                                     sViewerID);
+        sServices.save(newReport);
+        // position is still 0
+        assertBigDecimalEquals(BigDecimal.ZERO,
+                               getInstrumentPosition(new Date(),
+                                                     getInstrument()));
+        // partially fill the order
+        ExecutionReport partialReport1 = createExecReport(ordId1,
+                                                          null,
+                                                          "execId",
+                                                          getInstrument(),
+                                                          Side.Buy,
+                                                          OrderStatus.PartiallyFilled,
+                                                          BigDecimal.TEN, // ordQty
+                                                          BigDecimal.ONE, // ordPrice
+                                                          BigDecimal.ONE, // cumQty
+                                                          BigDecimal.ONE, // avgPx
+                                                          BigDecimal.ONE, // lastQty
+                                                          BigDecimal.ONE, // lastPrice
+                                                          BROKER,
+                                                          ACCOUNT,
+                                                          "text",
+                                                          sActorID,
+                                                          sViewerID);
+        sServices.save(partialReport1);
+        // position is now 1
+        assertBigDecimalEquals(BigDecimal.ONE,
+                               getInstrumentPosition(new Date(),
+                                                     getInstrument()));
+        // replace the order
+        String ordId2 = "order-" + System.nanoTime();
+        assertFalse(ordId1.equals(ordId2));
+        ExecutionReport replacedReport1 = createExecReport(ordId2,
+                                                           ordId1,
+                                                           "execId",
+                                                           getInstrument(),
+                                                           Side.Buy,
+                                                           OrderStatus.Replaced,
+                                                           BigDecimal.TEN, // ordQty
+                                                           new BigDecimal(2), // ordPrice (new price)
+                                                           BigDecimal.ONE, // cumQty
+                                                           BigDecimal.ONE, // avgPx
+                                                           BigDecimal.ONE, // lastQty
+                                                           BigDecimal.ONE, // lastPrice
+                                                           BROKER,
+                                                           ACCOUNT,
+                                                           "text",
+                                                           sActorID,
+                                                           sViewerID);
+        sServices.save(replacedReport1);
+        // position is still 1
+        assertBigDecimalEquals(BigDecimal.ONE,
+                               getInstrumentPosition(new Date(),
+                                                     getInstrument()));
+        // replace the replaced order
+        String ordId3 = "order-" + System.nanoTime();
+        assertFalse(ordId2.equals(ordId3));
+        ExecutionReport replacedReport2 = createExecReport(ordId3,
+                                                           ordId2,
+                                                           "execId",
+                                                           getInstrument(),
+                                                           Side.Buy,
+                                                           OrderStatus.Replaced,
+                                                           BigDecimal.TEN, // ordQty
+                                                           new BigDecimal(3), // ordPrice (new price)
+                                                           BigDecimal.ONE, // cumQty
+                                                           BigDecimal.ONE, // avgPx
+                                                           BigDecimal.ONE, // lastQty
+                                                           BigDecimal.ONE, // lastPrice
+                                                           BROKER,
+                                                           ACCOUNT,
+                                                           "text",
+                                                           sActorID,
+                                                           sViewerID);
+        sServices.save(replacedReport2);
+        // position is still 1
+        assertBigDecimalEquals(BigDecimal.ONE,
+                               getInstrumentPosition(new Date(),
+                                                     getInstrument()));
+        // partially fill the replaced (replaced) order
+        ExecutionReport partialReport2 = createExecReport(ordId3,
+                                                          null,
+                                                          "execId",
+                                                          getInstrument(),
+                                                          Side.Buy,
+                                                          OrderStatus.PartiallyFilled,
+                                                          BigDecimal.TEN, // ordQty
+                                                          new BigDecimal(3), // ordPrice
+                                                          new BigDecimal(2), // cumQty
+                                                          new BigDecimal("1.5"), // avgPx
+                                                          BigDecimal.ONE, // lastQty
+                                                          new BigDecimal(3), // lastPrice
+                                                          BROKER,
+                                                          ACCOUNT,
+                                                          "text",
+                                                          sActorID,
+                                                          sViewerID);
+        sServices.save(partialReport2);
+        // position is now 2
+        assertBigDecimalEquals(new BigDecimal(2),
+                               getInstrumentPosition(new Date(),
+                                                     getInstrument()));
+    }
     /**
      * Returns the instrument.
      *
