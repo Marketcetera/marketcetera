@@ -37,11 +37,13 @@ class DefaultOrderDestinationSelector
             Set<OrderDestination> destinations = orderDestinationManager.getDestinations();
             // TODO this is O(n) - should be in a map, might be worth pre-loading
             for(OrderDestination destination : destinations) {
-                if(destination.getId().equals(brokerID.getValue())) {
+                // TODO this is somewhat inelegant
+                if(destination.getId().getValue().equals(brokerID.getValue())) {
                     return destination;
                 }
             }
-            throw new IllegalArgumentException("The specified destination id \"" + brokerID + "\" does not correspond to a known destination");
+            // TODO create a typed exception
+            throw new RuntimeException("The specified destination id \"" + brokerID + "\" does not correspond to a known destination");
         }
     }
     /**

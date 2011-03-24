@@ -8,7 +8,7 @@ import org.marketcetera.systemmodel.OrderDestinationIdFactory;
 /* $License$ */
 
 /**
- *
+ * Constructs <code>OrderDestinationID</code> values.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -17,7 +17,6 @@ import org.marketcetera.systemmodel.OrderDestinationIdFactory;
 class OrderDestinationIdFactoryImpl
         implements OrderDestinationIdFactory
 {
-
     /* (non-Javadoc)
      * @see org.marketcetera.systemmodel.OrderDestinationIdFactory#create(java.lang.String)
      */
@@ -26,7 +25,7 @@ class OrderDestinationIdFactoryImpl
     {
         inValue = StringUtils.trimToNull(inValue);
         Validate.notNull(inValue,
-                         "Order destination ID must not be null");
+                         "Order destination ID value must not be null");
         return new OrderDestinationIdImpl(inValue);
     }
 }

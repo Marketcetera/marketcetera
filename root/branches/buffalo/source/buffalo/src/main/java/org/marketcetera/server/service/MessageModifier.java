@@ -1,7 +1,8 @@
 package org.marketcetera.server.service;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.context.Lifecycle;
+
+import quickfix.Message;
 
 /* $License$ */
 
@@ -13,25 +14,13 @@ import org.springframework.context.Lifecycle;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface OrderDestinationPort
-        extends Lifecycle
+public interface MessageModifier
 {
     /**
      * 
      *
      *
+     * @param inMessage
      */
-    public void login();
-    /**
-     * 
-     *
-     *
-     */
-    public void logout();
-    /**
-     * 
-     *
-     *
-     */
-    public void send();
+    public void modify(Message inMessage);
 }

@@ -1,17 +1,14 @@
 package org.marketcetera.ors;
 
-import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.apache.commons.lang.Validate;
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.jms.JmsManager;
-import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
@@ -29,13 +26,10 @@ import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.SpringSessionSettings;
-import org.marketcetera.util.spring.SpringUtils;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 import quickfix.DefaultMessageFactory;
@@ -60,7 +54,7 @@ import quickfix.field.TargetCompID;
 
 @ClassVersion("$Id$")
 public class OrderRoutingSystem
-        implements Lifecycle,InitializingBean
+        implements Lifecycle, InitializingBean
 {
     /**
      * Returns the server's broker status.
@@ -192,8 +186,8 @@ public class OrderRoutingSystem
             SystemInfoImpl systemInfo = new SystemInfoImpl();
             // Create resource managers.
             config.getIDFactory().init();
-            JmsManager jmsMgr = new JmsManager(config.getIncomingConnectionFactory(),
-                                               config.getOutgoingConnectionFactory());
+//            JmsManager jmsMgr = new JmsManager(config.getIncomingConnectionFactory(),
+//                                               config.getOutgoingConnectionFactory());
             ReportHistoryServices historyServices = config.getReportHistoryServices();
             systemInfo.setValue(SystemInfo.HISTORY_SERVICES,
                                 historyServices);
@@ -205,7 +199,7 @@ public class OrderRoutingSystem
             ReplyPersister persister = new ReplyPersister(historyServices,
                                                           config.getOrderInfoCache());
             historyServices.init(config.getIDFactory(),
-                                 jmsMgr,
+                                 null,
                                  persister);
             // Set dictionary for all QuickFIX/J messages we generate.
             CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
@@ -220,19 +214,21 @@ public class OrderRoutingSystem
                                                         qSender,
                                                         userManager,
                                                         localIdFactory);
-            mListener = jmsMgr.getIncomingJmsFactory().registerHandlerOEX(handler,
-                                                                          Service.REQUEST_QUEUE,
-                                                                          false);
-            mListener.start();
+//            mListener = jmsMgr.getIncomingJmsFactory().registerHandlerOEX(handler,
+//                                                                          Service.REQUEST_QUEUE,
+//                                                                          false);
+//            mListener.start();
             mQFApp = new QuickFIXApplication(systemInfo,getBrokers(),
                                              config.getSupportedMessages(),
                                              persister,
                                              qSender,
                                              userManager,
-                                             jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
-                                                                                               true),
-                                             jmsMgr.getOutgoingJmsFactory().createJmsTemplateQ(TRADE_RECORDER_QUEUE,
-                                                                                               false));
+                                             null,
+                                             null);
+//                                             jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
+//                                                                                               true),
+//                                             jmsMgr.getOutgoingJmsFactory().createJmsTemplateQ(TRADE_RECORDER_QUEUE,
+//                                                                                               false));
             // Initiate broker connections.
             SpringSessionSettings settings = getBrokers().getSettings();
             mInitiator = new SocketInitiator(mQFApp,

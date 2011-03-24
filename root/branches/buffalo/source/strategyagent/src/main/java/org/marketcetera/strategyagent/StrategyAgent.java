@@ -24,6 +24,7 @@ import org.marketcetera.saclient.SAClientVersion;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.unicode.UnicodeFileReader;
 import org.marketcetera.util.ws.stateful.ClientContext;
@@ -171,10 +172,16 @@ public class StrategyAgent
     public void afterPropertiesSet()
             throws Exception
     {
-        Validate.notNull(moduleManager,
-                         "Strategy Agent module manager must not be null");
-        Validate.notNull(moduleLoader,
-                         "Strategy Agent module loader must not be null");
+        try {
+            Validate.notNull(moduleManager,
+                             "Strategy Agent module manager must not be null");
+            Validate.notNull(moduleLoader,
+                             "Strategy Agent module loader must not be null");
+        } catch (Exception e) {
+            SLF4JLoggerProxy.error(StrategyAgent.class,
+                                   e);
+            throw e;
+        }
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#start()

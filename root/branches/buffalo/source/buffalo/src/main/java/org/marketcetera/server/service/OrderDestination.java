@@ -1,6 +1,5 @@
 package org.marketcetera.server.service;
 
-import org.marketcetera.client.ReportListener;
 import org.marketcetera.systemmodel.OrderDestinationID;
 import org.marketcetera.trade.Order;
 import org.marketcetera.util.misc.ClassVersion;
@@ -23,45 +22,27 @@ public interface OrderDestination
         extends Lifecycle
 {
     /**
-     * 
+     * Gets the status of the <code>OrderDestination</code>.
      *
-     *
-     * @return
+     * @return a <code>DestinationStatus</code> value
      */
     public DestinationStatus getStatus();
     /**
-     * 
+     * Gets the name of the <code>OrderDestination</code>.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     public String getName();
     /**
-     * 
+     * Gets the ID of the <code>OrderDestination</code>.
      *
-     *
-     * @return
+     * @return an <code>OrderDestinationID</code> value
      */
     public OrderDestinationID getId();
     /**
-     * 
+     * Sends an <code>Order</code> to the <code>OrderDestination</code>.
      *
-     *
-     * @param inOrder
+     * @param inOrder an <code>Order</code> valu
      */
     public void send(Order inOrder);
-    /**
-     * 
-     *
-     *
-     * @param inReportListener
-     */
-    public void subscribe(ReportListener inReportListener);
-    /**
-     * 
-     *
-     *
-     * @param inReportListener
-     */
-    public void cancelSubscription(ReportListener inReportListener);
 }

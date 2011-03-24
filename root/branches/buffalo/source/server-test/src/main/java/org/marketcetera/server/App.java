@@ -1,13 +1,16 @@
 package org.marketcetera.server;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.ModuleInfo;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.server.ws.MatpService;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.ws.stateful.Client;
 import org.marketcetera.util.ws.stateful.ClientContext;
+import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 
 public class App 
@@ -25,6 +28,19 @@ public class App
             ClientContext context = client.getContext();
             List<ModuleURN> providers = matpService.getProviders(context);
             System.out.println(providers);
+            Equity metc = new Equity("METC");
+            System.out.println(matpService.getEquityPositionAsOf(context,
+                                                                 new DateWrapper(new Date()),
+                                                                 metc));
+            OrderSingleImpl order = (OrderSingleImpl)Factory.getInstance().createOrderSingle();
+            order.setSide(Side.Buy);
+            order.setQuantity(new BigDecimal("1000.0"));
+            order.setInstrument(metc);
+            order.setOrderType(OrderType.Limit);
+            order.setTimeInForce(TimeInForce.Day);
+            order.setPrice(BigDecimal.TEN);
+            matpService.sendOrderSingle(context,
+                                        order);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
