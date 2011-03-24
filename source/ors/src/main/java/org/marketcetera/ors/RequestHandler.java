@@ -108,35 +108,29 @@ public class RequestHandler
 
     // CONSTRUCTORS.
 
-    public RequestHandler
-        (Brokers brokers,
-         Selector selector,
-         OrderFilter allowedOrders,
-         ReplyPersister persister,
-         IQuickFIXSender sender,
-         UserManager userManager,
-         IDFactory idFactory)
-        throws ConfigError
+    public RequestHandler(Brokers brokers,
+                          Selector selector,
+                          OrderFilter allowedOrders,
+                          ReplyPersister persister,
+                          IQuickFIXSender sender,
+                          UserManager userManager,
+                          IDFactory idFactory)
+            throws ConfigError
     {
-        mBrokers=brokers;
-        mSelector=selector;
-        mAllowedOrders=allowedOrders;
-        mPersister=persister;
-        mSender=sender;
-        mUserManager=userManager;
-        mIDFactory=idFactory;
-        mDataDictionary=new DataDictionary
-            (FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
+        mBrokers = brokers;
+        mSelector = selector;
+        mAllowedOrders = allowedOrders;
+        mPersister = persister;
+        mSender = sender;
+        mUserManager = userManager;
+        mIDFactory = idFactory;
+        mDataDictionary = new DataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
     }
-
-
     // INSTANCE METHODS.
-
     public Brokers getBrokers()
     {
         return mBrokers;
     }
-
     public Selector getSelector()
     {
         return mSelector;
@@ -432,46 +426,31 @@ public class RequestHandler
     // ReplyHandler.
 
     @Override
-    public void receiveMessage
-        (OrderEnvelope msgEnv)
+    public void receiveMessage(OrderEnvelope msgEnv)
     {
-        ThreadedMetric.begin
-            ((msgEnv.getOrder() instanceof OrderBase)
-             ?((OrderBase)msgEnv.getOrder()).getOrderID()
-             :null);
-        Messages.RH_RECEIVED_MESSAGE.info(this,msgEnv);
-        Order msg=null;
-        UserID actorID=null;
-        BrokerID bID=null;
-        Broker b=null;
-        Message qMsg=null;
-        Message qMsgToSend=null;
-        Message qMsgReply=null;
-        boolean responseExpected=false;
-        OrderInfo orderInfo=null;
+        ThreadedMetric.begin((msgEnv.getOrder() instanceof OrderBase) ? ((OrderBase)msgEnv.getOrder()).getOrderID() : null);
+        Messages.RH_RECEIVED_MESSAGE.info(RequestHandler.class,
+                                          msgEnv);
+        Order msg = null;
+        UserID actorID = null;
+        BrokerID bID = null;
+        Broker b = null;
+        Message qMsg = null;
+        Message qMsgToSend = null;
+        Message qMsgReply = null;
+        boolean responseExpected = false;
+        OrderInfo orderInfo = null;
         try {
-
-            // Reject null message envelopes.
-
-            if (msgEnv==null) {
-                throw new I18NException(Messages.RH_NULL_MESSAGE_ENVELOPE);
-            }
-
             // Reject null messages.
-
-            msg=msgEnv.getOrder();
+            msg = msgEnv.getOrder();
             if (msg==null) {
                 throw new I18NException(Messages.RH_NULL_MESSAGE);
             }
-
             // Reject invalid sessions.
-
-            SessionInfo sessionInfo=
-                getUserManager().getSessionInfo(msgEnv.getSessionId());
-            if (sessionInfo==null) {
-                throw new I18NException
-                    (new I18NBoundMessage1P
-                     (Messages.RH_SESSION_EXPIRED,msgEnv.getSessionId()));
+            SessionInfo sessionInfo = getUserManager().getSessionInfo(msgEnv.getSessionId());
+            if(sessionInfo==null) {
+                throw new I18NException(new I18NBoundMessage1P(Messages.RH_SESSION_EXPIRED,
+                                                               msgEnv.getSessionId()));
             }
             actorID=(UserID)sessionInfo.getValue(SessionInfo.ACTOR_ID);
             RequestInfo requestInfo=new RequestInfoImpl(sessionInfo);

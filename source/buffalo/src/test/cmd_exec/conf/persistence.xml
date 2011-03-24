@@ -40,12 +40,12 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	
-	<!-- bean id="databaseInitializer" class="org.marketcetera.server.security.DatabaseInitializer">
+	<bean id="databaseInitializer" class="org.marketcetera.server.security.DatabaseInitializer">
 		<property name="users">
 			<map>
 				<entry key="admin" value="group list" />
 				<entry key="user" value="group list" />
 			</map>
 		</property>
-	</bean-->
+	</bean>
 </beans>

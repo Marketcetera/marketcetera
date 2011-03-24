@@ -8,6 +8,8 @@ import org.marketcetera.util.quickfix.SpringSessionDescriptor;
 import org.marketcetera.util.quickfix.SpringSessionSettings;
 import org.springframework.beans.factory.InitializingBean;
 
+/* $License$ */
+
 /**
  * The collective Spring-based configuration of all brokers.
  *
@@ -15,12 +17,9 @@ import org.springframework.beans.factory.InitializingBean;
  * @since 1.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class SpringBrokers
-    implements InitializingBean
+        implements InitializingBean
 {
 
     // INSTANCE DATA.

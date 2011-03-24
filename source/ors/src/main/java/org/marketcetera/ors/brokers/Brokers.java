@@ -25,17 +25,12 @@ import quickfix.SessionID;
 @ClassVersion("$Id$")
 public class Brokers
 {
-
     // INSTANCE DATA.
-
     private final SpringBrokers mSpringBrokers;
     private final List<Broker> mBrokers;
     private final Map<BrokerID,Broker> mBrokerIDMap;
     private final Map<SessionID,Broker> mSessionIDMap;
-
-
     // CONSTRUCTORS.
-
     /**
      * Creates a new collective representation based on the given
      * broker configurations. Any message modifiers are configured to
@@ -45,27 +40,25 @@ public class Brokers
      * @param springBrokers The configurations.
      * @param historyServices The report history services provider.
      */
-
-    public Brokers
-        (SpringBrokers springBrokers,
-         ReportHistoryServices historyServices)
+    public Brokers(SpringBrokers springBrokers,
+                   ReportHistoryServices historyServices)
     {
-        mSpringBrokers=springBrokers;
-        int capacity=getSpringBrokers().getBrokers().size();
-        mBrokers=new ArrayList<Broker>(capacity);
-        mBrokerIDMap=new HashMap<BrokerID,Broker>(capacity);
-        mSessionIDMap=new HashMap<SessionID,Broker>(capacity);
+        mSpringBrokers = springBrokers;
+        int capacity = getSpringBrokers().getBrokers().size();
+        mBrokers = new ArrayList<Broker>(capacity);
+        mBrokerIDMap = new HashMap<BrokerID,Broker>(capacity);
+        mSessionIDMap = new HashMap<SessionID,Broker>(capacity);
         for (SpringBroker sb:getSpringBrokers().getBrokers()) {
-            Broker b=new Broker(sb,historyServices);
+            Broker b = new Broker(sb,
+                                  historyServices);
             mBrokers.add(b);
-            mBrokerIDMap.put(b.getBrokerID(),b);
-            mSessionIDMap.put(b.getSessionID(),b);
+            mBrokerIDMap.put(b.getBrokerID(),
+                             b);
+            mSessionIDMap.put(b.getSessionID(),
+                              b);
         }
     }
-
-
     // INSTANCE METHODS.
-
     /**
      * Returns the receiver's broker configurations.
      *
