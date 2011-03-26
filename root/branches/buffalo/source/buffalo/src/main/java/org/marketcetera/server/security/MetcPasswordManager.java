@@ -2,6 +2,7 @@ package org.marketcetera.server.security;
 
 import org.marketcetera.systemmodel.User;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
  * @since $Release$
  */
 @Service
+@ClassVersion("$Id$")
 public class MetcPasswordManager
         implements PasswordManager
 {

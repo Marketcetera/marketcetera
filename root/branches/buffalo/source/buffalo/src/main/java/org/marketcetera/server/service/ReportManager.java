@@ -1,5 +1,6 @@
-package org.marketcetera.systemmodel;
+package org.marketcetera.server.service;
 
+import org.marketcetera.systemmodel.Report;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -12,14 +13,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface OrderDestinationIdFactory
+public interface ReportManager
 {
     /**
      * 
      *
      *
-     * @param inValue
-     * @return
+     * @param inReport
      */
-    public OrderDestinationID create(String inValue);
+    public void write(Report inReport);
 }

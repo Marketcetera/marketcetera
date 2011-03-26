@@ -1,6 +1,7 @@
-package org.marketcetera.server.service;
+package org.marketcetera.systemmodel.persistence;
 
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Order;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -13,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface OrderManager
+public interface OrderDao
 {
     /**
      * 

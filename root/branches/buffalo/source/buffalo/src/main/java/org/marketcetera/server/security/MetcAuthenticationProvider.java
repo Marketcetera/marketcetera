@@ -2,6 +2,7 @@ package org.marketcetera.server.security;
 
 import org.marketcetera.server.service.UserManager;
 import org.marketcetera.systemmodel.User;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class MetcAuthenticationProvider
         implements AuthenticationProvider
 {

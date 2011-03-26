@@ -132,6 +132,14 @@ class FixOrderDestination
                              id,
                              status);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.server.service.OrderDestination#getNextId()
+     */
+    @Override
+    public long getNextId()
+    {
+        return idFactory.getId();
+    }
     /**
      * Sets the name value.
      *
@@ -186,6 +194,8 @@ class FixOrderDestination
                          "Destination id must not be null");
         Validate.notNull(getEngine(),
                          "Destination needs a Fix engine");
+        Validate.notNull(getIdFactory(),
+                         "Destination needs an id factory");
     }
     /* (non-Javadoc)
      * @see org.marketcetera.server.service.UpdatableStatus#setStatus(org.marketcetera.server.service.DestinationStatus)
@@ -241,6 +251,24 @@ class FixOrderDestination
         responseMessageModifiers = inResponseMessageModifiers;
     }
     /**
+     * Get the idFactory value.
+     *
+     * @return an <code>IdFactory</code> value
+     */
+    public IdFactory getIdFactory()
+    {
+        return idFactory;
+    }
+    /**
+     * Sets the idFactory value.
+     *
+     * @param an <code>IdFactory</code> value
+     */
+    public void setIdFactory(IdFactory inIdFactory)
+    {
+        idFactory = inIdFactory;
+    }
+    /**
      * message modifiers to apply to incoming (received) messages 
      */
     private volatile List<MessageModifier> responseMessageModifiers;
@@ -260,6 +288,10 @@ class FixOrderDestination
      * the id of the order destination
      */
     private volatile OrderDestinationID id;
+    /**
+     * 
+     */
+    private volatile IdFactory idFactory;
     /**
      * the physical FIX engine through which messages are sent and received
      */

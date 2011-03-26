@@ -14,7 +14,7 @@
 				<!-- - An acceptable value for this option is - 'metc.DefaultDataDictionary', which will choose the standard - QuickFIX/J 
 					dictionary for the FIX version deduced from the - 'BeginString' option. -->
 				<entry key="DataDictionary" value="metc.DefaultDataDictionary" />
-				<entry key="SenderCompID" value="enduser@enduserdomain.com" />
+				<entry key="SenderCompID" value="buffalo-test-sender" />
 				<entry key="TargetCompID" value="MRKTC-EXCH" />
 				<entry key="FileStorePath" value="${org.marketcetera.appDir}/broker/qf_store" />
 				<entry key="SocketConnectHost" value="exchange.marketcetera.com" />

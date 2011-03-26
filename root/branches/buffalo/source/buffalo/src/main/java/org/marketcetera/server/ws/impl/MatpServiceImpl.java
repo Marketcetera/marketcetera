@@ -16,7 +16,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.saclient.CreateStrategyParameters;
 import org.marketcetera.server.security.MetcAuthentication;
 import org.marketcetera.server.service.OrderDestinationManager;
-import org.marketcetera.server.service.OrderManagerSelector;
+import org.marketcetera.server.service.OrderProcessorSelector;
 import org.marketcetera.server.service.PositionManager;
 import org.marketcetera.server.service.StrategyAgentManager;
 import org.marketcetera.server.ws.MatpService;
@@ -885,7 +885,7 @@ public class MatpServiceImpl
         public void sendOrderSingle(ClientContext inContext,
                                     OrderSingleImpl inOrderSingle)
         {
-            orderManagerSelector.send(inOrderSingle);
+            orderProcessorSelector.send(inOrderSingle);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.server.ws.MatpService#sendOrder(org.marketcetera.trade.OrderReplace)
@@ -894,7 +894,7 @@ public class MatpServiceImpl
         public void sendOrderReplace(ClientContext inContext,
                                      OrderReplaceImpl inOrderReplace)
         {
-            orderManagerSelector.send(inOrderReplace);
+            orderProcessorSelector.send(inOrderReplace);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.server.ws.MatpService#sendOrder(org.marketcetera.trade.OrderCancel)
@@ -903,7 +903,7 @@ public class MatpServiceImpl
         public void sendOrderCancel(ClientContext inContext,
                                     OrderCancelImpl inOrderCancel)
         {
-            orderManagerSelector.send(inOrderCancel);
+            orderProcessorSelector.send(inOrderCancel);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.server.ws.MatpService#sendOrderRaw(org.marketcetera.trade.FIXOrder)
@@ -912,7 +912,7 @@ public class MatpServiceImpl
         public void sendOrderRaw(ClientContext inContext,
                                  FIXOrderImpl inFIXOrder)
         {
-            orderManagerSelector.send(inFIXOrder);
+            orderProcessorSelector.send(inFIXOrder);
         }
     }
     /**
@@ -949,7 +949,7 @@ public class MatpServiceImpl
      * 
      */
     @Autowired
-    private OrderManagerSelector orderManagerSelector;
+    private OrderProcessorSelector orderProcessorSelector;
     /**
      * 
      */

@@ -45,4 +45,11 @@ public interface OrderDestination
      * @param inOrder an <code>Order</code> valu
      */
     public void send(Order inOrder);
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    public long getNextId();
 }

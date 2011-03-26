@@ -3,6 +3,7 @@ package org.marketcetera.systemmodel.persistence;
 import java.util.List;
 
 import org.marketcetera.systemmodel.User;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -13,6 +14,7 @@ import org.marketcetera.systemmodel.User;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface UserDao
 {
     /**
@@ -26,9 +28,9 @@ public interface UserDao
      * 
      *
      *
-     * @param inUserImpl
+     * @param inUser
      */
-    public void write(User inUserImpl);
+    public void write(User inUser);
     /**
      *
      *
@@ -36,4 +38,12 @@ public interface UserDao
      * @return
      */
     public User getByName(String inUsername);
+    /**
+     * 
+     *
+     *
+     * @param inUserID
+     * @return
+     */
+    public User getById(long inUserID);
 }

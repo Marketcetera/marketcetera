@@ -36,7 +36,15 @@ public interface UserManager
      * 
      *
      *
-     * @param inUserImpl
+     * @param inUserID
+     * @return
      */
-    public void write(User inUserImpl);
+    public User getById(long inUserID);
+    /**
+     * 
+     *
+     *
+     * @param inUser
+     */
+    public void write(User inUser);
 }

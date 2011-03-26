@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.marketcetera.systemmodel.User;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class MetcUserDetails
         implements UserDetails
 {

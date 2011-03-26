@@ -1,5 +1,6 @@
 package org.marketcetera.server.security;
 
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -10,6 +11,7 @@ package org.marketcetera.server.security;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface PasswordManager
 {
     /**

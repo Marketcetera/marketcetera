@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.systemmodel.OrderDestinationID;
 import org.marketcetera.systemmodel.OrderDestinationIdFactory;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -14,6 +15,7 @@ import org.marketcetera.systemmodel.OrderDestinationIdFactory;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 class OrderDestinationIdFactoryImpl
         implements OrderDestinationIdFactory
 {

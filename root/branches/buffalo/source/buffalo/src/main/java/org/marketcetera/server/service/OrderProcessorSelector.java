@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface OrderManagerSelector
+public interface OrderProcessorSelector
 {
     /**
      * 
