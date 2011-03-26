@@ -1,5 +1,6 @@
 package org.marketcetera.systemmodel;
 
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -12,14 +13,14 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface OrderDestinationIdFactory
+public interface ReportFactory
 {
     /**
      * 
      *
      *
-     * @param inValue
+     * @param inTradeMessage
      * @return
      */
-    public OrderDestinationID create(String inValue);
+    public Report createFrom(TradeMessage inTradeMessage);
 }

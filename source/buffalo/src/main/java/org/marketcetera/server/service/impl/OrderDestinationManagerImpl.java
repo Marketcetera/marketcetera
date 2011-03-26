@@ -9,8 +9,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.server.service.*;
 import org.marketcetera.systemmodel.OrderDestinationID;
+import org.marketcetera.systemmodel.ReportFactory;
+import org.marketcetera.systemmodel.impl.CannotCreateReport;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Order;
-import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -65,6 +67,7 @@ class OrderDestinationManagerImpl
                                this,
                                inOrder);
         OrderDestination destination = destinationSelector.selectDestination(inOrder);
+        inOrder.setBrokerID(new BrokerID(destination.getId().getValue()));
         SLF4JLoggerProxy.debug(OrderDestinationManagerImpl.class,
                                "{} selected {} for {}",
                                this,
@@ -82,6 +85,12 @@ class OrderDestinationManagerImpl
                     throw new RuntimeException(e); // TODO handle properly
                 }
             }
+        }
+        // TODO assign identifier to ClOrdID?
+        try {
+            orderManager.write(inOrder);
+        } catch (Exception e) {
+            e.printStackTrace(); // TODO manage this exception - what to do if the order can't be written?
         }
         destination.send(inOrder);
     }
@@ -225,14 +234,14 @@ class OrderDestinationManagerImpl
                 }
             }
         }
-        if(inMessage instanceof ReportBase) {
-            ReportBase report = (ReportBase)inMessage;
-            // TODO assign report ID
-            // TODO persist report
-            //                PersistentReport.save(report);
-        } else {
+        try {
+            reportManager.write(reportFactory.createFrom(inMessage));
+        } catch (CannotCreateReport ignored) {
+            // this is a normal behavior - inMessage is of a type that doesn't want to be persisted (logon, heartbeat, etc)
+        } catch (Exception e) {
             SLF4JLoggerProxy.warn(OrderDestinationManagerImpl.class,
-                                  "Cannot persist {} as it is not a ReportBase",
+                                  e,
+                                  "Cannot persist {} as it cannot be made into a Report",
                                   inMessage);
         }
         // TODO send message to listeners
@@ -246,6 +255,21 @@ class OrderDestinationManagerImpl
      */
     @Autowired
     private OrderDestinationSelector destinationSelector;
+    /**
+     * 
+     */
+    @Autowired
+    private ReportManager reportManager;
+    /**
+     * 
+     */
+    @Autowired
+    private ReportFactory reportFactory;
+    /**
+     * 
+     */
+    @Autowired
+    private OrderManager orderManager;
     /**
      * indicates if the manager is running or not
      */

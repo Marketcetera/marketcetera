@@ -2,6 +2,8 @@ package org.marketcetera.systemmodel;
 
 import java.util.Properties;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /* $License$ */
 
 /**
@@ -11,6 +13,7 @@ import java.util.Properties;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface User
 {
     /**

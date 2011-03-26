@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.marketcetera.systemmodel.User;
 import org.marketcetera.systemmodel.persistence.UserDao;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Repository;
  * @since $Release$
  */
 @Repository
+@ClassVersion("$Id$")
 public class HibernateUserDao
         implements UserDao
 {
@@ -69,6 +71,17 @@ public class HibernateUserDao
         Criteria criteria = currentSession().createCriteria(PersistentUser.class);
         criteria.add(Restrictions.eq("name",
                                      inUsername));
+        return (User)criteria.uniqueResult();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.systemmodel.persistence.UserDao#getById(long)
+     */
+    @Override
+    public User getById(long inUserID)
+    {
+        Criteria criteria = currentSession().createCriteria(PersistentUser.class);
+        criteria.add(Restrictions.eq("id",
+                                     inUserID));
         return (User)criteria.uniqueResult();
     }
     /**

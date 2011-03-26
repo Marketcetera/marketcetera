@@ -12,14 +12,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface OrderDestinationIdFactory
+public interface HasOwner
 {
     /**
      * 
      *
      *
-     * @param inValue
      * @return
      */
-    public OrderDestinationID create(String inValue);
+    public User getOwner();
 }

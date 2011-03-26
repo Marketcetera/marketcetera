@@ -29,18 +29,18 @@
 		<property name="currentLoader" ref="moduleLoader" />
 	</bean>
 	<!-- the bean responsible for selecting order managers -->
-	<bean id="orderManagerSelector" class="org.marketcetera.server.service.impl.RoundRobinOrderManagerSelector">
-		<property name="orderManagers">
+	<bean id="orderManagerSelector" class="org.marketcetera.server.service.impl.RoundRobinOrderProcessorSelector">
+		<property name="orderProcessors">
 			<list>
-				<ref bean="orderManager1" />
-				<ref bean="orderManager2" />
+				<ref bean="orderProcessor1" />
+				<ref bean="orderProcessor2" />
 			</list>
 		</property>
 	</bean>
 	<!-- create as many order managers as needed -->
-	<bean id="orderManager1" class="org.marketcetera.server.service.impl.OrderManagerImpl" init-method="start"
+	<bean id="orderProcessor1" class="org.marketcetera.server.service.impl.OrderProcessorImpl" init-method="start"
 		destroy-method="stop" />
-	<bean id="orderManager2" class="org.marketcetera.server.service.impl.OrderManagerImpl" init-method="start"
+	<bean id="orderProcessor2" class="org.marketcetera.server.service.impl.OrderProcessorImpl" init-method="start"
 		destroy-method="stop" />
 	<!-- the bean responsible for creating order validators as needed -->
 	<bean id="orderValidatorFactory" class="org.marketcetera.server.service.impl.OrderValidatorFactoryImpl" />
@@ -63,17 +63,18 @@
 		<property name="name" value="Marketcetera Simulated Exchange" />
 		<property name="id" ref="metcOrderDestinationId" />
 		<property name="engine" ref="fixEngine1" />
+		<property name="idFactory" ref="systemIdFactory" />
 	</bean>
 	<!-- this is one of the FIX engines - there can be several, but each one must bind to a unique local address -->
-    <bean id="fixEngine1" class="org.marketcetera.server.service.impl.FixEngine">
-        <property name="name" value="FIX Engine 1" />
-        <property name="sessionSettings" ref="fix1_qsettings" />
-        <property name="sessionMap">
-            <map>
-                <entry key-ref="metcOrderDestinationId" value-ref="metc_qdescriptor" />
-            </map>
-        </property>
-    </bean>
+	<bean id="fixEngine1" class="org.marketcetera.server.service.impl.FixEngine">
+		<property name="name" value="FIX Engine 1" />
+		<property name="sessionSettings" ref="fix1_qsettings" />
+		<property name="sessionMap">
+			<map>
+				<entry key-ref="metcOrderDestinationId" value-ref="metc_qdescriptor" />
+			</map>
+		</property>
+	</bean>
 	<!-- the unique identifier for the METC order destination -->
 	<bean id="metcOrderDestinationId" class="org.marketcetera.systemmodel.impl.OrderDestinationIdImpl" factory-bean="orderDestinationIdFactory"
 		factory-method="create">
@@ -84,4 +85,8 @@
 	<!-- systemmodel factories -->
 	<bean id="userFactory" class="org.marketcetera.systemmodel.impl.UserFactoryImpl" />
 	<bean id="orderDestinationIdFactory" class="org.marketcetera.systemmodel.impl.OrderDestinationIdFactoryImpl" />
+	<bean id="reportFactory" class="org.marketcetera.systemmodel.impl.ReportFactoryImpl" />
+	<bean id="systemIdFactory" class="org.marketcetera.server.service.impl.IdFactoryImpl">
+		<constructor-arg value="1000" />
+	</bean>
 </beans>

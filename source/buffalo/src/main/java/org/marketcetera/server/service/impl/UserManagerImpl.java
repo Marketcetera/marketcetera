@@ -52,6 +52,15 @@ class UserManagerImpl
     {
         return userDao.getByName(inUsername);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.server.service.UserManager#getById(long)
+     */
+    @Override
+    @Transactional(propagation=Propagation.SUPPORTS,readOnly=true)
+    public User getById(long inUserID)
+    {
+        return userDao.getById(inUserID);
+    }
     /**
      * data access object to use for access to persistent users
      */

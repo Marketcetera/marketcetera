@@ -259,6 +259,16 @@ class FixEngine
             throw new RuntimeException(e); // TODO make a typed exception
         }
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return String.format("FixEngine %s [%s]",
+                             name,
+                             running);
+    }
     /**
      * Gets the <code>SessionID</code> for the given <code>OrderDestination</code>.
      *

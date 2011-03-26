@@ -5,6 +5,7 @@ import java.util.Properties;
 import javax.persistence.*;
 
 import org.marketcetera.systemmodel.User;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -17,6 +18,7 @@ import org.marketcetera.systemmodel.User;
  */
 @Entity
 @Table(name="users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@ClassVersion("$Id$")
 class PersistentUser
         implements User
 {
