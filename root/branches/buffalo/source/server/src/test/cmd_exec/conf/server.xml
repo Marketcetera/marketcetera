@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop.xsd
+                        http://www.springframework.org/schema/tx
+                        http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<import resource="persistence.xml" />
+	<import resource="security.xml" />
+	<import resource="modules.xml" />
+	<!-- Scans within the base package of the application for @Components to configure as beans -->
+	<!-- @Controller, @Service, @Configuration, etc. -->
+	<context:component-scan base-package="org.marketcetera.server,org.marketcetera.module" />
+	<!-- Enables annotation-driven transactions -->
+	<tx:annotation-driven />
+	<!-- the bean responsible for running modules -->
+	<bean id="strategyAgent" class="org.marketcetera.strategyagent.StrategyAgent" init-method="start" destroy-method="stop">
+		<property name="moduleManager" ref="moduleManager" />
+		<property name="currentLoader" ref="moduleLoader" />
+	</bean>
+	<!-- the bean responsible for selecting order managers -->
+	<bean id="orderManagerSelector" class="org.marketcetera.server.service.impl.RoundRobinOrderProcessorSelector">
+		<property name="orderProcessors">
+			<list>
+				<ref bean="orderProcessor1" />
+				<ref bean="orderProcessor2" />
+			</list>
+		</property>
+	</bean>
+	<!-- create as many order managers as needed -->
+	<bean id="orderProcessor1" class="org.marketcetera.server.service.impl.OrderProcessorImpl" init-method="start"
+		destroy-method="stop" />
+	<bean id="orderProcessor2" class="org.marketcetera.server.service.impl.OrderProcessorImpl" init-method="start"
+		destroy-method="stop" />
+	<!-- the bean responsible for creating order validators as needed -->
+	<bean id="orderValidatorFactory" class="org.marketcetera.server.service.impl.OrderValidatorFactoryImpl" />
+	<!-- create the order destination manager - this lists all available order destinations -->
+	<bean id="orderDestinations" class="org.marketcetera.server.service.impl.OrderDestinationManagerImpl" init-method="start"
+		destroy-method="stop">
+		<property name="destinations">
+			<set>
+				<ref bean="metcOrderDestination" />
+			</set>
+		</property>
+	</bean>
+	<!-- define the destination selector, this one includes a default destination if none is specified -->
+	<bean id="orderDestinationSelector" class="org.marketcetera.server.service.impl.DefaultOrderDestinationSelector">
+		<!-- unless explicitly specified, orders will be routed to the METC order destination -->
+		<property name="defaultDestination" ref="metcOrderDestination" />
+	</bean>
+	<!-- create an order destination for the Marketcetera simulated exchange -->
+	<bean id="metcOrderDestination" class="org.marketcetera.server.service.impl.FixOrderDestination">
+		<property name="name" value="Marketcetera Simulated Exchange" />
+		<property name="id" ref="metcOrderDestinationId" />
+		<property name="engine" ref="fixEngine1" />
+		<property name="idFactory" ref="systemIdFactory" />
+	</bean>
+	<!-- this is one of the FIX engines - there can be several, but each one must bind to a unique local address -->
+	<bean id="fixEngine1" class="org.marketcetera.server.service.impl.FixEngine">
+		<property name="name" value="FIX Engine 1" />
+		<property name="sessionSettings" ref="fix1_qsettings" />
+		<property name="sessionMap">
+			<map>
+				<entry key-ref="metcOrderDestinationId" value-ref="metc_qdescriptor" />
+			</map>
+		</property>
+	</bean>
+	<!-- the unique identifier for the METC order destination -->
+	<bean id="metcOrderDestinationId" class="org.marketcetera.systemmodel.impl.OrderDestinationIdImpl" factory-bean="orderDestinationIdFactory"
+		factory-method="create">
+		<constructor-arg value="metc" />
+	</bean>
+	<!-- import session settings for the simulated exchange -->
+	<import resource="qsettings.xml" />
+	<!-- systemmodel factories -->
+	<bean id="userFactory" class="org.marketcetera.systemmodel.impl.UserFactoryImpl" />
+	<bean id="orderDestinationIdFactory" class="org.marketcetera.systemmodel.impl.OrderDestinationIdFactoryImpl" />
+	<bean id="reportFactory" class="org.marketcetera.systemmodel.impl.ReportFactoryImpl" />
+	<bean id="systemIdFactory" class="org.marketcetera.server.service.impl.IdFactoryImpl">
+		<constructor-arg value="1000" />
+	</bean>
+</beans>
