@@ -13,14 +13,14 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * {@link Report} implementation. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class ReportImpl
+class ReportImpl
         implements Report
 {
     /* (non-Javadoc)
@@ -79,16 +79,29 @@ public class ReportImpl
     {
         return reportSummary;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return String.format("Report [orderId=%s, orderDestinationId=%s, sendingTime=%s, reportType=%s, owner=%s]",
+                             orderId,
+                             orderDestinationId,
+                             sendingTime,
+                             reportType,
+                             owner);
+    }
     /**
      * Create a new ReportImpl instance.
      *
-     * @param inOrderId
-     * @param inOwner
-     * @param inOrderDestinationId
-     * @param inRawMessage
-     * @param inSendingTime
-     * @param inReportType
-     * @param inReportSummary
+     * @param inOrderId an <code>OrderID</code> value
+     * @param inOwner a <code>User</code> value
+     * @param inOrderDestinationId an <code>OrderDestinationID</code> value
+     * @param inRawMessage a <code>String</code> value containing a representation of the underlying execution report or <code>null</code>
+     * @param inSendingTime a <code>Date</code> value
+     * @param inReportType a <code>ReportType</code> value
+     * @param inReportSummary a <code>ReportSummary</code. value
      */
     ReportImpl(OrderID inOrderId,
                User inOwner,
@@ -107,31 +120,45 @@ public class ReportImpl
         reportSummary = inReportSummary;
     }
     /**
-     * 
+     * Create a new ReportImpl instance.
+     */
+    @SuppressWarnings("unused")
+    private ReportImpl()
+    {
+        orderId = null;
+        owner = null;
+        orderDestinationId = null;
+        rawMessage = null;
+        sendingTime = null;
+        reportType = null;
+        reportSummary = null;
+    }
+    /**
+     * orderID for the execution report 
      */
     private final OrderID orderId;
     /**
-     * 
+     * owner of the execution report
      */
     private final User owner;
     /**
-     * 
+     * order destination ID from which the execution report came
      */
     private final OrderDestinationID orderDestinationId;
     /**
-     * 
+     * the raw message or <code>null</code>
      */
     private final String rawMessage;
     /**
-     * 
+     * the sending time of the execution report
      */
     private final Date sendingTime;
     /**
-     * 
+     * the type of the execution report
      */
     private final ReportType reportType;
     /**
-     * 
+     * the execution report summary linked to this execution report
      */
     private final ReportSummary reportSummary;
 }

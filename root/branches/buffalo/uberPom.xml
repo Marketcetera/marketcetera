@@ -53,7 +53,7 @@
 			</dependency>
 			<dependency>
 				<groupId>${mvn.public.package}</groupId>
-				<artifactId>buffalo/artifactId></artifactId>
+				<artifactId>server</artifactId>
 				<version>[${mvn.project.version}]</version>
 			</dependency>
 			<dependency>

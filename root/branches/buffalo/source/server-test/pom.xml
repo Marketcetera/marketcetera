@@ -14,8 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${mvn.public.package}</groupId>
-			<artifactId>buffalo</artifactId>
-			<version>3.0.0</version>
+			<artifactId>server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${mvn.public.package}</groupId>

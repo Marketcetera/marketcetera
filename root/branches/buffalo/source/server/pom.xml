@@ -7,8 +7,8 @@
 		<version>3.0.0</version>
 	</parent>
 	<packaging>jar</packaging>
-	<artifactId>buffalo</artifactId>
-	<name>buffalo</name>
+	<artifactId>server</artifactId>
+	<name>Marketcetera Server</name>
 	<version>3.0.0</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
