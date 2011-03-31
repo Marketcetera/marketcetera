@@ -30,7 +30,6 @@
     <module>strategyagent</module>
     <module>util</module>
     <module>util-test</module>
-    <module>server-test</module>
-    <module>buffalo</module>
+    <module>server</module>
   </modules>
 </project>
