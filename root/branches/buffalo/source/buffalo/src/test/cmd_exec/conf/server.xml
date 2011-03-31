@@ -18,11 +18,6 @@
 	<context:component-scan base-package="org.marketcetera.server,org.marketcetera.module" />
 	<!-- Enables annotation-driven transactions -->
 	<tx:annotation-driven />
-	<!-- the bean responsible for setting up the WS listener -->
-	<bean id="webService" class="org.marketcetera.server.ws.impl.MatpServiceImpl" init-method="start" destroy-method="stop">
-		<constructor-arg value="localhost" />
-		<constructor-arg value="9000" />
-	</bean>
 	<!-- the bean responsible for running modules -->
 	<bean id="strategyAgent" class="org.marketcetera.strategyagent.StrategyAgent" init-method="start" destroy-method="stop">
 		<property name="moduleManager" ref="moduleManager" />
