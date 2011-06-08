@@ -41,11 +41,6 @@ public enum YahooFeedEventTranslator
         if(!(inData instanceof String)) {
             throw new UnsupportedOperationException("Unexpected data type: " + inData.getClass().getName());
         }
-        /*
-?s=GOOG+AMZN&f=k3,d1,t1,l1,a5,b3,b6,b2,x,e1,s,&&/&&100,"6/3/2011","3:48pm",523.38,100,523.26,100,523.40,"NasdaqNM","N/A","GOOG"100,"6/3/2011","3:48pm",188.57,100,188.58,400,188.62,"NasdaqNM","N/A","AMZN"
-Fields: [k3, d1, t1, l1, a5, b3, b6, b2, x, e1, s]
-Values: [100, "6/3/2011", "3:48pm", 523.38, 100, 523.26, 100, 523.40, "NasdaqNM", "N/A", "GOOG"100, "6/3/2011", "3:48pm", 188.57, 100, 188.58, 400, 188.62, "NasdaqNM", "N/A", "AMZN"]
-         */
         String data = (String)inData;
         SLF4JLoggerProxy.debug(YahooFeedEventTranslator.class,
                                "Received [{}] {}",
@@ -61,8 +56,6 @@ Values: [100, "6/3/2011", "3:48pm", 523.38, 100, 523.26, 100, 523.40, "NasdaqNM"
         // the values are also comma-delimited
         String completeValues = components[1];
         String[] values = completeValues.split(",");
-        System.out.println("Fields: " + Arrays.toString(fields));
-        System.out.println("Values: " + Arrays.toString(values));
         if(fields.length != values.length) {
             throw new RuntimeException(Arrays.toString(fields) + " does not match " + Arrays.toString(values));
         }
@@ -152,26 +145,43 @@ Values: [100, "6/3/2011", "3:48pm", 523.38, 100, 523.26, 100, 523.40, "NasdaqNM"
      */
     private boolean shouldSendEvent(Event inEvent)
     {
-        Event cachedEvent = eventCache.get(inEvent.getClass());
-        if(cachedEvent == null) {
+        System.out.println("==========");
+        System.out.println("Start");
+        System.out.println(eventCache);
+        System.out.println(comparators);
+        System.out.println("==========");
+        try {
+            System.out.println("Candidate event(" + inEvent.getClass() + "): " + inEvent);
+            Event cachedEvent = eventCache.get(inEvent.getClass());
+            if(cachedEvent == null) {
+                eventCache.put(inEvent.getClass(),
+                               inEvent);
+                System.out.println("No event in cache, returning new event");
+                return true;
+            }
+            // compare just the salient parts (e.g., the timestamp will be different, but that won't matter to us)
+            Comparator<Event> comparator = getComparator(inEvent);
+            if(comparator == null) {
+                throw new UnsupportedOperationException("No comparator for " + inEvent.getClass());
+            }
+            if(comparator.compare(cachedEvent,
+                                  inEvent) == 0) {
+                // event compares to the cachedEvent, do nothing
+                System.out.println("Matches cached event, do nothing");
+                return false;
+            }
+            // event is not the same as the cachedEvent
             eventCache.put(inEvent.getClass(),
                            inEvent);
+            System.out.println("Does not match cached event, returning new event");
             return true;
+        } finally {
+            System.out.println("==========");
+            System.out.println("Finish");
+            System.out.println(eventCache);
+            System.out.println(comparators);
+            System.out.println("==========");
         }
-        // compare just the salient parts (e.g., the timestamp will be different, but that won't matter to us)
-        Comparator<Event> comparator = getComparator(inEvent);
-        if(comparator == null) {
-            throw new UnsupportedOperationException("No comparator for " + inEvent.getClass());
-        }
-        if(comparator.compare(cachedEvent,
-                              inEvent) == 0) {
-            // event compares to the cachedEvent, do nothing
-            return false;
-        }
-        // event is not the same as the cachedEvent
-        eventCache.put(inEvent.getClass(),
-                       inEvent);
-        return true;
     }
     /**
      * 
@@ -190,7 +200,22 @@ Values: [100, "6/3/2011", "3:48pm", 523.38, 100, 523.26, 100, 523.40, "NasdaqNM"
             comparators.put(AskEvent.class,
                             QUOTE_COMPARATOR);
         }
-        return comparators.get(inEvent);
+        Comparator<Event> comparator = comparators.get(inEvent.getClass());
+        if(comparator == null) {
+            // no comparator there now, look for one that matches most closely
+            for(Map.Entry<Class<? extends Event>,Comparator<Event>> entry : comparators.entrySet()) {
+                if(entry.getKey().isAssignableFrom(inEvent.getClass())) {
+                    // this comparator can be used for this event
+                    // do two things: one, add this comparator for this class type to make the next check more efficient;
+                    //  two, return this comparator
+                    comparator = entry.getValue();
+                    comparators.put(inEvent.getClass(),
+                                    comparator);
+                    break;
+                }
+            }
+        }
+        return comparator;
     }
     /**
      * 
