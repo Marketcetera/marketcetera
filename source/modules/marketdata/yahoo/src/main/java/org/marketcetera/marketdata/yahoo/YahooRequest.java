@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.apache.commons.lang.StringUtils;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.util.misc.ClassVersion;
@@ -68,13 +69,15 @@ class YahooRequest
     /**
      * Create a new YahooRequest instance.
      *
+     * @param inRequest
      * @param inSymbol
-     * @param inContent
      */
-    YahooRequest(MarketDataRequest inRequest)
+    YahooRequest(MarketDataRequest inRequest,
+                 String inSymbol)
     {
         id = counter.incrementAndGet();
         request = inRequest;
+        symbol = StringUtils.trimToNull(inSymbol);
     }
     /**
      * Get the handle value.
@@ -104,16 +107,9 @@ class YahooRequest
     {
         StringBuilder query = new StringBuilder();
         query.append("?s=");
-        boolean delimiterNeeded = false;
-        for(String symbol : request.getSymbols()) {
-            if(delimiterNeeded) {
-                query.append('+');
-            }
-            query.append(symbol);
-            if(request.getExchange() != null) {
-                query.append('.').append(request.getExchange());
-            }
-            delimiterNeeded = true;
+        query.append(symbol);
+        if(request.getExchange() != null) {
+            query.append('.').append(request.getExchange());
         }
         // request string now has all the symbols, add the fields according to content type
         query.append("&f=");
@@ -176,6 +172,10 @@ class YahooRequest
      * 
      */
     private final MarketDataRequest request;
+    /**
+     * 
+     */
+    private final String symbol;
     /**
      * 
      */

@@ -32,7 +32,7 @@ class YahooFeed
                                        YahooFeedCredentials,
                                        YahooFeedMessageTranslator,
                                        YahooFeedEventTranslator,
-                                       YahooRequest,
+                                       List<YahooRequest>,
                                        YahooFeed>
         implements YahooFeedServices
 {
@@ -155,16 +155,20 @@ class YahooFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
      */
     @Override
-    protected List<String> doMarketDataRequest(YahooRequest inRequest)
+    protected List<String> doMarketDataRequest(List<YahooRequest> inRequests)
             throws FeedException
     {
+        List<String> handles = new ArrayList<String>();
         synchronized(requests) {
-            String handle = generateHandle();
-            inRequest.setHandle(handle);
-            requests.put(handle,
-                         inRequest);
-            client.request(inRequest);
-            return Arrays.asList(new String[] { handle } );
+            for(YahooRequest request : inRequests) {
+                String handle = generateHandle();
+                handles.add(handle);
+                request.setHandle(handle);
+                requests.put(handle,
+                             request);
+                client.request(request);
+            }
+            return handles;
         }
     }
     /* (non-Javadoc)
