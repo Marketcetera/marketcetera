@@ -1,13 +1,14 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.TreeMap;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -79,14 +80,14 @@ public class OrderBaseImpl implements OrderBase {
     public Map<String, String> getCustomFields() {
         return mCustomFields == null
                 ? null
-                : new HashMap<String,String>(mCustomFields);
+                : new TreeMap<String,String>(mCustomFields);
     }
 
     @Override
     public void setCustomFields(Map<String, String> inCustomFields) {
         mCustomFields = inCustomFields == null
                 ? null
-                : new HashMap<String,String>(inCustomFields);
+                : new TreeMap<String,String>(inCustomFields);
     }
 
     @Override
