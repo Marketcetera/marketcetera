@@ -1049,6 +1049,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                 return false;
             if (getClass() != obj.getClass())
                 return false;
+            @SuppressWarnings("unchecked")
             final MarketDataHandle other = (MarketDataHandle) obj;
             if (mHandle == null) {
                 if (other.mHandle != null)
