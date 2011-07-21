@@ -51,6 +51,11 @@
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
+        <artifactId>ors</artifactId>
+        <version>[${mvn.project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
         <artifactId>marketdata-bogus</artifactId>
         <version>[${mvn.project.version}]</version>
       </dependency>
@@ -230,7 +235,7 @@
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
-        <version>[3.1.0]</version>
+        <version>[4.3.0]</version>
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
@@ -561,7 +566,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>1.4.3</version>
+          <version>2.3.5</version>
         </plugin>
 
         <!-- mvn dependency:* -->
