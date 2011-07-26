@@ -1,10 +1,12 @@
 package org.marketcetera.core;
 
-import org.marketcetera.util.misc.ClassVersion;
-
-import java.util.Properties;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -16,62 +18,102 @@ import java.io.IOException;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class ApplicationVersion {
+public class ApplicationVersion
+{
     /**
      * Returns the application version number.
      *
-     * @return the application version number.
+     * @return a <code>String</code> value containing the application version number
      */
-    public static String getVersion() {
-        return getProperty("VersionNumber", DEFAULT_VERSION);  //$NON-NLS-1$
+    public static String getVersion()
+    {
+        return getProperty("VersionNumber", //$NON-NLS-1$
+                           DEFAULT_VERSION,
+                           ApplicationVersion.class);
     }
-
+    /**
+     * Returns the application version number.
+     *
+     * @param inResourceClass a <code>Class&lt;?&gt;</code> value
+     * @return a <code>String</code> value containing the application version number
+     */
+    public static String getVersion(Class<?> inResourceClass)
+    {
+        return getProperty("VersionNumber", //$NON-NLS-1$
+                           DEFAULT_VERSION,
+                           inResourceClass);
+    }
     /**
      * Returns the applicatino build number.
      *
-     * @return the build number.
+     * @return a <code>String</code> value containing the application build number
      */
-    public static String getBuildNumber() {
-        return getProperty("BuildNumber", DEFAULT_BUILD); //$NON-NLS-1$
+    public static String getBuildNumber()
+    {
+        return getProperty("BuildNumber", //$NON-NLS-1$
+                           DEFAULT_BUILD,
+                           ApplicationVersion.class);
     }
-
+    /**
+     * Gets the build number using the given class as a resource source.
+     *
+     * @param inResourceClass a <code>Class&lt;?&gt;</code> value
+     * @return a <code>String</code> value
+     */
+    public static String getBuildNumber(Class<?> inResourceClass)
+    {
+        return getProperty("BuildNumber", //$NON-NLS-1$
+                           DEFAULT_BUILD,
+                           inResourceClass);
+    }
     /**
      * Returns the property value from the version properties instance.
      *
-     * @param inName the property name
-     * @param inDefaultValue the default property value
-     *
-     * @return the property value.
+     * @param inName a <code>String</code> value containing the property name
+     * @param inDefaultValue a <code>String</code> value containing the default property value
+     * @param inResourceClass a <code>Class&lt;?&gt;</code> value containing the resource owning class
+     * @return a <code>String</code> value containing the property value.
      */
-    private static String getProperty(String inName, String inDefaultValue) {
-        return getProperties().getProperty(inName, inDefaultValue);
+    private static String getProperty(String inName,
+                                      String inDefaultValue,
+                                      Class<?> inResourceClass)
+    {
+        return getProperties(inResourceClass).getProperty(inName,
+                                                          inDefaultValue);
     }
-
     /**
      * Returns the properties instance containing version
      * and build information.
      *
+     * @param inResourceClass a <code>Class&lt;?&gt;</code> value containing the resource owning class
      * @return properties instance.
      */
-    private static Properties getProperties() {
-        if(sProperties == null) {
-            Properties p = new Properties();
-            try {
-                InputStream stream = ApplicationVersion.class.
-                        getResourceAsStream("/META-INF/metc_version.properties");  //$NON-NLS-1$
-                if (stream != null) {
-                    p.load(stream);
-                    stream.close();
+    private static Properties getProperties(Class<?> inResourceClass)
+    {
+        synchronized(properties) {
+            Properties p = properties.get(inResourceClass.getName());
+            if(p == null) {
+                p = new Properties();
+                properties.put(inResourceClass.getName(),
+                               p);
+                try {
+                    InputStream stream = inResourceClass.getResourceAsStream("/META-INF/metc_version.properties");  //$NON-NLS-1$
+                    if(stream != null) {
+                        p.load(stream);
+                        stream.close();
+                    }
+                } catch(IOException e) {
+                    Messages.ERROR_FETCHING_VERSION_PROPERTIES.warn(ApplicationVersion.class,
+                                                                    e);
                 }
-            } catch (IOException e) {
-                Messages.ERROR_FETCHING_VERSION_PROPERTIES.warn(
-                        ApplicationVersion.class, e);
             }
-            sProperties = p;
+            return p;
         }
-        return sProperties;
     }
-    private static Properties sProperties;
+    /**
+     * properties by owning resource class
+     */
+    private static final Map<String,Properties> properties = new HashMap<String,Properties>();
     /**
      * No instances of this class can exist.
      */
