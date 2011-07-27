@@ -1,8 +1,9 @@
 package org.marketcetera.marketdata.csv;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.marketdata.AbstractMarketDataModule;
+import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.marketdata.AbstractMarketDataModule;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * StrategyAgent module for {@link CSVFeed}.
@@ -19,20 +20,36 @@ public class CSVFeedModule
         implements CSVFeedMXBean
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getDelay()
+     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getReplayRate()
      */
     @Override
-    public String getDelay()
+    public double getReplayRate()
     {
-        return Long.toString(delay);
+        return replayRate;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setDelay(java.lang.String)
+     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setReplayRate(double)
      */
     @Override
-    public void setDelay(String inDelay)
+    public void setReplayRate(double inReplayRate)
     {
-        delay = Long.parseLong(inDelay);
+        replayRate = inReplayRate;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getMarketdataDirectory()
+     */
+    @Override
+    public String getMarketdataDirectory()
+    {
+        return marketdataDirectory;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setMarketdataDirectory(java.lang.String)
+     */
+    @Override
+    public void setMarketdataDirectory(String inDirectory)
+    {
+        marketdataDirectory = StringUtils.trimToNull(inDirectory);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getEventTranslatorClassName()
@@ -65,7 +82,7 @@ public class CSVFeedModule
      * @throws org.marketcetera.core.CoreException 
      */
     CSVFeedModule()
-        throws CoreException
+            throws CoreException
     {
         super(CSVFeedModuleFactory.INSTANCE_URN,
               CSVFeedFactory.getInstance().getMarketDataFeed());
@@ -77,15 +94,20 @@ public class CSVFeedModule
     protected CSVFeedCredentials getCredentials()
         throws CoreException
     {
-        return CSVFeedCredentials.getInstance(delay,
+        return CSVFeedCredentials.getInstance(replayRate,
+                                              marketdataDirectory,
                                               getEventTranslatorClassName());
     }
-    /**
-     * the delay value to use 
-     */
-    private volatile long delay = 0;
     /**
      * the event translator classname to use
      */
     private volatile String eventTranslatorClassname = BasicCSVFeedEventTranslator.class.getName();
+    /**
+     * the rate at which to replay data
+     */
+    private volatile double replayRate = 1.0;
+    /**
+     * the directory in which to find marketdata
+     */
+    private volatile String marketdataDirectory;
 }

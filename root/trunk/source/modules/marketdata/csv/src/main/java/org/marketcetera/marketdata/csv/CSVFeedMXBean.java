@@ -21,19 +21,33 @@ public interface CSVFeedMXBean
         extends AbstractMarketDataModuleMXBean
 {
     /**
-     * Gets the number of milliseconds to delay between market data events.
+     * Gets the rate at which data is replayed.
+     *
+     * @return a <code>double</code> value
+     */
+    @DisplayName("The rate at which data is replayed")
+    public double getReplayRate();
+    /**
+     * Sets the rate at which data is replayed.
+     *
+     * @param inReplayRate a <code>double</code> value
+     */
+    @DisplayName("The rate at which data is replayed")
+    public void setReplayRate(double inReplayRate);
+    /**
+     * Gets the name of the directory in which to find market data.
      *
      * @return a <code>String</code> value
      */
-    @DisplayName("Delay in milliseconds")
-    public String getDelay();
+    @DisplayName("The absolute path in which to find market data")
+    public String getMarketdataDirectory();
     /**
-     * Sets the number of milliseconds to delay between market data events.
+     * Sets the name of the directory in which to find market data. 
      *
-     * @param inDelay a <code>String</code> value
+     * @param inDirectory a <code>String</code> value
      */
-    @DisplayName("Delay in milliseconds")
-    public void setDelay(String inDelay);
+    @DisplayName("The absolute path in which to find market data")
+    public void setMarketdataDirectory(@DisplayName("The absolute path in which to find market data")String inDirectory);
     /**
      * Gets the fully-qualified class name of the CSV event translator.
      *

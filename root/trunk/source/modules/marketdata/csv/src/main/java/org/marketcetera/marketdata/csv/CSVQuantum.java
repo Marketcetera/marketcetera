@@ -25,13 +25,16 @@ public class CSVQuantum
      *
      * @param inLine a <code>String[]</code> value containing the distinct tokens from a single line in a CSV file
      * @param inRequest a <code>MarketDataRequest</code> value containing the original market data request
+     * @param inReplayRate a <code>double</code> value containing the replay rate at which to process the events
      * @return a <code>CSVQuantum</code> value
      */
     static CSVQuantum getQuantum(String[] inLine,
-                                 MarketDataRequest inRequest)
+                                 MarketDataRequest inRequest,
+                                 double inReplayRate)
     {
         return new CSVQuantum(inLine,
-                              inRequest);
+                              inRequest,
+                              inReplayRate);
     }
     /**
      * Get the line value.
@@ -53,6 +56,15 @@ public class CSVQuantum
     {
         return request;
     }
+    /**
+     * Get the replayRate value.
+     *
+     * @return a <code>double</code> value
+     */
+    public double getReplayRate()
+    {
+        return replayRate;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -64,14 +76,17 @@ public class CSVQuantum
     /**
      * Create a new CSVQuantum instance.
      *
-     * @param inLine
-     * @param inRequest
+     * @param inLine a <code>String[]</code> value
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inReplayRate a <code>double</code> value
      */
     private CSVQuantum(String[] inLine,
-                       MarketDataRequest inRequest)
+                       MarketDataRequest inRequest,
+                       double inReplayRate)
     {
         line = inLine;
         request = inRequest;
+        replayRate = inReplayRate;
     }
     /**
      * a single line from the file
@@ -81,4 +96,8 @@ public class CSVQuantum
      * the original market data request
      */
     private final MarketDataRequest request;
+    /**
+     * rate at which to replay the events
+     */
+    private final double replayRate;
 }
