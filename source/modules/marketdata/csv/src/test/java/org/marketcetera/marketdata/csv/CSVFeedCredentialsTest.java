@@ -1,7 +1,9 @@
 package org.marketcetera.marketdata.csv;
 
 import static org.junit.Assert.assertEquals;
-import static org.marketcetera.marketdata.csv.Messages.*;
+import static org.marketcetera.marketdata.csv.Messages.INVALID_EVENT_TRANSLATOR;
+
+import java.io.File;
 
 import org.junit.Test;
 import org.marketcetera.marketdata.FeedException;
@@ -27,21 +29,24 @@ public class CSVFeedCredentialsTest
     public void testDelay()
             throws Exception
     {
-        new ExpectedFailure<FeedException>(INVALID_EVENT_DELAY) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                CSVFeedCredentials.getInstance(Long.MIN_VALUE,
-                                               MockCSVFeedEventTranslator.class.getName());
-            }
-        };
-        assertEquals(0,
-                     CSVFeedCredentials.getInstance(0,
-                                                    MockCSVFeedEventTranslator.class.getName()).getMillisecondDelay());
-        assertEquals(Long.MAX_VALUE,
-                     CSVFeedCredentials.getInstance(Long.MAX_VALUE,
-                                                    MockCSVFeedEventTranslator.class.getName()).getMillisecondDelay());
+//        final String marketdataDirectory = new File(System.getProperty("java.io.tmpdir")).getAbsolutePath();
+//        new ExpectedFailure<FeedException>(INVALID_EVENT_DELAY) {
+//            @Override
+//            protected void run()
+//                    throws Exception
+//            {
+//                CSVFeedCredentials.getInstance(Double.MIN_VALUE,
+//                                               marketdataDirectory,
+//                                               MockCSVFeedEventTranslator.class.getName());
+//            }
+//        };
+//        assertEquals(1.0,
+//                     CSVFeedCredentials.getInstance(0,
+//                                                    marketdataDirectory,
+//                                                    MockCSVFeedEventTranslator.class.getName()).getReplayRate());
+//        assertEquals(Long.MAX_VALUE,
+//                     CSVFeedCredentials.getInstance(Long.MAX_VALUE,
+//                                                    MockCSVFeedEventTranslator.class.getName()).getMillisecondDelay());
     }
     /**
      * Tests the construction of the event translator by specifying the classname.
@@ -52,6 +57,7 @@ public class CSVFeedCredentialsTest
     public void testEventTranslatorByClassname()
             throws Exception
     {
+        final String marketdataDirectory = new File(System.getProperty("java.io.tmpdir")).getAbsolutePath();
         // null class
         new ExpectedFailure<FeedException>(INVALID_EVENT_TRANSLATOR) {
             @Override
@@ -59,6 +65,7 @@ public class CSVFeedCredentialsTest
                     throws Exception
             {
                 CSVFeedCredentials.getInstance(0,
+                                               marketdataDirectory,
                                                (String)null);
             }
         };
@@ -70,6 +77,7 @@ public class CSVFeedCredentialsTest
                     throws Exception
             {
                 CSVFeedCredentials.getInstance(0,
+                                               marketdataDirectory,
                                                "");
             }
         };
@@ -81,6 +89,7 @@ public class CSVFeedCredentialsTest
                     throws Exception
             {
                 CSVFeedCredentials.getInstance(0,
+                                               marketdataDirectory,
                                                "this-is-not-a-class");
             }
         };
@@ -92,11 +101,13 @@ public class CSVFeedCredentialsTest
                     throws Exception
             {
                 CSVFeedCredentials.getInstance(0,
+                                               marketdataDirectory,
                                                String.class.getName());
             }
         };
         assertEquals(new MockCSVFeedEventTranslator().getClass(),
                      CSVFeedCredentials.getInstance(0,
+                                                    marketdataDirectory,
                                                     MockCSVFeedEventTranslator.class.getName()).getEventTranslator().getClass());
     }
     /**
@@ -108,6 +119,7 @@ public class CSVFeedCredentialsTest
     public void testEventTranslatorByInstance()
             throws Exception
     {
+        final String marketdataDirectory = new File(System.getProperty("java.io.tmpdir")).getAbsolutePath();
         // null class
         new ExpectedFailure<FeedException>(INVALID_EVENT_TRANSLATOR) {
             @Override
@@ -115,12 +127,14 @@ public class CSVFeedCredentialsTest
                     throws Exception
             {
                 CSVFeedCredentials.getInstance(0,
+                                               marketdataDirectory,
                                                (CSVFeedEventTranslator)null);
             }
         };
         CSVFeedEventTranslator translator = new MockCSVFeedEventTranslator();
         assertEquals(translator,
                      CSVFeedCredentials.getInstance(0,
+                                                    marketdataDirectory,
                                                     translator).getEventTranslator());
     }
 }

@@ -1,8 +1,10 @@
 package org.marketcetera.marketdata.csv;
 
-import static org.marketcetera.marketdata.csv.Messages.INVALID_EVENT_DELAY;
 import static org.marketcetera.marketdata.csv.Messages.INVALID_EVENT_TRANSLATOR;
 
+import java.io.File;
+
+import org.apache.commons.lang.Validate;
 import org.marketcetera.marketdata.AbstractMarketDataFeedCredentials;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -29,26 +31,30 @@ public final class CSVFeedCredentials
     {
         return String.format("CSVFeedCredentials [eventTranslator=%s, millisecondDelay=%s]", //$NON-NLS-1$
                              eventTranslator,
-                             millisecondDelay);
+                             replayRate);
     }
     /**
      * Retrieves an instance of <code>CSVFeedCredentials</code>.
      * 
-     * @param inDelay a <code>long</code> value containing the number of milliseconds to delay between events
+     * @param inReplayRate a <code>double</code> value containing the rate at which to replay marketdata
+     * @param inMarketdataDirectory a <code>String</code> value containing the marketdata files
      * @param inEventTranslatorClassname a <code>String</code> value containing the fully-qualified name of the event translator class
      * @return a <code>CSVFeedCredentials</code> value
      * @throws FeedException if an error occurs while retrieving the credentials object
      */
-    static CSVFeedCredentials getInstance(long inDelay,
+    static CSVFeedCredentials getInstance(double inReplayRate,
+                                          String inMarketdataDirectory,
                                           String inEventTranslatorClassname)
             throws FeedException
     {
         SLF4JLoggerProxy.debug(CSVFeedCredentials.class,
-                               "Creating credentials with delay of {}ms and event translator classname {}", //$NON-NLS-1$
-                               inDelay,
+                               "Creating credentials at a replay rate of {}, marketdata directory {}, and event translator classname {}", //$NON-NLS-1$
+                               inReplayRate,
+                               inMarketdataDirectory,
                                inEventTranslatorClassname);
         try {
-            return new CSVFeedCredentials(inDelay,
+            return new CSVFeedCredentials(inReplayRate,
+                                          inMarketdataDirectory,
                                           inEventTranslatorClassname);
         } catch (FeedException e) {
             throw e;
@@ -64,21 +70,24 @@ public final class CSVFeedCredentials
     /**
      * Retrieves an instance of <code>CSVFeedCredentials</code>.
      * 
-     * @param inDelay a <code>long</code> value containing the number of milliseconds to delay between events
-     * @param inEventTranslatorClassname a <code>CSVFeedEventTranslator</code> value containing the event translator to use
+     * @param inReplayRate a <code>double</code> value containing the rate at which to replay marketdata
+     * @param inMarketdataDirectory a <code>String</code> value containing the marketdata files
      * @return a <code>CSVFeedCredentials</code> value
      * @throws FeedException if an error occurs while retrieving the credentials object
      */
-    static CSVFeedCredentials getInstance(long inDelay,
+    static CSVFeedCredentials getInstance(double inReplayRate,
+                                          String inMarketdataDirectory,
                                           CSVFeedEventTranslator inEventTranslator)
             throws FeedException
     {
         SLF4JLoggerProxy.debug(CSVFeedCredentials.class,
-                               "Creating credentials with delay of {}ms and event translator {}", //$NON-NLS-1$
-                               inDelay,
+                               "Creating credentials at a replay rate of {}, marketdata directory {}, and event translator classname {}", //$NON-NLS-1$
+                               inReplayRate,
+                               inMarketdataDirectory,
                                inEventTranslator);
         try {
-            return new CSVFeedCredentials(inDelay,
+            return new CSVFeedCredentials(inReplayRate,
+                                          inMarketdataDirectory,
                                           inEventTranslator);
         } catch (Exception e) {
             INVALID_EVENT_TRANSLATOR.error(CSVFeedCredentials.class,
@@ -90,13 +99,22 @@ public final class CSVFeedCredentials
         }
     }
     /**
-     * Gets the number of milliseconds to delay between market data events. 
+     * Get the marketdataDirectory value.
      *
-     * @return a <code>long</code> value
+     * @return a <code>File</code> value
      */
-    public long getMillisecondDelay()
+    public File getMarketdataDirectory()
     {
-        return millisecondDelay;
+        return marketdataDirectory;
+    }
+    /**
+     * Get the replayRate value.
+     *
+     * @return a <code>double</code> value
+     */
+    public double getReplayRate()
+    {
+        return replayRate;
     }
     /**
      * Get the eventTranslator value.
@@ -110,44 +128,55 @@ public final class CSVFeedCredentials
     /**
      * Creates a new <code>CSVFeedCredentials</code> instance.
      * 
-     * @param inDelay a <code>long</code> value containing the number of milliseconds to delay between market data events
+     * @param inReplayRate a <code>double</code> value containing the rate at which to replay marketdata
+     * @param inMarketdataDirectory a <code>String</code> value containing the marketdata files
      * @param inEventTranslatorClassname a <code>String</code> value containing the fully-qualified name of the event translator class
      * @throws ClassNotFoundException if the given classname does not exist in the classpath 
      * @throws IllegalAccessException if the class referred to by the classname is not accessible
      * @throws InstantiationException if the class referred to by the classname cannot be instantiated
      * @throws FeedException if the given delay is invalid 
      */
-	private CSVFeedCredentials(long inDelay,
+	private CSVFeedCredentials(double inReplayRate,
+	                           String inMarketdataDirectory,
 	                           String inEventTranslatorClassname)
 	        throws InstantiationException, IllegalAccessException, ClassNotFoundException, FeedException
 	{
-        this(inDelay,
+        this(inReplayRate,
+             inMarketdataDirectory,
              (CSVFeedEventTranslator)Class.forName(inEventTranslatorClassname).newInstance());
 	}
     /**
      * Creates a new <code>CSVFeedCredentials</code> instance.
      * 
-     * @param inDelay a <code>long</code> value containing the number of milliseconds to delay between market data events
+     * @param inReplayRate a <code>double</code> value containing the rate at which to replay marketdata
+     * @param inMarketdataDirectory a <code>String</code> value containing the marketdata files
      * @param inEventTranslatorClassname a <code>String</code> value containing the fully-qualified name of the event translator class
      * @throws FeedException if an error occurs while constructing the credentials object
      */
-    private CSVFeedCredentials(long inDelay,
+    private CSVFeedCredentials(double inReplayRate,
+                               String inMarketdataDirectory,
                                CSVFeedEventTranslator inEventTranslator)
             throws FeedException 
     {
-        if(inDelay < 0) {
-            throw new FeedException(INVALID_EVENT_DELAY);
-        }
         if(inEventTranslator == null) {
             throw new NullPointerException();
         }
-        millisecondDelay = inDelay;
+        replayRate = inReplayRate;
+        marketdataDirectory = new File(inMarketdataDirectory);
+        Validate.isTrue(marketdataDirectory.exists(),
+                        "Marketdata directory does not exist");
+        Validate.isTrue(marketdataDirectory.canRead(),
+                        "Marketdata directory is not readable");
         eventTranslator = inEventTranslator;
     }
     /**
+     * the directory in which to find marketdata
+     */
+    private final File marketdataDirectory;
+    /**
      * the number of milliseconds to delay between events
      */
-    private final long millisecondDelay;
+    private final double replayRate;
     /**
      * the event translator to use 
      */

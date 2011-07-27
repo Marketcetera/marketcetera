@@ -21,16 +21,15 @@ import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataModuleTestBase;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.module.*;
-import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Subclass from the main Market data test and verify that basic module functionality works
  * @author toli kuznets
  * @version $Id: CSVFeedModuleTest.java 4348 2009-09-24 02:33:11Z toli $
  */
-
-@ClassVersion("$Id: CSVFeedModuleTest.java 4348 2009-09-24 02:33:11Z toli $")
-public class CSVFeedModuleTest extends MarketDataModuleTestBase {
+public class CSVFeedModuleTest
+        extends MarketDataModuleTestBase
+{
     private static final String DATA_DIR = "src/test/sample_data/";
 
     @BeforeClass
@@ -42,7 +41,7 @@ public class CSVFeedModuleTest extends MarketDataModuleTestBase {
     protected void populateConfigurationProvider(ConfigurationProviderTest.MockConfigurationProvider inProvider)
     {
         inProvider.addValue(CSVFeedModuleFactory.INSTANCE_URN,
-                            "DataDirectory",
+                            "MarketdataDirectory",
                             DATA_DIR);
     }
 
@@ -84,10 +83,11 @@ public class CSVFeedModuleTest extends MarketDataModuleTestBase {
         });
         CSVFeed feed = CSVFeedFactory.getInstance().getMarketDataFeed();
         feed.doLogin(CSVFeedCredentials.getInstance(0,
+                                                    DATA_DIR,
                                                     MockCSVFeedEventTranslator.class.getName()));
         MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest();
         DataFlowID dfid = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
-                                                                                           builder.withSymbols(DATA_DIR + "GOOG.csv")
+                                                                                           builder.withSymbols("GOOG.csv")
                                                                                                   .withContent("LATEST_TICK").create()) });
         try {
             Event event = events.take();
@@ -121,9 +121,10 @@ public class CSVFeedModuleTest extends MarketDataModuleTestBase {
         });
         CSVFeed feed = CSVFeedFactory.getInstance().getMarketDataFeed();
         feed.doLogin(CSVFeedCredentials.getInstance(0,
+                                                    DATA_DIR,
                                                     MockCSVFeedEventTranslator.class.getName()));
         DataFlowID dfid = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
-                                                                                          MarketDataRequestBuilder.newRequest().withSymbols(DATA_DIR + "GOOG.csv")
+                                                                                          MarketDataRequestBuilder.newRequest().withSymbols("GOOG.csv")
                                                                                                                                .withContent("TOP_OF_BOOK").create()) });
 
         try {

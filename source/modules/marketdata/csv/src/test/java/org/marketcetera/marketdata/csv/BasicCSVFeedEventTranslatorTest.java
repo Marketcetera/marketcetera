@@ -48,7 +48,8 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(translator.guessBigDecimal(null,
                                               0));
         assertNull(translator.guessBigDecimal(CSVQuantum.getQuantum(new String[] { "" },
-                                                                    request),
+                                                                    request,
+                                                                    1.0),
                                               0));
         // invalid chunk
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL,
@@ -58,22 +59,23 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessBigDecimal(CSVQuantum.getQuantum(new String[] { "this-is-not-a-number" },
-                                                                 request),
+                                                                 request,
+                                                                 1.0),
                                            0);
             }
         };
         // valid chunks
         assertEquals(new BigDecimal("123.456"),
                      translator.guessBigDecimal(CSVQuantum.getQuantum(new String[] { "123.456" },
-                                                                      request),
+                                                                      request, 1.0),
                                                 0));
         assertEquals(new BigDecimal(Long.MIN_VALUE),
                      translator.guessBigDecimal(CSVQuantum.getQuantum(new String[] { Long.toString(Long.MIN_VALUE) },
-                                                                      request),
+                                                                      request, 1.0),
                                                 0));
         assertEquals(new BigDecimal(Long.MAX_VALUE),
                      translator.guessBigDecimal(CSVQuantum.getQuantum(new String[] { Long.toString(Long.MAX_VALUE) },
-                                                                      request),
+                                                                      request, 1.0),
                                                 0));
     }
     /**
@@ -88,7 +90,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(translator.guessDate(null,
                                         0));
         assertNull(translator.guessDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                              request),
+                                                              request, 1.0),
                                         0));
         // invalid chunk
         new ExpectedFailure<CoreException>(CANNOT_GUESS_DATE,
@@ -98,7 +100,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessDate(CSVQuantum.getQuantum(new String[] { "this-is-not-a-date" },
-                                                           request),
+                                                           request, 1.0),
                                      0);
             }
         };
@@ -111,26 +113,26 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessDate(CSVQuantum.getQuantum(new String[] { date.toString() },
-                                                           request),
+                                                           request, 1.0),
                                      0);
             }
         };
         // valid chunks
         assertEquals(date,
                      translator.guessDate(CSVQuantum.getQuantum(new String[] { Long.toString(date.getTime()) },
-                                                                request),
+                                                                request, 1.0),
                                           0));
         assertEquals(new Date(0),
                      translator.guessDate(CSVQuantum.getQuantum(new String[] { Long.toString(0) },
-                                                                request),
+                                                                request, 1.0),
                                           0));
         assertEquals(new Date(Long.MIN_VALUE),
                      translator.guessDate(CSVQuantum.getQuantum(new String[] { Long.toString(Long.MIN_VALUE) },
-                                                                request),
+                                                                request, 1.0),
                                           0));
         assertEquals(new Date(Long.MAX_VALUE),
                      translator.guessDate(CSVQuantum.getQuantum(new String[] { Long.toString(Long.MAX_VALUE) },
-                                                                request),
+                                                                request, 1.0),
                                           0));
     }
     /**
@@ -144,10 +146,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessCloseDate(null));
         assertNull(translator.guessCloseDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                                   request)));
+                                                                   request, 1.0)));
         assertEquals("nine",
                      translator.guessCloseDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven" },
-                                                                     request)));
+                                                                     request, 1.0)));
     }
     /**
      * Tests the ability to read an open price from a data line.
@@ -160,7 +162,7 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessOpenPrice(null));
         assertNull(translator.guessOpenPrice(CSVQuantum.getQuantum(new String[] { "" },
-                                                                   request)));
+                                                                   request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL,
                                            "this-is-not-a-number") {
             @Override
@@ -168,12 +170,12 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessOpenPrice(CSVQuantum.getQuantum(new String[] { "0","1","2","this-is-not-a-number","4" },
-                                                                request));
+                                                                request, 1.0));
             }
         };
         assertEquals(new BigDecimal("3"),
                      translator.guessOpenPrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4" },
-                                                                     request)));
+                                                                     request, 1.0)));
     }
     /**
      * Tests the ability to read a previous close price from a data line.
@@ -186,7 +188,7 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessPreviousClosePrice(null));
         assertNull(translator.guessPreviousClosePrice(CSVQuantum.getQuantum(new String[] { "" },
-                                                                            request)));
+                                                                            request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL,
                                            "this-is-not-a-number") {
             @Override
@@ -194,12 +196,12 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessPreviousClosePrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","5","6","this-is-not-a-number" },
-                                                                         request));
+                                                                         request, 1.0));
             }
         };
         assertEquals(new BigDecimal("7"),
                      translator.guessPreviousClosePrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","5","6","7" },
-                                                                              request)));
+                                                                              request, 1.0)));
     }
     /**
      * Tests the ability to read a volume from a data line.
@@ -212,7 +214,7 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessVolume(null));
         assertNull(translator.guessVolume(CSVQuantum.getQuantum(new String[] { "" },
-                                                                request)));
+                                                                request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL,
                                            "this-is-not-a-number") {
             @Override
@@ -220,12 +222,12 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessVolume(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","5","6","7","this-is-not-a-number","6" },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         assertEquals(new BigDecimal("8"),
                      translator.guessVolume(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","5","6","7","8" },
-                                                                  request)));
+                                                                  request, 1.0)));
     }
     /**
      * Tests the ability to read a close price from a data line.
@@ -238,7 +240,7 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessClosePrice(null));
         assertNull(translator.guessClosePrice(CSVQuantum.getQuantum(new String[] { "" },
-                                                                    request)));
+                                                                    request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL,
                                            "this-is-not-a-number") {
             @Override
@@ -246,12 +248,12 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessClosePrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","5","this-is-not-a-number","7" },
-                                                                 request));
+                                                                 request, 1.0));
             }
         };
         assertEquals(new BigDecimal("6"),
                      translator.guessClosePrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","5","6","7" },
-                                                                      request)));
+                                                                      request, 1.0)));
     }
     /**
      * Tests the ability to read a high price from a data line.
@@ -264,7 +266,7 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessHighPrice(null));
         assertNull(translator.guessHighPrice(CSVQuantum.getQuantum(new String[] { "" },
-                                                                   request)));
+                                                                   request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL,
                                            "this-is-not-a-number") {
             @Override
@@ -272,12 +274,12 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessHighPrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","this-is-not-a-number","5","6" },
-                                                                request));
+                                                                request, 1.0));
             }
         };
         assertEquals(new BigDecimal("4"),
                      translator.guessHighPrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","5","6","7" },
-                                                                     request)));
+                                                                     request, 1.0)));
     }
     /**
      * Tests the ability to read a low price from a data line.
@@ -290,7 +292,7 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessLowPrice(null));
         assertNull(translator.guessLowPrice(CSVQuantum.getQuantum(new String[] { "" },
-                                                                  request)));
+                                                                  request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL,
                                            "this-is-not-a-number") {
             @Override
@@ -298,12 +300,12 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessLowPrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","this-is-not-a-number","6" },
-                                                               request));
+                                                               request, 1.0));
             }
         };
         assertEquals(new BigDecimal("5"),
                      translator.guessLowPrice(CSVQuantum.getQuantum(new String[] { "0","1","2","3","4","5","6","7" },
-                                                                    request)));
+                                                                    request, 1.0)));
     }
     /**
      * Tests the ability to read a previous close date from a data line.
@@ -316,10 +318,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessPreviousCloseDate(null));
         assertNull(translator.guessPreviousCloseDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                                           request)));
+                                                                           request, 1.0)));
         assertEquals("ten",
                      translator.guessPreviousCloseDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven" },
-                                                                             request)));
+                                                                             request, 1.0)));
     }
     /**
      * Tests the ability to read a trade high time from a data line.
@@ -332,10 +334,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessTradeHighTime(null));
         assertNull(translator.guessTradeHighTime(CSVQuantum.getQuantum(new String[] { "" },
-                                                                       request)));
+                                                                       request, 1.0)));
         assertEquals("eleven",
                      translator.guessTradeHighTime(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve" },
-                                                                         request)));
+                                                                         request, 1.0)));
     }
     /**
      * Tests the ability to read a trade low time from a data line.
@@ -348,10 +350,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessTradeLowTime(null));
         assertNull(translator.guessTradeLowTime(CSVQuantum.getQuantum(new String[] { "" },
-                                                                      request)));
+                                                                      request, 1.0)));
         assertEquals("twelve",
                      translator.guessTradeLowTime(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen" },
-                                                                        request)));
+                                                                        request, 1.0)));
     }
     /**
      * Tests the ability to read an open exchange from a data line.
@@ -364,10 +366,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessOpenExchange(null));
         assertNull(translator.guessOpenExchange(CSVQuantum.getQuantum(new String[] { "" },
-                                                                      request)));
+                                                                      request, 1.0)));
         assertEquals("thirteen",
                      translator.guessOpenExchange(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen" },
-                                                                        request)));
+                                                                        request, 1.0)));
     }
     /**
      * Tests the ability to read a high exchange from a data line.
@@ -380,10 +382,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessHighExchange(null));
         assertNull(translator.guessHighExchange(CSVQuantum.getQuantum(new String[] { "" },
-                                                                      request)));
+                                                                      request, 1.0)));
         assertEquals("fourteen",
                      translator.guessHighExchange(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen" },
-                                                                        request)));
+                                                                        request, 1.0)));
     }
     /**
      * Tests the ability to read a low exchange from a data line.
@@ -396,10 +398,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessLowExchange(null));
         assertNull(translator.guessLowExchange(CSVQuantum.getQuantum(new String[] { "" },
-                                                                     request)));
+                                                                     request, 1.0)));
         assertEquals("fifteen",
                      translator.guessLowExchange(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen" },
-                                                                       request)));
+                                                                       request, 1.0)));
     }
     /**
      * Tests the ability to read a close exchange from a data line.
@@ -412,10 +414,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessCloseExchange(null));
         assertNull(translator.guessCloseExchange(CSVQuantum.getQuantum(new String[] { "" },
-                                                                       request)));
+                                                                       request, 1.0)));
         assertEquals("sixteen",
                      translator.guessCloseExchange(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                         request)));
+                                                                         request, 1.0)));
     }
     /**
      * Tests the ability of the translator to parse <code>Date</code> values.
@@ -428,7 +430,7 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessEventTimestamp(null));
         assertNull(translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "","" },
-                                                                        request)));
+                                                                        request, 1.0)));
         // invalid chunk
         new ExpectedFailure<CoreException>(CANNOT_GUESS_DATE,
                                            "this-is-not-a-date") {
@@ -437,7 +439,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "","this-is-not-a-date" },
-                                                                     request));
+                                                                     request, 1.0));
             }
         };
         final Date date = new Date();
@@ -449,22 +451,22 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "",date.toString() },
-                                                                     request));
+                                                                     request, 1.0));
             }
         };
         // valid chunks
         assertEquals(date,
                      translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "",Long.toString(date.getTime()) },
-                                                                          request)));
+                                                                          request, 1.0)));
         assertEquals(new Date(0),
                      translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "",Long.toString(0) },
-                                                                          request)));
+                                                                          request, 1.0)));
         assertEquals(new Date(Long.MIN_VALUE),
                      translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "",Long.toString(Long.MIN_VALUE) },
-                                                                          request)));
+                                                                          request, 1.0)));
         assertEquals(new Date(Long.MAX_VALUE),
                      translator.guessEventTimestamp(CSVQuantum.getQuantum(new String[] { "",Long.toString(Long.MAX_VALUE) },
-                                                                          request)));
+                                                                          request, 1.0)));
     }
     /**
      * Tests the ability to read an exchange from a data line.
@@ -477,10 +479,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessExchange(null));
         assertNull(translator.guessExchange(CSVQuantum.getQuantum(new String[] { "" },
-                                                                  request)));
+                                                                  request, 1.0)));
         assertEquals("four",
                      translator.guessExchange(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                    request)));
+                                                                    request, 1.0)));
     }
     /**
      * Tests the ability to read a quote action from a data line.
@@ -493,13 +495,13 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertEquals(QuoteAction.ADD,
                      translator.guessQuoteAction(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                       request)));
+                                                                       request, 1.0)));
         assertEquals(QuoteAction.ADD,
                      translator.guessQuoteAction(CSVQuantum.getQuantum(new String[] { },
-                                                                       request)));
+                                                                       request, 1.0)));
         assertEquals(QuoteAction.ADD,
                      translator.guessQuoteAction(CSVQuantum.getQuantum(null,
-                                                                       request)));
+                                                                       request, 1.0)));
     }
     /**
      * Tests the ability to guess an instrument.
@@ -512,15 +514,15 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessInstrument(null));
         assertNull(translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one" },
-                                                                    request)));
+                                                                    request, 1.0)));
         // naked equity
         assertEquals(new Equity("symbol"),
                      translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","symbol" },
-                                                                 request)));
+                                                                 request, 1.0)));
         // naked option
         assertEquals(option,
                      translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one",OptionUtils.getOsiSymbolFromOption(option) },
-                                                                      request)));
+                                                                      request, 1.0)));
         // unsupported CFI code
         new ExpectedFailure<CoreException>(UNSUPPORTED_CFI_CODE,
                                            "D:SYMBOL",
@@ -531,7 +533,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","D:SYMBOL" },
-                                                                 request));
+                                                                 request, 1.0));
             }
         };
         // invalid CFI code
@@ -544,17 +546,17 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","Q:SYMBOL" },
-                                                                 request));
+                                                                 request, 1.0));
             }
         };
         // CFI equity
         assertEquals(new Equity("SYMBOL"),
                      translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","E:SYMBOL" },
-                                                                 request)));
+                                                                 request, 1.0)));
         // CFI OSI-compliant option
         assertEquals(option,
                      translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","O:" + OptionUtils.getOsiSymbolFromOption(option) },
-                                                                 request)));
+                                                                 request, 1.0)));
         // seems to be an option, but not OSI-compliant
         new ExpectedFailure<CoreException>(NOT_OSI_COMPLIANT,
                                            "O:SYMBOL",
@@ -564,7 +566,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","O:SYMBOL" },
-                                                                 request));
+                                                                 request, 1.0));
             }
         };
         // contains more than one ':' character
@@ -575,7 +577,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","X:Y:Z" },
-                                                                 request));
+                                                                 request, 1.0));
             }
         };
     }
@@ -591,7 +593,7 @@ public class BasicCSVFeedEventTranslatorTest
         long initialValue = translator.guessMessageId(null);
         assertTrue(initialValue > 0);
         long subsequentValue = translator.guessMessageId(CSVQuantum.getQuantum(new String[] { "zero","one" },
-                                                                 request));
+                                                                 request, 1.0));
         assertTrue(subsequentValue > 0);
         assertFalse(initialValue == subsequentValue);
     }
@@ -606,26 +608,26 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessPrice(null));
         assertNull(translator.guessPrice(CSVQuantum.getQuantum(new String[] { "" },
-                                                               request)));
+                                                               request, 1.0)));
         assertEquals(BigDecimal.ZERO,
                      translator.guessPrice(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","0","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                 request)));
+                                                                 request, 1.0)));
         assertEquals(new BigDecimal(Long.MIN_VALUE),
                      translator.guessPrice(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four",Long.toString(Long.MIN_VALUE),"six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                 request)));
+                                                                 request, 1.0)));
         assertEquals(new BigDecimal(Long.MAX_VALUE),
                      translator.guessPrice(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four",Long.toString(Long.MAX_VALUE),"six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                 request)));
+                                                                 request, 1.0)));
         assertEquals(new BigDecimal("123.4567"),
                      translator.guessPrice(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","123.4567","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                 request)));
+                                                                 request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL) {
             @Override
             protected void run()
                     throws Exception
             {
                 translator.guessPrice(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","this-is-not-a-price", },
-                                                            request));
+                                                            request, 1.0));
             }
         };
     }
@@ -640,14 +642,14 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessQuoteDate(null));
         assertNull(translator.guessQuoteDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                                   request)));
+                                                                   request, 1.0)));
         assertEquals("this-is-not-a-date",
                      translator.guessQuoteDate(CSVQuantum.getQuantum(new String[] { "one","two","three","this-is-not-a-date" },
-                                                                     request)));
+                                                                     request, 1.0)));
         String dateString = DateUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessQuoteDate(CSVQuantum.getQuantum(new String[] { "one","two","three",dateString },
-                                                                     request)));
+                                                                     request, 1.0)));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#guessSize(CSVQuantum)}.
@@ -660,26 +662,26 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessSize(null));
         assertNull(translator.guessSize(CSVQuantum.getQuantum(new String[] { "" },
-                                                              request)));
+                                                              request, 1.0)));
         assertEquals(BigDecimal.ZERO,
                      translator.guessSize(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","0","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                request)));
+                                                                request, 1.0)));
         assertEquals(new BigDecimal(Long.MIN_VALUE),
                      translator.guessSize(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five",Long.toString(Long.MIN_VALUE),"seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                request)));
+                                                                request, 1.0)));
         assertEquals(new BigDecimal(Long.MAX_VALUE),
                      translator.guessSize(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five",Long.toString(Long.MAX_VALUE),"seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                request)));
+                                                                request, 1.0)));
         assertEquals(new BigDecimal("123.4567"),
                      translator.guessSize(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","123.4567","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen" },
-                                                                request)));
+                                                                request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL) {
             @Override
             protected void run()
                     throws Exception
             {
                 translator.guessSize(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","this-is-not-a-price", },
-                                                           request));
+                                                           request, 1.0));
             }
         };
     }
@@ -734,7 +736,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.guessUnderlyingInstrument(CSVQuantum.getQuantum(new String[] { },
-                                                                           request),
+                                                                           request, 1.0),
                                                      null);
             }
         };
@@ -767,14 +769,14 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessTradeDate(null));
         assertNull(translator.guessTradeDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                                   request)));
+                                                                   request, 1.0)));
         assertEquals("this-is-not-a-date",
                      translator.guessTradeDate(CSVQuantum.getQuantum(new String[] { "one","two","three","this-is-not-a-date" },
-                                                                     request)));
+                                                                     request, 1.0)));
         String dateString = DateUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessTradeDate(CSVQuantum.getQuantum(new String[] { "one","two","three",dateString },
-                                                                     request)));
+                                                                     request, 1.0)));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#guessDividendAmount(CSVQuantum)}.
@@ -787,26 +789,26 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendAmount(null));
         assertNull(translator.guessDividendAmount(CSVQuantum.getQuantum(new String[] { "" },
-                                                                        request)));
+                                                                        request, 1.0)));
         assertEquals(BigDecimal.ZERO,
                      translator.guessDividendAmount(CSVQuantum.getQuantum(new String[] { "zero","one","two","0" },
-                                                                          request)));
+                                                                          request, 1.0)));
         assertEquals(new BigDecimal(Long.MIN_VALUE),
                      translator.guessDividendAmount(CSVQuantum.getQuantum(new String[] { "zero","one","two",Long.toString(Long.MIN_VALUE) },
-                                                                          request)));
+                                                                          request, 1.0)));
         assertEquals(new BigDecimal(Long.MAX_VALUE),
                      translator.guessDividendAmount(CSVQuantum.getQuantum(new String[] { "zero","one","two",Long.toString(Long.MAX_VALUE) },
-                                                                          request)));
+                                                                          request, 1.0)));
         assertEquals(new BigDecimal("123.4567"),
                      translator.guessDividendAmount(CSVQuantum.getQuantum(new String[] { "zero","one","two","123.4567" },
-                                                                          request)));
+                                                                          request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_GUESS_BIG_DECIMAL) {
             @Override
             protected void run()
                     throws Exception
             {
                 translator.guessDividendAmount(CSVQuantum.getQuantum(new String[] { "zero","one","two","this-is-not-a-dividend-amount", },
-                                                                     request));
+                                                                     request, 1.0));
             }
         };
     }
@@ -821,12 +823,12 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendCurrency(null));
         assertNull(translator.guessDividendCurrency(CSVQuantum.getQuantum(new String[] { "" },
-                                                                          request)));
+                                                                          request, 1.0)));
         assertEquals("this-is-a-currency",
                      translator.guessDividendCurrency(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","this-is-a-currency" },
-                                                                            request)));
+                                                                            request, 1.0)));
         assertNull(translator.guessDividendCurrency(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","" },
-                                                                          request)));
+                                                                          request, 1.0)));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#guessDividendDeclareDate(CSVQuantum)}.
@@ -839,14 +841,14 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendDeclareDate(null));
         assertNull(translator.guessDividendDeclareDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                                             request)));
+                                                                             request, 1.0)));
         assertEquals("this-is-not-a-date",
                      translator.guessDividendDeclareDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","this-is-not-a-date" },
-                                                                               request)));
+                                                                               request, 1.0)));
         String dateString = DateUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessDividendDeclareDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten",dateString },
-                                                                               request)));
+                                                                               request, 1.0)));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#guessDividendExecutionDate(CSVQuantum)}.
@@ -859,14 +861,14 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendExecutionDate(null));
         assertNull(translator.guessDividendExecutionDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                                               request)));
+                                                                               request, 1.0)));
         assertEquals("this-is-not-a-date",
                      translator.guessDividendExecutionDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","this-is-not-a-date" },
-                                                                                 request)));
+                                                                                 request, 1.0)));
         String dateString = DateUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessDividendExecutionDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven",dateString },
-                                                                                 request)));
+                                                                                 request, 1.0)));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#guessDividendFrequency(CSVQuantum)}. 
@@ -879,29 +881,29 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendFrequency(null));
         assertNull(translator.guessDividendFrequency(CSVQuantum.getQuantum(new String[] { "" },
-                                                                           request)));
+                                                                           request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_INTERPRET_DIVIDEND_FREQUENCY) {
             @Override
             protected void run()
                     throws Exception
             {
                 translator.guessDividendFrequency(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","invalid-frequency" },
-                                                                        request));
+                                                                        request, 1.0));
             }
         };
         for(DividendFrequency frequency : DividendFrequency.values()) {
             // default case
             assertEquals(frequency,
                          translator.guessDividendFrequency(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five",frequency.name() },
-                                                                                 request)));
+                                                                                 request, 1.0)));
             // upper-case
             assertEquals(frequency,
                          translator.guessDividendFrequency(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five",frequency.name().toUpperCase() },
-                                                                                 request)));
+                                                                                 request, 1.0)));
             // lower-case
             assertEquals(frequency,
                          translator.guessDividendFrequency(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five",frequency.name().toLowerCase() },
-                                                                                 request)));
+                                                                                 request, 1.0)));
         }
     }
     /**
@@ -915,10 +917,10 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendEquity(null));
         assertNull(translator.guessDividendEquity(CSVQuantum.getQuantum(new String[] { "" },
-                                                                        request)));
+                                                                        request, 1.0)));
         assertEquals(new Equity("symbol"),
                      translator.guessDividendEquity(CSVQuantum.getQuantum(new String[] { "one","two","symbol","four","five","six","seven","eight" },
-                                                                          request)));
+                                                                          request, 1.0)));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#guessDividendPaymentDate(CSVQuantum)}.
@@ -931,14 +933,14 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendPaymentDate(null));
         assertNull(translator.guessDividendPaymentDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                                             request)));
+                                                                             request, 1.0)));
         assertEquals("this-is-not-a-date",
                      translator.guessDividendPaymentDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","this-is-not-a-date" },
-                                                                               request)));
+                                                                               request, 1.0)));
         String dateString = DateUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessDividendPaymentDate(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine",dateString },
-                                                                               request)));
+                                                                               request, 1.0)));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#guessDividendRecordDate(CSVQuantum)}.
@@ -951,14 +953,14 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendRecordDate(null));
         assertNull(translator.guessDividendRecordDate(CSVQuantum.getQuantum(new String[] { "" },
-                                                                            request)));
+                                                                            request, 1.0)));
         assertEquals("this-is-not-a-date",
                      translator.guessDividendRecordDate(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight","nine","this-is-not-a-date" },
-                                                                               request)));
+                                                                               request, 1.0)));
         String dateString = DateUtils.dateToString(new Date());
         assertEquals(dateString,
                      translator.guessDividendRecordDate(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight","nine",dateString },
-                                                                               request)));
+                                                                               request, 1.0)));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#guessDividendStatus(CSVQuantum)}. 
@@ -971,29 +973,29 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendStatus(null));
         assertNull(translator.guessDividendStatus(CSVQuantum.getQuantum(new String[] { "" },
-                                                                        request)));
+                                                                        request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_INTERPRET_DIVIDEND_STATUS) {
             @Override
             protected void run()
                     throws Exception
             {
                 translator.guessDividendStatus(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","invalid-status" },
-                                                                        request));
+                                                                        request, 1.0));
             }
         };
         for(DividendStatus status : DividendStatus.values()) {
             // default case
             assertEquals(status,
                          translator.guessDividendStatus(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six",status.name() },
-                                                                                 request)));
+                                                                                 request, 1.0)));
             // upper-case
             assertEquals(status,
                          translator.guessDividendStatus(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six",status.name().toUpperCase() },
-                                                                                 request)));
+                                                                                 request, 1.0)));
             // lower-case
             assertEquals(status,
                          translator.guessDividendStatus(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six",status.name().toLowerCase() },
-                                                                                 request)));
+                                                                                 request, 1.0)));
         }
     }
     /**
@@ -1007,29 +1009,29 @@ public class BasicCSVFeedEventTranslatorTest
     {
         assertNull(translator.guessDividendType(null));
         assertNull(translator.guessDividendType(CSVQuantum.getQuantum(new String[] { "" },
-                                                                      request)));
+                                                                      request, 1.0)));
         new ExpectedFailure<CoreException>(CANNOT_INTERPRET_DIVIDEND_TYPE) {
             @Override
             protected void run()
                     throws Exception
             {
                 translator.guessDividendType(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","invalid-Type" },
-                                                                   request));
+                                                                   request, 1.0));
             }
         };
         for(DividendType type : DividendType.values()) {
             // default case
             assertEquals(type,
                          translator.guessDividendType(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four",type.name() },
-                                                                            request)));
+                                                                            request, 1.0)));
             // upper-case
             assertEquals(type,
                          translator.guessDividendType(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four",type.name().toUpperCase() },
-                                                                            request)));
+                                                                            request, 1.0)));
             // lower-case
             assertEquals(type,
                          translator.guessDividendType(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four",type.name().toLowerCase() },
-                                                                            request)));
+                                                                            request, 1.0)));
         }
     }
     /**
@@ -1056,21 +1058,21 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateRequiredFields(CSVQuantum.getQuantum(new String[] { "" },
-                                                                        request),
+                                                                        request, 1.0),
                                                   null);
             }
         };
         // empty - nothing provided, nothing required
         translator.validateRequiredFields(CSVQuantum.getQuantum(new String[] { "" },
-                                                                request),
+                                                                request, 1.0),
                                           new HashSet<Integer>());
         // several fields provided, nothing required
         translator.validateRequiredFields(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                                request),
+                                                                request, 1.0),
                                           new HashSet<Integer>());
         // several fields provided, subset of provided is required
         translator.validateRequiredFields(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                                request),
+                                                                request, 1.0),
                                           new HashSet<Integer>(Arrays.asList(new Integer[] { 0,2 })));
         // several fields provided, superset of provided is required
         new ExpectedFailure<CoreException>(LINE_MISSING_REQUIRED_FIELDS) {
@@ -1079,7 +1081,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateRequiredFields(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                                        request),
+                                                                        request, 1.0),
                                                   new HashSet<Integer>(Arrays.asList(new Integer[] { 0,1,2,3 })));
             }
         };
@@ -1090,7 +1092,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateRequiredFields(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                                        request),
+                                                                        request, 1.0),
                                                   new HashSet<Integer>(Arrays.asList(new Integer[] { 3,4,5,6 })));
             }
         };
@@ -1119,7 +1121,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateTrade(CSVQuantum.getQuantum(new String[] { },
-                                                               request));
+                                                               request, 1.0));
             }
         };
         // some required fields
@@ -1129,15 +1131,15 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateTrade(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                               request));
+                                                               request, 1.0));
             }
         };
         // exactly required fields
         translator.validateTrade(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven" },
-                                                       request));
+                                                       request, 1.0));
         // superset of required fields
         translator.validateTrade(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight" },
-                                                       request));
+                                                       request, 1.0));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#validateQuote(CSVQuantum)}. 
@@ -1163,7 +1165,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateQuote(CSVQuantum.getQuantum(new String[] { },
-                                                               request));
+                                                               request, 1.0));
             }
         };
         // some required fields
@@ -1173,15 +1175,15 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateQuote(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                               request));
+                                                               request, 1.0));
             }
         };
         // exactly required fields
         translator.validateQuote(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven" },
-                                                       request));
+                                                       request, 1.0));
         // superset of required fields
         translator.validateQuote(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight" },
-                                                       request));
+                                                       request, 1.0));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#validateBid(CSVQuantum)}. 
@@ -1207,7 +1209,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateBid(CSVQuantum.getQuantum(new String[] { },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         // some required fields
@@ -1217,15 +1219,15 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateBid(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         // exactly required fields
         translator.validateBid(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven" },
-                                                     request));
+                                                     request, 1.0));
         // superset of required fields
         translator.validateBid(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight" },
-                                                     request));
+                                                     request, 1.0));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#validateAsk(CSVQuantum)}. 
@@ -1251,7 +1253,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateAsk(CSVQuantum.getQuantum(new String[] { },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         // some required fields
@@ -1261,15 +1263,15 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateAsk(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         // exactly required fields
         translator.validateAsk(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven" },
-                                                     request));
+                                                     request, 1.0));
         // superset of required fields
         translator.validateAsk(CSVQuantum.getQuantum(new String[] { "one","two","three","four","five","six","seven","eight" },
-                                                     request));
+                                                     request, 1.0));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#validateDividend(CSVQuantum)}. 
@@ -1295,7 +1297,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateDividend(CSVQuantum.getQuantum(new String[] { },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         // some required fields
@@ -1305,15 +1307,15 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateDividend(CSVQuantum.getQuantum(new String[] { "one","two","three" },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         // exactly required fields
         translator.validateDividend(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","","six","seven","","","ten","eleven" },
-                                                          request));
+                                                          request, 1.0));
         // superset of required fields
         translator.validateDividend(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve" },
-                                                          request));
+                                                          request, 1.0));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#validateMarketstat(CSVQuantum)}. 
@@ -1339,7 +1341,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateMarketstat(CSVQuantum.getQuantum(new String[] { },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         // some required fields
@@ -1349,15 +1351,15 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.validateMarketstat(CSVQuantum.getQuantum(new String[] { "zero","one" },
-                                                             request));
+                                                             request, 1.0));
             }
         };
         // exactly required fields
         translator.validateMarketstat(CSVQuantum.getQuantum(new String[] { "zero","one","two" },
-                                                          request));
+                                                          request, 1.0));
         // superset of required fields
         translator.validateMarketstat(CSVQuantum.getQuantum(new String[] { "zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen" },
-                                                          request));
+                                                          request, 1.0));
     }
     /**
      * Tests {@link BasicCSVFeedEventTranslator#processAsk(CSVQuantum)} and {@link BasicCSVFeedEventTranslator#processBid(CSVQuantum)}.
@@ -1391,7 +1393,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.processAsk(CSVQuantum.getQuantum(new String[] { "zero","one" },
-                                                            request));
+                                                            request, 1.0));
             }
         };
         new ExpectedFailure<CoreException>(UNABLE_TO_CONSTRUCT_QUOTE) {
@@ -1400,13 +1402,13 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.processBid(CSVQuantum.getQuantum(new String[] { "zero","one" },
-                                                            request));
+                                                            request, 1.0));
             }
         };
         long askTimestamp = System.currentTimeMillis();
         long bidTimestamp = System.currentTimeMillis() + 5000;
         AskEvent ask = translator.processAsk(CSVQuantum.getQuantum(new String[] { "ask",String.valueOf(askTimestamp),"ask-symbol","ask-date","ask-exchange","1234.56","9876.543" },
-                                                                   request));
+                                                                   request, 1.0));
         assertEquals(QuoteAction.ADD,
                      ask.getAction());
         assertEquals("ask-exchange",
@@ -1424,7 +1426,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertEquals(new Date(askTimestamp),
                      ask.getTimestamp());
         BidEvent bid = translator.processBid(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(bidTimestamp),"bid-symbol","bid-date","bid-exchange","12340.056","98760.0543" },
-                                                                   request));
+                                                                   request, 1.0));
         assertEquals(QuoteAction.ADD,
                      bid.getAction());
         assertEquals("bid-exchange",
@@ -1444,7 +1446,7 @@ public class BasicCSVFeedEventTranslatorTest
         // repeat just one of the tests using an option instead
         bidTimestamp += 5000;
         bid = translator.processBid(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(bidTimestamp),OptionUtils.getOsiSymbolFromOption(option),"bid-date","bid-exchange","12340.056","98760.0543" },
-                                                          request));
+                                                          request, 1.0));
         assertEquals(QuoteAction.ADD,
                      bid.getAction());
         assertEquals("bid-exchange",
@@ -1486,12 +1488,12 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.processTrade(CSVQuantum.getQuantum(new String[] { "zero","one" },
-                                                              request));
+                                                              request, 1.0));
             }
         };
         long tradeTimestamp = System.currentTimeMillis();
         TradeEvent trade = translator.processTrade(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(tradeTimestamp),"trade-symbol","trade-date","trade-exchange","1234.56","9876.543" },
-                                                                         request));
+                                                                         request, 1.0));
         assertEquals("trade-exchange",
                      trade.getExchange());
         assertEquals("trade-date",
@@ -1509,7 +1511,7 @@ public class BasicCSVFeedEventTranslatorTest
         // repeat with an option
         tradeTimestamp += 5000;
         trade = translator.processTrade(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(tradeTimestamp),OptionUtils.getOsiSymbolFromOption(option),"trade-date","trade-exchange","12340.056","98760.0543" },
-                                                              request));
+                                                              request, 1.0));
         assertEquals("trade-exchange",
                      trade.getExchange());
         assertEquals("trade-date",
@@ -1549,13 +1551,13 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.processDividend(CSVQuantum.getQuantum(new String[] { "zero","one" },
-                                                                 request));
+                                                                 request, 1.0));
             }
         };
         // minimum fields
         long dividendTimestamp = System.currentTimeMillis();
         DividendEvent dividend = translator.processDividend(CSVQuantum.getQuantum(new String[] { "dividend",String.valueOf(dividendTimestamp),"dividend-symbol","123.45","USD",DividendType.CURRENT.name(),DividendFrequency.ANNUALLY.name(),DividendStatus.OFFICIAL.name(),"execution-date" },
-                                                                                  request));
+                                                                                  request, 1.0));
         assertEquals(new BigDecimal("123.45"),
                      dividend.getAmount());
         assertEquals("USD",
@@ -1581,7 +1583,7 @@ public class BasicCSVFeedEventTranslatorTest
         // maximum fields
         dividendTimestamp = System.currentTimeMillis() + 5000;
         dividend = translator.processDividend(CSVQuantum.getQuantum(new String[] { "dividend",String.valueOf(dividendTimestamp),"dividend-symbol-new","123.45678","CAD",DividendType.FUTURE.name(),DividendFrequency.MONTHLY.name(),DividendStatus.UNKNOWN.name(),"new-execution-date","record-date","payment-date","declare-date" },
-                                                                    request));
+                                                                    request, 1.0));
         assertEquals(new BigDecimal("123.45678"),
                      dividend.getAmount());
         assertEquals("CAD",
@@ -1629,13 +1631,13 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.processMarketstat(CSVQuantum.getQuantum(new String[] { "zero","one" },
-                                                                   request));
+                                                                   request, 1.0));
             }
         };
         // minimum fields
         long marketstatTimestamp = System.currentTimeMillis();
         MarketstatEvent marketstat = translator.processMarketstat(CSVQuantum.getQuantum(new String[] { "stat",String.valueOf(marketstatTimestamp),"marketstat-symbol" },
-                                                                                        request));
+                                                                                        request, 1.0));
         assertNull(marketstat.getClose());
         assertNull(marketstat.getCloseDate());
         assertNull(marketstat.getCloseExchange());
@@ -1656,13 +1658,13 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(marketstat.getVolume());
         // minimum fields with an option
         marketstat = translator.processMarketstat(CSVQuantum.getQuantum(new String[] { "stat",String.valueOf(marketstatTimestamp),OptionUtils.getOsiSymbolFromOption(option) },
-                                                                        request));
+                                                                        request, 1.0));
         assertEquals(option,
                      marketstat.getInstrument());
         // maximum fields
         marketstatTimestamp = System.currentTimeMillis() + 5000;
         marketstat = translator.processMarketstat(CSVQuantum.getQuantum(new String[] { "stat",String.valueOf(marketstatTimestamp),OptionUtils.getOsiSymbolFromOption(option),"1.0","2.1","3.2","4.3","5.4","6.5","close-date","previous-close-date","trade-high-time","trade-low-time","open-exchange","high-exchange","low-exchange","close-exchange" },
-                                                                        request));
+                                                                        request, 1.0));
         assertEquals(new BigDecimal("4.3"),
                      marketstat.getClose());
         assertEquals("close-date",
@@ -1732,7 +1734,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.toEvent(CSVQuantum.getQuantum(new String[] { },
-                                                         request),
+                                                         request, 1.0),
                                    "1");
             }
         };
@@ -1743,7 +1745,7 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.toEvent(CSVQuantum.getQuantum(new String[] { "not-a-type" },
-                                                         request),
+                                                         request, 1.0),
                                    "1");
             }
         };
@@ -1755,14 +1757,14 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.toEvent(CSVQuantum.getQuantum(new String[] { "bid" },
-                                                         request),
+                                                         request, 1.0),
                                    "1");
             }
         };
         // valid bid
         long timestamp = System.currentTimeMillis();
         List<Event> events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "bid",String.valueOf(timestamp),"bid-symbol","bid-date","bid-exchange","12340.056","98760.0543" },
-                                                                      request),
+                                                                      request, 1.0),
                                                 "handle-1");
         assertEquals(1,
                      events.size());
@@ -1791,14 +1793,14 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.toEvent(CSVQuantum.getQuantum(new String[] { "ask" },
-                                                         request),
+                                                         request, 1.0),
                                    "1");
             }
         };
         // valid ask
         timestamp = System.currentTimeMillis();
         events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "ask",String.valueOf(timestamp),"ask-symbol","ask-date","ask-exchange","12340.056","98760.0543" },
-                                                          request),
+                                                          request, 1.0),
                                     "handle-1");
         assertEquals(1,
                      events.size());
@@ -1827,14 +1829,14 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.toEvent(CSVQuantum.getQuantum(new String[] { "trade" },
-                                                         request),
+                                                         request, 1.0),
                                    "1");
             }
         };
         // valid trade
         timestamp = System.currentTimeMillis();
         events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "trade",String.valueOf(timestamp),"trade-symbol","trade-date","trade-exchange","12340.056","98760.0543" },
-                                                          request),
+                                                          request, 1.0),
                                     "handle-1");
         assertEquals(1,
                      events.size());
@@ -1861,14 +1863,14 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.toEvent(CSVQuantum.getQuantum(new String[] { "dividend" },
-                                                         request),
+                                                         request, 1.0),
                                    "1");
             }
         };
         // valid dividend
         timestamp = System.currentTimeMillis();
         events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "dividend",String.valueOf(timestamp),"dividend-symbol","123.45","USD",DividendType.CURRENT.name(),DividendFrequency.ANNUALLY.name(),DividendStatus.OFFICIAL.name(),"execution-date" },
-                                                          request),
+                                                          request, 1.0),
                                     "handle-1");
         DividendEvent dividend = (DividendEvent)events.get(0);
         assertEquals(1,
@@ -1903,13 +1905,13 @@ public class BasicCSVFeedEventTranslatorTest
                     throws Exception
             {
                 translator.toEvent(CSVQuantum.getQuantum(new String[] { "stat" },
-                                                         request),
+                                                         request, 1.0),
                                    "1");
             }
         };
         // valid marketstat
         events = translator.toEvent(CSVQuantum.getQuantum(new String[] { "stat",String.valueOf(timestamp),"marketstat-symbol" },
-                                                                                        request),
+                                                                                        request, 1.0),
                                     "handle-2");
         MarketstatEvent marketstat = (MarketstatEvent)events.get(0);
         assertNull(marketstat.getClose());

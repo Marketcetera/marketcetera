@@ -1,6 +1,8 @@
 package org.marketcetera.marketdata.csv;
 
-import static org.marketcetera.marketdata.AssetClass.*;
+import static org.marketcetera.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.marketdata.AssetClass.OPTION;
 import static org.marketcetera.marketdata.Capability.LATEST_TICK;
 import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.csv.Messages.*;
@@ -26,8 +28,9 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Implementation of the market data feed that reads from a CSV file.
  *
- * <p>Market data is available in one or more CSV files.  The market data
- * request specifies the CSV file or files to use.  Market data is read
+ * <p>Market data is available in one or more CSV files. The market data
+ * request specifies a symbol which is matched against a file of the same
+ * name in the specified directory. Market data is read
  * from the file or files until exhausted.
  * 
  * @author toli kuznets
@@ -336,8 +339,10 @@ public class CSVFeed
         public void run()
         {
             SLF4JLoggerProxy.debug(CSVFeed.class,
-                                   "Beggining request {}", //$NON-NLS-1$
+                                   "Beginning request {}", //$NON-NLS-1$
                                    this);
+            long start = System.currentTimeMillis();
+            long count = 0;
             isRunning.set(true);
             try {
                 while(isRunning.get()) {
@@ -346,12 +351,11 @@ public class CSVFeed
                         END_OF_DATA_REACHED.info(CSVFeed.class);
                         break;
                     }
+                    count += 1;
                     dataReceived(handle,
                                  CSVQuantum.getQuantum(line,
-                                                       request));
-                    if(credentials.getMillisecondDelay() > 0) {
-                        Thread.sleep(credentials.getMillisecondDelay());
-                    }
+                                                       request,
+                                                       credentials.getReplayRate()));
                 }
             } catch (Exception e) {
                 REQUEST_FAILED.warn(CSVFeed.class,
@@ -359,6 +363,10 @@ public class CSVFeed
                                     this);
             } finally {
                 isRunning.set(false);
+                SLF4JLoggerProxy.debug(CSVFeed.class,
+                                       "Read {} event(s) in {}ms",
+                                       count,
+                                       System.currentTimeMillis()-start);
             }
         }
         /* (non-Javadoc)
@@ -374,15 +382,16 @@ public class CSVFeed
         /**
          * Create a new CsvFeedRequest instance.
          *
-         * @param inDataFilename
-         * @param inRequest
-         * @throws FileNotFoundException
+         * @param inDataFilename a <code>String</code> value
+         * @param inRequest a <code>MarketDataRequest</code> value
+         * @throws FileNotFoundException if an error occurs
          */
         private CsvFeedRequest(String inDataFilename,
                                MarketDataRequest inRequest)
                 throws FileNotFoundException
         {
-            parser = new CSVParser(new FileReader(new File(inDataFilename)),
+            parser = new CSVParser(new FileReader(new File(credentials.getMarketdataDirectory(),
+                                                           inDataFilename)),
                                    CSVStrategy.EXCEL_STRATEGY);
             request = inRequest;
         }
