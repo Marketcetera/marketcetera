@@ -18,22 +18,24 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.OrderID;
-import org.marketcetera.util.test.CollectionAssert;
 
 import quickfix.Message;
 import quickfix.field.*;
 import quickfix.field.Side;
 
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+
 /* $License$ */
 
 /**
- * Tests {@link OrderTracker} class.
+ * Tests {@link OrderHistoryManager} class.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class OrderTrackerTest
+public class OrderHistoryManagerTest
 {
     /**
      * Run once before all unit tests.
@@ -54,12 +56,12 @@ public class OrderTrackerTest
         }
     }
     /**
-     * Tests {@link OrderTracker#add(org.marketcetera.trade.ExecutionReport)}. 
+     * Tests {@link OrderHistoryManager#add(org.marketcetera.trade.ExecutionReport)}. 
      *
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    public void testAdd()
+    public void testAddBasicLifecycle()
             throws Exception
     {
         new ExpectedFailure<NullPointerException>() {
@@ -67,88 +69,83 @@ public class OrderTrackerTest
             protected void run()
                     throws Exception
             {
-                new OrderTracker().add(null);
+                new OrderHistoryManager().add(null);
             }
         };
-        verifyTracker(new OrderTracker(),
-                      EMPTY_REPORTS);
-        Collection<ExecutionReport> expectedReports = new ArrayList<ExecutionReport>();
-        ExecutionReport report = generateExecutionReport("order-" + System.nanoTime(),
-                                                         null,
-                                                         OrderStatus.New);
-        expectedReports.add(report);
-        assertNotNull(report.getOrderID());
-        assertNull(report.getOriginalOrderID());
-        OrderTracker tracker = new OrderTracker();
-        tracker.add(report);
-        verifyTracker(tracker,
-                      expectedReports);
-        // add the same report again
-        tracker.add(report);
-        expectedReports.add(report);
-        verifyTracker(tracker,
-                      expectedReports);
+        Multimap<OrderID,ExecutionReport> expectedReports = LinkedHashMultimap.create();
+        verifyOrderHistory(new OrderHistoryManager(),
+                           expectedReports);
+        ExecutionReport report1 = generateExecutionReport("order-" + System.nanoTime(),
+                                                          null,
+                                                          OrderStatus.New);
+        expectedReports.put(report1.getOrderID(),
+                            report1);
+        assertNotNull(report1.getOrderID());
+        assertNull(report1.getOriginalOrderID());
+        OrderHistoryManager orderManager = new OrderHistoryManager();
+        orderManager.add(report1);
+        verifyOrderHistory(orderManager,
+                           expectedReports);
+        verifyOrderHistory(orderManager,
+                           expectedReports);
         // add a new ER for the same order
-        report = generateExecutionReport(report.getOrderID().getValue(),
-                                         null,
-                                         OrderStatus.PartiallyFilled);
-        expectedReports.add(report);
-        tracker.add(report);
-        verifyTracker(tracker,
-                      expectedReports);
+        ExecutionReport report2 = generateExecutionReport(report1.getOrderID().getValue(),
+                                                          null,
+                                                          OrderStatus.PartiallyFilled);
+        expectedReports.removeAll(report1.getOrderID());
+        expectedReports.putAll(report1.getOrderID(),
+                               Arrays.asList(report2, report1));
+        orderManager.add(report2);
+        verifyOrderHistory(orderManager,
+                           expectedReports);
         // create a report with an original order ID
-        report = generateExecutionReport(report.getOrderID().getValue(),
-                                         "report-" + System.nanoTime(),
-                                         OrderStatus.Replaced);
-        assertNotNull(report.getOriginalOrderID());
-        tracker.add(report);
-        expectedReports.add(report);
-        verifyTracker(tracker,
-                      expectedReports);
-        // create an ER with 
+        ExecutionReport report3 = generateExecutionReport("report-" + System.nanoTime(),
+                                                          report2.getOrderID().getValue(),
+                                                          OrderStatus.Replaced);
+        assertNotNull(report3.getOriginalOrderID());
+        orderManager.add(report3);
+        expectedReports.removeAll(report1.getOrderID());
+        // order chain should now show up for both original and new order ID
+        expectedReports.putAll(report1.getOrderID(),
+                               Arrays.asList(report3, report2, report1));
+        expectedReports.putAll(report3.getOrderID(),
+                               Arrays.asList(report3, report2, report1));
+        verifyOrderHistory(orderManager,
+                           expectedReports);
+        // replace the replaced with another replace
+        ExecutionReport report4 = generateExecutionReport("report-" + System.nanoTime(),
+                                                          report3.getOrderID().getValue(),
+                                                          OrderStatus.Replaced);
+        assertNotNull(report4.getOriginalOrderID());
+        orderManager.add(report4);
+        expectedReports.clear();
+        // order chain should now have all 4 for any of the family
+        expectedReports.putAll(report1.getOrderID(),
+                               Arrays.asList(report4, report3, report2, report1));
+        expectedReports.putAll(report3.getOrderID(),
+                               Arrays.asList(report4, report3, report2, report1));
+        expectedReports.putAll(report4.getOrderID(),
+                               Arrays.asList(report4, report3, report2, report1));
+        verifyOrderHistory(orderManager,
+                           expectedReports);
     }
     /**
      * Verifies that the given <code>OrderTracker</code> contains the given <code>ExecutionReport</code> objects.
      * 
      * <p>The <code>ExecutionReport</code> values are assumed to be in the order they are expected to appear.
      *
-     * @param inTracker an <code>OrderTracker</code> value
-     * @param inExpectedReports a <code>Collection&lt;ExecutionReport&gt;</code> value containing the expected reports
+     * @param inManager an <code>OrderTracker</code> value
+     * @param inExpectedReports a <code>List&lt;ExecutionReport&gt;</code> value containing the expected reports
      * @throws Exception if an unexpected error occurs
      */
-    private void verifyTracker(OrderTracker inTracker,
-                               Collection<ExecutionReport> inExpectedReports)
+    private void verifyOrderHistory(OrderHistoryManager inManager,
+                                    Multimap<OrderID,ExecutionReport> inExpectedReports)
             throws Exception
     {
-        assertNotNull(inTracker.toString());
-        Set<OrderID> actualOrderIds = inTracker.getOrderIds();
-        Set<OrderID> expectedOrderIds = new HashSet<OrderID>();
-        Map<OrderID,Collection<ExecutionReport>> expectedReports = new HashMap<OrderID,Collection<ExecutionReport>>();
-        for(ExecutionReport report : inExpectedReports) {
-            Collection<ExecutionReport> reports = expectedReports.get(report.getOrderID());
-            if(reports == null) {
-                reports = new ArrayList<ExecutionReport>();
-                expectedReports.put(report.getOrderID(),
-                                    reports);
-            }
-            reports.add(report);
-            expectedOrderIds.add(report.getOrderID());
-            if(report.getOriginalOrderID() != null) {
-                expectedOrderIds.add(report.getOriginalOrderID());
-                reports = expectedReports.get(report.getOriginalOrderID());
-                if(reports == null) {
-                    reports = new ArrayList<ExecutionReport>();
-                    expectedReports.put(report.getOriginalOrderID(),
-                                        reports);
-                }
-                reports.add(report);
-            }
-        }
-        CollectionAssert.assertArrayPermutation(expectedOrderIds.toArray(),
-                                                actualOrderIds.toArray());
-        for(Map.Entry<OrderID,Collection<ExecutionReport>> entry : expectedReports.entrySet()) {
-            Collection<ExecutionReport> expectedEntryReports = expectedReports.get(entry.getKey());
-            Collection<ExecutionReport> actualEntryReports = inTracker.getReportHistoryFor(entry.getKey());
+        assertNotNull(inManager.toString());
+        for(Map.Entry<OrderID,ExecutionReport> entry : inExpectedReports.entries()) {
+            Collection<ExecutionReport> expectedEntryReports = inExpectedReports.get(entry.getKey());
+            Collection<ExecutionReport> actualEntryReports = inManager.getReportHistoryFor(entry.getKey());
             assertEquals(expectedEntryReports.size(),
                          actualEntryReports.size());
             Iterator<ExecutionReport> expectedIterator = expectedEntryReports.iterator();
@@ -163,7 +160,7 @@ public class OrderTrackerTest
     /**
      * Generates an <code>ExecutionReport</code> for the given <code>OrderID</code> value and <code>OrderStatus</code>.
      * 
-     * <p><code>ExecutionReport</code> objects generated by this method are guaranteed to be valid according to {@link OrderTrackerTest#fixVersion}.
+     * <p><code>ExecutionReport</code> objects generated by this method are guaranteed to be valid according to {@link OrderHistoryManagerTest#fixVersion}.
      *
      * @param inOrderID a <code>String</code> value
      * @param inOriginalOrderID a <code>String</code> value or <code>null</code>
@@ -189,7 +186,7 @@ public class OrderTrackerTest
     /**
      * Generates a <code>Message</code> containing an <code>ExecutionReport</code> for the given <code>OrderID</code> value and <code>OrderStatus</code>.
      * 
-     * <p><code>ExecutionReport</code> objects generated by this method are guaranteed to be valid according to {@link OrderTrackerTest#fixVersion}.
+     * <p><code>ExecutionReport</code> objects generated by this method are guaranteed to be valid according to {@link OrderHistoryManagerTest#fixVersion}.
      *
      * @param inOrderID a <code>String</code> value
      * @param inOriginalOrderID a <code>String</code> value or <code>null</code>
@@ -220,6 +217,7 @@ public class OrderTrackerTest
         msg.setField(new OrderQty(EventTestBase.generateDecimalValue()));
         msg.setField(new LastPx(EventTestBase.generateDecimalValue()));
         msg.setField(new LastQty(EventTestBase.generateDecimalValue()));
+        msg.setField(new TransactTime(new Date()));
         if(inOriginalOrderID != null) {
             msg.setField(new OrigClOrdID(inOriginalOrderID));
         }
@@ -239,8 +237,4 @@ public class OrderTrackerTest
      * user to guarantee unique ids
      */
     private static final AtomicInteger counter = new AtomicInteger(0);
-    /**
-     * static value to use for empty reports
-     */
-    private static final List<ExecutionReport> EMPTY_REPORTS = Collections.emptyList();
 }
