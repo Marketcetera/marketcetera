@@ -1,7 +1,6 @@
 package org.marketcetera.trade.utils;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -9,6 +8,7 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.util.collections.UnmodifiableDeque;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -26,26 +26,13 @@ import org.marketcetera.util.misc.ClassVersion;
 public class OrderHistoryManager
 {
     /**
-     * Create a new OrderHistoryManager instance.
-     */
-    public OrderHistoryManager()
-    {
-        this(null);
-    }
-    /**
-     * Create a new OrderHistoryManager instance.
-     *
-     * @param inReportComparator a <code>Comparator&lt;MetaReport&gt;</code> value or <code>null</code>
-     */
-    public OrderHistoryManager(Comparator<MetaReport> inReportComparator)
-    {
-        reportComparator = inReportComparator;
-    }
-    /**
      * Gets the latest <code>ExecutionReport</code> for the given <code>OrderID</code>.
      *
      * <p>The given <code>OrderID</code> may correspond to either the
      * actual order ID or order ID of a replaced order in the same order chain.
+     * 
+     * <p>The returned <code>ExecutionReport</code> is the most recent report at a static point in time only.
+     * Changes to the underlying order history are not reflected in the returned <code>ExecutionReport</code>.
      *
      * @param inOrderID an <code>OrderID</code> value
      * @return an <code>ExecutionReport</code> or <code>null</code> if there is no known status for the given <code>OrderID</code>
@@ -53,7 +40,7 @@ public class OrderHistoryManager
     public ExecutionReport getLatestReportFor(OrderID inOrderID)
     {
         SLF4JLoggerProxy.debug(OrderHistoryManager.class,
-                               "Searching order tracker for {}",
+                               "Searching order tracker for {}", //$NON-NLS-1$
                                inOrderID);
         synchronized(orders) {
             OrderHistory history = orders.get(inOrderID);
@@ -61,7 +48,7 @@ public class OrderHistoryManager
                 return history.getLatestReport();
             }
             SLF4JLoggerProxy.debug(OrderHistoryManager.class,
-                                   "No history for {}",
+                                   "No history for {}", //$NON-NLS-1$
                                    inOrderID);
             return null;
         }
@@ -86,7 +73,7 @@ public class OrderHistoryManager
                 history = orders.get(originalOrderID);
                 if(history == null) {
                     // now we know this is case #1 from above: create a new order history and add it
-                    history = new OrderHistory(reportComparator);
+                    history = new OrderHistory();
                     // index the new history using the actual order ID
                     orders.put(actualOrderID,
                                history);
@@ -103,26 +90,25 @@ public class OrderHistoryManager
     /**
      * Gets the <code>ExecutionReport</code> values for the given <code>OrderID</code>.
      * 
-     * <p>The <code>ExecutionReport</code> collection returned will be sorted in the order
-     * determined by the <code>Comparator</code> passed to this object upon construction. If no
-     * <code>Comparator</code> was specified, the default sort will be used: newest to oldest.
+     * <p>The <code>ExecutionReport</code> collection returned is sorted from newest to oldest.
      * 
-     * <p>Modifying the returned collection will have no effect on the underlying order history. The
-     * returned collection is a static snapshot at a particular point in time: it will not be updated
-     * as the underlying order history changes.
+     * <p>The returned <code>Deque</code> reflects changes to the underlying order history. 
      * 
      * <p>The given <code>OrderID</code> may be either an order ID or an original order ID. The reports
-     * returned will be the same in either case.
+     * returned will be the same in either case. If no history exists for the given <code>OrderID<code>,
+     * an empty <code>Deque</code> is returned.
+     * 
+     * <p>The underlying order history is populated by calls to {@link #add(ExecutionReport)}.
      *
      * @param inOrderId an <code>OrderID</code> value
-     * @return a <code>Collection&lt;ExecutionReport&gt;</code> value which may be empty
+     * @return a <code>Deque&lt;ExecutionReport&gt;</code> value which may be empty
      */
-    public Collection<ExecutionReport> getReportHistoryFor(OrderID inOrderId)
+    public Deque<ExecutionReport> getReportHistoryFor(OrderID inOrderId)
     {
         synchronized(orders) {
             OrderHistory history = orders.get(inOrderId);
             if(history == null) {
-                return Collections.emptyList(); 
+                return NO_HISTORY;
             }
             return history.getOrderHistory();
         }
@@ -155,6 +141,9 @@ public class OrderHistoryManager
      * 
      * <p>This method has no effect if there is no stored order history for the
      * given <code>OrderID</code>.
+     * 
+     * <p>This method will clear the order history for all orders in the order history
+     * chain including replaced orders.
      *
      * @param inOrderId an <code>OrderID</code> value
      */
@@ -165,7 +154,7 @@ public class OrderHistoryManager
             if(history != null) {
                 for(OrderID orderID : history.getOrderIdChain()) {
                     SLF4JLoggerProxy.debug(OrderHistoryManager.class,
-                                           "Clearing history for {}",
+                                           "Clearing history for {}", //$NON-NLS-1$
                                            orderID);
                     orders.remove(orderID);
                 }
@@ -179,117 +168,8 @@ public class OrderHistoryManager
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("OrderHistoryManager with history for: ").append(orders.keySet());
+        builder.append("OrderHistoryManager with history for: ").append(orders.keySet()); //$NON-NLS-1$
         return builder.toString();
-    }
-    /**
-     * Tracks an <code>ExecutionReport</code> and some meta data about it that provides
-     * context about when the report was received.
-     * 
-     * <p>Note that the <a href="http://download.oracle.com/javase/tutorial/collections/interfaces/order.html">natural ordering</a>
-     * of this object is inverted: newer <code>ExecutionReport</code> values are ranked lower than older values.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    @ClassVersion("$Id$")
-    public final static class MetaReport
-            implements Comparable<MetaReport>
-    {
-        /**
-         * Get the report value.
-         *
-         * @return an <code>ExecutionReport</code> value
-         */
-        public ExecutionReport getReport()
-        {
-            return report;
-        }
-        /**
-         * Get the sequence value.
-         *
-         * @return a <code>Long</code> value
-         */
-        public Long getSequence()
-        {
-            return sequence;
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        @Override
-        public int compareTo(MetaReport inO)
-        {
-            // the contract of MetaReport is that the reports want to be in reverse order
-            // all we have to do, then, is to reverse the comparison - compare this to the passed obj
-            //  instead of the passed obj to this
-            if(inO.getReport().getTransactTime() != null) {
-                int result = inO.getReport().getTransactTime().compareTo(report.getTransactTime());
-                if(result != 0) {
-                    return result;
-                }
-            }
-            return inO.getSequence().compareTo(sequence);
-            
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode()
-        {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((sequence == null) ? 0 : sequence.hashCode());
-            return result;
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (!(obj instanceof MetaReport)) {
-                return false;
-            }
-            MetaReport other = (MetaReport) obj;
-            if (sequence == null) {
-                if (other.sequence != null) {
-                    return false;
-                }
-            } else if (!sequence.equals(other.sequence)) {
-                return false;
-            }
-            return true;
-        }
-        /**
-         * Create a new MetaReport instance.
-         *
-         * @param inReport an <code>ExecutionReport</code> value
-         */
-        private MetaReport(ExecutionReport inReport)
-        {
-            report = inReport;
-        }
-        /**
-         * execution report value
-         */
-        private final ExecutionReport report;
-        /**
-         * sequence number indicating when this report was received in relative relation to others in the same process
-         */
-        private final Long sequence = counter.incrementAndGet();
-        /**
-         * counter used to track all execution reports in the same process
-         */
-        private static final AtomicLong counter = new AtomicLong(0);
     }
     /**
      * Tracks order history for a single order.
@@ -308,48 +188,29 @@ public class OrderHistoryManager
     private static class OrderHistory
     {
         /**
-         * Create a new OrderHistory instance.
-         *
-         * @param inComparator a <code>Comparator&lt;MetaReport&gt;</code> value or <code>null</code>
-         */
-        private OrderHistory(Comparator<MetaReport> inComparator)
-        {
-            if(inComparator == null) {
-                orderHistory = new TreeSet<MetaReport>();
-            } else {
-                orderHistory = new TreeSet<MetaReport>(inComparator);
-            }
-        }
-        /**
          * Adds the given <code>ExecutionReport</code> to the order history.
          * 
          * @param inReport an <code>ExecutionReport</code> value
          */
         private void add(ExecutionReport inReport)
         {
-            orderHistory.add(new MetaReport(inReport));
+            orderHistory.addFirst(inReport);
             orderIdChain.add(inReport.getOrderID());
             latestReport = inReport;
         }
         /**
          * Gets the order history.
          * 
-         * <p>The reports returned are sorted using the <code>Comparator</code> established
-         * for this object. The default sort order is newest to oldest.
+         * <p>The reports returned are sorted from newest to oldest.
          * 
-         * <p>Modifying the returned collection will have no effect on the underlying order
-         * history. Changes to the underlying order history will not be reflected in the
+         * <p>Changes to the underlying order history will be reflected in the
          * returned collection.
          *
-         * @return a <code>Collection&lt;ExecutionReport&gt;</code> value
+         * @return a <code>Deque&lt;ExecutionReport&gt;</code> value
          */
-        private Collection<ExecutionReport> getOrderHistory()
+        private Deque<ExecutionReport> getOrderHistory()
         {
-            Collection<ExecutionReport> reports = new ArrayList<ExecutionReport>();
-            for(MetaReport report : orderHistory) {
-                reports.add(report.getReport());
-            }
-            return reports;
+            return new UnmodifiableDeque<ExecutionReport>(orderHistory);
         }
         /**
          * Get the latestReport value.
@@ -361,35 +222,40 @@ public class OrderHistoryManager
             return latestReport;
         }
         /**
+         * Gets the chain of <code>OrderID</code> values that describe the evolution of this
+         * order.
          * 
+         * <p>Changes to the underlying order history will be reflected in the
+         * returned collection.
+         * 
+         * <p>OrderIDs are sorted from oldest to newest.
          *
-         *
-         * @return
+         * @return a <code>Set&lt;OrderID&gt;</code> value
          */
         private Set<OrderID> getOrderIdChain()
         {
             return Collections.unmodifiableSet(orderIdChain);
         }
         /**
-         * sorted order history
+         * order history sorted from newest to oldest
          */
-        private final Set<MetaReport> orderHistory;
+        private final Deque<ExecutionReport> orderHistory = new LinkedList<ExecutionReport>();
         /**
          * order IDs in the order chain in the order they occurred
          */
         private final Set<OrderID> orderIdChain = new LinkedHashSet<OrderID>();
         /**
-         * most recent <code>ExecutionReport</code>
+         * most recent <code>ExecutionReport</code>, may be <code>null</code>
          */
         private volatile ExecutionReport latestReport;
     }
-    /**
-     * comparator used to rank <code>MetaReport</code> objects in this order history, may be <code>null</code>
-     */
-    private final Comparator<MetaReport> reportComparator;
     /**
      * order history objects indexed by actual order ID
      */
     @GuardedBy("orders")
     private final Map<OrderID,OrderHistory> orders = new HashMap<OrderID,OrderHistory>();
+    /**
+     * sentinel collection used to indicate there is no history available for an order
+     */
+    private static final Deque<ExecutionReport> NO_HISTORY = new UnmodifiableDeque<ExecutionReport>(new LinkedList<ExecutionReport>());
 }
