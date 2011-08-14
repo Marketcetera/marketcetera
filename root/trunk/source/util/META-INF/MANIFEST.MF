@@ -9,6 +9,7 @@ Require-Bundle: org.marketcetera.thirdparty;visibility:=reexport,
  org.marketcetera.util-test;resolution:=optional,
  org.junit4;resolution:=optional
 Export-Package: org.marketcetera.util.auth,
+ org.marketcetera.util.collections,
  org.marketcetera.util.except,
  org.marketcetera.util.exec,
  org.marketcetera.util.file,
@@ -24,3 +25,4 @@ Export-Package: org.marketcetera.util.auth,
  org.marketcetera.util.ws.types,
  org.marketcetera.util.ws.wrappers
 Eclipse-BuddyPolicy: dependent
+Import-Package: org.hamcrest;version="1.1.0"
