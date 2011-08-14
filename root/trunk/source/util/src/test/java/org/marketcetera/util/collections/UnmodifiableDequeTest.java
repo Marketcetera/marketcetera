@@ -187,6 +187,7 @@ public class UnmodifiableDequeTest
         // set up a flag to pause iteration
         final AtomicBoolean keepWaiting = new AtomicBoolean(true);
         final AtomicBoolean clientComplete = new AtomicBoolean(false);
+        final AtomicBoolean clientReady = new AtomicBoolean(false);
         // track any exceptions our iterator collects
         final List<Exception> exceptions = new ArrayList<Exception>();
         // set up an object that iterates using a q iterator
@@ -195,6 +196,10 @@ public class UnmodifiableDequeTest
             public void run()
             {
                 Iterator<String> iterator = q.iterator();
+                clientReady.set(true);
+                synchronized(clientReady) {
+                    clientReady.notifyAll();
+                }
                 try {
                     while(iterator.hasNext()) {
                         iterator.next();
@@ -214,6 +219,11 @@ public class UnmodifiableDequeTest
         client1.start();
         // client1 should now be waiting after retrieving value1 using an active iterator
         assertFalse(clientComplete.get());
+        while(!clientReady.get()) {
+            synchronized(clientReady) {
+                clientReady.wait();
+            }
+        }
         // remove value2 from the underlying collection and see if the iterator breaks
         assertEquals(3,
                      testCollection.size());
