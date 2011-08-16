@@ -28,7 +28,7 @@ import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 /* $License$ */
 
 /**
- *
+ * Tests {@link LiveOrderHistoryManager}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -216,12 +216,15 @@ public class LiveOrderHistoryManagerTest
         ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                              null,
                                                                              OrderStatus.New);
+        Thread.sleep(250);
         ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                              null,
                                                                              OrderStatus.Canceled);
+        Thread.sleep(250);
         ReportBase report3 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                              null,
                                                                              OrderStatus.Replaced);
+        Thread.sleep(250);
         ReportBase report4 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                              null,
                                                                              OrderStatus.Filled);
