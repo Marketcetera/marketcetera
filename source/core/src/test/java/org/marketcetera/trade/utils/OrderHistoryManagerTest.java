@@ -65,7 +65,7 @@ public class OrderHistoryManagerTest
         OrderHistoryManager manager = new OrderHistoryManager();
         assertNull(manager.getLatestReportFor(null));
         assertNull(manager.getLatestReportFor(new OrderID("some-orderid-that-doesn't-exist")));
-        ExecutionReport report1 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         manager.add(report1);
@@ -74,7 +74,7 @@ public class OrderHistoryManagerTest
         assertNull(manager.getLatestReportFor(new OrderID("some-orderid-that-doesn't-exist")));
     }
     /**
-     * Tests {@link OrderHistoryManager#add(ExecutionReport)}.
+     * Tests {@link OrderHistoryManager#add(ReportBase)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -83,7 +83,7 @@ public class OrderHistoryManagerTest
             throws Exception
     {
         final OrderHistoryManager orderManager = new OrderHistoryManager();
-        Multimap<OrderID,ExecutionReport> expectedReports = LinkedHashMultimap.create();
+        Multimap<OrderID,ReportBase> expectedReports = LinkedHashMultimap.create();
         new ExpectedFailure<NullPointerException>() {
             @Override
             protected void run()
@@ -92,7 +92,7 @@ public class OrderHistoryManagerTest
                 orderManager.add(null);
             }
         };
-        ExecutionReport report1 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         orderManager.add(report1);
@@ -111,7 +111,7 @@ public class OrderHistoryManagerTest
                                Arrays.asList(report2,report1));
         verifyOrderHistory(orderManager,
                            expectedReports);
-        ExecutionReport report3 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report3 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           report1.getOrderID().toString(),
                                                           OrderStatus.Replaced);
         assertEquals(report1.getOrderID(),
@@ -125,7 +125,7 @@ public class OrderHistoryManagerTest
                                Arrays.asList(report3,report2,report1));
         verifyOrderHistory(orderManager,
                            expectedReports);
-        ExecutionReport report4 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report4 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         assertFalse(report1.getOrderID().equals(report4.getOrderID()));
@@ -148,7 +148,7 @@ public class OrderHistoryManagerTest
         OrderHistoryManager orderManager = new OrderHistoryManager();
         assertTrue(orderManager.getReportHistoryFor(null).isEmpty());
         assertTrue(orderManager.getReportHistoryFor(new OrderID("this-order-doesn't-exist")).isEmpty());
-        ExecutionReport report1 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         orderManager.add(report1);
@@ -160,7 +160,7 @@ public class OrderHistoryManagerTest
         orderManager.add(report2);
         CollectionAssert.assertArrayPermutation(new ExecutionReport[] { report2, report1 },
                                                 orderManager.getReportHistoryFor(report1.getOrderID()).toArray(new ExecutionReport[0]));
-        ExecutionReport report3 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report3 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         assertFalse(report1.getOrderID().equals(report3.getOrderID()));
@@ -181,7 +181,7 @@ public class OrderHistoryManagerTest
     {
         OrderHistoryManager orderManager = new OrderHistoryManager();
         assertTrue(orderManager.getOrderIds().isEmpty());
-        ExecutionReport report1 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         orderManager.add(report1);
@@ -193,7 +193,7 @@ public class OrderHistoryManagerTest
         orderManager.add(report2);
         CollectionAssert.assertArrayPermutation(new OrderID[] { report1.getOrderID() },
                                                 orderManager.getOrderIds().toArray(new OrderID[0]));
-        ExecutionReport report3 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report3 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         assertFalse(report1.getOrderID().equals(report3.getOrderID()));
@@ -210,14 +210,14 @@ public class OrderHistoryManagerTest
     public void testClear()
             throws Exception
     {
-        Multimap<OrderID,ExecutionReport> expectedReports = LinkedHashMultimap.create();
+        Multimap<OrderID,ReportBase> expectedReports = LinkedHashMultimap.create();
         OrderHistoryManager orderManager = new OrderHistoryManager();
         assertTrue(orderManager.getOrderIds().isEmpty());
         orderManager.clear();
         assertTrue(orderManager.getOrderIds().isEmpty());
         verifyOrderHistory(orderManager,
                            expectedReports);
-        ExecutionReport report1 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         orderManager.add(report1);
@@ -244,7 +244,7 @@ public class OrderHistoryManagerTest
                            expectedReports);
         orderManager.add(report1);
         orderManager.add(report2);
-        ExecutionReport report3 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report3 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           report1.getOrderID().toString(),
                                                           OrderStatus.Replaced);
         assertEquals(report1.getOrderID(),
@@ -265,7 +265,7 @@ public class OrderHistoryManagerTest
         orderManager.add(report1);
         orderManager.add(report2);
         orderManager.add(report3);
-        ExecutionReport report4 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report4 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         assertFalse(report1.getOrderID().equals(report4.getOrderID()));
@@ -293,14 +293,14 @@ public class OrderHistoryManagerTest
     public void testClearOrderHistoryForOrderId()
             throws Exception
     {
-        Multimap<OrderID,ExecutionReport> expectedReports = LinkedHashMultimap.create();
+        Multimap<OrderID,ReportBase> expectedReports = LinkedHashMultimap.create();
         OrderHistoryManager orderManager = new OrderHistoryManager();
         assertTrue(orderManager.getOrderIds().isEmpty());
         orderManager.clear(null);
         assertTrue(orderManager.getOrderIds().isEmpty());
         verifyOrderHistory(orderManager,
                            expectedReports);
-        ExecutionReport report1 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         orderManager.add(report1);
@@ -327,7 +327,7 @@ public class OrderHistoryManagerTest
                            expectedReports);
         orderManager.add(report1);
         orderManager.add(report2);
-        ExecutionReport report3 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report3 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           report1.getOrderID().toString(),
                                                           OrderStatus.Replaced);
         assertEquals(report1.getOrderID(),
@@ -341,7 +341,7 @@ public class OrderHistoryManagerTest
                                Arrays.asList(report3,report2,report1));
         verifyOrderHistory(orderManager,
                            expectedReports);
-        ExecutionReport report4 = generateExecutionReport("order-" + System.nanoTime(),
+        ExecutionReport report4 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         assertFalse(report1.getOrderID().equals(report4.getOrderID()));
@@ -355,26 +355,156 @@ public class OrderHistoryManagerTest
                            expectedReports);
     }
     /**
-     * Verifies that the given <code>OrderTracker</code> contains the given <code>ExecutionReport</code> objects.
+     * Tests the ability to process order cancel rejects.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testCancelRejects()
+            throws Exception
+    {
+        Multimap<OrderID,ReportBase> expectedReports = LinkedHashMultimap.create();
+        OrderHistoryManager orderManager = new OrderHistoryManager();
+        ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                          null,
+                                                          OrderStatus.New);
+        orderManager.add(report1);
+        expectedReports.putAll(report1.getOrderID(),
+                               Arrays.asList(new ReportBase[] { report1 }));
+        verifyOrderHistory(orderManager,
+                           expectedReports);
+        expectedReports.clear();
+        OrderCancelReject report2 = generateOrderCancelReject("order-" + counter.incrementAndGet(),
+                                                              report1.getOrderID().getValue());
+        orderManager.add(report2);
+        expectedReports.putAll(report1.getOrderID(),
+                               Arrays.asList(new ReportBase[] { report2, report1 }));
+        verifyOrderHistory(orderManager,
+                           expectedReports);
+    }
+    /**
+     * Tests {@link OrderHistoryManager#getOrderChain(OrderID)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testOrderChain()
+            throws Exception
+    {
+        OrderHistoryManager orderManager = new OrderHistoryManager();
+        assertTrue(orderManager.getOrderChain(null).isEmpty());
+        ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                          null,
+                                                          OrderStatus.New);
+        orderManager.add(report1);
+        Set<OrderID> report1OrderChain = orderManager.getOrderChain(report1.getOrderID());
+        assertEquals(1,
+                     report1OrderChain.size());
+        assertTrue(report1OrderChain.contains(report1.getOrderID()));
+        ExecutionReport report2 = generateExecutionReport(report1.getOrderID().getValue(),
+                                                          null,
+                                                          OrderStatus.PartiallyFilled);
+        orderManager.add(report2);
+        assertEquals(1,
+                     report1OrderChain.size());
+        assertTrue(Arrays.equals(new OrderID[] { report1.getOrderID() },
+                                 report1OrderChain.toArray(new OrderID[report1OrderChain.size()])));
+        ExecutionReport report3 = generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                          report1.getOrderID().getValue(),
+                                                          OrderStatus.PendingReplace);
+        orderManager.add(report3);
+        Set<OrderID> report3OrderChain = orderManager.getOrderChain(report3.getOrderID());
+        assertEquals(2,
+                     report1OrderChain.size());
+        assertTrue(Arrays.equals(new OrderID[] { report1.getOrderID(), report3.getOrderID() },
+                                 report1OrderChain.toArray(new OrderID[report1OrderChain.size()])));
+        assertEquals(report1OrderChain,
+                     report3OrderChain);
+        ExecutionReport report4 = generateExecutionReport(report3.getOrderID().getValue(),
+                                                          report1.getOrderID().getValue(),
+                                                          OrderStatus.Replaced);
+        orderManager.add(report4);
+        assertEquals(2,
+                     report1OrderChain.size());
+        assertTrue(Arrays.equals(new OrderID[] { report1.getOrderID(), report3.getOrderID() },
+                                 report1OrderChain.toArray(new OrderID[report1OrderChain.size()])));
+        assertEquals(report1OrderChain,
+                     report3OrderChain);
+        ExecutionReport report5 = generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                          report4.getOrderID().getValue(),
+                                                          OrderStatus.PendingCancel);
+        orderManager.add(report5);
+        Set<OrderID> report5OrderChain = orderManager.getOrderChain(report5.getOrderID());
+        assertEquals(3,
+                     report1OrderChain.size());
+        assertTrue(Arrays.equals(new OrderID[] { report1.getOrderID(), report3.getOrderID(), report5.getOrderID() },
+                                 report1OrderChain.toArray(new OrderID[report1OrderChain.size()])));
+        assertEquals(report1OrderChain,
+                     report3OrderChain);
+        assertEquals(report1OrderChain,
+                     report5OrderChain);
+        OrderCancelReject report6 = generateOrderCancelReject(report5.getOrderID().getValue(),
+                                                              report4.getOrderID().getValue());
+        orderManager.add(report6);
+        Set<OrderID> report6OrderChain = orderManager.getOrderChain(report6.getOrderID());
+        assertEquals(3,
+                     report1OrderChain.size());
+        assertTrue(Arrays.equals(new OrderID[] { report1.getOrderID(), report3.getOrderID(), report5.getOrderID() },
+                                 report1OrderChain.toArray(new OrderID[report1OrderChain.size()])));
+        assertEquals(report1OrderChain,
+                     report3OrderChain);
+        assertEquals(report1OrderChain,
+                     report5OrderChain);
+        assertEquals(report1OrderChain,
+                     report6OrderChain);
+        ExecutionReport report9 = generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                          null,
+                                                          OrderStatus.New);
+        orderManager.add(report9);
+        Set<OrderID> report9OrderChain = orderManager.getOrderChain(report9.getOrderID());
+        assertEquals(3,
+                     report1OrderChain.size());
+        assertTrue(Arrays.equals(new OrderID[] { report1.getOrderID(), report3.getOrderID(), report5.getOrderID() },
+                                 report1OrderChain.toArray(new OrderID[report1OrderChain.size()])));
+        assertEquals(report1OrderChain,
+                     report3OrderChain);
+        assertEquals(report1OrderChain,
+                     report5OrderChain);
+        assertEquals(report1OrderChain,
+                     report6OrderChain);
+        assertEquals(1,
+                     report9OrderChain.size());
+        assertTrue(Arrays.equals(new OrderID[] { report9.getOrderID() },
+                                 report9OrderChain.toArray(new OrderID[report9OrderChain.size()])));
+        orderManager.clear(report9.getOrderID());
+        assertTrue(report9OrderChain.isEmpty());
+        orderManager.clear();
+        assertTrue(report1OrderChain.isEmpty());
+        assertTrue(report3OrderChain.isEmpty());
+        assertTrue(report5OrderChain.isEmpty());
+        assertTrue(report6OrderChain.isEmpty());
+    }
+    /**
+     * Verifies that the given <code>OrderHistoryManager</code> contains the given <code>ReportBase</code> objects.
      * 
-     * <p>The <code>ExecutionReport</code> values are assumed to be in the order they are expected to appear.
+     * <p>The <code>ReportBase</code> values are assumed to be in the order they are expected to appear.
      *
      * @param inManager an <code>OrderTracker</code> value
-     * @param inExpectedReports a <code>List&lt;ExecutionReport&gt;</code> value containing the expected reports
+     * @param inExpectedReports a <code>List&lt;ReportBase&gt;</code> value containing the expected reports
      * @throws Exception if an unexpected error occurs
      */
     private void verifyOrderHistory(OrderHistoryManager inManager,
-                                    Multimap<OrderID,ExecutionReport> inExpectedReports)
+                                    Multimap<OrderID,ReportBase> inExpectedReports)
             throws Exception
     {
         assertNotNull(inManager.toString());
-        for(Map.Entry<OrderID,ExecutionReport> entry : inExpectedReports.entries()) {
-            Collection<ExecutionReport> expectedEntryReports = inExpectedReports.get(entry.getKey());
-            Collection<ExecutionReport> actualEntryReports = inManager.getReportHistoryFor(entry.getKey());
+        for(Map.Entry<OrderID,ReportBase> entry : inExpectedReports.entries()) {
+            Collection<ReportBase> expectedEntryReports = inExpectedReports.get(entry.getKey());
+            Collection<ReportBase> actualEntryReports = inManager.getReportHistoryFor(entry.getKey());
             assertEquals(expectedEntryReports.size(),
                          actualEntryReports.size());
-            Iterator<ExecutionReport> expectedIterator = expectedEntryReports.iterator();
-            Iterator<ExecutionReport> actualIterator = actualEntryReports.iterator();
+            Iterator<ReportBase> expectedIterator = expectedEntryReports.iterator();
+            Iterator<ReportBase> actualIterator = actualEntryReports.iterator();
             while(expectedIterator.hasNext()) {
                 assertTrue(actualIterator.hasNext());
                 assertEquals(expectedIterator.next(),
@@ -398,8 +528,8 @@ public class OrderHistoryManagerTest
                                                           OrderStatus inOrderStatus)
             throws Exception
     {
-        BrokerID broker = new BrokerID("broker-" + System.nanoTime());
-        UserID user = new UserID(System.nanoTime());
+        BrokerID broker = new BrokerID("broker-" + counter.incrementAndGet());
+        UserID user = new UserID(counter.incrementAndGet());
         return factory.createExecutionReport(generateFixExecutionReport(inOrderID,
                                                                         inOriginalOrderID,
                                                                         inOrderStatus),
@@ -407,6 +537,29 @@ public class OrderHistoryManagerTest
                                              Originator.Broker,
                                              user,
                                              user);
+    }
+    /**
+     * Generates an <code>OrderCancelReject</code> for the given <code>OrderID</code> value.
+     *
+     * <p><code>ExecutionReport</code> objects generated by this method are guaranteed to be valid according to {@link OrderHistoryManagerTest#fixVersion}.
+     *
+     * @param inOrderID a <code>String</code> value
+     * @param inOriginalOrderID a <code>String</code> value
+     * @return an <code>OrderCancelReject</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    public static OrderCancelReject generateOrderCancelReject(String inOrderID,
+                                                              String inOriginalOrderID)
+            throws Exception
+    {
+        BrokerID broker = new BrokerID("broker-" + counter.incrementAndGet());
+        UserID user = new UserID(counter.incrementAndGet());
+        return factory.createOrderCancelReject(generateFixOrderCancelReject(inOrderID,
+                                                                            inOriginalOrderID),
+                                               broker,
+                                               Originator.Broker,
+                                               user,
+                                               user);
     }
     /**
      * Generates a <code>Message</code> containing an <code>ExecutionReport</code> for the given <code>OrderID</code> value and <code>OrderStatus</code>.
@@ -429,7 +582,7 @@ public class OrderHistoryManagerTest
         msg.getHeader().setField(new SenderCompID("sender"));
         msg.getHeader().setField(new TargetCompID("target"));
         msg.getHeader().setField(new SendingTime(new Date()));
-        msg.setField(new ExecID(String.valueOf(System.nanoTime())));
+        msg.setField(new ExecID(String.valueOf(counter.incrementAndGet())));
         msg.setField(new Symbol("colin-rocks"));
         msg.setField(new Side(Side.BUY));
         msg.setField(new OrdStatus(inOrderStatus.getFIXValue()));
@@ -446,6 +599,35 @@ public class OrderHistoryManagerTest
         if(inOriginalOrderID != null) {
             msg.setField(new OrigClOrdID(inOriginalOrderID));
         }
+        msg.toString();
+        FIXDataDictionaryManager.getFIXDataDictionary(fixVersion).getDictionary().validate(msg);
+        return msg;
+    }
+    /**
+     * Generates a <code>Message</code> containing an <code>OrderCancelReject</code> for the given <code>OrderID</code> value.
+     * 
+     * <p><code>ExecutionReport</code> objects generated by this method are guaranteed to be valid according to {@link OrderHistoryManagerTest#fixVersion}.
+     *
+     * @param inOrderID a <code>String</code> value
+     * @param inOriginalOrderID a <code>String</code> value
+     * @return a <code>Message</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    public static Message generateFixOrderCancelReject(String inOrderID,
+                                                       String inOriginalOrderID)
+            throws Exception
+    {
+        Message msg = fixVersion.getMessageFactory().createMessage(MsgType.ORDER_CANCEL_REJECT);
+        msg.getHeader().setField(new MsgSeqNum(counter.incrementAndGet()));
+        msg.getHeader().setField(new SenderCompID("sender"));
+        msg.getHeader().setField(new TargetCompID("target"));
+        msg.getHeader().setField(new SendingTime(new Date()));
+        msg.setField(new OrdStatus(OrderStatus.Rejected.getFIXValue()));
+        msg.setField(new quickfix.field.OrderID(inOrderID));
+        msg.setField(new ClOrdID(inOrderID));
+        msg.setField(new TransactTime(new Date()));
+        msg.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
+        msg.setField(new OrigClOrdID(inOriginalOrderID));
         msg.toString();
         FIXDataDictionaryManager.getFIXDataDictionary(fixVersion).getDictionary().validate(msg);
         return msg;

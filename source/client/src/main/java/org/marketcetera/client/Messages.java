@@ -123,4 +123,8 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "log_unable_fetch_id_server");   //$NON-NLS-1$
     static final I18NMessage0P HEARTBEAT_THREAD_NAME =
             new I18NMessage0P(LOGGER, "heartbeat_thread_name");   //$NON-NLS-1$
+    static final I18NMessage0P DONT_ADD_REPORTS = new I18NMessage0P(LOGGER,
+                                                                              "dont_add_execution_reports");   //$NON-NLS-1$
+    static final I18NMessage0P OPEN_ORDER_LIST_NOT_READY = new I18NMessage0P(LOGGER,
+                                                                             "open_order_list_not_ready");   //$NON-NLS-1$
 }

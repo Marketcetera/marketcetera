@@ -31,6 +31,7 @@ Export-Package: org.marketcetera.core,
  org.marketcetera.quickfix.messagefactory,
  org.marketcetera.symbology,
  org.marketcetera.trade,
+ org.marketcetera.trade.utils,
  quickfix.spring
 Eclipse-BuddyPolicy: registered
 Import-Package: junit.framework;resolution:=optional,
