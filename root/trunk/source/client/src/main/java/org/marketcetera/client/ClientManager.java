@@ -28,12 +28,25 @@ public final class ClientManager {
     public static synchronized void init(ClientParameters inParameter)
             throws ConnectionException, ClientInitException {
         if (!isInitialized()) {
-            mClientImpl = new ClientImpl(inParameter);
+            mClient = mClientFactory.getClient(inParameter);
         } else {
             throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
         }
     }
-
+    /**
+     * Sets the <code>ClientFactory</code> to use to create the <code>Client</code>.
+     *
+     * @param inFactory a <code>ClientFactory</code> value
+     * @throws ClientInitException if the client is already initialized.
+     */
+    public static synchronized void setClientFactory(ClientFactory inFactory)
+            throws ClientInitException
+    {
+        if(isInitialized()) {
+            throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
+        }
+        mClientFactory = inFactory;
+    }
     /**
      * Returns the Client instance after it has been initialized via
      * {@link #init(ClientParameters)}
@@ -44,7 +57,7 @@ public final class ClientManager {
      */
     public static Client getInstance() throws ClientInitException {
         if (isInitialized()) {
-            return mClientImpl;
+            return mClient;
         } else {
             throw new ClientInitException(Messages.CLIENT_NOT_INITIALIZED);
         }
@@ -56,7 +69,7 @@ public final class ClientManager {
      * @return if the client is initialized.
      */
     public static boolean isInitialized() {
-        return mClientImpl != null;
+        return mClient != null;
     }
 
     /**
@@ -65,7 +78,7 @@ public final class ClientManager {
      * This method is not meant to be used by clients. 
      */
     synchronized static void reset() {
-        mClientImpl = null;
+        mClient = null;
     }
 
     /**
@@ -73,6 +86,19 @@ public final class ClientManager {
      */
     private ClientManager() {
     }
-
-    private volatile static ClientImpl mClientImpl;
+    /**
+     * the <code>ClientFactory</code> to use to create the <code>Client</code> object 
+     */
+    private volatile static ClientFactory mClientFactory = new ClientFactory() {
+        @Override
+        public Client getClient(ClientParameters inParameters)
+                throws ClientInitException, ConnectionException
+        {
+            return new ClientImpl(inParameters);
+        }
+    };
+    /**
+     * the <code>Client</code> object
+     */
+    private volatile static Client mClient;
 }

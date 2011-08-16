@@ -1,10 +1,11 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -36,7 +37,15 @@ public enum OrderStatus {
     Expired(quickfix.field.OrdStatus.EXPIRED),
     AcceptedForBidding(quickfix.field.OrdStatus.ACCEPTED_FOR_BIDDING),
     PendingReplace(quickfix.field.OrdStatus.PENDING_REPLACE);
-
+    /**
+     * Indicates if an order at this <code>OrderStatus</code> may be cancelled.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isCancellable()
+    {
+        return FIXMessageUtil.isCancellable(getFIXValue());
+    }
     /**
      * The FIX char value for this instance.
      *
