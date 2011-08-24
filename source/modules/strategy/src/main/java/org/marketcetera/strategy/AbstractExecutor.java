@@ -65,6 +65,7 @@ abstract class AbstractExecutor
                                        "{} start job beginning", //$NON-NLS-1$
                                        getStrategy());
                 enclosingStrategy.setStatus(STARTING);
+                abstractRunningStrategy.start();
                 runningStrategy.onStart();
                 enclosingStrategy.setStatus(RUNNING);
                 return runningStrategy;

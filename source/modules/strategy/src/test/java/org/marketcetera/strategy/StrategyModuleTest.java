@@ -40,7 +40,7 @@ import org.marketcetera.util.test.UnicodeData;
  * @since 1.0.0
  */
 public class StrategyModuleTest
-    extends StrategyTestBase
+        extends StrategyTestBase
 {
     /**
      * Tests the function of the cancel method.

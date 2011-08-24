@@ -1,16 +1,22 @@
 package org.marketcetera.trade.utils;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Messages;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.collections.UnmodifiableDeque;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.nocrala.tools.texttablefmt.*;
+import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 
 /* $License$ */
 
@@ -60,6 +66,12 @@ public class OrderHistoryManager
      */
     public void add(ReportBase inReport)
     {
+        if(inReport.getOrderStatus() == null ||
+           inReport.getOrderID() == null) {
+            Messages.SKIPPNG_MALFORMED_REPORT.warn(OrderHistoryManager.class,
+                                                   inReport);
+            return;
+        }
         synchronized(orders) {
             OrderID actualOrderID = inReport.getOrderID();
             OrderID originalOrderID = inReport.getOriginalOrderID();
@@ -85,6 +97,153 @@ public class OrderHistoryManager
             }
             // add the report to the order history
             history.add(inReport);
+            // check to see if the report represents an open order
+            if(inReport.getOrderStatus().isCancellable()) {
+                // if a report is cancellable, at least by our current understanding, the report has to be an ExecutionReport (not an OrderCancelReject)
+                if(inReport instanceof ExecutionReport) {
+                    SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+                                           "{} represents an open order ({}), updating live order list for {}", //$NON-NLS-1$
+                                           inReport.getOrderID(),
+                                           inReport.getOrderStatus(),
+                                           history);
+                    openOrders.put(inReport.getOrderID(),
+                                   (ExecutionReport)inReport);
+                }
+            } else {
+                SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+                                       "{} represents a closed order ({}) updating live order list for {}", //$NON-NLS-1$
+                                       inReport.getOrderID(),
+                                       inReport.getOrderStatus(),
+                                       history);
+                openOrders.remove(inReport.getOrderID());
+            }
+            if(inReport.getOriginalOrderID() != null) {
+                SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+                                       "{} replaces {}, updating live order list", //$NON-NLS-1$
+                                       inReport.getOrderID(),
+                                       inReport.getOriginalOrderID());
+                openOrders.remove(inReport.getOriginalOrderID());
+            }
+        }
+        synchronized(this) {
+            this.notifyAll();
+        }
+    }
+    /**
+     * Displays the current order history in a readable format.
+     * 
+     * <p>This operation may be very expensive.
+     *
+     * @return a <code>String</code> value
+     */
+    public String display()
+    {
+        synchronized(orders) {
+            StringBuffer output = new StringBuffer();
+            output.append(nl).append("Order History as of ").append(new Date()).append(nl); //$NON-NLS-1$
+            Table latestReportTable = new Table(10,
+                                                BorderStyle.CLASSIC_COMPATIBLE_WIDE,
+                                                ShownBorders.ALL,
+                                                false);
+            latestReportTable.addCell("OrderID", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Status", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("SendingTime", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("OrderChain", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Side", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Quantity", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Symbol", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Type", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Price", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Text", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            Set<OrderID> handledOrders = new HashSet<OrderID>();
+            for(OrderHistory order : orders.values()) {
+                ReportBase report = order.getLatestReport();
+                if(!handledOrders.contains(report.getOrderID())) {
+                    latestReportTable.addCell(order.getLatestReport().getOrderID().getValue());
+                    latestReportTable.addCell(order.getLatestReport().getOrderStatus().name());
+                    latestReportTable.addCell(DateUtils.dateToString(order.getLatestReport().getSendingTime()));
+                    latestReportTable.addCell(order.getOrderIdChain().toString());
+                    latestReportTable.addCell(report instanceof ExecutionReport ? ((ExecutionReport)report).getSide().name() : none);
+                    latestReportTable.addCell(report instanceof ExecutionReport ? String.valueOf(((ExecutionReport)report).getOrderQuantity()) : none);
+                    latestReportTable.addCell(report instanceof ExecutionReport ? ((ExecutionReport)report).getInstrument().getSymbol() : none);
+                    latestReportTable.addCell(report instanceof ExecutionReport ? String.valueOf(((ExecutionReport)report).getOrderType()) : none);
+                    latestReportTable.addCell(report instanceof ExecutionReport ? String.valueOf(((ExecutionReport)report).getPrice()) : none);
+                    latestReportTable.addCell(order.getLatestReport().getText());
+                    handledOrders.add(report.getOrderID());
+                }
+            }
+            output.append(nl);
+            for(String line : latestReportTable.renderAsStringArray()) {
+                output.append(line).append(nl);
+            }
+            output.append(nl).append("Open Orders").append(nl); //$NON-NLS-1$
+            latestReportTable = new Table(9,
+                                          BorderStyle.CLASSIC_COMPATIBLE_WIDE,
+                                          ShownBorders.ALL,
+                                          false);
+            latestReportTable.addCell("OrderID", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Status", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("SendingTime", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Side", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Quantity", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Symbol", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Type", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Price", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            latestReportTable.addCell("Text", //$NON-NLS-1$
+                                      headerStyle,
+                                      1);
+            for(ReportBase report : openOrders.values()) {
+                latestReportTable.addCell(report.getOrderID().getValue());
+                latestReportTable.addCell(report.getOrderStatus().name());
+                latestReportTable.addCell(DateUtils.dateToString(report.getSendingTime()));
+                latestReportTable.addCell(report instanceof ExecutionReport ? ((ExecutionReport)report).getSide().name() : none);
+                latestReportTable.addCell(report instanceof ExecutionReport ? String.valueOf(((ExecutionReport)report).getOrderQuantity()) : none);
+                latestReportTable.addCell(report instanceof ExecutionReport ? ((ExecutionReport)report).getInstrument().getSymbol() : none);
+                latestReportTable.addCell(report instanceof ExecutionReport ? String.valueOf(((ExecutionReport)report).getOrderType()) : none);
+                latestReportTable.addCell(report instanceof ExecutionReport ? String.valueOf(((ExecutionReport)report).getPrice()) : none);
+                latestReportTable.addCell(report.getText());
+            }
+            output.append(nl);
+            for(String line : latestReportTable.renderAsStringArray()) {
+                output.append(line).append(nl);
+            }
+            return output.toString();
         }
     }
     /**
@@ -105,13 +264,29 @@ public class OrderHistoryManager
      */
     public Deque<ReportBase> getReportHistoryFor(OrderID inOrderId)
     {
+        if(inOrderId == null) {
+            throw new NullPointerException();
+        }
         synchronized(orders) {
             OrderHistory history = orders.get(inOrderId);
             if(history == null) {
-                return NO_HISTORY;
+                history = new OrderHistory();
+                orders.put(inOrderId,
+                           history);
             }
             return history.getOrderHistory();
         }
+    }
+    /**
+     * Gets the open orders.
+     * 
+     * <p>The collection returned by this operation will reflect changes to the underlying order history.
+     * 
+     * @return a <code>Map&lt;OrderID,ExecutionReport&gt;</code> value
+     */
+    public Map<OrderID,ExecutionReport> getOpenOrders()
+    {
+        return Collections.unmodifiableMap(openOrders);
     }
     /**
      * Gets all <code>OrderID</code> values for which history is known.
@@ -137,6 +312,7 @@ public class OrderHistoryManager
                 history.clear();
             }
             orders.clear();
+            openOrders.clear();
         }
     }
     /**
@@ -162,6 +338,9 @@ public class OrderHistoryManager
                     orders.remove(orderID);
                 }
                 history.clear();
+            }
+            if(inOrderId != null) {
+                openOrders.remove(inOrderId);
             }
         }
     }
@@ -215,6 +394,16 @@ public class OrderHistoryManager
     @ClassVersion("$Id$")
     private static class OrderHistory
     {
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("OrderHistory [").append(latestReport == null ? "none" : latestReport.getOrderID()).append("]");
+            return builder.toString();
+        }
         /**
          * Adds the given <code>ReportBase</code> to the order history.
          * 
@@ -290,13 +479,26 @@ public class OrderHistoryManager
      * order history objects indexed by actual order ID
      */
     @GuardedBy("orders")
-    private final Map<OrderID,OrderHistory> orders = new HashMap<OrderID,OrderHistory>();
+    private final Map<OrderID,OrderHistory> orders = new LinkedHashMap<OrderID,OrderHistory>();
     /**
-     * sentinel collection used to indicate there is no history available for an order
+     * collection containing only the open orders
      */
-    private static final Deque<ReportBase> NO_HISTORY = new UnmodifiableDeque<ReportBase>(new LinkedList<ReportBase>());
+    @GuardedBy("orders")
+    private final Map<OrderID,ExecutionReport> openOrders = new ConcurrentHashMap<OrderID,ExecutionReport>();
     /**
      * sentinel collection used to indicate there is no order chain for a given order ID
      */
     private static final Set<OrderID> NO_ORDER_CHAIN = Collections.emptySet();
+    /**
+     * constant used to separate lines in status display
+     */
+    private static final String nl = System.getProperty("line.separator"); //$NON-NLS-1$
+    /**
+     * the style used for display tables
+     */
+    private static final CellStyle headerStyle = new CellStyle(HorizontalAlign.center);
+    /**
+     * display constant used to represent the lack of data
+     */
+    private static final String none = "---"; //$NON-NLS-1$
 }

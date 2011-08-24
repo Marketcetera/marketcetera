@@ -136,4 +136,6 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"null_expiry"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_EXPIRY=
         new I18NMessage1P(LOGGER,"invalid_expiry"); //$NON-NLS-1$
+    static final I18NMessage1P SKIPPNG_MALFORMED_REPORT = new I18NMessage1P(LOGGER,
+                                                                            "skipping_malformed_report"); //$NON-NLS-1$
 }

@@ -36,6 +36,7 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.event.*;
 import org.marketcetera.marketdata.DateUtils;
@@ -125,7 +126,7 @@ public class StrategyTestBase
         implements DataReceiver, DataEmitter
     {
         /**
-         * indicates if the module should emit execution reports when it receives OrderSingle objects
+         * indicates if the module should emit execution reports when it receives order objects
          */
         public static boolean shouldSendExecutionReports = true;
         public static boolean shouldFullyFillOrders = true;
@@ -175,12 +176,15 @@ public class StrategyTestBase
                                           inData));
             }
             if(inData instanceof OrderSingle) {
+                System.out.println("Received OrderSingle!");
                 if(shouldSendExecutionReports) {
+                    System.out.println("Sending back ERs");
                     OrderSingle order = (OrderSingle)inData;
                     try {
                         List<ExecutionReport> executionReports = generateExecutionReports(order);
                         synchronized(subscribers) {
                             for(ExecutionReport executionReport : executionReports) {
+                                System.out.println("Sending " + executionReport + " to " + subscribers);
                                 for(DataEmitterSupport subscriber : subscribers.values()) {
                                     subscriber.send(executionReport);
                                 }
@@ -193,13 +197,16 @@ public class StrategyTestBase
                     }
                 }
                 ordersReceived += 1;
+            } else if(inData instanceof OrderCancel) {
+                System.out.println("Received OrderCancel!");
             }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
          */
         @Override
-        public void cancel(DataFlowID inFlowID, RequestID inRequestID)
+        public void cancel(DataFlowID inFlowID,
+                           RequestID inRequestID)
         {
             synchronized(subscribers) {
                 subscribers.remove(inRequestID);
@@ -414,23 +421,23 @@ public class StrategyTestBase
             synchronized(dataToSend) {
                 dataToSend.clear();
                 dataToSend.add(EventTestBase.generateEquityTradeEvent(System.nanoTime(),
-                                              System.currentTimeMillis(),
-                                              new Equity("GOOG"),
-                                              "Exchange",
-                                              new BigDecimal("100"),
-                                              new BigDecimal("10000")));
+                                                                      System.currentTimeMillis(),
+                                                                      new Equity("GOOG"),
+                                                                      "Exchange",
+                                                                      new BigDecimal("100"),
+                                                                      new BigDecimal("10000")));
                 dataToSend.add(EventTestBase.generateEquityBidEvent(System.nanoTime(),
-                                            System.currentTimeMillis(),
-                                            new Equity("GOOG"),
-                                            "Exchange",
-                                            new BigDecimal("200"),
-                                            new BigDecimal("20000")));
+                                                                    System.currentTimeMillis(),
+                                                                    new Equity("GOOG"),
+                                                                    "Exchange",
+                                                                    new BigDecimal("200"),
+                                                                    new BigDecimal("20000")));
                 dataToSend.add(EventTestBase.generateEquityAskEvent(System.nanoTime(),
-                                            System.currentTimeMillis(),
-                                            new Equity("GOOG"),
-                                            "Exchange",
-                                            new BigDecimal("200"),
-                                            new BigDecimal("20000")));
+                                                                    System.currentTimeMillis(),
+                                                                    new Equity("GOOG"),
+                                                                    "Exchange",
+                                                                    new BigDecimal("200"),
+                                                                    new BigDecimal("20000")));
                 dataToSend.add(EventTestBase.generateDividendEvent());
                 Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
                 OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
@@ -574,6 +581,19 @@ public class StrategyTestBase
     public static class MockClient
         implements Client
     {
+        public static class MockClientFactory
+                implements org.marketcetera.client.ClientFactory
+        {
+            /* (non-Javadoc)
+             * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters)
+             */
+            @Override
+            public Client getClient(ClientParameters inClientParameters)
+                    throws ClientInitException, ConnectionException
+            {
+                return new MockClient();
+            }
+        }
         /**
          * indicates whether calls to {@link #getBrokersStatus()} should fail automatically
          */
@@ -860,10 +880,19 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#getReportsSince(java.util.Date)
          */
         @Override
-        public ReportBase[] getReportsSince(Date inArg0)
+        public ReportBase[] getReportsSince(Date inDate)
                 throws ConnectionException
         {
-            throw new UnsupportedOperationException();
+            if(getReportsSinceThrows != null) {
+                throw getReportsSinceThrows;
+            }
+            List<ReportBase> reportsToReturn = new ArrayList<ReportBase>();
+            for(ReportBase report : reports) {
+                if(report.getSendingTime().compareTo(inDate) != -1) {
+                    reportsToReturn.add(report);
+                }
+            }
+            return reportsToReturn.toArray(new ReportBase[reportsToReturn.size()]);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#reconnect()
@@ -983,6 +1012,35 @@ public class StrategyTestBase
             userdata = inProperties;
         }
         public Properties userdata;
+        /**
+         * reports used to feed report-related calls
+         */
+        private final Set<ReportBase> reports = new TreeSet<ReportBase>(ReportSendingTimeComparator.INSTANCE);
+        /**
+         * if non-null, will be thrown during {@link #getReportsSince(Date)}.
+         */
+        private volatile ConnectionException getReportsSinceThrows;
+    }
+    /**
+     * Compares the sending times of two <code>ReportBase</code> values.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private enum ReportSendingTimeComparator
+            implements Comparator<ReportBase>
+    {
+        INSTANCE;
+        /* (non-Javadoc)
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare(ReportBase inO1,
+                           ReportBase inO2)
+        {
+            return inO1.getSendingTime().compareTo(inO2.getSendingTime());
+        }
     }
     /**
      * Generates a random set of broker status objects.
@@ -1316,8 +1374,12 @@ public class StrategyTestBase
      */
     @BeforeClass
     public static void once()
-        throws Exception
+            throws Exception
     {
+        LoggerConfiguration.logSetup();
+        ClientManager.setClientFactory(new MockClient.MockClientFactory());
+        ClientManager.init(null);
+        client = (MockClient)ClientManager.getInstance();
         System.setProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME,
                            StrategyTestBase.SAMPLE_STRATEGY_DIR.getCanonicalPath());
         List<Instrument> testInstruments = new ArrayList<Instrument>();
@@ -1437,17 +1499,17 @@ public class StrategyTestBase
         runningModules.add(bogusDataFeedURN);
         setPropertiesToNull();
         tradeEvent = EventTestBase.generateEquityTradeEvent(System.nanoTime(),
-                                    System.currentTimeMillis(),
-                                    new Equity("METC"),
-                                    "Q",
-                                    new BigDecimal("1000.25"),
-                                    new BigDecimal("1000"));
+                                                            System.currentTimeMillis(),
+                                                            new Equity("METC"),
+                                                            "Q",
+                                                            new BigDecimal("1000.25"),
+                                                            new BigDecimal("1000"));
         askEvent = EventTestBase.generateEquityAskEvent(System.nanoTime(),
-                                System.currentTimeMillis(),
-                                new Equity("METC"),
-                                "Q",
-                                new BigDecimal("100.00"),
-                                new BigDecimal("10000"));
+                                                        System.currentTimeMillis(),
+                                                        new Equity("METC"),
+                                                        "Q",
+                                                        new BigDecimal("100.00"),
+                                                        new BigDecimal("10000"));
         StrategyDataEmissionModule.setDataToSendToDefaults();
     }
     /**
@@ -2057,4 +2119,8 @@ public class StrategyTestBase
      * determines how many execution reports should be produced for each order received
      */
     protected static int executionReportMultiplicity = 1;
+    /**
+     * test client used to simulate connections to the server
+     */
+    protected static MockClient client;
 }

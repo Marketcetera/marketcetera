@@ -5,6 +5,7 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.java.Strategy;
+import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.OrderID;
@@ -14,6 +15,7 @@ import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.trade.OrderCancel;
 import org.marketcetera.trade.OrderReplace;
+import java.util.Deque;
 
 /* $License$ */
 
@@ -47,9 +49,9 @@ public class Orders
     {
         String orderID = getProperty("orderID");
         if(orderID != null) {
-            ExecutionReport[] exeReports = getExecutionReports(new OrderID(orderID));
+            Deque<ReportBase> exeReports = getExecutionReports(new OrderID(orderID));
             setProperty("executionReportCount",
-                        Integer.toString(exeReports.length));
+                        Integer.toString(exeReports.size()));
         }
     }
     /* (non-Javadoc)

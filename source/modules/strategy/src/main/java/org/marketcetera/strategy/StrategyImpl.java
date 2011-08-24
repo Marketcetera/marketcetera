@@ -149,7 +149,11 @@ class StrategyImpl
             }
             if(inData instanceof OrderCancelReject) {
                 method = "onCancelReject"; //$NON-NLS-1$
-                runningStrategy.onCancelReject((OrderCancelReject)inData);
+                if(runningStrategy instanceof AbstractRunningStrategy) {
+                    ((AbstractRunningStrategy)runningStrategy).onCancelRejectRedirected((OrderCancelReject)inData);
+                } else {
+                    runningStrategy.onCancelReject((OrderCancelReject)inData);
+                }
                 return;
             }
             if(inData instanceof ExecutionReport) {

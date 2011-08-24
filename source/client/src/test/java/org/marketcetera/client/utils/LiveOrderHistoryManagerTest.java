@@ -20,6 +20,7 @@ import org.marketcetera.client.MockClient;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.ReportBase;
@@ -85,35 +86,6 @@ public class LiveOrderHistoryManagerTest
                      manager.getReportHistoryOrigin());
     }
     /**
-     * Verifies that {@link LiveOrderHistoryManager#add(org.marketcetera.trade.ReportBase)} is not allowed.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Test
-    public void testAddNotAllowed()
-            throws Exception
-    {
-        final LiveOrderHistoryManager manager = new LiveOrderHistoryManager(null);
-        new ExpectedFailure<UnsupportedOperationException>(org.marketcetera.client.Messages.DONT_ADD_REPORTS.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                manager.add(null);
-            }
-        };
-        new ExpectedFailure<UnsupportedOperationException>(org.marketcetera.client.Messages.DONT_ADD_REPORTS.getText()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                manager.add(OrderHistoryManagerTest.generateExecutionReport("order",
-                                                                            null,
-                                                                            OrderStatus.New));
-            }
-        };
-    }
-    /**
      * Tests {@link LiveOrderHistoryManager#getOpenOrders()}.
      *
      * @throws Exception if an unexpected error occurs
@@ -133,7 +105,7 @@ public class LiveOrderHistoryManagerTest
             }
         };
         manager.start();
-        final Map<OrderID,ReportBase> openOrders = manager.getOpenOrders();
+        final Map<OrderID,ExecutionReport> openOrders = manager.getOpenOrders();
         final Set<OrderID> orderIds = manager.getOrderIds();
         assertTrue(openOrders.isEmpty());
         assertTrue(openOrders.isEmpty());
@@ -142,7 +114,7 @@ public class LiveOrderHistoryManagerTest
                                                                              null,
                                                                              OrderStatus.Filled);
         assertFalse(report1.getOrderStatus().isCancellable());
-        client.sendToListeners(report1);
+        manager.add(report1);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -159,7 +131,7 @@ public class LiveOrderHistoryManagerTest
                                                                              null,
                                                                              OrderStatus.PartiallyFilled);
         assertTrue(report2.getOrderStatus().isCancellable());
-        client.sendToListeners(report2);
+        manager.add(report2);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -233,7 +205,7 @@ public class LiveOrderHistoryManagerTest
         historicalReports.add(report3);
         historicalReports.add(report4);
         manager.start();
-        Map<OrderID,ReportBase> openOrders = manager.getOpenOrders();
+        Map<OrderID,ExecutionReport> openOrders = manager.getOpenOrders();
         assertEquals(2,
                      openOrders.size());
         assertEquals(4,
@@ -254,12 +226,12 @@ public class LiveOrderHistoryManagerTest
     {
         final LiveOrderHistoryManager manager = new LiveOrderHistoryManager(null);
         manager.start();
-        final Map<OrderID,ReportBase> openOrders = manager.getOpenOrders();
+        final Map<OrderID,ExecutionReport> openOrders = manager.getOpenOrders();
         assertTrue(openOrders.isEmpty());
         ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                              null,
                                                                              OrderStatus.New);
-        client.sendToListeners(report1);
+        manager.add(report1);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -271,7 +243,7 @@ public class LiveOrderHistoryManagerTest
         ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport(report1.getOrderID().getValue(),
                                                                              null,
                                                                              OrderStatus.Filled);
-        client.sendToListeners(report2);
+        manager.add(report2);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -292,12 +264,12 @@ public class LiveOrderHistoryManagerTest
     {
         final LiveOrderHistoryManager manager = new LiveOrderHistoryManager(null);
         manager.start();
-        final Map<OrderID,ReportBase> openOrders = manager.getOpenOrders();
+        final Map<OrderID,ExecutionReport> openOrders = manager.getOpenOrders();
         assertTrue(openOrders.isEmpty());
         final ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                                    null,
                                                                                    OrderStatus.New);
-        client.sendToListeners(report1);
+        manager.add(report1);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -309,7 +281,7 @@ public class LiveOrderHistoryManagerTest
         ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport(report1.getOrderID().getValue(),
                                                                              null,
                                                                              OrderStatus.PendingReplace);
-        client.sendToListeners(report2);
+        manager.add(report2);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -329,7 +301,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report3 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                                    report1.getOrderID().getValue(),
                                                                                    OrderStatus.Replaced);
-        client.sendToListeners(report3);
+        manager.add(report3);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -350,7 +322,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report4 = OrderHistoryManagerTest.generateExecutionReport(report3.getOrderID().getValue(),
                                                                                    null,
                                                                                    OrderStatus.PartiallyFilled);
-        client.sendToListeners(report4);
+        manager.add(report4);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -370,7 +342,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report5 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                                    report4.getOrderID().getValue(),
                                                                                    OrderStatus.PendingReplace);
-        client.sendToListeners(report5);
+        manager.add(report5);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -391,7 +363,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report6 = OrderHistoryManagerTest.generateExecutionReport(report5.getOrderID().getValue(),
                                                                                    report4.getOrderID().getValue(),
                                                                                    OrderStatus.Replaced);
-        client.sendToListeners(report6);
+        manager.add(report6);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -412,7 +384,7 @@ public class LiveOrderHistoryManagerTest
         final ReportBase report7 = OrderHistoryManagerTest.generateExecutionReport(report6.getOrderID().getValue(),
                                                                                    null,
                                                                                    OrderStatus.PendingCancel);
-        client.sendToListeners(report7);
+        manager.add(report7);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
@@ -431,7 +403,7 @@ public class LiveOrderHistoryManagerTest
                      openOrders.get(report7.getOrderID()));
         final ReportBase report8 = OrderHistoryManagerTest.generateOrderCancelReject("order-" + counter.incrementAndGet(),
                                                                                      report7.getOrderID().getValue());
-        client.sendToListeners(report8);
+        manager.add(report8);
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
             @Override
             public Boolean call()
