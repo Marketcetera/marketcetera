@@ -1,13 +1,17 @@
 package org.marketcetera.client.utils;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import org.marketcetera.client.*;
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ConnectionException;
 import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.utils.OrderHistoryManager;
@@ -18,7 +22,7 @@ import org.springframework.context.Lifecycle;
 /* $License$ */
 
 /**
- * Provides a self-populating {@link OrderHistoryManager} implementation.
+ * Provides a historically-aware {@link OrderHistoryManager} implementation.
  * 
  * <p>Instantiate this class with an origin date. The origin date establishes how far back
  * to look for order history.
@@ -47,7 +51,7 @@ import org.springframework.context.Lifecycle;
 @ClassVersion("$Id$")
 public class LiveOrderHistoryManager
         extends OrderHistoryManager
-        implements Lifecycle, ReportListener
+        implements Lifecycle
 {
     /**
      * Create a new LiveOrderHistoryManager instance.
@@ -58,71 +62,31 @@ public class LiveOrderHistoryManager
     public LiveOrderHistoryManager(Date inReportHistoryOrigin)
             throws ClientInitException
     {
-        client = ClientManager.getInstance();
         if(inReportHistoryOrigin == null) {
             reportHistoryOrigin = new Date(0);
         } else {
             reportHistoryOrigin = inReportHistoryOrigin;
         }
+        client = ClientManager.getInstance();
     }
     /**
      * Gets the open orders.
      * 
      * <p>The collection returned by this operation will reflect changes to the underlying order history.
      * 
-     * <p>The <code>LiveOrderHistoryManager</code> object must be {@link #start() started} and must have
-     * completed processing order history before this operation may be successfully invoked. To safely
-     * use this object, do the following:
-     * <pre>
-     * Date originDate = (establish your history date, the more recent the more performant)
-     * LiveOrderHistoryManager orderHistoryManager = new LiveOrderHistoryManager(originDate);
-     * orderHistoryManager.start();
-     * while(!orderHistoryManager.isRunning()) {
-     *   synchronized(orderHistoryManager) {
-     *     orderHistoryManager.wait(250);
-     *   }
-     * }
-     * Map<OrderID,ReportBase> openOrders = orderHistoryManager.getOpenOrders();
-     * </pre> 
+     * <p>The <code>LiveOrderHistoryManager</code> object must be {@link #start() started} before this operation 
+     * may be successfully invoked.
      *
-     * @return a <code>Map&lt;OrderID,ReportBase&gt;</code> value
+     * @return a <code>Map&lt;OrderID,ExecutionReport&gt;</code> value
+     * @throws IllegalStateException if the object has not started
      */
-    public Map<OrderID,ReportBase> getOpenOrders()
+    @Override
+    public Map<OrderID,ExecutionReport> getOpenOrders()
     {
         if(!isRunning) {
             throw new IllegalStateException(org.marketcetera.client.Messages.OPEN_ORDER_LIST_NOT_READY.getText());
         }
-        return Collections.unmodifiableMap(openOrders);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.utils.OrderHistoryManager#add(org.marketcetera.trade.ReportBase)
-     */
-    @Override
-    public void add(ReportBase inReport)
-    {
-        throw new UnsupportedOperationException(org.marketcetera.client.Messages.DONT_ADD_REPORTS.getText());
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.client.ReportListener#receiveExecutionReport(org.marketcetera.trade.ExecutionReport)
-     */
-    @Override
-    public void receiveExecutionReport(ExecutionReport inReport)
-    {
-        SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
-                               "Received {}", //$NON-NLS-1$
-                               inReport);
-        updateReports.add(inReport);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.client.ReportListener#receiveCancelReject(org.marketcetera.trade.OrderCancelReject)
-     */
-    @Override
-    public void receiveCancelReject(OrderCancelReject inReport)
-    {
-        SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
-                               "Received {}", //$NON-NLS-1$
-                               inReport);
-        updateReports.add(inReport);
+        return super.getOpenOrders();
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
@@ -144,7 +108,6 @@ public class LiveOrderHistoryManager
         SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
                                "LiveOrderHistoryManager starting - collecting order history since {}", //$NON-NLS-1$
                                reportHistoryOrigin);
-        client.addReportListener(this);
         // note that live reports may be flowing in from this point, but we must not process them
         //  until we have processed all snapshot reports
         // collect the snapshot reports
@@ -170,7 +133,6 @@ public class LiveOrderHistoryManager
                 LiveOrderHistoryManager.super.add(report);
             }
             snapshotReports.clear();
-            compileInitialOpenOrdersView();
             SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
                                    "All historical reports processed"); //$NON-NLS-1$
         }
@@ -182,7 +144,7 @@ public class LiveOrderHistoryManager
                 try {
                     while(true) {
                         // process any updates that exist
-                        processUpdate(updateReports.take());
+                        add(updateReports.take());
                     }
                 } catch (InterruptedException ignored) {}
             }
@@ -209,8 +171,7 @@ public class LiveOrderHistoryManager
             } catch (InterruptedException ignored) {}
             reportProcessor = null;
         }
-        client.removeReportListener(this);
-        openOrders.clear();
+        clear();
         isRunning = false;
     }
     /**
@@ -229,57 +190,17 @@ public class LiveOrderHistoryManager
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("LiveOrderHistoryManager [").append(isRunning?"running":"not running").append("] with ").append(openOrders.size()).append(" open order").append(openOrders.size() == 1?"":"(s)"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+        builder.append("LiveOrderHistoryManager [").append(isRunning?"running":"not running").append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         return builder.toString();
     }
     /**
-     * Processes a <code>ReportBase</code> object received as part of an update.
+     * Get the client value.
      *
-     * @param inReport a <code>ReportBase</code> value
+     * @return a <code>Client</code> value
      */
-    private void processUpdate(ReportBase inReport)
+    protected Client getClient()
     {
-        super.add(inReport);
-        if(inReport.getOrderStatus().isCancellable()) {
-            SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
-                                   "{} represents an open order ({}), updating live order list", //$NON-NLS-1$
-                                   inReport.getOrderID(),
-                                   inReport.getOrderStatus());
-            openOrders.put(inReport.getOrderID(),
-                           inReport);
-        } else {
-            SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
-                                   "{} represents a closed order ({}) updating live order list", //$NON-NLS-1$
-                                   inReport.getOrderID(),
-                                   inReport.getOrderStatus());
-            openOrders.remove(inReport.getOrderID());
-        }
-        if(inReport.getOriginalOrderID() != null) {
-            SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
-                                   "{} replaces {}, updating live order list", //$NON-NLS-1$
-                                   inReport.getOrderID(),
-                                   inReport.getOriginalOrderID());
-            openOrders.remove(inReport.getOriginalOrderID());
-        }
-        synchronized(openOrders) {
-            openOrders.notifyAll();
-        }
-    }
-    /**
-     * Examines the current order history and compiles a list of open orders from it.
-     * 
-     * <p>This method assumes synchronized access to the order history collection.
-     */
-    private void compileInitialOpenOrdersView()
-    {
-        for(OrderID orderId : getOrderIds()) {
-            ReportBase report = getLatestReportFor(orderId);
-            if(report != null &&
-               report.getOrderStatus().isCancellable()) {
-                openOrders.put(orderId,
-                               report);
-            }
-        }
+        return client;
     }
     /**
      * processes incoming reports from the live report channel
@@ -290,14 +211,6 @@ public class LiveOrderHistoryManager
      */
     private final BlockingDeque<ReportBase> updateReports = new LinkedBlockingDeque<ReportBase>();
     /**
-     * collection containing only the open orders
-     */
-    private final Map<OrderID,ReportBase> openOrders = new ConcurrentHashMap<OrderID,ReportBase>();
-    /**
-     * connection to the client 
-     */
-    private final Client client;
-    /**
      * date from which to gather status
      */
     private final Date reportHistoryOrigin;
@@ -305,4 +218,8 @@ public class LiveOrderHistoryManager
      * indicates if the object is active
      */
     private volatile boolean isRunning = false;
+    /**
+     * connection to the client 
+     */
+    private final Client client;
 }

@@ -1,10 +1,7 @@
 package org.marketcetera.strategy.ruby;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
@@ -566,18 +563,25 @@ public class Strategy
         cancelDataFlow(inDataFlowID);
     }
     /**
-     * Gets the <code>ExecutionReport</code> values received during the current session that
-     * match the given <code>OrderID</code>.
+     * Gets the <code>ReportBase</code> values representing the order history of the given <code>OrderID</code>.
      * 
-     * <p>Note that the <code>OrderID</code> must match an <code>OrderSingle</code> generated
-     * by this strategy during the current session.  If not, an empty list will be returned.
-     *
-     * @param inOrderID an <code>OrderID</code> value corresponding to an <code>OrderSingle</code>
-     *   generated during this session by this strategy via {@link #send(Object)} or {@link #cancel_replace(OrderID, OrderSingle, boolean)}
-     * @return an <code>ExecutionReport[]</code> value containing the <code>ExecutionReport</code> objects as limited according to
-     *   the conditions enumerated above
+     * <p>The <code>ReportBase</code> objects returned by this call represent the history of the order represented
+     * by the given <code>OrderID</code>. if there is no order history for the given <code>OrderID</code>, this operation
+     * will return an empty collection.
+     * 
+     * <p>The values returned by this operation are sorted from newest to oldest: the order's current status is represented
+     * by the first element in the collection.
+     * 
+     * <p>The collection returned by this operation will be updated as the underlying report history changes. The collection itself
+     * may not be modified.
+     * 
+     * <p>The contents of the returned collection are limited by the value returned by {@link #getReportHistoryOriginDate()}. The
+     * default value is all reports. No reports with a sending time before the origin date will be returned.
+     * 
+     * @param inOrderID an <code>OrderID</code> value corresponding to an existing order, either open or closed
+     * @return a <code>Deque&lt;ReportBase&gt;</code> value containing the <code>ReportBase</code> objects
      */
-    public final ExecutionReport[] get_execution_reports(OrderID inOrderID)
+    public final Deque<ReportBase> get_execution_reports(OrderID inOrderID)
     {
         return getExecutionReports(inOrderID);
     }

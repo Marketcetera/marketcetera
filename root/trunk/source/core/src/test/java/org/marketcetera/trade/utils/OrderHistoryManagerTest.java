@@ -3,18 +3,21 @@ package org.marketcetera.trade.utils;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.EventTestBase;
+import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.OrderID;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.CollectionAssert;
 
 import quickfix.Message;
@@ -145,8 +148,15 @@ public class OrderHistoryManagerTest
     public void testGetReportHistoryFor()
             throws Exception
     {
-        OrderHistoryManager orderManager = new OrderHistoryManager();
-        assertTrue(orderManager.getReportHistoryFor(null).isEmpty());
+        final OrderHistoryManager orderManager = new OrderHistoryManager();
+        new ExpectedFailure<NullPointerException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                orderManager.getReportHistoryFor(null);
+            }
+        };
         assertTrue(orderManager.getReportHistoryFor(new OrderID("this-order-doesn't-exist")).isEmpty());
         ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
@@ -485,6 +495,102 @@ public class OrderHistoryManagerTest
         assertTrue(report6OrderChain.isEmpty());
     }
     /**
+     * Tests {@link LiveOrderHistoryManager#getOpenOrders()}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetOpenOrders()
+            throws Exception
+    {
+        final OrderHistoryManager manager = new OrderHistoryManager();
+        final Map<OrderID,ExecutionReport> openOrders = manager.getOpenOrders();
+        final Set<OrderID> orderIds = manager.getOrderIds();
+        assertTrue(openOrders.isEmpty());
+        assertTrue(openOrders.isEmpty());
+        // add a non-open report
+        ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                                             null,
+                                                                             OrderStatus.Filled);
+        assertFalse(report1.getOrderStatus().isCancellable());
+        manager.add(report1);
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return !orderIds.isEmpty();
+            }
+        });
+        
+        ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                                             null,
+                                                                             OrderStatus.PartiallyFilled);
+        assertTrue(report2.getOrderStatus().isCancellable());
+        manager.add(report2);
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return !openOrders.isEmpty();
+            }
+        });
+        assertEquals(1,
+                     openOrders.size());
+        assertEquals(report2,
+                     openOrders.get(report2.getOrderID()));
+        new ExpectedFailure<UnsupportedOperationException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                openOrders.clear();
+            }
+        };
+        new ExpectedFailure<UnsupportedOperationException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                openOrders.put(new OrderID("orderID"),
+                               OrderHistoryManagerTest.generateExecutionReport("orderID",
+                                                                               null,
+                                                                               OrderStatus.PartiallyFilled));
+            }
+        };
+        new ExpectedFailure<UnsupportedOperationException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                openOrders.keySet().iterator().remove();
+            }
+        };
+    }
+    /**
+     * Tests that {@link OrderHistoryManager#getReportHistoryFor(OrderID)} is populated when the initial value is empty.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testSubsequentPopulation()
+            throws Exception
+    {
+        OrderHistoryManager orderManager = new OrderHistoryManager();
+        OrderID orderID = new OrderID("myorder-" + System.nanoTime());
+        Deque<ReportBase> reportHistory = orderManager.getReportHistoryFor(orderID);
+        assertTrue(reportHistory.isEmpty());
+        ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport(orderID.getValue(),
+                                                                             null,
+                                                                             OrderStatus.New);
+        orderManager.add(report1);
+        assertEquals(1,
+                     reportHistory.size());
+        assertEquals(report1,
+                     reportHistory.getFirst());
+    }
+    /**
      * Verifies that the given <code>OrderHistoryManager</code> contains the given <code>ReportBase</code> objects.
      * 
      * <p>The <code>ReportBase</code> values are assumed to be in the order they are expected to appear.
@@ -498,6 +604,11 @@ public class OrderHistoryManagerTest
             throws Exception
     {
         assertNotNull(inManager.toString());
+        assertNotNull(inManager.display());
+        if(SLF4JLoggerProxy.isDebugEnabled(OrderHistoryManagerTest.class)) {
+            SLF4JLoggerProxy.debug(OrderHistoryManagerTest.class,
+                                   inManager.display());
+        }
         for(Map.Entry<OrderID,ReportBase> entry : inExpectedReports.entries()) {
             Collection<ReportBase> expectedEntryReports = inExpectedReports.get(entry.getKey());
             Collection<ReportBase> actualEntryReports = inManager.getReportHistoryFor(entry.getKey());
@@ -511,6 +622,21 @@ public class OrderHistoryManagerTest
                              actualIterator.next());
             }
         }
+        Set<ReportBase> expectedOpenOrders = new HashSet<ReportBase>();
+        Set<OrderID> expectedOpenOrderIds = new HashSet<OrderID>();
+        Set<OrderID> allActualOrders = inManager.getOrderIds();
+        for(OrderID orderID : allActualOrders) {
+            ReportBase latestReport = inManager.getLatestReportFor(orderID);
+            if(latestReport.getOrderStatus().isCancellable()) {
+                expectedOpenOrders.add(latestReport);
+                expectedOpenOrderIds.add(latestReport.getOrderID());
+            }
+        }
+        Map<OrderID,ExecutionReport> actualOpenOrders = inManager.getOpenOrders();
+        CollectionAssert.assertArrayPermutation(expectedOpenOrders.toArray(new ReportBase[expectedOpenOrders.size()]),
+                                                actualOpenOrders.values().toArray(new ReportBase[actualOpenOrders.size()]));
+        CollectionAssert.assertArrayPermutation(expectedOpenOrderIds.toArray(new OrderID[expectedOpenOrderIds.size()]),
+                                                actualOpenOrders.keySet().toArray(new OrderID[actualOpenOrders.size()]));
     }
     /**
      * Generates an <code>ExecutionReport</code> for the given <code>OrderID</code> value and <code>OrderStatus</code>.
@@ -583,6 +709,17 @@ public class OrderHistoryManagerTest
         msg.getHeader().setField(new TargetCompID("target"));
         msg.getHeader().setField(new SendingTime(new Date()));
         msg.setField(new ExecID(String.valueOf(counter.incrementAndGet())));
+        if(orderType != null) {
+            switch(orderType) {
+                case Market:
+                    msg.setField(new OrdType(OrdType.MARKET));
+                    break;
+                case Limit:
+                    msg.setField(new OrdType(OrdType.LIMIT));
+                    msg.setField(new Price(EventTestBase.generateDecimalValue()));
+                    break;
+            }
+        }
         msg.setField(new Symbol("colin-rocks"));
         msg.setField(new Side(Side.BUY));
         msg.setField(new OrdStatus(inOrderStatus.getFIXValue()));
@@ -644,4 +781,8 @@ public class OrderHistoryManagerTest
      * user to guarantee unique ids
      */
     private static final AtomicInteger counter = new AtomicInteger(0);
+    /**
+     * value used in generated execution reports 
+     */
+    public static OrderType orderType = OrderType.Market;
 }

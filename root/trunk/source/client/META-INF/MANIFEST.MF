@@ -13,7 +13,8 @@ Export-Package: org.marketcetera.client,
  org.marketcetera.client.config,
  org.marketcetera.client.instruments,
  org.marketcetera.client.jms,
- org.marketcetera.client.users
+ org.marketcetera.client.users,
+ org.marketcetera.client.utils
 Import-Package: org.hamcrest;resolution:=optional,
  org.junit;resolution:=optional,
  junit.framework;resolution:=optional
