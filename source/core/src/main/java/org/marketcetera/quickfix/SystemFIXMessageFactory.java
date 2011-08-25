@@ -74,6 +74,7 @@ public class SystemFIXMessageFactory extends FIXMessageFactory {
         tmp.addAll(Arrays.asList(
                 ClOrdID.FIELD,
                 Account.FIELD,
+                Text.FIELD,
                 OrdType.FIELD,
                 Price.FIELD,
                 OrderQty.FIELD,
@@ -117,6 +118,7 @@ public class SystemFIXMessageFactory extends FIXMessageFactory {
                 ClOrdID.FIELD,
                 quickfix.field.OrderID.FIELD,
                 Account.FIELD,
+                Text.FIELD,
                 OrigClOrdID.FIELD,
                 OrderQty.FIELD,
                 quickfix.field.Side.FIELD,
@@ -129,6 +131,7 @@ public class SystemFIXMessageFactory extends FIXMessageFactory {
                 ClOrdID.FIELD,
                 quickfix.field.OrderID.FIELD,
                 Account.FIELD,
+                Text.FIELD,
                 OrdType.FIELD,
                 OrigClOrdID.FIELD,
                 Price.FIELD,

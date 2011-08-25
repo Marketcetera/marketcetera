@@ -48,6 +48,7 @@ class FactoryImpl extends Factory {
             order.setQuantity(inLatestReport.getOrderQuantity());
             order.setSide(inLatestReport.getSide());
             order.setInstrument(inLatestReport.getInstrument());
+            order.setText(inLatestReport.getText());
             addCustomFieldsFromReport(inLatestReport, order, SystemFIXMessageFactory.EXECUTION_REPORT_FIELDS);
 
             // set this manually after the customFields are copied, so that we take the OrigClOrdId from the report itself,
@@ -73,6 +74,7 @@ class FactoryImpl extends Factory {
             order.setTimeInForce(inLatestReport.getTimeInForce());
             order.setOrderCapacity(inLatestReport.getOrderCapacity());
             order.setPositionEffect(inLatestReport.getPositionEffect());
+            order.setText(inLatestReport.getText());
             addCustomFieldsFromReport(inLatestReport, order, SystemFIXMessageFactory.CANCEL_REPLACE_EXCLUSION_FIELDS);
 
             // set this manually after the customFields are copied, so that we take the OrigClOrdId from the report itself,
@@ -187,6 +189,7 @@ class FactoryImpl extends Factory {
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));
         order.setOrderCapacity(FIXUtil.getOrderCapacity(inMessage));
         order.setPositionEffect(FIXUtil.getPositionEffect(inMessage));
+        order.setText(FIXUtil.getText(inMessage));
         assignOrderID(order);
         return order;
     }
@@ -210,6 +213,7 @@ class FactoryImpl extends Factory {
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
         order.setInstrument(FIXUtil.getInstrument(inMessage));
+        order.setText(FIXUtil.getText(inMessage));
         assignOrderID(order);
         return order;
     }
@@ -239,6 +243,7 @@ class FactoryImpl extends Factory {
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));
         order.setOrderCapacity(FIXUtil.getOrderCapacity(inMessage));
         order.setPositionEffect(FIXUtil.getPositionEffect(inMessage));
+        order.setText(FIXUtil.getText(inMessage));
         assignOrderID(order);
         return order;
     }

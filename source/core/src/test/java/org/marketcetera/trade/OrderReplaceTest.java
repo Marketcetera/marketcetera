@@ -69,12 +69,13 @@ public class OrderReplaceTest extends TypesTestBase {
         BigDecimal lastPrice = new BigDecimal("23.43");
         Instrument instrument = new Equity("IBM");
         String account = "what?";
+        String text = "shaddup";
         OrderType orderType = OrderType.Limit;
         TimeInForce fillOrKill = TimeInForce.FillOrKill;
         BrokerID cID = new BrokerID("iam");
         //Create an exec report.
         report = createExecReport(orderID, side, orderQty, price,
-                lastPrice, instrument, account, null, orderType, fillOrKill,
+                lastPrice, instrument, account, text, orderType, fillOrKill,
                 destOrderID, OrderCapacity.Agency, PositionEffect.Open);
         //Create the order from the report.
         order = sFactory.createOrderReplace(
@@ -83,7 +84,7 @@ public class OrderReplaceTest extends TypesTestBase {
         assertOrderReplace(order, NOT_NULL, new OrderID(orderID),
                 destOrderID, OrderType.Limit, side,
                 orderQty, price,
-                instrument, instrument.getSecurityType(), fillOrKill, account, null,
+                instrument, instrument.getSecurityType(), fillOrKill, account, text,
                 cID, PositionEffect.Open, OrderCapacity.Agency, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -95,7 +96,7 @@ public class OrderReplaceTest extends TypesTestBase {
         //Test a replace for a partial fill
         //Create an exec report.
         report = createExecReport(orderID, side, orderQty, price,
-                lastPrice, instrument, account, null, orderType, fillOrKill,
+                lastPrice, instrument, account, text, orderType, fillOrKill,
                 destOrderID, OrderCapacity.Agency, PositionEffect.Open);
         report.setDecimal(AvgPx.FIELD, new BigDecimal("23.2"));
         report.setDecimal(CumQty.FIELD, new BigDecimal("10"));
@@ -109,7 +110,7 @@ public class OrderReplaceTest extends TypesTestBase {
         assertOrderReplace(order, NOT_NULL, new OrderID(orderID),
                 destOrderID, OrderType.Limit, side,
                 orderQty, price,
-                instrument, instrument.getSecurityType(), fillOrKill, account, null,
+                instrument, instrument.getSecurityType(), fillOrKill, account, text,
                 cID, PositionEffect.Open, OrderCapacity.Agency, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -169,16 +170,17 @@ public class OrderReplaceTest extends TypesTestBase {
         SecurityType securityType = SecurityType.CommonStock;
         Instrument instrument = new Equity("IBM");
         String account = "nonplus";
+        String text = "prominus";
         PositionEffect positionEffect = PositionEffect.Close;
         msg = factory.newCancelReplaceFromMessage(createExecReport(
                 orderID.getValue(), Side.Buy, qty, new BigDecimal("45.67"), price, instrument,
-                account, null, OrderType.Limit, TimeInForce.AtTheClose,
+                account, text, OrderType.Limit, TimeInForce.AtTheClose,
                 destOrderID, OrderCapacity.Individual, positionEffect));
         order = sFactory.createOrderReplace(msg, brokerID);
         assertOrderReplace(order, expectedOrderID, orderID, destOrderID,
                 OrderType.Limit, Side.Buy, qty,
                 msg.getField(new Price()).getValue(), instrument, securityType,
-                TimeInForce.AtTheClose, account, null, brokerID, positionEffect,
+                TimeInForce.AtTheClose, account, text, brokerID, positionEffect,
                 OrderCapacity.Individual, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -191,12 +193,12 @@ public class OrderReplaceTest extends TypesTestBase {
         OrderCapacity orderCapacity = OrderCapacity.Proprietary;
         msg = factory.newCancelReplaceFromMessage(createExecReport(
                 orderID.getValue(), side, qty, new BigDecimal("45.67"), null, instrument,
-                account, null, orderType, tif,
+                account, text, orderType, tif,
                 destOrderID, orderCapacity, positionEffect));
         order = sFactory.createOrderReplace(msg, null);
         assertOrderReplace(order, expectedOrderID, orderID, destOrderID,
                 orderType, side, qty, msg.getField(new Price()).getValue(),
-                instrument, securityType, tif, account, null, null, positionEffect,
+                instrument, securityType, tif, account, text, null, positionEffect,
                 orderCapacity, null);
         //Verify toString() doesn't fail
         order.toString();
@@ -233,7 +235,7 @@ public class OrderReplaceTest extends TypesTestBase {
         BigDecimal expectedPrice = msg.getField(new Price()).getValue();
         assertOrderReplace(order, expectedOrderID, orderID, destOrderID,
                 orderType, side, qty, expectedPrice, instrument, securityType,
-                tif, account, null, brokerID, positionEffect, orderCapacity,
+                tif, account, text, brokerID, positionEffect, orderCapacity,
                 expectedMap);
     }
 

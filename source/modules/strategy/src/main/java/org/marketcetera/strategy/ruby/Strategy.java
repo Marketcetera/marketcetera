@@ -32,9 +32,7 @@ import quickfix.Message;
 public class Strategy
         extends AbstractRunningStrategy
 {
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.IStrategy#onAsk(org.marketcetera.event.AskEvent)
      */
     @Override
@@ -42,9 +40,7 @@ public class Strategy
     {
         on_ask(inAsk);
     }
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.IStrategy#onBid(org.marketcetera.event.BidEvent)
      */
     @Override
@@ -68,9 +64,7 @@ public class Strategy
     {
         on_dividend(inDividend);
     }
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.IStrategy#onCallback()
      */
     @Override
@@ -78,9 +72,7 @@ public class Strategy
     {
         on_callback(inData);
     }
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.IStrategy#onExecutionReport(org.marketcetera.event.ExecutionReport)
      */
     @Override
@@ -96,9 +88,7 @@ public class Strategy
     {
         on_cancel_reject(inCancel);
     }
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.IStrategy#onTrade(org.marketcetera.event.TradeEvent)
      */
     @Override
@@ -106,9 +96,7 @@ public class Strategy
     {
         on_trade(inTrade);
     }
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.AbstractStrategy#onOther(java.lang.Object)
      */
     @Override
@@ -486,14 +474,13 @@ public class Strategy
     /**
      * Submits a request to cancel the <code>OrderSingle</code> with the given <code>OrderID</code>.
      * 
-     * <p>The order must have been submitted by this strategy during this session or this call will
-     * have no effect.
-     *
-     * @param inOrderID an <code>OrderID</code> value
-     * @param inSendOrder a <code>boolean</code> value indicating whether the <code>OrderCancel</code> should be submitted or just returned to the caller.  If <code>false</code>,
-     *   it is the caller's responsibility to submit the <code>OrderReplace</code> with {@link #send(Object)}.
-     * @return an <code>OrderCancel</code> value containing the cancel order or <code>null</code> if
-     *   the <code>OrderCancel</code> could not be constructed
+     * <p>The order must currently be open or this operation will fail. Note that the strategy's concept of
+     * open orders is based on its report history origin date as {@link #getReportHistoryOriginDate() specified}.
+     * 
+     * @param inOrderID an <code>OrderID</code> value containing the ID of the open order to cancel
+     * @param inSendOrder a <code>boolean</code> value indicating whether the <code>OrderCancel</code> should be submitted or just returned to the caller
+     *   If <code>false</code>, it is the caller's responsibility to submit the <code>OrderCancel</code> with {@link #send(Object)}.
+     * @return an <code>OrderCancel</code> value containing the cancel order or <code>null</code> if the <code>OrderCancel</code> could not be constructed
      */
     public final OrderCancel cancel_order(OrderID inOrderID,
                                           boolean inSendOrder)
@@ -502,11 +489,14 @@ public class Strategy
                            inSendOrder);
     }
     /**
-     * Submits a cancel-replace order for the given <code>OrderID</code> with the given <code>Order</code>. 
-     *
-     * <p>The order must have been submitted by this strategy during this session or this call will
-     * have no effect.  If <code>inSendOrder</code> is <code>false</code>, it is the caller's responsibility to submit the <code>OrderReplace</code>.
-     *
+     * Submits a cancel-replace order for the given <code>OrderID</code> with
+     * the given <code>Order</code>.
+     * 
+     * <p>The order must be open or this call will have no effect.
+     * 
+     * <p>If <code>inSendOrder</code> is <code>false</code>, it is the caller's responsibility
+     * to submit the <code>OrderReplace</code>.
+     * 
      * @param inOrderID an <code>OrderID</code> value containing the order to cancel
      * @param inNewOrder an <code>OrderSingle</code> value containing the order with which to replace the existing order
      * @param inSendOrder a <code>boolean</code> value indicating whether the <code>OrderReplace</code> should be submitted or just returned to the caller.  If <code>false</code>,
@@ -522,15 +512,68 @@ public class Strategy
                              inSendOrder);
     }
     /**
-     * Submits cancel requests for all <code>OrderSingle</code> objects created during this session.
+     * Submits cancel requests for all <code>OrderSingle</code> open orders owned by the strategy's owner.
      * 
-     * <p>This method will make a best-effort attempt to cancel all orders.  If an attempt to cancel one order
-     * fails, that order will be skipped and the others will still be attempted in their turn.
-     * @return an <code>int</code> value containing the number of orders to cancel
+     * <p> This method will make a best-effort attempt to cancel all orders. If an
+     * attempt to cancel one order fails, that order will be skipped and the
+     * others will still be attempted in their turn.
+     * 
+     * @return an <code>int</code> value containing the number of orders for which cancels were submitted
      */
     public final int cancel_all_orders()
     {
         return cancelAllOrders();
+    }
+    /**
+     * Gets the <code>OrderStatus</code> for the given <code>OrderID</code>.
+     * 
+     * <p>The given <code>OrderID</code> may be any part of the order chain. For example, if an order is replaced,
+     * either the original <code>OrderID</code> or the current <code>OrderID</code> will return the same value,
+     * although only the current <code>OrderID</code> is open.
+     *
+     * @param inOrderID an <code>OrderID</code> value or <code>null</code> if the given order cannot be found
+     * @return an <code>OrderStatus</code> value
+     */
+    public final OrderStatus get_order_status(OrderID inOrderID)
+    {
+        return getOrderStatus(inOrderID);
+    }
+    /**
+     * Gets the collection of open orders represented by the most recent <code>ExecutionReport</code>.
+     *
+     * @return a <code>Collection&lt;ExecutionReport&gt;</code> value
+     */
+    public final Collection<ExecutionReport> get_open_orders()
+    {
+        return getOpenOrders();
+    }
+    /**
+     * Returns the list of open order IDs created during this session in the order they
+     * were submitted.
+     * 
+     * <p>Returns all order IDs regardless of their state.
+     * 
+     * @return a <code>Set&lt;OrderID&gt;</code> value
+     */
+    public final Set<OrderID> get_submitted_order_ids()
+    {
+        return getSubmittedOrderIDs();
+    }
+    /**
+     * Returns the list of <code>OrderID</code> values for open orders created in this
+     * session in the order they were submitted.
+     *
+     * <p>Returns IDs of open orders only.  Orders that were canceled, replaced, filled, or
+     * otherwise are no longer open will not be returned.  For orders submitted
+     * via {@link AbstractRunningStrategy#cancelReplace(OrderID, OrderSingle, boolean)},
+     * the ID of the {@link OrderReplace} value sent to the broker is returned, not the 
+     * {@link OrderSingle} value used to create the <code>OrderReplace</code>.
+     *
+     * @return a <code>Set&lt;OrderID&gt;</code> value
+     */
+    public final Set<OrderID> get_open_order_ids()
+    {
+        return getOpenOrderIDs();
     }
     /**
      * Initiates a data flow request.
