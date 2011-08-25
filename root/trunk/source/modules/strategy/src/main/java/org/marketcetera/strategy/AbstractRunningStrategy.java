@@ -144,7 +144,7 @@ public abstract class AbstractRunningStrategy
      * 
      * @return a <code>Set&lt;OrderID&gt;</code> value
      */
-    final Set<OrderID> getSubmittedOrderIDs()
+    protected final Set<OrderID> getSubmittedOrderIDs()
     {
         return Collections.unmodifiableSet(submittedOrderIDs);
     }

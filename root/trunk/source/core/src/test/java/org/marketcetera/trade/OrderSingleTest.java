@@ -88,9 +88,10 @@ public class OrderSingleTest extends TypesTestBase {
                 TimeInForce.AtTheClose.getFIXValue(), account);
         msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.INDIVIDUAL));
         msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
+        msg.setField(new quickfix.field.Text("text"));
         order = sFactory.createOrderSingle(msg, brokerID);
         assertOrderValues(order, brokerID, securityType);
-        assertOrderBaseValues(order, expectedOrderID, account, null, null, qty, Side.Buy, instrument);
+        assertOrderBaseValues(order, expectedOrderID, account, "text", null, qty, Side.Buy, instrument);
         OrderCapacity orderCapacity = OrderCapacity.Individual;
         PositionEffect positionEffect = PositionEffect.Close;
         assertNROrderValues(order, OrderType.Limit, price,
@@ -102,7 +103,7 @@ public class OrderSingleTest extends TypesTestBase {
         //verify the clone
         assertOrderSingle(order, expectedOrderID, Side.Buy, qty, price,
                 TimeInForce.AtTheClose, OrderType.Limit, instrument, securityType,
-                account, null, orderCapacity, positionEffect, brokerID, null);
+                account, "text", orderCapacity, positionEffect, brokerID, null);
 
         //A market order with all fields set.
         Side side = Side.Sell;
