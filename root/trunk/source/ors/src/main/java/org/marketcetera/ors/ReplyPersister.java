@@ -3,15 +3,12 @@ package org.marketcetera.ors;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportSavedListener;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
-import quickfix.field.OrdStatus;
 import quickfix.field.OrigClOrdID;
 
 /**
@@ -111,6 +108,9 @@ public class ReplyPersister
     {
         if (!(msg instanceof ReportBase)) {
             return;
+        }
+        if(msg instanceof ExecutionReport) {
+            ReportCache.INSTANCE.cache((ExecutionReport)msg);
         }
         try {
             getHistoryServices().save((ReportBase)msg);

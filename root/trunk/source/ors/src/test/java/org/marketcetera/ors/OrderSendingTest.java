@@ -164,7 +164,7 @@ public class OrderSendingTest
                                new BigDecimal("0"),
                                new BigDecimal("1"),
                                new BigDecimal("1"),
-                               null,
+                               OrderType.Limit,
                                Side.Sell,
                                instrument,
                                null,
