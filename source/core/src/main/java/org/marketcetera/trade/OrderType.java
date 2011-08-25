@@ -35,7 +35,7 @@ public enum OrderType {
      *
      * @return the FIX char value for this instance.
      */
-    char getFIXValue() {
+    public char getFIXValue() {
         return mFIXValue;
     }
 

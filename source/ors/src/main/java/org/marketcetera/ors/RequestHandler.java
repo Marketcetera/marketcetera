@@ -3,6 +3,7 @@ package org.marketcetera.ors;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.concurrent.Callable;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
@@ -21,44 +22,16 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.FIXConverter;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.Order;
-import org.marketcetera.trade.OrderBase;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.TradeMessage;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
-import quickfix.ConfigError;
-import quickfix.DataDictionary;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.SessionNotFound;
-import quickfix.field.AvgPx;
-import quickfix.field.BusinessRejectReason;
-import quickfix.field.CumQty;
-import quickfix.field.CxlRejResponseTo;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.LastPx;
-import quickfix.field.LastShares;
-import quickfix.field.MsgSeqNum;
-import quickfix.field.MsgType;
-import quickfix.field.OrdStatus;
+
+import quickfix.*;
+import quickfix.field.*;
 import quickfix.field.OrderID;
-import quickfix.field.SenderCompID;
-import quickfix.field.SendingTime;
-import quickfix.field.TargetCompID;
-import quickfix.field.Text;
 
 /**
  * A handler for incoming trade requests (orders).
@@ -359,14 +332,11 @@ public class RequestHandler
      * @throws FieldNotFound Thrown if there is a QuickFIX/J problem.
      */
 
-    private Message createExecutionReport
-        (Broker b,
-         Message qMsg)
-        throws CoreException,
-               FieldNotFound
+    private Message createExecutionReport(Broker b,
+                                          Message qMsg)
+            throws CoreException, FieldNotFound
     {
         // Choose status that matches that of the incoming message.
-
         char ordStatus;
         String orderID;
         if (FIXMessageUtil.isOrderSingle(qMsg)) {
@@ -387,13 +357,18 @@ public class RequestHandler
         } else {
             return null;
         }
-
         // Create execution report.
-
         FIXMessageFactory messageFactory = getBestMsgFactory(b);
         Message qMsgReply= messageFactory.newExecutionReportEmpty();
         String msgType = MsgType.EXECUTION_REPORT;
         DataDictionary dict=getBestDataDictionary(b);
+        String clOrderId = null;
+        if(qMsg.isSetField(OrigClOrdID.FIELD)) {
+            OrigClOrdID clOrdId = new OrigClOrdID();
+            qMsg.getField(clOrdId);
+            clOrderId = clOrdId.getValue();
+        }
+        ExecutionReport latestMessage = ReportCache.INSTANCE.getLatestReportFor(clOrderId);
         if(dict.isMsgField(msgType,OrderID.FIELD)) {
             qMsgReply.setField(new OrderID(orderID));
         }
@@ -403,27 +378,89 @@ public class RequestHandler
         if(dict.isMsgField(msgType,OrdStatus.FIELD)) {
             qMsgReply.setField(new OrdStatus(ordStatus));
         }
-        if(dict.isMsgField(msgType,LastShares.FIELD)) {
-            qMsgReply.setField(new LastShares(BigDecimal.ZERO));
+        if(dict.isMsgField(msgType,
+                           LastShares.FIELD)) {
+            if(latestMessage != null &&
+               latestMessage.getLastQuantity() != null) {
+                LastShares lastShares = new LastShares(latestMessage.getLastQuantity());
+                qMsgReply.setField(lastShares);
+            } else {
+                qMsgReply.setField(new LastShares(BigDecimal.ZERO));
+            }
         }
-        if(dict.isMsgField(msgType,LastPx.FIELD)) {
-            qMsgReply.setField(new LastPx(BigDecimal.ZERO));
+        if(dict.isMsgField(msgType,
+                           LastPx.FIELD)) {
+            if(latestMessage != null &&
+               latestMessage.getLastPrice() != null) {
+                LastPx lastPx = new LastPx(latestMessage.getLastPrice());
+                qMsgReply.setField(lastPx);
+            } else {
+                qMsgReply.setField(new LastPx(BigDecimal.ZERO));
+            }
         }
-        if(dict.isMsgField(msgType,CumQty.FIELD)) {
-            qMsgReply.setField(new CumQty(BigDecimal.ZERO));
+        if(dict.isMsgField(msgType,
+                           CumQty.FIELD)) {
+            if(latestMessage != null &&
+               latestMessage.getCumulativeQuantity() != null) {
+                CumQty cumQty = new CumQty(latestMessage.getCumulativeQuantity());
+                qMsgReply.setField(cumQty);
+            } else {
+                qMsgReply.setField(new CumQty(BigDecimal.ZERO));
+            }
         }
-        if(dict.isMsgField(msgType,AvgPx.FIELD)) {
-            qMsgReply.setField(new AvgPx(BigDecimal.ZERO));
+        if(dict.isMsgField(msgType,
+                           AvgPx.FIELD)) {
+            if(latestMessage != null &&
+               latestMessage.getAveragePrice() != null) {
+                AvgPx price = new AvgPx(latestMessage.getAveragePrice());
+                qMsgReply.setField(price);
+            } else {
+                qMsgReply.setField(new AvgPx(BigDecimal.ZERO));
+            }
         }
-
+        if(dict.isMsgField(msgType,
+                           LeavesQty.FIELD)) {
+            if(latestMessage != null &&
+               latestMessage.getLeavesQuantity() != null) {
+                LeavesQty leavesQty = new LeavesQty(latestMessage.getLeavesQuantity());
+                qMsgReply.setField(leavesQty);
+            } else {
+                qMsgReply.setField(new LeavesQty(BigDecimal.ZERO));
+            }
+        }
+        if(dict.isMsgField(msgType,
+                           OrdType.FIELD)) {
+            if(latestMessage != null &&
+               latestMessage.getOrderType() != null) {
+                OrdType ordType = new OrdType(latestMessage.getOrderType().getFIXValue());
+                qMsgReply.setField(ordType);
+            }
+        }
+        if(dict.isMsgField(msgType,
+                           Price.FIELD)) {
+            if(latestMessage != null &&
+               latestMessage.getPrice() != null) {
+                Price price = new Price(latestMessage.getPrice());
+                qMsgReply.setField(price);
+            } else {
+                qMsgReply.setField(new Price(BigDecimal.ZERO));
+            }
+        }
+        if(dict.isMsgField(msgType,
+                           OrderID.FIELD)) {
+            if(latestMessage != null &&
+               latestMessage.getBrokerOrderID() != null) {
+                OrderID brokerOrderID = new OrderID(latestMessage.getBrokerOrderID());
+                qMsgReply.setField(brokerOrderID);
+            }
+        }
         // Add all the fields of the incoming message.
-
-        FIXMessageUtil.fillFieldsFromExistingMessage
-            (qMsgReply,qMsg,getBestDataDictionary(b),false);
+        FIXMessageUtil.fillFieldsFromExistingMessage(qMsgReply,
+                                                     qMsg,
+                                                     getBestDataDictionary(b),
+                                                     false);
         messageFactory.getMsgAugmentor().executionReportAugment(qMsgReply);
-
         // Add required header/trailer fields.
-
         addRequiredFields(qMsgReply);
         return qMsgReply;
     }
@@ -435,10 +472,6 @@ public class RequestHandler
     public void receiveMessage
         (OrderEnvelope msgEnv)
     {
-        ThreadedMetric.begin
-            ((msgEnv.getOrder() instanceof OrderBase)
-             ?((OrderBase)msgEnv.getOrder()).getOrderID()
-             :null);
         Messages.RH_RECEIVED_MESSAGE.info(this,msgEnv);
         Order msg=null;
         UserID actorID=null;
@@ -450,13 +483,11 @@ public class RequestHandler
         boolean responseExpected=false;
         OrderInfo orderInfo=null;
         try {
-
             // Reject null message envelopes.
-
             if (msgEnv==null) {
                 throw new I18NException(Messages.RH_NULL_MESSAGE_ENVELOPE);
             }
-
+            ThreadedMetric.begin((msgEnv.getOrder() instanceof OrderBase) ? ((OrderBase)msgEnv.getOrder()).getOrderID() : null);
             // Reject null messages.
 
             msg=msgEnv.getOrder();
