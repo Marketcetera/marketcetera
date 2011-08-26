@@ -2,6 +2,8 @@ package org.marketcetera.event.beans;
 
 import static org.marketcetera.event.Messages.VALIDATION_NULL_INSTRUMENT;
 
+import java.io.Serializable;
+
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.FutureEvent;
@@ -21,6 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public class FutureBean
+        implements Serializable
 {
     /**
      * Creates a shallow copy of the given <code>FutureBean</code>.
