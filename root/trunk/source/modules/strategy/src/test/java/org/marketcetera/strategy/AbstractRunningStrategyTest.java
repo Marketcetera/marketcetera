@@ -34,7 +34,7 @@ import quickfix.Message;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.1.4
  */
 public class AbstractRunningStrategyTest
 {
@@ -550,7 +550,7 @@ public class AbstractRunningStrategyTest
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     private class MockStrategy
             implements Strategy
@@ -651,7 +651,7 @@ public class AbstractRunningStrategyTest
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     private class MockServicesProvider
             implements ServicesProvider
@@ -938,7 +938,7 @@ public class AbstractRunningStrategyTest
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     private class MockRunningStrategy
             extends AbstractRunningStrategy

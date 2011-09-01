@@ -1026,7 +1026,7 @@ public class StrategyTestBase
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     private enum ReportSendingTimeComparator
             implements Comparator<ReportBase>

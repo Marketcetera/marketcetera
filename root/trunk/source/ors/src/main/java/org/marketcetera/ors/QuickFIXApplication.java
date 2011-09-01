@@ -349,7 +349,7 @@ public class QuickFIXApplication
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     @ClassVersion("$Id$")
     private enum MessageType
@@ -362,7 +362,7 @@ public class QuickFIXApplication
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     @ClassVersion("$Id$")
     private static class MessagePackage
@@ -467,7 +467,7 @@ public class QuickFIXApplication
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     @ClassVersion("$Id$")
     private class MessageProcessor
