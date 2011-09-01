@@ -21,7 +21,7 @@ import org.marketcetera.trade.*;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.1.4
  */
 public class MockClient
         implements Client
@@ -408,7 +408,7 @@ public class MockClient
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     public static class MockClientFactory
             implements ClientFactory
@@ -428,7 +428,7 @@ public class MockClient
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     private enum ReportSendingTimeComparator
             implements Comparator<ReportBase>

@@ -25,7 +25,7 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.1.4
  */
 @ThreadSafe
 @ClassVersion("$Id$")
@@ -388,7 +388,7 @@ public class OrderHistoryManager
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.1.4
      */
     @NotThreadSafe
     @ClassVersion("$Id$")

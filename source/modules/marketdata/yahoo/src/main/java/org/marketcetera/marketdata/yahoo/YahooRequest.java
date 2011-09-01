@@ -28,7 +28,7 @@ import com.google.common.collect.Multimap;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.1.4
  */
 @ThreadSafe
 @ClassVersion("$Id$")
