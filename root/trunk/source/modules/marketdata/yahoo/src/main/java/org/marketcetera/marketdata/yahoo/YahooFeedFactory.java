@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * Constructs {@link YahooFeed} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -45,11 +45,11 @@ public class YahooFeedFactory
         return PROVIDER_NAME;
     }
     /**
-     * 
+     * feed instance
      */
     private static YahooFeed feed;
     /**
-     * 
+     * name of the yahoo provider
      */
-    static final String PROVIDER_NAME = "yahoo";
+    static final String PROVIDER_NAME = "yahoo"; //$NON-NLS-1$
 }

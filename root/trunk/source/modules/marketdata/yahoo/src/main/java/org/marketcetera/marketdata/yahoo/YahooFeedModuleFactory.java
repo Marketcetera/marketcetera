@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * Constructs {@link YahooFeedModule} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -23,7 +23,6 @@ public class YahooFeedModuleFactory
 
     /**
      * Create a new YahooFeedModuleFactory instance.
-     *
      */
     public YahooFeedModuleFactory()
     {
@@ -46,15 +45,15 @@ public class YahooFeedModuleFactory
         }
     }
     /**
-     * 
+     * provider name of the module 
      */
     public static final String IDENTIFIER = YahooFeedFactory.PROVIDER_NAME;
     /**
-     * 
+     * provider URN of the yahoo module
      */
     public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:" + IDENTIFIER);  //$NON-NLS-1$
     /**
-     * 
+     * instance URN of the yahoo module
      */
     public static final ModuleURN INSTANCE_URN = new ModuleURN(PROVIDER_URN,
                                                                "single");  //$NON-NLS-1$

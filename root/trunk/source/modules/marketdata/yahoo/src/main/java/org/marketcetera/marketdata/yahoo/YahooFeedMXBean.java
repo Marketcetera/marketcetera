@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * Provides an MX interface for the Yahoo market data feed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -52,17 +52,14 @@ public interface YahooFeedMXBean
     public void setRefreshInterval(@DisplayName("The rate at which to refresh market data")
                                    String inRefreshInterval);
     /**
-     * 
+     * Gets the number of requests that have been made.
      *
-     *
-     * @return
+     * @return a <code>long</code> value
      */
     @DisplayName("The number of requests made since start or reset")
     public long getRequestCounter();
     /**
-     * 
-     *
-     *
+     * Resets the request counter.
      */
     @DisplayName("Resets the request counter")
     public void resetRequestCounter();

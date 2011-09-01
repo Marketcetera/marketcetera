@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * Provides a <code>YahooClient</code> implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -45,7 +45,7 @@ class YahooClientImpl
             return;
         }
         thread = new Thread(this,
-                            "Yahoo Client Thread");
+                            "Yahoo Client Thread"); //$NON-NLS-1$
         thread.start();
         isRunning.set(true);
     }
@@ -81,7 +81,7 @@ class YahooClientImpl
                 synchronized(requests) {
                     for(YahooRequest request : requests) {
                         feedServices.doDataReceived(request.getHandle(),
-                                                    getResponse(request));
+                                                    submit(request));
                     }
                 }
                 Thread.sleep(feedServices.getRefreshInterval());
@@ -157,31 +157,30 @@ class YahooClientImpl
     /**
      * Create a new YahooClient instance.
      *
-     * @param inFeedServices
+     * @param inFeedServices a <code>YahooFeedServices</code> value
      */
     YahooClientImpl(YahooFeedServices inFeedServices)
     {
         feedServices = inFeedServices;
     }
     /**
-     * 
+     * Submits the given request and returns the response from Yahoo.
      *
-     *
-     * @param inRequest
-     * @return
-     * @throws IOException
+     * @param inRequest a <code>YahooRequest</code> value
+     * @return a <code>String</code> value
+     * @throws IOException if an error occurs submitting the request
      */
-    private String getResponse(YahooRequest inRequest)
+    private String submit(YahooRequest inRequest)
             throws IOException
     {
         StringBuilder response = new StringBuilder();
         String query = inRequest.getQuery();
         response.append(query).append(QUERY_SEPARATOR);
         // Create a URL for the desired page
-        URL url = new URL(credentials.getURL() + query.replaceAll(",",
-                                                                  ""));
+        URL url = new URL(credentials.getURL() + query.replaceAll(",", //$NON-NLS-1$
+                                                                  "")); //$NON-NLS-1$
         SLF4JLoggerProxy.trace(YahooClientImpl.class,
-                               "Submitting request for {}",
+                               "Submitting request for {}", //$NON-NLS-1$
                                url);
         // Read all the text returned by the server
         BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -195,32 +194,32 @@ class YahooClientImpl
         return response.toString();
     }
     /**
-     * 
+     * sentinel value used to separate query tokens
      */
-    static final String QUERY_SEPARATOR = "&&/&&";
+    static final String QUERY_SEPARATOR = "&&/&&"; //$NON-NLS-1$
     /**
-     * 
+     * Yahoo feed services value
      */
     private final YahooFeedServices feedServices;
     /**
-     * 
+     * thread used for submitting requests
      */
     private volatile Thread thread;
     /**
-     * 
+     * credentials used for the Yahoo connection
      */
     private volatile YahooFeedCredentials credentials;
     /**
-     * 
+     * indicates if the client is running
      */
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     /**
-     * 
+     * the active Yahoo requests
      */
     @GuardedBy("requests")
     private final Set<YahooRequest> requests = new HashSet<YahooRequest>();
     /**
-     * 
+     * the counter used to keep track of the number of requests
      */
     private final AtomicLong requestCounter = new AtomicLong(0);
 }

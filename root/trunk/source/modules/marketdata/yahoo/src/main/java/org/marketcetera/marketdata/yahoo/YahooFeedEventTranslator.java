@@ -18,8 +18,8 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
- *
+ * Translates events from the Yahoo market data supplier.
+ * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
@@ -39,33 +39,31 @@ public enum YahooFeedEventTranslator
             throws CoreException
     {
         if(!(inData instanceof String)) {
-            throw new UnsupportedOperationException("Unexpected data type: " + inData.getClass().getName());
+            throw new UnsupportedOperationException(Messages.UNEXPECTED_DATA.getText(inData.getClass().getName()));
         }
         String data = (String)inData;
         SLF4JLoggerProxy.debug(YahooFeedEventTranslator.class,
-                               "Received [{}] {}",
+                               "Received [{}] {}", //$NON-NLS-1$
                                inHandle,
                                data);
         // split the data into the query description string and the data itself
         String[] components = data.split(YahooClientImpl.QUERY_SEPARATOR);
         // the query consists of a header and a field description, split that again to get just the field description
         String header = components[0];
-        String completeFields = header.split("&f=")[1];
+        String completeFields = header.split("&f=")[1]; //$NON-NLS-1$
         // split the fields using the delimiter
-        String[] fields = completeFields.split(",");
+        // TODO there's a problem here - Yahoo idiotically returns values with thousands-separators of ','. this means that
+        //  a quote for a stock that is worth more than $1000/share will be returned as $1,000, which confuses this line
+        String[] fields = completeFields.split(","); //$NON-NLS-1$
         // the values are also comma-delimited
         String completeValues = components[1];
-        String[] values = completeValues.split(",");
-        if(fields.length != values.length) {
-            throw new RuntimeException(Arrays.toString(fields) + " does not match " + Arrays.toString(values));
-        }
+        String[] values = completeValues.split(","); //$NON-NLS-1$
         Map<YahooField,String> matchedData = new HashMap<YahooField,String>();
         for(int i=0;i<fields.length;i++) {
             YahooField field = YahooField.getFieldFor(fields[i]);
             if(field == null) {
-                SLF4JLoggerProxy.error(YahooFeedEventTranslator.class,
-                                       "Unknown field code {}",
-                                       fields[i]);
+                Messages.UNEXPECTED_FIELD_CODE.error(YahooFeedEventTranslator.class,
+                                                     fields[i]);
             } else {
                 matchedData.put(field,
                                 values[i]);
@@ -91,7 +89,7 @@ public enum YahooFeedEventTranslator
     private List<Event> getEventsFrom(Map<YahooField,String> inData)
     {
         SLF4JLoggerProxy.debug(YahooFeedEventTranslator.class,
-                               "Getting events from {}",
+                               "Getting events from {}", //$NON-NLS-1$
                                inData);
         String errorIndication = inData.get(YahooField.ERROR_INDICATION);
         if(!errorIndication.equals(NO_ERROR)) {
@@ -136,59 +134,43 @@ public enum YahooFeedEventTranslator
         return events;
     }
     /**
-     * 
+     * Determines if the given event should be sent to the client or not. 
      *
      * <p>This method requires external synchronization.
      *
-     * @param inEvent
-     * @return
+     * @param inEvent an <code>Event</code> value
+     * @return a <code>boolean</code> value
      */
     private boolean shouldSendEvent(Event inEvent)
     {
-        System.out.println("==========");
-        System.out.println("Start");
-        System.out.println(eventCache);
-        System.out.println(comparators);
-        System.out.println("==========");
-        try {
-            System.out.println("Candidate event(" + inEvent.getClass() + "): " + inEvent);
-            Event cachedEvent = eventCache.get(inEvent.getClass());
-            if(cachedEvent == null) {
-                eventCache.put(inEvent.getClass(),
-                               inEvent);
-                System.out.println("No event in cache, returning new event");
-                return true;
-            }
-            // compare just the salient parts (e.g., the timestamp will be different, but that won't matter to us)
-            Comparator<Event> comparator = getComparator(inEvent);
-            if(comparator == null) {
-                throw new UnsupportedOperationException("No comparator for " + inEvent.getClass());
-            }
-            if(comparator.compare(cachedEvent,
-                                  inEvent) == 0) {
-                // event compares to the cachedEvent, do nothing
-                System.out.println("Matches cached event, do nothing");
-                return false;
-            }
-            // event is not the same as the cachedEvent
+        Event cachedEvent = eventCache.get(inEvent.getClass());
+        if(cachedEvent == null) {
             eventCache.put(inEvent.getClass(),
                            inEvent);
-            System.out.println("Does not match cached event, returning new event");
             return true;
-        } finally {
-            System.out.println("==========");
-            System.out.println("Finish");
-            System.out.println(eventCache);
-            System.out.println(comparators);
-            System.out.println("==========");
         }
+        // compare just the salient parts (e.g., the timestamp will be different, but that won't matter to us)
+        Comparator<Event> comparator = getComparator(inEvent);
+        if(comparator == null) {
+            throw new UnsupportedOperationException(Messages.NO_COMPARATOR.getText(inEvent.getClass()));
+        }
+        if(comparator.compare(cachedEvent,
+                              inEvent) == 0) {
+            // event compares to the cachedEvent, do nothing
+            return false;
+        }
+        // event is not the same as the cachedEvent
+        eventCache.put(inEvent.getClass(),
+                       inEvent);
+        return true;
     }
     /**
+     * Gets the comparator to use for the given <code>Event</code>.
      * 
      * <p>This method requires external synchronization.
      *
-     * @param inEvent
-     * @return
+     * @param inEvent an <code>Event</code> value
+     * @return a <code>Comparator&lt;Event&gt;</code> value
      */
     private Comparator<Event> getComparator(Event inEvent)
     {
@@ -218,11 +200,10 @@ public enum YahooFeedEventTranslator
         return comparator;
     }
     /**
-     * 
+     * Determines if a <code>DividendEvent</code> can be found in the given data.
      *
-     *
-     * @param inData
-     * @param inEvents
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
+     * @param inEvents a <code>List&lt;Event&gt;</code> value
      */
     private void lookForDividendEvent(Map<YahooField,String> inData,
                                       List<Event> inEvents)
@@ -230,15 +211,15 @@ public enum YahooFeedEventTranslator
         // TODO
     }
     /**
-     * 
+     * Determines if a <code>QuoteEvent</code> can be found in the given data. 
      *
-     *
-     * @param <T>
-     * @param inData
-     * @param inEvents
-     * @param inPrice
-     * @param inSize
-     * @param inBuilder
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
+     * @param inEvents a <code>List&lt;Event&gt;</code> value
+     * @param inPrice a <code>String</code> value
+     * @param inSize a <code>String</code> value
+     * @param inSymbol a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inBuilder a <code>QuoteEventBuilder&lt;T&gt;</code> value
      */
     private <T extends QuoteEvent> void lookForQuoteEvent(Map<YahooField,String> inData,
                                                           List<Event> inEvents,
@@ -282,11 +263,10 @@ public enum YahooFeedEventTranslator
         inEvents.add(inBuilder.create());
     }
     /**
-     * 
+     * Looks for bid events in the given data. 
      *
-     *
-     * @param inData
-     * @param inEvents
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
+     * @param inEvents a <code>List&lt;Event&gt;</code> value
      */
     private void lookForBidEvent(Map<YahooField,String> inData,
                                  List<Event> inEvents)
@@ -312,11 +292,10 @@ public enum YahooFeedEventTranslator
                           builder);
     }
     /**
-     * 
+     * Looks for ask events in the given data. 
      *
-     *
-     * @param inData
-     * @param inEvents
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
+     * @param inEvents a <code>List&lt;Event&gt;</code> value
      */
     private void lookForAskEvent(Map<YahooField,String> inData,
                                  List<Event> inEvents)
@@ -342,11 +321,10 @@ public enum YahooFeedEventTranslator
                           builder);
     }
     /**
-     * 
+     * Looks for trade events in the given data. 
      *
-     *
-     * @param inData
-     * @param inEvents
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
+     * @param inEvents a <code>List&lt;Event&gt;</code> value
      */
     private void lookForTradeEvent(Map<YahooField,String> inData,
                                    List<Event> inEvents)
@@ -383,7 +361,7 @@ public enum YahooFeedEventTranslator
                .withProviderSymbol(symbol)
                .withSize(size)
                .withTimestamp(date)
-               .withTradeDate(String.format("%s %s",
+               .withTradeDate(String.format("%s %s", //$NON-NLS-1$
                                             tradeDate,
                                             tradeTime));
         addFutureAttributes(builder,
@@ -395,13 +373,11 @@ public enum YahooFeedEventTranslator
         inEvents.add(builder.create());
     }
     /**
-     * 
+     * Adds future attributes to the given trade events, if applicable.
      *
-     *
-     * @param <T>
-     * @param inBuilder
-     * @param inInstrument
-     * @param inData
+     * @param inBuilder a <code>TradeEventBuilder&lt;T&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
      */
     private <T extends TradeEvent> void addFutureAttributes(TradeEventBuilder<T> inBuilder,
                                                             Instrument inInstrument,
@@ -410,13 +386,11 @@ public enum YahooFeedEventTranslator
         // TODO
     }
     /**
-     * 
+     * Adds option attributes to the given trade events, if applicable.
      *
-     *
-     * @param <T>
-     * @param inBuilder
-     * @param inInstrument
-     * @param inData
+     * @param inBuilder a <code>TradeEventBuilder&lt;T&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
      */
     private <T extends TradeEvent> void addOptionAttributes(TradeEventBuilder<T> inBuilder,
                                                             Instrument inInstrument,
@@ -425,13 +399,11 @@ public enum YahooFeedEventTranslator
         // TODO
     }
     /**
-     * 
+     * Adds future attributes to the given quote events, if applicable.
      *
-     *
-     * @param <T>
-     * @param inBuilder
-     * @param inInstrument
-     * @param inData
+     * @param inBuilder a <code>TradeEventBuilder&lt;T&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
      */
     private <T extends QuoteEvent> void addFutureAttributes(QuoteEventBuilder<T> inBuilder,
                                                             Instrument inInstrument,
@@ -440,13 +412,11 @@ public enum YahooFeedEventTranslator
         // TODO
     }
     /**
-     * 
+     * Adds option attributes to the given quote events, if applicable.
      *
-     *
-     * @param <T>
-     * @param inBuilder
-     * @param inInstrument
-     * @param inData
+     * @param inBuilder a <code>TradeEventBuilder&lt;T&gt;</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inData a <code>Map&lt;YahooField,String&gt;</code> value
      */
     private <T extends QuoteEvent> void addOptionAttributes(QuoteEventBuilder<T> inBuilder,
                                                             Instrument inInstrument,
@@ -455,11 +425,10 @@ public enum YahooFeedEventTranslator
         // TODO
     }
     /**
-     * 
+     * Gets an <code>Instrument</code> for the given symbol.
      *
-     *
-     * @param inSymbol
-     * @return
+     * @param inSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value
      */
     private Instrument getInstrumentFrom(String inSymbol)
     {
@@ -467,11 +436,11 @@ public enum YahooFeedEventTranslator
         return new Equity(inSymbol);
     }
     /**
-     * 
+     * MRU cache of events 
      */
     private final Map<Class<? extends Event>,Event> eventCache = new HashMap<Class<? extends Event>,Event>();
     /**
-     * 
+     * comparator used to compare subsequent trade events
      */
     private static final Comparator<Event> TRADE_COMPARATOR = new Comparator<Event>() {
         @Override
@@ -490,7 +459,7 @@ public enum YahooFeedEventTranslator
         }
     };
     /**
-     * 
+     * comparator used to compare subsequent quote events
      */
     private static final Comparator<Event> QUOTE_COMPARATOR = new Comparator<Event>() {
         @Override
@@ -514,15 +483,15 @@ public enum YahooFeedEventTranslator
         }
     };
     /**
-     * 
+     * comparators stored by event type
      */
     private static final Map<Class<? extends Event>,Comparator<Event>> comparators = new HashMap<Class<? extends Event>,Comparator<Event>>();
     /**
-     * 
+     * empty event list
      */
     private static final List<Event> EMPTY_EVENT_LIST = new ArrayList<Event>();
     /**
-     * 
+     * indicates no error
      */
-    private static final String NO_ERROR = "\"N/A\""; 
+    private static final String NO_ERROR = "\"N/A\"";  //$NON-NLS-1$
 }
