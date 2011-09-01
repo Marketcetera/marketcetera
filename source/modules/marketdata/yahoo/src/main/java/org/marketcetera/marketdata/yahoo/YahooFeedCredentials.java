@@ -7,7 +7,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * Credentials for the Yahoo market data feed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -21,7 +21,7 @@ public class YahooFeedCredentials
      * Create a new YahooFeedCredentials instance.
      *
      * @param inURL a <code>String</code> value
-     * @throws FeedException
+     * @throws FeedException if the credentials cannot be constructed
      */
     YahooFeedCredentials(String inURL)
             throws FeedException

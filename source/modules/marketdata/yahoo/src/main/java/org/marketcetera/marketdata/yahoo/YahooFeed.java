@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * Market data feed implementation for the Yahoo market data supplier.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -71,19 +71,16 @@ class YahooFeed
         return refreshInterval;
     }
     /**
-     * 
-     *
-     *
+     * Resets the request counter.
      */
     void resetCounter()
     {
         client.resetRequestcounter();
     }
     /**
-     * 
+     * Gets the current request counter. 
      *
-     *
-     * @return
+     * @return a <code>long</code> value
      */
     long getRequestCounter()
     {
@@ -198,18 +195,17 @@ class YahooFeed
         return YahooFeedMessageTranslator.INSTANCE;
     }
     /**
-     * 
+     * Generates a request handle.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     private String generateHandle()
     {
-        return String.format("yahoo-%s",
+        return String.format("yahoo-%s", //$NON-NLS-1$
                              counter.incrementAndGet());
     }
     /**
-     * 
+     * default interval at which to refresh the market data
      */
     private volatile int refreshInterval = 250;
     /**
@@ -226,11 +222,11 @@ class YahooFeed
     @GuardedBy("requests")
     private final Map<String,YahooRequest> requests = new HashMap<String,YahooRequest>();
     /**
-     * 
+     * counter used to count requests
      */
     private final AtomicLong counter = new AtomicLong(0);
     /**
-     * 
+     * client implementation to use
      */
     private final YahooClient client;
 }

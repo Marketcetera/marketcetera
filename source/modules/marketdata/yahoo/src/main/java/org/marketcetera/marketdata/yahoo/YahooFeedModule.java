@@ -1,15 +1,30 @@
 package org.marketcetera.marketdata.yahoo;
 
+import javax.management.AttributeChangeNotification;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.AbstractMarketDataModule;
+import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Provides access to Yahoo market data.
+ * 
+ * <p>
+ * Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>Data Emitter</td></tr>
+ * <tr><th>Stops data flows</th><td>No</td></tr>
+ * <tr><th>Start Operation</th><td>Starts the feed, logs into it.</td></tr>
+ * <tr><th>Stop Operation</th><td>Stops the data feed.</td></tr>
+ * <tr><th>Management Interface</th><td>{@link AbstractMarketDataModuleMXBean}</td></tr>
+ * <tr><th>MX Notification</th><td>{@link AttributeChangeNotification}
+ * whenever {@link #getFeedStatus()} changes. </td></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -36,7 +51,7 @@ public class YahooFeedModule
     {
         url = StringUtils.trimToNull(inURL);
         Validate.notNull(url,
-                         "URL must be specified");
+                         Messages.MISSING_URL.getText());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.yahoo.YahooFeedMXBean#getRefreshInterval()
@@ -104,7 +119,7 @@ public class YahooFeedModule
     /**
      * the URL at which Yahoo provides the data
      */
-    private volatile String url = "http://finance.yahoo.com/d/quotes.csv";
+    private volatile String url = "http://finance.yahoo.com/d/quotes.csv"; //$NON-NLS-1$
     /**
      * the interval at which to get a new quote
      */

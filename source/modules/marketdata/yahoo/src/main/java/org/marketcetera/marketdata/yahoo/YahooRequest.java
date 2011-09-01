@@ -24,7 +24,7 @@ import com.google.common.collect.Multimap;
 /* $License$ */
 
 /**
- *
+ * Represents a market data request to the Yahoo market data provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -69,8 +69,8 @@ class YahooRequest
     /**
      * Create a new YahooRequest instance.
      *
-     * @param inRequest
-     * @param inSymbol
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inSymbol a <code>String</code> value
      */
     YahooRequest(MarketDataRequest inRequest,
                  String inSymbol)
@@ -98,28 +98,27 @@ class YahooRequest
         handle = inHandle;
     }
     /**
-     * 
+     * Gets the query associated with this request.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     String getQuery()
     {
         StringBuilder query = new StringBuilder();
-        query.append("?s=");
+        query.append("?s="); //$NON-NLS-1$
         query.append(symbol);
         if(request.getExchange() != null) {
             query.append('.').append(request.getExchange());
         }
         // request string now has all the symbols, add the fields according to content type
-        query.append("&f=");
+        query.append("&f="); //$NON-NLS-1$
         // add fields based on content
         for(Content content : request.getContent()) {
             query.append(getFieldsFor(content));
         }
         // add fixed fields (used for every request)
         for(YahooField field : commonFields) {
-            query.append(field.getCode()).append(",");
+            query.append(field.getCode()).append(","); //$NON-NLS-1$
         }
         return query.toString();
     }
@@ -133,11 +132,10 @@ class YahooRequest
         return request;
     }
     /**
-     * 
+     * Gets the fields for the given content. 
      *
-     *
-     * @param inContent
-     * @return
+     * @param inContent a <code>Content</code> value
+     * @return a <code>String</code> value
      */
     private String getFieldsFor(Content inContent)
     {
@@ -155,33 +153,33 @@ class YahooRequest
         }
         StringBuilder builder = new StringBuilder();
         for(YahooField field : fields.get(inContent)) {
-            builder.append(field.getCode()).append(",");
+            builder.append(field.getCode()).append(","); //$NON-NLS-1$
         }
         return builder.toString();
     }
     /**
-     * 
+     * fields in all requests
      */
     private static final List<YahooField> commonFields = Arrays.asList(new YahooField[] { STOCK_EXCHANGE,ERROR_INDICATION,SYMBOL } );
     /**
-     * 
+     * fields by content type
      */
     @GuardedBy("fields")
     private static final Multimap<Content,YahooField> fields = HashMultimap.create();
     /**
-     * 
+     * underlying request
      */
     private final MarketDataRequest request;
     /**
-     * 
+     * symbol of the request
      */
     private final String symbol;
     /**
-     * 
+     * identifier assigned to the request
      */
     private final int id;
     /**
-     * 
+     * handle value corresponding to the request
      */
     private volatile String handle;
     /**

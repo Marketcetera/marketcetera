@@ -24,43 +24,35 @@ interface YahooClient
      */
     boolean login(YahooFeedCredentials inCredentials);
     /**
-     * 
-     *
-     *
+     * Logs out from the Yahoo data source.
      */
     void logout();
     /**
-     * 
+     * Indicates if the connection is currently logged in or not. 
      *
-     *
-     * @return
+     * @return a <code>boolean</code> value
      */
     boolean isLoggedIn();
     /**
-     * 
+     * Executes the given request.
      *
-     *
-     * @param inRequest
+     * @param inRequest a <code>YahooRequest</code> value
      */
     void request(YahooRequest inRequest);
     /**
-     * 
+     * Cancels th given request.
      *
-     *
-     * @param inRequest
+     * @param inRequest a <code>YahooRequest</code> value
      */
     void cancel(YahooRequest inRequest);
     /**
-     * 
+     * Gets the current count of requests. 
      *
-     *
-     * @return
+     * @return a <code>long</code> value
      */
     long getRequestCounter();
     /**
-     * 
-     *
-     *
+     * Resets the count of requests.
      */
     void resetRequestcounter();
 }
