@@ -30,7 +30,7 @@ public interface Messages
     public static final I18NMessage0P CSV_FILE_DNE = new I18NMessage0P(LOGGER, "csv_file_dne"); //$NON-NLS-1$
     public static final I18NMessage1P UNABLE_PARSE_CSV = new I18NMessage1P(LOGGER, "unable_parse_csv"); //$NON-NLS-1$
     public static final I18NMessage1P UNABLE_PARSE_CSV_LINE = new I18NMessage1P(LOGGER, "unable_parse_csv_line"); //$NON-NLS-1$
-    public static final I18NMessage0P END_OF_DATA_REACHED = new I18NMessage0P(LOGGER, "end_of_data_reached"); //$NON-NLS-1$
+    public static final I18NMessage2P END_OF_DATA_REACHED = new I18NMessage2P(LOGGER, "end_of_data_reached"); //$NON-NLS-1$
     public static final I18NMessage1P CANCEL_REQUEST_FAILED_HANDLE_NOT_FOUND = new I18NMessage1P(LOGGER,
                                                                                                  "cancel_request_failed_handle_not_found"); //$NON-NLS-1$
     public static final I18NMessage0P FAILED_TO_START_REQUEST = new I18NMessage0P(LOGGER,

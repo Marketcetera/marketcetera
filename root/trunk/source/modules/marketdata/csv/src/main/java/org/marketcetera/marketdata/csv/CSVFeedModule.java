@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id: CSVFeedModule.java 4348 2009-09-24 02:33:11Z toli $
  */
 @ClassVersion("$Id: CSVFeedModule.java 4348 2009-09-24 02:33:11Z toli $")
-public class CSVFeedModule 
+public class CSVFeedModule
         extends AbstractMarketDataModule<CSVFeedToken,
                                          CSVFeedCredentials>
         implements CSVFeedMXBean
@@ -23,17 +23,17 @@ public class CSVFeedModule
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getReplayRate()
      */
     @Override
-    public double getReplayRate()
+    public String getReplayRate()
     {
-        return replayRate;
+        return String.valueOf(replayRate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setReplayRate(double)
      */
     @Override
-    public void setReplayRate(double inReplayRate)
+    public void setReplayRate(String inReplayRate)
     {
-        replayRate = inReplayRate;
+        replayRate = Double.parseDouble(StringUtils.trimToNull(inReplayRate));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getMarketdataDirectory()
@@ -68,6 +68,22 @@ public class CSVFeedModule
         eventTranslatorClassname = inEventTranslatorClassname;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getReplayEvents()
+     */
+    @Override
+    public String getReplayEvents()
+    {
+        return String.valueOf(replayEvents);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#setReplayEvents(String)
+     */
+    @Override
+    public void setReplayEvents(String inReplayEvents)
+    {
+        replayEvents = Boolean.valueOf(StringUtils.trimToNull(inReplayEvents));
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -95,6 +111,7 @@ public class CSVFeedModule
         throws CoreException
     {
         return CSVFeedCredentials.getInstance(replayRate,
+                                              replayEvents,
                                               marketdataDirectory,
                                               getEventTranslatorClassName());
     }
@@ -110,4 +127,8 @@ public class CSVFeedModule
      * the directory in which to find marketdata
      */
     private volatile String marketdataDirectory;
+    /**
+     * indicates if events should be replayed upon completion
+     */
+    private volatile boolean replayEvents = false;
 }
