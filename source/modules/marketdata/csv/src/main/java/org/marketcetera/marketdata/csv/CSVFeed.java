@@ -5,10 +5,11 @@ import static org.marketcetera.marketdata.AssetClass.FUTURE;
 import static org.marketcetera.marketdata.AssetClass.OPTION;
 import static org.marketcetera.marketdata.Capability.LATEST_TICK;
 import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.csv.Messages.*;
+import static org.marketcetera.marketdata.csv.Messages.CANCEL_REQUEST_FAILED_HANDLE_NOT_FOUND;
+import static org.marketcetera.marketdata.csv.Messages.FAILED_TO_START_REQUEST;
+import static org.marketcetera.marketdata.csv.Messages.REQUEST_FAILED;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -144,24 +145,17 @@ public class CSVFeed
      */
     @Override
     protected final synchronized List<String> doMarketDataRequest(MarketDataRequest inData)
-            throws FeedException
     {
-        try {
-            List<String> handleList = new ArrayList<String>();
-            for(String filename : inData.getSymbols()) {
-                CsvFeedRequest request = new CsvFeedRequest(filename,
-                                                            inData);
-                String handle = request.getHandle();
-                handleList.add(handle);
-                requests.put(handle,
-                             request);
-            }
-            return handleList;
-        } catch (FileNotFoundException e) {
-            CSV_FILE_DNE.error(CSVFeed.class,
-                               e);
-            throw new FeedException(CSV_FILE_DNE);
+        List<String> handleList = new ArrayList<String>();
+        for(String filename : inData.getSymbols()) {
+            CsvFeedRequest request = new CsvFeedRequest(filename,
+                                                        inData);
+            String handle = request.getHandle();
+            handleList.add(handle);
+            requests.put(handle,
+                         request);
         }
+        return handleList;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogin(org.marketcetera.marketdata.AbstractMarketDataFeedCredentials)
@@ -341,15 +335,32 @@ public class CSVFeed
             SLF4JLoggerProxy.debug(CSVFeed.class,
                                    "Beginning request {}", //$NON-NLS-1$
                                    this);
-            long start = System.currentTimeMillis();
-            long count = 0;
             isRunning.set(true);
             try {
+                CSVParser parser = null;
+                long start = System.currentTimeMillis();
+                long count = 0;
                 while(isRunning.get()) {
+                    if(parser == null) {
+                        start = System.currentTimeMillis();
+                        count = 0;
+                        parser = new CSVParser(new FileReader(new File(credentials.getMarketdataDirectory(),
+                                                                       dataFilename)),
+                                              CSVStrategy.EXCEL_STRATEGY);
+                    }
                     String[] line = parser.getLine();
                     if(line == null) {
-                        END_OF_DATA_REACHED.info(CSVFeed.class);
-                        break;
+                        Messages.END_OF_DATA_REACHED.debug(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                                           count,
+                                                           System.currentTimeMillis() - start);
+                        if(credentials.getReplayEvents() &&
+                           isRunning.get()) {
+                            count = 0;
+                            parser = null;
+                            continue;
+                        } else {
+                            break;
+                        }
                     }
                     count += 1;
                     dataReceived(handle,
@@ -358,15 +369,11 @@ public class CSVFeed
                                                        credentials.getReplayRate()));
                 }
             } catch (Exception e) {
-                REQUEST_FAILED.warn(CSVFeed.class,
+                REQUEST_FAILED.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                     e,
                                     this);
             } finally {
                 isRunning.set(false);
-                SLF4JLoggerProxy.debug(CSVFeed.class,
-                                       "Read {} event(s) in {}ms",
-                                       count,
-                                       System.currentTimeMillis()-start);
             }
         }
         /* (non-Javadoc)
@@ -384,16 +391,12 @@ public class CSVFeed
          *
          * @param inDataFilename a <code>String</code> value
          * @param inRequest a <code>MarketDataRequest</code> value
-         * @throws FileNotFoundException if an error occurs
          */
         private CsvFeedRequest(String inDataFilename,
                                MarketDataRequest inRequest)
-                throws FileNotFoundException
         {
-            parser = new CSVParser(new FileReader(new File(credentials.getMarketdataDirectory(),
-                                                           inDataFilename)),
-                                   CSVStrategy.EXCEL_STRATEGY);
             request = inRequest;
+            dataFilename = inDataFilename;
         }
         /**
          * Stops the currently running request as soon as possible. 
@@ -415,9 +418,9 @@ public class CSVFeed
             return handle;
         }
         /**
-         * the CSV file parser
+         * data filename
          */
-        private final CSVParser parser;
+        private final String dataFilename;
         /**
          * the original request
          */

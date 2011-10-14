@@ -83,6 +83,7 @@ public class CSVFeedModuleTest
         });
         CSVFeed feed = CSVFeedFactory.getInstance().getMarketDataFeed();
         feed.doLogin(CSVFeedCredentials.getInstance(0,
+                                                    false,
                                                     DATA_DIR,
                                                     MockCSVFeedEventTranslator.class.getName()));
         MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest();
@@ -121,6 +122,7 @@ public class CSVFeedModuleTest
         });
         CSVFeed feed = CSVFeedFactory.getInstance().getMarketDataFeed();
         feed.doLogin(CSVFeedCredentials.getInstance(0,
+                                                    false,
                                                     DATA_DIR,
                                                     MockCSVFeedEventTranslator.class.getName()));
         DataFlowID dfid = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),

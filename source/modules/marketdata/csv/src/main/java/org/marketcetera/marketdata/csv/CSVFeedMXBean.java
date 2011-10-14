@@ -23,17 +23,17 @@ public interface CSVFeedMXBean
     /**
      * Gets the rate at which data is replayed.
      *
-     * @return a <code>double</code> value
+     * @return a <code>String</code> value
      */
     @DisplayName("The rate at which data is replayed")
-    public double getReplayRate();
+    public String getReplayRate();
     /**
      * Sets the rate at which data is replayed.
      *
-     * @param inReplayRate a <code>double</code> value
+     * @param inReplayRate a <code>String</code> value
      */
     @DisplayName("The rate at which data is replayed")
-    public void setReplayRate(double inReplayRate);
+    public void setReplayRate(String inReplayRate);
     /**
      * Gets the name of the directory in which to find market data.
      *
@@ -62,4 +62,18 @@ public interface CSVFeedMXBean
      */
     @DisplayName("The fully-qualified class name of the CSV event translator to use")
     public void setEventTranslatorClassName(@DisplayName("The fully-qualified class name of the CSV event translator to use")String inEventTranslatorClassname);
+    /**
+     * Gets the replay events value.
+     *
+     * @return a <code>String</code> value
+     */
+    @DisplayName("Indicates if events should be replayed upon completion")
+    public String getReplayEvents();
+    /**
+     * Sets the replay events value.
+     *
+     * @param inReplayEvents a <code>String</code> value
+     */
+    @DisplayName("Indicates if events should be replayed upon completion")
+    public void setReplayEvents(String inReplayEvents);
 }
