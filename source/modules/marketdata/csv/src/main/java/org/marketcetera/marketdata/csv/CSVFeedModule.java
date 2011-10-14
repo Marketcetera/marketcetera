@@ -33,7 +33,7 @@ public class CSVFeedModule
     @Override
     public void setReplayRate(String inReplayRate)
     {
-        replayRate = Double.parseDouble(StringUtils.trimToNull(inReplayRate));
+        replayRate = Long.parseLong(StringUtils.trimToNull(inReplayRate));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.csv.CSVFeedMXBean#getMarketdataDirectory()
@@ -120,9 +120,9 @@ public class CSVFeedModule
      */
     private volatile String eventTranslatorClassname = BasicCSVFeedEventTranslator.class.getName();
     /**
-     * the rate at which to replay data
+     * delay between each event
      */
-    private volatile double replayRate = 1.0;
+    private volatile long replayRate = 1000;
     /**
      * the directory in which to find marketdata
      */

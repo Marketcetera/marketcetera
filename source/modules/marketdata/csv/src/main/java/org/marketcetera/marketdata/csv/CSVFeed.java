@@ -340,6 +340,10 @@ public class CSVFeed
                 CSVParser parser = null;
                 long start = System.currentTimeMillis();
                 long count = 0;
+                long delay = credentials.getReplayRate();
+                if(delay < 0) {
+                    delay = 0;
+                }
                 while(isRunning.get()) {
                     if(parser == null) {
                         start = System.currentTimeMillis();
@@ -361,6 +365,9 @@ public class CSVFeed
                         } else {
                             break;
                         }
+                    }
+                    if(delay != 0) {
+                        Thread.sleep(delay);
                     }
                     count += 1;
                     dataReceived(handle,
