@@ -16,5 +16,4 @@ Eclipse-RegisterBuddy: org.marketcetera.core
 Export-Package: org.marketcetera.strategy,
  org.marketcetera.strategy.java,
  org.marketcetera.strategy.ruby,
- org.marketcetera.strategy.util,
- samples
+ org.marketcetera.strategy.util
