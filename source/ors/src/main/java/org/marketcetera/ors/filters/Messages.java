@@ -59,7 +59,8 @@ public interface Messages
     static final I18NMessage3P MAX_PRICE= 
         new I18NMessage3P(LOGGER,"max_price"); //$NON-NLS-1$
 
-
+    static final I18NMessage0P NON_CONFORMING_FIELD_SPECIFICATION = new I18NMessage0P(LOGGER,
+                                                                                      "non_conforming_field_specification"); //$NON-NLS-1$
     // LEGACY CODE.
 
     static final I18NMessage1P ERROR_UNRECOGNIZED_ROUTE = 
