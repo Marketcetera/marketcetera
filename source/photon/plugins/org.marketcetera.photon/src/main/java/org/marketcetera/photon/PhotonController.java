@@ -190,6 +190,7 @@ public class PhotonController
              * which is an invalid value.
              */
             replace.setBrokerOrderID(null);
+            replace.setPrice(report.getPrice());
             PhotonPlugin.getDefault().showOrderInTicket(replace);
         }
 	}
