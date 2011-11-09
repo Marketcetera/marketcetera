@@ -1,5 +1,8 @@
 package org.marketcetera.marketdata;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.marketcetera.event.*;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -83,6 +86,15 @@ public enum Content
         }
     }
     /**
+     * Indicates if this <code>Content</code> type represents a depth-of-book view.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isDepth()
+    {
+        return depth.contains(this);
+    }
+    /**
      * Gets the appropriate <code>Capability</code> that maps to this <code>Content</code>. 
      *
      * @return a <code>Capability</code> value
@@ -102,4 +114,8 @@ public enum Content
             default : throw new UnsupportedOperationException();
         }
     }
+    /**
+     * content types that represent a depth-of-book view
+     */
+    private static final Set<Content> depth = EnumSet.of(OPEN_BOOK, TOTAL_VIEW, LEVEL_2, BBO10);
 }
