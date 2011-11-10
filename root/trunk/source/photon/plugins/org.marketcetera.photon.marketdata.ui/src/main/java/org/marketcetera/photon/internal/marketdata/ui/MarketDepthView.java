@@ -273,9 +273,8 @@ public class MarketDepthView extends ViewPart {
 	public void setFocus() {
 		mBidsTable.setFocus();
 	}
-
 	/**
-	 * Compares {@link MDQuote} based on ascending price, then descending time.
+	 * Compares {@link MDQuote} based on ascending price, then ascending time.
 	 */
 	@ClassVersion("$Id$")
 	private static class AskComparator implements Comparator<MDQuote> {
@@ -286,15 +285,15 @@ public class MarketDepthView extends ViewPart {
 			// elements
 			assert o1 != null;
 			assert o2 != null;
-			// lower price, higher time comes first
-			return new CompareToBuilder().append(o1.getPrice(), o2.getPrice()).append(o2.getTime(),
-					o1.getTime()).toComparison();
+			// lower price, lower time comes first
+			return new CompareToBuilder().append(o1.getPrice(),
+			                                     o2.getPrice()).append(o1.getTime(),
+			                                                           o2.getTime()).toComparison();
 		}
 
 	}
-
 	/**
-	 * Compares {@link MDQuote} based on descending price, then descending time.
+	 * Compares {@link MDQuote} based on descending price, then ascending time.
 	 */
 	@ClassVersion("$Id$")
 	private static class BidComparator implements Comparator<MDQuote> {
@@ -305,9 +304,10 @@ public class MarketDepthView extends ViewPart {
 			// elements
 			assert o1 != null;
 			assert o2 != null;
-			// higher price, higher time comes first
-			return new CompareToBuilder().append(o2.getPrice(), o1.getPrice()).append(o2.getTime(),
-					o1.getTime()).toComparison();
+			// higher price, lower time comes first
+			return new CompareToBuilder().append(o2.getPrice(),
+			                                     o1.getPrice()).append(o1.getTime(),
+			                                                           o2.getTime()).toComparison();
 		}
 
 	}
