@@ -11,8 +11,6 @@ import static org.marketcetera.marketdata.csv.Messages.REQUEST_FAILED;
 
 import java.io.File;
 import java.io.FileReader;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -209,64 +207,29 @@ public class CSVFeed
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#afterDoExecute(org.marketcetera.marketdata.AbstractMarketDataFeedToken, java.lang.Exception)
      */
-    @SuppressWarnings("unchecked")
     @Override
     protected void afterDoExecute(CSVFeedToken inToken,
+                                  List<String> inHandles,
                                   Exception inException)
     {
         if(inException != null) {
             // this means the request failed, do nothing
             return;
         }
-        // the request succeeded - proceed
-        // this code is not good.  it is bad.  it must be replaced, but changes need to be made to AbstractMarketDataFeed
-        // this can't be done right now.
-        // so, here it goes - to avoid a race condition, we need to delay parsing the file until the parent is ready to receive
-        //  market data.  and we can almost do it with this method.  the problem is we have no way of associating a handle
-        //  with a token.  the parent knows tokens, we know handles.  so, what we're going to do is sneak a peek at the set
-        //  of handles associated with a token.  the parent knows this, but doesn't expose the information.  that's the change
-        //  that needs to be made in the parent
-        Class<?> thisClass = AbstractMarketDataFeed.class;
         try {
-            Class<?> marketDataHandleClass = null;
-            for(Class<?> innerClass : thisClass.getDeclaredClasses()) {
-                if(innerClass.getName().contains("MarketDataHandle")) { //$NON-NLS-1$
-                    marketDataHandleClass = innerClass;
-                }
-            }
-            if(marketDataHandleClass == null) {
-                throw new NullPointerException();
-            } else {
-                Field handleHolderField = thisClass.getDeclaredField("mHandleHolder"); //$NON-NLS-1$
-                handleHolderField.setAccessible(true);
-                Object handleHolder = handleHolderField.get(this);
-                Method getHandlesMethod = handleHolder.getClass().getDeclaredMethod("getHandles", //$NON-NLS-1$
-                                                                                    AbstractMarketDataFeedToken.class);
-                getHandlesMethod.setAccessible(true);
-                List<Object> handles = (List<Object>)getHandlesMethod.invoke(handleHolder,
-                                                                             inToken);
+            for(String actualHandle : inHandles) {
+                CsvFeedRequest request = requests.get(actualHandle);
                 SLF4JLoggerProxy.debug(CSVFeed.class,
-                                       "Found {} for token {}", //$NON-NLS-1$
-                                       handles,
-                                       inToken);
-                for(Object handle : handles) {
-                    // almost there, the handle isn't in quite the right format
-                    Field actualHandleField = handle.getClass().getDeclaredField("mProtoHandle"); //$NON-NLS-1$
-                    actualHandleField.setAccessible(true);
-                    String actualHandle = (String)actualHandleField.get(handle);
-                    CsvFeedRequest request = requests.get(actualHandle);
+                                       "Found request {} for handle {}", //$NON-NLS-1$
+                                       request,
+                                       actualHandle);
+                if(request == null) {
+                    throw new NullPointerException();
+                } else {
                     SLF4JLoggerProxy.debug(CSVFeed.class,
-                                           "Found request {} for handle {}", //$NON-NLS-1$
-                                           request,
-                                           actualHandle);
-                    if(request == null) {
-                        throw new NullPointerException();
-                    } else {
-                        SLF4JLoggerProxy.debug(CSVFeed.class,
-                                               "Submitting {}", //$NON-NLS-1$
-                                               request);
-                        requestExecutor.submit(request);
-                    }
+                                           "Submitting {}", //$NON-NLS-1$
+                                           request);
+                    requestExecutor.submit(request);
                 }
             }
         } catch (Exception e) {
