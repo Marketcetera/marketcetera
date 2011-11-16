@@ -193,6 +193,7 @@ public class MockMarketDataFeed
      */
     @Override
     protected void afterDoExecute(MockMarketDataFeedToken inToken,
+                                  List<String> inHandles,
                                   Exception inException)
     {
         if(getAfterExecuteThrows()) {

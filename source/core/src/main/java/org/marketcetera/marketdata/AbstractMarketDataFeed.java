@@ -431,10 +431,12 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * of the execution.
      * 
      * @param inToken a <code>T</code> value
+     * @param inHandles a <code>List&lt;String&gt;</code> value containing the handles associated with the given token
      * @param inException a <code>Exception</code> value containing the exception thrown
      *   during execution or <code>null</code> if no exception was thrown
      */
-    protected void afterDoExecute(T inToken, 
+    protected void afterDoExecute(T inToken,
+                                  List<String> inHandles,
                                   Exception inException)
     {
     }
@@ -590,7 +592,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      */
     private boolean doExecute(T inToken)
     {
-        Exception thrownException = null;        
+        Exception thrownException = null;
+        List<String> handles = new ArrayList<String>();
         try {
             if(!beforeDoExecute(inToken)) {
                 return false;
@@ -602,7 +605,11 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             // translate the request to an appropriate proprietary format
             D data = xlator.fromDataRequest(request);
             if(request instanceof MarketDataRequest) {
-                processResponse(doMarketDataRequest(data), 
+                List<String> handlesReturned = doMarketDataRequest(data);
+                if(handlesReturned != null) {
+                    handles.addAll(handlesReturned);
+                }
+                processResponse(handles, 
                                 inToken);
                 return true;
             }
@@ -617,7 +624,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                                                                    e);
             return false;
         } finally {
-            afterDoExecute(inToken, 
+            afterDoExecute(inToken,
+                           handles,
                            thrownException);
         }
     }

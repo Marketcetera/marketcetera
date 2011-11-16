@@ -193,8 +193,15 @@ public class AbstractMarketDataFeedTest
                                                                                       new ISubscriber[0]);
         MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(tokenSpec,
                                                                          feed);
-        feed.afterDoExecute(null, null);
-        feed.afterDoExecute(token, null);
+        feed.afterDoExecute(null,
+                            null,
+                            null);
+        feed.afterDoExecute(token,
+                            null,
+                            null);
+        feed.afterDoExecute(token,
+                            new ArrayList<String>(),
+                            null);
     }
     @Test
     public void testSetFeedStatus()
