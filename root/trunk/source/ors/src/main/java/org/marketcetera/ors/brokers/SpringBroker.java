@@ -1,5 +1,10 @@
 package org.marketcetera.ors.brokers;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.marketcetera.ors.config.LogonAction;
+import org.marketcetera.ors.config.LogoutAction;
 import org.marketcetera.ors.filters.MessageModifierManager;
 import org.marketcetera.ors.filters.MessageRouteManager;
 import org.marketcetera.util.except.I18NException;
@@ -32,7 +37,8 @@ public class SpringBroker
     private MessageRouteManager mRoutes;
     private MessageModifierManager mPreSendModifiers;
     private MessageModifierManager mResponseModifiers;
-
+    private Collection<LogonAction> logonActions = new ArrayList<LogonAction>();
+    private Collection<LogoutAction> logoutActions = new ArrayList<LogoutAction>();
 
     // INSTANCE METHODS.
 
@@ -220,9 +226,45 @@ public class SpringBroker
     {
         return mResponseModifiers;
     }
-
+    /**
+     * Get the logonActions value.
+     *
+     * @return a <code>List&lt;LogonAction&gt;</code> value
+     */
+    public Collection<LogonAction> getLogonActions()
+    {
+        return logonActions;
+    }
+    /**
+     * Get the logoutActions value.
+     *
+     * @return a <code>Collection&lt;LogoutAction&gt;</code> value
+     */
+    public Collection<LogoutAction> getLogoutActions()
+    {
+        return logoutActions;
+    }
+    /**
+     * Sets the logoutActions value.
+     *
+     * @param a <code>Collection&lt;LogoutAction&gt;</code> value
+     */
+    public void setLogoutActions(Collection<LogoutAction> inLogoutActions)
+    {
+        logoutActions = inLogoutActions;
+    }
+    /**
+     * Sets the logonActions value.
+     *
+     * @param a <code>Collection&lt;LogonAction&gt;</code> value
+     */
+    public void setLogonActions(Collection<LogonAction> inLogonActions)
+    {
+        logonActions = inLogonActions;
+    }
 
     // InitializingBean.
+
 
     @Override
     public void afterPropertiesSet()

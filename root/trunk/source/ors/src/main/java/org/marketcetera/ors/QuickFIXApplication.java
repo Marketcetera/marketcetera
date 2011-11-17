@@ -1,11 +1,14 @@
 package org.marketcetera.ors;
 
+import java.util.Collection;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
+import org.marketcetera.ors.config.LogonAction;
+import org.marketcetera.ors.config.LogoutAction;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.info.*;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -238,7 +241,18 @@ public class QuickFIXApplication
     {
         Broker b=getBrokers().getBroker(session);
         updateStatus(b,true);
-        // fromAdmin() will forward an execution report following the
+        if(b.getSpringBroker().getLogonActions() != null) {
+            for(LogonAction action : b.getSpringBroker().getLogonActions()) {
+                try {
+                    action.onLogon(b,
+                                   getSender());
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(QuickFIXApplication.class,
+                                          e);
+                }
+            }
+        }
+         // fromAdmin() will forward an execution report following the
         // logon; there is no need to send a message from here.
     }
 
@@ -248,6 +262,18 @@ public class QuickFIXApplication
     {
         Broker b=getBrokers().getBroker(session);
         updateStatus(b,false);
+        Collection<LogoutAction> logoutActions = b.getSpringBroker().getLogoutActions();
+        if(logoutActions != null) {
+            for(LogoutAction action : logoutActions) {
+                try {
+                    action.onLogout(b,
+                                    getSender());
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(QuickFIXApplication.class,
+                                          e);
+                }
+            }
+        }
     }
 
     @Override
