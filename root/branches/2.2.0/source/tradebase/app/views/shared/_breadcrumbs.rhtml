@@ -1,0 +1,15 @@
+  <ul id="breadcrumbs">
+    <li><%= link_to top_level, { :controller=>top_level_controller }, :title=>top_level %>
+<% if(!action_name.blank?) -%>
+    <span>&gt;</span></li>
+    <li class="active"><%= action_name -%>
+<% end -%>
+    </li>
+  </ul>
+  <div class="clear"></div>
+  <% if(!flash[:error].nil?) -%>
+      <div id="error_notice"><%= flash[:error] %></div>
+  <% end -%>
+  <% if(!flash[:notice].nil?) -%>
+      <div id="notice"><%= flash[:notice] %></div>
+  <% end -%>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Messaging configuration: broker.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - Sets Java system properties.
+    -->
+
+  <bean
+   id="metc_system_properties_setter"
+   class="org.marketcetera.util.spring.SystemPropertiesSetter">
+    <property
+     name="map">
+      <map>
+        <!--
+          - The name of the JAAS configuration file containing the JAAS
+          - 'ors-amq-domain'.
+          -->
+        <entry
+         key="java.security.auth.login.config"
+         value="${java.security.auth.login.config}"/>
+      </map>
+    </property>
+  </bean>
+
+  <!--
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/broker/BrokerService.html' for a complete list of options.
+    -->
+
+  <bean
+   id="metc_jms_broker"
+   class="org.apache.activemq.broker.BrokerService"
+   init-method="start"
+   destroy-method="stop"
+   depends-on="metc_system_properties_setter,metc_ers">
+    <property
+     name="brokerName"
+     value="ORS_BROKER"/>
+    <property
+     name="persistent"
+     value="false"/>
+    <property
+     name="useShutdownHook"
+     value="false"/>
+    <property
+     name="useJmx"
+     value="true"/>
+    <property
+     name="destinationPolicy">
+      <bean
+       class="org.apache.activemq.broker.region.policy.PolicyMap">
+        <property
+         name="policyEntries">
+          <list>
+            <bean
+             class="org.apache.activemq.broker.region.policy.PolicyEntry">
+              <property
+               name="queue"
+               value="*"/>
+              <property
+               name="producerFlowControl"
+               value="false"/>
+            </bean>
+            <bean
+             class="org.apache.activemq.broker.region.policy.PolicyEntry">
+              <property
+               name="topic"
+               value="*"/>
+              <property
+               name="producerFlowControl"
+               value="false"/>
+            </bean>
+          </list>
+        </property>
+      </bean>
+    </property>    
+    <property
+     name="transportConnectorURIs">
+      <list>
+        <value>${metc.jms.broker.url}</value>
+        <value>stomp://${metc.ws.host}:61613</value>
+      </list>
+    </property>
+    <property
+     name="plugins">
+      <list>
+        <bean
+         class="org.apache.activemq.security.JaasAuthenticationPlugin">
+          <property
+           name="configuration"
+           value="ors-amq-domain"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+</beans>
