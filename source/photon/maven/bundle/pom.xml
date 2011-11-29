@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>photon-maven</artifactId>
-    <version>2.1.4</version>
+    <version>2.2.0</version>
   </parent>
   <artifactId>photon-bundle</artifactId>
   <packaging>bundle</packaging>
@@ -95,8 +95,8 @@
       <artifactId>tools</artifactId>
     </dependency>
     <dependency>
-      <groupId>joda-primatives</groupId>
-      <artifactId>joda-primatives</artifactId>
+      <groupId>org.joda</groupId>
+      <artifactId>joda-primitives</artifactId>
     </dependency>
     <dependency>
       <groupId>jparsec</groupId>
