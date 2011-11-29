@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>source</artifactId>
-    <version>2.1.4</version>
+    <version>2.2.0</version>
   </parent>
   <artifactId>core</artifactId>
   <packaging>jar</packaging>
@@ -31,10 +31,6 @@
     <dependency>
       <groupId>${mvn.public.package}</groupId>
       <artifactId>util</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
     </dependency>
     <dependency>
       <groupId>org.skife.kasparov</groupId>
@@ -75,6 +71,10 @@
     <dependency>
       <groupId>org.nocrala</groupId>
       <artifactId>tools</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
     </dependency>
 
     <!-- Testing. -->
