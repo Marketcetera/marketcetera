@@ -33,6 +33,7 @@
     <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
     <mvn.xjc.version>2.5.0</mvn.xjc.version>
     <mvn.eclipse.version>3.5</mvn.eclipse.version>
+    <mvn.photon.target>/home/colin/marketcetera/photon-target-220</mvn.photon.target>
   </properties>
 
   <dependencyManagement>
@@ -173,7 +174,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>[1.6.4]</version>
+        <version>[1.5.10]</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -328,7 +329,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>[1.6.4]</version>
+        <version>[1.5.10]</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -574,7 +575,7 @@
         <!-- mvn dependency:* -->
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.0</version>
         </plugin>
 
         <!-- mvn eclipse:* -->
