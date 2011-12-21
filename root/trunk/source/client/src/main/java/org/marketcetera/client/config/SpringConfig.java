@@ -1,10 +1,17 @@
 package org.marketcetera.client.config;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.jms.ConnectionFactory;
+
+import org.marketcetera.client.OrderModifier;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
+
+import java.util.Collections;
 
 /**
  * The application's Spring-based configuration. A global singleton
@@ -33,6 +40,7 @@ public class SpringConfig
 
     private ConnectionFactory mIncomingCF;
     private ConnectionFactory mOutgoingCF;
+    private final Collection<OrderModifier> orderModifiers = new ArrayList<OrderModifier>();
 
 
     // CONSTRUCTORS.
@@ -53,15 +61,18 @@ public class SpringConfig
      *
      * @param incomingCF The connection factory for incoming connections.
      * @param outgoingCF The connection factory for outgoing connections.
+     * @param inOrderModifiers a <code>Collection&lt;OrderModifier&gt;</code> value or <code>null</code>
      */
-
-    public SpringConfig
-        (ConnectionFactory incomingCF,
-         ConnectionFactory outgoingCF)
+    public SpringConfig(ConnectionFactory incomingCF,
+                        ConnectionFactory outgoingCF,
+                        Collection<OrderModifier> inOrderModifiers)
         throws I18NException
     {
         setIncomingConnectionFactory(incomingCF);
         setOutgoingConnectionFactory(outgoingCF);
+        if(inOrderModifiers != null) {
+            orderModifiers.addAll(inOrderModifiers);
+        }
         afterPropertiesSet();
         setSingleton(this);
     }
@@ -146,8 +157,29 @@ public class SpringConfig
     {
         return mOutgoingCF;
     }
-
-
+    /**
+     * Get the orderModifiers value.
+     *
+     * @return a <code>Collection&lt;OrderModifier&gt;</code> value
+     */
+    public Collection<OrderModifier> getOrderModifiers()
+    {
+        return Collections.unmodifiableCollection(orderModifiers);
+    }
+    /**
+     * Sets the orderModifiers value.
+     *
+     * @param a <code>Collection&lt;OrderModifier&gt;</code> value
+     */
+    public void setOrderModifiers(Collection<OrderModifier> inOrderModifiers)
+    {
+        synchronized(orderModifiers) {
+            orderModifiers.clear();
+            if(inOrderModifiers != null) {
+                orderModifiers.addAll(inOrderModifiers);
+            }
+        }
+    }
     // InitializingBean.
 
     @Override
