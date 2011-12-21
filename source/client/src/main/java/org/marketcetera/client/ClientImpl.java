@@ -1,5 +1,12 @@
 package org.marketcetera.client;
 
+import java.beans.ExceptionListener;
+import java.math.BigDecimal;
+import java.util.*;
+
+import javax.jms.JMSException;
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
@@ -9,12 +16,16 @@ import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.except.ExceptUtils;
-import org.marketcetera.util.log.*;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage4P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.ws.stateful.ClientContext;
@@ -22,18 +33,13 @@ import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.RemoteProxyException;
+import org.springframework.beans.BeansException;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
-
-import java.util.*;
-import java.math.BigDecimal;
-import java.beans.ExceptionListener;
-
-import javax.jms.JMSException;
-import javax.xml.bind.JAXBException;
 
 /* $License$ */
 /**
@@ -785,11 +791,14 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                     ? null
                     : String.valueOf(mParameters.getPassword()));
             parentCtx.refresh();
-
-            ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
-                    new String[]{
-                            "client.xml"},  //$NON-NLS-1$
-                    parentCtx);
+            AbstractApplicationContext ctx;
+            try {
+                ctx = new FileSystemXmlApplicationContext(new String[] {"file:"+ApplicationBase.CONF_DIR+"client.xml"}, //$NON-NLS-1$
+                                                          parentCtx);
+            } catch (BeansException e) {
+                ctx = new ClassPathXmlApplicationContext(new String[] {"client.xml"},  //$NON-NLS-1$
+                                                         parentCtx);
+            }
             ctx.registerShutdownHook();
             ctx.start();
             setContext(ctx);
@@ -866,8 +875,13 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                 throw new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER);
             }
             failIfDisconnected();
-            mToServer.convertAndSend
-                (new OrderEnvelope(inOrder,getSessionId()));
+            SpringConfig cfg = SpringConfig.getSingleton();
+            Collection<OrderModifier> orderModifiers = cfg.getOrderModifiers();
+            for(OrderModifier modifier : orderModifiers) {
+                modifier.modify(inOrder);
+            }
+            mToServer.convertAndSend(new OrderEnvelope(inOrder,
+                                                       getSessionId()));
         } catch (Exception e) {
             ConnectionException exception;
             exception = new ConnectionException(e, new I18NBoundMessage1P(

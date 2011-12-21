@@ -15,6 +15,7 @@ Export-Package: org.marketcetera.client,
  org.marketcetera.client.jms,
  org.marketcetera.client.users,
  org.marketcetera.client.utils
-Import-Package: org.hamcrest;resolution:=optional,
+Import-Package: junit.framework;resolution:=optional,
+ org.hamcrest;resolution:=optional,
  org.junit;resolution:=optional,
- junit.framework;resolution:=optional
+ org.mockito
