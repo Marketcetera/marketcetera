@@ -27,7 +27,7 @@ Export-Package: org.marketcetera.core,
  org.marketcetera.quickfix.messagefactory,
  org.marketcetera.trade
 Import-Package: junit.framework;resolution:=optional,
- org.hamcrest,
+ org.hamcrest;resolution:=optional,
  org.junit,
  org.mockito
 Bundle-ClassPath: core-2.1.2-tests.jar

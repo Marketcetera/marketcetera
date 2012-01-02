@@ -18,4 +18,4 @@ Export-Package: org.marketcetera.client,
 Import-Package: junit.framework;resolution:=optional,
  org.hamcrest;resolution:=optional,
  org.junit;resolution:=optional,
- org.mockito
+ org.mockito;resolution:=optional
