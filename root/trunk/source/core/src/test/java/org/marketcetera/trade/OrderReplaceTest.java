@@ -220,7 +220,7 @@ public class OrderReplaceTest extends TypesTestBase {
         msg.setField(new AllocQty(bigDecimal));
         expectedMap.put(String.valueOf(AllocQty.FIELD), bigDecimal.toString());
 
-        msg.setField(new SettlType(charValue));
+        msg.setField(new SettlType(String.valueOf(charValue)));
         expectedMap.put(String.valueOf(SettlType.FIELD),
                 String.valueOf(charValue));
 

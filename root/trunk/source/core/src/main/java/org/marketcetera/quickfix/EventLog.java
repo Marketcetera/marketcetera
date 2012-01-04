@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 import quickfix.LogUtil;
 import quickfix.SessionID;
 import quickfix.SystemTime;
@@ -61,7 +63,15 @@ public class EventLog implements quickfix.Log {
             LogUtil.logThrowable(sessionID, Messages.ERROR_WRITING_EVENT_TO_LOG.getText(), e);
         }
     }
-
+    /* (non-Javadoc)
+     * @see quickfix.Log#onErrorEvent(java.lang.String)
+     */
+    @Override
+    public void onErrorEvent(String inMessage)
+    {
+        SLF4JLoggerProxy.warn(EventLog.class,
+                              inMessage);
+    }
     private void writeTimeStamp(OutputStream out) throws IOException {
         String formattedTime = UtcTimestampConverter.convert(SystemTime.getDate(), includeMillis); //i18n_datetime
         out.write(formattedTime.getBytes());
@@ -106,6 +116,4 @@ public class EventLog implements quickfix.Log {
                 + (pathPrefix.endsWith(File.separator) ? "" : File.separator) //$NON-NLS-1$
                 + pathSuffix;
     }
-
-
 }
