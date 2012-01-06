@@ -32,12 +32,13 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
     </dependency>
-    
-    <!-- Runtime. -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
+      <scope>compile</scope>
     </dependency>
+    
+    <!-- Runtime. -->
     <dependency>
       <groupId>org.apache.mina</groupId>
       <artifactId>mina-core</artifactId>
