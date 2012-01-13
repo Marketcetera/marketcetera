@@ -49,7 +49,13 @@ public class MockClient
     public void sendOrder(OrderSingle inOrderSingle)
             throws ConnectionException, OrderValidationException
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(sendOrderSingleConnectionException != null) {
+            throw sendOrderSingleConnectionException;
+        }
+        if(sendOrderSingleValidationException != null) {
+            throw sendOrderSingleValidationException;
+        }
+        orders.add(inOrderSingle);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderReplace)
@@ -58,7 +64,13 @@ public class MockClient
     public void sendOrder(OrderReplace inOrderReplace)
             throws ConnectionException, OrderValidationException
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(sendOrderReplaceConnectionException != null) {
+            throw sendOrderReplaceConnectionException;
+        }
+        if(sendOrderReplaceValidationException != null) {
+            throw sendOrderReplaceValidationException;
+        }
+        replaces.add(inOrderReplace);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderCancel)
@@ -67,7 +79,13 @@ public class MockClient
     public void sendOrder(OrderCancel inOrderCancel)
             throws ConnectionException, OrderValidationException
     {
-        throw new UnsupportedOperationException(); // TODO
+        if(sendOrderCancelConnectionException != null) {
+            throw sendOrderCancelConnectionException;
+        }
+        if(sendOrderCancelValidationException != null) {
+            throw sendOrderCancelValidationException;
+        }
+        cancels.add(inOrderCancel);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#sendOrderRaw(org.marketcetera.trade.FIXOrder)
@@ -369,6 +387,33 @@ public class MockClient
         return reports;
     }
     /**
+     * Gets the orders collected via {@link #sendOrder(OrderSingle)}.
+     *
+     * @return a <code>Collection&lt;OrderSingle&gt;</code> value
+     */
+    public Collection<OrderSingle> getOrders()
+    {
+        return orders;
+    }
+    /**
+     * Get the replaces value.
+     *
+     * @return a <code>Collection&lt;OrderReplace&gt;</code> value
+     */
+    public Collection<OrderReplace> getReplaces()
+    {
+        return replaces;
+    }
+    /**
+     * Get the cancels value.
+     *
+     * @return a <code>Collection&lt;OrderCancel&gt;</code> value
+     */
+    public Collection<OrderCancel> getCancels()
+    {
+        return cancels;
+    }
+    /**
      * Sends the given <code>ReportBase</code> to registered report listeners.
      *
      * @param inReport a <code>ReportBase</code> value
@@ -395,13 +440,76 @@ public class MockClient
         getReportsSinceThrows = inException;
     }
     /**
+     * Sets the exception to be thrown during {@link #sendOrder(OrderSingle)}.
+     *
+     * @param inException a <code>ConnectionException</code> value or <code>null</code>
+     */
+    public void setSendOrderSingleException(ConnectionException inException)
+    {
+        sendOrderSingleConnectionException = inException;
+    }
+    /**
+     * Sets the sendOrderReplaceConnectionException value.
+     *
+     * @param a <code>ConnectionException</code> value
+     */
+    public void setSendOrderReplaceConnectionException(ConnectionException inSendOrderReplaceConnectionException)
+    {
+        sendOrderReplaceConnectionException = inSendOrderReplaceConnectionException;
+    }
+    /**
+     * Sets the sendOrderCancelConnectionException value.
+     *
+     * @param a <code>ConnectionException</code> value
+     */
+    public void setSendOrderCancelConnectionException(ConnectionException inSendOrderCancelConnectionException)
+    {
+        sendOrderCancelConnectionException = inSendOrderCancelConnectionException;
+    }
+    /**
+     * Sets the sendOrderSingleValidationException value.
+     *
+     * @param an <code>OrderValidationException</code> value
+     */
+    public void setSendOrderSingleValidationException(OrderValidationException inSendOrderSingleValidationException)
+    {
+        sendOrderSingleValidationException = inSendOrderSingleValidationException;
+    }
+    /**
+     * Sets the sendOrderReplaceValidationException value.
+     *
+     * @param an <code>OrderValidationException</code> value
+     */
+    public void setSendOrderReplaceValidationException(OrderValidationException inSendOrderReplaceValidationException)
+    {
+        sendOrderReplaceValidationException = inSendOrderReplaceValidationException;
+    }
+    /**
+     * Sets the sendOrderCancelValidationException value.
+     *
+     * @param an <code>OrderValidationException</code> value
+     */
+    public void setSendOrderCancelValidationException(OrderValidationException inSendOrderCancelValidationException)
+    {
+        sendOrderCancelValidationException = inSendOrderCancelValidationException;
+    }
+    /**
      * Clears the client state.
      */
     public void reset()
     {
         reportListeners.clear();
         reports.clear();
+        orders.clear();
+        replaces.clear();
+        cancels.clear();
         setGetReportsSinceException(null);
+        setSendOrderSingleException(null);
+        setSendOrderReplaceConnectionException(null);
+        setSendOrderCancelConnectionException(null);
+        setSendOrderSingleValidationException(null);
+        setSendOrderReplaceValidationException(null);
+        setSendOrderCancelValidationException(null);
     }
     /**
      * Creates {@link MockClient} objects.
@@ -449,6 +557,18 @@ public class MockClient
      */
     private final Set<ReportBase> reports = new TreeSet<ReportBase>(ReportSendingTimeComparator.INSTANCE);
     /**
+     * orders sent since last {@link #reset()}
+     */
+    private final Collection<OrderSingle> orders = new ArrayList<OrderSingle>();
+    /**
+     * replaces sent since last {@link #reset()}
+     */
+    private final Collection<OrderReplace> replaces = new ArrayList<OrderReplace>();
+    /**
+     * cancels sent since last {@link #reset()}
+     */
+    private final Collection<OrderCancel> cancels = new ArrayList<OrderCancel>();
+    /**
      * client parameters used to instantiate the client, may be <code>null</code>
      */
     private final ClientParameters clientParameters;
@@ -460,4 +580,28 @@ public class MockClient
      * if non-null, will be thrown during {@link #getReportsSince(Date)}.
      */
     private volatile ConnectionException getReportsSinceThrows;
+    /**
+     * if non-null, will be thrown during {@link #sendOrder(OrderSingle)}
+     */
+    private volatile ConnectionException sendOrderSingleConnectionException = null;
+    /**
+     * if non-null, will be thrown during {@link #sendOrder(OrderReplace)
+     */
+    private volatile ConnectionException sendOrderReplaceConnectionException = null;
+    /**
+     * if non-null, will be thrown during {@link #sendCancel(OrderCancel)
+     */
+    private volatile ConnectionException sendOrderCancelConnectionException = null;
+    /**
+     * if non-null, will be thrown during {@link #sendOrder(OrderSingle)}
+     */
+    private volatile OrderValidationException sendOrderSingleValidationException = null;
+    /**
+     * if non-null, will be thrown during {@link #sendOrder(OrderReplace)
+     */
+    private volatile OrderValidationException sendOrderReplaceValidationException = null;
+    /**
+     * if non-null, will be thrown during {@link #sendCancel(OrderCancel)
+     */
+    private volatile OrderValidationException sendOrderCancelValidationException = null;
 }
