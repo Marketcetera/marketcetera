@@ -60,7 +60,7 @@ public class LoginDialog
     implements Messages
 {
 
-    private static final String ORS_URL = "href=\"http://www.marketcetera.com/masha/docs?version=2.1.4&qualifier=authentication\""; //$NON-NLS-1$
+    private static final String ORS_URL = "href=\"http://www.marketcetera.org/confluence/display/ORS/Authentication\""; //$NON-NLS-1$
 
     private Combo userIdText;
 
