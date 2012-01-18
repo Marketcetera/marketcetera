@@ -29,11 +29,8 @@ import org.marketcetera.util.misc.ClassVersion;
 public class WebHelpAction extends Action {
 
 	public static final String ID = "org.marketcetera.photon.actions.HelpBrowserAction"; //$NON-NLS-1$
-	private static final String MAIN_HELP_URL = MessageFormat
-			.format(
-					"http://www.marketcetera.com/masha/docs?version={0}&qualifier=photon", //$NON-NLS-1$
-					PhotonPlugin.getDefault().getBundle().getHeaders().get(
-							"Bundle-Version")); //$NON-NLS-1$
+	private static final String MAIN_HELP_URL = MessageFormat.format("http://www.marketcetera.org/confluence/display/PN/Photon", //$NON-NLS-1$
+	                                                                 PhotonPlugin.getDefault().getBundle().getHeaders().get("Bundle-Version")); //$NON-NLS-1$
 	private IWorkbenchWindow mWindow;
 
 	/**
