@@ -12,9 +12,9 @@ import org.marketcetera.core.NoMoreIDsException;
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedFactory.java 4241 2009-06-11 01:26:00Z toli $
+ * @version $Id$
  */
-@ClassVersion("$Id: CSVFeedFactory.java 4241 2009-06-11 01:26:00Z toli $")
+@ClassVersion("$Id$")
 public class CSVFeedFactory  
         extends AbstractMarketDataFeedFactory<CSVFeed,CSVFeedCredentials>
 {
