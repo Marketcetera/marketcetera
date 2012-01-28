@@ -8,10 +8,10 @@ import static org.junit.Assert.assertTrue;
 /**
  * Verify that all the i18n messages are specified correctly
  * @author toli kuznets
- * @version $Id: MessagesTest.java 4348 2009-09-24 02:33:11Z toli $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: MessagesTest.java 4348 2009-09-24 02:33:11Z toli $")
+@ClassVersion("$Id$")
 public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {

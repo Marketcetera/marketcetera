@@ -13,9 +13,9 @@ import org.marketcetera.core.CoreException;
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedModuleFactory.java 4348 2009-09-24 02:33:11Z toli $
+ * @version $Id$
  */
-@ClassVersion("$Id: CSVFeedModuleFactory.java 4348 2009-09-24 02:33:11Z toli $")
+@ClassVersion("$Id$")
 public class CSVFeedModuleFactory 
         extends ModuleFactory
 {

@@ -11,9 +11,9 @@ import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
  * @author <a href="mailto:toli@marketcetera.com">Toli Kuznets</a>
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedToken.java 4348 2009-09-24 02:33:11Z toli $
+ * @version $Id$
  */
-@ClassVersion("$Id: CSVFeedToken.java 4348 2009-09-24 02:33:11Z toli $")
+@ClassVersion("$Id$")
 public class CSVFeedToken
         extends AbstractMarketDataFeedToken<CSVFeed>
 {
