@@ -1,0 +1,7 @@
+#Names of module factory implementations
+org.marketcetera.photon.internal.marketdata.MarketDataFeedTest$NotSingletonFactory
+org.marketcetera.photon.internal.marketdata.MarketDataFeedTest$NotEmitterFactory
+org.marketcetera.photon.internal.marketdata.MarketDataFeedTest$ReconnectUnsupportedFactory
+org.marketcetera.photon.internal.marketdata.MarketDataFeedTest$PartialInterfaceFactory
+org.marketcetera.photon.internal.marketdata.MockMarketDataModuleFactory
+
