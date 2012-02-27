@@ -114,19 +114,21 @@ public final class SLF4JLoggerProxy
      *
      * @return True if logging takes place.
      */
-
-    private static boolean log
-        (Logger logger,
-         String proxy,
-         int level,
-         String message,
-         Throwable throwable)
+    private static boolean log(Logger logger,
+			       String proxy,
+			       int level,
+			       String message,
+			       Throwable throwable)
     {
-        if (!(logger instanceof LocationAwareLogger)) {
+        if(!(logger instanceof LocationAwareLogger)) {
             return false;
         }
-        ((LocationAwareLogger)logger).log
-            (null,proxy,level,message,throwable);
+        ((LocationAwareLogger)logger).log(null,
+					  proxy,
+					  level,
+					  message,
+					  new Object[0],
+					  throwable);
         return true;
     }
     
@@ -170,21 +172,23 @@ public final class SLF4JLoggerProxy
      *
      * @return True if logging takes place.
      */
-
-    private static boolean log
-        (Logger logger,
-         String proxy,
-         int level,
-         Throwable throwable,
-         String message,
-         Object[] params)
+    private static boolean log(Logger logger,
+			       String proxy,
+			       int level,
+			       Throwable throwable,
+			       String message,
+			       Object[] params)
     {
         if (!(logger instanceof LocationAwareLogger)) {
             return false;
         }
-        ((LocationAwareLogger)logger).log
-            (null,proxy,level,MessageFormatter.arrayFormat
-             (message,params),throwable);
+        ((LocationAwareLogger)logger).log(null,
+					  proxy,
+					  level,
+					  MessageFormatter.arrayFormat(message,
+								       params).getMessage(),
+					  params,
+					  throwable);
         return true;
     }
 
@@ -391,12 +395,17 @@ public final class SLF4JLoggerProxy
         if (!logger.isErrorEnabled()) {
             return;
         }
-        if (log(logger,proxy,LocationAwareLogger.ERROR_INT,
-                throwable,message,params)) {
+        if(log(logger,
+	       proxy,
+	       LocationAwareLogger.ERROR_INT,
+	       throwable,
+	       message,
+	       params)) {
             return;
         }
-        logger.error(MessageFormatter.arrayFormat
-                     (message,params),throwable);
+        logger.error(MessageFormatter.arrayFormat(message,
+						  params).getMessage(),
+		     throwable);
     }
 
     /**
@@ -609,24 +618,27 @@ public final class SLF4JLoggerProxy
      * @param message The message.
      * @param params The message parameters.
      */
-    
-    static void warnProxy
-        (String proxy,
-         Object category,
-         Throwable throwable,
-         String message,
-         Object... params)
+    static void warnProxy(String proxy,
+			  Object category,
+			  Throwable throwable,
+			  String message,
+			  Object... params)
     {
         Logger logger=getLogger(category);
-        if (!logger.isWarnEnabled()) {
+        if(!logger.isWarnEnabled()) {
             return;
         }
-        if (log(logger,proxy,LocationAwareLogger.WARN_INT,
-                throwable,message,params)) {
+        if(log(logger,
+	       proxy,
+	       LocationAwareLogger.WARN_INT,
+	       throwable,
+	       message,
+	       params)) {
             return;
         }
-        logger.warn(MessageFormatter.arrayFormat
-                    (message,params),throwable);
+        logger.warn(MessageFormatter.arrayFormat(message,
+						 params).getMessage(),
+		    throwable);
     }
 
     /**
@@ -841,24 +853,27 @@ public final class SLF4JLoggerProxy
      * @param message The message.
      * @param params The message parameters.
      */
-    
-    static void infoProxy
-        (String proxy,
-         Object category,
-         Throwable throwable,
-         String message,
-         Object... params)
+    static void infoProxy(String proxy,
+			  Object category,
+			  Throwable throwable,
+			  String message,
+			  Object... params)
     {
         Logger logger=getLogger(category);
         if (!logger.isInfoEnabled()) {
             return;
         }
-        if (log(logger,proxy,LocationAwareLogger.INFO_INT,
-                throwable,message,params)) {
+        if(log(logger,
+	       proxy,
+	       LocationAwareLogger.INFO_INT,
+	       throwable,
+	       message,
+	       params)) {
             return;
         }
-        logger.info(MessageFormatter.arrayFormat
-                    (message,params),throwable);
+        logger.info(MessageFormatter.arrayFormat(message,
+						 params).getMessage(),
+		    throwable);
     }
 
     /**
@@ -1080,15 +1095,19 @@ public final class SLF4JLoggerProxy
          Object... params)
     {
         Logger logger=getLogger(category);
-        if (!logger.isDebugEnabled()) {
+        if(!logger.isDebugEnabled()) {
             return;
         }
-        if (log(logger,proxy,LocationAwareLogger.DEBUG_INT,
-                throwable,message,params)) {
+        if(log(logger,
+	       proxy,
+	       LocationAwareLogger.DEBUG_INT,
+	       throwable,
+	       message,params)) {
             return;
         }
-        logger.debug(MessageFormatter.arrayFormat
-                     (message,params),throwable);
+        logger.debug(MessageFormatter.arrayFormat(message,
+						  params).getMessage(),
+		     throwable);
     }
 
     /**
@@ -1301,24 +1320,27 @@ public final class SLF4JLoggerProxy
      * @param message The message.
      * @param params The message parameters.
      */
-    
-    static void traceProxy
-        (String proxy,
-         Object category,
-         Throwable throwable,
-         String message,
-         Object... params)
+    static void traceProxy(String proxy,
+			   Object category,
+			   Throwable throwable,
+			   String message,
+			   Object... params)
     {
         Logger logger=getLogger(category);
-        if (!logger.isTraceEnabled()) {
+        if(!logger.isTraceEnabled()) {
             return;
         }
-        if (log(logger,proxy,LocationAwareLogger.TRACE_INT,
-                throwable,message,params)) {
+        if(log(logger,
+	       proxy,
+	       LocationAwareLogger.TRACE_INT,
+	       throwable,
+	       message,
+	       params)) {
             return;
         }
-        logger.trace(MessageFormatter.arrayFormat
-                     (message,params),throwable);
+        logger.trace(MessageFormatter.arrayFormat(message,
+						  params).getMessage(),
+		     throwable);
     }
 
     /**
