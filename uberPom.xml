@@ -565,7 +565,28 @@
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.2</version>
+	  <executions>
+	    <execution>
+	      <goals>
+		<goal>test-jar</goal>
+	      </goals>
+	    </execution>
+	  </executions>
         </plugin>
+
+	<!-- source jar generation -->
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-source-plugin</artifactId>
+	  <executions>
+	    <execution>
+	      <id>attach-sources</id>
+	      <goals>
+		<goal>jar</goal>
+	      </goals>
+	    </execution>
+	  </executions>
+	</plugin>
 
         <!-- war generation. -->
         <plugin>
@@ -650,6 +671,14 @@
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>2.5</version>
+	  <executions>
+	    <execution>
+	      <id>attach-javadocs</id>
+	      <goals>
+		<goal>jar</goal>
+	      </goals>
+	    </execution>
+	  </executions>
           <configuration>
             <links>
               <link>http://commons.apache.org/cli/api-release/</link>
@@ -799,6 +828,14 @@
   </pluginRepositories>
 
   <scm>
-    <connection>scm:svn:http://code.marketcetera.org/root/trunk/</connection>
+    <connection>scm:svn:http://source.marketcetera.org/root/tags/2.1.4/</connection>
   </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>internal</id>
+      <name>Marketcetera Internal Repository</name>
+      <url>scp://repo.marketcetera.org/mnt/svn/repo.marketcetera.org/maven</url>
+    </repository>
+  </distributionManagement>
 </project>
