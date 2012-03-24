@@ -1,26 +1,17 @@
 package org.marketcetera.ors;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
+
 import org.junit.Test;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.ExecutionType;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
-import quickfix.Message;
-import quickfix.field.ClOrdID;
-import quickfix.field.MessageEncoding;
-import quickfix.field.Rule80A;
-import quickfix.field.SecondaryClOrdID;
+import org.marketcetera.trade.*;
 
-import static org.junit.Assert.*;
-import static org.marketcetera.trade.TypesTestBase.*;
+import quickfix.Message;
+import quickfix.field.SecondaryClOrdID;
 
 /**
  * @author tlerios@marketcetera.com

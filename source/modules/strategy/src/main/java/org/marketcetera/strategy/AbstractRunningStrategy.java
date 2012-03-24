@@ -84,8 +84,11 @@ public abstract class AbstractRunningStrategy
     final void start()
             throws ClientInitException
     {
-        orderHistoryManager = new LiveOrderHistoryManager(getReportHistoryOriginDate());
-        orderHistoryManager.start();
+        synchronized(AbstractRunningStrategy.class) {
+            if(orderHistoryManager == null) {
+                initializeReportHistoryManager();
+            }
+        }
         openOrders = orderHistoryManager.getOpenOrders();
     }
     /**
@@ -233,13 +236,26 @@ public abstract class AbstractRunningStrategy
      * 
      * <p>Strategies may override this method to return a date. For performance
      * reasons, it is best to use the most recent date possible. The default is
-     * to return the beginning of time.
+     * to return the first second of the current day.
+     * 
+     * <p>All strategies in the same strategy agent share the same order history manager.
+     * The report history origin date can be set only by the first strategy to run.
      *
      * @return a <code>Date</code> value
      */
     protected Date getReportHistoryOriginDate()
     {
-        return new Date(0);
+        Calendar dateGenerator = Calendar.getInstance();
+        dateGenerator.set(Calendar.HOUR_OF_DAY,
+                          0);
+        dateGenerator.set(Calendar.MINUTE,
+                          0);
+        dateGenerator.set(Calendar.SECOND,
+                          0);
+        dateGenerator.set(Calendar.MILLISECOND,
+                          0);
+        Date originDate = dateGenerator.getTime();
+        return originDate;
     }
     /**
      * Gets the parameter associated with the given name.
@@ -1571,6 +1587,30 @@ public abstract class AbstractRunningStrategy
                                                                                inMessage).create());
     }
     /**
+     * Initializes the report history manager.
+     * 
+     * <p>This can be a very expensive call depending on the value returned
+     * by {@link #getReportHistoryOriginDate()} and the number of execution reports
+     * in the database.
+     */
+    protected final void initializeReportHistoryManager()
+    {
+        synchronized(AbstractRunningStrategy.class) {
+            Date origin = getReportHistoryOriginDate();
+            Messages.USING_ORDER_HISTORY_ORIGIN.info(AbstractRunningStrategy.class,
+                                                     origin);
+            try {
+                if(orderHistoryManager != null) {
+                    orderHistoryManager.stop();
+                }
+                orderHistoryManager = new LiveOrderHistoryManager(origin);
+                orderHistoryManager.start();
+            } catch (ClientInitException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    /**
      * Indicates if incoming data can be received.
      *
      * @return a <code>boolean</code> value
@@ -1598,7 +1638,7 @@ public abstract class AbstractRunningStrategy
     /**
      * tracks orders based on execution reports
      */
-    private volatile LiveOrderHistoryManager orderHistoryManager;
+    private static volatile LiveOrderHistoryManager orderHistoryManager;
     /**
      * dynamically updated list of open orders
      */
