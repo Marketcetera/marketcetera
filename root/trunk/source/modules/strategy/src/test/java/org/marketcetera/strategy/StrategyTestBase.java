@@ -176,15 +176,12 @@ public class StrategyTestBase
                                           inData));
             }
             if(inData instanceof OrderSingle) {
-                System.out.println("Received OrderSingle!");
                 if(shouldSendExecutionReports) {
-                    System.out.println("Sending back ERs");
                     OrderSingle order = (OrderSingle)inData;
                     try {
                         List<ExecutionReport> executionReports = generateExecutionReports(order);
                         synchronized(subscribers) {
                             for(ExecutionReport executionReport : executionReports) {
-                                System.out.println("Sending " + executionReport + " to " + subscribers);
                                 for(DataEmitterSupport subscriber : subscribers.values()) {
                                     subscriber.send(executionReport);
                                 }
@@ -197,8 +194,6 @@ public class StrategyTestBase
                     }
                 }
                 ordersReceived += 1;
-            } else if(inData instanceof OrderCancel) {
-                System.out.println("Received OrderCancel!");
             }
         }
         /* (non-Javadoc)
@@ -1377,8 +1372,10 @@ public class StrategyTestBase
             throws Exception
     {
         LoggerConfiguration.logSetup();
-        ClientManager.setClientFactory(new MockClient.MockClientFactory());
-        ClientManager.init(null);
+        try {
+            ClientManager.setClientFactory(new MockClient.MockClientFactory());
+            ClientManager.init(null);
+        } catch (ClientInitException ignored) {}
         client = (MockClient)ClientManager.getInstance();
         System.setProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME,
                            StrategyTestBase.SAMPLE_STRATEGY_DIR.getCanonicalPath());

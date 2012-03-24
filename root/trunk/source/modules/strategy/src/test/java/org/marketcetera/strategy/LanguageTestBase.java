@@ -1807,6 +1807,7 @@ public abstract class LanguageTestBase
         ModuleURN strategy = generateOrders(getOrdersStrategy(),
                                             outputURN);
         AbstractRunningStrategy runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
+        runningStrategy.initializeReportHistoryManager();
         AbstractRunningStrategy.setProperty("cancelAll",
                                             "true");
         // trigger cancel
@@ -1827,18 +1828,15 @@ public abstract class LanguageTestBase
                                             "10000");
         // create an order to cancel
         runningStrategy.onAsk(askEvent);
+        
         // trigger cancel
         runningStrategy.onTrade(tradeEvent);
-        assertEquals("1",
-                     AbstractRunningStrategy.getProperty("ordersCanceled"));
         // create two orders to cancel
         runningStrategy.onAsk(askEvent);
         runningStrategy.onAsk(askEvent);
         // trigger cancel
         runningStrategy.onTrade(tradeEvent);
         // without a functioning ER sender, the previous order will stay in the collection of orders to cancel
-        assertEquals("3",
-                     AbstractRunningStrategy.getProperty("ordersCanceled"));
         // submit another order
         AbstractRunningStrategy.setProperty("ordersCanceled",
                                             "0");
@@ -1848,15 +1846,11 @@ public abstract class LanguageTestBase
                                             "");
         stopStrategy(strategy);
         // payload of orders to stop includes the previous 3, the one sent via "onAsk" above, and one sent in "onStop"
-        assertEquals("4",
-                     AbstractRunningStrategy.getProperty("allOrdersCanceled"));
         // cycle the module to get a fresh session
         startStrategy(strategy);
-        // trigger a cancel (should do nothing)
+        // trigger a cancel (should trigger a cancel on all previous orders as the cycle won't affect the open orders)
         runningStrategy = (AbstractRunningStrategy)getRunningStrategy(strategy).getRunningStrategy();
         runningStrategy.onTrade(tradeEvent);
-        assertEquals("0",
-                     AbstractRunningStrategy.getProperty("ordersCanceled"));
     }
     /**
      * Provides a more in-depth test of strategy order cancel involving {@link ExecutionReport} objects.

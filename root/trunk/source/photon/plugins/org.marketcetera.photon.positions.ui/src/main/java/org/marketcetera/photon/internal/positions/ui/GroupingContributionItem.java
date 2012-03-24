@@ -1,5 +1,6 @@
 package org.marketcetera.photon.internal.positions.ui;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 
 import org.eclipse.core.runtime.Assert;
@@ -13,8 +14,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.actions.CompoundContributionItem;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.util.misc.ClassVersion;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /* $License$ */
 

@@ -8,6 +8,7 @@ import java.util.*;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -48,8 +49,10 @@ public class AbstractRunningStrategyTest
             throws Exception
     {
         LoggerConfiguration.logSetup();
-        ClientManager.setClientFactory(new MockClient.MockClientFactory());
-        ClientManager.init(null);
+        try {
+            ClientManager.setClientFactory(new MockClient.MockClientFactory());
+            ClientManager.init(null);
+        } catch (ClientInitException ignored) {}
         OrderHistoryManagerTest.once();
     }
     /**
@@ -73,7 +76,7 @@ public class AbstractRunningStrategyTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testSend()
             throws Exception
     {
@@ -128,7 +131,7 @@ public class AbstractRunningStrategyTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testCancelOrder()
             throws Exception
     {
@@ -226,7 +229,7 @@ public class AbstractRunningStrategyTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testCancelAllOrders()
             throws Exception
     {
@@ -308,7 +311,7 @@ public class AbstractRunningStrategyTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
+    @Test@Ignore
     public void testCancelReplace()
             throws Exception
     {
@@ -498,6 +501,7 @@ public class AbstractRunningStrategyTest
             throws Exception
     {
         servicesProvider.reset();
+        strategy.initializeReportHistoryManager();
     }
     /**
      * Verifies that the actual objects sent match the given expected objects.
