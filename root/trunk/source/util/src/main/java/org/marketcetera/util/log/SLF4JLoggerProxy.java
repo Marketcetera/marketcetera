@@ -125,8 +125,12 @@ public final class SLF4JLoggerProxy
         if (!(logger instanceof LocationAwareLogger)) {
             return false;
         }
-        ((LocationAwareLogger)logger).log
-            (null,proxy,level,message,throwable);
+        ((LocationAwareLogger)logger).log(null,
+                                          proxy,
+                                          level,
+                                          message,
+                                          new Object[0],
+                                          throwable);
         return true;
     }
     
@@ -182,9 +186,13 @@ public final class SLF4JLoggerProxy
         if (!(logger instanceof LocationAwareLogger)) {
             return false;
         }
-        ((LocationAwareLogger)logger).log
-            (null,proxy,level,MessageFormatter.arrayFormat
-             (message,params),throwable);
+        ((LocationAwareLogger)logger).log(null,
+                                          proxy,
+                                          level,
+                                          MessageFormatter.arrayFormat(message,
+                                                                       params).getMessage(),
+                                          params,
+                                          throwable);
         return true;
     }
 
@@ -395,8 +403,9 @@ public final class SLF4JLoggerProxy
                 throwable,message,params)) {
             return;
         }
-        logger.error(MessageFormatter.arrayFormat
-                     (message,params),throwable);
+        logger.error(MessageFormatter.arrayFormat(message,
+                                                  params).getMessage(),
+                     throwable);
     }
 
     /**
@@ -625,8 +634,9 @@ public final class SLF4JLoggerProxy
                 throwable,message,params)) {
             return;
         }
-        logger.warn(MessageFormatter.arrayFormat
-                    (message,params),throwable);
+        logger.warn(MessageFormatter.arrayFormat(message,
+                                                 params).getMessage(),
+                    throwable);
     }
 
     /**
@@ -857,8 +867,9 @@ public final class SLF4JLoggerProxy
                 throwable,message,params)) {
             return;
         }
-        logger.info(MessageFormatter.arrayFormat
-                    (message,params),throwable);
+        logger.info(MessageFormatter.arrayFormat(message,
+                                                 params).getMessage(),
+                    throwable);
     }
 
     /**
@@ -1087,8 +1098,9 @@ public final class SLF4JLoggerProxy
                 throwable,message,params)) {
             return;
         }
-        logger.debug(MessageFormatter.arrayFormat
-                     (message,params),throwable);
+        logger.debug(MessageFormatter.arrayFormat(message,
+                                                  params).getMessage(),
+                     throwable);
     }
 
     /**
@@ -1317,8 +1329,9 @@ public final class SLF4JLoggerProxy
                 throwable,message,params)) {
             return;
         }
-        logger.trace(MessageFormatter.arrayFormat
-                     (message,params),throwable);
+        logger.trace(MessageFormatter.arrayFormat(message,
+                                                  params).getMessage(),
+                     throwable);
     }
 
     /**
