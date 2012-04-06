@@ -341,8 +341,8 @@ public class AnalyzedMessageTest
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
         assertSingleEvent
             (Level.ERROR,TEST_FIELD_CATEGORY,
-             "Group 1 is missing from message scope '8=FIX.4.2"+SOH+"9=17"+SOH+
-             "35=W"+SOH+"55=QF"+SOH+"268=0"+SOH+"10=072"+SOH+"'",
+             "Group 1 is missing from message scope '8=FIX.4.2"+SOH+"9=11"+SOH+
+             "35=W"+SOH+"55=QF"+SOH+"10=052"+SOH+"'",
              TEST_FIELD_CATEGORY);
         assertEquals(3,msgA.getHeader().size());
         assertEquals(2,msgA.getBody().size());
@@ -357,6 +357,6 @@ public class AnalyzedMessageTest
              " Symbol [55R] = QF"+
              SystemUtils.LINE_SEPARATOR+
              " NoMDEntries [268R] = 1"+
-             TEST_FOOTER+"072",msgA.toString());
+             TEST_FOOTER+"052",msgA.toString());
     }
 }
