@@ -114,7 +114,7 @@
       <dependency>
         <groupId>quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
-        <version>[1.5.0-bd]</version>
+        <version>[1.5.2-bd]</version>
       </dependency>
 
       <!-- Compile: other. -->
