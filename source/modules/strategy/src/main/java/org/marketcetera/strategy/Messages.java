@@ -245,4 +245,6 @@ public interface Messages
                                                                  "null_order_id"); //$NON-NLS-1$
     static final I18NMessage0P NULL_REPORT = new I18NMessage0P(LOGGER,
                                                                "null_report"); //$NON-NLS-1$
+    static final I18NMessage1P USING_ORDER_HISTORY_ORIGIN = new I18NMessage1P(LOGGER,
+                                                                              "using_order_history_origin"); //$NON-NLS-1$
 }
