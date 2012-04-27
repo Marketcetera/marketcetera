@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+    <!-- JDBC Setup -->
+    <bean name="JdbcDriver" class="java.lang.String"><constructor-arg value="com.mysql.jdbc.Driver"/></bean>
+    <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="marketcetera"/></bean>
+    <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="marketcetera"/></bean>
+    <!--
+    The mysql jdbc url. See
+    http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-configuration-properties.html
+    for a complete list of options that can be specified for connecting to msql.
+    -->
+    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera?logSlowQueries=true"/></bean>
+
+  <!-- Initialize MySQL as DB Vendor Implementation -->
+    <bean id="dbVendor" class="org.marketcetera.persist.MySQLDBVendor"
+          scope="singleton"/>
+  <!-- Initialize hibernate as JPA Vendor Implementation -->
+    <bean id="jpaVendor" class="org.marketcetera.persist.HibernateVendor"
+          scope="singleton" depends-on="dbVendor"/>
+    <!--
+    Properties for configuring the dbcp connection pool. See
+    http://commons.apache.org/dbcp/configuration.html
+    for a complete list of options that can be specified here
+     -->
+    <!--bean id="mysqlpool" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" ref="JdbcDriver"/>
+        <property name="url" ref="JdbcURL"/>
+        <property name="username" ref="JdbcUser"/>
+        <property name="password" ref="JdbcPassword"/>
+        <property name="maxActive" value="10"/>
+        <property name="validationQuery" value="select 1"/>
+        <property name="testOnBorrow" value="true"/>
+    </bean-->
+    <!--
+    Properties for configuring the c3p0 connection pool. See
+    http://www.mchange.com/projects/c3p0/index.html#configuration_properties
+    for a complete list of options that can be specified here
+     -->
+    <bean id="mysqlpool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" ref="JdbcDriver"/>
+        <property name="jdbcUrl" ref="JdbcURL"/>
+        <property name="user" ref="JdbcUser"/>
+        <property name="password" ref="JdbcPassword"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="preferredTestQuery" value="select 1"/>
+        <property name="testConnectionOnCheckout" value="true"/>
+    </bean>
+    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="jpaVendor">
+        <property name="dataSource" ref="mysqlpool"/>
+        <property name="persistenceUnitName" value="unit-testing"/>
+    </bean>
+    <bean id="ers" class="org.marketcetera.persist.EntityRemoteServer" scope="singleton">
+        <constructor-arg ref="emf"/>
+    </bean>
+
+</beans>
