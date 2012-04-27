@@ -142,7 +142,7 @@ public class LiveOrderHistoryManager
             public void run()
             {
                 try {
-                    while(true) {
+                    while(isRunning) {
                         // process any updates that exist
                         add(updateReports.take());
                     }
