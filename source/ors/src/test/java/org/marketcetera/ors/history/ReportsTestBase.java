@@ -1,37 +1,39 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.impl.PositionKeyImpl;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.TestCaseBase;
-import org.marketcetera.persist.PersistTestBase;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.security.MultiSimpleUserQuery;
-import org.marketcetera.trade.*;
-import org.marketcetera.trade.Side;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.event.HasFIXMessage;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.After;
-import org.junit.Before;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import quickfix.Message;
-import quickfix.field.*;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.io.File;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.impl.PositionKeyImpl;
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.ors.security.MultiSimpleUserQuery;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.PersistTestBase;
+import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.test.TestCaseBase;
+
+import quickfix.Message;
+import quickfix.field.ClOrdID;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.SendingTime;
 
 /* $License$ */
 /**
@@ -41,7 +43,7 @@ import java.io.File;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@SuppressWarnings("rawtypes")
 public class ReportsTestBase extends TestCaseBase {
     @BeforeClass
     public static void springSetup()
@@ -428,7 +430,34 @@ public class ReportsTestBase extends TestCaseBase {
         return createAndSaveER(inOrderID, inOrigOrderID, inInstrument,
                                inSide, inCumQty, sViewerID);
     }
-
+    /**
+     * Creates and persists an <code>ExecutionReport</code> with the given attributes.
+     *
+     * @param inOrderID a <code>String</code> value
+     * @param inOrigOrderID a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inSide a <code>Side</code> value
+     * @param inCumQty a <code>BigDecimal</code> value
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @return an <code>ExecutionReport</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected static ExecutionReport createAndSaveER(String inOrderID,
+                                                     String inOrigOrderID,
+                                                     Instrument inInstrument,
+                                                     Side inSide,
+                                                     BigDecimal inCumQty,
+                                                     OrderStatus inOrderStatus)
+            throws Exception
+    {
+        return createAndSaveER(inOrderID,
+                               inOrigOrderID,
+                               inInstrument,
+                               inSide,
+                               inCumQty,
+                               sViewerID,
+                               inOrderStatus);
+    }
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
                                             Instrument inInstrument,
@@ -438,7 +467,36 @@ public class ReportsTestBase extends TestCaseBase {
         return createAndSaveER(inOrderID,inOrigOrderID, inInstrument,inSide,
                                inCumQty,sActorID,inViewerID);
     }
-
+    /**
+     * Creates and persists an <code>ExecutionReport</code> with the given attributes.
+     *
+     * @param inOrderID a <code>String</code> value
+     * @param inOrigOrderID a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inSide a <code>Side</code> value
+     * @param inCumQty a <code>BigDecimal</code> value
+     * @param inViewerID a <code>UserID</code> value
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @return an <code>ExecutionReport</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected static ExecutionReport createAndSaveER(String inOrderID,
+                                                     String inOrigOrderID,
+                                                     Instrument inInstrument,
+                                                     Side inSide,
+                                                     BigDecimal inCumQty,
+                                                     UserID inViewerID,
+                                                     OrderStatus inOrderStatus)
+            throws Exception
+    {
+        return createAndSaveER(inOrderID,
+                               inOrigOrderID,
+                               inInstrument,inSide,
+                               inCumQty,
+                               sActorID,
+                               inViewerID,
+                               inOrderStatus);
+    }
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
                                             Instrument inInstrument,
@@ -449,25 +507,105 @@ public class ReportsTestBase extends TestCaseBase {
         return createAndSaveER(inOrderID,inOrigOrderID, inInstrument,inSide,
                                inCumQty, ACCOUNT, inActorID,inViewerID);
     }
-
+    /**
+     * Creates and persists an <code>ExecutionReport</code> with the given attributes.
+     *
+     * @param inOrderID a <code>String</code> value
+     * @param inOrigOrderID a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inSide a <code>Side</code> value
+     * @param inCumQty a <code>BigDecimal</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @return an <code>ExecutionReport</code> value
+     * @throws Exception if an unexpected error occurs
+     */
     protected static ExecutionReport createAndSaveER(String inOrderID,
-                                            String inOrigOrderID,
-                                            Instrument inInstrument,
-                                            Side inSide,
-                                            BigDecimal inCumQty,
-                                            String inAccount,
-                                            UserID inActorID,
-                                            UserID inViewerID) throws Exception {
+                                                     String inOrigOrderID,
+                                                     Instrument inInstrument,
+                                                     Side inSide,
+                                                     BigDecimal inCumQty,
+                                                     UserID inActorID,
+                                                     UserID inViewerID,
+                                                     OrderStatus inOrderStatus)
+            throws Exception
+    {
+        return createAndSaveER(inOrderID,
+                               inOrigOrderID,
+                               inInstrument,
+                               inSide,
+                               inCumQty,
+                               ACCOUNT,
+                               inActorID,
+                               inViewerID,
+                               inOrderStatus);
+    }
+    protected static ExecutionReport createAndSaveER(String inOrderID,
+                                                     String inOrigOrderID,
+                                                     Instrument inInstrument,
+                                                     Side inSide,
+                                                     BigDecimal inCumQty,
+                                                     String inAccount,
+                                                     UserID inActorID,
+                                                     UserID inViewerID)
+            throws Exception
+    {
+        return createAndSaveER(inOrderID,
+                               inOrigOrderID,
+                               inInstrument,
+                               inSide,
+                               inCumQty,
+                               inAccount,
+                               inActorID,
+                               inViewerID,
+                               OrderStatus.PartiallyFilled);
+    }
+    /**
+     * Creates and persists an <code>ExecutionReport</code> with the given attributes.
+     *
+     * @param inOrderID a <code>String</code> value
+     * @param inOrigOrderID a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inSide a <code>Side</code> value
+     * @param inCumQty a <code>BigDecimal</code> value
+     * @param inAccount a <code>String</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     * @param inOrderStatus an <code>OrderStatus</code> value
+     * @return an <code>ExecutionReport</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected static ExecutionReport createAndSaveER(String inOrderID,
+                                                     String inOrigOrderID,
+                                                     Instrument inInstrument,
+                                                     Side inSide,
+                                                     BigDecimal inCumQty,
+                                                     String inAccount,
+                                                     UserID inActorID,
+                                                     UserID inViewerID,
+                                                     OrderStatus inOrderStatus)
+            throws Exception
+    {
         sleepForSignificantTime();
-        ExecutionReport report = createExecReport(inOrderID, inOrigOrderID,
-                inInstrument, inSide, OrderStatus.PartiallyFilled, inCumQty,
-                BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
-                BROKER, inAccount, "text", inActorID, inViewerID);
+        ExecutionReport report = createExecReport(inOrderID,
+                                                  inOrigOrderID,
+                                                  inInstrument,
+                                                  inSide,
+                                                  inOrderStatus,
+                                                  inCumQty,
+                                                  BigDecimal.TEN,
+                                                  BigDecimal.TEN,
+                                                  BigDecimal.TEN,
+                                                  BROKER,
+                                                  inAccount,
+                                                  "text",
+                                                  inActorID,
+                                                  inViewerID);
         sServices.save(report);
         sleepForSignificantTime();
         return report;
     }
-
     protected static <T extends Instrument> PositionKey<T> pos(T inInstrument) {
         return pos(inInstrument,ACCOUNT,sActorID);
     }

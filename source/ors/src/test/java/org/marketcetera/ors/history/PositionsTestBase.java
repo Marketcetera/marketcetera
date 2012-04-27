@@ -2,7 +2,8 @@ package org.marketcetera.ors.history;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -16,7 +17,6 @@ import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
+@SuppressWarnings("unchecked")
 public abstract class PositionsTestBase<T extends Instrument> extends ReportsTestBase {
     @Test
     public void noRecords() throws Exception {
@@ -546,9 +546,13 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
         //A simple chain of buy orders for A
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER(prefix+"a1", null, getInstrumentA(), Side.Buy, BigDecimal.ONE, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"a1", null, getInstrumentA(), Side.Buy, BigDecimal.ONE, inAccount, inActorID, inViewerID, OrderStatus.PendingCancel));
         reports.add(createAndSaveER(prefix+"a2", prefix+"a1", getInstrumentA(), Side.Buy, BigDecimal.TEN, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"a2", prefix+"a1", getInstrumentA(), Side.Buy, BigDecimal.TEN, inAccount, inActorID, inViewerID, OrderStatus.PendingNew));
         reports.add(createAndSaveER(prefix+"a3", prefix+"a2", getInstrumentA(), Side.Buy, POSITION_SELL_SHORTE_A, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"a3", prefix+"a2", getInstrumentA(), Side.Buy, POSITION_SELL_SHORTE_A, inAccount, inActorID, inViewerID, OrderStatus.PendingReplace));
         reports.add(createAndSaveER(prefix+"a4", prefix+"a3", getInstrumentA(), Side.Buy, finalPosition, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"a4", prefix+"a3", getInstrumentA(), Side.Buy, finalPosition, inAccount, inActorID, inViewerID, OrderStatus.PendingNew));
         return reports;
     }
 
@@ -556,8 +560,11 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
         //A simple chain of buy orders for A
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER("a5", null, getInstrumentA(), Side.Sell, BigDecimal.ONE));
+        reports.add(createAndSaveER("a5", null, getInstrumentA(), Side.Sell, BigDecimal.ONE, OrderStatus.PendingCancel));
         reports.add(createAndSaveER("a6", "a5", getInstrumentA(), Side.Sell, BigDecimal.TEN));
+        reports.add(createAndSaveER("a6", "a5", getInstrumentA(), Side.Sell, BigDecimal.TEN, OrderStatus.PendingNew));
         reports.add(createAndSaveER("a7", "a6", getInstrumentA(), Side.Sell, POSITION_SELL_A));
+        reports.add(createAndSaveER("a7", "a6", getInstrumentA(), Side.Sell, POSITION_SELL_A, OrderStatus.PendingReplace));
         return reports;
     }
 
@@ -565,7 +572,9 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
         //A simple chain of buy orders for A
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER("a8", null, getInstrumentA(), Side.SellShort, BigDecimal.ONE));
+        reports.add(createAndSaveER("a8", null, getInstrumentA(), Side.SellShort, BigDecimal.ONE, OrderStatus.PendingCancel));
         reports.add(createAndSaveER("a9", "a8", getInstrumentA(), Side.SellShort, POSITION_SELL_SHORT_A));
+        reports.add(createAndSaveER("a9", "a8", getInstrumentA(), Side.SellShort, POSITION_SELL_SHORT_A, OrderStatus.PendingNew));
         return reports;
     }
 
@@ -573,6 +582,7 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
         //A simple chain of buy orders for A
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER("a10", null, getInstrumentA(), Side.SellShortExempt, POSITION_SELL_SHORTE_A));
+        reports.add(createAndSaveER("a10", null, getInstrumentA(), Side.SellShortExempt, POSITION_SELL_SHORTE_A, OrderStatus.PendingCancel));
         return reports;
     }
 
@@ -591,39 +601,53 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
     {
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER(prefix+"b1", null, getInstrumentB(), Side.Sell, BigDecimal.ONE, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"b1", null, getInstrumentB(), Side.Sell, BigDecimal.ONE, inAccount, inActorID, inViewerID, OrderStatus.PendingCancel));
         reports.add(createAndSaveER(prefix+"b2", prefix+"b1", getInstrumentB(), Side.Sell, BigDecimal.TEN, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"b2", prefix+"b1", getInstrumentB(), Side.Sell, BigDecimal.TEN, inAccount, inActorID, inViewerID, OrderStatus.PendingNew));
         reports.add(createAndSaveER(prefix+"b3", prefix+"b2", getInstrumentB(), Side.Sell, finalPosition, inAccount, inActorID, inViewerID));
+        reports.add(createAndSaveER(prefix+"b3", prefix+"b2", getInstrumentB(), Side.Sell, finalPosition, inAccount, inActorID, inViewerID, OrderStatus.PendingReplace));
         return reports;
     }
 
     private List<ExecutionReport> createChainReportsForSellB2() throws Exception {
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER("b4", null, getInstrumentB(), Side.Sell, new BigDecimal("23.34")));
+        reports.add(createAndSaveER("b4", null, getInstrumentB(), Side.Sell, new BigDecimal("23.34"), OrderStatus.PendingCancel));
         reports.add(createAndSaveER("b5", "b4", getInstrumentB(), Side.Sell, new BigDecimal("34.56")));
+        reports.add(createAndSaveER("b5", "b4", getInstrumentB(), Side.Sell, new BigDecimal("34.56"), OrderStatus.PendingNew));
         reports.add(createAndSaveER("b6", "b5", getInstrumentB(), Side.Sell, POSITION_SELL_B2));
+        reports.add(createAndSaveER("b6", "b5", getInstrumentB(), Side.Sell, POSITION_SELL_B2, OrderStatus.PendingReplace));
         return reports;
     }
 
     private List<ExecutionReport> createChainReportsForBuyB1() throws Exception {
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER("b7", null, getInstrumentB(), Side.Buy, POSITION_BUY_B1));
+        reports.add(createAndSaveER("b7", null, getInstrumentB(), Side.Buy, POSITION_BUY_B1, OrderStatus.PendingCancel));
         return reports;
     }
 
     private List<ExecutionReport> createChainReportsForBuyB2() throws Exception {
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER("b8", null, getInstrumentB(), Side.Buy, new BigDecimal("38")));
+        reports.add(createAndSaveER("b8", null, getInstrumentB(), Side.Buy, new BigDecimal("38"), OrderStatus.PendingNew));
         reports.add(createAndSaveER("b9", "b8", getInstrumentB(), Side.Buy, POSITION_BUY_B2));
+        reports.add(createAndSaveER("b9", "b8", getInstrumentB(), Side.Buy, POSITION_BUY_B2, OrderStatus.PendingCancel));
         return reports;
     }
 
     private List<ExecutionReport> createChainReportsForSellShortB() throws Exception {
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
         reports.add(createAndSaveER("b10", null, getInstrumentB(), Side.SellShort, new BigDecimal("23.34")));
+        reports.add(createAndSaveER("b10", null, getInstrumentB(), Side.SellShort, new BigDecimal("23.34"), OrderStatus.PendingCancel));
         reports.add(createAndSaveER("b11", "b10", getInstrumentB(), Side.SellShort, new BigDecimal("34.56")));
+        reports.add(createAndSaveER("b11", "b10", getInstrumentB(), Side.SellShort, new BigDecimal("34.56"), OrderStatus.PendingNew));
         reports.add(createAndSaveER("b12", "b11", getInstrumentB(), Side.SellShort, new BigDecimal("67.45")));
+        reports.add(createAndSaveER("b12", "b11", getInstrumentB(), Side.SellShort, new BigDecimal("67.45"), OrderStatus.PendingReplace));
         reports.add(createAndSaveER("b13", "b12", getInstrumentB(), Side.SellShort, new BigDecimal("95.34")));
+        reports.add(createAndSaveER("b13", "b12", getInstrumentB(), Side.SellShort, new BigDecimal("95.34"), OrderStatus.PendingReplace));
         reports.add(createAndSaveER("b14", "b13", getInstrumentB(), Side.SellShort, POSITION_SELL_SHORT_B));
+        reports.add(createAndSaveER("b14", "b13", getInstrumentB(), Side.SellShort, POSITION_SELL_SHORT_B, OrderStatus.PendingNew));
         return reports;
     }
 

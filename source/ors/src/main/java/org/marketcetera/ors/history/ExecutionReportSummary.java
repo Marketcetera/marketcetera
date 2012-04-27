@@ -64,7 +64,9 @@ import org.marketcetera.util.misc.ClassVersion;
                 @ColumnResult(name = "position")
                     })
         })
-
+// CD 26-Apr-2012 ORS-84
+// The position queries should ignore PENDING ERs. This is done by excluding ORS with particular order status values.
+// Hibernate maps enums to 0-based index values, so 7, 11, and 15 map to values in the OrderStatus enum, the PENDING values.
 @NamedNativeQueries({
     @NamedNativeQuery(name = "eqPositionForSymbol",query = "select " +
             "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
@@ -75,7 +77,7 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID)",
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "eqAllPositions",query = "select " +
             "e.symbol as symbol, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
@@ -86,7 +88,7 @@ import org.marketcetera.util.misc.ClassVersion;
             "or e.securityType = :securityType) " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, account, actor having position <> 0",
             resultSetMapping = "eqAllPositions"),
     @NamedNativeQuery(name = "futPositionForSymbol",query = "select " +
@@ -97,7 +99,7 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID)",
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "futAllPositions",query = "select " +
             "e.symbol as symbol, e.expiry as expiry, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
@@ -107,7 +109,7 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.securityType = :securityType " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, account, actor having position <> 0",
             resultSetMapping = "futAllPositions"),
     @NamedNativeQuery(name = "optPositionForTuple",query = "select " +
@@ -121,7 +123,7 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID)",
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "optAllPositions",query = "select " +
             "e.symbol as symbol, e.expiry as expiry, e.strikePrice as strikePrice, e.optionType as optionType, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
@@ -131,7 +133,7 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.securityType = :securityType " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
             resultSetMapping = "optAllPositions"),
     @NamedNativeQuery(name = "optPositionsForRoots",query = "select " +
@@ -143,7 +145,7 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.symbol in (:symbols) " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID) " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
             resultSetMapping = "optAllPositions")
         })
@@ -571,7 +573,7 @@ class ExecutionReportSummary extends EntityBase {
         if (instrument != null) {
             mSecurityType = instrument.getSecurityType();
             mSymbol = instrument.getSymbol();
-            InstrumentSummaryFields summaryFields = InstrumentSummaryFields.SELECTOR.forInstrument(instrument);
+            InstrumentSummaryFields<?> summaryFields = InstrumentSummaryFields.SELECTOR.forInstrument(instrument);
             mOptionType = summaryFields.getOptionType(instrument);
             mStrikePrice = summaryFields.getStrikePrice(instrument);
             mExpiry = summaryFields.getExpiry(instrument);
