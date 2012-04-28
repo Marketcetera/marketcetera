@@ -12,22 +12,9 @@ import java.util.Map;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
-import org.marketcetera.core.position.Grouping;
-import org.marketcetera.core.position.ImmutablePositionSupport;
-import org.marketcetera.core.position.MarketDataSupport;
-import org.marketcetera.core.position.PositionEngine;
-import org.marketcetera.core.position.PositionEngineFactory;
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.core.position.*;
 import org.marketcetera.messagehistory.ReportHolder;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.Side;
+import org.marketcetera.trade.*;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -96,26 +83,142 @@ public class PositionEngineImplTest {
         protected void clearReports() {
             reports.clear();
         }
-
-        protected void addTrade(Instrument instrument, String account, long traderId, Side side,
-                String quantity, String price, long sequence) {
-            add(new MockExecutionReport(account, instrument, traderId, side, price, quantity, sequence,
-                    OrderStatus.Filled));
+        /**
+         * Adds a trade with the given attributes.
+         *
+         * @param instrument an <code>Instrument</code> value
+         * @param account a <code>String</code> value
+         * @param traderId a <code>String</code> value
+         * @param side a <code>Side</code> value
+         * @param quantity a <code>String</code> value 
+         * @param price a <code>String</code> value
+         * @param inOrderStatus an <code>OrderStatus</code> value
+         * @param inExecutionType an <code>ExecutionType</code> value
+         * @param inOriginator an <code>Originator</code> value
+         */
+        protected void addTrade(Instrument instrument,
+                                String account,
+                                long traderId,
+                                Side side,
+                                String quantity,
+                                String price,
+                                long sequence,
+                                OrderStatus inOrderStatus,
+                                ExecutionType inExecutionType,
+                                Originator inOriginator)
+        {
+            add(new MockExecutionReport(account,
+                                        instrument,
+                                        traderId,
+                                        side,
+                                        price,
+                                        quantity,
+                                        sequence,
+                                        inOrderStatus,
+                                        inExecutionType,
+                                        inOriginator));
         }
 
         protected void addEquityTrade(String symbol, String account, Side side, String quantity,
                 String price) {
             addEquityTrade(symbol, account, "1", side, quantity, price);
         }
-
+        /**
+         * Adds a trade with the given attributes.
+         *
+         * @param inSymbol a <code>String</code> value
+         * @param inAccount a <code>String</code> value
+         * @param inSide a <code>Side</code> value
+         * @param inQuantity a <code>String</code> value 
+         * @param inPrice a <code>String</code> value
+         * @param inOrderStatus an <code>OrderStatus</code> value
+         * @param inExecutionType an <code>ExecutionType</code> value
+         * @param inOriginator an <code>Originator</code> value
+         */
+        protected void addEquityTrade(String inSymbol,
+                                      String inAccount,
+                                      Side inSide,
+                                      String inQuantity,
+                                      String inPrice,
+                                      OrderStatus inOrderStatus,
+                                      ExecutionType inExecutionType,
+                                      Originator inOriginator)
+        {
+            addEquityTrade(inSymbol,
+                           inAccount,
+                           "1",
+                           inSide,
+                           inQuantity,
+                           inPrice,
+                           inOrderStatus,
+                           inExecutionType,
+                           inOriginator);
+        }
         protected void addEquityTrade(String symbol, String account, String traderId, Side side,
                 String quantity, String price) {
             addTrade(new Equity(symbol), account, traderId, side, quantity, price);
         }
-
-        protected void addTrade(Instrument instrument, String account, String traderId, Side side,
-                String quantity, String price) {
-            addTrade(instrument, account, Long.valueOf(traderId), side, quantity, price, ++tradeCounter);
+        /**
+         * Adds a trade with the given attributes.
+         *
+         * @param inSymbol a <code>String</code> value
+         * @param inAccount a <code>String</code> value
+         * @param inTraderId a <code>String</code> value
+         * @param inSide a <code>Side</code> value
+         * @param inQuantity a <code>String</code> value 
+         * @param inPrice a <code>String</code> value
+         * @param inOrderStatus an <code>OrderStatus</code> value
+         * @param inExecutionType an <code>ExecutionType</code> value
+         * @param inOriginator an <code>Originator</code> value
+         */
+        protected void addEquityTrade(String inSymbol,
+                                      String inAccount,
+                                      String inTraderId,
+                                      Side inSide,
+                                      String inQuantity,
+                                      String inPrice,
+                                      OrderStatus inOrderStatus,
+                                      ExecutionType inExecutionType,
+                                      Originator inOriginator)
+        {
+            addTrade(new Equity(inSymbol),
+                     inAccount,
+                     Long.valueOf(inTraderId),
+                     inSide,
+                     inQuantity,
+                     inPrice,
+                     ++tradeCounter,
+                     inOrderStatus,
+                     inExecutionType,
+                     inOriginator);
+        }
+        /**
+         * Adds a trade with the given attributes.
+         *
+         * @param instrument an <code>Instrument</code> value
+         * @param account a <code>String</code> value
+         * @param traderId a <code>String</code> value
+         * @param side a <code>Side</code> value
+         * @param quantity a <code>String</code> value 
+         * @param price a <code>String</code> value
+         */
+        protected void addTrade(Instrument instrument,
+                                String account,
+                                String traderId,
+                                Side side,
+                                String quantity,
+                                String price)
+        {
+            addTrade(instrument,
+                     account,
+                     Long.valueOf(traderId),
+                     side,
+                     quantity,
+                     price,
+                     ++tradeCounter,
+                     OrderStatus.Filled,
+                     ExecutionType.Fill,
+                     Originator.Broker);
         }
 
         private void add(ReportBase report) {
@@ -152,12 +255,15 @@ public class PositionEngineImplTest {
             @Override
             protected void initReports() {
                 addEquityTrade("METC", "personal", Side.Buy, "1000", "500");
+                addEquityTrade("METC", "personal", Side.Buy, "500", "200", OrderStatus.PendingCancel, ExecutionType.Fill, Originator.Broker);
+                addEquityTrade("METC", "personal", Side.Buy, "1000", "500", OrderStatus.Filled, ExecutionType.Fill, Originator.Server);
+                addEquityTrade("METC", "personal", Side.Buy, "1000", "500", OrderStatus.Filled, ExecutionType.New, Originator.Broker);
             }
 
             @Override
             protected void validatePositions(EventList<PositionRow> positions) {
                 assertThat(positions.size(), is(1));
-                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1000");
+                assertEquityPosition(positions.get(0), "METC", "personal", "1", "1500");
             }
         }.run();
     }
@@ -170,10 +276,18 @@ public class PositionEngineImplTest {
             protected void initReports() {
                 addEquityTrade("METC", "personal", Side.Buy, "1000", "1");
                 addEquityTrade("METC", "personal", Side.Buy, "104", "1");
+                addEquityTrade("METC", "personal", Side.Buy, "104", "1", OrderStatus.Filled, ExecutionType.Fill, Originator.Server);
+                addEquityTrade("METC", "personal", Side.Buy, "104", "1", OrderStatus.Filled, ExecutionType.New, Originator.Broker);
                 addEquityTrade("METC", "work", Side.Buy, "70", "1");
+                addEquityTrade("METC", "work", Side.Buy, "70", "1", OrderStatus.PartiallyFilled, ExecutionType.PartialFill, Originator.Server);
+                addEquityTrade("METC", "work", Side.Buy, "70", "1", OrderStatus.PartiallyFilled, ExecutionType.New, Originator.Broker);
                 addEquityTrade("GOOG", "personal", Side.Buy, "45.5", "1");
+                addEquityTrade("GOOG", "personal", Side.Buy, "45.5", "1", OrderStatus.Filled, ExecutionType.Fill, Originator.Server);
+                addEquityTrade("GOOG", "personal", Side.Buy, "45.5", "1", OrderStatus.Filled, ExecutionType.New, Originator.Broker);
                 addEquityTrade("YHOO", "work", Side.Buy, "20", "1");
                 addEquityTrade("YHOO", "work", Side.Sell, "6", "1");
+                addEquityTrade("YHOO", "work", Side.Sell, "6", "1", OrderStatus.Filled, ExecutionType.Fill, Originator.Server);
+                addEquityTrade("YHOO", "work", Side.Sell, "6", "1", OrderStatus.Filled, ExecutionType.New, Originator.Broker);
                 addEquityTrade("ABC", "work", Side.Sell, "100", "1");
                 addEquityTrade("ABC", "work", Side.Buy, "20", "1");
                 addEquityTrade("ABC", "work", "2", Side.Buy, "20", "1");

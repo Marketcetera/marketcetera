@@ -36,11 +36,35 @@ public class MockExecutionReport implements ExecutionReport {
 	private final BigDecimal mPrice;
 	private final BigDecimal mQuantity;
 	private final OrderStatus mStatus;
+	private final ExecutionType executionType;
+	private final Originator originator;
 	private final ReportID mId;
 	private UserID mViewer;	
-	
-	public MockExecutionReport(String account, Instrument instrument, long trader, Side side,
-			String price, String quantity, long sequence, OrderStatus status) {
+	/**
+	 * Create a new MockExecutionReport instance.
+	 *
+	 * @param account a <code>String</code> value
+	 * @param instrument an <code>Instrument</code> value
+	 * @param trader a <code>long</code> value
+	 * @param side a <code>Side</code> value
+	 * @param price a <code>String</code> value
+	 * @param quantity a <code>String</code> value
+	 * @param sequence a <code>long</code> value
+	 * @param status an <code>OrderStatus</code> value
+	 * @param inExecutionType an <code>ExecutionType</code> value
+	 * @param inOriginator an <code>Originator</code> value
+	 */
+	public MockExecutionReport(String account,
+	                           Instrument instrument,
+	                           long trader,
+	                           Side side,
+	                           String price,
+	                           String quantity,
+	                           long sequence,
+	                           OrderStatus status,
+	                           ExecutionType inExecutionType,
+	                           Originator inOriginator)
+	{
 		mAccount = account;
 		mInstrument = instrument;
 		mSide = side;
@@ -49,6 +73,8 @@ public class MockExecutionReport implements ExecutionReport {
 		mStatus = status;
 		mId = new ReportID(sequence);
 		mViewer = new UserID(trader);
+		executionType = inExecutionType;
+		originator = inOriginator;
 	}
 
 	@Override
@@ -118,7 +144,7 @@ public class MockExecutionReport implements ExecutionReport {
 
 	@Override
 	public ExecutionType getExecutionType() {
-		return null;
+		return executionType;
 	}
 
 	@Override
@@ -148,7 +174,7 @@ public class MockExecutionReport implements ExecutionReport {
 
 	@Override
 	public Originator getOriginator() {
-		return null;
+		return originator;
 	}
 
 	@Override
