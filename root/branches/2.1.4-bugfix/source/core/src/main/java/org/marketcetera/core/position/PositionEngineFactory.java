@@ -7,12 +7,7 @@ import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.impl.Messages;
 import org.marketcetera.core.position.impl.PositionEngineImpl;
 import org.marketcetera.messagehistory.ReportHolder;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.ReportID;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -162,10 +157,16 @@ public class PositionEngineFactory {
 
         @Override
         public boolean matches(ReportBase item) {
-            OrderStatus orderStatus = item.getOrderStatus();
-            return item instanceof ExecutionReport
-                    && (orderStatus == OrderStatus.PartiallyFilled || orderStatus == OrderStatus.Filled)
-                    && isValid((ExecutionReport) item);
+            Originator originator = item.getOriginator();
+            if(item instanceof ExecutionReport) {
+                ExecutionReport er = (ExecutionReport)item;
+                ExecutionType executionType = er.getExecutionType();
+                return isValid(er) &&
+                        originator == Originator.Broker &&
+                       (executionType == ExecutionType.Fill || executionType == ExecutionType.PartialFill);
+            } else {
+                return false;
+            }
         }
 
         private boolean isValid(ExecutionReport report) {
