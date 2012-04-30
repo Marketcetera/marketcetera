@@ -161,9 +161,9 @@ public class PositionEngineFactory {
             if(item instanceof ExecutionReport) {
                 ExecutionReport er = (ExecutionReport)item;
                 ExecutionType executionType = er.getExecutionType();
-                return isValid(er) &&
-                        originator == Originator.Broker &&
-                       (executionType == ExecutionType.Fill || executionType == ExecutionType.PartialFill);
+                return originator == Originator.Broker &&
+                       (executionType == ExecutionType.Fill || executionType == ExecutionType.PartialFill) &&
+                       isValid(er);
             } else {
                 return false;
             }
@@ -175,8 +175,8 @@ public class PositionEngineFactory {
                     && notZero(report.getLastQuantity())) {
                 return true;
             } else {
-                Messages.VALIDATION_MATCHER_INVALID_EXECUTION_REPORT.error(
-                        this, report);
+                Messages.VALIDATION_MATCHER_INVALID_EXECUTION_REPORT.warn(PositionEngineFactory.class,
+                                                                          report);
                 return false;
             }
         }
