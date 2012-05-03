@@ -24,10 +24,7 @@ import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
 import org.marketcetera.event.util.PriceAndSizeComparator;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -289,7 +286,9 @@ public class SimulatedExchange
                            .withVolumeChange(randomInteger(1000));
                 }
                 if(requestInstrument instanceof Future) {
-                    // TODO
+                    builder.withContractSize(100)
+                           .withDeliveryType(DeliveryType.PHYSICAL)
+                           .withStandardType(StandardType.STANDARD);
                 }
                 results.add(builder.create());
             }
@@ -1075,6 +1074,11 @@ public class SimulatedExchange
                             tradeBuilder.withExpirationType(getExpirationType((Option)bid.getInstrument()));
                             tradeBuilder.withUnderlyingInstrument(inBook.getUnderlyingInstrument());
                         }
+                        if(bid.getInstrument() instanceof Future) {
+                            tradeBuilder.withContractSize(100)
+                                        .withDeliveryType(DeliveryType.PHYSICAL)
+                                        .withStandardType(StandardType.STANDARD);
+                        }
                         TradeEvent trade = tradeBuilder.create();
                         // these events are used to modify the orders in the book
                         BidEvent bidCorrection;
@@ -1434,6 +1438,14 @@ public class SimulatedExchange
                 bidBuilder.withExpirationType(getExpirationType((Option)marketInstrument));
                 askBuilder.withUnderlyingInstrument(underlyingInstrument);
                 bidBuilder.withUnderlyingInstrument(underlyingInstrument);
+            }
+            if(marketInstrument instanceof Future) {
+                askBuilder.withContractSize(100)
+                          .withDeliveryType(DeliveryType.PHYSICAL)
+                          .withStandardType(StandardType.STANDARD);
+                bidBuilder.withContractSize(100)
+                          .withDeliveryType(DeliveryType.PHYSICAL)
+                          .withStandardType(StandardType.STANDARD);
             }
             // create the events
             process(askBuilder.create());

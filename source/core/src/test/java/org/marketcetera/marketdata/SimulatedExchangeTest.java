@@ -19,13 +19,11 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.*;
 import org.marketcetera.event.impl.QuoteEventBuilder;
 import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.marketdata.SimulatedExchange.Token;
 import org.marketcetera.marketdata.SimulatedExchange.TopOfBook;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.test.CollectionAssert;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -72,6 +70,9 @@ public class SimulatedExchangeTest
                                                 goog1Put.getExpiry(),
                                                 goog1Put.getStrikePrice(),
                                                 OptionType.Call);
+    private final Future brn201212 = new Future("BRN",
+                                                FutureExpirationMonth.DECEMBER,
+                                                2012);
     private BidEvent bid;
     private AskEvent ask;
     private static final AtomicLong counter = new AtomicLong(0);
@@ -1455,6 +1456,84 @@ public class SimulatedExchangeTest
             }
         });
         exchange.stop();
+    }
+    /**
+     * Tests the ability of the exchange to deliver a non-zero and non-one contract size. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testFutureContractSize()
+            throws Exception
+    {
+        exchange.start();
+        final AllEventsSubscriber all = new AllEventsSubscriber();
+        Token token = exchange.getTopOfBook(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
+                                            all);
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return all.events.size() >= 10;
+            }
+        });
+        for(Event event : all.events) {
+            assertTrue(event instanceof FutureEvent);
+            assertEquals(100,
+                         ((FutureEvent)event).getContractSize());
+        }
+        exchange.cancel(token);
+        all.events.clear();
+        token = exchange.getDepthOfBook(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
+                                        all);
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return all.events.size() >= 10;
+            }
+        });
+        for(Event event : all.events) {
+            assertTrue(event instanceof FutureEvent);
+            assertEquals(100,
+                         ((FutureEvent)event).getContractSize());
+        }
+        exchange.cancel(token);
+        all.events.clear();
+        token = exchange.getLatestTick(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
+                                       all);
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return all.events.size() >= 10;
+            }
+        });
+        for(Event event : all.events) {
+            assertTrue(event instanceof FutureEvent);
+            assertEquals(100,
+                         ((FutureEvent)event).getContractSize());
+        }
+        exchange.cancel(token);
+        all.events.clear();
+        token = exchange.getStatistics(ExchangeRequestBuilder.newRequest().withInstrument(brn201212).create(),
+                                       all);
+        MarketDataFeedTestBase.wait(new Callable<Boolean>(){
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return all.events.size() >= 10;
+            }
+        });
+        for(Event event : all.events) {
+            assertTrue(event instanceof FutureEvent);
+            assertEquals(100,
+                         ((FutureEvent)event).getContractSize());
+        }
     }
     /**
      * Executes a test to make sure that the given <code>Instrument</code> and underlying <code>Instrument</code>
