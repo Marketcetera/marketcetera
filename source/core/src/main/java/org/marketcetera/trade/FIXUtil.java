@@ -230,22 +230,30 @@ class FIXUtil {
             }
         }
         //See if ExecTransType is available (FIX v < 4.3)
-        if (inMessage.isSetField(ExecTransType.FIELD)) {
+        if (inMessage.isSetField(OrdStatus.FIELD)){
             try {
-                char c = inMessage.getChar(ExecTransType.FIELD);
-                switch(c) {
-                    case ExecTransType.NEW:
-                        return ExecutionType.New;
-                    case ExecTransType.CANCEL:
-                        return ExecutionType.TradeCancel;
-                    case ExecTransType.CORRECT:
-                        return ExecutionType.TradeCorrect;
-                    case ExecTransType.STATUS:
-                        return ExecutionType.OrderStatus;
-                    default:
-                        return ExecutionType.Unknown;
+                char ordStatus = inMessage.getChar(OrdStatus.FIELD);
+                if(ordStatus==OrdStatus.FILLED){
+                    return ExecutionType.Fill;
+                }else if(ordStatus==OrdStatus.PARTIALLY_FILLED){
+                    return ExecutionType.PartialFill;
+                }else if(inMessage.isSetField(ExecTransType.FIELD)) {
+                    char c = inMessage.getChar(ExecTransType.FIELD);
+                    switch(c) {
+                        case ExecTransType.NEW:
+                            return ExecutionType.New;
+                        case ExecTransType.CANCEL:
+                            return ExecutionType.TradeCancel;
+                        case ExecTransType.CORRECT:
+                            return ExecutionType.TradeCorrect;
+                        case ExecTransType.STATUS:
+                            return ExecutionType.OrderStatus;
+                        default:
+                            return ExecutionType.Unknown;
                 }
-            } catch (FieldNotFound ignored) {
+        }
+            }catch(FieldNotFound ignore){
+                
             }
         }
         return null;

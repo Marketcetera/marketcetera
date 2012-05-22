@@ -1047,7 +1047,7 @@ public abstract class LanguageTestBase
     {
         final StrategyCoordinates strategy = getStrategyCompiles();
         final Properties parameters = new Properties();
-        Date callbackAt = new Date(System.currentTimeMillis()+2000);
+        Date callbackAt = new Date(System.currentTimeMillis()+6000);
         parameters.setProperty("shouldRequestCallbackAt",
                                Long.toString(callbackAt.getTime()));
         verifyPropertyNull("onCallback");
@@ -1061,7 +1061,7 @@ public abstract class LanguageTestBase
         stopStrategy(strategyURN);
         assertTrue("The strategy should have been stopped before the callback - increase the callback delay",
                    System.currentTimeMillis() < callbackAt.getTime());
-        Thread.sleep(2500);
+        Thread.sleep(7500);
         // callback should have happened
         assertTrue(System.currentTimeMillis() > callbackAt.getTime());
         verifyPropertyNull("onCallback");

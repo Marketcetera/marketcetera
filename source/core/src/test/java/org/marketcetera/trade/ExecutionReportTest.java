@@ -204,6 +204,7 @@ public class ExecutionReportTest extends TypesTestBase {
                 null, Originator.Server, null, null).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.NEW));
+        msg.setField(new OrdStatus(OrdStatus.NEW));
         assertEquals(ExecutionType.New,
                 sFactory.createExecutionReport(msg, null,
                         Originator.Server, null, null).getExecutionType());
@@ -222,5 +223,13 @@ public class ExecutionReportTest extends TypesTestBase {
         assertEquals(ExecutionType.OrderStatus,
                 sFactory.createExecutionReport(msg, null,
                         Originator.Server, null, null).getExecutionType());
+    }
+    
+    @Test
+    public void execTypeTest() throws Exception{
+    	Message msg = createEmptyExecReport();
+    	msg.setField(new ExecTransType(ExecTransType.STATUS));
+        assertNull(sFactory.createExecutionReport(msg, null,
+                        Originator.Broker, null, null).getExecutionType());
     }
 }
