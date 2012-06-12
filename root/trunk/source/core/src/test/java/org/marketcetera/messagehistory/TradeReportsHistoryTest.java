@@ -464,19 +464,11 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         EventList<ReportHolder> averagePriceList = messageHistory
                 .getAveragePricesList();
 
-        assertEquals(1, averagePriceList.size());
-
-        ReportHolder holder = averagePriceList.get(0);
-        Message returnedMessage = holder.getMessage();
-        assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader()
-                .getString(MsgType.FIELD));
-
-        BigDecimal returnedAvgPrice = returnedMessage.getDecimal(AvgPx.FIELD);
-        assertTrue(new BigDecimal("1000").compareTo(returnedMessage.getDecimal(CumQty.FIELD)) == 0); //$NON-NLS-1$
-        assertEquals(((12.3 * 100) + (12.4 * 900)) / 1000, returnedAvgPrice
-                .doubleValue(), .0001);
-        assertEquals(Side.SELL_SHORT, returnedMessage.getChar(Side.FIELD));
-
+        assertEquals(0, averagePriceList.size());
+        ReportHolder holder;
+        Message returnedMessage;
+        BigDecimal returnedAvgPrice;
+        
         orderID1 = "1"; //$NON-NLS-1$
         clOrderID1 = "1"; //$NON-NLS-1$
         execID = "302"; //$NON-NLS-1$
@@ -491,17 +483,8 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 cumQty, avgPrice, instrument, null, null);
         messageHistory.addIncomingMessage(createServerReport(message));
 
-        assertEquals(2, messageHistory.getAveragePricesList().size());
-        holder = averagePriceList.get(1);
-        returnedMessage = holder.getMessage();
-        assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader()
-                .getString(MsgType.FIELD));
-
-        returnedAvgPrice = returnedMessage.getDecimal(AvgPx.FIELD);
-        assertEquals(Side.BUY, returnedMessage.getChar(Side.FIELD));
-        assertEquals(12.4, returnedAvgPrice.doubleValue(), .0001);
-        assertTrue(new BigDecimal("900").compareTo(returnedMessage.getDecimal(CumQty.FIELD)) == 0); //$NON-NLS-1$
-
+        assertEquals(0, messageHistory.getAveragePricesList().size());
+       
         orderID1 = "1"; //$NON-NLS-1$
         clOrderID1 = "1"; //$NON-NLS-1$
         execID = "305"; //$NON-NLS-1$
@@ -516,18 +499,8 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 cumQty, avgPrice, instrument, null, null);
         messageHistory.addIncomingMessage(createServerReport(message));
 
-        assertEquals(2, messageHistory.getAveragePricesList().size());
-        holder = averagePriceList.get(0);
-        returnedMessage = holder.getMessage();
-        assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader()
-                .getString(MsgType.FIELD));
-
-        returnedAvgPrice = returnedMessage.getDecimal(AvgPx.FIELD);
-        assertEquals(Side.SELL_SHORT, returnedMessage.getChar(Side.FIELD));
-        assertEquals(((12.3 * 100) + (12.4 * 900) + (12.4 * (900))) / 1900,
-                returnedAvgPrice.doubleValue(), .0001);
-        assertTrue(new BigDecimal("1900").compareTo(returnedMessage.getDecimal(CumQty.FIELD)) == 0); //$NON-NLS-1$
-
+        assertEquals(0, messageHistory.getAveragePricesList().size());
+       
     }
 
     public void testAveragePriceList2() throws Exception {
@@ -543,7 +516,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         fill.setField(new ExecType(ExecType.PARTIAL_FILL));
         fill.setField(new LeavesQty(909));
         hist.addIncomingMessage(createServerReport(fill));
-        assertEquals(1, hist.getAveragePricesList().size());
+        assertEquals(0, hist.getAveragePricesList().size());
 
         fill = msgFactory.newExecutionReport("clordid1", "orderid2", "execid1",
                 OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000),
@@ -555,7 +528,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         fill.setField(new ExecType(ExecType.PARTIAL_FILL));
         fill.setField(new LeavesQty(909));
         hist.addIncomingMessage(createServerReport(fill));
-        assertEquals(1, hist.getAveragePricesList().size());
+        assertEquals(0, hist.getAveragePricesList().size());
 
         fill = msgFactory.newExecutionReport("clordid1", "orderid2", "execid2",
                 OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000),
@@ -567,13 +540,8 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         fill.setField(new ExecType(ExecType.PARTIAL_FILL));
         fill.setField(new LeavesQty(909));
         hist.addIncomingMessage(createServerReport(fill));
-        assertEquals(2, hist.getAveragePricesList().size());
-
-        ReportHolder returnedMessageHolder = hist.getAveragePricesList().get(0);
-        Message message = returnedMessageHolder.getMessage();
-        assertEquals("symbol1", message.getString(Symbol.FIELD)); //$NON-NLS-1$
-        assertEquals(0,
-                new BigDecimal("81").compareTo(message.getDecimal(AvgPx.FIELD))); //$NON-NLS-1$
+        assertEquals(0, hist.getAveragePricesList().size());
+       
     }
 
     public void testExecutionReportOrder() throws Exception {
@@ -918,7 +886,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
         TradeReportsHistory history = createMessageHistory();
         history.addIncomingMessage(createServerReport(executionReportA));
         assertEquals(0, history.getFillsList().size());
-        history.addIncomingMessage(createServerReport(executionReportB));
+        history.addIncomingMessage(createBrokerReport(executionReportB));
         assertEquals(1, history.getFillsList().size());
 
     }
