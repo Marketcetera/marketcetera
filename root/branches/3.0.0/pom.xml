@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Author: colin@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>declarations</artifactId>
+    <version>3.0.0</version>
+    <relativePath>uberPom.xml</relativePath>
+  </parent>
+  <groupId>org.marketcetera</groupId>
+  <artifactId>public</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Public Items</name>
+
+  <modules>
+    <module>source</module>
+  </modules>
+
+  <build>
+    <plugins>
+    </plugins>
+  </build>
+</project>
