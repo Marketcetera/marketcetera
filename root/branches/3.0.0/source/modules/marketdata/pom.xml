@@ -19,7 +19,6 @@
     <module>bogus</module>
     <module>csv</module>
     <module>marketcetera</module>
-    <module>reuters</module>
     <module>yahoo</module>
   </modules>
 </project>
