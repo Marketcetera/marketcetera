@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>marketdata</artifactId>
+    <groupId>org.marketcetera</groupId>
+    <version>3.0.0</version>
+  </parent>
+  <groupId>com.marketcetera</groupId>
+  <artifactId>marketdata-reuters</artifactId>
+  <name>Reuters Marketdata Adapter</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+    <!-- compile: local -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <!-- compile: spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <!-- compile: other -->
+    <dependency>
+      <groupId>com.reuters</groupId>
+      <artifactId>jsfc-p2ps</artifactId>
+      <version>[3.5.6]</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- test: local -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>dao</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <!-- test: spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- test: other -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>dao</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <!-- runtime: other -->
+    <dependency>
+      <groupId>com.reuters</groupId>
+      <artifactId>sslj</artifactId>
+      <version>[3.5.6]</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.reuters</groupId>
+      <artifactId>jDacsPrincipal</artifactId>
+      <version>[3.5.6]</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>

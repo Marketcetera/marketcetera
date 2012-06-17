@@ -1,0 +1,2 @@
+#Names of module factory implementations
+com.marketcetera.marketdata.reuters.ReutersFeedModuleFactory
