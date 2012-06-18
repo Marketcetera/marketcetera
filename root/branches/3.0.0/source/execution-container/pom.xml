@@ -1,119 +1,126 @@
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>source</artifactId>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.marketcetera</groupId>
+        <artifactId>public-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+
     <groupId>org.marketcetera</groupId>
-    <version>3.0.0</version>
-  </parent>
-  <artifactId>execution-container</artifactId>
-  <name>Execution Container</name>
-  <url>http://maven.apache.org</url>
-  <dependencies>
-    <!-- compile: local -->
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>dao</artifactId>
-    </dependency>
-    <!-- compile: spring -->
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <!--  test: other -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <!--  runtime: spring -->
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-config</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-aop</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-    </dependency>
-    <!--  runtime: other -->
-    <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-    </dependency>
-  </dependencies>
-  <profiles>
-    <profile>
-      <id>execute</id>
-      <build>
+    <artifactId>execution-container</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <name>Execution Container</name>
+
+    <dependencies>
+        <!-- compile: local -->
+        <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>dao</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+        </dependency>
+        <!-- compile: spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <!--  test: other -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <!--  runtime: spring -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+        <!--  runtime: other -->
+        <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+        </dependency>
+    </dependencies>
+    <profiles>
+        <profile>
+            <id>execute</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>org.marketcetera.executioncontainer.ExecutionContainer</mainClass>
+                            <systemProperties>
+                                <systemProperty>
+                                    <key>org.marketcetera.appDir</key>
+                                    <value>src/test/cmd_exec</value>
+                                </systemProperty>
+                            </systemProperties>
+                            <classpathScope>test</classpathScope>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <mainClass>org.marketcetera.executioncontainer.ExecutionContainer</mainClass>
-              <systemProperties>
-                <systemProperty>
-                  <key>org.marketcetera.appDir</key>
-                  <value>src/test/cmd_exec</value>
-                </systemProperty>
-              </systemProperties>
-              <classpathScope>test</classpathScope>
-            </configuration>
-          </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <!-- this is used for inheritance merges -->
+                        <phase>package</phase>
+                        <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-      </build>
-    </profile>
-  </profiles>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-    <executions>
-      <execution>
-        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-        <phase>package</phase> <!-- bind to the packaging phase -->
-        <goals>
-          <goal>single</goal>
-        </goals>
-      </execution>
-    </executions>
-      </plugin>
-    </plugins>
-  </build>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    </build>
 </project>
