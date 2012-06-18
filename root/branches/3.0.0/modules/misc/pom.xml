@@ -26,8 +26,9 @@
         </dependency>
         <!--  compile: other -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
+            <groupId>org.marketcetera.fork</groupId>
             <artifactId>commons-csv</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
         </dependency>
         <!-- test: local -->
         <dependency>

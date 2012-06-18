@@ -41,10 +41,10 @@
             <groupId>org.jruby</groupId>
             <artifactId>jruby</artifactId>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.nocrala</groupId>-->
-            <!--<artifactId>tools</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.marketcetera.fork</groupId>
+            <artifactId>texttablefmt</artifactId>
+        </dependency>
         <!-- runtime: other -->
         <dependency>
             <groupId>org.slf4j</groupId>
