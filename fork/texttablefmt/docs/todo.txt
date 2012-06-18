@@ -1,0 +1,43 @@
+1. Simplify classes.
+ - done
+ 
+2. Add "colspan" attribute.
+ - Not simple to do, posponed.
+ 
+3. Add methods: newRow(), addCell();
+ - done
+ 
+4. Simplify Table constructor, without using TableStyle.
+ - done
+
+5. Add DESIGN_*_WIDE tiles.
+ - done
+
+6. Include ToString in these tools.
+ - rejected. I will generate separated libraries.
+
+7. Add multi-line tiles.
+
+ _________________________________________________
+(________________________________________________()
+ )                                                )
+ )  Country     Population  Area (km2)   Density  )
+ )  ~~~~~~~~~  ~~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~  )
+ )  Chile       17 000 000   1 250 000     13.60  )
+ )  Argentina   50 000 000   3 000 000     16.67  )
+ )  Brasil      80 000 000   5 000 000     16.00  )
+ )  ~~~~~~~~~  ~~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~  )
+ )  Total      147 000 000   9 250 000     15.89  )
+ )________________________________________________)
+(________________________________________________()
+
+
+8. Add "immediate" Writer, to reduce memory usage.
+
+9. Set minWidth and MaxWidth, per column, rather than per cell.
+ - done
+
+10. Use 5x5 tile grid, instead of a 3x3 tile grid.
+
+11. Add "curtain" tiles.
+ - dode
