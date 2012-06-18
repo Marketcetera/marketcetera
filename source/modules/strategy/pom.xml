@@ -8,105 +8,78 @@
   -->
 
 <project
- xmlns="http://maven.apache.org/POM/4.0.0"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.marketcetera</groupId>
-    <artifactId>modules</artifactId>
-    <version>3.0.0</version>
-  </parent>
-  <artifactId>strategy</artifactId>
-  <packaging>jar</packaging>
-  <name>Strategy Module</name>
-  <dependencies>
-    <!-- compile: local -->
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>bsf</groupId>
-      <artifactId>bsf</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jruby</groupId>
-      <artifactId>jruby</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nocrala</groupId>
-      <artifactId>tools</artifactId>
-    </dependency>
-    <!-- runtime: other -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
-    <!-- test: local -->
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>cep-system</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>marketdata-bogus</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>core</artifactId>
-      <type>test-jar</type>
-    </dependency>
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>util-test</artifactId>
-    </dependency>
-    <!-- test: other -->
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>cep-esper</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-source-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <id>attach-sources</id>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin>    
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-javadoc-plugin</artifactId>
-	<executions>
-	  <execution>
-	    <id>attach-javadocs</id>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin>    
-    </plugins>
-  </build>
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.marketcetera.modules</groupId>
+        <artifactId>modules-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.marketcetera.modules</groupId>
+    <artifactId>strategy</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <name>Strategy Module</name>
+
+    <dependencies>
+        <!-- compile: local -->
+        <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>core</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+        </dependency>
+        <dependency>
+            <groupId>bsf</groupId>
+            <artifactId>bsf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jruby</groupId>
+            <artifactId>jruby</artifactId>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.nocrala</groupId>-->
+            <!--<artifactId>tools</artifactId>-->
+        <!--</dependency>-->
+        <!-- runtime: other -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <!-- test: local -->
+        <dependency>
+            <groupId>org.marketcetera.modules</groupId>
+            <artifactId>cep-system</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera.modules</groupId>
+            <artifactId>marketdata-bogus</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>core</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>util-test</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+        </dependency>
+        <!-- test: other -->
+        <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>cep-esper</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
