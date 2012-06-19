@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-sandbox-parent</artifactId>
-    <version>5</version>
+    <groupId>org.marketcetera.fork</groupId>
+    <artifactId>fork-parent</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.marketcetera.fork</groupId>
@@ -70,7 +70,8 @@
   <properties>
     <commons.componentid>csv</commons.componentid>
     <commons.jira.componentid>12311182</commons.jira.componentid>
-  </properties> 
+    <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
+  </properties>
 
   <build>
       <sourceDirectory>src/java</sourceDirectory>
