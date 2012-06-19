@@ -45,8 +45,8 @@
     <properties>
         <project.groupId>org.marketcetera</project.groupId>
         <mvn.project.version>3.0.0</mvn.project.version>
-        <mvn.spring.version>3.1.1.RELEASE</mvn.spring.version>
-        <mvn.spring.security.version>3.1.0.RELEASE</mvn.spring.security.version>
+        <mvn.spring.version>3.0.7.RELEASE</mvn.spring.version>
+        <mvn.spring.security.version>3.0.7.RELEASE</mvn.spring.security.version>
         <mvn.hibernate.version>4.1.0.Final</mvn.hibernate.version>
         <mvn.cxf.version>2.5.2</mvn.cxf.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -146,6 +146,7 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-api</artifactId>
                 <version>${mvn.cxf.version}</version>
+                <scope>provided</scope>
                 <!-- current version of cxf bundles spring 3.0.6, so exclude its dependencies -->
                 <exclusions>
                     <exclusion>
@@ -166,11 +167,13 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-frontend-jaxws</artifactId>
                 <version>${mvn.cxf.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http</artifactId>
                 <version>${mvn.cxf.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.glazedlists</groupId>
@@ -266,7 +269,7 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>1.6.4</version>
-                <scope>runtime</scope>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>commons-dbcp</groupId>
@@ -296,13 +299,28 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http-jetty</artifactId>
                 <version>${mvn.cxf.version}</version>
-                <scope>runtime</scope>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
     <profiles>
     </profiles>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.3.7</version>
+                    <extensions>true</extensions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>3.0.0-SNAPSHOT</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -329,6 +347,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
                 <executions>
                     <execution>
                         <goals>
@@ -340,6 +359,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
