@@ -35,11 +35,13 @@
             <artifactId>core</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
             <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.marketcetera</groupId>
             <artifactId>util-test</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
+            <scope>test</scope>
         </dependency>
         <!-- test: other -->
         <dependency>
