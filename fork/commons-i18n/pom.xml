@@ -13,6 +13,8 @@
   <name>Commons i18n (Sandbox)</name>
   <description>Internationalization package</description>
 
+  <packaging>bundle</packaging>
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -92,7 +94,18 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.9</version>
       </plugin>
+        <plugin>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>maven-bundle-plugin</artifactId>
+            <configuration>
+                <instructions>
+                    <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                    <ExportPackage>org.apache.commons.i18n.*</ExportPackage>
+                </instructions>
+            </configuration>
+        </plugin>
     </plugins>
   </build>
   <dependencies>

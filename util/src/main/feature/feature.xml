@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="${project.artifactId}">
+    <repository>mvn:org.apache.cxf.karaf/apache-cxf/2.5.2/xml/features</repository>
+    <feature name="${project.artifactId}" version="${project.version}" description="${project.description}">
+        <feature version="${mvn.spring.version}">spring</feature>
+        <feature version="${mvn.cxf.version}">cxf</feature>
+        <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/1.1</bundle>
+    </feature>
+</features>
