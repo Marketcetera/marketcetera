@@ -378,19 +378,19 @@
         <developerConnection>scm:svn:http://source.marketcetera.org/root/branches/3.0.0</developerConnection>
     </scm>
 
-    <repositories>
-        <repository>
+    <pluginRepositories>
+        <pluginRepository>
             <id>apache-snapshots</id>
-            <name>Apache Snapshots</name>
-            <url>http://repository.apache.org/snapshots/</url>
+            <name>Apache Snapshots Repository</name>
+            <url>http://repository.apache.org/content/groups/snapshots-group</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
-    </repositories>
+        </pluginRepository>
+    </pluginRepositories>
 
     <modules>
         <module>core</module>
