@@ -45,8 +45,8 @@
     <properties>
         <project.groupId>org.marketcetera</project.groupId>
         <mvn.project.version>3.0.0</mvn.project.version>
-        <mvn.spring.version>3.0.7.RELEASE</mvn.spring.version>
-        <mvn.spring.security.version>3.0.7.RELEASE</mvn.spring.security.version>
+        <mvn.spring.version>3.1.1.RELEASE</mvn.spring.version>
+        <mvn.spring.security.version>3.1.0.RELEASE</mvn.spring.security.version>
         <mvn.hibernate.version>4.1.0.Final</mvn.hibernate.version>
         <mvn.cxf.version>2.5.2</mvn.cxf.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
