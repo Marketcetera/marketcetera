@@ -6,10 +6,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.ComparableAssert;
 import org.marketcetera.util.test.EqualityAssert;
@@ -27,8 +27,30 @@ import org.marketcetera.util.test.SerializableAssert;
  * @version $Id: IDTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: IDTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
-public class IDTest {
+public class IDTest
+{
+    /**
+     * Run once before all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @BeforeClass
+    public static void once()
+            throws Exception
+    {
+        LoggerConfiguration.logSetup();
+    }
+    /**
+     * Run after each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @After
+    public void cleanup()
+            throws Exception
+    {
+        Factory.getInstance().setOrderIDFactory(new InMemoryIDFactory(0));
+    }
     /**
      * Verify {@link OrderID}
      *

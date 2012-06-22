@@ -282,7 +282,7 @@ public class OptionUtils {
      * This method is provided to facilitate testing. It's not meant to be
      * used outside of unit-testing.
      */
-    static void resetNormalizerLoaded() {
+    public static void resetNormalizerLoaded() {
         sNormalizerLoaded = false;
     }
 
