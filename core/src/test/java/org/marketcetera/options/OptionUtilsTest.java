@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.trade.Option;
@@ -26,8 +27,19 @@ import org.marketcetera.trade.OptionType;
  * @version $Id: OptionUtilsTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-public class OptionUtilsTest {
-    	
+public class OptionUtilsTest
+{
+    /**
+     * Run before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void setup()
+            throws Exception
+    {
+        OptionUtils.resetNormalizerLoaded();
+    }
     /**
      * Verifies {@link OptionUtils#normalizeEquityOptionExpiry(String)} &
      * {@link OptionUtils#normalizeUSEquityOptionExpiry(String)}.

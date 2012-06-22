@@ -558,7 +558,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
                 FIXMessageUtil.mergeMarketDataMessages(messageFactory.createMessage(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH),
                                                        nos, messageFactory);
             }
-        }.run();
+        };
     }
 
     public void testIsCancellable() throws Exception {
