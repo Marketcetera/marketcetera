@@ -1,11 +1,15 @@
 package org.marketcetera.core.position.impl;
 
+import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import ca.odell.glazedlists.impl.beans.BeanConnector;
+import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.matchers.Matchers;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
@@ -16,15 +20,15 @@ import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.core.position.impl.GroupingList.GroupMatcher;
-import org.marketcetera.core.position.impl.GroupingList.GroupMatcherFactory;
+import org.marketcetera.fork.glazed.GroupingList;
+import org.marketcetera.fork.glazed.GroupingList.GroupMatcher;
+import org.marketcetera.fork.glazed.GroupingList.GroupMatcherFactory;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FunctionList;
-import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.ObservableElementList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.FunctionList.AdvancedFunction;
@@ -92,7 +96,7 @@ public final class PositionEngineImpl implements PositionEngine {
     }
 
     /**
-     * Creates group matchers from trades. Used by {@link GroupingList}.
+     * Creates group matchers from trades. Used by {@link org.marketcetera.fork.glazed.GroupingList}.
      */
     @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
     private final static class TradeGroupMatcherFactory implements
@@ -268,11 +272,10 @@ public final class PositionEngineImpl implements PositionEngine {
                         }
                     }
                 });
+        final Matcher<PropertyChangeEvent> byNameMatcher = Matchers.propertyEventNameMatcher(true, "positionMetrics");
         mFlatView = new ObservableElementList<PositionRow>(
                 new SortedList<PositionRow>(mPositionsBase,
-                        new PositionRowComparator()), GlazedLists
-                        .beanConnector(PositionRow.class, true,
-                                "positionMetrics")); //$NON-NLS-1$
+                        new PositionRowComparator()), new BeanConnector<PositionRow>(PositionRow.class, byNameMatcher)); //$NON-NLS-1$
     }
 
     private void addPosition(EventList<Trade<?>> trades) {

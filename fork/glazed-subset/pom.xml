@@ -22,11 +22,6 @@
     </properties>
 
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>net.java.dev.glazedlists</groupId>-->
-            <!--<artifactId>glazedlists_java15</artifactId>-->
-            <!--<version>1.8.0</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.marketcetera</groupId>
             <artifactId>util</artifactId>
@@ -50,7 +45,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.marketcetera.fork.glazed, ca.odell.glazedlists</Export-Package>
+                        <Export-Package>ca.odell.glazedlists.*,org.marketcetera.fork.glazed</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
