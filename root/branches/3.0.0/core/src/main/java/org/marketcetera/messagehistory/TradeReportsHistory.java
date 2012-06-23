@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import ca.odell.glazedlists.impl.ReadOnlyList;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.trade.ExecutionReport;
@@ -26,7 +27,6 @@ import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
-import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.GroupingList;
 
 /* $License$ */
@@ -99,9 +99,8 @@ public class TradeReportsHistory {
         mAllMessages = new BasicEventList<ReportHolder>();
         mReadLock = mAllMessages.getReadWriteLock().readLock();
         mWriteLock = mAllMessages.getReadWriteLock().writeLock();
-        mReadOnlyAllMessages = GlazedLists.readOnlyList(mAllMessages);
-        mReadOnlyFillMessages = GlazedLists.readOnlyList(new FilterList<ReportHolder>(mAllMessages,
-                new ReportFillMatcher()));
+        mReadOnlyAllMessages = new ReadOnlyList<ReportHolder>(mAllMessages);
+        mReadOnlyFillMessages = new ReadOnlyList<ReportHolder>(new FilterList<ReportHolder>(mAllMessages, new ReportFillMatcher()));
         GroupingList<ReportHolder> orderIDList = new GroupingList<ReportHolder>(mAllMessages,
                 new ReportGroupIDComparator());
         mLatestExecutionReportsList = new FilterList<ReportHolder>(
@@ -111,11 +110,11 @@ public class TradeReportsHistory {
                 new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
                         new LatestReportFunction()), new NotNullReportMatcher());
         mAveragePriceList = new AveragePriceReportList(messageFactory, mAllMessages);
-        mReadOnlyAveragePriceList = GlazedLists.readOnlyList(mAveragePriceList);
+        mReadOnlyAveragePriceList = new ReadOnlyList<ReportHolder>(mAveragePriceList);
         mOpenOrderList = new FilterList<ReportHolder>(
                 new FunctionList<List<ReportHolder>, ReportHolder>(orderIDList,
                         new OpenOrderListFunction()), new NotNullReportMatcher());
-        mReadOnlyOpenOrderList = GlazedLists.readOnlyList(mOpenOrderList);
+        mReadOnlyOpenOrderList = new ReadOnlyList<ReportHolder>(mOpenOrderList);
 
         mOriginalOrderACKs = new HashMap<OrderID, ReportHolder>();
         mOrderIDToGroupMap = new HashMap<OrderID, OrderID>();
