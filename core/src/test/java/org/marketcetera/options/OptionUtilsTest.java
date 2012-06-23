@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.trade.Option;
@@ -30,17 +29,6 @@ import org.marketcetera.trade.OptionType;
 public class OptionUtilsTest
 {
     /**
-     * Run before each test.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Before
-    public void setup()
-            throws Exception
-    {
-        OptionUtils.resetNormalizerLoaded();
-    }
-    /**
      * Verifies {@link OptionUtils#normalizeEquityOptionExpiry(String)} &
      * {@link OptionUtils#normalizeUSEquityOptionExpiry(String)}.
      *
@@ -52,32 +40,47 @@ public class OptionUtilsTest
 	    assertNormalized("201001", "20100116");
 	    assertNormalized("201005", "20100522");
         assertNormalized("203712", "20371219");
-        assertNormalized("20371212", null);
-        assertNormalized("abc", null);
-        assertNormalized("", null);
-        assertNormalized("  ", null);
-        assertNormalized("      ", null);
-        assertNormalized("2009xx", null);
-        assertNormalized("xxxx05", null);
-        assertNormalized("200900", null);
-        assertNormalized("200913", null);
+        assertNormalized("20371212", "20371212");
+        String[] badExpiries = new String[] { "abc","","      ","2009xx","xxxx05","200900","200913" };
+        for(final String badExpiry : badExpiries) {
+            new ExpectedFailure<IllegalArgumentException>() {
+                @Override
+                protected void run()
+                        throws Exception
+                {
+                    new OptionUtils().normalizeUSEquityOptionExpiry(badExpiry);
+                }
+            };
+            new ExpectedFailure<IllegalArgumentException>() {
+                @Override
+                protected void run()
+                        throws Exception
+                {
+                    new OptionUtils().normalizeEquityOptionExpiry(badExpiry);
+                }
+            };
+        }
         new ExpectedFailure<NullPointerException>() {
             @Override
-            protected void run() throws Exception {
-                OptionUtils.normalizeUSEquityOptionExpiry(null);
+            protected void run()
+                    throws Exception
+            {
+                new OptionUtils().normalizeUSEquityOptionExpiry(null);
             }
         };
         new ExpectedFailure<NullPointerException>() {
             @Override
-            protected void run() throws Exception {
-                OptionUtils.normalizeEquityOptionExpiry(null);
+            protected void run()
+                    throws Exception
+            {
+                new OptionUtils().normalizeEquityOptionExpiry(null);
             }
         };
     }
 
     private void assertNormalized(String expiry, String expected) {
-        assertThat(OptionUtils.normalizeUSEquityOptionExpiry(expiry), is(expected));
-        assertThat(OptionUtils.normalizeEquityOptionExpiry(expiry), is(expected));
+        assertThat(new OptionUtils().normalizeUSEquityOptionExpiry(expiry), is(expected));
+        assertThat(new OptionUtils().normalizeEquityOptionExpiry(expiry), is(expected));
     }
     
     /**
