@@ -1,15 +1,13 @@
-package org.marketcetera.core.position.impl;
+package org.marketcetera.fork.glazed;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.marketcetera.util.misc.ClassVersion;
-
 import ca.odell.glazedlists.AbstractEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventAssembler;
@@ -17,7 +15,9 @@ import ca.odell.glazedlists.impl.adt.Barcode;
 import ca.odell.glazedlists.impl.adt.barcode2.Element;
 import ca.odell.glazedlists.impl.adt.barcode2.SimpleTree;
 import ca.odell.glazedlists.impl.adt.barcode2.SimpleTreeIterator;
+import ca.odell.glazedlists.impl.sort.ComparableComparator;
 import ca.odell.glazedlists.matchers.Matcher;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -49,8 +49,7 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
      * The GroupLists that make up this GroupingList in sorted order (sorted by their
      * GroupMatchers).
      */
-    private SimpleTree<GroupList> groupLists = new SimpleTree<GroupList>(GlazedLists
-            .comparableComparator());
+    private SimpleTree<GroupList> groupLists = new SimpleTree<GroupList>((Comparator<Comparable>) new ComparableComparator());
 
     private GroupMatcherFactory<E, GroupMatcher<E>> factory;
 
