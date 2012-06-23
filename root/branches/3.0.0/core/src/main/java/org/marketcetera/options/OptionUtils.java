@@ -11,75 +11,92 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Various option related utilities. 
+ * Provides various option related utilities. 
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OptionUtils.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
 @ClassVersion("$Id: OptionUtils.java 16063 2012-01-31 18:21:55Z colin $")
-public class OptionUtils {
-
-    private static Calendar getSaturdayAfterThirdFriday(int month, int year) {
-        Calendar cal = new GregorianCalendar(year, month, 1);
+public class OptionUtils
+{
+    /**
+     * Gets the <code>Calendar</code> value of the Saturday after the third Friday
+     * of the given month and year in the default timezone of the default localte.
+     *
+     * @param inMonth an <code>int</code> value containing the month in the range 0-11
+     * @param inYear an <code>int</code> value containing the year in YYYY format
+     * @return a <code>Calendar</code> value indicating the specified date
+     */
+    private Calendar getSaturdayAfterThirdFriday(int inMonth,
+                                                 int inYear)
+    {
+        Calendar cal = new GregorianCalendar(inYear,
+                                             inMonth,
+                                             1);
 		int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
 		int firstFridayOffset = (Calendar.FRIDAY - dayOfWeek + 7)%7;
-		cal.add(Calendar.DAY_OF_MONTH, firstFridayOffset + 15); // two weeks and a day
+		cal.add(Calendar.DAY_OF_MONTH,
+		        firstFridayOffset + 15); // two weeks and a day
         return cal;
     }
-
     /**
-     * Adds day to a YYYYMM expiry string. The day is the Saturday after the
-     * third Friday of the month (US standard rules). If the provided expiry is
-     * not YYYYMM, or cannot be normalized for any reason, null is returned.
+     * Adds day to a YYYYMM expiry string.
      * 
-     * @param expiry an option expiry string
-     * @return the expiry in YYYYMMDD, or null
+     * <p>If the given expiry is already in YYYYMMDD format, the given expiry is returned without
+     * modification. Note that, in this case, the expiry is assumed to be correct if it is a string
+     * of eight numbers - no further validation is performed.</p>
+     * 
+     * <p>The day added is the Saturday after the third Friday of the month (US standard rules).</p>
+     * 
+     * @param inExpiry a <code>String</code> value containing an expiry in YYYYMM format
+     * @return a <code>String</code> value containing the expiry in YYYYMMDD
+     * @throws IllegalArgumentException is the provided expiry is not YYYYMM or cannot be normalized
      */
-    public static String normalizeUSEquityOptionExpiry(String expiry) {
-        if (expiry.length() == 6) {
+    public String normalizeUSEquityOptionExpiry(String inExpiry)
+    {
+        if(inExpiry.length() == 8 &&
+           YYYYMMDD.matcher(inExpiry).matches()) {
+            return inExpiry;
+        }
+        if(inExpiry.length() == 6 &&
+           YYYYMM.matcher(inExpiry).matches()) {
             try {
-                int expiryYear = Integer.parseInt(expiry.substring(0, 4));
-                int expiryMonth = Integer.parseInt(expiry.substring(4));
-                if (expiryMonth > 0 && expiryMonth < 13) {
+                int expiryYear = Integer.parseInt(inExpiry.substring(0,
+                                                                     4));
+                int expiryMonth = Integer.parseInt(inExpiry.substring(4));
+                if(expiryMonth > 0 &&
+                   expiryMonth < 13) {
                     Calendar cal = getSaturdayAfterThirdFriday(expiryMonth - 1,
-                            expiryYear);
+                                                               expiryYear);
                     int expiryDay = cal.get(Calendar.DAY_OF_MONTH);
-                    return String.format("%s%02d", expiry, expiryDay); //$NON-NLS-1$
+                    return String.format("%s%02d", //$NON-NLS-1$
+                                         inExpiry,
+                                         expiryDay);
                 }
             } catch (NumberFormatException e) {
-                // unsupported format, return expiry as is
+                throw new IllegalArgumentException(e);
             }
         }
-        return null;
+        throw new IllegalArgumentException();
     }
-
     /**
      * Normalizes the supplied expiry date with a day if it doesn't
-     * include the day, ie. if it's in YYYYMM format. If the supplied
-     * expiry doesn't need to be normalized or cannot be normalized, a
-     * null value is returned back.
-     * <p>
-     * This method looks for a {@link OptionExpiryNormalizer custom} option
-     * expiry normalization implementation. If one is found, that implementation
-     * is used to carry out the option expiry normalization. If no such
-     * implementation is found the
-     * {@link #normalizeUSEquityOptionExpiry(String) US option expiry}
-     * normalization is applied. 
-     *  
-     * @param inExpiry the option expiry string.
-     *
-     * @return the expiry in YYYYMMDD, if the supplied expiry was normalized,
-     * null if it wasn't.
+     * include the day, ie. if it's in YYYYMM format.
+     * 
+     * @param inExpiry a <code>String</code> value containing the option expiry string to be normalized
+     * @return a <code>String</code> value in YYYYMMDD
+     * @throws IllegalArgumentException if the expiry could not be normalized
      */
-    public static String normalizeEquityOptionExpiry(String inExpiry) {
+    public String normalizeEquityOptionExpiry(String inExpiry)
+    {
         OptionExpiryNormalizer normalizer = getNormalizer();
         if(normalizer != null) {
             return normalizer.normalizeEquityOptionExpiry(inExpiry);
         }
         return normalizeUSEquityOptionExpiry(inExpiry);
     }
-
     /**
 	 * Gets the <code>OptionType</code> value for the given character
 	 * interpreted as an OSI-compliant symbol value.
@@ -227,82 +244,38 @@ public class OptionUtils {
         return extrapolatedYear;
     }
     /**
-     * Load the custom option expiry normalizer if any.
+     * Gets the normalizer value.
      *
-     * @return the custom option expiry normalizer if found, null otherwise.
+     * @return an <code>OptionExpiryNormalizer</code> or <code>null</code> if no normalizer is available
      */
-    private static OptionExpiryNormalizer getNormalizer() {
-        if (sNormalizerLoaded) {
-            return sOptionExpiryNormalizer;
-        }
-        synchronized (OptionUtils.class) {
-            if (!sNormalizerLoaded) {
-                Class<OptionExpiryNormalizer> normalizerClass = OptionExpiryNormalizer.class;
-                //Use the context class loader when unit testing to facilitate unit testing
-                /*
-                * The following section of code uses the classloader for this jar
-                * for loading the custom loader in a production install.
-                * It is written to use the thread context classloader within
-                * a unit test run to facilitate testing of this code from within
-                * a unit test.
-                * It is not desirable to use the context classloader in production
-                * as it might yield different results depending on the context
-                * it is invoked from.
-                */
-                ClassLoader cl = sIsTest
-                        ? Thread.currentThread().getContextClassLoader()
-                        : normalizerClass.getClassLoader();
-                OptionExpiryNormalizer normalizer = null;
-                try {
-                    ServiceLoader<OptionExpiryNormalizer> loader = ServiceLoader.load(
-                            normalizerClass, cl);
-                    Iterator<OptionExpiryNormalizer> iter = loader.iterator();
-                    if (iter.hasNext()) {
-                        normalizer = iter.next();
-                    }
-                } catch (Exception e) {
-                    Messages.LOG_ERROR_LOADING_OPTION_EXPIRY_NORMALIZER.warn(OptionUtils.class, e);
-                } catch (ServiceConfigurationError e) {
-                    Messages.LOG_ERROR_LOADING_OPTION_EXPIRY_NORMALIZER.warn(OptionUtils.class, e);
-                } finally {
-                    if (normalizer != null) {
-                        Messages.LOG_OPTION_EXPIRY_NORMALIZER_CUSTOMIZED.info(
-                                OptionUtils.class,
-                                normalizer.getClass().getName());
-                    }
-                    sOptionExpiryNormalizer = normalizer;
-                    sNormalizerLoaded = true;
-                }
-            }
-            return sOptionExpiryNormalizer;
-        }
+    public OptionExpiryNormalizer getNormalizer()
+    {
+        return optionExpiryNormalizer;
     }
-
     /**
-     * This method is provided to facilitate testing. It's not meant to be
-     * used outside of unit-testing.
+     * Sets the normalizer value.
+     *
+     * @param inNormalizer an <code>OptionExpiryNormalizer</code> value
      */
-    public static void resetNormalizerLoaded() {
-        sNormalizerLoaded = false;
+    public void setNormalizer(OptionExpiryNormalizer inNormalizer)
+    {
+        optionExpiryNormalizer = inNormalizer;
     }
-
     /**
-     * Sets up the class for testing. When setup for testing,
-     * the {@link #getNormalizer()} method uses the Thread context classloader
-     * to load the custom option normalizer instead of the current class'
-     * classloader.
-     * <p>
-     * This method is only meant to be invoked from a unit test.
+     * option expiry normalizer value
      */
-    static void setupForTest() {
-        sIsTest = true;
-    }
+    private volatile OptionExpiryNormalizer optionExpiryNormalizer;
     /**
      * this pattern does a basic syntax check of a symbol to see if it complies with the OSI
      * note that this pattern does not check the expiry date to see if it is completely valid, for example Feb 31st would be valid
      */
     private static final Pattern OSI_SYMBOL_PATTERN = Pattern.compile(".{6}\\d{2}(0\\d|1[0-2])(0[1-9]|[12]\\d|3[01])(C|P)\\d{5}\\d{3}"); //$NON-NLS-1$
-    private static volatile OptionExpiryNormalizer sOptionExpiryNormalizer;
-    private static volatile boolean sNormalizerLoaded = false;
-    private static volatile boolean sIsTest = false;
+    /**
+     * pattern used to check the syntax of a short expiry
+     */
+    private static final Pattern YYYYMM = Pattern.compile("\\d{6}"); //$NON-NLS-1$
+    /**
+     * pattern used to check the syntax of a long expiry
+     */
+    private static final Pattern YYYYMMDD = Pattern.compile("\\d{8}"); //$NON-NLS-1$
 }

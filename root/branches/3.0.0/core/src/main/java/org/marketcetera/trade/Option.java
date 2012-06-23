@@ -71,7 +71,14 @@ public class Option extends Instrument {
         mSymbol = symbol;
         mType = type;
         mExpiry = expiry;
-        mAugmentedExpiry = OptionUtils.normalizeEquityOptionExpiry(mExpiry);
+        String tmpAugmentedExpiry = null;
+        try {
+            tmpAugmentedExpiry = new OptionUtils().normalizeEquityOptionExpiry(mExpiry);
+            if(mExpiry.equals(tmpAugmentedExpiry)) {
+                tmpAugmentedExpiry = null;
+            }
+        } catch (IllegalArgumentException ignored) {}
+        mAugmentedExpiry = tmpAugmentedExpiry;
         strikePrice = strikePrice.stripTrailingZeros();
         if(strikePrice.scale() < 0) {
             //reset the scale if the number is a multiple of 10
