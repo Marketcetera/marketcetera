@@ -58,8 +58,8 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.marketcetera.fork</groupId>
