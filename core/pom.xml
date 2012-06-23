@@ -128,12 +128,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <ExportPackage>org.marketcetera.*</ExportPackage>
-                        <Embed-Dependency>glazedlists_java15</Embed-Dependency>
-                        <Import-Package>
-                            !com.jgoodies.forms.layout,!com.publicobject.*,!de.kupzog.ktable,!net.sf.nachocalendar.*,
-                            !org.eclipse.jface.viewers,!org.eclipse.swt.*,!org.hibernate.*,!org.jdesktop.*,*
-                        </Import-Package>
+                        <Export-Package>org.marketcetera.*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
