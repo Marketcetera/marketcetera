@@ -90,6 +90,15 @@
             <artifactId>cxf-rt-transports-http</artifactId>
         </dependency>
 
+        <!-- Features -->
+        <dependency>
+            <groupId>org.apache.cxf.karaf</groupId>
+            <artifactId>apache-cxf</artifactId>
+            <version>${mvn.cxf.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+
         <!-- Runtime. -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
