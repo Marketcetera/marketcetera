@@ -9,23 +9,16 @@ import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
-import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
-import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.marketcetera.marketdata.Content;
-
+import org.marketcetera.photon.internal.marketdata.EObjectLockableCopyOnReadContainmentEList;
+import org.marketcetera.photon.internal.marketdata.LockableEList;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDQuote;
-
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -74,7 +67,7 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * @generated
      * @ordered
      */
-    protected volatile EList<MDQuote> bids;
+    protected volatile LockableEList<MDQuote> bids;
 
     /**
      * The cached value of the '{@link #getAsks() <em>Asks</em>}' containment reference list.
@@ -84,7 +77,7 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * @generated
      * @ordered
      */
-    protected volatile EList<MDQuote> asks;
+    protected volatile LockableEList<MDQuote> asks;
 
     /**
      * <!-- begin-user-doc -->
@@ -132,10 +125,11 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EList<MDQuote> getBids() {
+    public LockableEList<MDQuote> getBids() {
         if (bids == null) {
-            bids = new EObjectContainmentEList<MDQuote>(MDQuote.class, this,
-                    MDPackage.MD_DEPTH_OF_BOOK__BIDS);
+            bids = new EObjectLockableCopyOnReadContainmentEList<MDQuote>(MDQuote.class,
+                                                                          this,
+                                                                          MDPackage.MD_DEPTH_OF_BOOK__BIDS);
         }
         return bids;
     }
@@ -145,10 +139,11 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
      * <!-- end-user-doc -->
      * @generated
      */
-    public EList<MDQuote> getAsks() {
+    public LockableEList<MDQuote> getAsks() {
         if (asks == null) {
-            asks = new EObjectContainmentEList<MDQuote>(MDQuote.class, this,
-                    MDPackage.MD_DEPTH_OF_BOOK__ASKS);
+            asks = new EObjectLockableCopyOnReadContainmentEList<MDQuote>(MDQuote.class,
+                                                                          this,
+                                                                          MDPackage.MD_DEPTH_OF_BOOK__ASKS);
         }
         return asks;
     }
@@ -268,5 +263,4 @@ public class MDDepthOfBookImpl extends MDItemImpl implements MDDepthOfBook {
         result.append(')');
         return result.toString();
     }
-
 } //MDDepthOfBookImpl

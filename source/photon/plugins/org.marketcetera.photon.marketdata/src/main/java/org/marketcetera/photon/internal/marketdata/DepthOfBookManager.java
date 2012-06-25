@@ -1,8 +1,8 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
 import org.marketcetera.event.AskEvent;
@@ -122,22 +122,36 @@ public class DepthOfBookManager extends
             final MDDepthOfBookImpl item) {
         assert key != null;
         assert item != null;
-        synchronized (item) {
-            mIdMap.remove(item);
-            item.getBids().clear();
-            item.getAsks().clear();
-        }
+        mIdMap.remove(item);
+        final LockableEList<MDQuote> bidsList = item.getBids();
+        bidsList.doWriteOperation(new Callable<Object>() {
+            @Override
+            public Object call()
+                    throws Exception
+            {
+                bidsList.clear();
+                return null;
+            }
+        });
+        final LockableEList<MDQuote> asksList = item.getAsks();
+        bidsList.doWriteOperation(new Callable<Object>() {
+            @Override
+            public Object call()
+                    throws Exception
+            {
+                asksList.clear();
+                return null;
+            }
+        });
     }
 
     @Override
     protected Subscriber createSubscriber(final DepthOfBookKey key) {
         assert key != null;
         final Instrument instrument = key.getInstrument();
-        final MarketDataRequest request = initializeRequest(instrument)
-                .withContent(key.getProduct()).create();
+        final MarketDataRequest request = initializeRequest(instrument).withContent(key.getProduct()).create();
         final boolean isLevel2 = key.getProduct() == Content.LEVEL_2;
         return new Subscriber() {
-
             @Override
             public MarketDataRequest getRequest() {
                 return request;
@@ -146,65 +160,71 @@ public class DepthOfBookManager extends
             @Override
             public void receiveData(final Object inData) {
                 if (inData instanceof QuoteEvent) {
-                    QuoteEvent data = (QuoteEvent) inData;
+                    final QuoteEvent data = (QuoteEvent)inData;
                     if (!validateInstrument(instrument, data)) {
                         return;
                     }
                     final MDDepthOfBookImpl item = getItem(key);
-                    synchronized (item) {
-                        List<MDQuote> list;
-                        if (data instanceof BidEvent) {
-                            list = item.getBids();
-                        } else if (data instanceof AskEvent) {
-                            list = item.getAsks();
-                        } else {
-                            // a new type of QuoteEvent is really unexpected,
-                            // but we can ignore it
-                            assert false : inData;
-                            reportUnexpectedData(inData);
-                            return;
-                        }
-                        Map<Object, MDQuoteImpl> map = mIdMap.get(item);
-                        switch (data.getAction()) {
-                        case ADD:
-                            // add new item and map it
-                            if (isLevel2) {
-                                // for Level 2, updates can come in an ADD event
-                                MDQuoteImpl changed = getFromMap(map, data);
-                                if (changed != null) {
-                                    updateItem(data, changed);
-                                    break;
-                                }
-                            }
-                            MDQuoteImpl added = mFunction.apply(data);
-                            addToMap(map, data, added);
-                            list.add(added);
-                            break;
-                        case CHANGE:
-                            MDQuoteImpl changed = getFromMap(map, data);
-                            if (changed == null) {
-                                reportUnexpectedMessageId(data);
-                            } else {
-                                // update item
-                                updateItem(data, changed);
-                            }
-                            break;
-                        case DELETE:
-                            MDQuoteImpl deleted = getFromMap(map, data);
-                            if (deleted == null) {
-                                reportUnexpectedMessageId(data);
-                            } else {
-                                // remove item
-                                list.remove(deleted);
-                                removeFromMap(map, data);
-                            }
-                            break;
-                        default:
-                            // new action is not expected, but we can ignore it
-                            assert false : data.getAction();
-                            reportUnexpectedData(data);
-                        }
+                    final LockableEList<MDQuote> list;
+                    if (data instanceof BidEvent) {
+                        list = item.getBids();
+                    } else if (data instanceof AskEvent) {
+                        list = item.getAsks();
+                    } else {
+                        // a new type of QuoteEvent is really unexpected,
+                        // but we can ignore it
+                        assert false : inData;
+                        reportUnexpectedData(inData);
+                        return;
                     }
+                    list.doWriteOperation(new Callable<Object>() {
+                        @Override
+                        public Object call()
+                                throws Exception
+                                {
+                            Map<Object, MDQuoteImpl> map = mIdMap.get(item);
+                            switch (data.getAction()) {
+                                case ADD:
+                                    // add new item and map it
+                                    if (isLevel2) {
+                                        // for Level 2, updates can come in an ADD event
+                                        MDQuoteImpl changed = getFromMap(map, data);
+                                        if (changed != null) {
+                                            updateItem(data, changed);
+                                            break;
+                                        }
+                                    }
+                                    MDQuoteImpl added = mFunction.apply(data);
+                                    addToMap(map, data, added);
+                                    list.add(added);
+                                    break;
+                                case CHANGE:
+                                    MDQuoteImpl changed = getFromMap(map, data);
+                                    if (changed == null) {
+                                        reportUnexpectedMessageId(data);
+                                    } else {
+                                        // update item
+                                        updateItem(data, changed);
+                                    }
+                                    break;
+                                case DELETE:
+                                    MDQuoteImpl deleted = getFromMap(map, data);
+                                    if (deleted == null) {
+                                        reportUnexpectedMessageId(data);
+                                    } else {
+                                        // remove item
+                                        list.remove(deleted);
+                                        removeFromMap(map, data);
+                                    }
+                                    break;
+                                default:
+                                    // new action is not expected, but we can ignore it
+                                    assert false : data.getAction();
+                                reportUnexpectedData(data);
+                            }
+                            return null;
+                        }
+                    });
                 } else {
                     reportUnexpectedData(inData);
                 }
