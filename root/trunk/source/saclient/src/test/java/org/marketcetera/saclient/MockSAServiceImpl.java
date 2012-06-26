@@ -111,7 +111,26 @@ class MockSAServiceImpl extends ServiceBaseImpl<Object> implements SAService {
             }
         }.execute(inCtx);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.saclient.SAService#sendData(org.marketcetera.util.ws.stateful.ClientContext, java.lang.Object)
+     */
+    @Override
+    public void sendData(ClientContext inServiceContext,
+                         final Object inData)
+            throws RemoteException
+    {
+        new RemoteCaller<Object,Void>(getSessionManager()) {
+            @Override
+            protected Void call(ClientContext context,
+                                SessionHolder<Object> sessionHolder)
+                    throws Exception
+            {
+                setData(inData);
+                failOrSleep();
+                return null;
+            }
+        }.execute(inServiceContext);
+    }
     @Override
     public void delete(ClientContext inCtx, final ModuleURN inURN)
             throws RemoteException {
@@ -222,7 +241,15 @@ class MockSAServiceImpl extends ServiceBaseImpl<Object> implements SAService {
     ModuleURN getURN() {
         return mURN;
     }
-
+    /**
+     * Gets the data value.
+     *
+     * @return an <code>Object</code> value
+     */
+    Object getData()
+    {
+        return data;
+    }
     /**
      * The urn list.
      * @param inURNs the urn list.
@@ -248,7 +275,15 @@ class MockSAServiceImpl extends ServiceBaseImpl<Object> implements SAService {
     void setURN(ModuleURN inURN) {
         mURN = inURN;
     }
-
+    /**
+     * Sets the data value.
+     *
+     * @param inData an <code>Object</code> value
+     */
+    void setData(Object inData)
+    {
+        data = inData;
+    }
     /**
      * Sets the create strategy parameters.
      *
@@ -298,6 +333,7 @@ class MockSAServiceImpl extends ServiceBaseImpl<Object> implements SAService {
         setPropertiesOut(null);
         setFailure(null);
         setSleep(false);
+        setData(null);
     }
 
     /**
@@ -337,6 +373,7 @@ class MockSAServiceImpl extends ServiceBaseImpl<Object> implements SAService {
     private volatile List<ModuleURN> mURNList;
     private volatile ModuleInfo mModuleInfo;
     private volatile ModuleURN mURN;
+    private volatile Object data;
     private volatile CreateStrategyParameters mCreateStrategyParameters;
     private volatile MapWrapper<String, java.lang.Object> mPropertiesIn;
     private volatile MapWrapper<String, java.lang.Object> mPropertiesOut;

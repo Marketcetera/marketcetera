@@ -1,28 +1,30 @@
 package org.marketcetera.strategyagent;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.*;
-import org.marketcetera.util.ws.wrappers.RemoteException;
-import org.marketcetera.util.ws.wrappers.MapWrapper;
-import org.marketcetera.util.ws.wrappers.RemoteProperties;
-import org.marketcetera.util.file.CopyBytesUtils;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.saclient.SAService;
-import org.marketcetera.saclient.CreateStrategyParameters;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.ModuleInfo;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.core.Util;
-import org.marketcetera.modules.remote.receiver.ReceiverFactory;
-
-import javax.management.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.management.*;
+
+import org.marketcetera.core.Util;
+import org.marketcetera.core.publisher.IPublisher;
+import org.marketcetera.module.ModuleInfo;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.modules.remote.receiver.ReceiverFactory;
+import org.marketcetera.saclient.CreateStrategyParameters;
+import org.marketcetera.saclient.SAService;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.file.CopyBytesUtils;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.stateful.*;
+import org.marketcetera.util.ws.wrappers.MapWrapper;
+import org.marketcetera.util.ws.wrappers.RemoteException;
+import org.marketcetera.util.ws.wrappers.RemoteProperties;
 
 /* $License$ */
 /**
@@ -116,7 +118,24 @@ class SAServiceImpl extends ServiceBaseImpl<ClientSession> implements SAService 
             }
         }.execute(inCtx);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.saclient.SAService#sendData(org.marketcetera.util.ws.stateful.ClientContext, java.lang.Object)
+     */
+    @Override
+    public void sendData(ClientContext inServiceContext,
+                         final Object inData)
+            throws RemoteException
+    {
+        new RemoteCaller<ClientSession,Void>(getSessionManager()) {
+            @Override
+            protected Void call(ClientContext context,
+                                SessionHolder<ClientSession> sessionHolder)
+                    throws Exception {
+                dataPublisher.publish(inData);
+                return null;
+            }
+        }.execute(inServiceContext);
+    }
     @Override
     public void delete(ClientContext inCtx, final ModuleURN inURN)
             throws RemoteException {
@@ -276,13 +295,16 @@ class SAServiceImpl extends ServiceBaseImpl<ClientSession> implements SAService 
      *
      * @param inSessionManager the session manager.
      * @param inManager the module manager.
+     * @param inPublisher an <code>IPublisher</code> value
      */
     SAServiceImpl(SessionManager<ClientSession> inSessionManager,
-                  ModuleManager inManager) {
+                  ModuleManager inManager,
+                  IPublisher inPublisher)
+    {
         super(inSessionManager);
         mManager = inManager;
+        dataPublisher = inPublisher;
     }
-
     /**
      * Throws an exception if the supplied URN is null.
      *
@@ -323,7 +345,10 @@ class SAServiceImpl extends ServiceBaseImpl<ClientSession> implements SAService 
     private static MBeanServer getMBeanServer() {
         return ManagementFactory.getPlatformMBeanServer();
     }
-
+    /**
+     * publisher responsible for distributing data to interested publishers
+     */
+    private final IPublisher dataPublisher;
     private final ModuleManager mManager;
     private final Map<ModuleURN, CreateStrategyParameters> mStrategies =
             new ConcurrentHashMap<ModuleURN, CreateStrategyParameters>();

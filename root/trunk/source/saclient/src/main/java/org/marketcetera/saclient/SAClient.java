@@ -177,7 +177,14 @@ public interface SAClient {
      */
     public CreateStrategyParameters getStrategyCreateParms(ModuleURN inURN)
             throws ConnectionException;
-
+    /**
+     * Sends the given object to the Strategy Agent where registered listeners will receive it.
+     *
+     * @param inData an <code>Object</code> value
+     * @throws ConnectionException if there were errors completing the operation.
+     */
+    public void sendData(Object inData)
+            throws ConnectionException;
     /**
      * Adds a data receiver so that it can receive all the data received
      * from the remote source that this client is connected to.
@@ -233,7 +240,6 @@ public interface SAClient {
      * @return the connection parameters.
      */
     public SAClientParameters getParameters();
-
     /**
      * Closes the connection to the remote strategy agent. The behavior
      * of the client after this method is invoked is undefined. If one

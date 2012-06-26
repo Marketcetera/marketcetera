@@ -1,10 +1,15 @@
 package org.marketcetera.util.ws.stateless;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.marketcetera.util.log.ActiveLocale;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.VersionId;
@@ -29,10 +34,31 @@ public class StatelessClient
     // INSTANCE DATA.
 
     private final AppId mAppId;
-
-
+    /**
+     * context classes to add to the client context, if any
+     */
+    private final Class<?>[] contextClasses;
+    
     // CONSTRUCTORS.
-
+    
+    /**
+     * Create a new StatelessClient instance.
+     *
+     * @param inHost a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inAppId an <code>AppId</code> value
+     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value
+     */
+    public StatelessClient(String inHost,
+                           int inPort,
+                           AppId inAppId,
+                           Class<?>...inContextClasses)
+    {
+        super(inHost,
+              inPort);
+        mAppId=inAppId;
+        contextClasses = inContextClasses;
+    }
     /**
      * Creates a new client node with the given server host name,
      * port, and client application ID.
@@ -47,8 +73,10 @@ public class StatelessClient
          int port,
          AppId appId)
     {
-        super(host,port);
-        mAppId=appId;
+        this(host,
+             port,
+             appId,
+             (Class<?>[])null);
     }
 
     /**
@@ -134,6 +162,18 @@ public class StatelessClient
         JaxWsProxyFactoryBean f=new JaxWsProxyFactoryBean();
         f.setServiceClass(iface);
         f.setAddress(getConnectionUrl(iface));
+        Map<String,Object> props = f.getProperties(); 
+        if (props == null) {
+            props = new HashMap<String,Object>();
+        }
+        if(contextClasses != null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Using additional context: {}", //$NON-NLS-1$
+                                   Arrays.toString(contextClasses));
+            props.put("jaxb.additionalContextClasses",  //$NON-NLS-1$
+                      contextClasses);
+        }
+        f.setProperties(props); 
         T service=(T)(f.create());
         HTTPConduit http=(HTTPConduit)
             ClientProxy.getClient(service).getConduit();

@@ -17,7 +17,7 @@ import org.marketcetera.core.publisher.PublisherEngine;
  * @version $Id$
  * @since 0.5.0
  */
-@SuppressWarnings("unchecked") //$NON-NLS-1$
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFeed>
     implements MarketDataFeedToken
 {
@@ -63,8 +63,17 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
      *   while notifying a publisher
      * @throws ExecutionException 
      */
-    protected final void publish(Object inData) 
-        throws InterruptedException, ExecutionException
+    @Override
+    public final void publish(Object inData) 
+    {
+        getPublisher().publish(inData);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#publishAndWait(java.lang.Object)
+     */
+    @Override
+    public final void publishAndWait(Object inData)
+            throws InterruptedException, ExecutionException
     {
         getPublisher().publish(inData);
     }

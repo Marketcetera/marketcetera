@@ -1,14 +1,15 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.ModuleManager;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-
+import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.Date;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -24,13 +25,37 @@ public class SAClientTestBase {
     @BeforeClass
     public static void setup() throws Exception {
         LoggerConfiguration.logSetup();
+    }
+    /**
+     * Run before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void before()
+            throws Exception
+    {
+        MockStrategyAgent.setContextClasses(getContextClasses());
         MockStrategyAgent.startServerAndClient();
         startAgent();
-        sClient = MockStrategyAgent.connectTo();
+        SAClientParameters defaultParams = MockStrategyAgent.DEFAULT_PARAMETERS;
+        SAClientParameters modifiedParams = new SAClientParameters(defaultParams.getUsername(),
+                                                                   defaultParams.getPassword(),
+                                                                   defaultParams.getURL(),
+                                                                   defaultParams.getHostname(),
+                                                                   defaultParams.getPort(),
+                                                                   getContextClasses());
+        sClient = MockStrategyAgent.connectTo(modifiedParams);
     }
-
-    @AfterClass
-    public static void teardown() throws Exception {
+    /**
+     * Run after each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @After
+    public void teardown()
+            throws Exception
+    {
         if (sClient != null) {
             sClient.close();
             sClient = null;
@@ -38,7 +63,18 @@ public class SAClientTestBase {
         stopAgent();
         MockStrategyAgent.closeServerAndClient();
     }
-
+    /**
+     * Adds additional context classes to the SA client/server context.
+     * 
+     * <p>Subclasses may override this method to provide additional context classes. The default
+     * behavior is to return no additional context classes.
+     *
+     * @return a <code>Class&lt;?&gt;</code> value
+     */
+    protected Class<?>[] getContextClasses()
+    {
+        return null;
+    }
     /**
      * Starts the mock strategy agent.
      *

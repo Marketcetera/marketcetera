@@ -57,9 +57,28 @@ class MockStrategyAgent {
                                             char[] password) throws I18NException {
                      return ObjectUtils.equals(user,String.valueOf(password));
                  }
-             },sessionManager);
+             },sessionManager,
+             contextClasses);
         mService = new MockSAServiceImpl(sessionManager);
         mRemoteService = mServer.publish(mService, SAService.class);
+    }
+    /**
+     * Get the contextClasses value.
+     *
+     * @return a <code>Class&lt;?&gt;[]</code> value
+     */
+    public static Class<?>[] getContextClasses()
+    {
+        return contextClasses;
+    }
+    /**
+     * Sets the contextClasses value.
+     *
+     * @param a <code>Class&lt;?&gt;...</code> value
+     */
+    public static void setContextClasses(Class<?>...inContextClasses)
+    {
+        contextClasses = inContextClasses;
     }
 
     /**
@@ -130,7 +149,19 @@ class MockStrategyAgent {
      * @throws ConnectionException if there were errors connecting.
      */
     static SAClient connectTo() throws ConnectionException {
-        return SAClientFactory.getInstance().create(DEFAULT_PARAMETERS);
+        return connectTo(DEFAULT_PARAMETERS);
+    }
+    /**
+     * Creates a client connection to this Mock Strategy Agent.
+     *
+     * @param inParameters a <code>SAClientParameters</code> value
+     * @return a <code>SAClient</code> value
+     * @throws ConnectionException if there were errors connecting.
+     */
+    static SAClient connectTo(SAClientParameters inParameters)
+            throws ConnectionException
+    {
+        return SAClientFactory.getInstance().create(inParameters);
     }
 
     /**
@@ -171,4 +202,5 @@ class MockStrategyAgent {
     private volatile ModuleManager mManager;
     private volatile ServiceInterface mRemoteService;
     private final MockSAServiceImpl mService;
+    private static Class<?>[] contextClasses;
 }

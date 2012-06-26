@@ -146,7 +146,21 @@ class SAClientImpl implements SAClient, EmitterAdapter {
             throw wrapRemoteFailure(e);
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.saclient.SAClient#sendData(java.lang.Object)
+     */
+    @Override
+    public void sendData(Object inData)
+            throws ConnectionException
+    {
+        failIfDisconnected();
+        try {
+            mSAService.sendData(getServiceContext(),
+                                inData);
+        } catch (Exception e) {
+            throw wrapRemoteFailure(e);
+        }
+    }
     @Override
     public void addDataReceiver(DataReceiver inReceiver) {
         if(inReceiver == null) {
@@ -265,7 +279,9 @@ class SAClientImpl implements SAClient, EmitterAdapter {
         mParameters = inParameters;
         try {
             mServiceClient = new Client(inParameters.getHostname(),
-                    inParameters.getPort(),SAClientVersion.APP_ID);
+                                        inParameters.getPort(),
+                                        SAClientVersion.APP_ID,
+                                        inParameters.getContextClasses());
             mServiceClient.login(inParameters.getUsername(),
                     inParameters.getPassword());
             mSAService = mServiceClient.getService(SAService.class);

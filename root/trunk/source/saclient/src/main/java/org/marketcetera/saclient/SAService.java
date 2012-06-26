@@ -185,4 +185,17 @@ public interface SAService extends ServiceBase {
             @WebParam(name = "context") ClientContext inServiceContext,
             @WebParam(name = "urn") ModuleURN inURN)
             throws RemoteException;
+    /**
+     * Sends the given data to the strategy agent.
+     * 
+     * <p>Note that if the type of data sent is not a Java basic type, context for that type must
+     * be added to both the client and server.
+     *
+     * @param inServiceContext a <code>ClientContext</code> value
+     * @param inData an <code>Object</code> value
+     * @throws RemoteException if there were errors communicating with the remote strategy agent.
+     */
+    public void sendData(@WebParam(name = "context") ClientContext inServiceContext,
+                         @WebParam(name = "data") Object inData)
+            throws RemoteException;
 }

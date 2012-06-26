@@ -33,6 +33,24 @@ public class Client
     // CONSTRUCTORS.
 
     /**
+     * Create a new Client instance.
+     *
+     * @param inHost a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inAppId an <code>AppId</code> value
+     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value
+     */
+    public Client(String inHost,
+                  int inPort,
+                  AppId inAppId,
+                  Class<?>...inContextClasses)
+    {
+        super(inHost,
+              inPort,
+              inAppId,
+              inContextClasses);
+    }
+    /**
      * Creates a new client node with the given server host name,
      * port, and client application ID.
      *

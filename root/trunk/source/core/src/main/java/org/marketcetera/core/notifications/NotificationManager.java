@@ -1,5 +1,7 @@
 package org.marketcetera.core.notifications;
 
+import java.util.concurrent.ExecutionException;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
@@ -73,6 +75,23 @@ public class NotificationManager
     public void publish(INotification inNotification)
     {
         getPublisher().publish(inNotification);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#publishAndWait(java.lang.Object)
+     */
+    @Override
+    public void publishAndWait(Object inData)
+            throws InterruptedException, ExecutionException
+    {
+        getPublisher().publishAndWait(inData);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#publish(java.lang.Object)
+     */
+    @Override
+    public void publish(Object inData)
+    {
+        getPublisher().publish(inData);
     }
     /**
      * Gets the <code>PublisherEngine</code> for this object.

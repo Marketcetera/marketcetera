@@ -46,21 +46,43 @@ public class Server<T>
          Authenticator authenticator,
          SessionManager<T> sessionManager)
     {
-        super(host,port);
-        mAuthenticator=authenticator;
-        mSessionManager=sessionManager;
-        if (getSessionManager()!=null) {
+        this(host,
+             port,
+             authenticator,
+             sessionManager,
+             (Class<?>[])null);
+    }
+    /**
+     * Create a new Server instance.
+     *
+     * @param inHost a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inAuthenticator an <code>Authenticator</code> value or <code>null</code>
+     * @param inSessionManager a <code>SessionManager&lt;T&gt;</code> value or <code>null</code>
+     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value or <code>null</code>
+     */
+    public Server(String inHost,
+                  int inPort,
+                  Authenticator inAuthenticator,
+                  SessionManager<T> inSessionManager,
+                  Class<?>...inContextClasses)
+    {
+        super(inHost,
+              inPort,
+              inContextClasses);
+        mAuthenticator = inAuthenticator;
+        mSessionManager = inSessionManager;
+        if(getSessionManager() != null) {
             getSessionManager().setServerId(getId());
         }
-        if (getAuthenticator()==null) {
+        if(getAuthenticator() == null) {
             mAuthService=null;
         } else {
-            mAuthService=publish
-                (new AuthServiceImpl<T>(getAuthenticator(),getSessionManager()),
-                 AuthService.class);
+            mAuthService = publish(new AuthServiceImpl<T>(getAuthenticator(),
+                                   getSessionManager()),
+                                   AuthService.class);
         }
     }
-
     /**
      * Creates a new server node with the default server host name and
      * port, and the given authenticator and session manager.

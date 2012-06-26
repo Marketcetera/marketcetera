@@ -1,7 +1,5 @@
 package org.marketcetera.marketdata;
 
-import java.util.concurrent.ExecutionException;
-
 import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
@@ -36,12 +34,6 @@ public class MockMarketDataFeedToken
     {        
         return new MockMarketDataFeedToken(inTokenSpec,
                                            inFeed);
-    }
-    
-    public void publishAndWait(Object inData) 
-        throws InterruptedException, ExecutionException
-    {
-        getPublisher().publishAndWait(inData);
     }
     void setHandle(String inHandle)
     {

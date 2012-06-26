@@ -1,5 +1,7 @@
 package org.marketcetera.core.publisher;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * Capable of supplying updates to a group of {@link ISubscriber} objects.
  * 
@@ -32,4 +34,19 @@ public interface IPublisher
      * @param inSubscriber a <code>Subscriber</code> value
      */
     public void unsubscribe(ISubscriber inSubscriber);
+    /**
+     * Publish the given data to subscribers.
+     *
+     * @param inData an <code>Object</code> value
+     */
+    public void publish(Object inData);
+    /**
+     * Publish the given data to subscribers and wait until all subscribers have been notified.
+     *
+     * @param inData an <code>Object</code> value
+     * @throws InterruptedException if the thread is interrupted before notifications are complete
+     * @throws ExecutionException if an error occurs during notification
+     */
+    public void publishAndWait(Object inData) 
+            throws InterruptedException, ExecutionException;
 }
