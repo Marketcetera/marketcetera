@@ -1,10 +1,5 @@
 package org.marketcetera.security.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
 import java.util.Map;
@@ -21,6 +16,8 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.security.Messages;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
+
+import static org.junit.Assert.*;
 
 /* $License$ */
 

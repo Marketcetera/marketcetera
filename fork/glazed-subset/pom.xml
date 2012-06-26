@@ -15,7 +15,7 @@
 
     <packaging>bundle</packaging>
 
-    <name>Subset of Glazed Lists, providing dependency for PositionEngine</name>
+    <description>Subset of Glazed Lists, providing dependency for PositionEngine</description>
 
     <properties>
         <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
