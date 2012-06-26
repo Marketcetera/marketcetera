@@ -1,4 +1,4 @@
-package org.marketcetera.security.impl;
+package org.marketcetera.dao;
 
 import org.junit.Before;
 import org.junit.Test;
