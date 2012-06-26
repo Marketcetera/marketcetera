@@ -5,6 +5,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.concurrent.ExecutionException;
+
 import org.junit.Test;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.INotificationManager;
@@ -99,6 +101,23 @@ public class NotificationHandlerTest {
 
         @Override
         public void unsubscribe(ISubscriber inSubscriber) {
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.publisher.IPublisher#publish(java.lang.Object)
+         */
+        @Override
+        public void publish(Object inData)
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.publisher.IPublisher#publishAndWait(java.lang.Object)
+         */
+        @Override
+        public void publishAndWait(Object inData)
+                throws InterruptedException, ExecutionException
+        {
+            throw new UnsupportedOperationException();
         }
     }
 }

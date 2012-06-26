@@ -302,7 +302,14 @@ public class StrategyAgentConnectionTest extends
         @Override
         public void removeDataReciever(DataReceiver inReceiver) {
         }
-
+        /* (non-Javadoc)
+         * @see org.marketcetera.saclient.SAClient#sendData(java.lang.Object)
+         */
+        @Override
+        public void sendData(Object inData)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
     }
-
 }
