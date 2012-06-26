@@ -1,39 +1,44 @@
 package org.marketcetera.strategyagent;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.unicode.UnicodeFileReader;
-import org.marketcetera.util.spring.SpringUtils;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.ws.stateful.SessionManager;
-import org.marketcetera.util.ws.stateful.Server;
-import org.marketcetera.util.ws.stateful.Authenticator;
-import org.marketcetera.util.ws.stateless.StatelessClientContext;
-import org.marketcetera.util.ws.stateless.ServiceInterface;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
+import java.io.File;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.lang.management.ManagementFactory;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
+import javax.management.JMX;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.log4j.PropertyConfigurator;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
+import org.marketcetera.core.publisher.IPublisher;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.module.*;
-import org.marketcetera.saclient.SAService;
 import org.marketcetera.saclient.SAClientVersion;
-import org.marketcetera.client.ClientManager;
+import org.marketcetera.saclient.SAService;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.spring.SpringUtils;
+import org.marketcetera.util.unicode.UnicodeFileReader;
+import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateful.Server;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.stateless.ServiceInterface;
+import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.commons.lang.ObjectUtils;
-
-import javax.management.JMX;
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
-import java.io.LineNumberReader;
-import java.io.IOException;
-import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.List;
-import java.lang.management.ManagementFactory;
 
 /* $License$ */
 /**
@@ -53,7 +58,10 @@ import java.lang.management.ManagementFactory;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class StrategyAgent extends ApplicationBase {
+public class StrategyAgent
+        extends ApplicationBase
+        implements IPublisher
+{
     /**
      * Creates and runs the application.
      *
@@ -68,7 +76,66 @@ public class StrategyAgent extends ApplicationBase {
         //Run the application.
         run(new StrategyAgent(), args);
     }
-
+    /**
+     * Gets the most recently created <code>StrategyAgent</code> instance in this process.
+     *
+     * @return a <code>StrategyAgent</code> value
+     */
+    public static StrategyAgent getInstance()
+    {
+        return instance;
+    }
+    /**
+     * Get the contextClasses value.
+     *
+     * @return a <code>Class&lt;?&gt;[]</code> value
+     */
+    public Class<?>[] getContextClasses()
+    {
+        return contextClasses;
+    }
+    /**
+     * Sets the contextClasses value.
+     *
+     * @param a <code>Class&lt;?&gt;[]</code> value
+     */
+    public void setContextClasses(Class<?>[] inContextClasses)
+    {
+        contextClasses = inContextClasses;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#subscribe(org.marketcetera.core.publisher.ISubscriber)
+     */
+    @Override
+    public void subscribe(ISubscriber inSubscriber)
+    {
+        dataPublisher.subscribe(inSubscriber);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#unsubscribe(org.marketcetera.core.publisher.ISubscriber)
+     */
+    @Override
+    public void unsubscribe(ISubscriber inSubscriber)
+    {
+        dataPublisher.unsubscribe(inSubscriber);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#publish(java.lang.Object)
+     */
+    @Override
+    public void publish(Object inData)
+    {
+        dataPublisher.publish(inData);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#publishAndWait(java.lang.Object)
+     */
+    @Override
+    public void publishAndWait(Object inData)
+            throws InterruptedException, ExecutionException
+    {
+        dataPublisher.publishAndWait(inData);
+    }
     /**
      * Stops the strategy agent. This method is meant to help with unit testing.
      */
@@ -124,7 +191,13 @@ public class StrategyAgent extends ApplicationBase {
         //Wait forever, do not exit unless killed.
         inAgent.startWaitingForever();
     }
-
+    /**
+     * Create a new StrategyAgent instance.
+     */
+    public StrategyAgent()
+    {
+        instance = this;
+    }
     /**
      * Terminates the process with the supplied exit code.
      *
@@ -256,19 +329,27 @@ public class StrategyAgent extends ApplicationBase {
         String hostname = (String) mContext.getBean("wsServerHost");  //$NON-NLS-1$
         if (hostname != null && !hostname.trim().isEmpty()) {
             int port = (Integer) mContext.getBean("wsServerPort");  //$NON-NLS-1$
-            SessionManager<ClientSession> sessionManager=
-                new SessionManager<ClientSession>
-                (new ClientSessionFactory(), SessionManager.INFINITE_SESSION_LIFESPAN);
-            mServer =new Server<ClientSession>
-                (hostname,port, new Authenticator(){
+            SessionManager<ClientSession> sessionManager= new SessionManager<ClientSession>(new ClientSessionFactory(),
+                                                                                            SessionManager.INFINITE_SESSION_LIFESPAN);
+            mServer = new Server<ClientSession>(hostname,
+                                                port,
+                                                new Authenticator() {
                      @Override
                      public boolean shouldAllow(StatelessClientContext context,
                                                 String user,
-                                                char[] password) throws I18NException {
-                         return authenticate(context, user, password);
+                                                char[] password)
+                             throws I18NException
+                     {
+                         return authenticate(context,
+                                             user,
+                                             password);
                      }
-                 },sessionManager);
-            mRemoteService = mServer.publish(new SAServiceImpl(sessionManager, mManager), SAService.class);
+                 },sessionManager,
+                   contextClasses);
+            mRemoteService = mServer.publish(new SAServiceImpl(sessionManager,
+                                                               mManager,
+                                                               dataPublisher),
+                                             SAService.class);
             //Register a shutdown task to shutdown the remote service.
             Runtime.getRuntime().addShutdownHook(new Thread(){
                 @Override
@@ -455,4 +536,16 @@ public class StrategyAgent extends ApplicationBase {
     private volatile ServiceInterface mRemoteService;
     private volatile ClassPathXmlApplicationContext mContext;
     private volatile Server<ClientSession> mServer;
+    /**
+     * used to publish data received to interested subscribers
+     */
+    private final PublisherEngine dataPublisher = new PublisherEngine();
+    /**
+     * extra context classes to add to the server context
+     */
+    private volatile Class<?>[] contextClasses;
+    /**
+     * most recent strategy agent instance
+     */
+    private volatile static StrategyAgent instance;
 }

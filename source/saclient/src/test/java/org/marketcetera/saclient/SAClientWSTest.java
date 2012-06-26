@@ -1,23 +1,29 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.ws.wrappers.MapWrapper;
-import org.marketcetera.util.file.CopyCharsUtils;
-import org.marketcetera.module.*;
-import org.junit.Test;
-import org.junit.After;
 import static org.junit.Assert.*;
-import org.apache.commons.io.IOUtils;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.module.*;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.file.CopyCharsUtils;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.wrappers.MapWrapper;
 
 /* $License$ */
 /**
@@ -33,7 +39,17 @@ import java.math.BigDecimal;
  */
 @ClassVersion("$Id$")
 public class SAClientWSTest extends SAClientTestBase {
-
+    /**
+     * Run before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void before()
+            throws Exception
+    {
+        super.before();
+    }
     @Test
     public void getProviders() throws Exception {
         //Test a non-empty and an empty list.
@@ -230,7 +246,32 @@ public class SAClientWSTest extends SAClientTestBase {
             }
         });
     }
-
+    /**
+     * Tests the ability to send data.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void sendData()
+            throws Exception
+    {
+        final TestData data = new TestData();
+        testAPI(new WSTester<Void>() {
+            @Override
+            protected Void invokeApi(boolean isNullParams)
+                    throws Exception
+            {
+                getClient().sendData(isNullParams ? null : data);
+                return null;
+            }
+            @Override
+            protected void verifyInputParams(boolean isNullParams)
+            {
+                assertEquals(isNullParams ? null : data,
+                             getMockSAService().getData());
+            }
+        });
+    }
     @Test
     public void delete() throws Exception {
         final ModuleURN input = new ModuleURN("test:prov:me:A");
@@ -328,7 +369,14 @@ public class SAClientWSTest extends SAClientTestBase {
     public void reset() {
         resetServiceParameters();
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.saclient.SAClientTestBase#getContextClasses()
+     */
+    @Override
+    protected Class<?>[] getContextClasses()
+    {
+        return new Class<?>[] { TestData.class };
+    }
     /**
      * Tests the API using the supplied tester instance.
      * First the API is tested with non-null parameters, then with null
@@ -487,5 +535,140 @@ public class SAClientWSTest extends SAClientTestBase {
          */
         protected void verifyInputParams(boolean isNullParams) throws Exception {
         }
+    }
+    /**
+     * Test class used to demonstrate the ability to send data.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class TestData
+    {
+        /**
+         * Create a new TestData instance.
+         */
+        public TestData()
+        {
+            attribute3 = new Date();
+            attribute2 = System.nanoTime();
+            attribute1 = String.valueOf(attribute3) + " and " + String.valueOf(attribute2);
+        }
+        /**
+         * Get the attribute1 value.
+         *
+         * @return a <code>String</code> value
+         */
+        public String getAttribute1()
+        {
+            return attribute1;
+        }
+        /**
+         * Sets the attribute1 value.
+         *
+         * @param a <code>String</code> value
+         */
+        public void setAttribute1(String inAttribute1)
+        {
+            attribute1 = inAttribute1;
+        }
+        /**
+         * Get the attribute2 value.
+         *
+         * @return a <code>long</code> value
+         */
+        public long getAttribute2()
+        {
+            return attribute2;
+        }
+        /**
+         * Sets the attribute2 value.
+         *
+         * @param a <code>long</code> value
+         */
+        public void setAttribute2(long inAttribute2)
+        {
+            attribute2 = inAttribute2;
+        }
+        /**
+         * Get the attribute3 value.
+         *
+         * @return a <code>Date</code> value
+         */
+        public Date getAttribute3()
+        {
+            return attribute3;
+        }
+        /**
+         * Sets the attribute3 value.
+         *
+         * @param a <code>Date</code> value
+         */
+        public void setAttribute3(Date inAttribute3)
+        {
+            attribute3 = inAttribute3;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((attribute1 == null) ? 0 : attribute1.hashCode());
+            result = prime * result + (int) (attribute2 ^ (attribute2 >>> 32));
+            result = prime * result + ((attribute3 == null) ? 0 : attribute3.hashCode());
+            return result;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            TestData other = (TestData) obj;
+            if (attribute1 == null) {
+                if (other.attribute1 != null)
+                    return false;
+            } else if (!attribute1.equals(other.attribute1))
+                return false;
+            if (attribute2 != other.attribute2)
+                return false;
+            if (attribute3 == null) {
+                if (other.attribute3 != null)
+                    return false;
+            } else if (!attribute3.equals(other.attribute3))
+                return false;
+            return true;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return "TestData [attribute1=" + attribute1 + ", attribute2=" + attribute2 + ", attribute3=" + attribute3 + "]";
+        }
+        /**
+         * attribute1 value
+         */
+        private String attribute1;
+        /**
+         * attribute2 value
+         */
+        private long attribute2;
+        /**
+         * attribute3 value
+         */
+        private Date attribute3;
     }
 }

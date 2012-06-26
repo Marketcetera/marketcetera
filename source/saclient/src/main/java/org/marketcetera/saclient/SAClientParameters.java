@@ -64,6 +64,11 @@ public class SAClientParameters {
     public String getHostname() {
         return mHostname;
     }
+    
+    public Class<?>[] getContextClasses()
+    {
+        return contextClasses;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -74,6 +79,7 @@ public class SAClientParameters {
 
         return ObjectUtils.equals(mPort, that.mPort)&&
                 Arrays.equals(mPassword, that.mPassword) &&
+                Arrays.equals(contextClasses, that.contextClasses) &&
                 ObjectUtils.equals(mURL, that.mURL) &&
                 ObjectUtils.equals(mUsername, that.mUsername) &&
                 ObjectUtils.equals(mHostname, that.mHostname);
@@ -83,6 +89,7 @@ public class SAClientParameters {
     public int hashCode() {
         return ObjectUtils.hashCode(mUsername) +
                 Arrays.hashCode(mPassword) +
+                Arrays.hashCode(contextClasses) +
                 ObjectUtils.hashCode(mHostname) +
                 ObjectUtils.hashCode(mPort) +
                 ObjectUtils.hashCode(mURL);
@@ -105,6 +112,31 @@ public class SAClientParameters {
             "port"})
     public SAClientParameters(String inUsername, char[] inPassword,
                               String inURL, String inHostname, int inPort) {
+        this(inUsername,
+             inPassword,
+             inURL,
+             inHostname,
+             inPort,
+             (Class<?>[])null);
+    }
+    /**
+     * Create a new SAClientParameters instance.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>char[]</code> value
+     * @param inURL a <code>String</code> value
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value
+     */
+    @ConstructorProperties({ "username","password","URL","hostname","port","contextClasses" })
+    public SAClientParameters(String inUsername,
+                              char[] inPassword,
+                              String inURL,
+                              String inHostname,
+                              int inPort,
+                              Class<?>...inContextClasses)
+    {
         mUsername = inUsername;
         mPassword = inPassword == null
                 ? null
@@ -112,8 +144,8 @@ public class SAClientParameters {
         mURL = inURL;
         mHostname = inHostname;
         mPort = inPort;
+        contextClasses = inContextClasses;
     }
-
 
     @Override
     public String toString() {
@@ -131,4 +163,5 @@ public class SAClientParameters {
     private final String mHostname;
     private final int mPort;
     private final String mURL;
+    private final Class<?>[] contextClasses;
 }
