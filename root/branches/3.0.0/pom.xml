@@ -395,10 +395,11 @@
     <modules>
         <module>core</module>
         <module>dao</module>
-        <module>util</module>
-        <module>util-test</module>
-        <module>modules</module>
         <module>execution-container</module>
         <module>fork</module>
+        <module>modules</module>
+        <module>security</module>
+        <module>util</module>
+        <module>util-test</module>
     </modules>
 </project>

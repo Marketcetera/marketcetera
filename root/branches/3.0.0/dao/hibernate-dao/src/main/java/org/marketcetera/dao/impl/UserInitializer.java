@@ -104,7 +104,7 @@ public class UserInitializer
     /**
      * Sets the users value.
      *
-     * @param a <code>Set<UserSpecification></code> value
+     * @param inUsers <code>Set<UserSpecification></code> value
      */
     public void setUsers(Set<UserSpecification> inUsers)
     {
