@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Photon Plug-in
 Bundle-SymbolicName: org.marketcetera.photon; singleton:=true
-Bundle-Version: 2.1.5
+Bundle-Version: 2.2.0
 Bundle-Activator: org.marketcetera.photon.PhotonPlugin
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
