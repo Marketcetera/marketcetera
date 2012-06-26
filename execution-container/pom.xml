@@ -21,7 +21,7 @@
         <!-- compile: local -->
         <dependency>
             <groupId>org.marketcetera</groupId>
-            <artifactId>dao</artifactId>
+            <artifactId>hibernate-dao</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
         <!-- compile: spring -->
