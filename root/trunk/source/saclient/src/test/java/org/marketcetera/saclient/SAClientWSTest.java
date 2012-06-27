@@ -541,7 +541,7 @@ public class SAClientWSTest extends SAClientTestBase {
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.2.0
      */
     @XmlRootElement
     @XmlAccessorType(XmlAccessType.FIELD)
