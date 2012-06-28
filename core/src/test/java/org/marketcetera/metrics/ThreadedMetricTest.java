@@ -21,6 +21,7 @@ import javax.management.MBeanServer;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.util.misc.ClassVersion;
@@ -307,6 +308,7 @@ public class ThreadedMetricTest {
     }
     @SuppressWarnings("unchecked")
     @Test
+    @Ignore
     public void jmx() throws Exception {
         assertEquals("org.marketcetera.metrics:name=ThreadedMetric",JmxUtils.DEFAULT_NAME.toString());
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
