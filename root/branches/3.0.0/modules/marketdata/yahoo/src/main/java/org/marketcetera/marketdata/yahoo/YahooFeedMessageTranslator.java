@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

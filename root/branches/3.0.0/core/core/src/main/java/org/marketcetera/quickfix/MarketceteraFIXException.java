@@ -4,7 +4,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

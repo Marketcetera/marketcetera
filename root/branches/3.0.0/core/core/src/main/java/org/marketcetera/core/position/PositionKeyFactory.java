@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

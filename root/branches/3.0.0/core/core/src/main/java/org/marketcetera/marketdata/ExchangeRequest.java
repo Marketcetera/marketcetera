@@ -11,7 +11,7 @@ import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.HasUnderlyingInstrument;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Encapsulates elements of a marker data request to an {@link Exchange}.

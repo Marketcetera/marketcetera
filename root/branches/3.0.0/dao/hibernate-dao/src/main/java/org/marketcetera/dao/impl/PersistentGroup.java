@@ -10,7 +10,7 @@ import javax.persistence.*;
 import org.marketcetera.systemmodel.Authority;
 import org.marketcetera.systemmodel.Group;
 import org.marketcetera.systemmodel.User;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

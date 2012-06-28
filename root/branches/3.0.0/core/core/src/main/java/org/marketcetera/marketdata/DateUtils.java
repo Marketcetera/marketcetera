@@ -10,7 +10,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Offers date translation utilities for {@link MarketDataRequest} objects.

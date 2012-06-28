@@ -2,7 +2,7 @@ package org.marketcetera.symbology;
 
 import java.util.Date;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * @author gmiller

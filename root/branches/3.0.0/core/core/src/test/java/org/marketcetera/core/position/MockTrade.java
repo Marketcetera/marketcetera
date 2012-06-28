@@ -3,14 +3,11 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.core.position.Trade;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

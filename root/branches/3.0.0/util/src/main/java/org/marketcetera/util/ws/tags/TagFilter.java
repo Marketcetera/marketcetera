@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.tags;
 
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A tag filter.

@@ -1,7 +1,7 @@
 package org.marketcetera.event;
 
 import org.marketcetera.trade.Option;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

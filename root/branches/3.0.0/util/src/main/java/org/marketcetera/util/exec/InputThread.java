@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.marketcetera.util.file.CloseableRegistry;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A thread that consumes an input stream.

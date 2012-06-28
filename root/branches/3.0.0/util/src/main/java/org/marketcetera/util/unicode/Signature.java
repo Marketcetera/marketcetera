@@ -1,7 +1,7 @@
 package org.marketcetera.util.unicode;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A byte stream signature. It appears in the beginning (header) of a

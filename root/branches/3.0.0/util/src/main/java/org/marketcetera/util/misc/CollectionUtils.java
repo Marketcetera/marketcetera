@@ -3,6 +3,8 @@ package org.marketcetera.util.misc;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.marketcetera.core.attributes.ClassVersion;
+
 /**
  * Utilities for collections.
  * 

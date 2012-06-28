@@ -1,6 +1,6 @@
 package org.marketcetera.ordermanager;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

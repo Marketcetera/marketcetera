@@ -7,7 +7,7 @@ import java.io.PushbackInputStream;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.Arrays;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A variation of {@link InputStreamReader} that is BOM-aware. It can

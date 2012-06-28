@@ -13,7 +13,7 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.management.*;
 
 import org.marketcetera.util.log.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.stereotype.Component;
 
 /* $License$ */

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import javax.annotation.Nonnull;
 
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

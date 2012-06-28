@@ -1,6 +1,6 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.quickfix.FIXVersion;
 import quickfix.Message;

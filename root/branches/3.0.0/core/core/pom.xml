@@ -118,6 +118,12 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>container</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+            <scope>test</scope>
+        </dependency>
         <!-- runtime: other -->
         <dependency>
             <groupId>org.slf4j</groupId>

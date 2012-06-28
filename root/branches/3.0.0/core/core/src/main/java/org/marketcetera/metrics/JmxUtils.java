@@ -2,7 +2,7 @@ package org.marketcetera.metrics;
 
 import javax.management.*;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 /**

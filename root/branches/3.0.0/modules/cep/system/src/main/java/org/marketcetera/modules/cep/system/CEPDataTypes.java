@@ -6,7 +6,7 @@ import org.marketcetera.core.Pair;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.event.*;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 /**

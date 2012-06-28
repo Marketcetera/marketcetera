@@ -1,6 +1,6 @@
 package org.marketcetera.core.position.impl;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFunctionHandler;
 import org.marketcetera.core.instruments.StaticInstrumentFunctionSelector;
 import org.marketcetera.trade.Instrument;

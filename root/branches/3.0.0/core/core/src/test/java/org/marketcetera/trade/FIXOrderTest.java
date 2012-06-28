@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.Message;
 import quickfix.field.*;

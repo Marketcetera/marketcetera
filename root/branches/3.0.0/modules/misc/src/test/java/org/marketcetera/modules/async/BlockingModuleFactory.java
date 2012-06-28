@@ -1,6 +1,6 @@
 package org.marketcetera.modules.async;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.Module;

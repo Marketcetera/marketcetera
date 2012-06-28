@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

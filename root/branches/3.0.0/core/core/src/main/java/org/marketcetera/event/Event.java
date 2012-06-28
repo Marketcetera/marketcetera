@@ -3,7 +3,7 @@ package org.marketcetera.event;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.management.MXBean;
 
 import org.marketcetera.module.DisplayName;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

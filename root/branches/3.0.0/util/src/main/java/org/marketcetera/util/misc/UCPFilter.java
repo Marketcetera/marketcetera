@@ -4,6 +4,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 
+import org.marketcetera.core.attributes.ClassVersion;
+
 /**
  * A filter for Unicode code points. It also maintains a cache of
  * filters associated with {@link Charset} instances.

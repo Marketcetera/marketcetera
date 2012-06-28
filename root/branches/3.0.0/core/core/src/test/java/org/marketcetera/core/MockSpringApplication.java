@@ -2,6 +2,7 @@ package org.marketcetera.core;
 
 import java.util.concurrent.Callable;
 
+import org.marketcetera.core.container.AbstractSpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /* $License$ */
@@ -33,7 +34,7 @@ public class MockSpringApplication
         return "MockSpringApplication";
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.AbstractSpringApplication#doStartingMessage()
+     * @see org.marketcetera.core.container.AbstractSpringApplication#doStartingMessage()
      */
     @Override
     protected void doStartingMessage()
@@ -44,7 +45,7 @@ public class MockSpringApplication
         super.doStartingMessage();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.AbstractSpringApplication#getLoggerFilename()
+     * @see org.marketcetera.core.container.AbstractSpringApplication#getLoggerFilename()
      */
     @Override
     protected String getLoggerFilename()
@@ -55,7 +56,7 @@ public class MockSpringApplication
         return super.getLoggerFilename();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.AbstractSpringApplication#createContext()
+     * @see org.marketcetera.core.container.AbstractSpringApplication#createContext()
      */
     @Override
     protected ConfigurableApplicationContext createContext()
@@ -76,7 +77,7 @@ public class MockSpringApplication
         return returnNullContext ? null : super.createContext();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.AbstractSpringApplication#doStart()
+     * @see org.marketcetera.core.container.AbstractSpringApplication#doStart()
      */
     @Override
     protected void doStart()
@@ -89,7 +90,7 @@ public class MockSpringApplication
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.AbstractSpringApplication#isContextAutostarted()
+     * @see org.marketcetera.core.container.AbstractSpringApplication#isContextAutostarted()
      */
     @Override
     protected boolean isContextAutostarted()

@@ -15,7 +15,7 @@ import javax.annotation.concurrent.GuardedBy;
 
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.marketdata.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

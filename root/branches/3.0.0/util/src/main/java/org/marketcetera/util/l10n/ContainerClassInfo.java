@@ -9,7 +9,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.I18NMessage;
 import org.marketcetera.util.log.I18NMessageProvider;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.misc.ReflectUtils;
 
 /**

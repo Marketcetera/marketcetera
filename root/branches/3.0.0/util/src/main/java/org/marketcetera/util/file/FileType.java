@@ -3,7 +3,7 @@ package org.marketcetera.util.file;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A file type. Files on NTFS are limited to the following types:

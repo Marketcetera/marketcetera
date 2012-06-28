@@ -2,7 +2,7 @@ package org.marketcetera.event;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * An event was received from a data feed but could not be translated.

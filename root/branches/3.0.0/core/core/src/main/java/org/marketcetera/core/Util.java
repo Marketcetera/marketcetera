@@ -9,7 +9,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Collection of random utilities.

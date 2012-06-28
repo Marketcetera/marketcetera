@@ -9,7 +9,7 @@ import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.*;
 import quickfix.field.*;

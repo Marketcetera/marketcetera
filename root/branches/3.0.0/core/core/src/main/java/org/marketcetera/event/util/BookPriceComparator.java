@@ -5,7 +5,7 @@ import java.util.Comparator;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Compares orders for the purpose of sorting bids and asks according to their price order.

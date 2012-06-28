@@ -8,7 +8,7 @@ import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.*;

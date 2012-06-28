@@ -1,7 +1,7 @@
 package org.marketcetera.util.log;
 
 import java.io.Serializable;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A bound message, representing the combination of an {@link

@@ -1,6 +1,7 @@
 package org.marketcetera.core;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ApplicationVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.test.UnicodeData;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -8,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 /* $License$ */
 /**
- * Tests {@link ApplicationVersion}
+ * Tests {@link org.marketcetera.core.attributes.ApplicationVersion}
  *
  * @author anshul@marketcetera.com
  * @version $Id: ApplicationVersionTest.java 82306 2012-02-29 23:18:25Z colin $

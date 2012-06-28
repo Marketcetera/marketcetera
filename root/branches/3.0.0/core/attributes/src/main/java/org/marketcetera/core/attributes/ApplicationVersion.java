@@ -1,12 +1,10 @@
-package org.marketcetera.core;
+package org.marketcetera.core.attributes;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**

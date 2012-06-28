@@ -17,7 +17,7 @@ import ca.odell.glazedlists.impl.adt.barcode2.SimpleTree;
 import ca.odell.glazedlists.impl.adt.barcode2.SimpleTreeIterator;
 import ca.odell.glazedlists.impl.sort.ComparableComparator;
 import ca.odell.glazedlists.matchers.Matcher;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

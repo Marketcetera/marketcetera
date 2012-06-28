@@ -4,7 +4,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
 import org.marketcetera.systemmodel.VersionedObject;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

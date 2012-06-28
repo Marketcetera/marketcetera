@@ -9,7 +9,7 @@ import org.marketcetera.event.TimestampCarrier;
 import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.w3c.dom.Node;
 
 import java.io.File;

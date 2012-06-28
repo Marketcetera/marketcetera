@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.MockEventTranslator;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

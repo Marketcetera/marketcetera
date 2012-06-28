@@ -7,7 +7,7 @@ import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.OptionMarketstatEvent;
 import org.marketcetera.event.impl.MarketstatEventBuilder;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

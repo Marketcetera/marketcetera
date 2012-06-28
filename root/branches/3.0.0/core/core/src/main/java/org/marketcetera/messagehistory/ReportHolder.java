@@ -6,7 +6,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.Message;
 

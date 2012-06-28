@@ -1,7 +1,7 @@
 package org.marketcetera.trade;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import quickfix.Message;
 
 /**

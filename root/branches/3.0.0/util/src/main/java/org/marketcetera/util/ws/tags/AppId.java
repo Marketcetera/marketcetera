@@ -1,6 +1,6 @@
 package org.marketcetera.util.ws.tags;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * An application ID. Each Java application has a unique application

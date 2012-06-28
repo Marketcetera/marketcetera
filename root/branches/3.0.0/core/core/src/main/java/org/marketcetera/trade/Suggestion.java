@@ -1,6 +1,6 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import java.math.BigDecimal;
 import java.io.Serializable;

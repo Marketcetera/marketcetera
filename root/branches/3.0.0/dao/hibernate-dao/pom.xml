@@ -21,7 +21,7 @@
         <!--  compile: local -->
         <dependency>
             <groupId>org.marketcetera.core</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>systemmodel</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
         <!--  compile: spring -->
@@ -86,6 +86,12 @@
             <scope>test</scope>
         </dependency>
         <!-- test: other -->
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>container</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.marketcetera</groupId>
             <artifactId>security</artifactId>

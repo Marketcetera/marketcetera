@@ -4,7 +4,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.marketdata.AbstractMarketDataFeedFactory;
 import org.marketcetera.marketdata.FeedException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
  /* $License$ */
 

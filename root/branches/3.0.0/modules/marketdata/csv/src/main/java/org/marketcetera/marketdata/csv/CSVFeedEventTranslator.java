@@ -5,7 +5,7 @@ import java.util.List;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTranslator;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Provides the base implementation of a CSV event translator.

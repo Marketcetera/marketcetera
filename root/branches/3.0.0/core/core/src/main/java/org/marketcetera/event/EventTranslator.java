@@ -3,7 +3,7 @@ package org.marketcetera.event;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Translates to and from {@link Event} format.

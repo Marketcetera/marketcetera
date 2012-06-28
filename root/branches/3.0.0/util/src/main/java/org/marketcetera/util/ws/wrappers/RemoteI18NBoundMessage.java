@@ -4,7 +4,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A wrapper for an {@link I18NBoundMessage}. The message is

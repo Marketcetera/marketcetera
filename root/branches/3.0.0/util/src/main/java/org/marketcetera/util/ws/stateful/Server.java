@@ -1,6 +1,6 @@
 package org.marketcetera.util.ws.stateful;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessServer;
 

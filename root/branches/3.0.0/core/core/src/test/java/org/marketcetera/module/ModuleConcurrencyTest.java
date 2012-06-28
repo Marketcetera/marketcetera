@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
 
 /* $License$ */

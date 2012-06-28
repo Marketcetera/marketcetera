@@ -5,7 +5,7 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.marketcetera.util.log.ActiveLocale;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;

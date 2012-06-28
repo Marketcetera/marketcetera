@@ -6,7 +6,7 @@ import org.marketcetera.event.EquityEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.trade.Equity;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

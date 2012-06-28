@@ -6,7 +6,7 @@
 
 package org.marketcetera.core;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 
 /**

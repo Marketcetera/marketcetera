@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.wrappers;
 
 import java.util.Date;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a date. The raw form is {@link

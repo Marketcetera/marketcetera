@@ -8,7 +8,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.event.QuoteAction;
 import org.marketcetera.event.QuoteEvent;
 import org.marketcetera.event.util.EventServices;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

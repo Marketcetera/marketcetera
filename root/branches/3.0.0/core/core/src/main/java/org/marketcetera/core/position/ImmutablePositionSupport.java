@@ -3,7 +3,7 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import com.google.common.collect.ImmutableMap;
 

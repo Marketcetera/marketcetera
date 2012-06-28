@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Collection;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Deletes a file or directory recursively. It does not follow

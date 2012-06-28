@@ -3,7 +3,7 @@ package org.marketcetera.quickfix;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Singleton class that is a mapping of all {@link FIXVersion} to

@@ -10,7 +10,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Translates {@link MarketDataRequest} objects to a format that the {@link CSVFeed} can understand.

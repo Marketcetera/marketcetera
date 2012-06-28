@@ -9,7 +9,7 @@ import org.hibernate.SessionFactory;
 import org.marketcetera.dao.UserDao;
 import org.marketcetera.dao.impl.PersistentUser;
 import org.marketcetera.systemmodel.User;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,7 +1,7 @@
 package org.marketcetera.messagehistory;
 
 import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

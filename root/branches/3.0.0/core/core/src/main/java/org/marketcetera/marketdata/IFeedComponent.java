@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata;
 
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 @ClassVersion("$Id: IFeedComponent.java 16063 2012-01-31 18:21:55Z colin $")
 public interface IFeedComponent {

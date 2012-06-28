@@ -1,7 +1,7 @@
 package org.marketcetera.messagehistory;
 
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Visitor Patter - visit all the messages and perfrom an operation on them

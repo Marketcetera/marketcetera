@@ -12,7 +12,7 @@ import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -9,7 +9,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

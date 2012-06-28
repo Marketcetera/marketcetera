@@ -3,7 +3,7 @@
  */
 package org.marketcetera.messagehistory;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import ca.odell.glazedlists.matchers.Matcher;
 /* $License$ */

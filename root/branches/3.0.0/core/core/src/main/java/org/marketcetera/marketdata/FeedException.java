@@ -2,7 +2,7 @@ package org.marketcetera.marketdata;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Indicates an error throw during Market Data Feed operations.

@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.sample;
 
 import javax.jws.WebService;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.StatelessServiceBase;
 import org.marketcetera.util.ws.wrappers.RemoteException;

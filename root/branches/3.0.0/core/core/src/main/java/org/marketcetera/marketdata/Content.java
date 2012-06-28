@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.marketcetera.event.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * The content types for market data requests.

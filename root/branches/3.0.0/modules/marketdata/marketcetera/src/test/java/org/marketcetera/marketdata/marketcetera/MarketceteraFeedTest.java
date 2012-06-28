@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.marketcetera;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Testing the {@link MarketceteraFeed} class.

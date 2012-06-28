@@ -2,7 +2,7 @@ package org.marketcetera.util.ws.sample;
 
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NMessage2P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.RemoteCaller;
 import org.marketcetera.util.ws.stateful.ServiceBaseImpl;

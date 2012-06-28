@@ -2,7 +2,7 @@ package org.marketcetera.core.instruments;
 
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

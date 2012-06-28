@@ -1,7 +1,7 @@
 package org.marketcetera.module;
 
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import java.util.Date;
 import java.util.concurrent.locks.ReadWriteLock;

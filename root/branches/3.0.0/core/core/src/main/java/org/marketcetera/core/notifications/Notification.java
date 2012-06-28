@@ -2,7 +2,7 @@ package org.marketcetera.core.notifications;
 
 import java.util.Date;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

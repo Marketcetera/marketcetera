@@ -3,7 +3,7 @@ package org.marketcetera.util.ws.stateful;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.tags.NodeId;
 import org.marketcetera.util.ws.tags.SessionId;
 

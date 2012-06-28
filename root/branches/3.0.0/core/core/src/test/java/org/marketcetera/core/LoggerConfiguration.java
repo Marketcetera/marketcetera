@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.apache.log4j.PropertyConfigurator;
 

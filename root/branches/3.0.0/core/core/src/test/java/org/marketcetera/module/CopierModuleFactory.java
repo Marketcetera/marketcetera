@@ -1,7 +1,7 @@
 package org.marketcetera.module;
 
 import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 /**

@@ -4,7 +4,7 @@ import java.util.EmptyStackException;
 import java.util.Locale;
 import java.util.Stack;
 import java.util.concurrent.Callable;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.misc.CollectionUtils;
 
 /**

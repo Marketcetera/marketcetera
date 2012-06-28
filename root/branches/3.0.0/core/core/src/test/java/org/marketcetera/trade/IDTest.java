@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.test.ComparableAssert;
 import org.marketcetera.util.test.EqualityAssert;
 import org.marketcetera.util.test.SerializableAssert;

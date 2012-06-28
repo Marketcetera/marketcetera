@@ -1,7 +1,7 @@
 package org.marketcetera.util.log;
 
 import java.util.Locale;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * An internationalized message, requiring exactly two parameters.

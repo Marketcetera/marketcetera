@@ -3,7 +3,7 @@ package org.marketcetera.trade;
 import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 /**

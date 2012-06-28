@@ -2,7 +2,7 @@ package org.marketcetera.messagehistory;
 
 import org.marketcetera.core.MemoizedHashCombinator;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 
 /**

@@ -2,7 +2,7 @@ package org.marketcetera.dao.impl;
 
 import org.marketcetera.systemmodel.Group;
 import org.marketcetera.systemmodel.GroupFactory;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.stereotype.Component;
 
 /* $License$ */

@@ -14,7 +14,7 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.collections.UnmodifiableDeque;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.nocrala.tools.texttablefmt.*;
 import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
 

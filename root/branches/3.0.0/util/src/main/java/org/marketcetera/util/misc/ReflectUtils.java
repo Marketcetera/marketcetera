@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;
 
 /**

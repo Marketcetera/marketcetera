@@ -12,7 +12,7 @@ import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

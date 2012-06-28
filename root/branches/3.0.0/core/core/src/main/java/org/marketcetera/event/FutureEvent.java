@@ -4,7 +4,7 @@ import org.marketcetera.trade.DeliveryType;
 import org.marketcetera.trade.FutureType;
 import org.marketcetera.trade.FutureUnderlyingAssetType;
 import org.marketcetera.trade.StandardType;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

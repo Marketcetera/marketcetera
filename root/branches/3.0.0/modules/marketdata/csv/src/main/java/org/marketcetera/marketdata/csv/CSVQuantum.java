@@ -3,7 +3,7 @@ package org.marketcetera.marketdata.csv;
 import java.util.Arrays;
 
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

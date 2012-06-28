@@ -1,4 +1,4 @@
-package org.marketcetera.util.misc;
+package org.marketcetera.core.attributes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
