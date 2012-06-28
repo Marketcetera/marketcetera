@@ -1,7 +1,7 @@
 package org.marketcetera.event.impl;
 
 import org.marketcetera.event.Event;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

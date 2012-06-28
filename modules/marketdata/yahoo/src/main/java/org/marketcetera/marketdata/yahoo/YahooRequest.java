@@ -16,7 +16,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;

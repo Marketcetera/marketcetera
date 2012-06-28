@@ -6,7 +6,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.util.except.I18NThrowable;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A container for the information marshalled/serialized by a {@link

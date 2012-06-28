@@ -2,7 +2,7 @@ package org.marketcetera.module;
 
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.ActiveLocale;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

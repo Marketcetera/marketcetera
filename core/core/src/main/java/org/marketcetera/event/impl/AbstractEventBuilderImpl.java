@@ -6,7 +6,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.Event;
 import org.marketcetera.event.beans.EventBean;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

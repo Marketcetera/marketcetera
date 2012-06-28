@@ -1,6 +1,6 @@
 package org.marketcetera.util.log;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * General-purpose utilities.

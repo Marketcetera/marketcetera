@@ -24,7 +24,7 @@ import org.marketcetera.fork.glazed.GroupingList;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcher;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcherFactory;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;

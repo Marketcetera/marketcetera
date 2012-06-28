@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;

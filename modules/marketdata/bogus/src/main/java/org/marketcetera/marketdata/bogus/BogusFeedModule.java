@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.bogus;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.AbstractMarketDataModule;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

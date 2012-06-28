@@ -4,7 +4,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.SerializationException;
 import org.apache.commons.lang.SerializationUtils;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a serializable object. The raw

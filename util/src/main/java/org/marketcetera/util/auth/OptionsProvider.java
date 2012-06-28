@@ -1,7 +1,7 @@
 package org.marketcetera.util.auth;
 
 import org.apache.commons.cli.Options;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A provider of extra command line options.

@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.stateless;
 
 import javax.jws.WebService;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * The base interface for all web services. It is a tagging interface.

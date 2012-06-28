@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.*;
 

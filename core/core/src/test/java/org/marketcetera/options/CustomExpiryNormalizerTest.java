@@ -6,7 +6,7 @@ import static org.junit.Assert.assertFalse;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 /**

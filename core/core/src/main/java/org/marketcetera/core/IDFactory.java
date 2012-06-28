@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Interface for a factory object that supplies unique identifiers as strings.

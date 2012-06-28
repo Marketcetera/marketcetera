@@ -30,6 +30,11 @@
 
         <!-- Compile. -->
         <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>attributes</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>

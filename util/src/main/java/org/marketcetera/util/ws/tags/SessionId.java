@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.tags;
 
 import java.util.UUID;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A session ID. Each stateful client connection to a server has a

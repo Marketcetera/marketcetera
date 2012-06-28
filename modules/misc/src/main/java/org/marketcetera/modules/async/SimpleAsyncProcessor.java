@@ -1,6 +1,6 @@
 package org.marketcetera.modules.async;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.module.*;

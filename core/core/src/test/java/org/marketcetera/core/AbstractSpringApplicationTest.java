@@ -26,7 +26,7 @@ import org.springframework.context.support.StaticApplicationContext;
 /* $License$ */
 
 /**
- * Tests {@link AbstractSpringApplication}.
+ * Tests {@link org.marketcetera.core.container.AbstractSpringApplication}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractSpringApplicationTest.java 82306 2012-02-29 23:18:25Z colin $
@@ -78,7 +78,7 @@ public class AbstractSpringApplicationTest
     }
     /**
      * Tests what happens if an exception is thrown by an
-     * overriden call to {@link AbstractSpringApplication#doStartingMessage()}. 
+     * overriden call to {@link org.marketcetera.core.container.AbstractSpringApplication#doStartingMessage()}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -116,7 +116,7 @@ public class AbstractSpringApplicationTest
         assertTrue(mockApplication.isRunning());
     }
     /**
-     * Tests what happens if {@link AbstractSpringApplication#createContext()} throws
+     * Tests what happens if {@link org.marketcetera.core.container.AbstractSpringApplication#createContext()} throws
      * an exception. 
      *
      * @throws Exception if an unexpected error occurs
@@ -138,7 +138,7 @@ public class AbstractSpringApplicationTest
         assertFalse(mockApplication.isRunning());
     }
     /**
-     * Tests what happens if {@link AbstractSpringApplication#createContext()} returns <code>null</code>. 
+     * Tests what happens if {@link org.marketcetera.core.container.AbstractSpringApplication#createContext()} returns <code>null</code>.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -159,7 +159,7 @@ public class AbstractSpringApplicationTest
         assertFalse(mockApplication.isRunning());
     }
     /**
-     * Tests {@link AbstractSpringApplication#createContext()} returning a custom context.
+     * Tests {@link org.marketcetera.core.container.AbstractSpringApplication#createContext()} returning a custom context.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -181,7 +181,7 @@ public class AbstractSpringApplicationTest
         verifyContext((AbstractApplicationContext)actualContext);
     }
     /**
-     * Tests {@link AbstractSpringApplication#doStart()} if it throws an exception. 
+     * Tests {@link org.marketcetera.core.container.AbstractSpringApplication#doStart()} if it throws an exception.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -202,7 +202,7 @@ public class AbstractSpringApplicationTest
         assertFalse(mockApplication.isRunning());
     }
     /**
-     * Tests {@link AbstractSpringApplication#doStart()} executing custom code during start.
+     * Tests {@link org.marketcetera.core.container.AbstractSpringApplication#doStart()} executing custom code during start.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -226,7 +226,7 @@ public class AbstractSpringApplicationTest
     }
     /**
      * Tests that the application context can be modified during start by
-     * {@link AbstractSpringApplication#doStart()}.
+     * {@link org.marketcetera.core.container.AbstractSpringApplication#doStart()}.
      *
      * @throws Exception if an unexpected error occurs
      */

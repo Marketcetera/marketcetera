@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix.customfields;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Collection of connstants for custom fields were FIX messages

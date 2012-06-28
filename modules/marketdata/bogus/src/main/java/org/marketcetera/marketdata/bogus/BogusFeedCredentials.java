@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.bogus;
 
 import org.marketcetera.marketdata.AbstractMarketDataFeedCredentials;
 import org.marketcetera.marketdata.FeedException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

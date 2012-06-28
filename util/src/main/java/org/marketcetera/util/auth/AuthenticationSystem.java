@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * An authentication system. It is responsible for using a series of

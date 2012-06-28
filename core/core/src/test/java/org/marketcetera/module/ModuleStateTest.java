@@ -1,6 +1,6 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import static org.junit.Assert.*;
 import static org.marketcetera.module.ModuleState.*;
 import org.junit.Test;

@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */

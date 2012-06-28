@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

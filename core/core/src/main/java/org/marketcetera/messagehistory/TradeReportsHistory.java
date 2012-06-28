@@ -20,7 +20,7 @@ import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.Message;
 import ca.odell.glazedlists.BasicEventList;

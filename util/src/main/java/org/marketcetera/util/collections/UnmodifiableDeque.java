@@ -7,7 +7,7 @@ import java.util.Iterator;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Provides a <code>Deque</code> implementation that cannot be modified.

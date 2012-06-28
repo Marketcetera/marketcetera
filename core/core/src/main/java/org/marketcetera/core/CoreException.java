@@ -2,7 +2,7 @@ package org.marketcetera.core;
 
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

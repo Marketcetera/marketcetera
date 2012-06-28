@@ -2,7 +2,7 @@ package org.marketcetera.marketdata;
 
 import static org.marketcetera.marketdata.Messages.NULL_URL;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

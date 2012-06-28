@@ -26,7 +26,7 @@ import org.marketcetera.event.util.PriceAndSizeComparator;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;

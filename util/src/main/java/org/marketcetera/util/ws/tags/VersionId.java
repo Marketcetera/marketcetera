@@ -1,6 +1,6 @@
 package org.marketcetera.util.ws.tags;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A version ID. Each set of collaborating web service classes has a

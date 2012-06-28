@@ -3,7 +3,7 @@ package org.marketcetera.quickfix;
 import java.util.HashMap;
 
 import org.marketcetera.quickfix.messagefactory.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

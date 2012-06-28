@@ -16,7 +16,7 @@ import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;

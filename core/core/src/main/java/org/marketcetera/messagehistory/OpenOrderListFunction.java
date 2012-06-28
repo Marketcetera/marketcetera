@@ -13,7 +13,7 @@ import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import ca.odell.glazedlists.FunctionList.Function;
 

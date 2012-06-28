@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

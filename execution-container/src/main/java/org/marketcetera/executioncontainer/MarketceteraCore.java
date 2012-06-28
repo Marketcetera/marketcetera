@@ -1,7 +1,7 @@
 package org.marketcetera.executioncontainer;
 
 import org.marketcetera.module.ModuleManager;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 

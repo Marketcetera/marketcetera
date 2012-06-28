@@ -1,7 +1,7 @@
 package org.marketcetera.trade;
 
 import java.io.Serializable;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A tagging interface for all trade messages.

@@ -1,6 +1,6 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.junit.After;
 
 import javax.management.JMX;

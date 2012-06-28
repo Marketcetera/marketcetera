@@ -9,7 +9,7 @@ import org.marketcetera.marketdata.AbstractMarketDataFeedCredentials;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Encapsulates the data necessary to initialize an instance of {@link CSVFeed}.

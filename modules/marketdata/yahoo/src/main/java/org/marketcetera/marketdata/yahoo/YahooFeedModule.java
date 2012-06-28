@@ -7,7 +7,7 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.AbstractMarketDataModule;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

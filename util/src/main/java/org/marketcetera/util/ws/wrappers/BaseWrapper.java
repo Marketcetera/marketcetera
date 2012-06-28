@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.wrappers;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A generic wrapper for marshalling a data value via JAXB. This class

@@ -10,7 +10,7 @@ import org.apache.commons.i18n.MessageNotFoundException;
 import org.apache.commons.i18n.ResourceBundleMessageProvider;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.except.ExceptUtils;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * An internationalized message provider, mapping instances of {@link

@@ -3,7 +3,7 @@ package org.marketcetera.quickfix;
 import java.io.InputStream;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.ConfigError;
 import quickfix.DataDictionary;

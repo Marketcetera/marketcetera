@@ -6,7 +6,7 @@ import static org.marketcetera.marketdata.marketcetera.Messages.URL_REQUIRED;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.AbstractMarketDataFeedURLCredentials;
 import org.marketcetera.marketdata.FeedException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

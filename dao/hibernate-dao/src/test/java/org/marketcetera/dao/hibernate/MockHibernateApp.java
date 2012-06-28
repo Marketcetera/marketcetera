@@ -1,6 +1,6 @@
 package org.marketcetera.dao.hibernate;
 
-import org.marketcetera.core.AbstractSpringApplication;
+import org.marketcetera.core.container.AbstractSpringApplication;
 
 /* $License$ */
 
@@ -15,7 +15,7 @@ public class MockHibernateApp
         extends AbstractSpringApplication
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.AbstractSpringApplication#getLoggerCategory()
+     * @see org.marketcetera.core.container.AbstractSpringApplication#getLoggerCategory()
      */
     @Override
     protected Class<? extends AbstractSpringApplication> getLoggerCategory()
@@ -23,7 +23,7 @@ public class MockHibernateApp
         return MockHibernateApp.class;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.AbstractSpringApplication#getName()
+     * @see org.marketcetera.core.container.AbstractSpringApplication#getName()
      */
     @Override
     protected String getName()

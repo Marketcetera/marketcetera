@@ -32,7 +32,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;

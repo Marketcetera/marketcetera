@@ -2,7 +2,7 @@ package org.marketcetera.util.log;
 
 import java.io.Serializable;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A logger which supports internationalized messages.

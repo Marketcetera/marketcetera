@@ -15,7 +15,7 @@ import org.marketcetera.symbolresolver.SymbolResolverManager;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -3,7 +3,7 @@ package org.marketcetera.quickfix.messagefactory;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.Group;

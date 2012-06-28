@@ -3,7 +3,7 @@ package org.marketcetera.marketdata.marketcetera;
 import org.marketcetera.marketdata.AbstractMarketDataFeedToken;
 import org.marketcetera.marketdata.MarketDataFeedToken;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

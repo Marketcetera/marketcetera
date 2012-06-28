@@ -7,7 +7,7 @@ import java.util.HashMap;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 

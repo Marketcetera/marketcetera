@@ -2,7 +2,7 @@ package org.marketcetera.util.ws.stateless;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.NodeId;
 import org.marketcetera.util.ws.tags.VersionId;

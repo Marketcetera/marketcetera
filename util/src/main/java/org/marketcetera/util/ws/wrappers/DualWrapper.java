@@ -6,7 +6,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlTransient;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a data value via JAXB or

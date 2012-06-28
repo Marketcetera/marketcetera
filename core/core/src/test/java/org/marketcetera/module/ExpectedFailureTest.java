@@ -10,7 +10,7 @@ import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NInterruptedException;
 import org.marketcetera.util.log.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 /**

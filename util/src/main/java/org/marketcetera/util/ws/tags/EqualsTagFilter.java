@@ -4,7 +4,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NMessage2P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A tag filter that accepts any tag that is equal to a specific

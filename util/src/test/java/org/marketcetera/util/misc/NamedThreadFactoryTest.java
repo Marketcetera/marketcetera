@@ -1,6 +1,8 @@
 package org.marketcetera.util.misc;
 
 import org.junit.Test;
+import org.marketcetera.core.attributes.ClassVersion;
+
 import static org.junit.Assert.*;
 
 import java.util.List;

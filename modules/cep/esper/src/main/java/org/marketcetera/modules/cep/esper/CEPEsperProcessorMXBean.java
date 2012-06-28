@@ -1,6 +1,6 @@
 package org.marketcetera.modules.cep.esper;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.module.DisplayName;
 
 import javax.management.MXBean;

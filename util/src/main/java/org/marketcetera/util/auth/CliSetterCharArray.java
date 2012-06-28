@@ -3,7 +3,7 @@ package org.marketcetera.util.auth;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A setter for a character array holder that obtains the data via a

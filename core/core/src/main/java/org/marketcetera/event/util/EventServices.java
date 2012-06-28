@@ -5,7 +5,7 @@ import javax.annotation.concurrent.Immutable;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -6,7 +6,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

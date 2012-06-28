@@ -22,7 +22,7 @@ import org.apache.commons.csv.CSVStrategy;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.marketdata.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Implementation of the market data feed that reads from a CSV file.

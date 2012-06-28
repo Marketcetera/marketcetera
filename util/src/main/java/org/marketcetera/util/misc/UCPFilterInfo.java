@@ -3,6 +3,8 @@ package org.marketcetera.util.misc;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.marketcetera.core.attributes.ClassVersion;
+
 /**
  * A meta-information holder for a {@link UCPFilter}.
  *

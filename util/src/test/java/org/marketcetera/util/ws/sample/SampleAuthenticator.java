@@ -2,7 +2,7 @@ package org.marketcetera.util.ws.sample;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 

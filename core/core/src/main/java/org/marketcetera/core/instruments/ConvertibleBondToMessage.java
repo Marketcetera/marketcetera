@@ -6,7 +6,7 @@ import java.util.Set;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.Message;

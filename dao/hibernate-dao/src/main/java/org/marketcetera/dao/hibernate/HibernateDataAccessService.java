@@ -6,7 +6,7 @@ import org.marketcetera.dao.AuthorityDao;
 import org.marketcetera.dao.DataAccessService;
 import org.marketcetera.dao.GroupDao;
 import org.marketcetera.dao.UserDao;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

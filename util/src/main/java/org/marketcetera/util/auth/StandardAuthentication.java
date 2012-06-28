@@ -3,7 +3,7 @@ package org.marketcetera.util.auth;
 import java.io.PrintStream;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A standard authentication system. A standard system comprises a

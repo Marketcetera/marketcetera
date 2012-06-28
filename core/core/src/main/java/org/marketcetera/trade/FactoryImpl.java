@@ -1,7 +1,7 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.quickfix.FIXDataDictionary;

@@ -2,7 +2,7 @@ package org.marketcetera.quickfix;
 
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_44;
 import org.marketcetera.quickfix.messagefactory.SystemMessageFactory;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import quickfix.Message;
 import quickfix.field.*;
 

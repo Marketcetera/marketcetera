@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * The asset class for market data requests.

@@ -10,7 +10,7 @@ import org.marketcetera.event.Event;
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.util.EventServices;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

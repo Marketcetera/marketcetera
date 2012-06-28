@@ -1,6 +1,6 @@
 package org.marketcetera.util.ws.stateless;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * The base class for all web services.

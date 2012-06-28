@@ -3,7 +3,7 @@ package org.marketcetera.marketdata;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

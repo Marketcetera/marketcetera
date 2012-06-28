@@ -6,7 +6,7 @@ import java.nio.channels.FileLockInterruptionException;
 import javax.naming.InterruptedNamingException;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * General-purpose utilities.

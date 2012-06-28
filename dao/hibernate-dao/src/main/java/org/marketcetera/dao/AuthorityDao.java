@@ -3,7 +3,7 @@ package org.marketcetera.dao;
 import java.util.List;
 
 import org.marketcetera.systemmodel.Authority;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /* $License$ */

@@ -2,7 +2,7 @@ package org.marketcetera.util.ws.stateful;
 
 import java.util.Arrays;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.StatelessRemoteCaller;
 import org.marketcetera.util.ws.tags.SessionId;

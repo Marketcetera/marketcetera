@@ -17,7 +17,7 @@ import org.marketcetera.util.log.I18NMessage4P;
 import org.marketcetera.util.log.I18NMessage5P;
 import org.marketcetera.util.log.I18NMessage6P;
 import org.marketcetera.util.log.I18NMessageNP;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

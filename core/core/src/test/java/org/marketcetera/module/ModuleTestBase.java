@@ -1,7 +1,7 @@
 package org.marketcetera.module;
 
 import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.test.CollectionAssert;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.LoggerConfiguration;

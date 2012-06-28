@@ -2,7 +2,7 @@ package org.marketcetera.util.ws.stateful;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;

@@ -1,7 +1,7 @@
 package org.marketcetera.util.ws.stateless;
 
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.ws.tags.EqualsTagFilter;
 import org.marketcetera.util.ws.tags.Tag;
 import org.marketcetera.util.ws.tags.TagFilter;

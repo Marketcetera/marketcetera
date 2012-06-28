@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A context, comprising a group of setters. The context provides an

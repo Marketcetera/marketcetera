@@ -1,7 +1,7 @@
 package org.marketcetera.core;
 
 import org.marketcetera.util.log.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -37,8 +37,6 @@ public interface Messages
                                                                 "app_stopping"); //$NON-NLS-1$
     static final I18NMessage1P APP_STOPPED = new I18NMessage1P(LOGGER,
                                                                "app_stopped"); //$NON-NLS-1$
-    static final I18NMessage0P ERROR_FETCHING_VERSION_PROPERTIES = new I18NMessage0P(LOGGER,
-                                                                                     "error_fetching_version_properties");   //$NON-NLS-1$
     static final I18NMessage1P NULL_CONTEXT = new I18NMessage1P(LOGGER,
                                                                 "null_context");   //$NON-NLS-1$
     static final I18NMessage1P APP_START_ERROR = new I18NMessage1P(LOGGER,

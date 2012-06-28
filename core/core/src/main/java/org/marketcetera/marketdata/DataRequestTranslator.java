@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * Translates between the specified external data type <code>T</code> and {@link MarketDataRequest} format.

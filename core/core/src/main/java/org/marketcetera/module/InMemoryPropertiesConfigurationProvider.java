@@ -7,7 +7,7 @@ import java.util.Properties;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -1,7 +1,7 @@
 package org.marketcetera.util.spring;
 
 import org.marketcetera.util.except.I18NRuntimeException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 /**
  * A base class for a Spring bean which allows for on-demand

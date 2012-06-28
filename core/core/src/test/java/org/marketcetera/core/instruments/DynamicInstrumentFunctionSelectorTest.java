@@ -14,7 +14,7 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
