@@ -20,13 +20,13 @@
     <dependencies>
         <!-- compile: local -->
         <dependency>
-            <groupId>org.marketcetera</groupId>
+            <groupId>org.marketcetera.core</groupId>
             <artifactId>core</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
         <!-- test: local -->
         <dependency>
-            <groupId>org.marketcetera</groupId>
+            <groupId>org.marketcetera.core</groupId>
             <artifactId>core</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
             <type>test-jar</type>
