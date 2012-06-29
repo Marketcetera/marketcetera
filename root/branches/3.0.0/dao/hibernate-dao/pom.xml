@@ -71,6 +71,13 @@
             <artifactId>commons-lang</artifactId>
         </dependency>
         <!-- test: local -->
+        <!-- todo BT 20120629 - this is kind of heinous that core is necessary here, it's something to do with core_messages being missing -->
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>core</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>core</artifactId>
@@ -84,6 +91,12 @@
             <version>[3.0.0-SNAPSHOT]</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- test: spring -->
         <dependency>
             <groupId>org.springframework</groupId>
