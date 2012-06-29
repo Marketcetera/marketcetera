@@ -20,6 +20,7 @@
     <modules>
         <module>container</module>
         <module>core</module>
+        <module>quickfix</module>
         <module>systemmodel</module>
         <module>util</module>
         <module>webservice</module>
