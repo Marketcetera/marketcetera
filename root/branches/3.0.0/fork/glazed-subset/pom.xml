@@ -22,11 +22,11 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.marketcetera</groupId>
-            <artifactId>util</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.marketcetera</groupId>-->
+            <!--<artifactId>util</artifactId>-->
+            <!--<version>3.0.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

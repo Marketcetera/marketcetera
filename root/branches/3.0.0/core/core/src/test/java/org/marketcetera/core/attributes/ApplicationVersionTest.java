@@ -1,10 +1,10 @@
-package org.marketcetera.core;
+package org.marketcetera.core.attributes;
 
-import org.marketcetera.core.attributes.ApplicationVersion;
-import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.test.UnicodeData;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.util.test.UnicodeData;
+
 import static org.junit.Assert.assertEquals;
 
 /* $License$ */

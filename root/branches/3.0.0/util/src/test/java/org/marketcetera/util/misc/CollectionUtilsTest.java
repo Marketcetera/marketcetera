@@ -4,6 +4,7 @@ import java.util.Arrays;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.junit.Test;
+import org.marketcetera.core.util.misc.CollectionUtils;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;

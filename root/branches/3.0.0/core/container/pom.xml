@@ -20,7 +20,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.marketcetera</groupId>
+            <groupId>org.marketcetera.core</groupId>
             <artifactId>util</artifactId>
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
@@ -31,6 +31,14 @@
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
         </dependency>
     </dependencies>
 

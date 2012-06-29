@@ -17,7 +17,6 @@ import ca.odell.glazedlists.impl.adt.barcode2.SimpleTree;
 import ca.odell.glazedlists.impl.adt.barcode2.SimpleTreeIterator;
 import ca.odell.glazedlists.impl.sort.ComparableComparator;
 import ca.odell.glazedlists.matchers.Matcher;
-import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -42,7 +41,6 @@ import org.marketcetera.core.attributes.ClassVersion;
  * @version $Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $")
 public class GroupingList<E> extends TransformedList<E, EventList<E>> {
 
     /**
@@ -302,7 +300,6 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
      * @version $Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
-    @ClassVersion("$Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $")
     private class GroupList extends AbstractEventList<E> implements Comparable<GroupList> {
 
         private GroupMatcher<E> matcher;

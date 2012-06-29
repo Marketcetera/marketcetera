@@ -1,6 +1,6 @@
 package org.marketcetera.executioncontainer;
 
-import org.marketcetera.core.AbstractSpringApplication;
+import org.marketcetera.core.container.AbstractSpringApplication;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

@@ -18,10 +18,10 @@
     <description>Different core projects.</description>
 
     <modules>
-        <module>attributes</module>
         <module>container</module>
         <module>core</module>
-        <module>logging</module>
         <module>systemmodel</module>
+        <module>util</module>
+        <module>webservice</module>
     </modules>
 </project>

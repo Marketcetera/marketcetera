@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.core.util.misc.CollectionUtils;
 
 /**
  * A meta-information holder for a {@link UCPFilter}.
@@ -48,7 +49,7 @@ public class UCPFilterInfo
                 ucps.add(ucp);
             }
         }
-        mUCPs=CollectionUtils.toArray(ucps);
+        mUCPs= CollectionUtils.toArray(ucps);
     }
 
 

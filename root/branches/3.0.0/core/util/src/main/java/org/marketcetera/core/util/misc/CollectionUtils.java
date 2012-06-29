@@ -1,4 +1,4 @@
-package org.marketcetera.util.misc;
+package org.marketcetera.core.util.misc;
 
 import java.util.List;
 import java.util.ListIterator;

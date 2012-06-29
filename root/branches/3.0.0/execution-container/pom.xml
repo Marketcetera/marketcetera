@@ -24,6 +24,16 @@
             <artifactId>hibernate-dao</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>container</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>core</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+        </dependency>
         <!-- compile: spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -56,7 +66,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -70,7 +79,6 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.hsqldb</groupId>
