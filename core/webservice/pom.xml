@@ -10,20 +10,32 @@
     </parent>
 
     <groupId>org.marketcetera.core</groupId>
-    <artifactId>attributes</artifactId>
+    <artifactId>webservice</artifactId>
     <version>3.0.0-SNAPSHOT</version>
 
     <packaging>bundle</packaging>
 
-    <name>Attributes</name>
-    <description>Constants, annotations and such used across modules</description>
+    <name>Web Service</name>
 
     <dependencies>
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.marketcetera.core</groupId>
-            <artifactId>logging</artifactId>
+            <artifactId>util</artifactId>
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -34,7 +46,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.marketcetera.core.attributes</Export-Package>
+                        <Export-Package>org.marketcetera.core.ws</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

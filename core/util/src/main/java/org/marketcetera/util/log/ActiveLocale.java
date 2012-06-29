@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Stack;
 import java.util.concurrent.Callable;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.misc.CollectionUtils;
+import org.marketcetera.core.util.misc.CollectionUtils;
 
 /**
  * Manages the active locale.

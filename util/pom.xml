@@ -31,7 +31,7 @@
         <!-- Compile. -->
         <dependency>
             <groupId>org.marketcetera.core</groupId>
-            <artifactId>attributes</artifactId>
+            <artifactId>core</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
         <dependency>

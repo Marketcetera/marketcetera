@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.concurrent.ThreadSafe;
-
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.attributes.ApplicationVersion;
 import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;
 import org.springframework.context.support.ClassPathXmlApplicationContext;

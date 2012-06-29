@@ -15,10 +15,15 @@
 
     <packaging>bundle</packaging>
 
-    <name>core</name>
+    <name>Core Facilities</name>
 
     <dependencies>
         <!-- compile: local -->
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>webservice</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+        </dependency>
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>systemmodel</artifactId>
@@ -30,7 +35,7 @@
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
         <dependency>
-            <groupId>org.marketcetera</groupId>
+            <groupId>org.marketcetera.core</groupId>
             <artifactId>util</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
@@ -128,6 +133,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.quickfix</artifactId>
         </dependency>
     </dependencies>
 
