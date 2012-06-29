@@ -18,15 +18,10 @@
     <name>Core Facilities</name>
 
     <dependencies>
-        <!-- compile: local -->
+        <!-- Local dependencies -->
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>webservice</artifactId>
-            <version>[3.0.0-SNAPSHOT]</version>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>systemmodel</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
         <dependency>
@@ -39,34 +34,20 @@
             <artifactId>util</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
-        <!-- compile: spring -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <scope>compile</scope>
+            <groupId>org.marketcetera.fork</groupId>
+            <artifactId>texttablefmt</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
         </dependency>
+
+        <!-- Community dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-        </dependency>
-        <!-- compile: other -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -75,11 +56,6 @@
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jpa_2.0_spec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera.fork</groupId>
-            <artifactId>texttablefmt</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.collections</groupId>
@@ -94,23 +70,20 @@
             <artifactId>commons-beanutils</artifactId>
         </dependency>
         <dependency>
-            <groupId>icu4j</groupId>
-            <artifactId>icu4j</artifactId>
-            <version>2.6.1</version>
-        </dependency>
-        <dependency>
             <groupId>org.marketcetera.fork</groupId>
             <artifactId>csvtools</artifactId>
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
-        <!-- test: local -->
         <dependency>
-            <groupId>org.marketcetera</groupId>
-            <artifactId>util-test</artifactId>
-            <version>[3.0.0-SNAPSHOT]</version>
-            <scope>test</scope>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
         </dependency>
-        <!-- test: other -->
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.quickfix</artifactId>
+        </dependency>
+
+        <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -124,23 +97,31 @@
             <artifactId>mockito-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>util-test</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>container</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
             <scope>test</scope>
         </dependency>
-        <!-- runtime: other -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.quickfix</artifactId>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -13,9 +13,9 @@
     <artifactId>dao-common</artifactId>
     <version>3.0.0-SNAPSHOT</version>
 
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
 
-    <name>Hibernate DAO</name>
+    <name>DAO Common</name>
 
     <dependencies>
         <!--  compile: local -->
@@ -25,4 +25,18 @@
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.marketcetera.dao</Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

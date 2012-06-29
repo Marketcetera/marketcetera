@@ -36,11 +36,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.marketcetera</groupId>
             <artifactId>util-test</artifactId>
             <version>3.0.0-SNAPSHOT</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.marketcetera.core</groupId>
