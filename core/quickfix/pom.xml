@@ -10,50 +10,14 @@
     </parent>
 
     <groupId>org.marketcetera.core</groupId>
-    <artifactId>util</artifactId>
+    <artifactId>quickfix</artifactId>
     <version>3.0.0-SNAPSHOT</version>
 
     <packaging>bundle</packaging>
 
-    <name>Core Utilities</name>
-    <description>I18N and logging functionality</description>
+    <name>Quickfix</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera.fork</groupId>
-            <artifactId>commons-i18n</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera</groupId>
-            <artifactId>util-test</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+    <dependencies></dependencies>
 
     <build>
         <plugins>
@@ -63,7 +27,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.marketcetera.core.attributes</Export-Package>
+                        <Export-Package>org.marketcetera.quickfix</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
