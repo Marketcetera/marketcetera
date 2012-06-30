@@ -99,6 +99,7 @@ public class SessionManagerTest
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
         setLevel(TEST_CATEGORY,Level.INFO);
+	setDefaultLevel(Level.WARN);
     }
 
 
