@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.ors;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: ORS Plug-in
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.core,
+ org.marketcetera.client,
+ org.marketcetera.core.tests;resolution:=optional,
+ org.junit4;resolution:=optional
+Eclipse-RegisterBuddy: org.marketcetera.core
+Export-Package: org.marketcetera.ors,
+ org.marketcetera.ors.brokers,
+ org.marketcetera.ors.config,
+ org.marketcetera.ors.exchange,
+ org.marketcetera.ors.filters,
+ org.marketcetera.ors.history,
+ org.marketcetera.ors.info,
+ org.marketcetera.ors.mbeans,
+ org.marketcetera.ors.security,
+ org.marketcetera.ors.ws,
+ org.marketcetera.spring
