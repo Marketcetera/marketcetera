@@ -1,12 +1,12 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.core.trade.Factory;
+import org.marketcetera.core.trade.OrderSingle;
+import org.marketcetera.core.trade.OrderType;
+import org.marketcetera.core.trade.Side;
+import org.marketcetera.core.trade.TimeInForce;
 
 /**
  * Test strategy that suggests trades.

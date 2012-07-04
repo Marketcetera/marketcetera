@@ -7,15 +7,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.impl.QuoteEventBuilder;
-import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.BidEvent;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.core.event.impl.QuoteEventBuilder;
+import org.marketcetera.core.event.impl.TradeEventBuilder;
+import org.marketcetera.core.marketdata.Content;
+import org.marketcetera.core.marketdata.DateUtils;
+import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 

@@ -12,14 +12,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.event.*;
-import org.marketcetera.event.impl.LogEventBuilder;
-import org.marketcetera.module.*;
-import org.marketcetera.quickfix.CurrentFIXDataDictionary;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXMessageUtilTest;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.impl.LogEventBuilder;
+import org.marketcetera.core.module.*;
+import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.core.quickfix.FIXDataDictionary;
+import org.marketcetera.core.quickfix.FIXMessageUtilTest;
+import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.core.trade.*;
 
 import quickfix.Message;
 import quickfix.field.Symbol;
@@ -148,7 +148,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
     @Test
     public void testInvalidDataRequestArgument() throws Exception {
         // send in a null request
-        new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
+        new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.core.module.Messages.ILLEGAL_REQ_PARM_VALUE,
                                                           getModuleURN().toString(),
                                                           null) {
             @Override
@@ -163,7 +163,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
     /** See what happens when you send in a non-string request parameter - should error out */
     @Test(timeout=120000)
     public void testNonStringRequestParameter() throws Exception {
-        new ExpectedFailure<UnsupportedRequestParameterType>(org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE,
+        new ExpectedFailure<UnsupportedRequestParameterType>(org.marketcetera.core.module.Messages.UNSUPPORTED_REQ_PARM_TYPE,
                                                              getModuleURN().toString(),
                                                              Integer.class.getName()) {
             @Override
@@ -265,7 +265,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
         assertEquals("didnt' get right size", new BigDecimal("85"), theBid.getPrice());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow1).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flow1);
-        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.module.Messages.DATA_FLOW_NOT_FOUND,
+        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.core.module.Messages.DATA_FLOW_NOT_FOUND,
                                                        flow1.toString()) {
             @Override
             protected void run()
@@ -290,7 +290,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
         assertEquals("didnt' get right size", new BigDecimal("300"), theBid.getPrice());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow2).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flow2);
-        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.module.Messages.DATA_FLOW_NOT_FOUND,
+        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.core.module.Messages.DATA_FLOW_NOT_FOUND,
                                                        flow2.toString()) {
             @Override
             protected void run()
@@ -319,7 +319,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
         assertEquals("CEP didn't receive all events", 3, sManager.getDataFlowInfo(flow3).getFlowSteps()[1].getNumReceived());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow3).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flow3);
-        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.module.Messages.DATA_FLOW_NOT_FOUND,
+        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.core.module.Messages.DATA_FLOW_NOT_FOUND,
                                                        flow3.toString()) {
             @Override
             protected void run()

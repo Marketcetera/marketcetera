@@ -7,8 +7,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.*;
-import org.marketcetera.trade.Factory;
+import org.marketcetera.core.module.*;
+import org.marketcetera.core.trade.Factory;
 
 /**
  * Test having a receiver that reposts events back into Esper

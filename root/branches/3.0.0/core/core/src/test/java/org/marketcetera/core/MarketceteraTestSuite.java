@@ -3,8 +3,8 @@ package org.marketcetera.core;
 import junit.framework.TestSuite;
 
 import org.junit.Ignore;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.quickfix.FIXDataDictionary;
+import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**

@@ -1,19 +1,25 @@
 package org.marketcetera.core.position.impl;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.math.BigDecimal;
 
+import ca.odell.glazedlists.BasicEventList;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.position.*;
+import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
-import org.marketcetera.trade.*;
+import org.marketcetera.core.position.MockTrade;
+import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.core.position.Trade;
+import org.marketcetera.core.trade.ConvertibleBond;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
 
-import ca.odell.glazedlists.BasicEventList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /* $License$ */
 

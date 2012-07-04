@@ -1,11 +1,15 @@
 package org.marketcetera.core;
 
 import junit.framework.TestCase;
-import org.marketcetera.quickfix.*;
+import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.core.quickfix.FIXDataDictionary;
+import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.core.quickfix.FIXMessageFactory;
+import org.marketcetera.core.quickfix.FIXVersion;
 
 /**
  * Subclass of the regular {@link junit.framework.TestCase} that also knows
- * about FIXVersions and has a {@link org.marketcetera.quickfix.FIXMessageFactory}
+ * about FIXVersions and has a {@link org.marketcetera.core.quickfix.FIXMessageFactory}
  * @author toli
  * @version $Id: FIXVersionedTestCase.java 16063 2012-01-31 18:21:55Z colin $
  */

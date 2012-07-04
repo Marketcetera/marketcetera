@@ -1,10 +1,10 @@
 package org.marketcetera.marketdata.yahoo;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.module.Module;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.Module;
+import org.marketcetera.core.module.ModuleCreationException;
+import org.marketcetera.core.module.ModuleFactory;
+import org.marketcetera.core.module.ModuleURN;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
@@ -32,7 +32,7 @@ public class YahooFeedModuleFactory
               false);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
+     * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
      */
     @Override
     public Module create(Object... inArg0)

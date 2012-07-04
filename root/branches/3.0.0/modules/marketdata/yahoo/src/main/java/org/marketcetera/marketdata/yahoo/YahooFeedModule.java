@@ -5,8 +5,8 @@ import javax.management.AttributeChangeNotification;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.marketdata.AbstractMarketDataModule;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.core.marketdata.AbstractMarketDataModule;
+import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

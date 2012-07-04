@@ -1,19 +1,19 @@
 package org.marketcetera.marketdata.marketcetera;
 
 import static org.junit.Assert.assertEquals;
-import static org.marketcetera.marketdata.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
+import static org.marketcetera.core.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.core.marketdata.Content.TOP_OF_BOOK;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.DataRequestTranslator;
-import org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase;
+import org.marketcetera.core.marketdata.Content;
+import org.marketcetera.core.marketdata.DataRequestTranslator;
+import org.marketcetera.core.marketdata.MarketDataMessageTranslatorTestBase;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;

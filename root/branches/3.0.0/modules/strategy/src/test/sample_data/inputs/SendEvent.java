@@ -1,16 +1,16 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.DataFlowID;
+import org.marketcetera.core.module.DataRequest;
+import org.marketcetera.core.module.ModuleURN;
 import org.marketcetera.strategy.OutputType;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.trade.Equity;
 
 import java.util.Date;
 
@@ -53,7 +53,7 @@ public class SendEvent
         cancelDataFlow(dataFlowID);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.core.event.AskEvent)
      */
     @Override
     public void onAsk(AskEvent inAsk)

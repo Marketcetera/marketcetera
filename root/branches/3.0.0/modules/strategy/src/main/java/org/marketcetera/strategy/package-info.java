@@ -74,7 +74,7 @@
  *            <em id="strategy_structure_api_data_onask">onAsk</em>
  *            <br>
  *            <pre>
- *                void onAsk(org.marketcetera.event.AskEvent)
+ *                void onAsk(org.marketcetera.core.event.AskEvent)
  *                on_ask(ask)
  *            </pre>
  *            Called when the strategy receives an ask event.  Ask events are received
@@ -84,7 +84,7 @@
  *            <em id="strategy_structure_api_data_onbid">onBid</em>
  *            <br>
  *            <pre>
- *                void onBid(org.marketcetera.event.BidEvent)
+ *                void onBid(org.marketcetera.core.event.BidEvent)
  *                on_bid(bid)
  *            </pre>
  *            Called when the strategy receives a bid event.  Bid events are received
@@ -94,7 +94,7 @@
  *            <em id="strategy_structure_api_data_ontrade">onTrade</em>
  *            <br>
  *            <pre>
- *                void onTrade(org.marketcetera.event.TradeEvent)
+ *                void onTrade(org.marketcetera.core.event.TradeEvent)
  *                on_trade(trade)
  *            </pre>
  *            Called when the strategy receives a trade event.  Trade events are received
@@ -104,7 +104,7 @@
  *            <em id="strategy_structure_api_data_onmarketstat">onMarketstat</em>
  *            <br>
  *            <pre>
- *                void onMarketstat(org.marketcetera.event.MarketstatEvent)
+ *                void onMarketstat(org.marketcetera.core.event.MarketstatEvent)
  *                on_marketstat(marketstat)
  *            </pre>
  *            Called when the strategy receives a marketstat event.  Marketstat events are received
@@ -114,7 +114,7 @@
  *            <em id="strategy_structure_api_data_ondividend">onDividend</em>
  *            <br>
  *            <pre>
- *                void onDividend(org.marketcetera.event.DividendEvent)
+ *                void onDividend(org.marketcetera.core.event.DividendEvent)
  *                on_dividend(dividend)
  *            </pre>
  *            Called when the strategy receives a dividend event.  Dividend events are received
@@ -124,7 +124,7 @@
  *            <em id="strategy_structure_api_data_oncancelreject">onCancelReject</em>
  *            <br>
  *            <pre>
- *                void onCancelReject(org.marketcetera.trade.OrderCancelReject)
+ *                void onCancelReject(org.marketcetera.core.trade.OrderCancelReject)
  *                on_cancel_reject(cancel)
  *            </pre>
  *            Called when the strategy receives an order cancel reject event.  Order cancel reject events
@@ -136,7 +136,7 @@
  *            <em id="strategy_structure_api_data_onexecutionreport">onExecutionReport</em>
  *            <br>
  *            <pre>
- *                void onExecutionReport(org.marketcetera.trade.ExecutionReport)
+ *                void onExecutionReport(org.marketcetera.core.trade.ExecutionReport)
  *                on_execution_report(execution_report)
  *            </pre>
  *            Called when the strategy receives an execution report.  Execution report events
@@ -196,7 +196,7 @@
  *            <em id="strategy_structure_api_services_getexecutionreports">getExecutionReports</em>
  *            <br>
  *            <pre>
- *                org.marketcetera.trade.ExecutionReport[] getExecutionReports(org.marketcetera.trade.OrderID)
+ *                org.marketcetera.core.trade.ExecutionReport[] getExecutionReports(org.marketcetera.core.trade.OrderID)
  *                get_execution_reports(orderID)
  *            </pre>
  *            Retrieves the execution reports that correspond to the given order.
@@ -234,7 +234,7 @@
  *            <em id="strategy_structure_api_services_geturn">getURN</em>
  *            <br>
  *            <pre>
- *                org.marketcetera.module.ModuleURN getURN()
+ *                org.marketcetera.core.module.ModuleURN getURN()
  *                get_urn()
  *            </pre>
  *            Retrieves the <code>ModuleURN</code> of the strategy
@@ -349,7 +349,7 @@
  *            <em id="strategy_structure_api_actions_suggesttrade">suggestTrade</em>
  *            <br>
  *            <pre>
- *                void suggestTrade(org.marketcetera.trade.OrderSingle,java.math.BigDecimal,java.lang.String)
+ *                void suggestTrade(org.marketcetera.core.trade.OrderSingle,java.math.BigDecimal,java.lang.String)
  *                suggest_trade(order,score,identifier)
  *            </pre>
  *            Suggests a trade for the given order with the given confidence score and identifying label.  Trade suggestions
@@ -373,7 +373,7 @@
  *            <em id="strategy_structure_api_actions_cancelorder">cancelOrder</em>
  *            <br>
  *            <pre>
- *                org.marketcetera.trade.OrderCancel cancelOrder(org.marketcetera.trade.OrderID,java.lang.boolean)
+ *                org.marketcetera.core.trade.OrderCancel cancelOrder(org.marketcetera.core.trade.OrderID,java.lang.boolean)
  *                cancel_order(orderID,inSendOrder)
  *            </pre>
  *            Sends a request to cancel the given order.  The order must have been created by this strategy during this
@@ -386,7 +386,7 @@
  *            <em id="strategy_structure_api_actions_cancelreplace">cancelReplace</em>
  *            <br>
  *            <pre>
- *                org.marketcetera.trade.OrderReplace cancelReplace(org.marketcetera.trade.OrderID,org.marketcetera.trade.OrderSingle,java.lang.boolean)
+ *                org.marketcetera.core.trade.OrderReplace cancelReplace(org.marketcetera.core.trade.OrderID,org.marketcetera.core.trade.OrderSingle,java.lang.boolean)
  *                cancel_replace(orderID,newOrder,sendOrder?)
  *            </pre>
  *            Sends a request to cancel and replace the order represented by the given <code>OrderID</code> with 
@@ -414,7 +414,7 @@
  *            <em id="strategy_structure_api_actions_sendmessage">sendMessage</em>
  *            <br>
  *            <pre>
- *                void sendMessage(quickfix.MessageMessage,org.marketcetera.trade.BrokerID)
+ *                void sendMessage(quickfix.MessageMessage,org.marketcetera.core.trade.BrokerID)
  *                send_message(fixMessage,broker)
  *            </pre>
  *            Sends the given FIX message routed to the given broker.  The FIX message will be sent to the same location
@@ -427,7 +427,7 @@
  *            <em id="strategy_structure_api_actions_sendeventtocep">sendEventToCEP</em>
  *            <br>
  *            <pre>
- *                void sendEventToCEP(org.marketcetera.event.EventBase,java.lang.String)
+ *                void sendEventToCEP(org.marketcetera.core.event.EventBase,java.lang.String)
  *                send_event_to_cep(event,source)
  *            </pre>
  *            Sends the given event to the specified CEP source.  The default query namespace for the strategy is the target
@@ -437,7 +437,7 @@
  *            <em id="strategy_structure_api_actions_sendevent">sendEvent</em>
  *            <br>
  *            <pre>
- *                void sendEvent(org.marketcetera.event.EventBase)
+ *                void sendEvent(org.marketcetera.core.event.EventBase)
  *                send_event(event)
  *            </pre>
  *            Sends the given event to the event subscribers for this strategy.  Each strategy may have a number of
@@ -518,7 +518,7 @@
  *            <em id="strategy_structure_api_actions_createdataflow">createDataFlow</em>
  *            <br>
  *            <pre>
- *                org.marketcetera.module.DataFlowID createDataFlow(java.lang.boolean,org.marketcetera.module.DataRequest...)
+ *                org.marketcetera.core.module.DataFlowID createDataFlow(java.lang.boolean,org.marketcetera.core.module.DataRequest...)
  *                create_data_flow(appendToDataSink?,requests)
  *            </pre>
  *            Creates a data flow between modules as described by the given <code>DataRequest</code> objects.  Appends data to the
@@ -529,7 +529,7 @@
  *            <em id="strategy_structure_api_actions_canceldataflow">cancelDataFlow</em>
  *            <br>
  *            <pre>
- *                void cancelDataFlow(org.marketcetera.module.DataFlowID)
+ *                void cancelDataFlow(org.marketcetera.core.module.DataFlowID)
  *                cancel_data_flow(dataFlowID)
  *            </pre>
  *            Cancels the data flow with the given <code>DataFlowID</code>.

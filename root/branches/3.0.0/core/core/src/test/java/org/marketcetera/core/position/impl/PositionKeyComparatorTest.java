@@ -1,18 +1,15 @@
 package org.marketcetera.core.position.impl;
 
-import static org.marketcetera.core.position.PositionKeyFactory.createConvertibleBondKey;
-import static org.marketcetera.core.position.PositionKeyFactory.createEquityKey;
-import static org.marketcetera.core.position.PositionKeyFactory.createOptionKey;
-
 import java.math.BigDecimal;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.core.trade.OptionType;
 
-import com.google.common.collect.ImmutableList;
+import static org.marketcetera.core.position.PositionKeyFactory.*;
 
 /* $License$ */
 

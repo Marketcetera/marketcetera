@@ -17,14 +17,14 @@ import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.LogEvent;
-import org.marketcetera.event.LogEventLevel;
-import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.LogEvent;
+import org.marketcetera.core.event.LogEventLevel;
+import org.marketcetera.core.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.metrics.ThreadedMetric;
-import org.marketcetera.module.*;
-import org.marketcetera.trade.*;
+import org.marketcetera.core.metrics.ThreadedMetric;
+import org.marketcetera.core.module.*;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
@@ -63,7 +63,7 @@ final class StrategyModule
         implements DataEmitter, DataFlowRequester, DataReceiver, ServicesProvider, StrategyMXBean, NotificationEmitter
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
+     * @see org.marketcetera.core.module.DataEmitter#cancel(org.marketcetera.core.module.RequestID)
      */
     @Override
     public void cancel(DataFlowID inFlowID,
@@ -72,7 +72,7 @@ final class StrategyModule
         unsubscribe(inRequestID);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
+     * @see org.marketcetera.core.module.DataEmitter#requestData(org.marketcetera.core.module.DataRequest, org.marketcetera.core.module.DataEmitterSupport)
      */
     @Override
     public void requestData(DataRequest inRequest,
@@ -111,7 +111,7 @@ final class StrategyModule
                   inSupport);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.DataFlowRequester#setFlowSupport(org.marketcetera.module.DataFlowSupport)
+     * @see org.marketcetera.core.module.DataFlowRequester#setFlowSupport(org.marketcetera.core.module.DataFlowSupport)
      */
     @Override
     public void setFlowSupport(DataFlowSupport inSupport)
@@ -119,7 +119,7 @@ final class StrategyModule
         dataFlowSupport = inSupport;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
+     * @see org.marketcetera.core.module.DataReceiver#receiveData(org.marketcetera.core.module.DataFlowID, java.lang.Object)
      */
     @Override
     public void receiveData(DataFlowID inFlowID,
@@ -141,7 +141,7 @@ final class StrategyModule
         strategy.dataReceived(inData);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelOrder(org.marketcetera.trade.OrderCancel)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelOrder(org.marketcetera.core.trade.OrderCancel)
      */
     @Override
     public void cancelOrder(OrderCancel inCancel)
@@ -149,7 +149,7 @@ final class StrategyModule
         publish(inCancel);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelReplace(org.marketcetera.trade.OrderReplace)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelReplace(org.marketcetera.core.trade.OrderReplace)
      */
     @Override
     public void cancelReplace(OrderReplace inReplace)
@@ -507,7 +507,7 @@ final class StrategyModule
         publish(inSuggestion);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#sendEvent(org.marketcetera.event.EventBase)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#sendEvent(org.marketcetera.core.event.EventBase)
      */
     @Override
     public void sendEvent(Event inEvent,
@@ -586,7 +586,7 @@ final class StrategyModule
         return clientFactory.getClient().getBrokersStatus().getBrokers();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.InboundServicesProvider#getEquityPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
+     * @see org.marketcetera.strategy.InboundServicesProvider#getEquityPositionAsOf(java.util.Date, org.marketcetera.core.trade.Equity)
      */
     @Override
     public BigDecimal getPositionAsOf(Date inDate,
@@ -615,7 +615,7 @@ final class StrategyModule
         return clientFactory.getClient().getAllFuturePositionsAsOf(inDate);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
+     * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.core.trade.Future)
      */
     @Override
     public BigDecimal getFuturePositionAsOf(Date inDate,
@@ -626,7 +626,7 @@ final class StrategyModule
                                                                inFuture);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
+     * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.core.trade.Option)
      */
     @Override
     public BigDecimal getOptionPositionAsOf(Date inDate,
@@ -742,7 +742,7 @@ final class StrategyModule
         notificationDelegate.removeNotificationListener(inListener);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelDataFlow(org.marketcetera.module.DataFlowID)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelDataFlow(org.marketcetera.core.module.DataFlowID)
      */
     @Override
     public void cancelDataFlow(DataFlowID inDataFlowID)
@@ -754,7 +754,7 @@ final class StrategyModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#createDataFlow(org.marketcetera.module.DataRequest[], boolean)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#createDataFlow(org.marketcetera.core.module.DataRequest[], boolean)
      */
     @Override
     public DataFlowID createDataFlow(DataRequest[] inRequests,
@@ -1013,7 +1013,7 @@ final class StrategyModule
                                   outputInstance);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.Module#preStart()
+     * @see org.marketcetera.core.module.Module#preStart()
      */
     @Override
     protected void preStart()
@@ -1061,7 +1061,7 @@ final class StrategyModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.Module#preStop()
+     * @see org.marketcetera.core.module.Module#preStop()
      */
     @Override
     protected void preStop()

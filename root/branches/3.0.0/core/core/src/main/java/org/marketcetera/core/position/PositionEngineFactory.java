@@ -2,20 +2,25 @@ package org.marketcetera.core.position;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.Validate;
-import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
-import org.marketcetera.core.position.impl.Messages;
-import org.marketcetera.core.position.impl.PositionEngineImpl;
-import org.marketcetera.messagehistory.ReportHolder;
-import org.marketcetera.trade.*;
-import org.marketcetera.core.attributes.ClassVersion;
-
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.FunctionList.Function;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.util.concurrent.Lock;
+import org.apache.commons.lang.Validate;
+import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
+import org.marketcetera.core.messagehistory.ReportHolder;
+import org.marketcetera.core.position.impl.Messages;
+import org.marketcetera.core.position.impl.PositionEngineImpl;
+import org.marketcetera.core.trade.ExecutionReport;
+import org.marketcetera.core.trade.ExecutionType;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Originator;
+import org.marketcetera.core.trade.ReportBase;
+import org.marketcetera.core.trade.ReportID;
+import org.marketcetera.core.trade.UserID;
 
 /* $License$ */
 

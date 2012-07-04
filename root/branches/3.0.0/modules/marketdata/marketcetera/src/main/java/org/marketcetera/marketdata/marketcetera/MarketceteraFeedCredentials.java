@@ -3,9 +3,9 @@ package org.marketcetera.marketdata.marketcetera;
 import static org.marketcetera.marketdata.marketcetera.Messages.TARGET_COMP_ID_REQUIRED;
 import static org.marketcetera.marketdata.marketcetera.Messages.URL_REQUIRED;
 
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
-import org.marketcetera.marketdata.AbstractMarketDataFeedURLCredentials;
-import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeedURLCredentials;
+import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

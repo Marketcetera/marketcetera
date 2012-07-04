@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
 
 /* $License$ */
 
@@ -106,7 +106,7 @@ public class Positions
         }
     }
     /**
-     * Executes {@link #getOptionPositionAsOf(java.util.Date, String, String, java.math.BigDecimal, org.marketcetera.trade.OptionType)}
+     * Executes {@link #getOptionPositionAsOf(java.util.Date, String, String, java.math.BigDecimal, org.marketcetera.core.trade.OptionType)}
      */
     private void doGetOptionPositionAsOf(boolean duringStart)
     {

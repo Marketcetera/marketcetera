@@ -1,9 +1,5 @@
 package org.marketcetera.core.position.impl;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.marketcetera.core.position.impl.OrderingComparison.comparesEqualTo;
-
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Random;
@@ -12,8 +8,12 @@ import org.marketcetera.core.position.MockTrade;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.marketcetera.core.position.impl.OrderingComparison.comparesEqualTo;
 
 /* $License$ */
 

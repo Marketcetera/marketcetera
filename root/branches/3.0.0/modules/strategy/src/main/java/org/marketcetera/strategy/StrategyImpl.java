@@ -9,10 +9,10 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.marketcetera.event.*;
-import org.marketcetera.event.impl.LogEventBuilder;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.impl.LogEventBuilder;
+import org.marketcetera.core.trade.ExecutionReport;
+import org.marketcetera.core.trade.OrderCancelReject;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

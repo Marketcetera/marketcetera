@@ -1,7 +1,7 @@
 package org.marketcetera.modules.async;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.module.*;
+import org.marketcetera.core.module.*;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
@@ -51,7 +51,7 @@ public class BlockingReceiverModule extends Module implements DataReceiver {
 
     /**
      * Get the next data item that is being supplied to the module via the
-     * concurrent call to {@link #receiveData(org.marketcetera.module.DataFlowID, Object)}.
+     * concurrent call to {@link #receiveData(org.marketcetera.core.module.DataFlowID, Object)}.
      * If a concurrent call to receiveData() is not executing, this call
      * blocks until receiveData() is called to deliver data.
      *

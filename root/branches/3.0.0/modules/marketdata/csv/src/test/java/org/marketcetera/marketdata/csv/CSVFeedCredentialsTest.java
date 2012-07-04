@@ -6,7 +6,7 @@ import static org.marketcetera.marketdata.csv.Messages.INVALID_EVENT_TRANSLATOR;
 import java.io.File;
 
 import org.junit.Test;
-import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.ExpectedFailure;
 
 /* $License$ */

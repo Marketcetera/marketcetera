@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.event.HasProviderSymbol;
-import org.marketcetera.event.OptionEvent;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.core.event.HasProviderSymbol;
+import org.marketcetera.core.event.OptionEvent;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

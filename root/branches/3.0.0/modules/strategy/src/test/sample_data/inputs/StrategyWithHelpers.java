@@ -1,15 +1,11 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
 import java.lang.Override;
 
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.BidEvent;
+import org.marketcetera.core.event.DividendEvent;
+import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.core.trade.ExecutionReport;
+import org.marketcetera.core.trade.OrderCancelReject;
 import org.marketcetera.strategy.java.Strategy;
 
 public class StrategyWithHelpers

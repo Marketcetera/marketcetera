@@ -3,7 +3,7 @@ package org.marketcetera.core.position.impl;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFunctionHandler;
 import org.marketcetera.core.instruments.StaticInstrumentFunctionSelector;
-import org.marketcetera.trade.Instrument;
+import org.marketcetera.core.trade.Instrument;
 
 import java.util.Comparator;
 

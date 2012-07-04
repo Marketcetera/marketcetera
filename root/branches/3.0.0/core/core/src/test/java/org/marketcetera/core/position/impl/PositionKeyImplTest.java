@@ -1,24 +1,21 @@
 package org.marketcetera.core.position.impl;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.marketcetera.core.position.PositionKeyFactory.createEquityKey;
-import static org.marketcetera.core.position.PositionKeyFactory.createOptionKey;
-import static org.marketcetera.core.position.PositionKeyFactory.createConvertibleBondKey;
-
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.PositionKeyTestBase;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.OptionType;
 
-import com.google.common.collect.ImmutableList;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.marketcetera.core.position.PositionKeyFactory.*;
 
 /* $License$ */
 

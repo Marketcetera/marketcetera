@@ -1,8 +1,8 @@
 package org.marketcetera.strategy;
 
-import org.marketcetera.event.*;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.trade.ExecutionReport;
+import org.marketcetera.core.trade.OrderCancelReject;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

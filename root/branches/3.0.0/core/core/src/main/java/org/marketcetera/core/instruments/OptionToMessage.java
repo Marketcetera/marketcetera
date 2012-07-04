@@ -1,14 +1,21 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.quickfix.FIXVersion;
-import quickfix.Message;
-import quickfix.DataDictionary;
-import quickfix.field.*;
-
 import java.util.regex.Pattern;
+
+import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import quickfix.DataDictionary;
+import quickfix.Message;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityDay;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.PutOrCall;
+import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
 
 /* $License$ */
 /**

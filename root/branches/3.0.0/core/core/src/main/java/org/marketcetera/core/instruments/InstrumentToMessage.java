@@ -1,8 +1,8 @@
 package org.marketcetera.core.instruments;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.quickfix.FIXVersion;
 import quickfix.Message;
 import quickfix.DataDictionary;
 import quickfix.field.SecurityType;
@@ -43,7 +43,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      * <p>
      * <b>NOTE:</b> This method is only meant to be used for unit testing.
      * It's not recommended that this method be used in production. Use
-     * {@link #set(org.marketcetera.trade.Instrument,quickfix.DataDictionary, String,quickfix.Message)} instead.
+     * {@link #set(org.marketcetera.core.trade.Instrument,quickfix.DataDictionary, String,quickfix.Message)} instead.
      *
      * @param inInstrument the instrument
      * @param inBeginString the begin string value of the FIX message
@@ -101,7 +101,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
                                           Message inMessage) {
         if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) &&
                 inInstrument.getSecurityType() != null &&
-                org.marketcetera.trade.SecurityType.Unknown != inInstrument.getSecurityType()) {
+                org.marketcetera.core.trade.SecurityType.Unknown != inInstrument.getSecurityType()) {
             inMessage.setField(new SecurityType(inInstrument.getSecurityType().getFIXValue()));
         }
     }

@@ -1,8 +1,8 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Instrument;
+import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.DataDictionary;

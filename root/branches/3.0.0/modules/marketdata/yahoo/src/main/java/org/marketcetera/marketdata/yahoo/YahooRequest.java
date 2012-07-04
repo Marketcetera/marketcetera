@@ -1,9 +1,9 @@
 package org.marketcetera.marketdata.yahoo;
 
-import static org.marketcetera.marketdata.Content.DIVIDEND;
-import static org.marketcetera.marketdata.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.Content.MARKET_STAT;
-import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
+import static org.marketcetera.core.marketdata.Content.DIVIDEND;
+import static org.marketcetera.core.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.core.marketdata.Content.MARKET_STAT;
+import static org.marketcetera.core.marketdata.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.yahoo.YahooField.*;
 
 import java.util.Arrays;
@@ -14,8 +14,8 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.core.marketdata.Content;
+import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.attributes.ClassVersion;
 
 import com.google.common.collect.HashMultimap;

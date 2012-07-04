@@ -5,7 +5,7 @@ import org.marketcetera.util.misc.NamedThreadFactory;
 import org.marketcetera.util.unicode.UnicodeInputStreamReader;
 import org.marketcetera.util.unicode.DecodingStrategy;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.module.*;
+import org.marketcetera.core.module.*;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

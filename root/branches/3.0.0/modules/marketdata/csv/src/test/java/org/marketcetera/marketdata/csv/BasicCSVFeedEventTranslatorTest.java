@@ -15,15 +15,15 @@ import java.util.List;
 import org.junit.Test;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.event.*;
-import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.options.ExpirationType;
-import org.marketcetera.options.OptionUtils;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.marketdata.DateUtils;
+import org.marketcetera.core.marketdata.MarketDataRequest;
+import org.marketcetera.core.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.core.options.ExpirationType;
+import org.marketcetera.core.options.OptionUtils;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
 
 /* $License$ */
 

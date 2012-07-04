@@ -6,13 +6,13 @@
  * that knows how to parse the data according to the particulars of a given CSV file.  The subclass can be compiled and placed on the classpath
  * or an instantiated object can be constructed and passed to the {@link org.marketcetera.marketdata.csv.CSVFeedCredentials} constructor.</p>
  * 
- * <p>To use the <code>CSVFeed</code>, create a {@link org.marketcetera.marketdata.MarketDataRequest} and pass it to the feed similarly to how other feeds process
+ * <p>To use the <code>CSVFeed</code>, create a {@link org.marketcetera.core.marketdata.MarketDataRequest} and pass it to the feed similarly to how other feeds process
  * market data requests.  This can be via the Strategy API, in which case the request should use 
- * {@link org.marketcetera.marketdata.MarketDataRequestBuilder#withProvider(String)} and specify {@link org.marketcetera.marketdata.csv.CSVFeedModuleFactory#getProviderDescription()}
- * or by using the module framework and passing a <code>MarketDataRequest</code> to {@link org.marketcetera.marketdata.csv.CSVFeedModule#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)}.</p>
+ * {@link org.marketcetera.core.marketdata.MarketDataRequestBuilder#withProvider(String)} and specify {@link org.marketcetera.marketdata.csv.CSVFeedModuleFactory#getProviderDescription()}
+ * or by using the module framework and passing a <code>MarketDataRequest</code> to {@link org.marketcetera.marketdata.csv.CSVFeedModule#requestData(org.marketcetera.core.module.DataRequest, org.marketcetera.core.module.DataEmitterSupport)}.</p>
  * 
  * <p>To specify a file to read from, pass the absolute or relative path of the file as a symbol in a market data request with
- * {@link org.marketcetera.marketdata.MarketDataRequestBuilder#withSymbols(String)}.  Each "symbol" in this context should be a distinct file
+ * {@link org.marketcetera.core.marketdata.MarketDataRequestBuilder#withSymbols(String)}.  Each "symbol" in this context should be a distinct file
  * name.  All files will be read more or less simultaneously and the lines passed to the event translator described above.  The market data
  * request will stop when all files have been read.</p>
  * 

@@ -1,7 +1,7 @@
 package org.marketcetera.strategy;
 
 import static org.junit.Assert.*;
-import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
+import static org.marketcetera.core.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 import static org.marketcetera.strategy.Status.FAILED;
 import static org.marketcetera.strategy.Status.RUNNING;
 import static org.marketcetera.strategy.Status.STOPPED;
@@ -38,15 +38,15 @@ import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.*;
+import org.marketcetera.core.event.*;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.TestMessages;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.module.*;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.module.*;
+import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyModule.ClientFactory;
-import org.marketcetera.trade.*;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.util.log.I18NMessage;
 
 import quickfix.Message;
@@ -143,7 +143,7 @@ public class StrategyTestBase
                   false);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.Module#preStart()
+         * @see org.marketcetera.core.module.Module#preStart()
          */
         @Override
         protected void preStart()
@@ -151,7 +151,7 @@ public class StrategyTestBase
         {
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.Module#preStop()
+         * @see org.marketcetera.core.module.Module#preStop()
          */
         @Override
         protected void preStop()
@@ -159,7 +159,7 @@ public class StrategyTestBase
         {
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
+         * @see org.marketcetera.core.module.DataReceiver#receiveData(org.marketcetera.core.module.DataFlowID, java.lang.Object)
          */
         @Override
         public void receiveData(DataFlowID inFlowID,
@@ -197,7 +197,7 @@ public class StrategyTestBase
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
+         * @see org.marketcetera.core.module.DataEmitter#cancel(org.marketcetera.core.module.RequestID)
          */
         @Override
         public void cancel(DataFlowID inFlowID,
@@ -208,7 +208,7 @@ public class StrategyTestBase
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
+         * @see org.marketcetera.core.module.DataEmitter#requestData(org.marketcetera.core.module.DataRequest, org.marketcetera.core.module.DataEmitterSupport)
          */
         @Override
         public void requestData(DataRequest inRequest,
@@ -278,7 +278,7 @@ public class StrategyTestBase
                       false);
             }
             /* (non-Javadoc)
-             * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
+             * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
              */
             @Override
             public Module create(Object... inParameters)
@@ -435,7 +435,7 @@ public class StrategyTestBase
                                                                     new BigDecimal("20000")));
                 dataToSend.add(EventTestBase.generateDividendEvent());
                 Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
-                OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
+                OrderCancelReject cancel = org.marketcetera.core.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
                                                                                                                 null,
                                                                                                                 Originator.Server,
                                                                                                                 null,
@@ -455,7 +455,7 @@ public class StrategyTestBase
                                                                                                   new Equity("Symbol"),
                                                                                                   "account",
                                                                                                   "text");
-                dataToSend.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
+                dataToSend.add(org.marketcetera.core.trade.Factory.getInstance().createExecutionReport(executionReport,
                                                                                                   new BrokerID("some-broker"),
                                                                                                   Originator.Server,
                                                                                                   null,
@@ -475,7 +475,7 @@ public class StrategyTestBase
                   false);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.Module#preStart()
+         * @see org.marketcetera.core.module.Module#preStart()
          */
         @Override
         protected void preStart()
@@ -483,7 +483,7 @@ public class StrategyTestBase
         {
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.Module#preStop()
+         * @see org.marketcetera.core.module.Module#preStop()
          */
         @Override
         protected void preStop()
@@ -491,7 +491,7 @@ public class StrategyTestBase
         {
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
+         * @see org.marketcetera.core.module.DataEmitter#cancel(org.marketcetera.core.module.RequestID)
          */
         @Override
         public void cancel(DataFlowID inFlowID, RequestID inRequestID)
@@ -499,7 +499,7 @@ public class StrategyTestBase
             // nothing to do here
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
+         * @see org.marketcetera.core.module.DataEmitter#requestData(org.marketcetera.core.module.DataRequest, org.marketcetera.core.module.DataEmitterSupport)
          */
         @Override
         public void requestData(DataRequest inRequest,
@@ -562,7 +562,7 @@ public class StrategyTestBase
             }
     
             /* (non-Javadoc)
-             * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
+             * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
              */
             @Override
             public Module create(Object... inParameters)
@@ -675,7 +675,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getEquityPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
+         * @see org.marketcetera.client.Client#getEquityPositionAsOf(java.util.Date, org.marketcetera.core.trade.Equity)
          */
         @Override
         public BigDecimal getEquityPositionAsOf(Date inDate,
@@ -790,7 +790,7 @@ public class StrategyTestBase
             return result;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
+         * @see org.marketcetera.client.Client#getOptionPositionAsOf(java.util.Date, org.marketcetera.core.trade.Option)
          */
         @Override
         public BigDecimal getOptionPositionAsOf(Date inDate,
@@ -838,7 +838,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
+         * @see org.marketcetera.client.Client#getFuturePositionAsOf(java.util.Date, org.marketcetera.core.trade.Future)
          */
         @Override
         public BigDecimal getFuturePositionAsOf(Date inDate,
@@ -940,7 +940,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderSingle)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.core.trade.OrderSingle)
          */
         @Override
         public void sendOrder(OrderSingle inArg0)
@@ -949,7 +949,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderReplace)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.core.trade.OrderReplace)
          */
         @Override
         public void sendOrder(OrderReplace inArg0)
@@ -958,7 +958,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderCancel)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.core.trade.OrderCancel)
          */
         @Override
         public void sendOrder(OrderCancel inArg0)
@@ -967,7 +967,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#sendOrderRaw(org.marketcetera.trade.FIXOrder)
+         * @see org.marketcetera.client.Client#sendOrderRaw(org.marketcetera.core.trade.FIXOrder)
          */
         @Override
         public void sendOrderRaw(FIXOrder inArg0)
@@ -1630,7 +1630,7 @@ public class StrategyTestBase
     {
         List<ExecutionReport> reports = new ArrayList<ExecutionReport>();
         for(Message rawExeReport : generateFixExecutionReports(inOrder)) {
-            reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
+            reports.add(org.marketcetera.core.trade.Factory.getInstance().createExecutionReport(rawExeReport,
                                                                                            inOrder.getBrokerID(),
                                                                                            Originator.Broker,
                                                                                            null,
@@ -1732,7 +1732,7 @@ public class StrategyTestBase
         order.setOrderType(OrderType.Limit);
         order.setPrice(new BigDecimal("100.23"));
         order.setQuantity(new BigDecimal("10000"));
-        order.setSide(org.marketcetera.trade.Side.Buy);
+        order.setSide(org.marketcetera.core.trade.Side.Buy);
         order.setInstrument(new Equity("METC"));
         if(inOrderID != null) {
             order.setOrderID(inOrderID);

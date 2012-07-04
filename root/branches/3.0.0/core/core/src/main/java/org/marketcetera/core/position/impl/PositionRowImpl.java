@@ -10,7 +10,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.trade.Instrument;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.attributes.ClassVersion;
 
 import ca.odell.glazedlists.EventList;

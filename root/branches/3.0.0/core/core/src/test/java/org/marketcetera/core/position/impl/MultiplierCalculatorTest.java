@@ -1,14 +1,14 @@
 package org.marketcetera.core.position.impl;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.math.BigDecimal;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.position.MockTrade;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.trade.Equity;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /* $License$ */
 

@@ -5,9 +5,9 @@ import static org.marketcetera.strategy.Messages.PROVIDER_DESCRIPTION;
 import java.io.File;
 import java.util.Properties;
 
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.ModuleCreationException;
+import org.marketcetera.core.module.ModuleFactory;
+import org.marketcetera.core.module.ModuleURN;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -67,7 +67,7 @@ public final class StrategyModuleFactory
               ModuleURN.class);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
+     * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
      */
     @Override
     public StrategyModule create(Object... inParameters)

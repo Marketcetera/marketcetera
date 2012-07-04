@@ -15,7 +15,7 @@ import javax.tools.*;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject.Kind;
 
-import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.core.event.impl.LogEventBuilder;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;

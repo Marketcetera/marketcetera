@@ -1,18 +1,17 @@
 package org.marketcetera.core.position.impl;
 
-import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.assertThat;
-
 import java.math.BigDecimal;
 
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.trade.Equity;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 /* $License$ */
 

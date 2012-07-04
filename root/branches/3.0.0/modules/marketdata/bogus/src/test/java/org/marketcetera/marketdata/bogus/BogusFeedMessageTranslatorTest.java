@@ -7,10 +7,10 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.DataRequestTranslator;
-import org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.core.marketdata.Content;
+import org.marketcetera.core.marketdata.DataRequestTranslator;
+import org.marketcetera.core.marketdata.MarketDataMessageTranslatorTestBase;
+import org.marketcetera.core.marketdata.MarketDataRequest;
 
 /* $License$ */
 

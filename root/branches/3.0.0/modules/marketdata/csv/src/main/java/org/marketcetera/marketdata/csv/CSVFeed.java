@@ -1,10 +1,10 @@
 package org.marketcetera.marketdata.csv;
 
-import static org.marketcetera.marketdata.AssetClass.EQUITY;
-import static org.marketcetera.marketdata.AssetClass.FUTURE;
-import static org.marketcetera.marketdata.AssetClass.OPTION;
-import static org.marketcetera.marketdata.Capability.LATEST_TICK;
-import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
+import static org.marketcetera.core.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.core.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.core.marketdata.AssetClass.OPTION;
+import static org.marketcetera.core.marketdata.Capability.LATEST_TICK;
+import static org.marketcetera.core.marketdata.Capability.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.csv.Messages.CANCEL_REQUEST_FAILED_HANDLE_NOT_FOUND;
 import static org.marketcetera.marketdata.csv.Messages.FAILED_TO_START_REQUEST;
 import static org.marketcetera.marketdata.csv.Messages.REQUEST_FAILED;
@@ -20,6 +20,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.core.marketdata.AssetClass;
+import org.marketcetera.core.marketdata.Capability;
+import org.marketcetera.core.marketdata.FeedException;
+import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
@@ -40,11 +46,11 @@ import org.marketcetera.core.attributes.ClassVersion;
 @ClassVersion("$Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $")
 public class CSVFeed 
         extends AbstractMarketDataFeed<CSVFeedToken,
-                                       CSVFeedCredentials,
-                                       CSVFeedMessageTranslator,
-                                       CSVFeedEventTranslator,
-                                       MarketDataRequest,
-                                       CSVFeed> 
+                                               CSVFeedCredentials,
+                                               CSVFeedMessageTranslator,
+                                               CSVFeedEventTranslator,
+                                               MarketDataRequest,
+                                               CSVFeed>
 {
     /**
      * Returns an instance of <code>CSVFeed</code>.

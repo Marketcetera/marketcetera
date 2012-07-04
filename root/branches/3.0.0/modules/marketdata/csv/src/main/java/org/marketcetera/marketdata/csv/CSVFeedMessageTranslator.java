@@ -1,14 +1,14 @@
 package org.marketcetera.marketdata.csv;
 
-import static org.marketcetera.marketdata.Content.DIVIDEND;
-import static org.marketcetera.marketdata.Content.LATEST_TICK;
-import static org.marketcetera.marketdata.Content.MARKET_STAT;
-import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
+import static org.marketcetera.core.marketdata.Content.DIVIDEND;
+import static org.marketcetera.core.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.core.marketdata.Content.MARKET_STAT;
+import static org.marketcetera.core.marketdata.Content.TOP_OF_BOOK;
+import static org.marketcetera.core.marketdata.Messages.UNSUPPORTED_REQUEST;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.marketdata.DataRequestTranslator;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.core.marketdata.DataRequestTranslator;
+import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.attributes.ClassVersion;
 

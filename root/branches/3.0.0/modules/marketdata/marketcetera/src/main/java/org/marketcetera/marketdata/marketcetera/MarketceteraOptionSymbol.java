@@ -3,8 +3,8 @@ package org.marketcetera.marketdata.marketcetera;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.marketcetera.symbology.IEquityOptionSymbol;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.symbology.IEquityOptionSymbol;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.attributes.ClassVersion;
 
 @ClassVersion("$Id: MarketceteraOptionSymbol.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$

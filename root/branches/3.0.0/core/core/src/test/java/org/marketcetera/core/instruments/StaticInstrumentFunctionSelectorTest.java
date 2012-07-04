@@ -1,9 +1,5 @@
 package org.marketcetera.core.instruments;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -11,7 +7,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.trade.*;
+import org.marketcetera.core.trade.ConvertibleBond;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.FutureExpirationMonth;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.SecurityType;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /* $License$ */
 /**

@@ -1,8 +1,8 @@
 package org.marketcetera.marketdata.csv;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.module.DisplayName;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.core.module.DisplayName;
+import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
 
 import javax.management.MXBean;
 

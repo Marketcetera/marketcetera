@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.module.*;
+import org.marketcetera.core.module.*;
 
 /* $License$ */
 /**
@@ -28,7 +28,7 @@ public class ParameterVerificationTest extends ModuleTestBase {
     @Test
     public void invalidRequests_null() throws Exception {
         // null request
-        new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
+        new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.core.module.Messages.ILLEGAL_REQ_PARM_VALUE,
                 TEST_URN.getValue(), null) {
             protected void run() throws Exception{
                 esperPr.requestData(new DataRequest(TEST_URN, null), null);

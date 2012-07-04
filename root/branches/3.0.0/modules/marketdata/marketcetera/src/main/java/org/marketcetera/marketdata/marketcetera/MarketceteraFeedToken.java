@@ -1,8 +1,8 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import org.marketcetera.marketdata.AbstractMarketDataFeedToken;
-import org.marketcetera.marketdata.MarketDataFeedToken;
-import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
+import org.marketcetera.core.marketdata.MarketDataFeedToken;
+import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

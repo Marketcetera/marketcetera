@@ -1,9 +1,5 @@
 package org.marketcetera.core.instruments;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -11,15 +7,24 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
 import org.marketcetera.core.attributes.ClassVersion;
-
+import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.core.trade.ConvertibleBond;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.FutureExpirationMonth;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
 import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.SecurityType;
 import quickfix.field.Side;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /* $License$ */
 /**

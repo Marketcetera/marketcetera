@@ -13,7 +13,7 @@ import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase;
-import org.marketcetera.trade.Option;
+import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
 
