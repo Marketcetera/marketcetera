@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata.yahoo;
 
-import org.marketcetera.marketdata.AbstractMarketDataFeedURLCredentials;
-import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeedURLCredentials;
+import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

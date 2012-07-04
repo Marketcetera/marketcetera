@@ -1,15 +1,14 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.trade.Instrument;
-import org.apache.commons.lang.Validate;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang.Validate;
+import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 /**

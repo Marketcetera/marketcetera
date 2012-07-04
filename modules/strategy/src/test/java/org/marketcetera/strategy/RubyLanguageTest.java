@@ -9,8 +9,8 @@ import java.util.Properties;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.event.LogEvent;
-import org.marketcetera.module.*;
+import org.marketcetera.core.event.LogEvent;
+import org.marketcetera.core.module.*;
 import org.marketcetera.util.test.SerializableAssert;
 
 /* $License$ */

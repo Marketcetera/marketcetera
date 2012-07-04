@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.marketcetera.module.Messages.*;
+import static org.marketcetera.core.module.Messages.*;
 import static org.marketcetera.strategy.Language.RUBY;
 import static org.marketcetera.strategy.Status.*;
 
@@ -27,7 +27,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.module.*;
+import org.marketcetera.core.module.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
 

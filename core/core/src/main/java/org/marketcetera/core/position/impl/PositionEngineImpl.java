@@ -23,7 +23,7 @@ import org.marketcetera.core.position.Trade;
 import org.marketcetera.fork.glazed.GroupingList;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcher;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcherFactory;
-import org.marketcetera.trade.Instrument;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.attributes.ClassVersion;
 
 import ca.odell.glazedlists.BasicEventList;

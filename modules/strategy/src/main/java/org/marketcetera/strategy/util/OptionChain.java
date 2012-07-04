@@ -12,10 +12,10 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.core.Pair;
-import org.marketcetera.event.*;
-import org.marketcetera.event.util.MarketstatEventCache;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.util.MarketstatEventCache;
 import org.marketcetera.strategy.util.OptionContractPair.OptionContractPairKey;
-import org.marketcetera.trade.Instrument;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;

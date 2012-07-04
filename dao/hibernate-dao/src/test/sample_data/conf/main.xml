@@ -73,11 +73,11 @@
         <property name="password" value="lazard"/>
     </bean>
     <!-- symbol resolution -->
-  <bean id="futureSymbolResolver" class="org.marketcetera.symbolresolver.impl.FutureSymbolResolver"/>
-  <bean id="convertibleBondSymbolResolver" class="org.marketcetera.symbolresolver.impl.ConvertibleBondSymbolResolver"/>
-  <bean id="osiOptionSymbolResolver" class="org.marketcetera.symbolresolver.impl.OsiOptionSymbolResolver"/>
-  <bean id="equitySymbolResolver" class="org.marketcetera.symbolresolver.impl.EquitySymbolResolver"/>
-  <bean id="symbolResolverManager" class="org.marketcetera.symbolresolver.impl.SymbolResolverManagerImpl">
+  <bean id="futureSymbolResolver" class="org.marketcetera.core.symbolresolver.impl.FutureSymbolResolver"/>
+  <bean id="convertibleBondSymbolResolver" class="org.marketcetera.core.symbolresolver.impl.ConvertibleBondSymbolResolver"/>
+  <bean id="osiOptionSymbolResolver" class="org.marketcetera.core.symbolresolver.impl.OsiOptionSymbolResolver"/>
+  <bean id="equitySymbolResolver" class="org.marketcetera.core.symbolresolver.impl.EquitySymbolResolver"/>
+  <bean id="symbolResolverManager" class="org.marketcetera.core.symbolresolver.impl.SymbolResolverManagerImpl">
     <property name="symbolResolvers">
       <list>
         <ref bean="futureSymbolResolver"/>

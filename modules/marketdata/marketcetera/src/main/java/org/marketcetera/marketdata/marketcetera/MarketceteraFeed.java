@@ -1,8 +1,8 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import static org.marketcetera.marketdata.AssetClass.EQUITY;
-import static org.marketcetera.marketdata.AssetClass.FUTURE;
-import static org.marketcetera.marketdata.AssetClass.OPTION;
+import static org.marketcetera.core.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.core.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.core.marketdata.AssetClass.OPTION;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -17,12 +17,20 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.core.marketdata.AssetClass;
+import org.marketcetera.core.marketdata.Capability;
+import org.marketcetera.core.marketdata.FIXCorrelationFieldSubscription;
+import org.marketcetera.core.marketdata.FeedException;
+import org.marketcetera.core.marketdata.FeedStatus;
+import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.*;
-import org.marketcetera.quickfix.EventLogFactory;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.quickfix.EventLogFactory;
+import org.marketcetera.core.quickfix.FIXDataDictionary;
+import org.marketcetera.core.quickfix.FIXMessageUtil;
+import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
 
@@ -47,11 +55,11 @@ import com.google.common.collect.SetMultimap;
 @ClassVersion("$Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $")
 public class MarketceteraFeed 
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
-                                   MarketceteraFeedCredentials,
-                                   MarketceteraFeedMessageTranslator,
-                                   MarketceteraFeedEventTranslator,
-                                   MarketceteraFeed.Request,
-                                   MarketceteraFeed> 
+                                       MarketceteraFeedCredentials,
+                                       MarketceteraFeedMessageTranslator,
+                                       MarketceteraFeedEventTranslator,
+                                       MarketceteraFeed.Request,
+                                       MarketceteraFeed>
     implements Application, Messages 
 {
 	private SessionID sessionID;
@@ -184,7 +192,7 @@ public class MarketceteraFeed
 	 * responded, this method throws a <code>FeedException</code>.  This method updates the feed status
 	 * based on the results of the connection attempt.
 	 * 
-	 * @throws FeedException if a connection cannot be made to the server 
+	 * @throws org.marketcetera.core.marketdata.FeedException if a connection cannot be made to the server
 	 */
 	private void connectToServer()
 	    throws Exception
@@ -525,7 +533,7 @@ public class MarketceteraFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(org.marketcetera.marketdata.MarketDataFeedTokenSpec)
      */
     @Override
-    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec inTokenSpec) 
+    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec inTokenSpec)
         throws FeedException
     {
         return MarketceteraFeedToken.getToken(inTokenSpec, 

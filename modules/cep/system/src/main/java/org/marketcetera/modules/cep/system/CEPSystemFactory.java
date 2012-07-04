@@ -1,9 +1,9 @@
 package org.marketcetera.modules.cep.system;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.ModuleFactory;
+import org.marketcetera.core.module.ModuleCreationException;
+import org.marketcetera.core.module.ModuleURN;
 
 /* $License$ */
 /**

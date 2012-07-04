@@ -3,8 +3,8 @@ package org.marketcetera.marketdata.csv;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.EventTranslator;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.EventTranslator;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**
@@ -31,7 +31,7 @@ public class CSVFeedEventTranslator
         implements EventTranslator
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
+     * @see org.marketcetera.core.event.IEventTranslator#translate(java.lang.Object)
      */
     public List<Event> toEvent(Object inData,
                                String inHandle)
@@ -40,7 +40,7 @@ public class CSVFeedEventTranslator
         throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.Event)
+     * @see org.marketcetera.core.event.IEventTranslator#translate(org.marketcetera.core.event.Event)
      */
     public Object fromEvent(Event inEvent)
             throws CoreException

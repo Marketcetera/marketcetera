@@ -1,20 +1,20 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.trade.Equity;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.BidEvent;
+import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TimeInForce;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.core.trade.ReportBase;
+import org.marketcetera.core.trade.ExecutionReport;
+import org.marketcetera.core.trade.Factory;
+import org.marketcetera.core.trade.OrderID;
+import org.marketcetera.core.trade.OrderSingle;
+import org.marketcetera.core.trade.OrderType;
+import org.marketcetera.core.trade.Side;
+import org.marketcetera.core.trade.TimeInForce;
+import org.marketcetera.core.trade.OrderCancel;
+import org.marketcetera.core.trade.OrderReplace;
 import java.util.Deque;
 
 /* $License$ */
@@ -30,7 +30,7 @@ public class Orders
         extends Strategy
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.core.event.AskEvent)
      */
     @Override
     public void onAsk(AskEvent inAsk)
@@ -42,7 +42,7 @@ public class Orders
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onBid(org.marketcetera.event.BidEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onBid(org.marketcetera.core.event.BidEvent)
      */
     @Override
     public void onBid(BidEvent inBid)
@@ -55,7 +55,7 @@ public class Orders
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onExecutionReport(org.marketcetera.trade.ExecutionReport)
+     * @see org.marketcetera.strategy.java.Strategy#onExecutionReport(org.marketcetera.core.trade.ExecutionReport)
      */
     @Override
     public void onExecutionReport(ExecutionReport inExecutionReport)
@@ -70,7 +70,7 @@ public class Orders
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onTrade(org.marketcetera.event.TradeEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onTrade(org.marketcetera.core.event.TradeEvent)
      */
     @Override
     public void onTrade(TradeEvent inTrade)

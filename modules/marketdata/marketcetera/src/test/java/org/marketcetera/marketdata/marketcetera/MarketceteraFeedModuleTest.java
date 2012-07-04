@@ -1,11 +1,11 @@
 package org.marketcetera.marketdata.marketcetera;
 
 import org.junit.Test;
-import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.SimulatedMarketDataModuleTestBase;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvider;
+import org.marketcetera.core.marketdata.Capability;
+import org.marketcetera.core.marketdata.SimulatedMarketDataModuleTestBase;
+import org.marketcetera.core.module.ModuleFactory;
+import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.core.module.ConfigurationProviderTest.MockConfigurationProvider;
 
 /* $License$ */
 
@@ -20,7 +20,7 @@ public class MarketceteraFeedModuleTest
     extends SimulatedMarketDataModuleTestBase
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataModuleTestBase#populateConfigurationProvider(org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvider)
+     * @see org.marketcetera.marketdata.MarketDataModuleTestBase#populateConfigurationProvider(org.marketcetera.core.module.ConfigurationProviderTest.MockConfigurationProvider)
      */
     @Override
     protected void populateConfigurationProvider(MockConfigurationProvider inProvider)

@@ -15,15 +15,15 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.*;
+import org.marketcetera.core.event.*;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.DataFlowID;
+import org.marketcetera.core.module.DataRequest;
+import org.marketcetera.core.module.ModuleException;
+import org.marketcetera.core.module.ModuleURN;
 import org.marketcetera.strategy.StrategyTestBase.MockClient;
-import org.marketcetera.trade.*;
-import org.marketcetera.trade.utils.OrderHistoryManagerTest;
+import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.utils.OrderHistoryManagerTest;
 import org.marketcetera.util.test.CollectionAssert;
 
 import quickfix.Message;
@@ -669,7 +669,7 @@ public class AbstractRunningStrategyTest
             sentObjects.add(inData);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#cancelOrder(org.marketcetera.trade.OrderCancel)
+         * @see org.marketcetera.strategy.ServicesProvider#cancelOrder(org.marketcetera.core.trade.OrderCancel)
          */
         @Override
         public void cancelOrder(OrderCancel inCancel)
@@ -677,7 +677,7 @@ public class AbstractRunningStrategyTest
             sentObjects.add(inCancel);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#cancelReplace(org.marketcetera.trade.OrderReplace)
+         * @see org.marketcetera.strategy.ServicesProvider#cancelReplace(org.marketcetera.core.trade.OrderReplace)
          */
         @Override
         public void cancelReplace(OrderReplace inReplace)
@@ -685,7 +685,7 @@ public class AbstractRunningStrategyTest
             sentObjects.add(inReplace);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#sendSuggestion(org.marketcetera.trade.Suggestion)
+         * @see org.marketcetera.strategy.ServicesProvider#sendSuggestion(org.marketcetera.core.trade.Suggestion)
          */
         @Override
         public void sendSuggestion(Suggestion inSuggestion)
@@ -693,7 +693,7 @@ public class AbstractRunningStrategyTest
             sentObjects.add(inSuggestion);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#sendEvent(org.marketcetera.event.Event, java.lang.String, java.lang.String)
+         * @see org.marketcetera.strategy.ServicesProvider#sendEvent(org.marketcetera.core.event.Event, java.lang.String, java.lang.String)
          */
         @Override
         public void sendEvent(Event inEvent,
@@ -711,7 +711,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#log(org.marketcetera.event.LogEvent)
+         * @see org.marketcetera.strategy.ServicesProvider#log(org.marketcetera.core.event.LogEvent)
          */
         @Override
         public void log(LogEvent inMessage)
@@ -764,7 +764,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#sendMessage(quickfix.Message, org.marketcetera.trade.BrokerID)
+         * @see org.marketcetera.strategy.ServicesProvider#sendMessage(quickfix.Message, org.marketcetera.core.trade.BrokerID)
          */
         @Override
         public void sendMessage(Message inMessage,
@@ -782,7 +782,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#createDataFlow(org.marketcetera.module.DataRequest[], boolean)
+         * @see org.marketcetera.strategy.ServicesProvider#createDataFlow(org.marketcetera.core.module.DataRequest[], boolean)
          */
         @Override
         public DataFlowID createDataFlow(DataRequest[] inRequests,
@@ -792,7 +792,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#cancelDataFlow(org.marketcetera.module.DataFlowID)
+         * @see org.marketcetera.strategy.ServicesProvider#cancelDataFlow(org.marketcetera.core.module.DataFlowID)
          */
         @Override
         public void cancelDataFlow(DataFlowID inDataFlowID)
@@ -810,7 +810,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
+         * @see org.marketcetera.strategy.ServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.core.trade.Equity)
          */
         @Override
         public BigDecimal getPositionAsOf(Date inDate,
@@ -829,7 +829,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
+         * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.core.trade.Future)
          */
         @Override
         public BigDecimal getFuturePositionAsOf(Date inDate,
@@ -848,7 +848,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
+         * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.core.trade.Option)
          */
         @Override
         public BigDecimal getOptionPositionAsOf(Date inDate,
@@ -948,7 +948,7 @@ public class AbstractRunningStrategyTest
             extends AbstractRunningStrategy
     {
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onTrade(org.marketcetera.event.TradeEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onTrade(org.marketcetera.core.event.TradeEvent)
          */
         @Override
         public void onTrade(TradeEvent inTrade)
@@ -956,7 +956,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onBid(org.marketcetera.event.BidEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onBid(org.marketcetera.core.event.BidEvent)
          */
         @Override
         public void onBid(BidEvent inBid)
@@ -964,7 +964,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onAsk(org.marketcetera.event.AskEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onAsk(org.marketcetera.core.event.AskEvent)
          */
         @Override
         public void onAsk(AskEvent inAsk)
@@ -972,7 +972,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onMarketstat(org.marketcetera.event.MarketstatEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onMarketstat(org.marketcetera.core.event.MarketstatEvent)
          */
         @Override
         public void onMarketstat(MarketstatEvent inStatistics)
@@ -980,7 +980,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onDividend(org.marketcetera.event.DividendEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onDividend(org.marketcetera.core.event.DividendEvent)
          */
         @Override
         public void onDividend(DividendEvent inDividend)
@@ -988,7 +988,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onExecutionReport(org.marketcetera.trade.ExecutionReport)
+         * @see org.marketcetera.strategy.RunningStrategy#onExecutionReport(org.marketcetera.core.trade.ExecutionReport)
          */
         @Override
         public void onExecutionReport(ExecutionReport inExecutionReport)
@@ -996,7 +996,7 @@ public class AbstractRunningStrategyTest
             reports.add(inExecutionReport);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onCancelReject(org.marketcetera.trade.OrderCancelReject)
+         * @see org.marketcetera.strategy.RunningStrategy#onCancelReject(org.marketcetera.core.trade.OrderCancelReject)
          */
         @Override
         public void onCancelReject(OrderCancelReject inCancelReject)

@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.csv;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.marketdata.AbstractMarketDataModule;
+import org.marketcetera.core.marketdata.AbstractMarketDataModule;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

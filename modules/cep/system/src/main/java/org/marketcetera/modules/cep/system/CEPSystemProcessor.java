@@ -1,7 +1,7 @@
 package org.marketcetera.modules.cep.system;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.module.*;
+import org.marketcetera.core.module.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.attributes.ClassVersion;
 

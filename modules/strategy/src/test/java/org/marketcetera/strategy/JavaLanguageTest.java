@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.module.ModuleException;
+import org.marketcetera.core.module.ModuleException;
 
 /* $License$ */
 

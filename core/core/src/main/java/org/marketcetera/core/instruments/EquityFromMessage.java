@@ -1,8 +1,8 @@
 package org.marketcetera.core.instruments;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Equity;
 import quickfix.Message;
 import quickfix.FieldNotFound;
 import quickfix.field.SecurityType;

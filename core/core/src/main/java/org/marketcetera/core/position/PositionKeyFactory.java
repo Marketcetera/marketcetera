@@ -3,10 +3,14 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-
-import org.marketcetera.core.position.impl.PositionKeyImpl;
-import org.marketcetera.trade.*;
 import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.core.position.impl.PositionKeyImpl;
+import org.marketcetera.core.trade.ConvertibleBond;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
 
 /* $License$ */
 

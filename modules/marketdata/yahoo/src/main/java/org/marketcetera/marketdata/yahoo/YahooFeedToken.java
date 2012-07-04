@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata.yahoo;
 
-import org.marketcetera.marketdata.AbstractMarketDataFeedToken;
-import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
+import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

@@ -1,0 +1,50 @@
+package org.marketcetera.core.module;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import org.marketcetera.core.attributes.ClassVersion;
+
+/* $License$ */
+/**
+ * A test sink data listener that receives data without blocking and enables
+ * its clients to block when reading data received by the sink via
+ * {@link #getNextData()}.
+ *
+ * @author anshul@marketcetera.com
+ * @version $Id: BlockingSinkDataListener.java 82330 2012-04-10 16:29:13Z colin $
+ * @since 2.0.0
+ */
+@ClassVersion("$Id: BlockingSinkDataListener.java 82330 2012-04-10 16:29:13Z colin $")
+public class BlockingSinkDataListener implements SinkDataListener {
+    @Override
+    public void receivedData(DataFlowID inFlowID, Object inData) {
+        //Use add() instead of put() as we don't want this call to block
+        mReceived.add(inData);
+    }
+
+    /**
+     * Gets the next received data object. waits until the data object
+     * is available.
+     *
+     * @return the next received data object.
+     *
+     * @throws InterruptedException if the thread was interrupted.
+     */
+    public Object getNextData() throws InterruptedException {
+        //block until there's data available.
+        return mReceived.take();
+    }
+
+    /**
+     * The number of objects that have been received but not yet fetched.
+     *
+     * @return number of unfetched received objects.
+     */
+    public int size() {
+        return mReceived.size();
+    }
+
+    private final BlockingQueue<Object> mReceived =
+            new LinkedBlockingQueue<Object>();
+}

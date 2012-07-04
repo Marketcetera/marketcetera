@@ -1,7 +1,7 @@
 package org.marketcetera.core.position.impl;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.trade.Option;
+import org.marketcetera.core.trade.Option;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
 /* $License$ */

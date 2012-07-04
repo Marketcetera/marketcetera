@@ -5,12 +5,12 @@ import java.util.*;
 
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.LogEvent;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.LogEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.module.*;
-import org.marketcetera.ordermanager.BrokerStatus;
-import org.marketcetera.trade.*;
+import org.marketcetera.core.module.*;
+import org.marketcetera.core.ordermanager.BrokerStatus;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;

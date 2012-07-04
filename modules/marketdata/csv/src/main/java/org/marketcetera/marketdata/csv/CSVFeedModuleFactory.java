@@ -2,9 +2,9 @@ package org.marketcetera.marketdata.csv;
 
 import static org.marketcetera.marketdata.csv.Messages.PROVIDER_DESCRIPTION;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.ModuleFactory;
+import org.marketcetera.core.module.ModuleCreationException;
+import org.marketcetera.core.module.ModuleURN;
 import org.marketcetera.core.CoreException;
 
 /**
@@ -30,7 +30,7 @@ public class CSVFeedModuleFactory
               false);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
+     * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
      */
     @Override
     public CSVFeedModule create(Object... inArg0)

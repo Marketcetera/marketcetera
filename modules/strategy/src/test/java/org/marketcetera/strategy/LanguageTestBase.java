@@ -1,12 +1,12 @@
 package org.marketcetera.strategy;
 
 import static org.junit.Assert.*;
-import static org.marketcetera.event.LogEventLevel.DEBUG;
-import static org.marketcetera.event.LogEventLevel.ERROR;
-import static org.marketcetera.event.LogEventLevel.INFO;
-import static org.marketcetera.event.LogEventLevel.WARN;
-import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
-import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
+import static org.marketcetera.core.event.LogEventLevel.DEBUG;
+import static org.marketcetera.core.event.LogEventLevel.ERROR;
+import static org.marketcetera.core.event.LogEventLevel.INFO;
+import static org.marketcetera.core.event.LogEventLevel.WARN;
+import static org.marketcetera.core.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
+import static org.marketcetera.core.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.strategy.Status.*;
 
 import java.math.BigDecimal;
@@ -22,18 +22,18 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.event.LogEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.EventTestBase;
+import org.marketcetera.core.event.LogEvent;
+import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.marketdata.*;
 import org.marketcetera.marketdata.MarketDataModuleTestBase.DataSink;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.module.CopierModule.SynchronousRequest;
-import org.marketcetera.module.*;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.module.CopierModule.SynchronousRequest;
+import org.marketcetera.core.module.*;
+import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
-import org.marketcetera.trade.*;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.NamedThreadFactory;
 import org.marketcetera.util.test.UnicodeData;
@@ -194,7 +194,7 @@ public abstract class LanguageTestBase
         };
     }
     /**
-     * Tests a strategy that overrides only {@link RunningStrategy#onAsk(org.marketcetera.event.AskEvent)}.
+     * Tests a strategy that overrides only {@link RunningStrategy#onAsk(org.marketcetera.core.event.AskEvent)}.
      *
      * <p>This test makes sure that a strategy that selectively overrides call-backs does not fail when
      * the non-overridden call-backs are executed.

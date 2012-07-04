@@ -19,7 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.*;
+import org.marketcetera.core.module.*;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
@@ -43,7 +43,7 @@ public class EmitterTest extends ModuleTestBase {
     @Test
     public void invalidRequests() throws Exception {
         new ExpectedFailure<IllegalRequestParameterValue>(
-                org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
+                org.marketcetera.core.module.Messages.ILLEGAL_REQ_PARM_VALUE,
                 CSVEmitterFactory.INSTANCE_URN.toString(), null){
             protected void run() throws Exception {
                 mManager.createDataFlow(new DataRequest[]{
@@ -53,7 +53,7 @@ public class EmitterTest extends ModuleTestBase {
         };
         final Object invalidParam = new Object();
         new ExpectedFailure<UnsupportedRequestParameterType>(
-                org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE,
+                org.marketcetera.core.module.Messages.UNSUPPORTED_REQ_PARM_TYPE,
                 CSVEmitterFactory.INSTANCE_URN.toString(),
                 invalidParam.getClass().getName()){
             protected void run() throws Exception {

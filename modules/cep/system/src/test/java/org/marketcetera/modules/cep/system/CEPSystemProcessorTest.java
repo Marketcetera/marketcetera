@@ -10,12 +10,12 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.module.*;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Factory;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.EventTestBase;
+import org.marketcetera.core.marketdata.DateUtils;
+import org.marketcetera.core.module.*;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Factory;
 
 /**
  * @author toli@marketcetera.com

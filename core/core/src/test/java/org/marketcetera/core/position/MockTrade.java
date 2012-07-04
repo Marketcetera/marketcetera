@@ -3,10 +3,10 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

@@ -3,8 +3,8 @@ package org.marketcetera.marketdata.csv;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.marketcetera.marketdata.Capability.LATEST_TICK;
-import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
+import static org.marketcetera.core.marketdata.Capability.LATEST_TICK;
+import static org.marketcetera.core.marketdata.Capability.TOP_OF_BOOK;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -13,14 +13,14 @@ import java.util.concurrent.BlockingQueue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.TradeEvent;
-import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.MarketDataModuleTestBase;
-import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.module.*;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.BidEvent;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.core.marketdata.Capability;
+import org.marketcetera.core.marketdata.MarketDataModuleTestBase;
+import org.marketcetera.core.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.core.module.*;
 
 /**
  * Subclass from the main Market data test and verify that basic module functionality works

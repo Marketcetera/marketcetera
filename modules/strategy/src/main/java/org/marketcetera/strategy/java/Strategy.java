@@ -1,11 +1,11 @@
 package org.marketcetera.strategy.java;
 
 import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.event.*;
+import org.marketcetera.core.event.*;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.core.trade.ExecutionReport;
+import org.marketcetera.core.trade.OrderCancelReject;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -24,7 +24,7 @@ public class Strategy
     /*
      * (non-Javadoc)
      * 
-     * @see org.marketcetera.strategy.RunningStrategy#onAsk(org.marketcetera.event.AskEvent)
+     * @see org.marketcetera.strategy.RunningStrategy#onAsk(org.marketcetera.core.event.AskEvent)
      */
     @Override
     public void onAsk(AskEvent inAsk)
@@ -33,21 +33,21 @@ public class Strategy
     /*
      * (non-Javadoc)
      * 
-     * @see org.marketcetera.strategy.RunningStrategy#onBid(org.marketcetera.event.BidEvent)
+     * @see org.marketcetera.strategy.RunningStrategy#onBid(org.marketcetera.core.event.BidEvent)
      */
     @Override
     public void onBid(BidEvent inBid)
     {
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.RunningStrategy#onMarketstat(org.marketcetera.event.MarketstatEvent)
+     * @see org.marketcetera.strategy.RunningStrategy#onMarketstat(org.marketcetera.core.event.MarketstatEvent)
      */
     @Override
     public void onMarketstat(MarketstatEvent inStatistics)
     {
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.RunningStrategy#onDividend(org.marketcetera.event.DividendEvent)
+     * @see org.marketcetera.strategy.RunningStrategy#onDividend(org.marketcetera.core.event.DividendEvent)
      */
     @Override
     public void onDividend(DividendEvent inStatistics)
@@ -65,14 +65,14 @@ public class Strategy
     /*
      * (non-Javadoc)
      * 
-     * @see org.marketcetera.strategy.RunningStrategy#onExecutionReport(org.marketcetera.event.ExecutionReport)
+     * @see org.marketcetera.strategy.RunningStrategy#onExecutionReport(org.marketcetera.core.event.ExecutionReport)
      */
     @Override
     public void onExecutionReport(ExecutionReport inExecutionReport)
     {
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.RunningStrategy#onCancel(org.marketcetera.trade.OrderCancelReject)
+     * @see org.marketcetera.strategy.RunningStrategy#onCancel(org.marketcetera.core.trade.OrderCancelReject)
      */
     @Override
     public void onCancelReject(OrderCancelReject inCancel)
@@ -90,7 +90,7 @@ public class Strategy
     /*
      * (non-Javadoc)
      * 
-     * @see org.marketcetera.strategy.RunningStrategy#onTrade(org.marketcetera.event.TradeEvent)
+     * @see org.marketcetera.strategy.RunningStrategy#onTrade(org.marketcetera.core.event.TradeEvent)
      */
     @Override
     public void onTrade(TradeEvent inTrade)

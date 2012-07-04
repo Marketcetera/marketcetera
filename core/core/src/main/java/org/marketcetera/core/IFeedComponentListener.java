@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import org.marketcetera.marketdata.IFeedComponent;
+import org.marketcetera.core.marketdata.IFeedComponent;
 
 /**
  * @author Toli Kuznets

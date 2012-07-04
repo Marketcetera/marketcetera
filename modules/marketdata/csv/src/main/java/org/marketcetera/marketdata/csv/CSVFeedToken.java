@@ -1,8 +1,8 @@
 package org.marketcetera.marketdata.csv;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.marketdata.AbstractMarketDataFeedToken;
-import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
+import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 
 /**
  * Token for {@link CSVFeed}.

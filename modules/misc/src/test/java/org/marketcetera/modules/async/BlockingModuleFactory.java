@@ -2,10 +2,10 @@ package org.marketcetera.modules.async;
 
 import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.Module;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.ModuleFactory;
+import org.marketcetera.core.module.Module;
+import org.marketcetera.core.module.ModuleCreationException;
+import org.marketcetera.core.module.ModuleURN;
 
 /* $License$ */
 /**

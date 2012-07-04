@@ -11,9 +11,9 @@ import junit.framework.Assert;
 import junit.framework.Test;
 
 import org.junit.Ignore;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.core.quickfix.FIXFieldConverterNotAvailable;
+import org.marketcetera.core.quickfix.FIXVersion;
 
 /**
  * Extends the {@link MarketceteraTestSuite} to run the unit test

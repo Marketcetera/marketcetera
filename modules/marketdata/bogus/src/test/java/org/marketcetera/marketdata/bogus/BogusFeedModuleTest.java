@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.bogus;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.marketcetera.marketdata.Capability.*;
+import static org.marketcetera.core.marketdata.Capability.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,14 +12,19 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.junit.Test;
-import org.marketcetera.event.HasInstrument;
+import org.marketcetera.core.event.HasInstrument;
+import org.marketcetera.core.marketdata.Capability;
+import org.marketcetera.core.marketdata.Content;
+import org.marketcetera.core.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.core.marketdata.MarketDataModuleTestBase;
+import org.marketcetera.core.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.*;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.SinkDataListener;
+import org.marketcetera.core.module.DataFlowID;
+import org.marketcetera.core.module.DataRequest;
+import org.marketcetera.core.module.ModuleException;
+import org.marketcetera.core.module.ModuleFactory;
+import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.core.module.SinkDataListener;
 
 /* $License$ */
 
@@ -109,9 +114,7 @@ public class BogusFeedModuleTest
             // need to infinite loop here since the deadlock is between the market data delivery thread and the new ExecutorThread
             MarketDataFeedTestBase.wait(new Callable<Boolean>() {
                 @Override
-                public Boolean call()
-                        throws Exception
-                {
+                public Boolean call() throws Exception {
                     return !receivedData.isEmpty();
                 }
             });

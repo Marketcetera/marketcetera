@@ -3,9 +3,9 @@ package org.marketcetera.marketdata.marketcetera;
 import static org.marketcetera.marketdata.marketcetera.Messages.PROVIDER_DESCRIPTION;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.module.ModuleCreationException;
-import org.marketcetera.module.ModuleFactory;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.ModuleCreationException;
+import org.marketcetera.core.module.ModuleFactory;
+import org.marketcetera.core.module.ModuleURN;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
@@ -43,7 +43,7 @@ public class MarketceteraFeedModuleFactory
               false);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
+     * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
      */
     @Override
     public MarketceteraFeedModule create(Object... inParameters)

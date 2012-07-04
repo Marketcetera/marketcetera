@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import ca.odell.glazedlists.BasicEventList;

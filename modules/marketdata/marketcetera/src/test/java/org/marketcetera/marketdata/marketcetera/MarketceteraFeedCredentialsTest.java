@@ -1,11 +1,11 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import static org.marketcetera.marketdata.Messages.NULL_URL;
+import static org.marketcetera.core.marketdata.Messages.NULL_URL;
 import static org.marketcetera.marketdata.marketcetera.Messages.TARGET_COMP_ID_REQUIRED;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.core.marketdata.FeedException;
 
 /* $License$ */
 

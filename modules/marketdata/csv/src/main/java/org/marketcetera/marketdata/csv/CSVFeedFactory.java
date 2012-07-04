@@ -1,8 +1,8 @@
 package org.marketcetera.marketdata.csv;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.marketdata.AbstractMarketDataFeedFactory;
-import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.core.marketdata.AbstractMarketDataFeedFactory;
+import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
 

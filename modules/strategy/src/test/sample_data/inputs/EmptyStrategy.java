@@ -1,4 +1,4 @@
-import org.marketcetera.event.AskEvent;
+import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.strategy.java.Strategy;
 
 public class EmptyStrategy

@@ -4,7 +4,7 @@ import static org.marketcetera.strategy.Status.RUNNING;
 import static org.marketcetera.strategy.Status.STARTING;
 import static org.marketcetera.strategy.Status.STOPPED;
 
-import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.core.event.impl.LogEventBuilder;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;

@@ -3,8 +3,8 @@ package org.marketcetera.marketdata.yahoo;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.marketdata.DataRequestTranslator;
-import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.core.marketdata.DataRequestTranslator;
+import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

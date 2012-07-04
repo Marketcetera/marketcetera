@@ -1,8 +1,8 @@
 import java.util.Date;
 
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.trade.BrokerID;
+import org.marketcetera.core.trade.BrokerID;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;

@@ -7,18 +7,18 @@ import java.util.*;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.event.*;
-import org.marketcetera.event.impl.DividendEventBuilder;
-import org.marketcetera.event.impl.LogEventBuilder;
-import org.marketcetera.event.impl.QuoteEventBuilder;
-import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.impl.DividendEventBuilder;
+import org.marketcetera.core.event.impl.LogEventBuilder;
+import org.marketcetera.core.event.impl.QuoteEventBuilder;
+import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.options.ExpirationType;
+import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.strategy.util.OptionContractPair.OptionContractPairKey;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -34,7 +34,7 @@ public class OptionChainTest
         implements TestMessages
 {
     /**
-     * Tests {@link OptionChain#OptionChain(org.marketcetera.trade.Instrument)}.
+     * Tests {@link OptionChain#OptionChain(org.marketcetera.core.trade.Instrument)}.
      *
      * @throws Exception
      */
@@ -531,7 +531,7 @@ public class OptionChainTest
                           Arrays.asList(new OptionContractPair[] { entry }));
     }
     /**
-     * Tests {@link OptionChain#process(org.marketcetera.event.Event)}. 
+     * Tests {@link OptionChain#process(org.marketcetera.core.event.Event)}.
      *
      * <p>Note that this test uses the process capability of {@link OptionContractPair}
      * to prepare the expected data, which means that it merely tests {@link OptionContractPair}'s
@@ -577,7 +577,7 @@ public class OptionChainTest
                           new ArrayList<OptionContractPair>());
     }
     /**
-     * Tests {@link OptionChain#process(org.marketcetera.event.Event)} with error conditions.
+     * Tests {@link OptionChain#process(org.marketcetera.core.event.Event)} with error conditions.
      *
      * @throws Exception if an unexpected error occurs
      */

@@ -3,9 +3,9 @@ package org.marketcetera.strategy;
 import javax.management.MXBean;
 
 import org.marketcetera.core.Util;
-import org.marketcetera.module.DataReceiver;
-import org.marketcetera.module.DisplayName;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.core.module.DataReceiver;
+import org.marketcetera.core.module.DisplayName;
+import org.marketcetera.core.module.ModuleURN;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */

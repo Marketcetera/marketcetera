@@ -8,13 +8,13 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.*;
-import org.marketcetera.event.impl.QuoteEventBuilder;
-import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.impl.QuoteEventBuilder;
+import org.marketcetera.core.event.impl.TradeEventBuilder;
+import org.marketcetera.core.marketdata.Content;
+import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.attributes.ClassVersion;
 
@@ -47,7 +47,7 @@ public class MarketceteraFeedEventTranslator
     {        
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
+     * @see org.marketcetera.core.event.IEventTranslator#translate(java.lang.Object)
      */
     public List<Event> toEvent(Object inData,
                                String inHandle) 
@@ -135,7 +135,7 @@ public class MarketceteraFeedEventTranslator
         return events;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
+     * @see org.marketcetera.core.event.IEventTranslator#translate(org.marketcetera.core.event.EventBase)
      */
     public Object fromEvent(Event inEvent) 
         throws CoreException

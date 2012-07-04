@@ -3,8 +3,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.lang.String;
 
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.BidEvent;
 
 public class SimpleStrategy
         extends org.marketcetera.strategy.java.Strategy

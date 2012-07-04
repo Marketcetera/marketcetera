@@ -3,18 +3,18 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.QuoteEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.DividendEvent;
-import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.QuoteEvent;
+import org.marketcetera.core.event.BidEvent;
+import org.marketcetera.core.event.DividendEvent;
+import org.marketcetera.core.event.MarketstatEvent;
+import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderCancelReject;
-import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.core.trade.ExecutionReport;
+import org.marketcetera.core.trade.Factory;
+import org.marketcetera.core.trade.OrderCancelReject;
+import org.marketcetera.core.trade.OrderSingle;
 import org.marketcetera.util.test.UnicodeData;
 
 public class JavaStrategy

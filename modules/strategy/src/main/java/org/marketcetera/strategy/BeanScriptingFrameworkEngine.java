@@ -9,7 +9,7 @@ import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.jruby.exceptions.RaiseException;
-import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.core.event.impl.LogEventBuilder;
 import org.marketcetera.strategy.CompilationFailed.Diagnostic;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

@@ -1,27 +1,40 @@
 package org.marketcetera.core.position.impl;
 
+import java.math.BigDecimal;
+import java.util.Map;
+
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.event.ListEvent;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
+import org.marketcetera.core.messagehistory.ReportHolder;
+import org.marketcetera.core.position.Grouping;
+import org.marketcetera.core.position.ImmutablePositionSupport;
+import org.marketcetera.core.position.MarketDataSupport;
+import org.marketcetera.core.position.PositionEngine;
+import org.marketcetera.core.position.PositionEngineFactory;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.PositionKeyFactory;
+import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.ExecutionType;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.OrderStatus;
+import org.marketcetera.core.trade.Originator;
+import org.marketcetera.core.trade.ReportBase;
+import org.marketcetera.core.trade.Side;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.util.Map;
-
-import org.junit.Ignore;
-import org.junit.Test;
-import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
-import org.marketcetera.core.position.*;
-import org.marketcetera.messagehistory.ReportHolder;
-import org.marketcetera.trade.*;
-
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.event.ListEvent;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 /* $License$ */
 

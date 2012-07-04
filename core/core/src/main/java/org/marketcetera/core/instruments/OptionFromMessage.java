@@ -1,14 +1,19 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.Option;
-import quickfix.Message;
-import quickfix.FieldNotFound;
-import quickfix.field.*;
-
 import java.math.BigDecimal;
+
+import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityDay;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
 
 /* $License$ */
 /**

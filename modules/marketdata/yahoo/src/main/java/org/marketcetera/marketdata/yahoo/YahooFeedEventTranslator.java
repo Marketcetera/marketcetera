@@ -6,12 +6,12 @@ import java.util.*;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.*;
-import org.marketcetera.event.impl.QuoteEventBuilder;
-import org.marketcetera.event.impl.TradeEventBuilder;
-import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.impl.QuoteEventBuilder;
+import org.marketcetera.core.event.impl.TradeEventBuilder;
+import org.marketcetera.core.marketdata.DateUtils;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
 
@@ -31,7 +31,7 @@ public enum YahooFeedEventTranslator
 {
     INSTANCE;
     /* (non-Javadoc)
-     * @see org.marketcetera.event.EventTranslator#toEvent(java.lang.Object, java.lang.String)
+     * @see org.marketcetera.core.event.EventTranslator#toEvent(java.lang.Object, java.lang.String)
      */
     @Override
     public synchronized List<Event> toEvent(Object inData,
@@ -72,7 +72,7 @@ public enum YahooFeedEventTranslator
         return getEventsFrom(matchedData);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.event.EventTranslator#fromEvent(org.marketcetera.event.Event)
+     * @see org.marketcetera.core.event.EventTranslator#fromEvent(org.marketcetera.core.event.Event)
      */
     @Override
     public Object fromEvent(Event inEvent)

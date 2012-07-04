@@ -21,7 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.module.*;
+import org.marketcetera.core.module.*;
 import org.marketcetera.core.attributes.ClassVersion;
 
 
@@ -78,7 +78,7 @@ public class AsyncModuleTest extends ModuleTestBase {
         final ModuleURN instanceURN = new ModuleURN(PROVIDER_URN, "mymodule");
         final String requestParm = "not null value";
         new ExpectedFailure<IllegalRequestParameterValue>(
-                org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
+                org.marketcetera.core.module.Messages.ILLEGAL_REQ_PARM_VALUE,
                 instanceURN.getValue(), requestParm) {
             public void run() throws Exception {
                 mManager.createDataFlow(new DataRequest[]{

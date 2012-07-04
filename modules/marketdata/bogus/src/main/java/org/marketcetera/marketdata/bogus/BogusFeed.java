@@ -1,23 +1,24 @@
 package org.marketcetera.marketdata.bogus;
 
-import static org.marketcetera.marketdata.AssetClass.EQUITY;
-import static org.marketcetera.marketdata.AssetClass.FUTURE;
-import static org.marketcetera.marketdata.AssetClass.OPTION;
-import static org.marketcetera.marketdata.Capability.*;
+import static org.marketcetera.core.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.core.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.core.marketdata.AssetClass.OPTION;
+import static org.marketcetera.core.marketdata.Capability.*;
 import static org.marketcetera.marketdata.bogus.Messages.UNSUPPORTED_OPTION_SPECIFICATION;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.marketdata.*;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.Event;
+import org.marketcetera.core.event.Event;
 import org.marketcetera.marketdata.*;
-import org.marketcetera.options.OptionUtils;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
+import org.marketcetera.core.options.OptionUtils;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
@@ -25,7 +26,7 @@ import org.marketcetera.core.attributes.ClassVersion;
 /* $License$ */
 
 /**
- * Sample implementation of {@link MarketDataFeed}.
+ * Sample implementation of {@link org.marketcetera.core.marketdata.MarketDataFeed}.
  *
  * <p>This implementation generates random market data for each
  * symbol for which a market data request is received.  Data is returned
@@ -38,11 +39,11 @@ import org.marketcetera.core.attributes.ClassVersion;
 @ClassVersion("$Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $")
 public class BogusFeed 
     extends AbstractMarketDataFeed<BogusFeedToken,
-                                   BogusFeedCredentials,
-                                   BogusFeedMessageTranslator,
-                                   BogusFeedEventTranslator,
-                                   MarketDataRequest,
-                                   BogusFeed> 
+                                       BogusFeedCredentials,
+                                       BogusFeedMessageTranslator,
+                                       BogusFeedEventTranslator,
+                                       MarketDataRequest,
+                                       BogusFeed>
 {
     /**
      * Returns an instance of <code>BogusFeed</code>.

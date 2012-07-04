@@ -63,7 +63,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.marketcetera.quickfix</Export-Package>
+                        <Export-Package>org.marketcetera.core.quickfix</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

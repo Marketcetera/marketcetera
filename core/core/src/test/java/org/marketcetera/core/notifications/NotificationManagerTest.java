@@ -1,18 +1,16 @@
 package org.marketcetera.core.notifications;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.Date;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.publisher.PublisherEngineTest;
-import org.marketcetera.marketdata.MarketDataFeedTestBase;
+
+import static org.junit.Assert.*;
 
 /* $License$ */
 

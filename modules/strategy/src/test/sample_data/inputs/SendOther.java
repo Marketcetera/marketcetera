@@ -1,7 +1,7 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.strategy.java.Strategy;
 
 /* $License$ */
@@ -17,7 +17,7 @@ public class SendOther
         extends Strategy
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.core.event.AskEvent)
      */
     @Override
     public void onAsk(AskEvent inAsk)

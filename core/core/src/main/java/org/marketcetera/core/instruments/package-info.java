@@ -22,7 +22,7 @@
  * A {@link org.marketcetera.core.instruments.StaticInstrumentFunctionSelector}
  * instance can be used to dynamically select the appropriate handler
  * instance for an instrument via 
- * {@link org.marketcetera.core.instruments.StaticInstrumentFunctionSelector#forInstrument(org.marketcetera.trade.Instrument)}.
+ * {@link org.marketcetera.core.instruments.StaticInstrumentFunctionSelector#forInstrument(org.marketcetera.core.trade.Instrument)}.
  * The selector chooses the appropriate instrument specific subclass of
  * {@link org.marketcetera.core.instruments.StaticInstrumentFunctionSelector}
  * based on the runtime type of the instrument.
