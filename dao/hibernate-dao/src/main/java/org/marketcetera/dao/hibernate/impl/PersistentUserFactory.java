@@ -3,6 +3,7 @@ package org.marketcetera.dao.hibernate.impl;
 import org.marketcetera.core.systemmodel.User;
 import org.marketcetera.core.systemmodel.UserFactory;
 import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.dao.impl.PersistentUser;
 import org.springframework.stereotype.Component;
 
 /* $License$ */

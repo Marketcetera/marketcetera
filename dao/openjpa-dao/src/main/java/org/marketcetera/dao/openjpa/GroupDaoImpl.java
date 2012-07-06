@@ -2,8 +2,11 @@ package org.marketcetera.dao.openjpa;
 
 import java.util.List;
 
-import org.marketcetera.dao.GroupDao;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.marketcetera.core.systemmodel.Group;
+import org.marketcetera.dao.GroupDao;
+import org.marketcetera.dao.impl.PersistentGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,41 +19,44 @@ import org.slf4j.LoggerFactory;
 public class GroupDaoImpl implements GroupDao {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(GroupDaoImpl.class);
+    private EntityManager entityManager;
 
 
     @Override
     public Group getByName(String inName) {
-        log.trace("Entering getByName");
-        return null;
+        return (Group) entityManager.createNamedQuery("findGroupByName").getSingleResult();
     }
 
     @Override
     public void add(Group inData) {
-        log.trace("Entering add");
+        entityManager.persist(inData);
 
     }
 
     @Override
     public void save(Group inData) {
-        log.trace("Entering save");
+        entityManager.merge(inData);
 
     }
 
     @Override
     public Group getById(long inId) {
-        log.trace("Entering getById");
-        return null;
+        return entityManager.find(PersistentGroup.class, inId);
     }
 
     @Override
     public List<Group> getAll() {
-        log.trace("Entering getAll");
-        return null;
+        return entityManager.createNamedQuery("findAllGroups").getResultList();
     }
 
     @Override
     public void delete(Group inData) {
-        log.trace("Entering delete");
+        entityManager.remove(inData);
 
+    }
+
+    @PersistenceContext
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 }

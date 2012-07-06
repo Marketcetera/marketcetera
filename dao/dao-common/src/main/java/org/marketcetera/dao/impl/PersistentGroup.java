@@ -1,4 +1,4 @@
-package org.marketcetera.dao.hibernate.impl;
+package org.marketcetera.dao.impl;
 
 import java.util.Collection;
 import java.util.HashSet;

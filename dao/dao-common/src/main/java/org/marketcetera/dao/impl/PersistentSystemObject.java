@@ -1,4 +1,4 @@
-package org.marketcetera.dao.hibernate.impl;
+package org.marketcetera.dao.impl;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

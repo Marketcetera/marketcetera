@@ -3,6 +3,7 @@ package org.marketcetera.dao.hibernate.impl;
 import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.core.systemmodel.AuthorityFactory;
 import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.dao.impl.PersistentAuthority;
 import org.springframework.stereotype.Component;
 
 /* $License$ */

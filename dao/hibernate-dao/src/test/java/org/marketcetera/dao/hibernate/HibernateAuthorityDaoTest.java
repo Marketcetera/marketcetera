@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.dao.AuthorityDao;
 import org.marketcetera.dao.hibernate.impl.AuthorityInitializer;
-import org.marketcetera.dao.hibernate.impl.PersistentAuthority;
+import org.marketcetera.dao.impl.PersistentAuthority;
 import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.core.systemmodel.SystemAuthority;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -1,4 +1,4 @@
-package org.marketcetera.dao.hibernate.impl;
+package org.marketcetera.dao.impl;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +12,8 @@ import javax.persistence.*;
 import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.core.systemmodel.User;
 import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.dao.impl.PersistentAuthority;
+import org.marketcetera.dao.impl.PersistentVersionedObject;
 import org.springframework.security.core.GrantedAuthority;
 
 /* $License$ */

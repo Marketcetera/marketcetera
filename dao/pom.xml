@@ -21,5 +21,6 @@
         <module>dao-common</module>
         <module>hibernate-dao</module>
         <module>openjpa-dao</module>
+        <module>datasource</module>
     </modules>
 </project>
