@@ -6,10 +6,10 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.dao.AuthorityDao;
-import org.marketcetera.dao.impl.AuthorityInitializer;
-import org.marketcetera.dao.impl.PersistentAuthority;
-import org.marketcetera.systemmodel.Authority;
-import org.marketcetera.systemmodel.SystemAuthority;
+import org.marketcetera.dao.hibernate.impl.AuthorityInitializer;
+import org.marketcetera.dao.hibernate.impl.PersistentAuthority;
+import org.marketcetera.core.systemmodel.Authority;
+import org.marketcetera.core.systemmodel.SystemAuthority;
 import org.springframework.dao.DataIntegrityViolationException;
 
 /* $License$ */
@@ -92,7 +92,7 @@ public class HibernateAuthorityDaoTest
         return PersistentAuthority.class;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#add(org.marketcetera.systemmodel.SystemObject)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#add(org.marketcetera.core.systemmodel.SystemObject)
      */
     @Override
     protected void add(Authority inData)
@@ -108,7 +108,7 @@ public class HibernateAuthorityDaoTest
         return getDao().getAuthorityDao().getById(inId);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.hibernate.PersistentVersionedObjectDaoTestBase#save(org.marketcetera.systemmodel.VersionedObject)
+     * @see org.marketcetera.dao.hibernate.PersistentVersionedObjectDaoTestBase#save(org.marketcetera.core.systemmodel.VersionedObject)
      */
     @Override
     protected void save(Authority inData)

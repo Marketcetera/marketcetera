@@ -3,7 +3,7 @@ package org.marketcetera.dao.openjpa;
 import java.util.List;
 
 import org.marketcetera.dao.AuthorityDao;
-import org.marketcetera.systemmodel.Authority;
+import org.marketcetera.core.systemmodel.Authority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

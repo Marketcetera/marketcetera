@@ -11,7 +11,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.core.module.*;
 import org.marketcetera.core.ordermanager.BrokerStatus;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 import quickfix.Message;
 

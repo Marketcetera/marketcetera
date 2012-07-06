@@ -12,7 +12,7 @@ import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

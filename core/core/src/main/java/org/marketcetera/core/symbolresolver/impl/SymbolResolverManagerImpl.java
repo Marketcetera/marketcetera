@@ -13,8 +13,8 @@ import org.marketcetera.core.symbolresolver.NoInstrumentForSymbol;
 import org.marketcetera.core.symbolresolver.SymbolResolver;
 import org.marketcetera.core.symbolresolver.SymbolResolverManager;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 

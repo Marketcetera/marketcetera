@@ -47,7 +47,7 @@ import org.marketcetera.core.module.*;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyModule.ClientFactory;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.core.util.log.I18NMessage;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;

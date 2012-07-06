@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.dao.DataAccessService;
-import org.marketcetera.systemmodel.SystemAuthority;
+import org.marketcetera.core.systemmodel.SystemAuthority;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 

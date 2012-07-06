@@ -34,8 +34,8 @@ import org.marketcetera.core.module.*;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
 import org.marketcetera.util.test.UnicodeData;
 
 import quickfix.Message;

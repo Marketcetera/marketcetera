@@ -3,7 +3,7 @@ package org.marketcetera.core.event.util;
 import javax.annotation.concurrent.Immutable;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.core.event.beans.HasEventBean;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /* $License$ */
 

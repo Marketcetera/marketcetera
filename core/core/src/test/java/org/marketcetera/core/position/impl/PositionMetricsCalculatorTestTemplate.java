@@ -9,7 +9,7 @@ import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.trade.Equity;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;

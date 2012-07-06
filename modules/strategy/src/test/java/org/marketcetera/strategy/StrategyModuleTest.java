@@ -28,7 +28,7 @@ import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.core.module.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
 
 /* $License$ */

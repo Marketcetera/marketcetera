@@ -18,8 +18,8 @@ import org.marketcetera.core.event.util.EventServices;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.marketdata.OrderBook;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage2P;
 
 /* $License$ */
 

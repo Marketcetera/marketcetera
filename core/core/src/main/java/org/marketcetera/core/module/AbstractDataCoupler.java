@@ -3,9 +3,9 @@ package org.marketcetera.core.module;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.except.I18NException;
+import org.marketcetera.core.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 /**

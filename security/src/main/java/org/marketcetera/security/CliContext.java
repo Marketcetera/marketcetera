@@ -4,9 +4,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.marketcetera.util.except.ExceptUtils;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.except.ExceptUtils;
+import org.marketcetera.core.util.except.I18NException;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

@@ -14,7 +14,7 @@ import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.Equity;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 import quickfix.Message;
 import quickfix.field.SubscriptionRequestType;

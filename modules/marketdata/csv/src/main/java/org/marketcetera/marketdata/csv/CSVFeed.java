@@ -26,8 +26,7 @@ import org.marketcetera.core.marketdata.Capability;
 import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

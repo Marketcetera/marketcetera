@@ -13,14 +13,13 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.marketdata.*;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.event.Event;
-import org.marketcetera.marketdata.*;
 import org.marketcetera.core.options.OptionUtils;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

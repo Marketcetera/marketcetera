@@ -1,10 +1,10 @@
 package org.marketcetera.core;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
-import org.marketcetera.util.l10n.MessageComparator;
+import org.marketcetera.core.util.l10n.MessageComparator;
 import org.marketcetera.util.test.TestCaseBase;
+
+import static org.junit.Assert.assertTrue;
 
 /* $License$ */
 

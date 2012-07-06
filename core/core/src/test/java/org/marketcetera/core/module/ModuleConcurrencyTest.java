@@ -16,10 +16,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.module.*;
-import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.core.util.log.I18NMessage0P;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /* $License$ */
 /**

@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 /**

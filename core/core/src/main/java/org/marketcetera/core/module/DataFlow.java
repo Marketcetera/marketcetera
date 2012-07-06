@@ -7,8 +7,8 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 /**

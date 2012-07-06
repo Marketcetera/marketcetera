@@ -8,15 +8,15 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.core.event.LogEvent;
 import org.marketcetera.core.event.LogEventLevel;
-import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessage2P;
-import org.marketcetera.util.log.I18NMessage3P;
-import org.marketcetera.util.log.I18NMessage4P;
-import org.marketcetera.util.log.I18NMessage5P;
-import org.marketcetera.util.log.I18NMessage6P;
-import org.marketcetera.util.log.I18NMessageNP;
+import org.marketcetera.core.util.log.I18NMessage;
+import org.marketcetera.core.util.log.I18NMessage0P;
+import org.marketcetera.core.util.log.I18NMessage1P;
+import org.marketcetera.core.util.log.I18NMessage2P;
+import org.marketcetera.core.util.log.I18NMessage3P;
+import org.marketcetera.core.util.log.I18NMessage4P;
+import org.marketcetera.core.util.log.I18NMessage5P;
+import org.marketcetera.core.util.log.I18NMessage6P;
+import org.marketcetera.core.util.log.I18NMessageNP;
 
 /* $License$ */
 

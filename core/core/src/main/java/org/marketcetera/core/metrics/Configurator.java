@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 /**

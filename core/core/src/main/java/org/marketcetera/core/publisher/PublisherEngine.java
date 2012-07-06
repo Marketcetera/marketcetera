@@ -6,9 +6,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /**
  * Publication engine which supplies the Publish side of the Publish/Subscribe contract.

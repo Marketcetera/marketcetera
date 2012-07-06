@@ -17,11 +17,11 @@ import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.log.I18NBoundMessage4P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage2P;
+import org.marketcetera.core.util.log.I18NBoundMessage3P;
+import org.marketcetera.core.util.log.I18NBoundMessage4P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.springframework.stereotype.Component;
 
 /* $License$ */

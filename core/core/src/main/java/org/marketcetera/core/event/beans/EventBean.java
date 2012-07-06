@@ -8,7 +8,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.util.EventServices;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 /* $License$ */
 

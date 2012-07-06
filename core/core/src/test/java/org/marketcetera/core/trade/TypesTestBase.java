@@ -14,7 +14,7 @@ import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.quickfix.FIXMessageUtil;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;

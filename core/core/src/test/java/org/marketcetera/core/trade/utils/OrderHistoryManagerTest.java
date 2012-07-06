@@ -24,7 +24,7 @@ import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.*;
 import org.marketcetera.core.trade.OrderID;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.CollectionAssert;
 import quickfix.Message;
 import quickfix.field.*;

@@ -12,7 +12,7 @@ import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

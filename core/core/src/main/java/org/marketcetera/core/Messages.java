@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import org.marketcetera.util.log.*;
+import org.marketcetera.core.util.log.*;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */
@@ -24,23 +24,8 @@ public interface Messages
      * The logger.
      */
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
-    // the messages
-    static final I18NMessage0P APP_COPYRIGHT = new I18NMessage0P(LOGGER,
-                                                                 "app_copyright"); //$NON-NLS-1$
-    static final I18NMessage3P APP_VERSION_BUILD = new I18NMessage3P(LOGGER,
-                                                                     "app_version_build");   //$NON-NLS-1$
-    static final I18NMessage1P APP_STARTING = new I18NMessage1P(LOGGER,
-                                                                "app_starting"); //$NON-NLS-1$
-    static final I18NMessage1P APP_STARTED = new I18NMessage1P(LOGGER,
-                                                               "app_started"); //$NON-NLS-1$
-    static final I18NMessage1P APP_STOPPING = new I18NMessage1P(LOGGER,
-                                                                "app_stopping"); //$NON-NLS-1$
-    static final I18NMessage1P APP_STOPPED = new I18NMessage1P(LOGGER,
-                                                               "app_stopped"); //$NON-NLS-1$
     static final I18NMessage1P NULL_CONTEXT = new I18NMessage1P(LOGGER,
                                                                 "null_context");   //$NON-NLS-1$
-    static final I18NMessage1P APP_START_ERROR = new I18NMessage1P(LOGGER,
-                                                                   "app_start_error");   //$NON-NLS-1$
     /**
      * The logger category used to log messages that are more visible to the
      * user than others. Messages logged to this category may appear more

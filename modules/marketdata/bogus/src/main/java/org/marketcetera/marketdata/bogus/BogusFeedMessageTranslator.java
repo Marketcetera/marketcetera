@@ -6,7 +6,7 @@ import static org.marketcetera.core.marketdata.Messages.UNSUPPORTED_REQUEST;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

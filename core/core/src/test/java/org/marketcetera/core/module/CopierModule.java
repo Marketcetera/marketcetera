@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /* $License$ */
 /**

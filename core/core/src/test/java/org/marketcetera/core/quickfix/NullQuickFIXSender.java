@@ -3,7 +3,7 @@ package org.marketcetera.core.quickfix;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.SessionID;

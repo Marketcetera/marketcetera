@@ -2,9 +2,9 @@ package org.marketcetera.security;
 
 import java.util.Properties;
 
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.spring.SpringUtils;
+import org.marketcetera.core.container.SpringUtils;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;

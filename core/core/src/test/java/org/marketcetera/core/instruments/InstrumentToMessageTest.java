@@ -19,7 +19,7 @@ import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.CFICode;

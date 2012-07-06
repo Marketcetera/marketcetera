@@ -7,8 +7,8 @@ import java.io.File;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedCredentials;
 import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

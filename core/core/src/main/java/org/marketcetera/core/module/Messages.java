@@ -1,7 +1,7 @@
 package org.marketcetera.core.module;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.*;
+import org.marketcetera.core.util.log.*;
 
 /* $License$ */
 /**

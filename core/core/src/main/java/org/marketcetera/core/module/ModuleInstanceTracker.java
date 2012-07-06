@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.core.util.log.I18NBoundMessage3P;
 
 /* $License$ */
 /**

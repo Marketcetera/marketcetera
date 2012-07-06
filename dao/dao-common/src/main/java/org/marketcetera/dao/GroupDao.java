@@ -2,7 +2,7 @@ package org.marketcetera.dao;
 
 import java.util.List;
 
-import org.marketcetera.systemmodel.Group;
+import org.marketcetera.core.systemmodel.Group;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.security.access.prepost.PreAuthorize;
 

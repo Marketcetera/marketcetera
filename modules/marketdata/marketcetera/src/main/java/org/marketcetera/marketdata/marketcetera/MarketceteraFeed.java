@@ -25,13 +25,12 @@ import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.marketdata.FeedStatus;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.*;
 import org.marketcetera.core.quickfix.EventLogFactory;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageUtil;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.Equity;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
 
 import quickfix.*;

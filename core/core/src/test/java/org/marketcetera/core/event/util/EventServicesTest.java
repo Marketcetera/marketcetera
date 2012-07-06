@@ -22,7 +22,7 @@ public class EventServicesTest
         implements Messages
 {
     /**
-     * Tests {@link org.marketcetera.core.event.util.EventServices#error(org.marketcetera.util.log.I18NBoundMessage)}.
+     * Tests {@link org.marketcetera.core.event.util.EventServices#error(org.marketcetera.core.util.log.I18NBoundMessage)}.
      *
      * @throws Exception if an unexpected error occurs
      */

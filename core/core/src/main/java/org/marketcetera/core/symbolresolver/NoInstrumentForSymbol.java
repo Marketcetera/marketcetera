@@ -1,7 +1,7 @@
 package org.marketcetera.core.symbolresolver;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

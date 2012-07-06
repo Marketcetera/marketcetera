@@ -16,7 +16,7 @@ import org.marketcetera.core.trade.FutureExpirationMonth;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import quickfix.DecimalField;
 import quickfix.Field;
 import quickfix.IntField;

@@ -25,7 +25,7 @@ import org.marketcetera.core.trade.OrderStatus;
 import org.marketcetera.core.trade.Originator;
 import org.marketcetera.core.trade.ReportBase;
 import org.marketcetera.core.trade.ReportID;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import quickfix.Message;
 
 /* $License$ */

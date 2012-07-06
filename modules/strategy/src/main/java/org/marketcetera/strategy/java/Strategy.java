@@ -6,7 +6,7 @@ import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.core.trade.ExecutionReport;
 import org.marketcetera.core.trade.OrderCancelReject;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

@@ -2,8 +2,8 @@ package org.marketcetera.dao.hibernate;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.systemmodel.SystemObject;
-import org.marketcetera.systemmodel.VersionedObject;
+import org.marketcetera.core.systemmodel.SystemObject;
+import org.marketcetera.core.systemmodel.VersionedObject;
 import org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureException;
 
 /* $License$ */

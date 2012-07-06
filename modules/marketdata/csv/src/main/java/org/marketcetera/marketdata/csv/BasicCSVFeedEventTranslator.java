@@ -20,9 +20,9 @@ import org.marketcetera.core.options.OptionUtils;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage2P;
+import org.marketcetera.core.util.log.I18NBoundMessage3P;
 
 /* $License$ */
 

@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.security.Messages;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
 
 import static org.junit.Assert.*;

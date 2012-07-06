@@ -25,7 +25,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
 import org.marketcetera.util.test.RegExAssert;
 
 import static org.junit.Assert.*;

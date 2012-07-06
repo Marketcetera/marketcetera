@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.marketcetera.core.event.LogEvent;
 import org.marketcetera.core.event.LogEventLevel;
 import org.marketcetera.core.event.TestMessages;
-import org.marketcetera.util.log.I18NBoundMessageNP;
-import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.log.I18NMessageNP;
+import org.marketcetera.core.util.log.I18NBoundMessageNP;
+import org.marketcetera.core.util.log.I18NMessage;
+import org.marketcetera.core.util.log.I18NMessageNP;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.core.event.LogEventLevel.*;

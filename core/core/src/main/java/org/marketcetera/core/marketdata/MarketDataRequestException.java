@@ -1,7 +1,7 @@
 package org.marketcetera.core.marketdata;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /* $License$ */
 

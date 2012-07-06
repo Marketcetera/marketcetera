@@ -1,8 +1,8 @@
 package org.marketcetera.strategy;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

@@ -5,8 +5,8 @@ import static org.marketcetera.strategy.Messages.COMPILATION_FAILED;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.log.I18NBoundMessage2P;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

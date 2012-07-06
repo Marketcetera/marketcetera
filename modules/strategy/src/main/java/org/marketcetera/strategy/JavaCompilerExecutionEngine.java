@@ -16,9 +16,9 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject.Kind;
 
 import org.marketcetera.core.event.impl.LogEventBuilder;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

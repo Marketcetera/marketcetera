@@ -4,8 +4,8 @@ import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.marketcetera.util.except.ExceptUtils;
-import org.marketcetera.util.except.I18NException;
+import org.marketcetera.core.util.except.ExceptUtils;
+import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

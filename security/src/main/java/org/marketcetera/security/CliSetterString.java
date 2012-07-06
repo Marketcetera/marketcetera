@@ -2,7 +2,7 @@ package org.marketcetera.security;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

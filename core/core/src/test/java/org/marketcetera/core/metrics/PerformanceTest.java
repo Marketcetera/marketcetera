@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 /**

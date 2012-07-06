@@ -5,7 +5,7 @@ import junit.framework.TestSuite;
 import org.junit.Ignore;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /**
  * @author Toli Kuznets

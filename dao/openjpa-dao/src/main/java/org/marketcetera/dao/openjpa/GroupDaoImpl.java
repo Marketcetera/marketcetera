@@ -3,7 +3,7 @@ package org.marketcetera.dao.openjpa;
 import java.util.List;
 
 import org.marketcetera.dao.GroupDao;
-import org.marketcetera.systemmodel.Group;
+import org.marketcetera.core.systemmodel.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

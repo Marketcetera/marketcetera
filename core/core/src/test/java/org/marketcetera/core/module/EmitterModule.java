@@ -10,8 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /* $License$ */
 /**

@@ -8,7 +8,7 @@ import org.marketcetera.core.event.HasProviderSymbol;
 import org.marketcetera.core.event.OptionEvent;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

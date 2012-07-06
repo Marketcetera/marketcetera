@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.Date;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 /* $License$ */
 /**

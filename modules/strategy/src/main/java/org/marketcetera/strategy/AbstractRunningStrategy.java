@@ -24,10 +24,10 @@ import org.marketcetera.core.module.DataFlowSupport;
 import org.marketcetera.core.module.DataRequest;
 import org.marketcetera.core.module.ModuleURN;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.util.collections.UnmodifiableDeque;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.collections.UnmodifiableDeque;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 import quickfix.Message;
 

@@ -3,8 +3,8 @@ package org.marketcetera.security;
 import java.io.File;
 
 import org.junit.Test;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.springframework.context.support.GenericApplicationContext;
 
 import static org.junit.Assert.assertEquals;

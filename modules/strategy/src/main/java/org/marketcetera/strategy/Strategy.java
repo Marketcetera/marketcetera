@@ -2,7 +2,7 @@ package org.marketcetera.strategy;
 
 import java.util.Properties;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

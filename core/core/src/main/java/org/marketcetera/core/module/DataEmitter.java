@@ -32,7 +32,7 @@ public interface DataEmitter {
      *
      * <p>
      * Do note that it's illegal to invoke
-     * {@link DataEmitterSupport#dataEmitError(org.marketcetera.util.log.I18NBoundMessage, boolean)}
+     * {@link DataEmitterSupport#dataEmitError(org.marketcetera.core.util.log.I18NBoundMessage, boolean)}
      * to stop the data flow from within this method. Data flow creation
      * is not complete unless this method returns. <code>dataEmitError</code>
      * can only be invoked after the data flow has been created. 

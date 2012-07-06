@@ -3,8 +3,8 @@ package org.marketcetera.core.module;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.core.util.log.I18NMessage;
+import org.marketcetera.core.util.log.I18NMessage1P;
 
 import static org.junit.Assert.*;
 

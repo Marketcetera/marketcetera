@@ -6,8 +6,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.marketcetera.dao.GroupDao;
-import org.marketcetera.dao.impl.PersistentGroup;
-import org.marketcetera.systemmodel.Group;
+import org.marketcetera.dao.hibernate.impl.PersistentGroup;
+import org.marketcetera.core.systemmodel.Group;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -29,7 +29,7 @@ public class HibernateGroupDao
         implements GroupDao
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.PersistentSystemObjectDao#add(org.marketcetera.systemmodel.SystemObject)
+     * @see org.marketcetera.dao.PersistentSystemObjectDao#add(org.marketcetera.core.systemmodel.SystemObject)
      */
     @Override
     @Transactional(readOnly=false)
@@ -65,7 +65,7 @@ public class HibernateGroupDao
         return (Group)results.get(0);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.PersistentSystemObjectDao#save(org.marketcetera.systemmodel.SystemObject)
+     * @see org.marketcetera.dao.PersistentSystemObjectDao#save(org.marketcetera.core.systemmodel.SystemObject)
      */
     @Override
     @Transactional(readOnly=false)
@@ -74,7 +74,7 @@ public class HibernateGroupDao
         getCurrentSession().update(inData);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.GroupDao#delete(org.marketcetera.systemmodel.Group)
+     * @see org.marketcetera.dao.GroupDao#delete(org.marketcetera.core.systemmodel.Group)
      */
     @Override
     @Transactional(readOnly=false)
