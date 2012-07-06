@@ -16,23 +16,35 @@ import org.slf4j.LoggerFactory;
 public class DataAccessServiceImpl implements DataAccessService {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(DataAccessServiceImpl.class);
+    private UserDao userDao;
+    private AuthorityDao authorityDao;
+    private GroupDao groupDao;
 
 
     @Override
     public UserDao getUserDao() {
-        log.trace("Entering getUserDao");
-        return null;
+        return userDao;
     }
 
     @Override
     public AuthorityDao getAuthorityDao() {
-        log.trace("Entering getAuthorityDao");
-        return null;
+        return authorityDao;
     }
 
     @Override
     public GroupDao getGroupDao() {
-        log.trace("Entering getGroupDao");
-        return null;
+        return groupDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void setAuthorityDao(AuthorityDao authorityDao) {
+        this.authorityDao = authorityDao;
+    }
+
+    public void setGroupDao(GroupDao groupDao) {
+        this.groupDao = groupDao;
     }
 }

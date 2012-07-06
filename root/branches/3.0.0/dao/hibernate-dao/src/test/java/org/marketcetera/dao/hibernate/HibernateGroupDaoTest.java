@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.dao.GroupDao;
 import org.marketcetera.dao.hibernate.impl.GroupInitializer;
-import org.marketcetera.dao.hibernate.impl.PersistentGroup;
+import org.marketcetera.dao.impl.PersistentGroup;
 import org.marketcetera.core.systemmodel.Group;
 import org.marketcetera.core.systemmodel.SystemGroup;
 import org.springframework.dao.DataIntegrityViolationException;

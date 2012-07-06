@@ -6,7 +6,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.marketcetera.dao.GroupDao;
-import org.marketcetera.dao.hibernate.impl.PersistentGroup;
+import org.marketcetera.dao.impl.PersistentGroup;
 import org.marketcetera.core.systemmodel.Group;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;

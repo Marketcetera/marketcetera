@@ -6,7 +6,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.marketcetera.dao.AuthorityDao;
-import org.marketcetera.dao.hibernate.impl.PersistentAuthority;
+import org.marketcetera.dao.impl.PersistentAuthority;
 import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;

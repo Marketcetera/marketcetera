@@ -7,7 +7,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.marketcetera.dao.UserDao;
-import org.marketcetera.dao.hibernate.impl.PersistentUser;
+import org.marketcetera.dao.impl.PersistentUser;
 import org.marketcetera.core.systemmodel.User;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;

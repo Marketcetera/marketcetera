@@ -2,8 +2,11 @@ package org.marketcetera.dao.openjpa;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.marketcetera.dao.UserDao;
 import org.marketcetera.core.systemmodel.User;
+import org.marketcetera.dao.impl.PersistentUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,47 +21,52 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public class UserDaoImpl implements UserDao {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(UserDaoImpl.class);
+    private EntityManager entityManager;
 
 
     @Override
     public User getByName(String inUsername) {
-        log.trace("Entering getByName");
-        return null;
+        return (User) entityManager.createNamedQuery("findUserByUsername").getSingleResult();
     }
 
     @Override
     public void add(User inData) {
-        log.trace("Entering add");
-
+        entityManager.persist(inData);
     }
 
     @Override
     public void save(User inData) {
-        log.trace("Entering save");
+        entityManager.merge(inData);
 
     }
 
     @Override
     public void delete(User inData) {
-        log.trace("Entering delete");
+        entityManager.remove(inData);
 
     }
 
     @Override
     public User getById(long inId) {
-        log.trace("Entering getById");
-        return null;
+        return entityManager.find(PersistentUser.class, inId);
     }
 
     @Override
     public List<User> getAll() {
-        log.trace("Entering getAll");
-        return null;
+        return entityManager.createNamedQuery("findAllUsers").getResultList();
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.trace("Entering loadUserByUsername");
-        return null;
+        User user = getByName(username);
+        if(user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        return user;
+    }
+
+    @PersistenceContext
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 }

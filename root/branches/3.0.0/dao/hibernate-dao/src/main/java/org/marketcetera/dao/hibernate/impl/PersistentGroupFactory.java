@@ -3,6 +3,7 @@ package org.marketcetera.dao.hibernate.impl;
 import org.marketcetera.core.systemmodel.Group;
 import org.marketcetera.core.systemmodel.GroupFactory;
 import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.dao.impl.PersistentGroup;
 import org.springframework.stereotype.Component;
 
 /* $License$ */

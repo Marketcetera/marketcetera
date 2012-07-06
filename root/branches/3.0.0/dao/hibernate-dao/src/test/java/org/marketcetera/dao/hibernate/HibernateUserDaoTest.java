@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.dao.hibernate.impl.PersistentUser;
+import org.marketcetera.dao.impl.PersistentUser;
 import org.marketcetera.dao.hibernate.impl.UserInitializer;
 import org.marketcetera.dao.hibernate.impl.UserSpecification;
 import org.marketcetera.core.systemmodel.*;

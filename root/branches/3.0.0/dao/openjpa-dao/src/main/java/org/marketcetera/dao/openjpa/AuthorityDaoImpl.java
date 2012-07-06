@@ -2,8 +2,11 @@ package org.marketcetera.dao.openjpa;
 
 import java.util.List;
 
-import org.marketcetera.dao.AuthorityDao;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.marketcetera.core.systemmodel.Authority;
+import org.marketcetera.dao.AuthorityDao;
+import org.marketcetera.dao.impl.PersistentAuthority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,35 +19,37 @@ import org.slf4j.LoggerFactory;
 public class AuthorityDaoImpl implements AuthorityDao {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(AuthorityDaoImpl.class);
+    private EntityManager entityManager;
 
 
     @Override
     public void add(Authority inData) {
-        log.trace("Entering add");
-
+        entityManager.persist(inData);
     }
 
     @Override
     public void save(Authority inData) {
-        log.trace("Entering save");
-
+        entityManager.merge(inData);
     }
 
     @Override
     public Authority getByName(String inName) {
-        log.trace("Entering getByName");
-        return null;
+        return (Authority) entityManager.createNamedQuery("findUserByName").setParameter("name", inName).getSingleResult();
     }
 
     @Override
     public Authority getById(long inId) {
-        log.trace("Entering getById");
-        return null;
+        return entityManager.find(PersistentAuthority.class, inId);
     }
 
     @Override
     public List<Authority> getAll() {
-        log.trace("Entering getAll");
-        return null;
+        return entityManager.createNamedQuery("findAllAuthorities").getResultList();
     }
+
+    @PersistenceContext
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
 }
