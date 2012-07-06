@@ -14,13 +14,8 @@ import java.util.*;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.marketdata.AssetClass;
-import org.marketcetera.core.marketdata.Content;
-import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.core.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.core.marketdata.Messages;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.test.EqualityAssert;
 import org.marketcetera.util.test.UnicodeData;
 

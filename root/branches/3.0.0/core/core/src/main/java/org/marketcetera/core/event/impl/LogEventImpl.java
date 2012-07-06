@@ -14,9 +14,9 @@ import org.marketcetera.core.event.beans.EventBean;
 import org.marketcetera.core.event.beans.HasEventBean;
 import org.marketcetera.core.event.util.EventServices;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.util.log.*;
-import org.marketcetera.util.ws.wrappers.RemoteI18NBoundMessage;
-import org.marketcetera.util.ws.wrappers.RemoteProperties;
+import org.marketcetera.core.util.log.*;
+import org.marketcetera.core.ws.wrappers.RemoteI18NBoundMessage;
+import org.marketcetera.core.ws.wrappers.RemoteProperties;
 
 /* $License$ */
 

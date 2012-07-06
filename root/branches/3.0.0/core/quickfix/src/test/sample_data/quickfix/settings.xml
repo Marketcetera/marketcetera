@@ -16,7 +16,7 @@
 
   <bean
    id="goodSettings"
-   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+   class="org.marketcetera.core.quickfix.SpringSessionSettings">
     <property
      name="defaults">
       <map>
@@ -36,7 +36,7 @@
      name="descriptors">
       <list>
         <bean
-         class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+         class="org.marketcetera.core.quickfix.SpringSessionDescriptor">
           <property
            name="dictionary">
             <map>
@@ -53,7 +53,7 @@
           </property>	
         </bean>
         <bean
-         class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+         class="org.marketcetera.core.quickfix.SpringSessionDescriptor">
           <property
            name="dictionary">
             <map>
@@ -72,11 +72,11 @@
 
   <bean
    id="emptySettings"
-   class="org.marketcetera.util.quickfix.SpringSessionSettings"/>
+   class="org.marketcetera.core.quickfix.SpringSessionSettings"/>
 
   <bean
    id="goodCustomFactories"
-   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+   class="org.marketcetera.core.quickfix.SpringSessionSettings">
     <property
      name="defaults">
       <map>
@@ -92,7 +92,7 @@
 
   <bean
    id="badCustomLogFactory"
-   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+   class="org.marketcetera.core.quickfix.SpringSessionSettings">
     <property
      name="defaults">
       <map>
@@ -105,7 +105,7 @@
 
   <bean
    id="badCustomStoreFactory"
-   class="org.marketcetera.util.quickfix.SpringSessionSettings">
+   class="org.marketcetera.core.quickfix.SpringSessionSettings">
     <property
      name="defaults">
       <map>

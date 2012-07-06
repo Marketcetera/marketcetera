@@ -7,7 +7,7 @@ import javax.management.DynamicMBean;
 import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.core.util.log.I18NMessage0P;
 
 /* $License$ */
 /**

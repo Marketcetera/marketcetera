@@ -12,7 +12,7 @@ import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.util.concurrent.Lock;

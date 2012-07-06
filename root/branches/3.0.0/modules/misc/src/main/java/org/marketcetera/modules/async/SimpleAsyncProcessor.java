@@ -1,8 +1,8 @@
 package org.marketcetera.modules.async;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.module.*;
 
 import java.util.concurrent.*;

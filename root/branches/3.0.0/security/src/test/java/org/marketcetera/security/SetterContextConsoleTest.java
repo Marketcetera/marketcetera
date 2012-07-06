@@ -3,8 +3,8 @@ package org.marketcetera.security;
 import java.io.Console;
 
 import org.junit.Test;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.except.I18NException;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

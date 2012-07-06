@@ -7,9 +7,9 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.util.file.CloseableRegistry;
-import org.marketcetera.util.log.ActiveLocale;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.file.CloseableRegistry;
+import org.marketcetera.core.util.log.ActiveLocale;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;

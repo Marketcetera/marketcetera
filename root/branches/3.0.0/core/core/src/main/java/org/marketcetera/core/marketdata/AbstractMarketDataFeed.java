@@ -15,11 +15,11 @@ import org.marketcetera.core.event.EventTranslator;
 import org.marketcetera.core.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.core.metrics.ConditionsFactory;
 import org.marketcetera.core.metrics.ThreadedMetric;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage3P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /* $License$ */
 

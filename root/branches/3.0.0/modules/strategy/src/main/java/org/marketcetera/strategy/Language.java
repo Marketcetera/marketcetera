@@ -2,7 +2,7 @@ package org.marketcetera.strategy;
 
 import java.lang.reflect.Constructor;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

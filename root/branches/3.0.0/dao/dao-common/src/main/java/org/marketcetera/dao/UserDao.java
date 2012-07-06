@@ -2,7 +2,7 @@ package org.marketcetera.dao;
 
 import java.util.List;
 
-import org.marketcetera.systemmodel.User;
+import org.marketcetera.core.systemmodel.User;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -8,7 +8,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 /* $License$ */
 /**

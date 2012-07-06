@@ -1,7 +1,7 @@
 package org.marketcetera.security;
 
 import org.junit.Test;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /**
  * @author tlerios@marketcetera.com

@@ -25,11 +25,11 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.core.metrics.ThreadedMetric;
 import org.marketcetera.core.module.*;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage2P;
+import org.marketcetera.core.util.log.I18NBoundMessage3P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 import quickfix.Message;
 

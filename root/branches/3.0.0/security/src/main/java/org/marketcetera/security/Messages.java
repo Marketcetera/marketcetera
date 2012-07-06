@@ -1,6 +1,6 @@
 package org.marketcetera.security;
 
-import org.marketcetera.util.log.*;
+import org.marketcetera.core.util.log.*;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

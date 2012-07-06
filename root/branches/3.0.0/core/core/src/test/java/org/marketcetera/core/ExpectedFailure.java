@@ -6,9 +6,9 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.core.util.except.I18NException;
+import org.marketcetera.core.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NMessage;
 
 /* $License$ */
 /**

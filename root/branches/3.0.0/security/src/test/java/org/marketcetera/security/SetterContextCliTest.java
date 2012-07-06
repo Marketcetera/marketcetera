@@ -4,9 +4,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.core.util.except.I18NException;
+import org.marketcetera.core.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage2P;
 
 import static org.junit.Assert.*;
 

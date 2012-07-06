@@ -10,7 +10,7 @@ import javax.management.JMX;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import static org.junit.Assert.*;
 

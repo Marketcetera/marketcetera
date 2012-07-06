@@ -1,7 +1,7 @@
 package org.marketcetera.security;
 
 import java.util.Arrays;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

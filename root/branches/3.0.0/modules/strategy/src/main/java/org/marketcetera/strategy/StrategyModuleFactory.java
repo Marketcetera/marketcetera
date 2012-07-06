@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.marketcetera.core.module.ModuleCreationException;
 import org.marketcetera.core.module.ModuleFactory;
 import org.marketcetera.core.module.ModuleURN;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

@@ -1,7 +1,7 @@
 package org.marketcetera.core.quickfix;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /**
  * An unsupported QuickFix message was received. 

@@ -62,7 +62,7 @@ public final class DataFlowInfo implements Serializable {
      * if the data flow is currently active
      *
      * @see DataFlowSupport#cancel(DataFlowID)
-     * @see DataEmitterSupport#dataEmitError(org.marketcetera.util.log.I18NBoundMessage, boolean)
+     * @see DataEmitterSupport#dataEmitError(org.marketcetera.core.util.log.I18NBoundMessage, boolean)
      * @see StopDataFlowException
      */
     public ModuleURN getStopperURN() {

@@ -16,7 +16,7 @@ import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.util.MarketstatEventCache;
 import org.marketcetera.strategy.util.OptionContractPair.OptionContractPairKey;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;

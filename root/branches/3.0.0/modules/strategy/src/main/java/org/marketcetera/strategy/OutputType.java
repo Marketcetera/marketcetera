@@ -1,6 +1,6 @@
 package org.marketcetera.strategy;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /**
  * Describes the types of data that a strategy can emit.

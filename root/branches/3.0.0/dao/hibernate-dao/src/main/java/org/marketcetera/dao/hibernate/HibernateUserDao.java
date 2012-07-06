@@ -7,8 +7,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.marketcetera.dao.UserDao;
-import org.marketcetera.dao.impl.PersistentUser;
-import org.marketcetera.systemmodel.User;
+import org.marketcetera.dao.hibernate.impl.PersistentUser;
+import org.marketcetera.core.systemmodel.User;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -107,7 +107,7 @@ public class HibernateUserDao
         return query.list();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.UserDao#delete(org.marketcetera.systemmodel.User)
+     * @see org.marketcetera.dao.UserDao#delete(org.marketcetera.core.systemmodel.User)
      */
     @Override
     @Transactional(readOnly=false)

@@ -17,7 +17,7 @@ import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.module.ConfigurationProviderTest.MockConfigurationProvider;
 import org.marketcetera.core.module.*;
 import org.marketcetera.core.module.Messages;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.CollectionAssert;
 
 import static org.junit.Assert.*;

@@ -4,8 +4,8 @@ import java.net.URI;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.util.log.I18NBoundMessage0P;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage0P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.test.EqualityAssert;
 import org.marketcetera.util.test.UnicodeData;
 

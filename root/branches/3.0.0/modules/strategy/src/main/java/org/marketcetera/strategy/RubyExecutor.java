@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.bsf.BSFException;
 import org.jruby.exceptions.RaiseException;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 

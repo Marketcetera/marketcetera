@@ -8,7 +8,7 @@ import org.marketcetera.core.metrics.ThreadedMetric;
 import org.marketcetera.core.event.TimestampCarrier;
 import org.marketcetera.core.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.attributes.ClassVersion;
 import org.w3c.dom.Node;
 

@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

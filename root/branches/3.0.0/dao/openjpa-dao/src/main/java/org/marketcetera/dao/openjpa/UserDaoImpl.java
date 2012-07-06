@@ -3,7 +3,7 @@ package org.marketcetera.dao.openjpa;
 import java.util.List;
 
 import org.marketcetera.dao.UserDao;
-import org.marketcetera.systemmodel.User;
+import org.marketcetera.core.systemmodel.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,8 +1,8 @@
 package org.marketcetera.security;
 
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.core.util.log.I18NLoggerProxy;
+import org.marketcetera.core.util.log.I18NMessage0P;
+import org.marketcetera.core.util.log.I18NMessageProvider;
 
 /**
  * @author tlerios@marketcetera.com

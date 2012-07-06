@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.systemmodel.SystemObject;
+import org.marketcetera.core.systemmodel.SystemObject;
 import org.springframework.dao.DataIntegrityViolationException;
 
 /* $License$ */

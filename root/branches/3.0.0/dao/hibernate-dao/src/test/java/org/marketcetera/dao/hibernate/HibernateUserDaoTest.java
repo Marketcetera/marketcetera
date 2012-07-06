@@ -9,10 +9,10 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.dao.impl.PersistentUser;
-import org.marketcetera.dao.impl.UserInitializer;
-import org.marketcetera.dao.impl.UserSpecification;
-import org.marketcetera.systemmodel.*;
+import org.marketcetera.dao.hibernate.impl.PersistentUser;
+import org.marketcetera.dao.hibernate.impl.UserInitializer;
+import org.marketcetera.dao.hibernate.impl.UserSpecification;
+import org.marketcetera.core.systemmodel.*;
 import org.marketcetera.util.test.UnicodeData;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -171,7 +171,7 @@ public class HibernateUserDaoTest
         return PersistentUser.class;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.hibernate.PersistentVersionedObjectDaoTestBase#save(org.marketcetera.systemmodel.VersionedObject)
+     * @see org.marketcetera.dao.hibernate.PersistentVersionedObjectDaoTestBase#save(org.marketcetera.core.systemmodel.VersionedObject)
      */
     @Override
     protected void save(User inData)
@@ -179,7 +179,7 @@ public class HibernateUserDaoTest
         getDao().getUserDao().save(inData);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#add(org.marketcetera.systemmodel.SystemObject)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#add(org.marketcetera.core.systemmodel.SystemObject)
      */
     @Override
     protected void add(User inData)

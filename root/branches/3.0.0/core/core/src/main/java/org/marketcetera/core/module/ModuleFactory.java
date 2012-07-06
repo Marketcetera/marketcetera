@@ -4,8 +4,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.ActiveLocale;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.log.ActiveLocale;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /* $License$ */
 /**

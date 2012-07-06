@@ -3,8 +3,8 @@ package org.marketcetera.security;
 import java.io.PrintStream;
 import java.util.LinkedList;
 
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.core.util.except.I18NException;
+import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /**

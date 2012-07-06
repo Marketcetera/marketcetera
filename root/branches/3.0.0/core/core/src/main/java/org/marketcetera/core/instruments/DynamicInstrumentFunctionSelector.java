@@ -1,7 +1,7 @@
 package org.marketcetera.core.instruments;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.apache.commons.lang.Validate;
 
 import java.util.ServiceLoader;

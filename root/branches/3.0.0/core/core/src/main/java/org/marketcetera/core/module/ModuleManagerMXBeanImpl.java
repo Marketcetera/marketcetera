@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.util.except.I18NException;
+import org.marketcetera.core.util.except.I18NException;
 
 /* $License$ */
 /**

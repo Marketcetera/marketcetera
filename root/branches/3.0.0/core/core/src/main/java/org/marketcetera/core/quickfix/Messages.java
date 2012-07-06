@@ -1,10 +1,10 @@
 package org.marketcetera.core.quickfix;
 
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessage2P;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.core.util.log.I18NLoggerProxy;
+import org.marketcetera.core.util.log.I18NMessage0P;
+import org.marketcetera.core.util.log.I18NMessage1P;
+import org.marketcetera.core.util.log.I18NMessage2P;
+import org.marketcetera.core.util.log.I18NMessageProvider;
 import org.marketcetera.core.attributes.ClassVersion;
 
 /* $License$ */

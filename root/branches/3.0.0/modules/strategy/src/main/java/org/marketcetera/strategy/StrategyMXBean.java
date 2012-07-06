@@ -6,7 +6,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.core.module.DataReceiver;
 import org.marketcetera.core.module.DisplayName;
 import org.marketcetera.core.module.ModuleURN;
-import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.util.misc.ClassVersion;
 
 /* $License$ */
 /*

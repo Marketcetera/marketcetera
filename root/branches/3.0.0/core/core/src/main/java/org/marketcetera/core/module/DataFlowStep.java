@@ -105,7 +105,7 @@ public final class DataFlowStep implements Serializable {
      * @return the number of data emit errors encountered when emitting
      * data. zero, if no errors have been encountered so far.
      * 
-     * @see DataEmitterSupport#dataEmitError(org.marketcetera.util.log.I18NBoundMessage, boolean) 
+     * @see DataEmitterSupport#dataEmitError(org.marketcetera.core.util.log.I18NBoundMessage, boolean)
      */
     public long getNumEmitErrors() {
         return mNumEmitErrors;

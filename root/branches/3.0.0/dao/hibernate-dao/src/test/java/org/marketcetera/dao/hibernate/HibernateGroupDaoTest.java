@@ -6,10 +6,10 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.dao.GroupDao;
-import org.marketcetera.dao.impl.GroupInitializer;
-import org.marketcetera.dao.impl.PersistentGroup;
-import org.marketcetera.systemmodel.Group;
-import org.marketcetera.systemmodel.SystemGroup;
+import org.marketcetera.dao.hibernate.impl.GroupInitializer;
+import org.marketcetera.dao.hibernate.impl.PersistentGroup;
+import org.marketcetera.core.systemmodel.Group;
+import org.marketcetera.core.systemmodel.SystemGroup;
 import org.springframework.dao.DataIntegrityViolationException;
 
 /* $License$ */
@@ -92,7 +92,7 @@ public class HibernateGroupDaoTest
         return PersistentGroup.class;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#add(org.marketcetera.systemmodel.SystemObject)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#add(org.marketcetera.core.systemmodel.SystemObject)
      */
     @Override
     protected void add(Group inData)
@@ -108,7 +108,7 @@ public class HibernateGroupDaoTest
         return getDao().getGroupDao().getById(inId);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.dao.hibernate.PersistentVersionedObjectDaoTestBase#save(org.marketcetera.systemmodel.VersionedObject)
+     * @see org.marketcetera.dao.hibernate.PersistentVersionedObjectDaoTestBase#save(org.marketcetera.core.systemmodel.VersionedObject)
      */
     @Override
     protected void save(Group inData)
