@@ -324,6 +324,7 @@ public class ReconnectServerJob extends UIJob {
                 if (status) {
                     ServerStatusIndicator.setConnected();
                     text = Messages.SERVER_NOTIFICATION_SERVER_ALIVE.getText();
+                    new RetrieveTradingHistoryJob().schedule();
                 } else {
                     ServerStatusIndicator.setDisconnected();
                     text = Messages.SERVER_NOTIFICATION_SERVER_DEAD.getText();
