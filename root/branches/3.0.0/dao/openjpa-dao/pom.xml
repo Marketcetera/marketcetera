@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.marketcetera</groupId>
+        <groupId>org.marketcetera.dao</groupId>
         <artifactId>dao-parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.marketcetera</groupId>
+    <groupId>org.marketcetera.dao</groupId>
     <artifactId>openjpa-dao</artifactId>
     <version>3.0.0-SNAPSHOT</version>
 
@@ -19,7 +19,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.marketcetera</groupId>
+            <groupId>org.marketcetera.dao</groupId>
             <artifactId>dao-common</artifactId>
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
@@ -33,25 +33,13 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.marketcetera.*</Export-Package>
+                        <Export-Package>org.marketcetera.dao.openjpa</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.karaf.tooling</groupId>
-                <artifactId>karaf-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-features-file</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>features-generate-descriptor</goal>
-                        </goals>
-                        <configuration>
-                            <includeTransitiveDependency>false</includeTransitiveDependency>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

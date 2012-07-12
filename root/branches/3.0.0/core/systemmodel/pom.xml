@@ -41,7 +41,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.marketcetera.*</Export-Package>
+                        <Export-Package>org.marketcetera.core.systemmodel</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
