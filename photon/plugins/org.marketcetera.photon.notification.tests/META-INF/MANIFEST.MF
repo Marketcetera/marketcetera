@@ -4,7 +4,7 @@ Bundle-Name: Photon Notification Test Fragment
 Bundle-SymbolicName: org.marketcetera.photon.notification.tests;singleton:=true
 Bundle-Version: 2.2.0.SNAPSHOT
 Bundle-Vendor: Marketcetera, Inc.
-Fragment-Host: org.marketcetera.photon.notification;bundle-version="2.2.0-SNAPSHOT"
+Fragment-Host: org.marketcetera.photon.notification
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.photon.test,
  org.eclipse.swtbot.swt.finder

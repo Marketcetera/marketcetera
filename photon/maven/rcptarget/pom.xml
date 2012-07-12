@@ -25,6 +25,10 @@
 
   <name>Photon RCP Target</name>
 
+  <properties>
+    <mvn.photon.target>photon-target</mvn.photon.target>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
