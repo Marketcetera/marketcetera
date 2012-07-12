@@ -53,6 +53,7 @@
         <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
         <mvn.xjc.version>2.1.7</mvn.xjc.version>
         <mvn.eclipse.version>3.5</mvn.eclipse.version>
+	<mvn.perl.path>/usr/bin/perl</mvn.perl.path>
     </properties>
 
     <dependencyManagement>
