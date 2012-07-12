@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.marketcetera</groupId>
+        <groupId>org.marketcetera.dao</groupId>
         <artifactId>dao-parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.marketcetera</groupId>
+    <groupId>org.marketcetera.dao</groupId>
     <artifactId>hibernate-dao</artifactId>
     <version>3.0.0-SNAPSHOT</version>
 
@@ -25,7 +25,7 @@
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
         <dependency>
-            <groupId>org.marketcetera</groupId>
+            <groupId>org.marketcetera.dao</groupId>
             <artifactId>dao-common</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
