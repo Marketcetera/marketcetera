@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Master Test Suite
+Bundle-SymbolicName: org.marketcetera.photon.testsuite
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.junit,
+ org.junit.runner,
+ org.junit.runners
+Require-Bundle: org.marketcetera.photon.commons,
+ org.marketcetera.photon.commons.ui,
+ org.marketcetera.photon.commons.ui.workbench,
+ org.marketcetera.photon.core,
+ org.marketcetera.photon.module,
+ org.marketcetera.photon.module.ui,
+ org.marketcetera.photon.marketdata,
+ org.marketcetera.photon.marketdata.ui,
+ org.marketcetera.photon.notification,
+ org.marketcetera.photon.strategy,
+ org.marketcetera.photon,
+ org.marketcetera.photon.strategy.engine.ui,
+ org.marketcetera.photon.strategy.engine.ui.workbench,
+ org.marketcetera.photon.strategy.engine.ui.workbench.ws,
+ org.marketcetera.photon.strategy.engine.embedded,
+ org.marketcetera.photon.strategy.engine.sa,
+ org.marketcetera.photon.strategy.engine.sa.ui,
+ org.marketcetera.photon.strategy.engine.sa.ui.workbench,
+ org.marketcetera.photon.positions.ui
+Bundle-Vendor: Marketcetera, Inc.

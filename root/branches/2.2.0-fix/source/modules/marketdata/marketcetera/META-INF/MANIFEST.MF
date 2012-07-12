@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.modules.mdata.marketcetera;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Marketcetera Marketdata Module
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.core,
+ org.marketcetera.core.tests;resolution:=optional,
+ org.junit4;resolution:=optional
+Eclipse-RegisterBuddy: org.marketcetera.core

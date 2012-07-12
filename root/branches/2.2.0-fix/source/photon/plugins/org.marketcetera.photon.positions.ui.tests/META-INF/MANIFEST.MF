@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Position UI Tests
+Bundle-SymbolicName: org.marketcetera.photon.positions.ui.tests
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Fragment-Host: org.marketcetera.photon.positions.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.stubbing
+Require-Bundle: org.marketcetera.photon.test,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.swtbot.swt.finder,
+ org.marketcetera.core.tests
+Export-Package: org.marketcetera.photon.positions.ui.tests

@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.modules.remote.receiver;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Remote Receiver Module
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.core,
+ org.marketcetera.client,
+ org.marketcetera.core.tests;resolution:=optional,
+ org.junit4;resolution:=optional
+Export-Package: org.marketcetera.modules.remote.receiver

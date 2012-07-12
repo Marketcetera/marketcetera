@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.saclient;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Marketcetera SA Client Library
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.core,
+ org.marketcetera.modules.remote.emitter,
+ org.marketcetera.core.tests;resolution:=optional,
+ org.marketcetera.client;resolution:=optional,
+ org.marketcetera.modules.remote.receiver;resolution:=optional
+Export-Package: org.marketcetera.saclient
+Import-Package: org.hamcrest;resolution:=optional,
+ org.junit;resolution:=optional

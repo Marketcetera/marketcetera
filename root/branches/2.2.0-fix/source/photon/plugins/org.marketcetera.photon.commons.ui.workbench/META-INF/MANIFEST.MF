@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: RCP Workbench Utilities
+Bundle-SymbolicName: org.marketcetera.photon.commons.ui.workbench;singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.marketcetera.photon.commons,
+ org.marketcetera.photon.commons.ui,
+ org.marketcetera.util
+Eclipse-ExtensibleAPI: true
+Export-Package: org.marketcetera.photon.commons.ui.workbench
+Import-Package: org.ops4j.peaberry.eclipse

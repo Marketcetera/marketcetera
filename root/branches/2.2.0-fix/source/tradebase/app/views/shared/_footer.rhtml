@@ -1,0 +1,23 @@
+<% if RAILS_ENV == 'development' %>
+<center>
+  <button onclick="show_debug_popup(); return false;">
+    Show debug popup
+  </button>
+</center>
+<%= debug_popup %>
+<% end %>
+<p/>
+
+<!-- end the right-column div -->
+        </div>
+        <div class="clear"></div>
+      </div>
+<!-- END BODY -->
+
+<!-- BEGIN FOOTER --><div id="footer">
+Copyright &copy; 2006-2012 (<a href="http://www.marketcetera.com">Marketcetera Inc</a>). v.<%= RELEASE_VERSION %>
+</div>
+
+</div>
+</body>
+</html>

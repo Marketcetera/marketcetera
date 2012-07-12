@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Photon Test Fragment Fragment
+Bundle-SymbolicName: org.marketcetera.photon.testfragment; singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Fragment-Host: org.marketcetera.photon
+Require-Bundle: org.marketcetera.core.tests,
+ org.marketcetera.photon.test,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.swtbot.swt.finder
+Import-Package: junit.framework,
+ org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runner.notification,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.invocation,
+ org.mockito.stubbing
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.marketcetera.photon.tests

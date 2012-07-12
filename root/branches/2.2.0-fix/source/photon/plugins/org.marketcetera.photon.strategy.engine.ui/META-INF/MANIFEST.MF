@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundleName
+Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.ui; singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: %bundleVendor
+Require-Bundle: org.eclipse.core.runtime,
+ com.google.inject,
+ org.marketcetera.photon.strategy.engine,
+ org.marketcetera.util,
+ org.eclipse.core.databinding,
+ org.eclipse.core.databinding.property,
+ org.eclipse.jface.databinding,
+ org.eclipse.swt,
+ org.eclipse.jface,
+ org.eclipse.emf.databinding,
+ org.marketcetera.photon.commons.ui,
+ org.marketcetera.photon.commons
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: org.marketcetera.photon.strategy.engine.ui
+Eclipse-ExtensibleAPI: true
