@@ -30,4 +30,4 @@ Import-Package: junit.framework;resolution:=optional,
  org.hamcrest;resolution:=optional,
  org.junit;resolution:=optional,
  org.mockito;resolution:=optional
-Bundle-ClassPath: core-2.2.0-SNAPSHOT-tests.jar
+Bundle-ClassPath: core-2.2.0-tests.jar
