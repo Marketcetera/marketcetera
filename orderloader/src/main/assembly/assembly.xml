@@ -23,27 +23,23 @@
   </fileSets>
   <files>
     <file>
-      <!--
-        - Assembly 2.1 interprets default mode of 0644 as *decimal*;
-        - as a workaround, use 420 decimal which results in 0644 octal.
-        -->
-      <fileMode>420</fileMode>
+      <fileMode>0644</fileMode>
       <source>src/test/sample_data/inputs/smallMarketFIX.csv</source>
       <outputDirectory>samples</outputDirectory>
     </file>
     <file>
-      <fileMode>420</fileMode>
+      <fileMode>0644</fileMode>
       <source>src/test/sample_data/inputs/smallMarketSys.csv</source>
       <outputDirectory>samples</outputDirectory>
     </file>
     <file>
-      <fileMode>420</fileMode>
+      <fileMode>0644</fileMode>
       <source>src/test/sample_data/inputs/reasonableOrdersFIX.csv</source>
       <outputDirectory>samples</outputDirectory>
       <destName>largeMarketFIX.csv</destName>
     </file>
     <file>
-      <fileMode>420</fileMode>
+      <fileMode>0644</fileMode>
       <source>src/test/sample_data/inputs/reasonableOrdersSys.csv</source>
       <outputDirectory>samples</outputDirectory>
       <destName>largeMarketSys.csv</destName>
