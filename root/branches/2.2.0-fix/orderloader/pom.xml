@@ -137,26 +137,39 @@
       <id>assembly</id>
       <build>
         <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <descriptors>
-                <descriptor>assembly.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </plugin>
-          <plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <formats><format>dir</format></formats>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <executable>${mvn.perl.path}</executable>
-              <arguments>
-                <argument>../../tools/scripts/createScript.pl</argument>
-                <argument>${project.build.directory}/${project.artifactId}</argument>
-                <argument>orderloader</argument>
-                <argument>org.marketcetera.orderloader.Main</argument>
-              </arguments>
-            </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>exec</goal></goals>
+                        <configuration>
+                            <executable>${mvn.perl.path}</executable>
+                            <arguments>
+                                <argument>../../tools/scripts/createScript.pl</argument>
+                                <argument>${project.build.directory}/${project.artifactId}</argument>
+                                <argument>orderloader</argument>
+                                <argument>org.marketcetera.orderloader.Main</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
           </plugin>
         </plugins>
       </build>

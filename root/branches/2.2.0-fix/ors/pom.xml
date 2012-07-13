@@ -322,7 +322,7 @@
                       <configuration>
                           <formats><format>dir</format></formats>
                           <descriptors>
-                              <descriptor>${project.basedir}/src/main/assembly/assembly.xml</descriptor>
+                              <descriptor>src/main/assembly/assembly.xml</descriptor>
                           </descriptors>
                       </configuration>
                   </execution>
