@@ -336,7 +336,7 @@
                       <phase>package</phase>
                       <goals><goal>exec</goal></goals>
                       <configuration>
-                          <executable>/usr/bin/perl</executable>
+                          <executable>${mvn.perl.path}</executable>
                           <arguments>
                               <argument>../tools/scripts/createScript.pl</argument>
                               <argument>${project.build.directory}/${project.artifactId}</argument>
