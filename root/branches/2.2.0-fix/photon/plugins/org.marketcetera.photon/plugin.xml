@@ -156,7 +156,7 @@
       <product
             application="org.marketcetera.photon.product.application"
             description="Marketcetera Photon 2.2.0 (Plugin)"
-            name="Photon 2.2.0.SNAPSHOT">
+            name="Photon 2.2.0">
          <property
                name="preferenceCustomization"
                value="plugin_customization.ini"/>
@@ -174,7 +174,7 @@
                value="225,75,170,20"/>
          <property
                name="appName"
-               value="Photon 2.2.0.SNAPSHOT">
+               value="Photon 2.2.0">
          </property>
          <property
                name="aboutImage"
