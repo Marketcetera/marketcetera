@@ -17,7 +17,7 @@
 
   <parent>
       <groupId>org.marketcetera</groupId>
-      <artifactId>public</artifactId>
+      <artifactId>public-parent</artifactId>
       <version>2.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>ors</artifactId>
@@ -91,7 +91,7 @@
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
-    </dependency> 
+    </dependency>
   </dependencies>
 
   <build>
@@ -111,7 +111,6 @@
         <filtering>true</filtering>
       </resource>
     </resources>
-    
     <plugins>
 
       <!-- Database schema generator. -->
@@ -198,16 +197,21 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
-              <systemProperties>
-                <systemProperty>
-                  <key>org.marketcetera.appDir</key>
-                  <value>src/test/cmd_exec</value>
-                </systemProperty>
-              </systemProperties>
-              <classpathScope>test</classpathScope>
-            </configuration>
+              <executions>
+                  <execution>
+                      <goals><goal>java</goal></goals>
+                      <configuration>
+                          <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
+                          <systemProperties>
+                              <systemProperty>
+                                  <key>org.marketcetera.appDir</key>
+                                  <value>src/test/cmd_exec</value>
+                              </systemProperty>
+                          </systemProperties>
+                          <classpathScope>test</classpathScope>
+                      </configuration>
+                  </execution>
+              </executions>
           </plugin>
         </plugins>
       </build>
@@ -221,19 +225,24 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <mainClass>org.marketcetera.ors.DBInit</mainClass>
-              <arguments>
-                <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
-              </arguments>
-              <systemProperties>
-                <systemProperty>
-                  <key>org.marketcetera.appDir</key>
-                  <value>src/test/cmd_exec</value>
-                </systemProperty>
-              </systemProperties>
-              <classpathScope>test</classpathScope>
-            </configuration>
+              <executions>
+                  <execution>
+                      <goals><goal>java</goal></goals>
+                      <configuration>
+                          <mainClass>org.marketcetera.ors.DBInit</mainClass>
+                          <arguments>
+                              <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
+                          </arguments>
+                          <systemProperties>
+                              <systemProperty>
+                                  <key>org.marketcetera.appDir</key>
+                                  <value>src/test/cmd_exec</value>
+                              </systemProperty>
+                          </systemProperties>
+                          <classpathScope>test</classpathScope>
+                      </configuration>
+                  </execution>
+              </executions>
           </plugin>
         </plugins>
       </build>
@@ -247,19 +256,24 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <mainClass>org.marketcetera.ors.exchange.Main</mainClass>
-              <arguments>
-                <argument>exchange.xml</argument>
-              </arguments>
-              <systemProperties>
-                <systemProperty>
-                  <key>org.marketcetera.appDir</key>
-                  <value>src/test/cmd_exec</value>
-                </systemProperty>
-              </systemProperties>
-              <classpathScope>test</classpathScope>
-            </configuration>
+              <executions>
+                  <execution>
+                      <goals><goal>java</goal></goals>
+                      <configuration>
+                          <mainClass>org.marketcetera.ors.exchange.Main</mainClass>
+                          <arguments>
+                              <argument>exchange.xml</argument>
+                          </arguments>
+                          <systemProperties>
+                              <systemProperty>
+                                  <key>org.marketcetera.appDir</key>
+                                  <value>src/test/cmd_exec</value>
+                              </systemProperty>
+                          </systemProperties>
+                          <classpathScope>test</classpathScope>
+                      </configuration>
+                  </execution>
+              </executions>
           </plugin>
         </plugins>
       </build>
@@ -273,17 +287,22 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <mainClass>org.marketcetera.ors.security.ORSAdminCLI</mainClass>
-              <!-- -Dexec.args="-u admin ..." -->
-              <systemProperties>
-                <systemProperty>
-                  <key>org.marketcetera.appDir</key>
-                  <value>src/test/cmd_exec</value>
-                </systemProperty>
-              </systemProperties>
-              <classpathScope>test</classpathScope>
-            </configuration>
+              <executions>
+                  <execution>
+                      <goals><goal>java</goal></goals>
+                      <configuration>
+                          <mainClass>org.marketcetera.ors.security.ORSAdminCLI</mainClass>
+                          <!-- -Dexec.args="-u admin ..." -->
+                          <systemProperties>
+                              <systemProperty>
+                                  <key>org.marketcetera.appDir</key>
+                                  <value>src/test/cmd_exec</value>
+                              </systemProperty>
+                          </systemProperties>
+                          <classpathScope>test</classpathScope>
+                      </configuration>
+                  </execution>
+              </executions>
           </plugin>
         </plugins>
       </build>
@@ -296,27 +315,40 @@
         <plugins>
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <descriptors>
-                <descriptor>assembly.xml</descriptor>
-              </descriptors>
-            </configuration>
+              <executions>
+                  <execution>
+                      <phase>package</phase>
+                      <goals><goal>single</goal></goals>
+                      <configuration>
+                          <formats><format>dir</format></formats>
+                          <descriptors>
+                              <descriptor>${project.basedir}/src/main/assembly/assembly.xml</descriptor>
+                          </descriptors>
+                      </configuration>
+                  </execution>
+              </executions>
           </plugin>
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <executable>${mvn.perl.path}</executable>
-              <arguments>
-                <argument>../tools/scripts/createScript.pl</argument>
-                <argument>${project.build.directory}/${project.artifactId}</argument>
-                <argument>ors</argument>
-                <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
-                <argument>${project.build.directory}/${project.artifactId}</argument>
-                <argument>orsadmin</argument>
-                <argument>org.marketcetera.ors.security.ORSAdminCLI</argument>
-              </arguments>
-            </configuration>
+              <executions>
+                  <execution>
+                      <phase>package</phase>
+                      <goals><goal>exec</goal></goals>
+                      <configuration>
+                          <executable>/usr/bin/perl</executable>
+                          <arguments>
+                              <argument>../tools/scripts/createScript.pl</argument>
+                              <argument>${project.build.directory}/${project.artifactId}</argument>
+                              <argument>ors</argument>
+                              <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
+                              <argument>${project.build.directory}/${project.artifactId}</argument>
+                              <argument>orsadmin</argument>
+                              <argument>org.marketcetera.ors.security.ORSAdminCLI</argument>
+                          </arguments>
+                      </configuration>
+                  </execution>
+              </executions>
           </plugin>
         </plugins>
       </build>
