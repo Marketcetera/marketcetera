@@ -771,15 +771,14 @@
                 </configuration>
             </plugin>
             <!-- Add customizations to javadoc. -->
-            <!-- todo BT 20120712 need to reconcile these with other projects, probably through shared properties -->
-            <!--<plugin>-->
-            <!--<artifactId>maven-javadoc-plugin</artifactId>-->
-            <!--<configuration>-->
-            <!--<doctitle>Marketcetera Platform ${project.version} API</doctitle>-->
-            <!--<windowtitle>Marketcetera Platform ${project.version} API</windowtitle>-->
-            <!--<overview>tools/javadoc/overview.html</overview>-->
-            <!--</configuration>-->
-            <!--</plugin>-->
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <doctitle>Marketcetera Platform ${project.version} API</doctitle>
+                    <windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
+                    <overview>tools/javadoc/overview.html</overview>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
