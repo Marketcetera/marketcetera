@@ -25,10 +25,6 @@
 
   <name>Photon RCP Target</name>
 
-  <properties>
-    <mvn.photon.target>photon-target</mvn.photon.target>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -204,7 +200,7 @@
                         plugins/org.eclipse.mylyn.commons.net.source_*,
                         plugins/org.eclipse.mylyn.commons.ui.source_*
                       </includes>
-                      <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                      <outputDirectory>${photon.target}/eclipse</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.eclipse</groupId>
@@ -261,7 +257,7 @@
                       <artifactId>junit4</artifactId>
                       <version>4.5.0.20090526</version>
                       <type>zip</type>
-                      <outputDirectory>${mvn.photon.target}/eclipse/plugins</outputDirectory>
+                      <outputDirectory>${photon.target}/eclipse/plugins</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.rubypeople</groupId>
@@ -278,7 +274,7 @@
                         plugins/org.epic.regexp_*,
                         plugins/com.aptana.rdt_*
                       </includes>
-                      <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                      <outputDirectory>${photon.target}/eclipse</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <groupId>com.swtworkbench.community</groupId>
@@ -288,24 +284,24 @@
                       <includes>
                         plugins/org.kxml_*/**
                       </includes>
-                      <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                      <outputDirectory>${photon.target}/eclipse</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.marketcetera</groupId>
                       <artifactId>photon-bundle</artifactId>
                       <version>${project.version}</version>
                       <type>jar</type>
-                      <outputDirectory>${mvn.photon.target}/eclipse/plugins/org.marketcetera.thirdparty_${project.version}</outputDirectory>
+                      <outputDirectory>${photon.target}/eclipse/plugins/org.marketcetera.thirdparty_${project.version}</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.marketcetera</groupId>
                       <artifactId>photon-test-bundle</artifactId>
                       <version>${project.version}</version>
                       <type>jar</type>
-                      <outputDirectory>${mvn.photon.target}/eclipse/plugins/org.marketcetera.thirdparty.test_${project.version}</outputDirectory>
+                      <outputDirectory>${photon.target}/eclipse/plugins/org.marketcetera.thirdparty.test_${project.version}</outputDirectory>
                     </artifactItem>
                   </artifactItems>
-                  <outputDirectory>${mvn.photon.target}</outputDirectory>
+                  <outputDirectory>${photon.target}</outputDirectory>
                 </configuration>
               </execution>
               <execution>
@@ -315,7 +311,7 @@
                   <goal>copy-dependencies</goal>
                 </goals>
                 <configuration>
-                  <outputDirectory>${mvn.photon.target}/eclipse/plugins</outputDirectory>
+                  <outputDirectory>${photon.target}/eclipse/plugins</outputDirectory>
                   <!-- Don't copy in marketcetera dependencies, they have their own projects. -->
                   <excludeGroupIds>org.marketcetera</excludeGroupIds>
                   <!-- Don't copy transitive dependencies, they may not be plugins and will be handled by photon-bundle. -->
@@ -329,7 +325,7 @@
             <configuration>
               <filesets>
                 <fileset>
-                  <directory>${mvn.photon.target}</directory>
+                  <directory>${photon.target}</directory>
                 </fileset>
               </filesets>
             </configuration>
