@@ -53,6 +53,8 @@
         <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
         <mvn.xjc.version>2.1.7</mvn.xjc.version>
         <mvn.eclipse.version>3.5</mvn.eclipse.version>
+        <!-- Build Number. -->
+        <mvn.build.number>Development Build</mvn.build.number>
     </properties>
 
     <dependencyManagement>
