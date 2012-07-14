@@ -16,7 +16,7 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <aries.blueprint.version>0.3</aries.blueprint.version>
+        <aries.blueprint.version>1.0.0-SNAPSHOT</aries.blueprint.version>
         <postgresql.version>8.4-701.jdbc4</postgresql.version>
         <xapool.version>1.5.0</xapool.version>
     </properties>
@@ -69,10 +69,15 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Import-Package>org.postgresql,javax.sql,org.enhydra.jdbc.standard,org.enhydra.jdbc.pool</Import-Package>
-                        <DynamicImport-Package>org.osgi.service.blueprint,*</DynamicImport-Package>
+                        <Import-Package>org.postgresql,javax.sql,org.enhydra.jdbc.standard,org.enhydra.jdbc.pool,*</Import-Package>
+                        <Fragment-Host>wrap_mvn_com.experlog_xapool_1.5.0</Fragment-Host>
+                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

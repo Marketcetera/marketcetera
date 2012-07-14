@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+           xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+
+    <service ref="authorityDao" interface="org.marketcetera.dao.AuthorityDao"></service>
+    <bean id="authorityDao" class="org.marketcetera.dao.openjpa.AuthorityDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="startupBean" class="org.marketcetera.dao.openjpa.StartupBean" init-method="activate">
+        <property name="authorityDao" ref="authorityDao"/>
+    </bean>
+
+</blueprint>

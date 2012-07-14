@@ -51,5 +51,4 @@ public class AuthorityDaoImpl implements AuthorityDao {
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
-
 }

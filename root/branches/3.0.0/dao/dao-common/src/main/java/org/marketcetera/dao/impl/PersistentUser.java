@@ -113,6 +113,11 @@ public class PersistentUser
     {
         return enabled;
     }
+
+    public void setAccountNonExpired(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#isAccountNonLocked()
      */
@@ -124,12 +129,12 @@ public class PersistentUser
     /**
      * Sets the locked value.
      *
-     * @param inLocked a <code>boolean</code> value
+     * @param accountNonLocked a <code>boolean</code> value
      */
     @Column(nullable=false)
-    public void setLocked(boolean inLocked)
+    public void setAccountNonLocked(boolean accountNonLocked)
     {
-        locked = inLocked;
+        locked = !accountNonLocked;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#isCredentialsNonExpired()
@@ -142,12 +147,12 @@ public class PersistentUser
     /**
      * Sets the credentialsExpired value.
      *
-     * @param inCredentialsExpired a <code>boolean</code> value
+     * @param credentialsNonExpired a <code>boolean</code> value
      */
     @Column(nullable=false)
-    public void setCredentialsExpired(boolean inCredentialsExpired)
+    public void setCredentialsNonExpired(boolean credentialsNonExpired)
     {
-        credentialsExpired = inCredentialsExpired;
+        credentialsExpired = !credentialsNonExpired;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#isEnabled()
@@ -234,7 +239,6 @@ public class PersistentUser
     /**
      * authorities for this user
      */
-    @Transient
     @GuardedBy("authorities")
     private final Set<Authority> authorities = new HashSet<Authority>();
     private static final long serialVersionUID = 1L;

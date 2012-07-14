@@ -1,54 +1,54 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
 
-  <cm:property-placeholder persistent-id="net.mauswerks.component.persistence.datasource" id="mauswerks">
-    <cm:default-properties>
+    <cm:property-placeholder persistent-id="org.marketcetera.dao.datasource" id="marketcetera">
+        <cm:default-properties>
 
-      <!-- JDBC Drivers -->
-      <cm:property name="jdbc.driverClassName" value="org.postgresql.Driver"/>
-      <cm:property name="jdbc.url" value="jdbc:postgresql:component"/>
-      <cm:property name="jdbc.username" value="metc"/>
-      <cm:property name="jdbc.password" value="pw4metc"/>
+            <!-- JDBC Drivers -->
+            <cm:property name="jdbc.driverClassName" value="org.postgresql.Driver"/>
+            <cm:property name="jdbc.url" value="jdbc:postgresql:metc"/>
+            <cm:property name="jdbc.username" value="metc"/>
+            <cm:property name="jdbc.password" value="pw4metc"/>
 
-      <!-- Connection Pooling DBCP -->
-      <cm:property name="jdbc.initialSize" value="5"/>
-      <cm:property name="jdbc.maxActive" value="10"/>
-      <cm:property name="jdbc.maxIdle" value="10"/>
-      <cm:property name="jdbc.defaultAutoCommit" value="false"/>
-      <cm:property name="jdbc.removeAbandoned" value="false"/>
-      <cm:property name="jdbc.removeAbandonedTimeout" value="300"/>
-      <cm:property name="jdbc.logAbandoned" value="false"/>
+            <!-- Connection Pooling DBCP -->
+            <cm:property name="jdbc.initialSize" value="5"/>
+            <cm:property name="jdbc.maxActive" value="10"/>
+            <cm:property name="jdbc.maxIdle" value="10"/>
+            <cm:property name="jdbc.defaultAutoCommit" value="false"/>
+            <cm:property name="jdbc.removeAbandoned" value="false"/>
+            <cm:property name="jdbc.removeAbandonedTimeout" value="300"/>
+            <cm:property name="jdbc.logAbandoned" value="false"/>
 
-    </cm:default-properties>
-  </cm:property-placeholder>
+        </cm:default-properties>
+    </cm:property-placeholder>
 
-  <service interface="javax.sql.DataSource" ref="jta">
-    <service-properties>
-      <entry key="transactional" value="true"/>
-    </service-properties>
-  </service>
-
-  <!--<service interface="javax.sql.DataSource" ref="nonJTA">-->
     <service interface="javax.sql.DataSource" ref="jta">
-      <service-properties>
-        <entry key="transactional" value="true"/>
-      </service-properties>
+        <service-properties>
+            <entry key="transactional" value="true"/>
+        </service-properties>
     </service>
+
+    <!--<service interface="javax.sql.DataSource" ref="nonJTA">-->
+    <!--<service interface="javax.sql.DataSource" ref="jta">-->
+        <!--<service-properties>-->
+            <!--<entry key="transactional" value="true"/>-->
+        <!--</service-properties>-->
+    <!--</service>-->
 
     <reference id="txManager" interface="javax.transaction.TransactionManager" availability="mandatory"/>
 
     <bean id="dataSource" class="org.enhydra.jdbc.standard.StandardXADataSource">
-      <property name="driverName" value="org.postgresql.Driver"/>
-      <property name="url" value="jdbc:postgresql:component"/>
-      <property name="user" value="mw"/>
-      <property name="password" value="1pw4mw"/>
+        <property name="driverName" value="org.postgresql.Driver"/>
+        <property name="url" value="jdbc:postgresql:metc"/>
+        <property name="user" value="metc"/>
+        <property name="password" value="pw4metc"/>
     </bean>
 
     <bean id="jta" class="org.enhydra.jdbc.pool.StandardXAPoolDataSource">
-      <property name="dataSource" ref="dataSource"/>
-      <property name="transactionManager" ref="txManager"/>
-      <property name="user" value="mw"/>
-      <property name="password" value="1pw4mw"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="transactionManager" ref="txManager"/>
+        <property name="user" value="metc"/>
+        <property name="password" value="pw4metc"/>
     </bean>
 
 </blueprint>
