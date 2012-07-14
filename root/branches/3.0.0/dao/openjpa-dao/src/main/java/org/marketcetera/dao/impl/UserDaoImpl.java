@@ -1,4 +1,4 @@
-package org.marketcetera.dao.openjpa;
+package org.marketcetera.dao.impl;
 
 import java.util.List;
 
@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.marketcetera.dao.UserDao;
 import org.marketcetera.core.systemmodel.User;
-import org.marketcetera.dao.impl.PersistentUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;

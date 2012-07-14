@@ -1,4 +1,4 @@
-package org.marketcetera.dao.openjpa;
+package org.marketcetera.dao.impl;
 
 import java.util.List;
 
@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.dao.AuthorityDao;
-import org.marketcetera.dao.impl.PersistentAuthority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,8 +20,8 @@
     <dependencies>
         <!-- compile: local -->
         <dependency>
-            <groupId>org.marketcetera</groupId>
-            <artifactId>hibernate-dao</artifactId>
+            <groupId>org.marketcetera.dao</groupId>
+            <artifactId>openjpa-dao</artifactId>
             <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
         <dependency>

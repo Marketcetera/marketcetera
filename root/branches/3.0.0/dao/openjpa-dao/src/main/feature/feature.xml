@@ -10,6 +10,9 @@
         <bundle>mvn:org.marketcetera.core/systemmodel/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.core/util/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.fork/commons-i18n/3.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.apache.openjpa/openjpa/2.2.0</bundle>
+        <bundle>mvn:commons-dbcp/commons-dbcp/1.4</bundle>
+        <bundle>mvn:commons-pool/commons-pool/1.6</bundle>
         <bundle>wrap:mvn:com.google.code.findbugs/jsr305/2.0.0</bundle>
         <bundle>wrap:mvn:aopalliance/aopalliance/1.0</bundle>
         <bundle>wrap:mvn:org.springframework.security/spring-security-crypto/3.1.0.RELEASE</bundle>

@@ -22,11 +22,23 @@
     </properties>
 
     <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>org.marketcetera.dao</groupId>-->
+            <!--<artifactId>dao-common</artifactId>-->
+            <!--<version>3.0.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>org.marketcetera.dao</groupId>
-            <artifactId>dao-common</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>systemmodel</artifactId>
+            <version>[3.0.0-SNAPSHOT]</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <version>1.1</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
@@ -57,38 +69,38 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>openjpa-maven-plugin</artifactId>-->
-                <!--<version>1.2</version>-->
-                <!--<configuration>-->
-                    <!--<includes>net/mauswerks/component/domain/**/*.class</includes>-->
-                    <!--<addDefaultConstructor>true</addDefaultConstructor>-->
-                    <!--<enforcePropertyRestrictions>true</enforcePropertyRestrictions>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>enhancer</id>-->
-                        <!--<phase>process-classes</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>enhance</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>openjpa-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <includes>net/mauswerks/component/domain/**/*.class</includes>
+                    <addDefaultConstructor>true</addDefaultConstructor>
+                    <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>enhancer</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
 
-                <!--<dependencies>-->
-                    <!--<dependency>-->
-                        <!--<groupId>org.apache.openjpa</groupId>-->
-                        <!--<artifactId>openjpa</artifactId>-->
-                        <!--<version>${openjpa.version}</version>-->
-                    <!--</dependency>-->
-                    <!--<dependency>-->
-                        <!--<groupId>org.slf4j</groupId>-->
-                        <!--<artifactId>slf4j-simple</artifactId>-->
-                        <!--<version>${slf4j.version}</version>-->
-                    <!--</dependency>-->
-                <!--</dependencies>-->
-            <!--</plugin>-->
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.openjpa</groupId>
+                        <artifactId>openjpa</artifactId>
+                        <version>${openjpa.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                        <version>${slf4j.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
