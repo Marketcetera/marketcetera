@@ -53,7 +53,8 @@ public class PersistentGroup
      * @see org.marketcetera.core.systemmodel.Group#getUsers()
      */
     @Override
-    public Collection<User> getUsers()
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
+    public Set<User> getUsers()
     {
         return users;
     }
@@ -70,7 +71,8 @@ public class PersistentGroup
      * @see org.marketcetera.core.systemmodel.Group#getAuthorities()
      */
     @Override
-    public Collection<Authority> getAuthorities()
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentAuthority.class)
+    public Set<Authority> getAuthorities()
     {
         return authorities;
     }
@@ -118,12 +120,10 @@ public class PersistentGroup
     /**
      * authorities granted to this group
      */
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentAuthority.class)
     private Set<Authority> authorities = new HashSet<Authority>();
     /**
      * users in this group
      */
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     private Set<User> users = new HashSet<User>();
     /**
      * name value

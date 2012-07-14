@@ -25,14 +25,19 @@ public abstract class PersistentSystemObject
      * @see org.marketcetera.core.systemmodel.SystemObject#getId()
      */
     @Override
+    @GeneratedValue
+    @Id
     public long getId()
     {
         return id;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     /**
      * unique identifier for this object
      */
-    @GeneratedValue
-    @Id
     private volatile long id;
 }

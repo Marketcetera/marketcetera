@@ -25,13 +25,18 @@ public abstract class PersistentVersionedObject
      * @see org.marketcetera.dao.VersionedObject#getVersion()
      */
     @Override
+    @Version
     public final int getVersion()
     {
         return version;
     }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
     /**
      * object version value
      */
-    @Version
     private int version;
 }
