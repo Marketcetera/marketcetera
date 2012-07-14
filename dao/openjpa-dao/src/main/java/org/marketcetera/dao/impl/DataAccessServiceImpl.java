@@ -1,4 +1,4 @@
-package org.marketcetera.dao.openjpa;
+package org.marketcetera.dao.impl;
 
 import org.marketcetera.dao.AuthorityDao;
 import org.marketcetera.dao.DataAccessService;

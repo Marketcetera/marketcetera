@@ -2,6 +2,7 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0" name="org.marketcetera.dao.datasource">
     <repository>mvn:org.apache.karaf.features/enterprise/3.0.0-SNAPSHOT/xml/features</repository>
     <feature description="Marketcetera Datasource" version="3.0.0-SNAPSHOT" name="org.marketcetera.dao.datasource">
+        <feature>jndi</feature>
         <feature>transaction</feature>
         <bundle>mvn:org.marketcetera.dao/datasource/3.0.0-SNAPSHOT</bundle>
         <bundle>wrap:mvn:com.experlog/xapool/1.5.0</bundle>

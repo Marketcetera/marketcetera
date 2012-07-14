@@ -6,12 +6,12 @@
 
 
     <service ref="authorityDao" interface="org.marketcetera.dao.AuthorityDao"></service>
-    <bean id="authorityDao" class="org.marketcetera.dao.openjpa.AuthorityDaoImpl">
+    <bean id="authorityDao" class="org.marketcetera.dao.impl.AuthorityDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
 
-    <bean id="startupBean" class="org.marketcetera.dao.openjpa.StartupBean" init-method="activate">
+    <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
         <property name="authorityDao" ref="authorityDao"/>
     </bean>
 

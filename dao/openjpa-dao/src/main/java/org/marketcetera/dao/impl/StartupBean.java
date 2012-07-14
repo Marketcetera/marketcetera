@@ -1,7 +1,8 @@
-package org.marketcetera.dao.openjpa;
+package org.marketcetera.dao.impl;
+
+import java.util.Date;
 
 import org.marketcetera.dao.AuthorityDao;
-import org.marketcetera.dao.impl.PersistentAuthority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ public class StartupBean {
 
     public void activate() {
         PersistentAuthority authority = new PersistentAuthority();
-        authority.setAuthority("foo");
+        authority.setAuthority(new Date().toString());
         authorityDao.save(authority);
     }
 }
