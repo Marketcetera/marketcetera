@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.5"?>
+
+<product name="Photon 2.2.0" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.product.application" version="2.2.0" useFeatures="true" includeLaunchers="true">
+
+   <aboutInfo>
+      <image path="/org.marketcetera.photon/icons/marketcetera/logo-150x55.gif"/>
+      <text>
+         Marketcetera Photon
+
+Version: 2.2.0
+Build: metc.build.number
+
+(c) Copyright Marketcetera Inc 2006-2012.  All rights reserved.
+Visit http://www.marketcetera.org
+      </text>
+   </aboutInfo>
+
+   <configIni use="default">
+      <linux>/org.marketcetera.photon.feature/config.ini</linux>
+      <macosx>/org.marketcetera.photon.feature/config.ini</macosx>
+      <solaris>/org.marketcetera.photon.feature/config.ini</solaris>
+      <win32>/org.marketcetera.photon.feature/config.ini</win32>
+   </configIni>
+
+   <launcherArgs>
+      <vmArgs>-Xmx512m -XX:MaxPermSize=256m -XX:+UnlockDiagnosticVMOptions -XX:+UnsyncloadClass -client</vmArgs>
+   </launcherArgs>
+
+   <windowImages i16="/org.marketcetera.photon/icons/marketcetera/photon-16x16.gif" i32="/org.marketcetera.photon/icons/marketcetera/photon-32x32.gif" i48="/org.marketcetera.photon/icons/marketcetera/photon-48x48.gif" i64="/org.marketcetera.photon/icons/marketcetera/photon-64x64.gif" i128="/org.marketcetera.photon/icons/marketcetera/photon-128x128.gif"/>
+
+   <splash
+      location="org.marketcetera.photon"
+      startupProgressRect="21,204,364,10"
+      startupMessageRect="225,75,170,20"
+      startupForegroundColor="555555" />
+   <launcher name="photon">
+      <macosx icon="/org.marketcetera.photon/icons/marketcetera/photon.icns"/>
+      <solaris/>
+      <win useIco="true">
+         <ico path="/org.marketcetera.photon/icons/marketcetera/photon.ico"/>
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
+
+   <plugins>
+   </plugins>
+
+   <features>
+      <feature id="org.marketcetera.photon.feature" version="2.2.0"/>
+   </features>
+
+
+</product>
