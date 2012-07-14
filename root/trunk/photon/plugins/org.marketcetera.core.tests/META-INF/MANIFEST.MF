@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.core.tests
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Marketcetera Core Tests
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.util-test;visibility:=reexport,
+ org.marketcetera.core
+Export-Package: org.marketcetera.core,
+ org.marketcetera.core.instruments,
+ org.marketcetera.core.notifications,
+ org.marketcetera.core.position,
+ org.marketcetera.core.position.impl,
+ org.marketcetera.core.publisher,
+ org.marketcetera.core.resourcepool,
+ org.marketcetera.event,
+ org.marketcetera.marketdata,
+ org.marketcetera.messagehistory,
+ org.marketcetera.module,
+ org.marketcetera.options,
+ org.marketcetera.persist,
+ org.marketcetera.persist.example,
+ org.marketcetera.quickfix,
+ org.marketcetera.quickfix.cficode,
+ org.marketcetera.quickfix.customfields,
+ org.marketcetera.quickfix.messagefactory,
+ org.marketcetera.trade
+Import-Package: junit.framework;resolution:=optional,
+ org.hamcrest;resolution:=optional,
+ org.junit;resolution:=optional,
+ org.mockito;resolution:=optional
+Bundle-ClassPath: core-2.2.0-tests.jar
