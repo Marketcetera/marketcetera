@@ -22,12 +22,12 @@
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>systemmodel</artifactId>
-            <version>[3.0.0-SNAPSHOT]</version>
+            <version>3.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.marketcetera.dao</groupId>
             <artifactId>dao-common</artifactId>
-            <version>[3.0.0-SNAPSHOT]</version>
+            <version>3.0.0-SNAPSHOT</version>
         </dependency>
         <!--  compile: spring -->
         <dependency>
@@ -84,20 +84,20 @@
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>core</artifactId>
-            <version>[3.0.0-SNAPSHOT]</version>
+            <version>3.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>core</artifactId>
-            <version>[3.0.0-SNAPSHOT]</version>
+            <version>3.0.0-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.marketcetera</groupId>
             <artifactId>util-test</artifactId>
-            <version>[3.0.0-SNAPSHOT]</version>
+            <version>3.0.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>

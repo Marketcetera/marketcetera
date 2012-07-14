@@ -12,9 +12,12 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
              version="2.0">
 
-    <persistence-unit name="marketcetera" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="marketcetera" transaction-type="JTA">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <jta-data-source>osgi:service/javax.sql.DataSource</jta-data-source>
+
+        <jta-data-source>osgi:service/javax.sql.XADataSource/(transactional=true)</jta-data-source>
+        <!-- Required by openJPA to update sequence table outside of Global Tx Management -->
+        <non-jta-data-source>osgi:service/javax.sql.DataSource/(transactional=false)</non-jta-data-source>
 
         <class>org.marketcetera.dao.impl.PersistentAuthority</class>
         <class>org.marketcetera.dao.impl.PersistentGroup</class>
@@ -25,15 +28,8 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>
-            <!--<property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(SchemaAction='add,deleteTableContents')"/>-->
-            <!--<property name="openjpa.ConnectionURL" value="jdbc:derby://localhost:1527/StoreSystem"/>-->
-            <!--<property name="openjpa.ConnectionDriverName" value="org.apache.derby.jdbc.ClientDriver"/>-->
             <property name="openjpa.Log" value="slf4j" />
             <!--<property name="openjpa.Log" value="DefaultLevel=WARN, Tool=INFO, SQL=TRACE, Schema=Trace"/>-->
-            <!--<property name="openjpa.ConnectionDriverName" value="org.postgresql.Driver" />-->
-            <!--<property name="openjpa.ConnectionURL" value="jdbc:postgresql:haulhive" />-->
-            <!--<property name="openjpa.ConnectionUserName" value="mw" />-->
-            <!--<property name="openjpa.ConnectionPassword" value="1pw4mw" />-->
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
             <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72" />
             <property name="openjpa.Multithreaded" value="true"/>

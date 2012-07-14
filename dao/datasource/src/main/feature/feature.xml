@@ -6,6 +6,8 @@
         <feature>transaction</feature>
         <bundle>mvn:org.marketcetera.dao/datasource/3.0.0-SNAPSHOT</bundle>
         <bundle>wrap:mvn:com.experlog/xapool/1.5.0</bundle>
+        <!--<bundle>mvn:commons-dbcp/commons-dbcp/1.4</bundle>-->
+        <!--<bundle>mvn:commons-pool/commons-pool/1.6</bundle>-->
         <bundle>wrap:mvn:postgresql/postgresql/8.4-701.jdbc4</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-j2ee-connector_1.5_spec/2.0.0</bundle>

@@ -28,6 +28,16 @@
             <version>${xapool.version}</version>
         </dependency>
         <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-pool</groupId>
+            <artifactId>commons-pool</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
@@ -64,14 +74,18 @@
 
     <build>
         <plugins>
+            <!-- This configuration embeds the xapool, commons-dbcp and commons-pool jars, exposing just the packages that are necessary -->
+            <!-- for OpenJPA needs.  The DataSource classes are exposed as services and thus do not need to be exported.  oracle.jdbc.xa, -->
+            <!-- oracle.jdbc.xa.client and org.enhydra.instantdb.jdbc are removed because they should have been marked as optional in xapool -->
+            <!-- jar manifest.  This avoids funky Fragment-Host configurations...  -BT 20120715 -->
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Import-Package>org.postgresql,javax.sql,org.enhydra.jdbc.standard,org.enhydra.jdbc.pool,*</Import-Package>
-                        <Fragment-Host>wrap_mvn_com.experlog_xapool_1.5.0</Fragment-Host>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Import-Package>org.postgresql,!oracle.jdbc.xa,!oracle.jdbc.xa.client,!org.enhydra.instantdb.jdbc,*</Import-Package>
+                        <Export-Package>org.apache.commons.dbcp,org.apache.commons.pool,org.apache.commons.pool.impl</Export-Package>
+                        <Embed-Dependency>xapool,commons-dbcp,commons-pool</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
