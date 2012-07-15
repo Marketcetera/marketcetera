@@ -138,5 +138,5 @@ public class ApplicationVersion
     public static final String VERSION_2_1_2 = "2.1.2"; //$NON-NLS-1$
     public static final String VERSION_2_1_3 = "2.1.3"; //$NON-NLS-1$
     public static final String VERSION_2_1_4 = "2.1.4"; //$NON-NLS-1$
-    public static final String VERSION_2_2_0 = "2.2.0"; //$NON-NLS-1$
+    public static final String VERSION_2_2 = "2.2"; //$NON-NLS-1$
 }
