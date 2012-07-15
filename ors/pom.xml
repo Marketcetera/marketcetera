@@ -200,18 +200,18 @@
               <executions>
                   <execution>
                       <goals><goal>java</goal></goals>
-                      <configuration>
-                          <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
-                          <systemProperties>
-                              <systemProperty>
-                                  <key>org.marketcetera.appDir</key>
-                                  <value>src/test/cmd_exec</value>
-                              </systemProperty>
-                          </systemProperties>
-                          <classpathScope>test</classpathScope>
-                      </configuration>
                   </execution>
               </executions>
+	      <configuration>
+		  <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
+		  <systemProperties>
+		      <systemProperty>
+		          <key>org.marketcetera.appDir</key>
+		          <value>src/test/cmd_exec</value>
+		      </systemProperty>
+		  </systemProperties>
+		  <classpathScope>test</classpathScope>
+	      </configuration>
           </plugin>
         </plugins>
       </build>
@@ -228,21 +228,21 @@
               <executions>
                   <execution>
                       <goals><goal>java</goal></goals>
-                      <configuration>
-                          <mainClass>org.marketcetera.ors.DBInit</mainClass>
-                          <arguments>
-                              <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
-                          </arguments>
-                          <systemProperties>
-                              <systemProperty>
-                                  <key>org.marketcetera.appDir</key>
-                                  <value>src/test/cmd_exec</value>
-                              </systemProperty>
-                          </systemProperties>
-                          <classpathScope>test</classpathScope>
-                      </configuration>
                   </execution>
               </executions>
+	      <configuration>
+		<mainClass>org.marketcetera.ors.DBInit</mainClass>
+		<arguments>
+		  <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
+		</arguments>
+		<systemProperties>
+		  <systemProperty>
+		    <key>org.marketcetera.appDir</key>
+		    <value>src/test/cmd_exec</value>
+		  </systemProperty>
+		</systemProperties>
+		<classpathScope>test</classpathScope>
+	      </configuration>
           </plugin>
         </plugins>
       </build>
@@ -259,21 +259,21 @@
               <executions>
                   <execution>
                       <goals><goal>java</goal></goals>
-                      <configuration>
-                          <mainClass>org.marketcetera.ors.exchange.Main</mainClass>
-                          <arguments>
-                              <argument>exchange.xml</argument>
-                          </arguments>
-                          <systemProperties>
-                              <systemProperty>
-                                  <key>org.marketcetera.appDir</key>
-                                  <value>src/test/cmd_exec</value>
-                              </systemProperty>
-                          </systemProperties>
-                          <classpathScope>test</classpathScope>
-                      </configuration>
                   </execution>
               </executions>
+	      <configuration>
+		<mainClass>org.marketcetera.ors.exchange.Main</mainClass>
+		<arguments>
+		  <argument>exchange.xml</argument>
+		</arguments>
+		<systemProperties>
+		  <systemProperty>
+		    <key>org.marketcetera.appDir</key>
+		    <value>src/test/cmd_exec</value>
+		  </systemProperty>
+		</systemProperties>
+		<classpathScope>test</classpathScope>
+	      </configuration>
           </plugin>
         </plugins>
       </build>
@@ -290,19 +290,19 @@
               <executions>
                   <execution>
                       <goals><goal>java</goal></goals>
-                      <configuration>
-                          <mainClass>org.marketcetera.ors.security.ORSAdminCLI</mainClass>
-                          <!-- -Dexec.args="-u admin ..." -->
-                          <systemProperties>
-                              <systemProperty>
-                                  <key>org.marketcetera.appDir</key>
-                                  <value>src/test/cmd_exec</value>
-                              </systemProperty>
-                          </systemProperties>
-                          <classpathScope>test</classpathScope>
-                      </configuration>
                   </execution>
               </executions>
+	      <configuration>
+		<mainClass>org.marketcetera.ors.security.ORSAdminCLI</mainClass>
+		<!-- -Dexec.args="-u admin ..." -->
+		<systemProperties>
+		  <systemProperty>
+		    <key>org.marketcetera.appDir</key>
+		    <value>src/test/cmd_exec</value>
+		  </systemProperty>
+		</systemProperties>
+		<classpathScope>test</classpathScope>
+	      </configuration>
           </plugin>
         </plugins>
       </build>
