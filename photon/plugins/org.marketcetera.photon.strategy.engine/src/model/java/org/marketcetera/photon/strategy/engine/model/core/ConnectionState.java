@@ -21,10 +21,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getConnectionState()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public enum ConnectionState implements Enumerator {
+public enum ConnectionState
+        implements Enumerator {
     /**
      * The '<em><b>Disconnected</b></em>' literal object.
      * <!-- begin-user-doc -->
@@ -81,8 +82,7 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    private static final ConnectionState[] VALUES_ARRAY = new ConnectionState[] {
-            DISCONNECTED, CONNECTED, };
+    private static final ConnectionState[] VALUES_ARRAY = new ConnectionState[] { DISCONNECTED, CONNECTED, };
 
     /**
      * A public read-only list of all the '<em><b>Connection State</b></em>' enumerators.
@@ -90,8 +90,7 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public static final List<ConnectionState> VALUES = Collections
-            .unmodifiableList(Arrays.asList(VALUES_ARRAY));
+    public static final List<ConnectionState> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
     /**
      * Returns the '<em><b>Connection State</b></em>' literal with the specified literal value.
@@ -99,7 +98,8 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public static ConnectionState get(String literal) {
+    public static ConnectionState get(String literal)
+    {
         for (int i = 0; i < VALUES_ARRAY.length; ++i) {
             ConnectionState result = VALUES_ARRAY[i];
             if (result.toString().equals(literal)) {
@@ -115,7 +115,8 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public static ConnectionState getByName(String name) {
+    public static ConnectionState getByName(String name)
+    {
         for (int i = 0; i < VALUES_ARRAY.length; ++i) {
             ConnectionState result = VALUES_ARRAY[i];
             if (result.getName().equals(name)) {
@@ -131,12 +132,13 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public static ConnectionState get(int value) {
+    public static ConnectionState get(int value)
+    {
         switch (value) {
-        case DISCONNECTED_VALUE:
-            return DISCONNECTED;
-        case CONNECTED_VALUE:
-            return CONNECTED;
+            case DISCONNECTED_VALUE:
+                return DISCONNECTED;
+            case CONNECTED_VALUE:
+                return CONNECTED;
         }
         return null;
     }
@@ -168,7 +170,10 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    private ConnectionState(int value, String name, String literal) {
+    private ConnectionState(int value,
+            String name,
+            String literal)
+    {
         this.value = value;
         this.name = name;
         this.literal = literal;
@@ -179,7 +184,8 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public int getValue() {
+    public int getValue()
+    {
         return value;
     }
 
@@ -188,7 +194,8 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
@@ -197,7 +204,8 @@ public enum ConnectionState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getLiteral() {
+    public String getLiteral()
+    {
         return literal;
     }
 
@@ -208,7 +216,8 @@ public enum ConnectionState implements Enumerator {
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         return literal;
     }
 

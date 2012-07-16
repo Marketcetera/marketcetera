@@ -95,6 +95,15 @@ public class StrategyAgentConnection extends AbstractStrategyEngineConnection {
             throw new Exception(errorMessage.toString());
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineConnectionImpl#sendData(java.lang.Object)
+     */
+    @Override
+    public void sendData(Object inData)
+            throws Exception
+    {
+        mClient.sendData(inData);
+    }
 
     private boolean appendError(Object result, Object value,
             StringBuilder errorMessage, I18NMessage2P description,

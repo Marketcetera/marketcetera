@@ -47,10 +47,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
+public class StrategyEngineImpl
+        extends EObjectImpl
+        implements StrategyEngine
+{
     /**
      * The default value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -156,7 +159,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    protected StrategyEngineImpl() {
+    protected StrategyEngineImpl()
+    {
         super();
     }
 
@@ -166,7 +170,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      */
     @Override
-    protected EClass eStaticClass() {
+    protected EClass eStaticClass()
+    {
         return StrategyEngineCorePackage.Literals.STRATEGY_ENGINE;
     }
 
@@ -175,7 +180,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
@@ -184,13 +190,16 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setName(String newName) {
+    public void setName(String newName)
+    {
         String oldName = name;
         name = newName;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    StrategyEngineCorePackage.STRATEGY_ENGINE__NAME, oldName,
-                    name));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.STRATEGY_ENGINE__NAME,
+                                          oldName,
+                                          name));
     }
 
     /**
@@ -198,7 +207,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getDescription() {
+    public String getDescription()
+    {
         return description;
     }
 
@@ -207,13 +217,16 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setDescription(String newDescription) {
+    public void setDescription(String newDescription)
+    {
         String oldDescription = description;
         description = newDescription;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION,
-                    oldDescription, description));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION,
+                                          oldDescription,
+                                          description));
     }
 
     /**
@@ -221,7 +234,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public ConnectionState getConnectionState() {
+    public ConnectionState getConnectionState()
+    {
         return connectionState;
     }
 
@@ -230,16 +244,16 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setConnectionState(ConnectionState newConnectionState) {
+    public void setConnectionState(ConnectionState newConnectionState)
+    {
         ConnectionState oldConnectionState = connectionState;
-        connectionState = newConnectionState == null ? CONNECTION_STATE_EDEFAULT
-                : newConnectionState;
+        connectionState = newConnectionState == null ? CONNECTION_STATE_EDEFAULT : newConnectionState;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(
-                    this,
-                    Notification.SET,
-                    StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE,
-                    oldConnectionState, connectionState));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE,
+                                          oldConnectionState,
+                                          connectionState));
     }
 
     /**
@@ -247,17 +261,18 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated NOT
      */
-    public synchronized StrategyEngineConnection getConnection() {
+    public synchronized StrategyEngineConnection getConnection()
+    {
         if (connection != null && connection.eIsProxy()) {
             InternalEObject oldConnection = (InternalEObject) connection;
             connection = (StrategyEngineConnection) eResolveProxy(oldConnection);
             if (connection != oldConnection) {
                 if (eNotificationRequired())
-                    eNotify(new ENotificationImpl(
-                            this,
-                            Notification.RESOLVE,
-                            StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION,
-                            oldConnection, connection));
+                    eNotify(new ENotificationImpl(this,
+                                                  Notification.RESOLVE,
+                                                  StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION,
+                                                  oldConnection,
+                                                  connection));
             }
         }
         return connection;
@@ -268,7 +283,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public StrategyEngineConnection basicGetConnection() {
+    public StrategyEngineConnection basicGetConnection()
+    {
         return connection;
     }
 
@@ -277,15 +293,17 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public NotificationChain basicSetConnection(
-            StrategyEngineConnection newConnection, NotificationChain msgs) {
+    public NotificationChain basicSetConnection(StrategyEngineConnection newConnection,
+                                                NotificationChain msgs)
+    {
         StrategyEngineConnection oldConnection = connection;
         connection = newConnection;
         if (eNotificationRequired()) {
             ENotificationImpl notification = new ENotificationImpl(this,
-                    Notification.SET,
-                    StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION,
-                    oldConnection, newConnection);
+                                                                   Notification.SET,
+                                                                   StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION,
+                                                                   oldConnection,
+                                                                   newConnection);
             if (msgs == null)
                 msgs = notification;
             else
@@ -299,28 +317,32 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setConnection(StrategyEngineConnection newConnection) {
+    public void setConnection(StrategyEngineConnection newConnection)
+    {
         if (newConnection != connection) {
             NotificationChain msgs = null;
             if (connection != null)
                 msgs = ((InternalEObject) connection)
-                        .eInverseRemove(
-                                this,
-                                StrategyEngineCorePackage.STRATEGY_ENGINE_CONNECTION__ENGINE,
-                                StrategyEngineConnection.class, msgs);
+                        .eInverseRemove(this,
+                                        StrategyEngineCorePackage.STRATEGY_ENGINE_CONNECTION__ENGINE,
+                                        StrategyEngineConnection.class,
+                                        msgs);
             if (newConnection != null)
                 msgs = ((InternalEObject) newConnection)
-                        .eInverseAdd(
-                                this,
-                                StrategyEngineCorePackage.STRATEGY_ENGINE_CONNECTION__ENGINE,
-                                StrategyEngineConnection.class, msgs);
-            msgs = basicSetConnection(newConnection, msgs);
+                        .eInverseAdd(this,
+                                     StrategyEngineCorePackage.STRATEGY_ENGINE_CONNECTION__ENGINE,
+                                     StrategyEngineConnection.class,
+                                     msgs);
+            msgs = basicSetConnection(newConnection,
+                                      msgs);
             if (msgs != null)
                 msgs.dispatch();
         } else if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION,
-                    newConnection, newConnection));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION,
+                                          newConnection,
+                                          newConnection));
     }
 
     /**
@@ -329,15 +351,15 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated NOT
      */
     @SuppressWarnings("unchecked")
-    public synchronized EList<DeployedStrategy> getDeployedStrategies() {
+    public synchronized EList<DeployedStrategy> getDeployedStrategies()
+    {
         if (deployedStrategies == null) {
-            EList<DeployedStrategy> delegate = new EObjectWithInverseResolvingEList<DeployedStrategy>(
-                    DeployedStrategy.class,
-                    this,
-                    StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
-                    StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE);
-            deployedStrategies = (EList<DeployedStrategy>) SynchronizedProxy
-                    .proxy(delegate, InternalEList.class);
+            EList<DeployedStrategy> delegate = new EObjectWithInverseResolvingEList<DeployedStrategy>(DeployedStrategy.class,
+                                                                                                      this,
+                                                                                                      StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
+                                                                                                      StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE);
+            deployedStrategies = (EList<DeployedStrategy>) SynchronizedProxy.proxy(delegate,
+                                                                                   InternalEList.class);
         }
         return deployedStrategies;
     }
@@ -347,7 +369,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public boolean isReadOnly() {
+    public boolean isReadOnly()
+    {
         return readOnly;
     }
 
@@ -356,13 +379,16 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setReadOnly(boolean newReadOnly) {
+    public void setReadOnly(boolean newReadOnly)
+    {
         boolean oldReadOnly = readOnly;
         readOnly = newReadOnly;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY,
-                    oldReadOnly, readOnly));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY,
+                                          oldReadOnly,
+                                          readOnly));
     }
 
     /**
@@ -373,21 +399,26 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
     @SuppressWarnings("unchecked")
     @Override
     public NotificationChain eInverseAdd(InternalEObject otherEnd,
-            int featureID, NotificationChain msgs) {
+                                         int featureID,
+                                         NotificationChain msgs)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
-            if (connection != null)
-                msgs = ((InternalEObject) connection)
-                        .eInverseRemove(
-                                this,
-                                StrategyEngineCorePackage.STRATEGY_ENGINE_CONNECTION__ENGINE,
-                                StrategyEngineConnection.class, msgs);
-            return basicSetConnection((StrategyEngineConnection) otherEnd, msgs);
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
-            return ((InternalEList<InternalEObject>) (InternalEList<?>) getDeployedStrategies())
-                    .basicAdd(otherEnd, msgs);
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
+                if (connection != null)
+                    msgs = ((InternalEObject) connection)
+                            .eInverseRemove(this,
+                                            StrategyEngineCorePackage.STRATEGY_ENGINE_CONNECTION__ENGINE,
+                                            StrategyEngineConnection.class,
+                                            msgs);
+                return basicSetConnection((StrategyEngineConnection) otherEnd,
+                                          msgs);
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
+                return ((InternalEList<InternalEObject>) (InternalEList<?>) getDeployedStrategies()).basicAdd(otherEnd,
+                                                                                                              msgs);
         }
-        return super.eInverseAdd(otherEnd, featureID, msgs);
+        return super.eInverseAdd(otherEnd,
+                                 featureID,
+                                 msgs);
     }
 
     /**
@@ -397,15 +428,20 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      */
     @Override
     public NotificationChain eInverseRemove(InternalEObject otherEnd,
-            int featureID, NotificationChain msgs) {
+                                            int featureID,
+                                            NotificationChain msgs)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
-            return basicSetConnection(null, msgs);
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
-            return ((InternalEList<?>) getDeployedStrategies()).basicRemove(
-                    otherEnd, msgs);
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
+                return basicSetConnection(null,
+                                          msgs);
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
+                return ((InternalEList<?>) getDeployedStrategies()).basicRemove(otherEnd,
+                                                                                msgs);
         }
-        return super.eInverseRemove(otherEnd, featureID, msgs);
+        return super.eInverseRemove(otherEnd,
+                                    featureID,
+                                    msgs);
     }
 
     /**
@@ -414,24 +450,29 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      */
     @Override
-    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    public Object eGet(int featureID,
+                       boolean resolve,
+                       boolean coreType)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__NAME:
-            return getName();
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION:
-            return getDescription();
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE:
-            return getConnectionState();
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
-            if (resolve)
-                return getConnection();
-            return basicGetConnection();
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
-            return getDeployedStrategies();
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY:
-            return isReadOnly();
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__NAME:
+                return getName();
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION:
+                return getDescription();
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE:
+                return getConnectionState();
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
+                if (resolve)
+                    return getConnection();
+                return basicGetConnection();
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
+                return getDeployedStrategies();
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY:
+                return isReadOnly();
         }
-        return super.eGet(featureID, resolve, coreType);
+        return super.eGet(featureID,
+                          resolve,
+                          coreType);
     }
 
     /**
@@ -441,30 +482,32 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void eSet(int featureID, Object newValue) {
+    public void eSet(int featureID,
+                     Object newValue)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__NAME:
-            setName((String) newValue);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION:
-            setDescription((String) newValue);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE:
-            setConnectionState((ConnectionState) newValue);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
-            setConnection((StrategyEngineConnection) newValue);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
-            getDeployedStrategies().clear();
-            getDeployedStrategies().addAll(
-                    (Collection<? extends DeployedStrategy>) newValue);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY:
-            setReadOnly((Boolean) newValue);
-            return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__NAME:
+                setName((String) newValue);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION:
+                setDescription((String) newValue);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE:
+                setConnectionState((ConnectionState) newValue);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
+                setConnection((StrategyEngineConnection) newValue);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
+                getDeployedStrategies().clear();
+                getDeployedStrategies().addAll((Collection<? extends DeployedStrategy>) newValue);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY:
+                setReadOnly((Boolean) newValue);
+                return;
         }
-        super.eSet(featureID, newValue);
+        super.eSet(featureID,
+                   newValue);
     }
 
     /**
@@ -473,26 +516,27 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      */
     @Override
-    public void eUnset(int featureID) {
+    public void eUnset(int featureID)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__NAME:
-            setName(NAME_EDEFAULT);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION:
-            setDescription(DESCRIPTION_EDEFAULT);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE:
-            setConnectionState(CONNECTION_STATE_EDEFAULT);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
-            setConnection((StrategyEngineConnection) null);
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
-            getDeployedStrategies().clear();
-            return;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY:
-            setReadOnly(READ_ONLY_EDEFAULT);
-            return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__NAME:
+                setName(NAME_EDEFAULT);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION:
+                setDescription(DESCRIPTION_EDEFAULT);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE:
+                setConnectionState(CONNECTION_STATE_EDEFAULT);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
+                setConnection((StrategyEngineConnection) null);
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
+                getDeployedStrategies().clear();
+                return;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY:
+                setReadOnly(READ_ONLY_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -503,22 +547,21 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      */
     @Override
-    public boolean eIsSet(int featureID) {
+    public boolean eIsSet(int featureID)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__NAME:
-            return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT
-                    .equals(name);
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION:
-            return DESCRIPTION_EDEFAULT == null ? description != null
-                    : !DESCRIPTION_EDEFAULT.equals(description);
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE:
-            return connectionState != CONNECTION_STATE_EDEFAULT;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
-            return connection != null;
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
-            return deployedStrategies != null && !deployedStrategies.isEmpty();
-        case StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY:
-            return readOnly != READ_ONLY_EDEFAULT;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__NAME:
+                return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DESCRIPTION:
+                return DESCRIPTION_EDEFAULT == null ? description != null : !DESCRIPTION_EDEFAULT.equals(description);
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION_STATE:
+                return connectionState != CONNECTION_STATE_EDEFAULT;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__CONNECTION:
+                return connection != null;
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES:
+                return deployedStrategies != null && !deployedStrategies.isEmpty();
+            case StrategyEngineCorePackage.STRATEGY_ENGINE__READ_ONLY:
+                return readOnly != READ_ONLY_EDEFAULT;
         }
         return super.eIsSet(featureID);
     }
@@ -529,7 +572,8 @@ public class StrategyEngineImpl extends EObjectImpl implements StrategyEngine {
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         if (eIsProxy())
             return super.toString();
 

@@ -21,10 +21,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyState()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public enum StrategyState implements Enumerator {
+public enum StrategyState
+        implements Enumerator {
     /**
      * The '<em><b>Stopped</b></em>' literal object.
      * <!-- begin-user-doc -->
@@ -81,8 +82,7 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    private static final StrategyState[] VALUES_ARRAY = new StrategyState[] {
-            STOPPED, RUNNING, };
+    private static final StrategyState[] VALUES_ARRAY = new StrategyState[] { STOPPED, RUNNING, };
 
     /**
      * A public read-only list of all the '<em><b>Strategy State</b></em>' enumerators.
@@ -90,8 +90,7 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public static final List<StrategyState> VALUES = Collections
-            .unmodifiableList(Arrays.asList(VALUES_ARRAY));
+    public static final List<StrategyState> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
     /**
      * Returns the '<em><b>Strategy State</b></em>' literal with the specified literal value.
@@ -99,7 +98,8 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public static StrategyState get(String literal) {
+    public static StrategyState get(String literal)
+    {
         for (int i = 0; i < VALUES_ARRAY.length; ++i) {
             StrategyState result = VALUES_ARRAY[i];
             if (result.toString().equals(literal)) {
@@ -115,7 +115,8 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public static StrategyState getByName(String name) {
+    public static StrategyState getByName(String name)
+    {
         for (int i = 0; i < VALUES_ARRAY.length; ++i) {
             StrategyState result = VALUES_ARRAY[i];
             if (result.getName().equals(name)) {
@@ -131,12 +132,13 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public static StrategyState get(int value) {
+    public static StrategyState get(int value)
+    {
         switch (value) {
-        case STOPPED_VALUE:
-            return STOPPED;
-        case RUNNING_VALUE:
-            return RUNNING;
+            case STOPPED_VALUE:
+                return STOPPED;
+            case RUNNING_VALUE:
+                return RUNNING;
         }
         return null;
     }
@@ -168,7 +170,10 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    private StrategyState(int value, String name, String literal) {
+    private StrategyState(int value,
+            String name,
+            String literal)
+    {
         this.value = value;
         this.name = name;
         this.literal = literal;
@@ -179,7 +184,8 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public int getValue() {
+    public int getValue()
+    {
         return value;
     }
 
@@ -188,7 +194,8 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
@@ -197,7 +204,8 @@ public enum StrategyState implements Enumerator {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getLiteral() {
+    public String getLiteral()
+    {
         return literal;
     }
 
@@ -208,7 +216,8 @@ public enum StrategyState implements Enumerator {
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         return literal;
     }
 

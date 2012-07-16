@@ -24,10 +24,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyEngineConnection()
  * @model abstract="true"
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface StrategyEngineConnection extends EObject {
+public interface StrategyEngineConnection
+        extends EObject
+{
     /**
      * Returns the value of the '<em><b>Engine</b></em>' reference.
      * It is bidirectional and its opposite is '{@link org.marketcetera.photon.strategy.engine.model.core.StrategyEngine#getConnection <em>Connection</em>}'.
@@ -65,7 +67,8 @@ public interface StrategyEngineConnection extends EObject {
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
      */
-    DeployedStrategy deploy(Strategy strategy) throws Exception;
+    DeployedStrategy deploy(Strategy strategy)
+            throws Exception;
 
     /**
      * <!-- begin-user-doc -->
@@ -76,7 +79,8 @@ public interface StrategyEngineConnection extends EObject {
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
      */
-    void undeploy(DeployedStrategy strategy) throws Exception;
+    void undeploy(DeployedStrategy strategy)
+            throws Exception;
 
     /**
      * <!-- begin-user-doc -->
@@ -87,7 +91,8 @@ public interface StrategyEngineConnection extends EObject {
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
      */
-    void start(DeployedStrategy strategy) throws Exception;
+    void start(DeployedStrategy strategy)
+            throws Exception;
 
     /**
      * <!-- begin-user-doc -->
@@ -98,7 +103,8 @@ public interface StrategyEngineConnection extends EObject {
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
      */
-    void stop(DeployedStrategy strategy) throws Exception;
+    void stop(DeployedStrategy strategy)
+            throws Exception;
 
     /**
      * <!-- begin-user-doc -->
@@ -110,7 +116,8 @@ public interface StrategyEngineConnection extends EObject {
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
      */
-    void update(DeployedStrategy strategy, Strategy newConfiguration)
+    void update(DeployedStrategy strategy,
+                Strategy newConfiguration)
             throws Exception;
 
     /**
@@ -122,7 +129,8 @@ public interface StrategyEngineConnection extends EObject {
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" strategyRequired="true"
      * @generated
      */
-    void refresh(DeployedStrategy strategy) throws Exception;
+    void refresh(DeployedStrategy strategy)
+            throws Exception;
 
     /**
      * <!-- begin-user-doc -->
@@ -132,6 +140,16 @@ public interface StrategyEngineConnection extends EObject {
      * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception"
      * @generated
      */
-    void refresh() throws Exception;
+    void refresh()
+            throws Exception;
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @model exceptions="org.marketcetera.photon.strategy.engine.model.core.Exception" dataDataType="org.marketcetera.photon.strategy.engine.model.core.Object"
+     * @generated
+     */
+    void sendData(Object data)
+            throws Exception;
 
 } // StrategyEngineConnection

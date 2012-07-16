@@ -33,10 +33,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyEngine()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface StrategyEngine extends EObject {
+public interface StrategyEngine
+        extends EObject
+{
     /**
      * Returns the value of the '<em><b>Name</b></em>' attribute.
      * <!-- begin-user-doc -->
@@ -159,7 +161,6 @@ public interface StrategyEngine extends EObject {
      * href="http://bugs.eclipse.org/291641">http://bugs.eclipse.org/291641</a>.
      * </p>
      * <!-- end-user-doc -->
-     * 
      * @return the value of the '<em>Deployed Strategies</em>' reference list.
      * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategyEngine_DeployedStrategies()
      * @see org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy#getEngine

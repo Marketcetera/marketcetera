@@ -2,11 +2,7 @@ package org.marketcetera.photon.strategy.engine;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
@@ -17,11 +13,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.commons.ExceptionUtils;
 import org.marketcetera.photon.commons.Validate;
-import org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy;
-import org.marketcetera.photon.strategy.engine.model.core.Strategy;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory;
-import org.marketcetera.photon.strategy.engine.model.core.StrategyState;
+import org.marketcetera.photon.strategy.engine.model.core.*;
 import org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineConnectionImpl;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
