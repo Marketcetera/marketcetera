@@ -36,11 +36,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class DeployedStrategyImpl extends StrategyImpl implements
-        DeployedStrategy {
+public class DeployedStrategyImpl
+        extends StrategyImpl
+        implements DeployedStrategy
+{
     /**
      * The cached value of the '{@link #getEngine() <em>Engine</em>}' reference.
      * <!-- begin-user-doc -->
@@ -96,7 +98,8 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    protected DeployedStrategyImpl() {
+    protected DeployedStrategyImpl()
+    {
         super();
     }
 
@@ -106,7 +109,8 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      */
     @Override
-    protected EClass eStaticClass() {
+    protected EClass eStaticClass()
+    {
         return StrategyEngineCorePackage.Literals.DEPLOYED_STRATEGY;
     }
 
@@ -115,17 +119,18 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * <!-- end-user-doc -->
      * @generated NOT
      */
-    public synchronized StrategyEngine getEngine() {
+    public synchronized StrategyEngine getEngine()
+    {
         if (engine != null && engine.eIsProxy()) {
             InternalEObject oldEngine = (InternalEObject) engine;
             engine = (StrategyEngine) eResolveProxy(oldEngine);
             if (engine != oldEngine) {
                 if (eNotificationRequired())
-                    eNotify(new ENotificationImpl(
-                            this,
-                            Notification.RESOLVE,
-                            StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE,
-                            oldEngine, engine));
+                    eNotify(new ENotificationImpl(this,
+                                                  Notification.RESOLVE,
+                                                  StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE,
+                                                  oldEngine,
+                                                  engine));
             }
         }
         return engine;
@@ -136,7 +141,8 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public StrategyEngine basicGetEngine() {
+    public StrategyEngine basicGetEngine()
+    {
         return engine;
     }
 
@@ -146,14 +152,16 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      */
     public NotificationChain basicSetEngine(StrategyEngine newEngine,
-            NotificationChain msgs) {
+                                            NotificationChain msgs)
+    {
         StrategyEngine oldEngine = engine;
         engine = newEngine;
         if (eNotificationRequired()) {
             ENotificationImpl notification = new ENotificationImpl(this,
-                    Notification.SET,
-                    StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE,
-                    oldEngine, newEngine);
+                                                                   Notification.SET,
+                                                                   StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE,
+                                                                   oldEngine,
+                                                                   newEngine);
             if (msgs == null)
                 msgs = notification;
             else
@@ -167,28 +175,32 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setEngine(StrategyEngine newEngine) {
+    public void setEngine(StrategyEngine newEngine)
+    {
         if (newEngine != engine) {
             NotificationChain msgs = null;
             if (engine != null)
                 msgs = ((InternalEObject) engine)
-                        .eInverseRemove(
-                                this,
-                                StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
-                                StrategyEngine.class, msgs);
+                        .eInverseRemove(this,
+                                        StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
+                                        StrategyEngine.class,
+                                        msgs);
             if (newEngine != null)
                 msgs = ((InternalEObject) newEngine)
-                        .eInverseAdd(
-                                this,
-                                StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
-                                StrategyEngine.class, msgs);
-            msgs = basicSetEngine(newEngine, msgs);
+                        .eInverseAdd(this,
+                                     StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
+                                     StrategyEngine.class,
+                                     msgs);
+            msgs = basicSetEngine(newEngine,
+                                  msgs);
             if (msgs != null)
                 msgs.dispatch();
         } else if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE,
-                    newEngine, newEngine));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE,
+                                          newEngine,
+                                          newEngine));
     }
 
     /**
@@ -196,7 +208,8 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public StrategyState getState() {
+    public StrategyState getState()
+    {
         return state;
     }
 
@@ -205,13 +218,16 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setState(StrategyState newState) {
+    public void setState(StrategyState newState)
+    {
         StrategyState oldState = state;
         state = newState == null ? STATE_EDEFAULT : newState;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE,
-                    oldState, state));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE,
+                                          oldState,
+                                          state));
     }
 
     /**
@@ -219,7 +235,8 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public ModuleURN getUrn() {
+    public ModuleURN getUrn()
+    {
         return urn;
     }
 
@@ -228,13 +245,16 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setUrn(ModuleURN newUrn) {
+    public void setUrn(ModuleURN newUrn)
+    {
         ModuleURN oldUrn = urn;
         urn = newUrn;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN, oldUrn,
-                    urn));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN,
+                                          oldUrn,
+                                          urn));
     }
 
     /**
@@ -244,18 +264,23 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      */
     @Override
     public NotificationChain eInverseAdd(InternalEObject otherEnd,
-            int featureID, NotificationChain msgs) {
+                                         int featureID,
+                                         NotificationChain msgs)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
-            if (engine != null)
-                msgs = ((InternalEObject) engine)
-                        .eInverseRemove(
-                                this,
-                                StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
-                                StrategyEngine.class, msgs);
-            return basicSetEngine((StrategyEngine) otherEnd, msgs);
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
+                if (engine != null)
+                    msgs = ((InternalEObject) engine)
+                            .eInverseRemove(this,
+                                            StrategyEngineCorePackage.STRATEGY_ENGINE__DEPLOYED_STRATEGIES,
+                                            StrategyEngine.class,
+                                            msgs);
+                return basicSetEngine((StrategyEngine) otherEnd,
+                                      msgs);
         }
-        return super.eInverseAdd(otherEnd, featureID, msgs);
+        return super.eInverseAdd(otherEnd,
+                                 featureID,
+                                 msgs);
     }
 
     /**
@@ -265,12 +290,17 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      */
     @Override
     public NotificationChain eInverseRemove(InternalEObject otherEnd,
-            int featureID, NotificationChain msgs) {
+                                            int featureID,
+                                            NotificationChain msgs)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
-            return basicSetEngine(null, msgs);
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
+                return basicSetEngine(null,
+                                      msgs);
         }
-        return super.eInverseRemove(otherEnd, featureID, msgs);
+        return super.eInverseRemove(otherEnd,
+                                    featureID,
+                                    msgs);
     }
 
     /**
@@ -279,18 +309,23 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      */
     @Override
-    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    public Object eGet(int featureID,
+                       boolean resolve,
+                       boolean coreType)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
-            if (resolve)
-                return getEngine();
-            return basicGetEngine();
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE:
-            return getState();
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN:
-            return getUrn();
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
+                if (resolve)
+                    return getEngine();
+                return basicGetEngine();
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE:
+                return getState();
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN:
+                return getUrn();
         }
-        return super.eGet(featureID, resolve, coreType);
+        return super.eGet(featureID,
+                          resolve,
+                          coreType);
     }
 
     /**
@@ -299,19 +334,22 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      */
     @Override
-    public void eSet(int featureID, Object newValue) {
+    public void eSet(int featureID,
+                     Object newValue)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
-            setEngine((StrategyEngine) newValue);
-            return;
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE:
-            setState((StrategyState) newValue);
-            return;
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN:
-            setUrn((ModuleURN) newValue);
-            return;
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
+                setEngine((StrategyEngine) newValue);
+                return;
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE:
+                setState((StrategyState) newValue);
+                return;
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN:
+                setUrn((ModuleURN) newValue);
+                return;
         }
-        super.eSet(featureID, newValue);
+        super.eSet(featureID,
+                   newValue);
     }
 
     /**
@@ -320,17 +358,18 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      */
     @Override
-    public void eUnset(int featureID) {
+    public void eUnset(int featureID)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
-            setEngine((StrategyEngine) null);
-            return;
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE:
-            setState(STATE_EDEFAULT);
-            return;
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN:
-            setUrn(URN_EDEFAULT);
-            return;
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
+                setEngine((StrategyEngine) null);
+                return;
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE:
+                setState(STATE_EDEFAULT);
+                return;
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN:
+                setUrn(URN_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -341,15 +380,15 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      */
     @Override
-    public boolean eIsSet(int featureID) {
+    public boolean eIsSet(int featureID)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
-            return engine != null;
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE:
-            return state != STATE_EDEFAULT;
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN:
-            return URN_EDEFAULT == null ? urn != null : !URN_EDEFAULT
-                    .equals(urn);
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__ENGINE:
+                return engine != null;
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__STATE:
+                return state != STATE_EDEFAULT;
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY__URN:
+                return URN_EDEFAULT == null ? urn != null : !URN_EDEFAULT.equals(urn);
         }
         return super.eIsSet(featureID);
     }
@@ -360,7 +399,8 @@ public class DeployedStrategyImpl extends StrategyImpl implements
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         if (eIsProxy())
             return super.toString();
 

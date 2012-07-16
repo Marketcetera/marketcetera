@@ -92,19 +92,19 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                         ExecutionType execType = execReport.getExecutionType();
                        
                         if(execType == null) {
-                        	SLF4JLoggerProxy.debug(AveragePriceReportList.class,
+                            SLF4JLoggerProxy.debug(AveragePriceReportList.class,
                                     "Skipping {} because the execType was null", //$NON-NLS-1$
                                     execReport);
                             continue;
                         }
                         
                         if(!EXECTYPE_STATUSES.contains(execType)){
-                        	SLF4JLoggerProxy.debug(AveragePriceReportList.class,
+                            SLF4JLoggerProxy.debug(AveragePriceReportList.class,
                                     "Skipping {} because its execution type {} is not in {}", //$NON-NLS-1$
                                     execReport,
                                     execReport.getExecutionType(),
                                     EXECTYPE_STATUSES);
-                        	continue;
+                            continue;
                         }
                         
                         if(execReport.getOriginator() != Originator.Broker ) {
@@ -114,19 +114,16 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                             continue;
                         }
                         BigDecimal lastQuantity = execReport.getLastQuantity();
-                        BigDecimal price = execReport.getLastPrice();
+                        BigDecimal lastPrice = execReport.getLastPrice();
                         if(lastQuantity == null || !(lastQuantity.compareTo(BigDecimal.ZERO) > 0)) {
                             SLF4JLoggerProxy.debug(AveragePriceReportList.class,
                                                    "Skipping {} because the last quantity was null/zero", //$NON-NLS-1$
                                                    execReport);
                             continue;
                         }
-                        if(price == null) {
-                            price = execReport.getPrice();
-                        }
-                        if(price == null) {
+                        if(lastPrice == null) {
                             SLF4JLoggerProxy.debug(AveragePriceReportList.class,
-                                                   "Skipping {} because the price was null", //$NON-NLS-1$
+                                                   "Skipping {} because the last price was null", //$NON-NLS-1$
                                                    execReport);
                             continue;
                         }
@@ -143,7 +140,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                             BigDecimal newLastQty = lastQuantity;
                             BigDecimal newTotal = existingCumQty.add(newLastQty);
                             if(!newTotal.equals(ZERO)) {
-                                BigDecimal numerator = existingCumQty.multiply(existingAvgPx).add(newLastQty.multiply(price));
+                                BigDecimal numerator = existingCumQty.multiply(existingAvgPx).add(newLastQty.multiply(lastPrice));
                                 BigDecimal newAvgPx = numerator.divide(newTotal,
                                                                        4,
                                                                        RoundingMode.HALF_UP);
@@ -163,7 +160,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                                                                        mMessageFactory.getBeginString(),
                                                                                        averagePriceMessage);
                             averagePriceMessage.setField(new CumQty(lastQuantity));
-                            averagePriceMessage.setField(new AvgPx(price.setScale(4,
+                            averagePriceMessage.setField(new AvgPx(lastPrice.setScale(4,
                                                                                       RoundingMode.HALF_UP)));
                             try {
                                 ReportHolder newReport = new ReportHolder(Factory.getInstance().createExecutionReport(averagePriceMessage,
@@ -206,7 +203,7 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
     }
     @Override
     public void clear() {
-    	// don't do a clear on an empty set
+        // don't do a clear on an empty set
         if(isEmpty()) return;
         // create the change event
         updates.beginEvent();

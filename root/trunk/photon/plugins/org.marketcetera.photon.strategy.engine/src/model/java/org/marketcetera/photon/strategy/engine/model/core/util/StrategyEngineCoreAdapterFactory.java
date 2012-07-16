@@ -25,10 +25,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
+public class StrategyEngineCoreAdapterFactory
+        extends AdapterFactoryImpl
+{
     /**
      * The cached model package.
      * <!-- begin-user-doc -->
@@ -43,7 +45,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * <!-- end-user-doc -->
      * @generated
      */
-    public StrategyEngineCoreAdapterFactory() {
+    public StrategyEngineCoreAdapterFactory()
+    {
         if (modelPackage == null) {
             modelPackage = StrategyEngineCorePackage.eINSTANCE;
         }
@@ -58,7 +61,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     @Override
-    public boolean isFactoryForType(Object object) {
+    public boolean isFactoryForType(Object object)
+    {
         if (object == modelPackage) {
             return true;
         }
@@ -76,34 +80,38 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      */
     protected StrategyEngineCoreSwitch<Adapter> modelSwitch = new StrategyEngineCoreSwitch<Adapter>() {
         @Override
-        public Adapter caseStrategyEngine(StrategyEngine object) {
+        public Adapter caseStrategyEngine(StrategyEngine object)
+        {
             return createStrategyEngineAdapter();
         }
 
         @Override
-        public Adapter caseStrategyEngineConnection(
-                StrategyEngineConnection object) {
+        public Adapter caseStrategyEngineConnection(StrategyEngineConnection object)
+        {
             return createStrategyEngineConnectionAdapter();
         }
 
         @Override
-        public Adapter caseStrategy(Strategy object) {
+        public Adapter caseStrategy(Strategy object)
+        {
             return createStrategyAdapter();
         }
 
         @Override
-        public Adapter caseDeployedStrategy(DeployedStrategy object) {
+        public Adapter caseDeployedStrategy(DeployedStrategy object)
+        {
             return createDeployedStrategyAdapter();
         }
 
         @Override
-        public Adapter caseStringToStringMapEntry(
-                Map.Entry<String, String> object) {
+        public Adapter caseStringToStringMapEntry(Map.Entry<String, String> object)
+        {
             return createStringToStringMapEntryAdapter();
         }
 
         @Override
-        public Adapter defaultCase(EObject object) {
+        public Adapter defaultCase(EObject object)
+        {
             return createEObjectAdapter();
         }
     };
@@ -117,7 +125,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * @generated
      */
     @Override
-    public Adapter createAdapter(Notifier target) {
+    public Adapter createAdapter(Notifier target)
+    {
         return modelSwitch.doSwitch((EObject) target);
     }
 
@@ -131,7 +140,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngine
      * @generated
      */
-    public Adapter createStrategyEngineAdapter() {
+    public Adapter createStrategyEngineAdapter()
+    {
         return null;
     }
 
@@ -145,7 +155,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineConnection
      * @generated
      */
-    public Adapter createStrategyEngineConnectionAdapter() {
+    public Adapter createStrategyEngineConnectionAdapter()
+    {
         return null;
     }
 
@@ -159,7 +170,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.strategy.engine.model.core.Strategy
      * @generated
      */
-    public Adapter createStrategyAdapter() {
+    public Adapter createStrategyAdapter()
+    {
         return null;
     }
 
@@ -173,7 +185,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * @see org.marketcetera.photon.strategy.engine.model.core.DeployedStrategy
      * @generated
      */
-    public Adapter createDeployedStrategyAdapter() {
+    public Adapter createDeployedStrategyAdapter()
+    {
         return null;
     }
 
@@ -187,7 +200,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * @see java.util.Map.Entry
      * @generated
      */
-    public Adapter createStringToStringMapEntryAdapter() {
+    public Adapter createStringToStringMapEntryAdapter()
+    {
         return null;
     }
 
@@ -199,7 +213,8 @@ public class StrategyEngineCoreAdapterFactory extends AdapterFactoryImpl {
      * @return the new adapter.
      * @generated
      */
-    public Adapter createEObjectAdapter() {
+    public Adapter createEObjectAdapter()
+    {
         return null;
     }
 

@@ -27,18 +27,21 @@ import org.marketcetera.util.misc.ClassVersion;
  * An implementation of the model <b>Factory</b>.
  * <!-- end-user-doc -->
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
-        StrategyEngineCoreFactory {
+public class StrategyEngineCoreFactoryImpl
+        extends EFactoryImpl
+        implements StrategyEngineCoreFactory
+{
     /**
      * Creates the default factory implementation.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    public static StrategyEngineCoreFactory init() {
+    public static StrategyEngineCoreFactory init()
+    {
         try {
             StrategyEngineCoreFactory theStrategyEngineCoreFactory = (StrategyEngineCoreFactory) EPackage.Registry.INSTANCE
                     .getEFactory("http://www.marketcetera.org/photon/strategy/engine/core/1.0");
@@ -57,7 +60,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public StrategyEngineCoreFactoryImpl() {
+    public StrategyEngineCoreFactoryImpl()
+    {
         super();
     }
 
@@ -67,19 +71,19 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     @Override
-    public EObject create(EClass eClass) {
+    public EObject create(EClass eClass)
+    {
         switch (eClass.getClassifierID()) {
-        case StrategyEngineCorePackage.STRATEGY_ENGINE:
-            return createStrategyEngine();
-        case StrategyEngineCorePackage.STRATEGY:
-            return createStrategy();
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY:
-            return createDeployedStrategy();
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY:
-            return (EObject) createStringToStringMapEntry();
-        default:
-            throw new IllegalArgumentException("The class '" + eClass.getName()
-                    + "' is not a valid classifier");
+            case StrategyEngineCorePackage.STRATEGY_ENGINE:
+                return createStrategyEngine();
+            case StrategyEngineCorePackage.STRATEGY:
+                return createStrategy();
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY:
+                return createDeployedStrategy();
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY:
+                return (EObject) createStringToStringMapEntry();
+            default:
+                throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
     }
 
@@ -89,19 +93,25 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     @Override
-    public Object createFromString(EDataType eDataType, String initialValue) {
+    public Object createFromString(EDataType eDataType,
+                                   String initialValue)
+    {
         switch (eDataType.getClassifierID()) {
-        case StrategyEngineCorePackage.CONNECTION_STATE:
-            return createConnectionStateFromString(eDataType, initialValue);
-        case StrategyEngineCorePackage.STRATEGY_STATE:
-            return createStrategyStateFromString(eDataType, initialValue);
-        case StrategyEngineCorePackage.MODULE_URN:
-            return createModuleURNFromString(eDataType, initialValue);
-        case StrategyEngineCorePackage.EXCEPTION:
-            return createExceptionFromString(eDataType, initialValue);
-        default:
-            throw new IllegalArgumentException("The datatype '"
-                    + eDataType.getName() + "' is not a valid classifier");
+            case StrategyEngineCorePackage.CONNECTION_STATE:
+                return createConnectionStateFromString(eDataType,
+                                                       initialValue);
+            case StrategyEngineCorePackage.STRATEGY_STATE:
+                return createStrategyStateFromString(eDataType,
+                                                     initialValue);
+            case StrategyEngineCorePackage.MODULE_URN:
+                return createModuleURNFromString(eDataType,
+                                                 initialValue);
+            case StrategyEngineCorePackage.EXCEPTION:
+                return createExceptionFromString(eDataType,
+                                                 initialValue);
+            default:
+                throw new IllegalArgumentException("The datatype '" + eDataType.getName()
+                        + "' is not a valid classifier");
         }
     }
 
@@ -111,19 +121,25 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     @Override
-    public String convertToString(EDataType eDataType, Object instanceValue) {
+    public String convertToString(EDataType eDataType,
+                                  Object instanceValue)
+    {
         switch (eDataType.getClassifierID()) {
-        case StrategyEngineCorePackage.CONNECTION_STATE:
-            return convertConnectionStateToString(eDataType, instanceValue);
-        case StrategyEngineCorePackage.STRATEGY_STATE:
-            return convertStrategyStateToString(eDataType, instanceValue);
-        case StrategyEngineCorePackage.MODULE_URN:
-            return convertModuleURNToString(eDataType, instanceValue);
-        case StrategyEngineCorePackage.EXCEPTION:
-            return convertExceptionToString(eDataType, instanceValue);
-        default:
-            throw new IllegalArgumentException("The datatype '"
-                    + eDataType.getName() + "' is not a valid classifier");
+            case StrategyEngineCorePackage.CONNECTION_STATE:
+                return convertConnectionStateToString(eDataType,
+                                                      instanceValue);
+            case StrategyEngineCorePackage.STRATEGY_STATE:
+                return convertStrategyStateToString(eDataType,
+                                                    instanceValue);
+            case StrategyEngineCorePackage.MODULE_URN:
+                return convertModuleURNToString(eDataType,
+                                                instanceValue);
+            case StrategyEngineCorePackage.EXCEPTION:
+                return convertExceptionToString(eDataType,
+                                                instanceValue);
+            default:
+                throw new IllegalArgumentException("The datatype '" + eDataType.getName()
+                        + "' is not a valid classifier");
         }
     }
 
@@ -132,7 +148,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public StrategyEngine createStrategyEngine() {
+    public StrategyEngine createStrategyEngine()
+    {
         StrategyEngineImpl strategyEngine = new StrategyEngineImpl();
         return strategyEngine;
     }
@@ -142,7 +159,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public Strategy createStrategy() {
+    public Strategy createStrategy()
+    {
         StrategyImpl strategy = new StrategyImpl();
         return strategy;
     }
@@ -152,7 +170,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public DeployedStrategy createDeployedStrategy() {
+    public DeployedStrategy createDeployedStrategy()
+    {
         DeployedStrategyImpl deployedStrategy = new DeployedStrategyImpl();
         return deployedStrategy;
     }
@@ -162,7 +181,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public Map.Entry<String, String> createStringToStringMapEntry() {
+    public Map.Entry<String, String> createStringToStringMapEntry()
+    {
         StringToStringMapEntryImpl stringToStringMapEntry = new StringToStringMapEntryImpl();
         return stringToStringMapEntry;
     }
@@ -173,12 +193,12 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     public ConnectionState createConnectionStateFromString(EDataType eDataType,
-            String initialValue) {
+                                                           String initialValue)
+    {
         ConnectionState result = ConnectionState.get(initialValue);
         if (result == null)
-            throw new IllegalArgumentException("The value '" + initialValue
-                    + "' is not a valid enumerator of '" + eDataType.getName()
-                    + "'");
+            throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '"
+                    + eDataType.getName() + "'");
         return result;
     }
 
@@ -188,7 +208,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     public String convertConnectionStateToString(EDataType eDataType,
-            Object instanceValue) {
+                                                 Object instanceValue)
+    {
         return instanceValue == null ? null : instanceValue.toString();
     }
 
@@ -198,12 +219,12 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     public StrategyState createStrategyStateFromString(EDataType eDataType,
-            String initialValue) {
+                                                       String initialValue)
+    {
         StrategyState result = StrategyState.get(initialValue);
         if (result == null)
-            throw new IllegalArgumentException("The value '" + initialValue
-                    + "' is not a valid enumerator of '" + eDataType.getName()
-                    + "'");
+            throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '"
+                    + eDataType.getName() + "'");
         return result;
     }
 
@@ -213,7 +234,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     public String convertStrategyStateToString(EDataType eDataType,
-            Object instanceValue) {
+                                               Object instanceValue)
+    {
         return instanceValue == null ? null : instanceValue.toString();
     }
 
@@ -223,8 +245,10 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     public ModuleURN createModuleURNFromString(EDataType eDataType,
-            String initialValue) {
-        return (ModuleURN) super.createFromString(eDataType, initialValue);
+                                               String initialValue)
+    {
+        return (ModuleURN) super.createFromString(eDataType,
+                                                  initialValue);
     }
 
     /**
@@ -233,8 +257,10 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     public String convertModuleURNToString(EDataType eDataType,
-            Object instanceValue) {
-        return super.convertToString(eDataType, instanceValue);
+                                           Object instanceValue)
+    {
+        return super.convertToString(eDataType,
+                                     instanceValue);
     }
 
     /**
@@ -243,8 +269,10 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     public Exception createExceptionFromString(EDataType eDataType,
-            String initialValue) {
-        return (Exception) super.createFromString(eDataType, initialValue);
+                                               String initialValue)
+    {
+        return (Exception) super.createFromString(eDataType,
+                                                  initialValue);
     }
 
     /**
@@ -253,8 +281,10 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     public String convertExceptionToString(EDataType eDataType,
-            Object instanceValue) {
-        return super.convertToString(eDataType, instanceValue);
+                                           Object instanceValue)
+    {
+        return super.convertToString(eDataType,
+                                     instanceValue);
     }
 
     /**
@@ -262,7 +292,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public StrategyEngineCorePackage getStrategyEngineCorePackage() {
+    public StrategyEngineCorePackage getStrategyEngineCorePackage()
+    {
         return (StrategyEngineCorePackage) getEPackage();
     }
 
@@ -273,7 +304,8 @@ public class StrategyEngineCoreFactoryImpl extends EFactoryImpl implements
      * @generated
      */
     @Deprecated
-    public static StrategyEngineCorePackage getPackage() {
+    public static StrategyEngineCorePackage getPackage()
+    {
         return StrategyEngineCorePackage.eINSTANCE;
     }
 

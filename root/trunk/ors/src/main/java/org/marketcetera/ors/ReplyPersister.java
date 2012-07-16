@@ -4,6 +4,7 @@ import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportSavedListener;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
@@ -163,39 +164,104 @@ public class ReplyPersister
      * the special case of returning {@link Principals#UNKNOWN}.
      */
 
-    public Principals getPrincipals
-        (Message msg,
-         boolean isAck)
+    public Principals getPrincipals(Message inMessage,
+                                     boolean isAck)
     {
         OrderID orderID;
         try {
-            orderID=new OrderID(msg.getString(ClOrdID.FIELD));
-        } catch(FieldNotFound ex) {
+            orderID = getOrderIDFrom(inMessage,
+                                     ClOrdID.FIELD);
+        } catch (FieldNotFound e) {
+            SLF4JLoggerProxy.warn(ReplyPersister.class,
+                                  e,
+                                  "An error occurred retrieving field {} from {} so the principals cannot be determined", // TODO this message needs to go to the order catalog
+                                  ClOrdID.FIELD,
+                                  inMessage);
             return Principals.UNKNOWN;
         }
-        OrderInfo info=getCache().get(orderID);
-
-        // The map entry has been removed hence the actor/view
-        // information has moved into the database.
-
-        if (info==null) {
-            try {
-                return getHistoryServices().getPrincipals(orderID);
-            } catch (PersistenceException ex) {
-                Messages.RP_GET_FROM_DB_FAILED.warn(this,ex,orderID);
-                return Principals.UNKNOWN;
+        OrderInfo info;
+        if(orderID != null) {
+            info = getCache().get(orderID);
+            if(info != null) {
+                Principals principals = getPrincipalsFromInfo(inMessage,
+                                                              isAck,
+                                                              info);
+                if(principals.getActorID() != null &&
+                   principals.getViewerID() != null) {
+                    return principals;
+                }
             }
         }
-
-        // Part of (or all of) the order chain is in the map. If the
-        // viewer has not yet been determined, copy the parent's
-        // viewer; the parent's viewer is assumed to have been set
-        // because it should not be possible to create a child before
-        // this method is invoked at least once on the parent prior to
-        // sending the parent to the ORS client.
-
-        if (!info.isViewerIDSet()) {
-            orderID=info.getOrigOrderID();
+        // hmm, couldn't find info from the orderID,
+        //  try using the origOrderID
+        OrderID origOrderID;
+        try {
+            origOrderID = getOrderIDFrom(inMessage,
+                                         OrigClOrdID.FIELD);
+        } catch (FieldNotFound e) {
+            SLF4JLoggerProxy.warn(ReplyPersister.class,
+                                  e,
+                                  "An error occurred retrieving field {} from {} so the principals cannot be determined", // TODO this message needs to go to the order catalog
+                                  OrigClOrdID.FIELD,
+                                  inMessage);
+            return Principals.UNKNOWN;
+        }
+        if(origOrderID == null) {
+            SLF4JLoggerProxy.warn(ReplyPersister.class,
+                                  "Message {} contains neither ClOrdID (11) nor OrigClOrdID (41) so the principals cannot be determined", // TODO this message needs to go to the order catalog
+                                  inMessage);
+            return Principals.UNKNOWN;
+        }
+        info = getCache().get(origOrderID);
+        if(info != null) {
+            Principals principals = getPrincipalsFromInfo(inMessage,
+                                                          isAck,
+                                                          info);
+            if(principals.getActorID() != null &&
+               principals.getViewerID() != null) {
+                return principals;
+            }
+        }
+        // so now, we're stuck, we don't have any other way of getting the principals 
+        SLF4JLoggerProxy.warn(ReplyPersister.class,
+                              "Message {} could not be mapped to a known order so the principals cannot be determined", // TODO this message needs to go to the order catalog
+                              inMessage);
+        return Principals.UNKNOWN;
+    }
+    /**
+     * Constructs an <code>OrderID</code> object from the given field of the given <code>Message</code>.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inField an <code>int</code> value
+     * @return an <code>OrderID</code> value or <code>null</code> if the given field does not exist on the given <code>Message</code>
+     * @throws FieldNotFound if an error occurs retrieving the field from the <code>Message</code>
+     */
+    private OrderID getOrderIDFrom(Message inMessage,
+                                   int inField)
+            throws FieldNotFound
+    {
+        if(inMessage.isSetField(inField)) {
+            return new OrderID(inMessage.getString(inField));
+        }
+        return null;
+    }
+    /**
+     * Gets the <code>Principals</code> associated with the given <code>Message</code> and <code>OrderInfo</code>.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param isAck a <code>boolean</code> value
+     * @param inInfo an <code>OrderInfo</code> value
+     * @return a <code>Principals</code> value
+     * @throws IllegalStateException if the given <code>OrderInfo</code> is malformed
+     */
+    private Principals getPrincipalsFromInfo(Message inMessage,
+                                             boolean isAck,
+                                             OrderInfo inInfo)
+    {
+    	OrderID orderID = null;
+        
+    	if (!inInfo.isViewerIDSet()) {
+            orderID=inInfo.getOrigOrderID();
             // orderID cannot be null because, if it were, the viewer
             // would have been set to the actor.
             if (orderID==null) {
@@ -218,20 +284,20 @@ public class ReplyPersister
                     viewerID=null;
                 }
             }
-            info.setViewerID(viewerID);
+            inInfo.setViewerID(viewerID);
         }
 
         // Update cache entry flags.
 
         if (isAck) {
-            info.setAckProcessed(true);
+            inInfo.setAckProcessed(true);
         } else {
-            info.setResponseProcessed(true);
+            inInfo.setResponseProcessed(true);
         }
-        info.setMessageProcessed(msg);
+        inInfo.setMessageProcessed(inMessage);
 
         // Return result.
 
-        return new Principals(info.getActorID(),info.getViewerID());
+        return new Principals(inInfo.getActorID(),inInfo.getViewerID());
     }
 }

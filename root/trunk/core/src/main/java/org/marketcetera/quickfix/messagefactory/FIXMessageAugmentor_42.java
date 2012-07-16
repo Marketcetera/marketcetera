@@ -3,7 +3,7 @@ package org.marketcetera.quickfix.messagefactory;
 import java.util.Arrays;
 
 import org.marketcetera.core.ClassVersion;
-
+import quickfix.Message;
 import quickfix.field.MsgType;
 
 /**
@@ -27,7 +27,16 @@ public class FIXMessageAugmentor_42 extends FIXMessageAugmentor_41 {
                 MsgType.MASS_QUOTE
     };
 
-
+    @Override
+    public Message newOrderSingleAugment(Message inMessage) {
+        return inMessage;
+    }
+    
+    @Override
+    public Message cancelReplaceRequestAugment(Message inMessage) {
+        return inMessage;
+    }
+    
     public FIXMessageAugmentor_42() {
         applicableMsgTypes.addAll(Arrays.asList(TT_APPLICABLE_MESSAGE_CODES));
     }

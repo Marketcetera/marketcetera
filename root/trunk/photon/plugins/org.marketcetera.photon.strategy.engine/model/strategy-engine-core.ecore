@@ -36,6 +36,9 @@
       <eParameters name="strategy" lowerBound="1" eType="#//DeployedStrategy"/>
     </eOperations>
     <eOperations name="refresh" eExceptions="#//Exception"/>
+    <eOperations name="sendData" eExceptions="#//Exception">
+      <eParameters name="data" eType="#//Object"/>
+    </eOperations>
     <eStructuralFeatures xsi:type="ecore:EReference" name="engine" lowerBound="1"
         eType="#//StrategyEngine" transient="true" eOpposite="#//StrategyEngine/connection"/>
   </eClassifiers>
@@ -74,4 +77,6 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="Exception" instanceClassName="java.lang.Exception"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="Object" instanceClassName="java.lang.Object"
+      serializable="false"/>
 </ecore:EPackage>

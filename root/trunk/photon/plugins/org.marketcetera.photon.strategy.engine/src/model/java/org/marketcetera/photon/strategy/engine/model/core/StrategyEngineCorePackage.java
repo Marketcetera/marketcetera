@@ -28,10 +28,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCoreFactory
  * @model kind="package"
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface StrategyEngineCorePackage extends EPackage {
+public interface StrategyEngineCorePackage
+        extends EPackage
+{
     /**
      * The package name.
      * <!-- begin-user-doc -->
@@ -417,6 +419,16 @@ public interface StrategyEngineCorePackage extends EPackage {
     int EXCEPTION = 8;
 
     /**
+     * The meta object id for the '<em>Object</em>' data type.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see java.lang.Object
+     * @see org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineCorePackageImpl#getObject()
+     * @generated
+     */
+    int OBJECT = 9;
+
+    /**
      * Returns the meta object for class '{@link org.marketcetera.photon.strategy.engine.model.core.StrategyEngine <em>Strategy Engine</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -709,6 +721,17 @@ public interface StrategyEngineCorePackage extends EPackage {
     EDataType getException();
 
     /**
+     * Returns the meta object for data type '{@link java.lang.Object <em>Object</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for data type '<em>Object</em>'.
+     * @see java.lang.Object
+     * @model instanceClass="java.lang.Object" serializeable="false"
+     * @generated
+     */
+    EDataType getObject();
+
+    /**
      * Returns the factory that creates the instances of the model.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -729,7 +752,8 @@ public interface StrategyEngineCorePackage extends EPackage {
      * <!-- end-user-doc -->
      * @generated
      */
-    interface Literals {
+    interface Literals
+    {
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineImpl <em>Strategy Engine</em>}' class.
          * <!-- begin-user-doc -->
@@ -754,8 +778,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute STRATEGY_ENGINE__DESCRIPTION = eINSTANCE
-                .getStrategyEngine_Description();
+        EAttribute STRATEGY_ENGINE__DESCRIPTION = eINSTANCE.getStrategyEngine_Description();
 
         /**
          * The meta object literal for the '<em><b>Connection State</b></em>' attribute feature.
@@ -763,8 +786,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute STRATEGY_ENGINE__CONNECTION_STATE = eINSTANCE
-                .getStrategyEngine_ConnectionState();
+        EAttribute STRATEGY_ENGINE__CONNECTION_STATE = eINSTANCE.getStrategyEngine_ConnectionState();
 
         /**
          * The meta object literal for the '<em><b>Connection</b></em>' reference feature.
@@ -772,8 +794,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference STRATEGY_ENGINE__CONNECTION = eINSTANCE
-                .getStrategyEngine_Connection();
+        EReference STRATEGY_ENGINE__CONNECTION = eINSTANCE.getStrategyEngine_Connection();
 
         /**
          * The meta object literal for the '<em><b>Deployed Strategies</b></em>' reference list feature.
@@ -781,8 +802,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference STRATEGY_ENGINE__DEPLOYED_STRATEGIES = eINSTANCE
-                .getStrategyEngine_DeployedStrategies();
+        EReference STRATEGY_ENGINE__DEPLOYED_STRATEGIES = eINSTANCE.getStrategyEngine_DeployedStrategies();
 
         /**
          * The meta object literal for the '<em><b>Read Only</b></em>' attribute feature.
@@ -790,8 +810,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute STRATEGY_ENGINE__READ_ONLY = eINSTANCE
-                .getStrategyEngine_ReadOnly();
+        EAttribute STRATEGY_ENGINE__READ_ONLY = eINSTANCE.getStrategyEngine_ReadOnly();
 
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineConnectionImpl <em>Strategy Engine Connection</em>}' class.
@@ -801,8 +820,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * @see org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineCorePackageImpl#getStrategyEngineConnection()
          * @generated
          */
-        EClass STRATEGY_ENGINE_CONNECTION = eINSTANCE
-                .getStrategyEngineConnection();
+        EClass STRATEGY_ENGINE_CONNECTION = eINSTANCE.getStrategyEngineConnection();
 
         /**
          * The meta object literal for the '<em><b>Engine</b></em>' reference feature.
@@ -810,8 +828,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference STRATEGY_ENGINE_CONNECTION__ENGINE = eINSTANCE
-                .getStrategyEngineConnection_Engine();
+        EReference STRATEGY_ENGINE_CONNECTION__ENGINE = eINSTANCE.getStrategyEngineConnection_Engine();
 
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.strategy.engine.model.core.impl.StrategyImpl <em>Strategy</em>}' class.
@@ -829,8 +846,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute STRATEGY__INSTANCE_NAME = eINSTANCE
-                .getStrategy_InstanceName();
+        EAttribute STRATEGY__INSTANCE_NAME = eINSTANCE.getStrategy_InstanceName();
 
         /**
          * The meta object literal for the '<em><b>Language</b></em>' attribute feature.
@@ -862,8 +878,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute STRATEGY__ROUTE_ORDERS_TO_SERVER = eINSTANCE
-                .getStrategy_RouteOrdersToServer();
+        EAttribute STRATEGY__ROUTE_ORDERS_TO_SERVER = eINSTANCE.getStrategy_RouteOrdersToServer();
 
         /**
          * The meta object literal for the '<em><b>Parameters</b></em>' map feature.
@@ -889,8 +904,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference DEPLOYED_STRATEGY__ENGINE = eINSTANCE
-                .getDeployedStrategy_Engine();
+        EReference DEPLOYED_STRATEGY__ENGINE = eINSTANCE.getDeployedStrategy_Engine();
 
         /**
          * The meta object literal for the '<em><b>State</b></em>' attribute feature.
@@ -898,8 +912,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute DEPLOYED_STRATEGY__STATE = eINSTANCE
-                .getDeployedStrategy_State();
+        EAttribute DEPLOYED_STRATEGY__STATE = eINSTANCE.getDeployedStrategy_State();
 
         /**
          * The meta object literal for the '<em><b>Urn</b></em>' attribute feature.
@@ -917,8 +930,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * @see org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineCorePackageImpl#getStringToStringMapEntry()
          * @generated
          */
-        EClass STRING_TO_STRING_MAP_ENTRY = eINSTANCE
-                .getStringToStringMapEntry();
+        EClass STRING_TO_STRING_MAP_ENTRY = eINSTANCE.getStringToStringMapEntry();
 
         /**
          * The meta object literal for the '<em><b>Key</b></em>' attribute feature.
@@ -926,8 +938,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute STRING_TO_STRING_MAP_ENTRY__KEY = eINSTANCE
-                .getStringToStringMapEntry_Key();
+        EAttribute STRING_TO_STRING_MAP_ENTRY__KEY = eINSTANCE.getStringToStringMapEntry_Key();
 
         /**
          * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
@@ -935,8 +946,7 @@ public interface StrategyEngineCorePackage extends EPackage {
          * <!-- end-user-doc -->
          * @generated
          */
-        EAttribute STRING_TO_STRING_MAP_ENTRY__VALUE = eINSTANCE
-                .getStringToStringMapEntry_Value();
+        EAttribute STRING_TO_STRING_MAP_ENTRY__VALUE = eINSTANCE.getStringToStringMapEntry_Value();
 
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.strategy.engine.model.core.ConnectionState <em>Connection State</em>}' enum.
@@ -977,6 +987,16 @@ public interface StrategyEngineCorePackage extends EPackage {
          * @generated
          */
         EDataType EXCEPTION = eINSTANCE.getException();
+
+        /**
+         * The meta object literal for the '<em>Object</em>' data type.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see java.lang.Object
+         * @see org.marketcetera.photon.strategy.engine.model.core.impl.StrategyEngineCorePackageImpl#getObject()
+         * @generated
+         */
+        EDataType OBJECT = eINSTANCE.getObject();
 
     }
 

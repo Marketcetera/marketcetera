@@ -33,11 +33,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class StringToStringMapEntryImpl extends EObjectImpl implements
-        BasicEMap.Entry<String, String> {
+public class StringToStringMapEntryImpl
+        extends EObjectImpl
+        implements BasicEMap.Entry<String, String>
+{
     /**
      * The default value of the '{@link #getTypedKey() <em>Key</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -83,7 +85,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    protected StringToStringMapEntryImpl() {
+    protected StringToStringMapEntryImpl()
+    {
         super();
     }
 
@@ -93,7 +96,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      */
     @Override
-    protected EClass eStaticClass() {
+    protected EClass eStaticClass()
+    {
         return StrategyEngineCorePackage.Literals.STRING_TO_STRING_MAP_ENTRY;
     }
 
@@ -102,7 +106,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getTypedKey() {
+    public String getTypedKey()
+    {
         return key;
     }
 
@@ -111,13 +116,16 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setTypedKey(String newKey) {
+    public void setTypedKey(String newKey)
+    {
         String oldKey = key;
         key = newKey;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY,
-                    oldKey, key));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY,
+                                          oldKey,
+                                          key));
     }
 
     /**
@@ -125,7 +133,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getTypedValue() {
+    public String getTypedValue()
+    {
         return value;
     }
 
@@ -134,15 +143,16 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setTypedValue(String newValue) {
+    public void setTypedValue(String newValue)
+    {
         String oldValue = value;
         value = newValue;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(
-                    this,
-                    Notification.SET,
-                    StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE,
-                    oldValue, value));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE,
+                                          oldValue,
+                                          value));
     }
 
     /**
@@ -151,14 +161,19 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      */
     @Override
-    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    public Object eGet(int featureID,
+                       boolean resolve,
+                       boolean coreType)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY:
-            return getTypedKey();
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE:
-            return getTypedValue();
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY:
+                return getTypedKey();
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE:
+                return getTypedValue();
         }
-        return super.eGet(featureID, resolve, coreType);
+        return super.eGet(featureID,
+                          resolve,
+                          coreType);
     }
 
     /**
@@ -167,16 +182,19 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      */
     @Override
-    public void eSet(int featureID, Object newValue) {
+    public void eSet(int featureID,
+                     Object newValue)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY:
-            setTypedKey((String) newValue);
-            return;
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE:
-            setTypedValue((String) newValue);
-            return;
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY:
+                setTypedKey((String) newValue);
+                return;
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE:
+                setTypedValue((String) newValue);
+                return;
         }
-        super.eSet(featureID, newValue);
+        super.eSet(featureID,
+                   newValue);
     }
 
     /**
@@ -185,14 +203,15 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      */
     @Override
-    public void eUnset(int featureID) {
+    public void eUnset(int featureID)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY:
-            setTypedKey(KEY_EDEFAULT);
-            return;
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE:
-            setTypedValue(VALUE_EDEFAULT);
-            return;
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY:
+                setTypedKey(KEY_EDEFAULT);
+                return;
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE:
+                setTypedValue(VALUE_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -203,14 +222,13 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      */
     @Override
-    public boolean eIsSet(int featureID) {
+    public boolean eIsSet(int featureID)
+    {
         switch (featureID) {
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY:
-            return KEY_EDEFAULT == null ? key != null : !KEY_EDEFAULT
-                    .equals(key);
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE:
-            return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT
-                    .equals(value);
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__KEY:
+                return KEY_EDEFAULT == null ? key != null : !KEY_EDEFAULT.equals(key);
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY__VALUE:
+                return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
         }
         return super.eIsSet(featureID);
     }
@@ -221,7 +239,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         if (eIsProxy())
             return super.toString();
 
@@ -246,7 +265,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public int getHash() {
+    public int getHash()
+    {
         if (hash == -1) {
             Object theKey = getKey();
             hash = (theKey == null ? 0 : theKey.hashCode());
@@ -259,7 +279,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setHash(int hash) {
+    public void setHash(int hash)
+    {
         this.hash = hash;
     }
 
@@ -268,7 +289,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getKey() {
+    public String getKey()
+    {
         return getTypedKey();
     }
 
@@ -277,7 +299,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setKey(String key) {
+    public void setKey(String key)
+    {
         setTypedKey(key);
     }
 
@@ -286,7 +309,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getValue() {
+    public String getValue()
+    {
         return getTypedValue();
     }
 
@@ -295,7 +319,8 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * <!-- end-user-doc -->
      * @generated
      */
-    public String setValue(String value) {
+    public String setValue(String value)
+    {
         String oldValue = getValue();
         setTypedValue(value);
         return oldValue;
@@ -307,10 +332,10 @@ public class StringToStringMapEntryImpl extends EObjectImpl implements
      * @generated
      */
     @SuppressWarnings("unchecked")
-    public EMap<String, String> getEMap() {
+    public EMap<String, String> getEMap()
+    {
         EObject container = eContainer();
-        return container == null ? null : (EMap<String, String>) container
-                .eGet(eContainmentFeature());
+        return container == null ? null : (EMap<String, String>) container.eGet(eContainmentFeature());
     }
 
 } //StringToStringMapEntryImpl

@@ -31,10 +31,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getStrategy()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface Strategy extends EObject {
+public interface Strategy
+        extends EObject
+{
     /**
      * Returns the value of the '<em><b>Instance Name</b></em>' attribute.
      * <!-- begin-user-doc -->

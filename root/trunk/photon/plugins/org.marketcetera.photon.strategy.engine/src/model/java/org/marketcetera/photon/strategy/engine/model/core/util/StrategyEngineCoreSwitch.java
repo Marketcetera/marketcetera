@@ -27,10 +27,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class StrategyEngineCoreSwitch<T> {
+public class StrategyEngineCoreSwitch<T>
+{
     /**
      * The cached model package
      * <!-- begin-user-doc -->
@@ -45,7 +46,8 @@ public class StrategyEngineCoreSwitch<T> {
      * <!-- end-user-doc -->
      * @generated
      */
-    public StrategyEngineCoreSwitch() {
+    public StrategyEngineCoreSwitch()
+    {
         if (modelPackage == null) {
             modelPackage = StrategyEngineCorePackage.eINSTANCE;
         }
@@ -58,8 +60,10 @@ public class StrategyEngineCoreSwitch<T> {
      * @return the first non-null result returned by a <code>caseXXX</code> call.
      * @generated
      */
-    public T doSwitch(EObject theEObject) {
-        return doSwitch(theEObject.eClass(), theEObject);
+    public T doSwitch(EObject theEObject)
+    {
+        return doSwitch(theEObject.eClass(),
+                        theEObject);
     }
 
     /**
@@ -69,13 +73,16 @@ public class StrategyEngineCoreSwitch<T> {
      * @return the first non-null result returned by a <code>caseXXX</code> call.
      * @generated
      */
-    protected T doSwitch(EClass theEClass, EObject theEObject) {
+    protected T doSwitch(EClass theEClass,
+                         EObject theEObject)
+    {
         if (theEClass.eContainer() == modelPackage) {
-            return doSwitch(theEClass.getClassifierID(), theEObject);
+            return doSwitch(theEClass.getClassifierID(),
+                            theEObject);
         } else {
             List<EClass> eSuperTypes = theEClass.getESuperTypes();
-            return eSuperTypes.isEmpty() ? defaultCase(theEObject) : doSwitch(
-                    eSuperTypes.get(0), theEObject);
+            return eSuperTypes.isEmpty() ? defaultCase(theEObject) : doSwitch(eSuperTypes.get(0),
+                                                                              theEObject);
         }
     }
 
@@ -86,48 +93,50 @@ public class StrategyEngineCoreSwitch<T> {
      * @return the first non-null result returned by a <code>caseXXX</code> call.
      * @generated
      */
-    protected T doSwitch(int classifierID, EObject theEObject) {
+    protected T doSwitch(int classifierID,
+                         EObject theEObject)
+    {
         switch (classifierID) {
-        case StrategyEngineCorePackage.STRATEGY_ENGINE: {
-            StrategyEngine strategyEngine = (StrategyEngine) theEObject;
-            T result = caseStrategyEngine(strategyEngine);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case StrategyEngineCorePackage.STRATEGY_ENGINE_CONNECTION: {
-            StrategyEngineConnection strategyEngineConnection = (StrategyEngineConnection) theEObject;
-            T result = caseStrategyEngineConnection(strategyEngineConnection);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case StrategyEngineCorePackage.STRATEGY: {
-            Strategy strategy = (Strategy) theEObject;
-            T result = caseStrategy(strategy);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case StrategyEngineCorePackage.DEPLOYED_STRATEGY: {
-            DeployedStrategy deployedStrategy = (DeployedStrategy) theEObject;
-            T result = caseDeployedStrategy(deployedStrategy);
-            if (result == null)
-                result = caseStrategy(deployedStrategy);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY: {
-            @SuppressWarnings("unchecked")
-            Map.Entry<String, String> stringToStringMapEntry = (Map.Entry<String, String>) theEObject;
-            T result = caseStringToStringMapEntry(stringToStringMapEntry);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        default:
-            return defaultCase(theEObject);
+            case StrategyEngineCorePackage.STRATEGY_ENGINE: {
+                StrategyEngine strategyEngine = (StrategyEngine) theEObject;
+                T result = caseStrategyEngine(strategyEngine);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case StrategyEngineCorePackage.STRATEGY_ENGINE_CONNECTION: {
+                StrategyEngineConnection strategyEngineConnection = (StrategyEngineConnection) theEObject;
+                T result = caseStrategyEngineConnection(strategyEngineConnection);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case StrategyEngineCorePackage.STRATEGY: {
+                Strategy strategy = (Strategy) theEObject;
+                T result = caseStrategy(strategy);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case StrategyEngineCorePackage.DEPLOYED_STRATEGY: {
+                DeployedStrategy deployedStrategy = (DeployedStrategy) theEObject;
+                T result = caseDeployedStrategy(deployedStrategy);
+                if (result == null)
+                    result = caseStrategy(deployedStrategy);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case StrategyEngineCorePackage.STRING_TO_STRING_MAP_ENTRY: {
+                @SuppressWarnings("unchecked")
+                Map.Entry<String, String> stringToStringMapEntry = (Map.Entry<String, String>) theEObject;
+                T result = caseStringToStringMapEntry(stringToStringMapEntry);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            default:
+                return defaultCase(theEObject);
         }
     }
 
@@ -142,7 +151,8 @@ public class StrategyEngineCoreSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseStrategyEngine(StrategyEngine object) {
+    public T caseStrategyEngine(StrategyEngine object)
+    {
         return null;
     }
 
@@ -157,7 +167,8 @@ public class StrategyEngineCoreSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseStrategyEngineConnection(StrategyEngineConnection object) {
+    public T caseStrategyEngineConnection(StrategyEngineConnection object)
+    {
         return null;
     }
 
@@ -172,7 +183,8 @@ public class StrategyEngineCoreSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseStrategy(Strategy object) {
+    public T caseStrategy(Strategy object)
+    {
         return null;
     }
 
@@ -187,7 +199,8 @@ public class StrategyEngineCoreSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseDeployedStrategy(DeployedStrategy object) {
+    public T caseDeployedStrategy(DeployedStrategy object)
+    {
         return null;
     }
 
@@ -202,7 +215,8 @@ public class StrategyEngineCoreSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseStringToStringMapEntry(Map.Entry<String, String> object) {
+    public T caseStringToStringMapEntry(Map.Entry<String, String> object)
+    {
         return null;
     }
 
@@ -217,7 +231,8 @@ public class StrategyEngineCoreSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject)
      * @generated
      */
-    public T defaultCase(EObject object) {
+    public T defaultCase(EObject object)
+    {
         return null;
     }
 

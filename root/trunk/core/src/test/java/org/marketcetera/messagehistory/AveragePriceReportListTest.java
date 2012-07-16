@@ -79,7 +79,7 @@ public class AveragePriceReportListTest extends FIXVersionedTestCase {
         
         Message message5 = msgFactory.newExecutionReport("clordid1",
                 "clordid1", "execido1", OrdStatus.PARTIALLY_FILLED, Side.BUY,
-                new BigDecimal(300), null, new BigDecimal(110), null,
+                new BigDecimal(300), new BigDecimal(111), new BigDecimal(110), null,
                 new BigDecimal(110), new BigDecimal(111),
                 new Equity("IBM"), "account", "text");
         message5.setField(new LeavesQty(190.0));

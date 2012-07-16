@@ -26,10 +26,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see org.marketcetera.photon.strategy.engine.model.core.StrategyEngineCorePackage#getDeployedStrategy()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface DeployedStrategy extends Strategy {
+public interface DeployedStrategy
+        extends Strategy
+{
     /**
      * Returns the value of the '<em><b>Engine</b></em>' reference.
      * It is bidirectional and its opposite is '{@link org.marketcetera.photon.strategy.engine.model.core.StrategyEngine#getDeployedStrategies <em>Deployed Strategies</em>}'.
