@@ -94,7 +94,8 @@ while (@ARGV) {
         print OUT 'CD %METC_HOME%\\%APPLICATION_DIR%'.$sep.$sep;
 
         print OUT 'SET THE_CLASSPATH=.\\conf'.$sep;
-        print OUT 'FOR /F %%f IN (\'DIR /B /O:N .\\lib\\*.jar\') DO CALL :SETCP .\\lib\\%%f'.$sep.$sep;
+        print OUT 'FOR /F %%f IN (\'DIR /B /O:N .\\lib\\*.jar\') DO CALL :SETCP .\\lib\\%%f'.$sep;
+        print OUT 'FOR /F %%f IN (\'DIR /B /O:N ..\\jre\\lib\\*.jar\') DO CALL :SETCP ..\\jre\\lib\\%%f'.$sep.$sep;
 
         print OUT 'java.exe '.$commonArgs.
                 ' -Dorg.marketcetera.appDir=%METC_HOME%\\%APPLICATION_DIR%^'.$sep;
