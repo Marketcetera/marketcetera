@@ -17,10 +17,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Bogus feed {@link EventTranslator} instance.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BogusFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class BogusFeedEventTranslator
         implements EventTranslator, Messages
 {

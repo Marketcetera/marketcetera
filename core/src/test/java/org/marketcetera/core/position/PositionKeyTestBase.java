@@ -19,7 +19,7 @@ import com.google.common.collect.Iterables;
  * Base class for testing PositionKey implementations.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionKeyTestBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public abstract class PositionKeyTestBase {

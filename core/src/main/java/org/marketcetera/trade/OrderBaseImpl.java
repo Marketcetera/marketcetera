@@ -16,10 +16,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * JAXB and is not intended for general use.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderBaseImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderBaseImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 /*
  * Use field accessors otherwise custom fields do not get unmarshalled. This
  * happens because JAXB expects to be able to modify the Map after supplying it

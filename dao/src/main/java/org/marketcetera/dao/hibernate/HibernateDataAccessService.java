@@ -16,12 +16,12 @@ import org.springframework.stereotype.Repository;
  * Provides hibernate-based access service for system objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HibernateDataAccessService.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @MappedSuperclass
 @Repository
-@ClassVersion("$Id: HibernateDataAccessService.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class HibernateDataAccessService
         implements DataAccessService
 {

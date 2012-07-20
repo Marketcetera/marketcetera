@@ -6,7 +6,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: SetterContextGenericTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

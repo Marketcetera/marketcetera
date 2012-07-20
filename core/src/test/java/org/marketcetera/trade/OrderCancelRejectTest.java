@@ -21,10 +21,10 @@ import quickfix.field.converter.UtcTimestampConverter;
  * Tests {@link OrderCancelReject}
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderCancelRejectTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderCancelRejectTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderCancelRejectTest extends TypesTestBase {
     /**
      * Test report creation failures.

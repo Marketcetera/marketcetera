@@ -12,12 +12,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * to enable emitters to emit data for a data flow. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: DataEmitterSupport.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  * 
  * @see DataEmitter
  */
-@ClassVersion("$Id: DataEmitterSupport.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public interface DataEmitterSupport {
     /**
      * Sends the data to any downstream module

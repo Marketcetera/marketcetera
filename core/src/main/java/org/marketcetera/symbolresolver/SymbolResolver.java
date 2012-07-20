@@ -9,10 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Resolves symbols to instruments.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SymbolResolver.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: SymbolResolver.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface SymbolResolver
 {
     /**

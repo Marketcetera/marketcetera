@@ -12,10 +12,10 @@ import java.util.Iterator;
  * Tests {@link CheckpointInfo}, {@link IterationInfo} & {@link PerThreadInfo}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: InfoTests.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: InfoTests.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class InfoTests {
     /**
      * Tests {@link CheckpointInfo}

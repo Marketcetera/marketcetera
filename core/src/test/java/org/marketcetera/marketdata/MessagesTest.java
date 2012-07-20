@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 /**
  * @author klim@marketcetera.com
  * @since 0.6.0
- * @version $Id: MessagesTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 public class MessagesTest
     extends TestCaseBase

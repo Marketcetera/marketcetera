@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * receiving data from other modules within a data flow.
  *
  * @author anshul@marketcetera.com
- * @version $Id: DataReceiver.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataReceiver.java 16063 2012-01-31 18:21:55Z colin $")   //$NON-NLS-1$
+@ClassVersion("$Id$")   //$NON-NLS-1$
 public interface DataReceiver {
     /**
      * The module framework invokes this method to supply data to this module.

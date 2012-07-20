@@ -24,12 +24,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: UnicodeFileWriter.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: UnicodeFileWriter.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class UnicodeFileWriter
     extends UnicodeOutputStreamWriter
 {

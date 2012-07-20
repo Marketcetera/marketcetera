@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * to receive data completes.
  *
  * @author anshul@marketcetera.com
- * @version $Id: SyncCoupler.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: SyncCoupler.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 class SyncCoupler extends AbstractDataCoupler {
     /**
      * Creates an instance.

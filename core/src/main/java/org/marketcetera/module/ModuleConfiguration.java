@@ -12,11 +12,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides configuration properties for a module.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ModuleConfiguration.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @NotThreadSafe
-@ClassVersion("$Id: ModuleConfiguration.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ModuleConfiguration
 {
     /**

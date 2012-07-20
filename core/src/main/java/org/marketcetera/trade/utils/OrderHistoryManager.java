@@ -24,11 +24,11 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
  * Manages order history for multiple orders throughout the order lifecycle.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OrderHistoryManager.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
 @ThreadSafe
-@ClassVersion("$Id: OrderHistoryManager.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class OrderHistoryManager
 {
     /**
@@ -387,11 +387,11 @@ public class OrderHistoryManager
      * act of invoking <code>add</code> implicitly establishes this fact.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: OrderHistoryManager.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 2.1.4
      */
     @NotThreadSafe
-    @ClassVersion("$Id: OrderHistoryManager.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private static class OrderHistory
     {
         /* (non-Javadoc)

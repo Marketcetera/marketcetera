@@ -7,10 +7,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Identifies the type of entity that originated the report.
  *
  * @author anshul@marketcetera.com
- * @version $Id: Originator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Originator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum Originator {
     /**
      * Indicates that the report was originated by the system's server.

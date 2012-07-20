@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: RandomStringsTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

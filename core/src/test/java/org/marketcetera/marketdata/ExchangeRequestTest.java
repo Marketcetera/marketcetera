@@ -22,7 +22,7 @@ import org.marketcetera.trade.OptionType;
  * Tests {@link ExchangeRequest} and {@link ExchangeRequestBuilder}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ExchangeRequestTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class ExchangeRequestTest

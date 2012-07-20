@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: EmitterModuleFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class EmitterModuleFactory extends ModuleFactory {
     public EmitterModuleFactory() {
         super(PROVIDER_URN, TestMessages.EMIT_PROVIDER, false, false);

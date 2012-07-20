@@ -14,10 +14,10 @@ import java.util.Date;
  * Provided detailed information on a module instance.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ModuleInfo.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleInfo.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class ModuleInfo implements Serializable {
 

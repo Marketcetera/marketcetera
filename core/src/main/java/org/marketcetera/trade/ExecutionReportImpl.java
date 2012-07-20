@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  * is public for the sake of JAXB and is not intended for general use.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ExecutionReportImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionReportImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 @XmlRootElement
 public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
 

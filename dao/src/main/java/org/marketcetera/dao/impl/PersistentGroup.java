@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Persistent implementation of {@link Group}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentGroup.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @ThreadSafe
@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NamedQueries( { @NamedQuery(name="findGroupByName",query="from PersistentGroup s where s.name = :name"),
                  @NamedQuery(name="findAllGroups",query="from PersistentGroup")})
 @Table(name="groups", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
-@ClassVersion("$Id: PersistentGroup.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class PersistentGroup
         extends PersistentVersionedObject
         implements Group

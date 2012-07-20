@@ -6,11 +6,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Instances of this class keeps track of information on every checkpoint.
  *
  * @author anshul@marketcetera.com
- * @version $Id: CheckpointInfo.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  * @see PerThreadInfo
  */
-@ClassVersion("$Id: CheckpointInfo.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 final class CheckpointInfo {
     private final String mIdentifier;
     private final long mTimestamp;

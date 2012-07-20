@@ -31,10 +31,10 @@ import ca.odell.glazedlists.FunctionList.Function;
  * etc.).
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: OpenOrderListFunction.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: OpenOrderListFunction.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 final class OpenOrderListFunction implements Function<List<ReportHolder>, ReportHolder> {
 
     private static final Comparator<ReportHolder> sComparator = new Comparator<ReportHolder>() {

@@ -16,10 +16,10 @@ import java.util.concurrent.Semaphore;
  * able to wait until the module about to receive data.
  *
  * @author anshul@marketcetera.com
- * @version $Id: BlockingReceiverModule.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: BlockingReceiverModule.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class BlockingReceiverModule extends Module implements DataReceiver {
     /**
      * Creates an instance.

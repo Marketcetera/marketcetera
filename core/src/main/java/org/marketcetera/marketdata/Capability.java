@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Enumeration of capabilities of {@link MarketDataFeed} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Capability.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: Capability.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum Capability
 {
     /**

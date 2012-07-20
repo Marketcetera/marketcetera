@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * {@link PositionMetrics#getPositionPL() position PL}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: IncomingPositionSupport.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: IncomingPositionSupport.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface IncomingPositionSupport {
 
     /**

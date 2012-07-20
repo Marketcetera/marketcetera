@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Constructs {@link YahooFeed} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooFeedFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class YahooFeedFactory
         extends AbstractMarketDataFeedFactory<YahooFeed,YahooFeedCredentials>
 {

@@ -25,10 +25,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * </ol>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Event.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: Event.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface Event
         extends TimestampCarrier, Serializable, Messages
 {

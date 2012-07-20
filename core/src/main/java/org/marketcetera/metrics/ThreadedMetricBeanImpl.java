@@ -13,10 +13,10 @@ import java.util.Map;
  * This class is meant to be only used by {@link JmxUtils}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ThreadedMetricBeanImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: ThreadedMetricBeanImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class ThreadedMetricBeanImpl implements ThreadedMetricMXBean {
 
     @Override

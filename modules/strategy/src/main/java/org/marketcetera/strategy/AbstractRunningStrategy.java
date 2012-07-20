@@ -37,10 +37,10 @@ import quickfix.Message;
  * Base class for running strategies.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $")
+@ClassVersion("$Id$")
 public abstract class AbstractRunningStrategy
         implements RunningStrategy
 {
@@ -1653,10 +1653,10 @@ public abstract class AbstractRunningStrategy
      * Executes a callback to a specific {@link RunningStrategy}.
      * 
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $")
+    @ClassVersion("$Id$")
     private static final class Callback
             implements Runnable
     {

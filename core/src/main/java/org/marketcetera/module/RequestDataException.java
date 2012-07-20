@@ -9,11 +9,11 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * not able to fulfill a request to emit data.
  *
  * @author anshul@marketcetera.com
- * @version $Id: RequestDataException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  * @see DataEmitter#requestData(DataRequest, DataEmitterSupport)
  */
-@ClassVersion("$Id: RequestDataException.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class RequestDataException extends ModuleException {
     /**
      * Creates an instance.

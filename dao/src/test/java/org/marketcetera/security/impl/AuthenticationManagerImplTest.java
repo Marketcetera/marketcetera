@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * Tests the authentication manager service.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AuthenticationManagerImplTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class AuthenticationManagerImplTest

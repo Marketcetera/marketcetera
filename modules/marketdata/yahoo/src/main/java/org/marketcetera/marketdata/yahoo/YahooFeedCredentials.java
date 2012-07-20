@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Credentials for the Yahoo market data feed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class YahooFeedCredentials
         extends AbstractMarketDataFeedURLCredentials
 {

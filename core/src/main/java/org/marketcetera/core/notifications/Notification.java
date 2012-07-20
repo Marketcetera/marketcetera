@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>It is preferable to subclass this class to create notifications 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Notification.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.8.0
  */
-@ClassVersion("$Id: Notification.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class Notification
         implements INotification
 {

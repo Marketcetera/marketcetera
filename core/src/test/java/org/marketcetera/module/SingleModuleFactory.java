@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: SingleModuleFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class SingleModuleFactory extends ModuleFactory {
     @Override
     public SingletonModule create(Object... parameters)

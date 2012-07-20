@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
- * @version $Id: LogTestAssistTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 

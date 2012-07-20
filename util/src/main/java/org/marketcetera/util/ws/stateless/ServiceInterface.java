@@ -8,12 +8,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.5.0
- * @version $Id: ServiceInterface.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ServiceInterface.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ServiceInterface
 {
 

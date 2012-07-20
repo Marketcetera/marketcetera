@@ -36,10 +36,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * strategy at the appropriate time.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: StrategyImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: StrategyImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class StrategyImpl
         implements Strategy, Messages
 {

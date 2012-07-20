@@ -9,10 +9,10 @@ import org.apache.commons.lang.builder.CompareToBuilder;
  * A comparator for {@link Option} instruments.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class OptionPositionKeyComparator extends InstrumentPositionKeyComparator<Option> {
     /**
      * Creates an instance.

@@ -37,9 +37,9 @@ import java.util.Map;
  *
  * @author anshul@marketcetera.com
  * @since 1.0.0
- * @version $Id: CEPSystemProcessor.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: CEPSystemProcessor.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CEPSystemProcessor extends Module
         implements DataReceiver, DataEmitter {
 

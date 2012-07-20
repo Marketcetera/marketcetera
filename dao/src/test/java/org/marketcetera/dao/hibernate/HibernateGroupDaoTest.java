@@ -18,7 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
  * Tests {@link HibernateGroupDao}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HibernateGroupDaoTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class HibernateGroupDaoTest

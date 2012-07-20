@@ -26,7 +26,7 @@ import org.marketcetera.util.test.LogTestAssist;
  * Test the external time functionality
  *  
  * @author toli kuznets
- * @version $Id: ExternalTimeTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 public class ExternalTimeTest extends ModuleTestBase {

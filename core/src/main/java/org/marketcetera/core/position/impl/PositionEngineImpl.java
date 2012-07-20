@@ -40,16 +40,16 @@ import com.google.common.collect.Maps;
  * Position engine implementation.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class PositionEngineImpl implements PositionEngine {
 
     /**
      * Comparator for PositionRows that imposes a default ordering of the data.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private final static class PositionRowComparator implements
             Comparator<PositionRow> {
 
@@ -65,7 +65,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Supports grouping of trades by trader id, symbol, and account.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private final static class TradeGroupMatcher implements
             GroupMatcher<Trade<?>> {
 
@@ -94,7 +94,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Creates group matchers from trades. Used by {@link GroupingList}.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private final static class TradeGroupMatcherFactory implements
             GroupMatcherFactory<Trade<?>, GroupMatcher<Trade<?>>> {
 
@@ -107,7 +107,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Supports grouping of positions by a number of grouping criteria.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private final static class GroupingMatcher implements
             GroupMatcher<PositionRow> {
 
@@ -143,7 +143,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Creates group matchers from position rows.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private final static class GroupingMatcherFactory implements
             GroupMatcherFactory<PositionRow, GroupMatcher<PositionRow>> {
 
@@ -163,7 +163,7 @@ public final class PositionEngineImpl implements PositionEngine {
      * Converts an {@link EventList} of positions into a dynamically updated
      * summary {@link PositionRow}. Used by {@link FunctionList}.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private final static class SummarizeFunction implements
             AdvancedFunction<EventList<PositionRow>, PositionRow> {
 

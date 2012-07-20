@@ -16,7 +16,7 @@ import org.marketcetera.core.position.PositionMetrics;
  * Test {@link PositionMetricsImpl}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionMetricsImplTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class PositionMetricsImplTest {

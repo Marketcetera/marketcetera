@@ -25,7 +25,7 @@ import org.marketcetera.module.*;
 /**
  * Subclass from the main Market data test and verify that basic module functionality works
  * @author toli kuznets
- * @version $Id: CSVFeedModuleTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public class CSVFeedModuleTest
         extends MarketDataModuleTestBase

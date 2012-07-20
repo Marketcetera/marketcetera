@@ -8,10 +8,10 @@ import quickfix.field.MsgType;
 
 /**
  * @author toli
- * @version $Id: FIXMessageAugmentor_44.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: FIXMessageAugmentor_44.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FIXMessageAugmentor_44 extends FIXMessageAugmentor_43 {
     private  static String[] TT_APPLICABLE_MESSAGE_CODES = new String[] {
             MsgType.QUOTE_RESPONSE,

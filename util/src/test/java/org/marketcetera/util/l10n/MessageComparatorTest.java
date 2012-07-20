@@ -14,7 +14,7 @@ import static org.marketcetera.util.test.CollectionAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: MessageComparatorTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

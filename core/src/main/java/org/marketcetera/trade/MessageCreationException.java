@@ -11,10 +11,10 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * by the factory into a message that the system is capable of dealing with.
  *
  * @author anshul@marketcetera.com
- * @version $Id: MessageCreationException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: MessageCreationException.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageCreationException extends I18NException {
     /**
      * Creates a new instance.

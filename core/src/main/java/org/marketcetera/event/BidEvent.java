@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Represents a Bid for an instrument on an exchange at a particular time.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BidEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: BidEvent.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface BidEvent
         extends QuoteEvent
 {

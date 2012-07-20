@@ -9,7 +9,7 @@ import static org.marketcetera.util.test.EqualityAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: EqualityAssertTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

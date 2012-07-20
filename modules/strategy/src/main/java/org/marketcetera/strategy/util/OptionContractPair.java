@@ -18,11 +18,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>The put and the call in this pair are guaranteed to be for the same symbol, expiry, and strike.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class OptionContractPair
         implements Comparable<OptionContractPair>
 {
@@ -175,10 +175,10 @@ public final class OptionContractPair
      * the unique key.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 2.0.0
      */
-    @ClassVersion("$Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     static class OptionContractPairKey
             implements Comparable<OptionContractPairKey>
     {

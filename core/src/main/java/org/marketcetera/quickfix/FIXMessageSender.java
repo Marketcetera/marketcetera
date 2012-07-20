@@ -12,10 +12,10 @@ import quickfix.SessionNotFound;
  * Essentially used for classes that need to be subclassed in unit tests
  * when we want to just capture the message instead of sending it out.
  * @author toli
- * @version $Id: FIXMessageSender.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: FIXMessageSender.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FIXMessageSender {
     /** To be overridden by unit tests for capturing outgoing messages */
     public void sendOutgoingMessage(Message inMsg, SessionID targetID) throws SessionNotFound

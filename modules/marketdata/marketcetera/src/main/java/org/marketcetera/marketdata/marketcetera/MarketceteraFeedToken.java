@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * {@link MarketDataFeedToken} implementation for {@link MarketceteraFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketceteraFeedToken.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: MarketceteraFeedToken.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedToken
     extends AbstractMarketDataFeedToken<MarketceteraFeed>
 {

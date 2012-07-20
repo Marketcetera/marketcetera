@@ -24,7 +24,7 @@ import org.marketcetera.quickfix.FIXVersion;
  * only under certain but not all versions.
  *
  * @author toli
- * @version $Id: FIXVersionTestSuite.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 @Ignore
 public class FIXVersionTestSuite extends MarketceteraTestSuite {

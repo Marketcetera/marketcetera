@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Indicates that no <code>Instrument</code> could be found for a given symbol.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: NoInstrumentForSymbol.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: NoInstrumentForSymbol.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class NoInstrumentForSymbol
         extends CoreException
 {

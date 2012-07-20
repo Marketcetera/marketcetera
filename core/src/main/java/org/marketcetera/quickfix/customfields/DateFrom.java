@@ -9,10 +9,10 @@ import quickfix.UtcTimeStampField;
 /**
  * Implementation of a custom field 9883: DateFrom
  * @author toli
- * @version $Id: DateFrom.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: DateFrom.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class DateFrom extends UtcTimeStampField {
     public static final int FIELD = 9883;
     public DateFrom() {

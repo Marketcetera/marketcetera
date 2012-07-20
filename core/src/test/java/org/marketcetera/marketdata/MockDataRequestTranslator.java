@@ -6,7 +6,7 @@ import org.marketcetera.core.CoreException;
  * Test implementation of <code>AbstractMessageTranslator</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MockDataRequestTranslator.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
 public class MockDataRequestTranslator

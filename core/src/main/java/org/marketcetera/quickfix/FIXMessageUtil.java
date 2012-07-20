@@ -20,9 +20,9 @@ import quickfix.field.*;
  * Collection of utilities to create work with FIX messages
  *
  * @author gmiller
- *         $Id: FIXMessageUtil.java 16063 2012-01-31 18:21:55Z colin $
+ *         $Id$
  */
-@ClassVersion("$Id: FIXMessageUtil.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FIXMessageUtil {
 
     private static final String LOGGER_NAME = FIXMessageUtil.class.getName();

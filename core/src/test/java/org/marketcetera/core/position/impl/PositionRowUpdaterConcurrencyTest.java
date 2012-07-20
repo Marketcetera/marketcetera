@@ -27,7 +27,7 @@ import com.google.common.collect.Sets;
  * PositionRowUpdater objects in another thread.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionRowUpdaterConcurrencyTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class PositionRowUpdaterConcurrencyTest {

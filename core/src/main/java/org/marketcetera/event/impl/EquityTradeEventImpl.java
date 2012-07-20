@@ -14,11 +14,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides an Equity implementation of {@link TradeEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: EquityTradeEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: EquityTradeEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 final class EquityTradeEventImpl
         extends AbstractTradeEventImpl
         implements EquityEvent

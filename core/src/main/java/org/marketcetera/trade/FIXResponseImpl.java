@@ -11,13 +11,13 @@ import quickfix.Message;
  *
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id: FIXResponseImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
 @XmlRootElement
-@ClassVersion("$Id: FIXResponseImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FIXResponseImpl
     extends FIXMessageWrapper
     implements FIXResponse

@@ -23,10 +23,10 @@ import quickfix.field.*;
  * Tests {@link Factory#createOrder(quickfix.Message, BrokerID)}
  *
  * @author anshul@marketcetera.com
- * @version $Id: FIXOrderTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: FIXOrderTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXOrderTest extends TypesTestBase {
     /**
      * Tests FIX Message field accessors.

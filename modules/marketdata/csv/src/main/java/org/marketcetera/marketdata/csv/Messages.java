@@ -10,9 +10,9 @@ import org.marketcetera.util.log.*;
  *
  * @author <a href="mailto:colin@marketcetera.com">Toli Kuznets</a>
  * @since 2.1.0
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: Messages.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("csv", Messages.class.getClassLoader());  //$NON-NLS-1$

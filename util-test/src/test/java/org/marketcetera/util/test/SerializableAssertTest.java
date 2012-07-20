@@ -11,7 +11,7 @@ import static org.marketcetera.util.test.SerializableAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: SerializableAssertTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

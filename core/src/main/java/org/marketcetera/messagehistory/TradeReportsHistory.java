@@ -35,10 +35,10 @@ import ca.odell.glazedlists.GroupingList;
  *
  * @author anshul@marketcetera.com
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: TradeReportsHistory.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: TradeReportsHistory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class TradeReportsHistory {
 
     private final EventList<ReportHolder> mAllMessages;

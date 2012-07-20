@@ -9,10 +9,10 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * setting attributes on a provider or module MBean.
  *
  * @author anshul@marketcetera.com
- * @version $Id: BeanAttributeSetException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: BeanAttributeSetException.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public class BeanAttributeSetException extends MXBeanOperationException {
     /**
      * Creates an instance.

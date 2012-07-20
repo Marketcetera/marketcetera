@@ -12,7 +12,7 @@ import org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureExcep
  * Provides common behavior for persistent versioned object tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentVersionedObjectDaoTestBase.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public abstract class PersistentVersionedObjectDaoTestBase<DataType extends VersionedObject & SystemObject>

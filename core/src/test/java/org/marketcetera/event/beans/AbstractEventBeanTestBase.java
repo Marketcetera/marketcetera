@@ -19,7 +19,7 @@ import org.marketcetera.event.Messages;
  * <p>Tests of subclasses of {@link EventBean} should extend this class.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractEventBeanTestBase.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public abstract class AbstractEventBeanTestBase<E extends EventBean>

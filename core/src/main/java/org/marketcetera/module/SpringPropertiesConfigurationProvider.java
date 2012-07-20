@@ -16,11 +16,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides a spring-configurable module configuration provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SpringPropertiesConfigurationProvider.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @ThreadSafe
-@ClassVersion("$Id: SpringPropertiesConfigurationProvider.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class SpringPropertiesConfigurationProvider
         implements ModuleConfigurationProvider
 {

@@ -7,13 +7,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * A provider of extra command line options.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionsProvider.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: OptionsProvider.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface OptionsProvider
 {
 

@@ -17,10 +17,10 @@ import quickfix.Message;
  *
  * @author anshul@marketcetera.com
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: ReportHolder.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportHolder.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ReportHolder
     implements Comparable<ReportHolder> {
 

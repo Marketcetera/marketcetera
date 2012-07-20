@@ -16,10 +16,10 @@ import quickfix.field.BeginString;
  * after they have been created.
  *
  * @author anshul@marketcetera.com
- * @version $Id: SystemMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: SystemMessageFactory.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SystemMessageFactory implements MessageFactory {
     @Override
     public Message create(String inBeginString, String inMsgType) {

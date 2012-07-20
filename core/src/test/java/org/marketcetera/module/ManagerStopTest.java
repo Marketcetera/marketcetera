@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ManagerStopTest.java 82384 2012-07-20 19:09:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ManagerStopTest extends ModuleTestBase {
     /**
      * Verifies that all the data flows and modules are stopped when the

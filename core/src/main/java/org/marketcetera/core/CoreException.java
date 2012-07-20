@@ -9,9 +9,9 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * @author klim@marketcetera.com
  * @since 0.6.0
- * @version $Id: CoreException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: CoreException.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class CoreException
     extends I18NException
 {

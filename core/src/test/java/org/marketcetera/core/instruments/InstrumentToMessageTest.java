@@ -35,10 +35,10 @@ import quickfix.field.SecurityType;
  * Tests {@link InstrumentToMessage} and its subclasses.
  *
  * @author anshul@marketcetera.com
- * @version $Id: InstrumentToMessageTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentToMessageTest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 @RunWith(Parameterized.class)
 public class InstrumentToMessageTest {
     /**

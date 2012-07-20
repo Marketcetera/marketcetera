@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * A comparator for {@link org.marketcetera.trade.Future} instruments.
  *
  * @author colin@marketcetera.com
- * @version $Id: FuturePositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
-@ClassVersion("$Id: FuturePositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FuturePositionKeyComparator
         extends InstrumentPositionKeyComparator<Future>
 {

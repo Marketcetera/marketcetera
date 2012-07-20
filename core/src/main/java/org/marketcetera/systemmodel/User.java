@@ -9,10 +9,10 @@ import org.springframework.security.core.userdetails.UserDetails;
  * Service object representing a system user.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: User.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: User.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface User
         extends VersionedObject, UserDetails, NamedObject, SystemObject
 {

@@ -11,9 +11,9 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  *
  * @author gmiller
- * $Id: FieldNameMap.java 16063 2012-01-31 18:21:55Z colin $
+ * $Id$
  */
-@ClassVersion("$Id: FieldNameMap.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FieldNameMap<T> {
 
     /** Creates a new instance of NameManager */

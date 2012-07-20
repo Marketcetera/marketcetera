@@ -14,11 +14,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Attempts to resolve symbols to {@link Option} instruments.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OsiOptionSymbolResolver.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @Immutable
-@ClassVersion("$Id: OsiOptionSymbolResolver.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class OsiOptionSymbolResolver
         implements SymbolResolver
 {

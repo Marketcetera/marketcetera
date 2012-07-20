@@ -23,10 +23,10 @@ import ca.odell.glazedlists.util.concurrent.Lock;
  * Factory for creating position engines.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
+@ClassVersion("$Id$")
 public class PositionEngineFactory {
 
     /**
@@ -135,7 +135,7 @@ public class PositionEngineFactory {
     /**
      * Function extracting reports from report holders.
      */
-    @ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
+    @ClassVersion("$Id$")
     private final static class ReportExtractor implements
             Function<ReportHolder, ReportBase> {
 
@@ -152,7 +152,7 @@ public class PositionEngineFactory {
      * <p>
      * Invalid reports are logged and ignored.
      */
-    @ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
+    @ClassVersion("$Id$")
     private final static class ValidFillsMatcher implements Matcher<ReportBase> {
 
         @Override
@@ -201,7 +201,7 @@ public class PositionEngineFactory {
      * elements must be ExecutionReport that represent fills or partial fills.
      * Use {@link ValidFillsMatcher} to ensure this.
      */
-    @ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
+    @ClassVersion("$Id$")
     private final static class TradeFunction implements
             Function<ReportBase, Trade<?>> {
 
@@ -214,7 +214,7 @@ public class PositionEngineFactory {
     /**
      * Adapts an {@link ExecutionReport} to be used as a Trade.
      */
-    @ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
+    @ClassVersion("$Id$")
     private final static class ExecutionReportAdapter implements
             Trade<Instrument> {
 

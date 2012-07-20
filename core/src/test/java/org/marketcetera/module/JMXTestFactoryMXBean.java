@@ -10,7 +10,7 @@ import javax.management.MXBean;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: JMXTestFactoryMXBean.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 @MXBean(true)
 @DisplayName("A factory for testing JMX integration")
 public interface JMXTestFactoryMXBean {

@@ -14,10 +14,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Credentials instance for <code>MarketceteraFeed</code>.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketceteraFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.6.0
 */
-@ClassVersion("$Id: MarketceteraFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedCredentials
     extends AbstractMarketDataFeedURLCredentials
 {

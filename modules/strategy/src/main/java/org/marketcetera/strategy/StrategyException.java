@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * An exception thrown during execution of a {@link Strategy}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: StrategyException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: StrategyException.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class StrategyException
         extends CoreException
 {

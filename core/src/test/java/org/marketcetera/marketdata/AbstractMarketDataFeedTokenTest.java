@@ -18,7 +18,7 @@ import org.marketcetera.marketdata.MarketDataFeedToken.Status;
  * Tests {@link AbstractMarketDataFeedToken}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractMarketDataFeedTokenTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
 public class AbstractMarketDataFeedTokenTest

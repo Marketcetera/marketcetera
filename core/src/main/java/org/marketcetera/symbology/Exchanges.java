@@ -14,9 +14,9 @@ import org.skife.csv.SimpleReader;
 
 /**
  * @author Graham Miller
- * @version $Id: Exchanges.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: Exchanges.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class Exchanges {
 
     private static Map<String, Exchange> micMap = new HashMap<String, Exchange>();

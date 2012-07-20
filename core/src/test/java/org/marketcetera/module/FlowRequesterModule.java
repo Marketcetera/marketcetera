@@ -11,7 +11,7 @@ import java.util.LinkedList;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: FlowRequesterModule.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class FlowRequesterModule extends ProcessorModule
         implements DataFlowRequester {
     public FlowRequesterModule(ModuleURN inModuleURN) {

@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException;
  * Test implementation of {@link AbstractMarketDataFeedToken}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MockMarketDataFeedToken.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
 public class MockMarketDataFeedToken

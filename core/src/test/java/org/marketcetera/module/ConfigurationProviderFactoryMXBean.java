@@ -14,7 +14,7 @@ import java.math.BigInteger;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ConfigurationProviderFactoryMXBean.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 @MXBean(true)
 @DisplayName("Management interface for configuration provider bean")
 public interface ConfigurationProviderFactoryMXBean {

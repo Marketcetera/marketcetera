@@ -19,10 +19,10 @@ import java.util.Set;
  * application.
  *
  * @author anshul@marketcetera.com
- * @version $Id: SystemFIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: SystemFIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SystemFIXMessageFactory extends FIXMessageFactory {
     /**
      * Creates an instance.

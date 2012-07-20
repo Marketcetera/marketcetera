@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * such events.
  *
  * @author anshul@marketcetera.com
- * @version $Id: TimestampCarrier.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: TimestampCarrier.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface TimestampCarrier {
     /**
      * Returns the time stamp on the event, in milliseconds .

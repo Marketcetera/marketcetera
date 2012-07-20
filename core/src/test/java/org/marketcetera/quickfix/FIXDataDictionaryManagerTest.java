@@ -10,7 +10,7 @@ import quickfix.field.Side;
 
 /**
  * @author Toli Kuznets
- * @version $Id: FIXDataDictionaryManagerTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public class FIXDataDictionaryManagerTest extends TestCase {
     public FIXDataDictionaryManagerTest(String name) {

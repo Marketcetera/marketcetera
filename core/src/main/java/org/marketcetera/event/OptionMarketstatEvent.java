@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Represents the set of statistics of a specific {@link Option}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OptionMarketstatEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionMarketstatEvent.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface OptionMarketstatEvent
         extends MarketstatEvent, OptionEvent
 {

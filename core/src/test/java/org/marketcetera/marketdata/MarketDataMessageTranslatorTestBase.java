@@ -22,7 +22,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  * Base class for market data message translator tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataMessageTranslatorTestBase.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public abstract class MarketDataMessageTranslatorTestBase<ResponseType>

@@ -17,10 +17,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * changes to the multiplier.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface MarketDataSupport {
 
     /**
@@ -88,7 +88,7 @@ public interface MarketDataSupport {
      * Interface to notify listeners of changes. Instead of implementing this
      * interface, extend {@link InstrumentMarketDataListenerBase}.
      */
-    @ClassVersion("$Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public interface InstrumentMarketDataListener {
 
         /**
@@ -120,7 +120,7 @@ public interface MarketDataSupport {
      * No-op implementation of {@link InstrumentMarketDataListener}. Subclasses can
      * extend callbacks they care about.
      */
-    @ClassVersion("$Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public abstract class InstrumentMarketDataListenerBase implements
             InstrumentMarketDataListener {
 
@@ -140,7 +140,7 @@ public interface MarketDataSupport {
     /**
      * Event object for {@link InstrumentMarketDataListener}.
      */
-    @ClassVersion("$Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public static class InstrumentMarketDataEvent extends EventObject {
 
         /**

@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * {@link BogusFeed} constructor factory.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BogusFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeedFactory.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public class BogusFeedFactory 
     extends AbstractMarketDataFeedFactory<BogusFeed,BogusFeedCredentials> 
 {

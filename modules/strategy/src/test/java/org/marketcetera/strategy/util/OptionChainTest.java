@@ -27,7 +27,7 @@ import org.marketcetera.util.test.EqualityAssert;
  * Tests {@link OptionChain}, [@link OptionContractPair}, and {@link OptionContract}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OptionChainTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class OptionChainTest

@@ -26,7 +26,7 @@ import org.marketcetera.util.test.UnicodeData;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: StringToTypeConvertTest.java 82384 2012-07-20 19:09:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class StringToTypeConvertTest {
     @BeforeClass
     public static void initLogger() {

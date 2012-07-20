@@ -15,11 +15,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides a Future implementation of {@link MarketstatEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: FutureMarketstatEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @ThreadSafe
-@ClassVersion("$Id: FutureMarketstatEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class FutureMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements FutureEvent

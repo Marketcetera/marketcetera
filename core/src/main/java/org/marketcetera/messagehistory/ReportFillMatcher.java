@@ -16,10 +16,10 @@ import java.math.BigDecimal;
  * 
  * @author anshul@marketcetera.com
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: ReportFillMatcher.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportFillMatcher.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public final class ReportFillMatcher implements Matcher<ReportHolder> {
     public boolean matches(ReportHolder holder) {
         ReportBase report = holder.getReport();

@@ -16,10 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * Initializes the users data store.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserInitializer.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: UserInitializer.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class UserInitializer
         implements Initializer
 {

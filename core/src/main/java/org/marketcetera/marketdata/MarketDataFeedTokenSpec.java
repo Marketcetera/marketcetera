@@ -20,7 +20,7 @@ import org.marketcetera.core.publisher.ISubscriber;
  * be used to initiate a request with any feed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataFeedTokenSpec.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
 public final class MarketDataFeedTokenSpec

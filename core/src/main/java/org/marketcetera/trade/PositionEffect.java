@@ -16,10 +16,10 @@ import java.util.HashMap;
  * (formerly named: OpenClose prior to FIX 4.3)
  *
  * @author anshul@marketcetera.com
- * @version $Id: PositionEffect.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: PositionEffect.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum PositionEffect {
     /**
      * Sentinel value for PositionEffect that the system is not currently

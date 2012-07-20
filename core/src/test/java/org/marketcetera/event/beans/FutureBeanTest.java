@@ -16,7 +16,7 @@ import org.marketcetera.trade.*;
  * Tests {@link FutureBean}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: FutureBeanTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
 public class FutureBeanTest

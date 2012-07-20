@@ -20,12 +20,12 @@ import quickfix.field.MaturityMonthYear;
  * Identifies a future contract.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Future.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@ClassVersion("$Id: Future.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class Future
         extends Instrument
 {

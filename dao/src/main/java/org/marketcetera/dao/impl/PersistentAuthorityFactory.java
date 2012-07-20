@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
  * Creates persistent {@link Authority} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentAuthorityFactory.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @Component
-@ClassVersion("$Id: PersistentAuthorityFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 class PersistentAuthorityFactory
         implements AuthorityFactory
 {

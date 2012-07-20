@@ -22,7 +22,7 @@ import java.lang.management.ManagementFactory;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ModuleTestBase.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ModuleTestBase {
 
     /**

@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Represents an event that has occurred.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: INotification.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.8.0
  */
-@ClassVersion("$Id: INotification.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface INotification
     extends Serializable
 {
@@ -22,10 +22,10 @@ public interface INotification
      * Indicates the severity of an <code>INotification</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: INotification.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 0.8.0
      */
-    @ClassVersion("$Id: INotification.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public enum Severity
     {
         LOW,

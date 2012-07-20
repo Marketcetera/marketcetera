@@ -17,7 +17,7 @@ import org.springframework.dao.DataIntegrityViolationException;
  * Provides common behavior for persistent system object tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentSystemObjectDaoTestBase.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public abstract class PersistentSystemObjectDaoTestBase<DataType extends SystemObject>

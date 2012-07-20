@@ -12,10 +12,10 @@ import java.util.Map;
  * appropriate messages / protocol used by the broker. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderBase.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface OrderBase extends Order {
     /**
      * The client assigned OrderID for this order. The factory

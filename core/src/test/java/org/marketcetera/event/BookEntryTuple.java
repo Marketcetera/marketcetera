@@ -6,7 +6,7 @@ package org.marketcetera.event;
  *
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BookEntryTuple.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class BookEntryTuple

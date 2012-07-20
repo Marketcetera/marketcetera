@@ -25,10 +25,10 @@ import quickfix.Message;
  * {@link RunningStrategy} implementation for Ruby strategies to extend.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Strategy.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Strategy.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class Strategy
         extends AbstractRunningStrategy
 {

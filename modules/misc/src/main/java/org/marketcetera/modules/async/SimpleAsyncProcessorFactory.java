@@ -22,10 +22,10 @@ import org.marketcetera.module.ModuleURN;
  *
  * @see SimpleAsyncProcessor
  * @author anshul@marketcetera.com
- * @version $Id: SimpleAsyncProcessorFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: SimpleAsyncProcessorFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class SimpleAsyncProcessorFactory extends ModuleFactory {
     /**
      * Creates an instance.

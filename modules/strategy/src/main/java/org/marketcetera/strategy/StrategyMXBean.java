@@ -20,10 +20,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * restarted before the changes take effect.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: StrategyMXBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: StrategyMXBean.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 @MXBean(true)
 @DisplayName("Management Interface for Strategy")
 public interface StrategyMXBean

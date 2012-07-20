@@ -21,10 +21,10 @@ import ca.odell.glazedlists.EventList;
  * Simple implementation of {@link PositionRow}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionRowImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionRowImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class PositionRowImpl implements PositionRow {
 
     private final Instrument mInstrument;

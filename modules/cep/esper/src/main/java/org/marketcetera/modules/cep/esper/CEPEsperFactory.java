@@ -28,9 +28,9 @@ import org.marketcetera.module.ModuleURN;
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com
  * @since 1.0.0
- * @version $Id: CEPEsperFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: CEPEsperFactory.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class CEPEsperFactory extends ModuleFactory {
     /**
      * Creates an instance.

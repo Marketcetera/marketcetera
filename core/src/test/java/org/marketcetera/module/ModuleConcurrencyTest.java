@@ -25,10 +25,10 @@ import org.marketcetera.util.misc.NamedThreadFactory;
  * Tests operation of various locks used within the ModuleManager.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ModuleConcurrencyTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.1.0
  */
-@ClassVersion("$Id: ModuleConcurrencyTest.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ModuleConcurrencyTest extends ModuleTestBase {
     /**
      * Tests locks acquisition when creating module instances

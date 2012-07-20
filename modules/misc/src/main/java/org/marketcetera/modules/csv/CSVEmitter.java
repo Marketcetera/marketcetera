@@ -58,7 +58,7 @@ import org.apache.commons.csv.CSVStrategy;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: CSVEmitter.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class CSVEmitter extends Module implements DataEmitter {
     /**
      * Creates an instance.

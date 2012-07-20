@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: MessagesTest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {

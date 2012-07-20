@@ -11,10 +11,10 @@ import java.util.HashMap;
  * Designates the capacity of the firm placing the order.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderCapacity.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderCapacity.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum OrderCapacity {
     /**
      * Sentinel value for OrderCapacity that the system is not currently

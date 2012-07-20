@@ -15,10 +15,10 @@ import java.util.HashMap;
  * resources that have been added to it.
  * 
  * @author anshul@marketcetera.com
- * @version $Id: DynamicResourceLoader.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: DynamicResourceLoader.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class DynamicResourceLoader extends ClassLoader {
     @Override
     public InputStream getResourceAsStream(String name) {

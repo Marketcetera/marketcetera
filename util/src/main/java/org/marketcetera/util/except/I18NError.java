@@ -9,12 +9,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: I18NError.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NError.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class I18NError
     extends Error
     implements I18NThrowable

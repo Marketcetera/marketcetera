@@ -13,10 +13,10 @@ import java.util.concurrent.ThreadFactory;
  * Tests {@link NamedThreadFactory}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: NamedThreadFactoryTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: NamedThreadFactoryTest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class NamedThreadFactoryTest {
     /**
      * Verifies the class behavior when supplied a null prefix.

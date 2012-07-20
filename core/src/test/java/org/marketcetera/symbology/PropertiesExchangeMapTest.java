@@ -8,7 +8,7 @@ import junit.framework.TestSuite;
 
 /**
  * @author Graham Miller
- * @version $Id: PropertiesExchangeMapTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public class PropertiesExchangeMapTest extends TestCase{
     public PropertiesExchangeMapTest(String inName) {

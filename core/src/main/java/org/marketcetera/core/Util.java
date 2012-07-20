@@ -16,9 +16,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author Toli Kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Util.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: Util.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class Util
 {
     /** Tries to load the named file from a classpath

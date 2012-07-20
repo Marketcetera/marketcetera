@@ -14,7 +14,7 @@ import quickfix.*;
  * Simple no-op implementation of a Quickfix session adapter
  * @author gmiller
  */
-@ClassVersion("$Id: QuickFIXSessionAdapterStub.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class QuickFIXSessionAdapterStub implements QuickFIXSessionAdapter
 {
 

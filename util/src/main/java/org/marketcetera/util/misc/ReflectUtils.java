@@ -11,12 +11,12 @@ import org.marketcetera.util.except.ExceptUtils;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: ReflectUtils.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ReflectUtils.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class ReflectUtils
 {
 

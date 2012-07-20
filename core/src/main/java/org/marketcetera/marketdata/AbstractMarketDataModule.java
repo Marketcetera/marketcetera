@@ -57,10 +57,10 @@ import com.google.common.collect.HashBiMap;
  * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractMarketDataModule.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: AbstractMarketDataModule.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken, 
                                                C extends MarketDataFeedCredentials>
         extends Module

@@ -32,10 +32,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * from the feed via {@link Event} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class BogusFeed 
     extends AbstractMarketDataFeed<BogusFeedToken,
                                    BogusFeedCredentials,
@@ -255,10 +255,10 @@ public class BogusFeed
      * Corresponds to a single market data request submitted to {@link BogusFeed}.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
-    @ClassVersion("$Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private static class Request
     {
         /**

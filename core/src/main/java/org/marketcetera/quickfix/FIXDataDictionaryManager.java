@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author toli
  * @author anshul@marketcetera.com
  * 
- * @version $Id: FIXDataDictionaryManager.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: FIXDataDictionaryManager.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FIXDataDictionaryManager {
 
     /**

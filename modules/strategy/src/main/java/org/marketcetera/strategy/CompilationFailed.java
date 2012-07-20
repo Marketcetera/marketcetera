@@ -14,10 +14,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Indicates that a strategy could not be compiled.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class CompilationFailed
         extends StrategyException
 {
@@ -85,10 +85,10 @@ public class CompilationFailed
      * Indicates what type of diagnostic was returned from the compiler.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public static enum Type
     {
         /**
@@ -104,10 +104,10 @@ public class CompilationFailed
      * Diagnostic information provided by the compiler for a compilation error or warning.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public static class Diagnostic
     {
         /**

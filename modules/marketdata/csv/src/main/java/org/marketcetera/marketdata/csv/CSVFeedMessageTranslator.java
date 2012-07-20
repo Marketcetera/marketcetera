@@ -18,9 +18,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: CSVFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class CSVFeedMessageTranslator     
         implements DataRequestTranslator<MarketDataRequest>
 {

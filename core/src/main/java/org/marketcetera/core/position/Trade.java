@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * A trade that is used to compute position information.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: Trade.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: Trade.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface Trade<T extends Instrument> {
     
     /**

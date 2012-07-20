@@ -12,10 +12,10 @@ import org.marketcetera.module.ModuleURN;
  * Factory for a module that blocks when receiving data.
  *
  * @author anshul@marketcetera.com
- * @version $Id: BlockingModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: BlockingModuleFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class BlockingModuleFactory extends ModuleFactory {
     /**
      * Creates an instance.

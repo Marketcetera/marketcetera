@@ -7,10 +7,10 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Testing the {@link MarketceteraFeed} class.
  * @author toli
- * @version $Id: MarketceteraFeedTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: MarketceteraFeedTest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class MarketceteraFeedTest
 {
     @Before

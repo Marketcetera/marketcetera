@@ -14,9 +14,9 @@ import quickfix.DataDictionary;
  * want to memorize field numbers
  *
  * @author Toli Kuznets
- * @version $Id: FIXDataDictionary.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: FIXDataDictionary.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FIXDataDictionary {
     public static final String FIX_SYSTEM_BEGIN_STRING = "FIX.0.0"; //$NON-NLS-1$
     public static final String FIX_4_0_BEGIN_STRING = "FIX.4.0"; //$NON-NLS-1$

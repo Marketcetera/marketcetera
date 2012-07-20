@@ -14,11 +14,11 @@ import javax.xml.bind.annotation.XmlValue;
  * be sent or from which a response to a request can be received.
  * 
  * @author anshul@marketcetera.com
- * @version $Id: BrokerID.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@ClassVersion("$Id: BrokerID.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class BrokerID implements Serializable {
 
     /**

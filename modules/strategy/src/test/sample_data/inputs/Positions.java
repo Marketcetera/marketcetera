@@ -15,7 +15,7 @@ import org.marketcetera.trade.OptionType;
  * Tests the position-related API of the Strategy API.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Positions.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class Positions

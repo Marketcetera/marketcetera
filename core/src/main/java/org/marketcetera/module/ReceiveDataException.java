@@ -9,11 +9,11 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * receive data within a data flow. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: ReceiveDataException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  * @see DataReceiver#receiveData(DataFlowID, Object) 
  */
-@ClassVersion("$Id: ReceiveDataException.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ReceiveDataException extends DataFlowException {
     /**
      * Creates an instance.

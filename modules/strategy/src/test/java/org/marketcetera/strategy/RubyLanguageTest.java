@@ -19,7 +19,7 @@ import org.marketcetera.util.test.SerializableAssert;
  * Tests Ruby language support.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: RubyLanguageTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public class RubyLanguageTest

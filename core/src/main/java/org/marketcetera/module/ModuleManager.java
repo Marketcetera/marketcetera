@@ -60,11 +60,11 @@ import org.springframework.stereotype.Component;
  * </ol>
  *
  * @author anshul@marketcetera.com
- * @version $Id: ModuleManager.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @Component
-@ClassVersion("$Id: ModuleManager.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class ModuleManager {
     /**
      * Gets the singleton instance of <code>ModuleManager</code> if one

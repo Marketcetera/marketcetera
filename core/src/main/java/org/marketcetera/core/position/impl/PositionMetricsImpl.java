@@ -14,10 +14,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Simple immutable implementation of {@link PositionMetrics}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionMetricsImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionMetricsImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class PositionMetricsImpl implements PositionMetrics {
 
     private final BigDecimal mIncomingPosition;

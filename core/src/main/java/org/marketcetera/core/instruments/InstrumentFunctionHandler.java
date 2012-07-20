@@ -17,10 +17,10 @@ import org.marketcetera.trade.Instrument;
  * @param <I> The type of instrument handled by this function.
  * 
  * @author anshul@marketcetera.com
- * @version $Id: InstrumentFunctionHandler.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentFunctionHandler.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public abstract class InstrumentFunctionHandler<I extends Instrument> {
     /**
      * Creates an instance that handles the specified instrument subclass.

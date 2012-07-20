@@ -13,7 +13,7 @@ import quickfix.fix41.NewOrderSingle;
 
 /**
  * @author toli
- * @version $Id: FIXMessageAugmentor_41Test.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 public class FIXMessageAugmentor_41Test extends TestCase {

@@ -9,9 +9,9 @@ import quickfix.*;
  * so we don't need to pass it around all the time
  * 
  * @author gmiller
- * @version $Id: QuickFIXSessionAdapter.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: QuickFIXSessionAdapter.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface QuickFIXSessionAdapter
 {
 

@@ -7,9 +7,9 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * @author Graham Miller
- * @version $Id: ExchangeMap.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: ExchangeMap.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class ExchangeMap {
     private SymbolScheme scheme;
     private Map<String, Exchange> schemeToStandardTranslation;

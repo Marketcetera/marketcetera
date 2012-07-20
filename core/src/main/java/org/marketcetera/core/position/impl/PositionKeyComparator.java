@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Comparator for PositionKeys that imposes a default ordering of the data.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: PositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 final class PositionKeyComparator implements Comparator<PositionKey<?>> {
 
     public final static PositionKeyComparator INSTANCE = new PositionKeyComparator();
@@ -38,7 +38,7 @@ final class PositionKeyComparator implements Comparator<PositionKey<?>> {
      * Comparator for Instruments that imposes a default ordering across all
      * instruments.
      */
-    @ClassVersion("$Id: PositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private final static class InstrumentComparator implements
             Comparator<Instrument> {
 

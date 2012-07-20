@@ -15,12 +15,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: UnicodeFileReader.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: UnicodeFileReader.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class UnicodeFileReader
     extends UnicodeInputStreamReader
 {

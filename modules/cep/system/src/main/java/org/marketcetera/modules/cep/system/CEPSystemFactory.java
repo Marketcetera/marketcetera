@@ -22,9 +22,9 @@ import org.marketcetera.module.ModuleURN;
  * @see CEPSystemProcessor
  * @author toli@marketcetera.com
  * @since 1.0.0
- * @version $Id: CEPSystemFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: CEPSystemFactory.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class CEPSystemFactory extends ModuleFactory {
     /**
      * Creates an instance.

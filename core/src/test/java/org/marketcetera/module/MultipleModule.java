@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: MultipleModule.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class MultipleModule extends ModuleBase {
     public MultipleModule(ModuleURN inURN, boolean inAutoStart) {
         super(inURN, inAutoStart);

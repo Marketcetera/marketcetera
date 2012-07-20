@@ -13,7 +13,7 @@ import java.util.Properties;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: JMXTestModule.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class JMXTestModule extends Module implements JMXTestModuleMXBean {
     public JMXTestModule(ModuleURN inURN) {
         super(inURN, false);

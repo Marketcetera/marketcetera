@@ -20,7 +20,7 @@ import java.util.Date;
  * Sample strategy which tests the ability to send events to CEP and event subscribers.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SendEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public class SendEvent

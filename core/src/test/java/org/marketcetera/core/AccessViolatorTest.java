@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 
 /**
  * @author Graham Miller
- * @version $Id: AccessViolatorTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public class AccessViolatorTest extends TestCase {
 

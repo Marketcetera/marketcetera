@@ -26,10 +26,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Executes a Java strategy using the <a href="http://www.jcp.org/en/jsr/detail?id=199">Java Compiler API</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class JavaCompilerExecutionEngine
         implements ExecutionEngine, Messages
 {
@@ -232,10 +232,10 @@ public class JavaCompilerExecutionEngine
      * Represents the Java source of a strategy containing one or more classes to compile.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private static class SourceJavaFileObject
         extends SimpleJavaFileObject
     {
@@ -278,10 +278,10 @@ public class JavaCompilerExecutionEngine
      * defers to its parent for others.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private static class InMemoryClassLoader
         extends ClassLoader
     {
@@ -326,10 +326,10 @@ public class JavaCompilerExecutionEngine
      * File manager which maintains file contents in memory.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private class InMemoryFileManager
         extends ForwardingJavaFileManager<StandardJavaFileManager>
     {
@@ -460,10 +460,10 @@ public class JavaCompilerExecutionEngine
      * An in-memory representation of a Java File Object.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private static class InMemoryJavaFileObject
         extends SimpleJavaFileObject
     {

@@ -21,7 +21,7 @@ import org.marketcetera.trade.Equity;
  * Tests {@link OrderBook}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OrderBookTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 0.6.0
  */
 public class OrderBookTest
@@ -628,7 +628,7 @@ public class OrderBookTest
      * Wrapper around a {@link QuantityTuple} {@link List} that accepts {@link QuoteEvent} inputs.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: OrderBookTest.java 82384 2012-07-20 19:09:59Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
     private static class QuantityTupleList<E extends QuoteEvent>

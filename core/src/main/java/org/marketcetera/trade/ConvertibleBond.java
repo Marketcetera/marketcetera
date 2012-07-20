@@ -16,10 +16,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Represents a Convertible Bond instrument.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ConvertibleBond.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: ConvertibleBond.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ConvertibleBond

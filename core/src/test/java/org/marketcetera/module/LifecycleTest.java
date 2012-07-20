@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: LifecycleTest.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class LifecycleTest extends ModuleTestBase {
     @BeforeClass
     public static void setup() throws Exception {

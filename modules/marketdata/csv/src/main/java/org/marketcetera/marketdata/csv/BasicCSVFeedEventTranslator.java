@@ -66,7 +66,7 @@ import org.marketcetera.util.log.I18NBoundMessage3P;
  * <p>This object is stateless.  All subclasses must also be reentrant.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BasicCSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @Immutable
@@ -1174,7 +1174,7 @@ public class BasicCSVFeedEventTranslator
      * The event type of a CSV event.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: BasicCSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 2.1.0
      */
     public static enum EventType

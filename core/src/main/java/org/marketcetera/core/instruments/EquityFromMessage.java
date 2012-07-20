@@ -15,10 +15,10 @@ import quickfix.field.CFICode;
  * Returns a null value if the symbol for the equity is not found in the message.
  *
  * @author anshul@marketcetera.com
- * @version $Id: EquityFromMessage.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: EquityFromMessage.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class EquityFromMessage extends InstrumentFromMessage {
 
     @Override

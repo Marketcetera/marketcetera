@@ -61,11 +61,11 @@ import com.google.common.collect.Multimaps;
  * market data until stopped. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 @ThreadSafe
-@ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class SimulatedExchange
         implements Exchange<SimulatedExchange.Token>
 {
@@ -1247,10 +1247,10 @@ public class SimulatedExchange
      * The status of the exchange.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     @ThreadSafe
     public static enum Status
     {
@@ -1285,7 +1285,7 @@ public class SimulatedExchange
      * as underlying instruments and option chain instruments.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 2.0.0
      */
     @ThreadSafe
@@ -1328,11 +1328,11 @@ public class SimulatedExchange
      * Holds information specific to a particular exchange for a given <code>Instrument</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 2.0.0
      */
     @ThreadSafe
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private class PrivateInstrumentInfo
     {
         /* (non-Javadoc)
@@ -1528,11 +1528,11 @@ public class SimulatedExchange
      * Holds information common to all exchanges for a given <code>Instrument</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 2.0.0
      */
     @ThreadSafe
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private static class SharedInstrumentInfo
     {
         /* (non-Javadoc)
@@ -1690,11 +1690,11 @@ public class SimulatedExchange
      * based on the original type of market data request and instrument.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
     @ThreadSafe
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private static class FilteringSubscriber
             implements ISubscriber
     {
@@ -2052,11 +2052,11 @@ public class SimulatedExchange
      * Represents the top of a given book at a particular point in time.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 2.0.0
      */
     @Immutable
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     static class TopOfBook
             extends Pair<BidEvent,AskEvent>
             implements Comparable<TopOfBook>
@@ -2179,10 +2179,10 @@ public class SimulatedExchange
      * {@link Token#cancel()}.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public static final class Token
     {
         /**

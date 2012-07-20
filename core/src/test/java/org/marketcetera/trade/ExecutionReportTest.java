@@ -23,10 +23,10 @@ import quickfix.field.converter.UtcTimestampConverter;
  * Tests {@link ExecutionReport}
  *
  * @author anshul@marketcetera.com
- * @version $Id: ExecutionReportTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionReportTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ExecutionReportTest extends TypesTestBase {
     /**
      * Tests various failures when creating execution reports.

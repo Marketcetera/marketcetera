@@ -15,10 +15,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * name of the thread as supplied to {@link #getStream(String)} method.
  *
  * @author anshul@marketcetera.com
- * @version $Id: FileStreamFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: FileStreamFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class FileStreamFactory implements PrintStreamFactory {
     /**
      * The singleton instance.

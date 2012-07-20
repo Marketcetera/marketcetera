@@ -25,7 +25,7 @@ import org.marketcetera.util.test.UnicodeData;
  * Tests {@link MarketDataRequest}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRequestTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public class MarketDataRequestTest

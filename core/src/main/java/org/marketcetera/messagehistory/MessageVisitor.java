@@ -6,10 +6,10 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Visitor Patter - visit all the messages and perfrom an operation on them
  * @author toli
- * @version $Id: MessageVisitor.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: MessageVisitor.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface MessageVisitor {
 
     /** Visits each Execution Report that we have gathered for all the

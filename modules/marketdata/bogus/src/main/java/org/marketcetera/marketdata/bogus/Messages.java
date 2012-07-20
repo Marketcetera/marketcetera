@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Messages for BogusFeed plug-in.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.6.0
  */
-@ClassVersion("$Id: Messages.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("bogus", Messages.class.getClassLoader());  //$NON-NLS-1$

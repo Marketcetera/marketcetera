@@ -30,10 +30,10 @@ import quickfix.fix44.OrderCancelReplaceRequest;
  * Tests {@link org.marketcetera.trade.OrderReplace}
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderReplaceTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderReplaceTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderReplaceTest extends TypesTestBase {
     /**
      * Verifies default attributes of objects returned via

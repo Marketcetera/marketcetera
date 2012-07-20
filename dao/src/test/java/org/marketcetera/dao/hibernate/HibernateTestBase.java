@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * Provides common utilities for hibernate-based data tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HibernateTestBase.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class HibernateTestBase

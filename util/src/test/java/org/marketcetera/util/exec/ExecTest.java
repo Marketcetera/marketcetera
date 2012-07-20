@@ -22,7 +22,7 @@ import static org.marketcetera.util.test.RegExAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: ExecTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

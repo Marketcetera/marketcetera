@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Represents a dividend for an equity at a particular time.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DividendEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: DividendEvent.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface DividendEvent
         extends Event, HasEquity, HasEventType
 {

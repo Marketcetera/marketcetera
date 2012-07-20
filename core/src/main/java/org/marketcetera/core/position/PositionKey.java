@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * The tuple that identifies a unique position.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionKey.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionKey.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 @Immutable
 public interface PositionKey<T extends Instrument> {
 

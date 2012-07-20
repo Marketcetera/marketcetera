@@ -22,10 +22,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * to execute scripts.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BeanScriptingFrameworkEngine.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: BeanScriptingFrameworkEngine.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class BeanScriptingFrameworkEngine
         implements ExecutionEngine
 {

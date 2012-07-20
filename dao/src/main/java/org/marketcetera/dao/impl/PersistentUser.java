@@ -21,7 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
  * Persistent implementation of {@link User}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentUser.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @ThreadSafe
@@ -31,7 +31,7 @@ import org.springframework.security.core.GrantedAuthority;
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
 @XmlRootElement(name="user")
-@ClassVersion("$Id: PersistentUser.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class PersistentUser
         extends PersistentVersionedObject
         implements User

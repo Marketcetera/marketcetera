@@ -10,10 +10,10 @@ import java.net.URL;
  * Verifies that the thread context class loader is not used in production
  *
  * @author anshul@marketcetera.com
- * @version $Id: CustomExpiryNormalizerLoaderTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: CustomExpiryNormalizerLoaderTest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class CustomExpiryNormalizerLoaderTest extends CustomExpiryNormalizerTestBase {
     @Override
     protected void doTest() throws Exception {

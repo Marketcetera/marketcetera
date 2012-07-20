@@ -11,10 +11,10 @@ import java.net.URL;
  * Tests loading of a custom {@link OptionExpiryNormalizer}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: CustomExpiryNormalizerTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: CustomExpiryNormalizerTest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class CustomExpiryNormalizerTest extends CustomExpiryNormalizerTestBase {
 
     @Override

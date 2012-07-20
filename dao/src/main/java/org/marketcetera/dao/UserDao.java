@@ -13,10 +13,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * Provides data access for {@link User} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserDao.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: UserDao.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface UserDao
         extends UserDetailsService
 {
