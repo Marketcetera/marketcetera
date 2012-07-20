@@ -566,6 +566,20 @@
                         </execution>
                     </executions>
                 </plugin>
+		
+		<plugin>
+  		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-gpg-plugin</artifactId>
+		    <executions>
+		        <execution>
+		            <id>sign-artifacts</id>
+			    <phase>verify</phase>
+			    <goals>
+			      <goal>sign</goal>
+			    </goals>
+			</execution>
+		    </executions>
+		</plugin>
 
                 <!-- war generation. -->
                 <plugin>
@@ -662,7 +676,7 @@
                             <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
                             <link>http://publicobject.com/glazedlists/glazedlists-1.7.0/api/</link>
                             <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
-                            <link>http://www.quickfixj.org/quickfixj/javadoc/</link>
+                            <link>http://www.quickfixj.org/quickfixj/javadoc/1.5.1</link>
                         </links>
                     </configuration>
                 </plugin>
@@ -813,6 +827,33 @@
                 </plugins>
             </build>
         </profile>
+	<profile>
+  	    <id>release-sign-artifacts</id>
+	    <activation>
+	        <property>
+		    <name>performRelease</name>
+		    <value>true</value>
+		</property>
+	    </activation>
+	    <build>
+  	        <plugins>
+		    <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-gpg-plugin</artifactId>
+			<version>1.1</version>
+			<executions>
+			    <execution>
+			        <id>sign-artifacts</id>
+				<phase>verify</phase>
+				<goals>
+				    <goal>sign</goal>
+				</goals>
+			    </execution>
+			</executions>
+		    </plugin>
+		</plugins>
+	    </build>
+	</profile>    
     </profiles>
 
     <modules>
@@ -909,8 +950,8 @@
     </pluginRepositories>
 
     <scm>
-        <url>https://www.marketcetera.org/crucible/browse/Public</url>
-        <connection>scm:svn:http://code.marketcetera.org/root/trunk</connection>
+        <url>http://source.marketcetera.org/root/trunk</url>
+        <connection>scm:svn:http://source.marketcetera.org/root/trunk</connection>
         <developerConnection>scm:svn:http://source.marketcetera.org/root/trunk</developerConnection>
     </scm>
 </project>
