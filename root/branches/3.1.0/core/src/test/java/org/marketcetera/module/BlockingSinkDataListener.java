@@ -12,10 +12,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * {@link #getNextData()}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: BlockingSinkDataListener.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: BlockingSinkDataListener.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class BlockingSinkDataListener implements SinkDataListener {
     @Override
     public void receivedData(DataFlowID inFlowID, Object inData) {

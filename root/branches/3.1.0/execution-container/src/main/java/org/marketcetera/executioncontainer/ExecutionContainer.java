@@ -9,10 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides a base application for Marketcetera.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ExecutionContainer.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: ExecutionContainer.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ExecutionContainer
         extends AbstractSpringApplication
 {

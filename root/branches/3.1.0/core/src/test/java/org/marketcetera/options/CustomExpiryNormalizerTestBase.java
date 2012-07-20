@@ -22,10 +22,10 @@ import java.io.File;
  * Subclasses override the abstract methods to carry out the tests.
  *
  * @author anshul@marketcetera.com
- * @version $Id: CustomExpiryNormalizerTestBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: CustomExpiryNormalizerTestBase.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public abstract class CustomExpiryNormalizerTestBase {
     @BeforeClass
     public static void setupLog() {

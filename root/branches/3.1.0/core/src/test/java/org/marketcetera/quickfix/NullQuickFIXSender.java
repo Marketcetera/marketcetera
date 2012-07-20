@@ -16,7 +16,7 @@ import java.util.concurrent.Semaphore;
  * but doesn't actually send them anywhere.
  * If there's a semaphore, signals on it that the element is available.
  * @author toli
-* @version $Id: NullQuickFIXSender.java 16063 2012-01-31 18:21:55Z colin $
+* @version $Id$
 */
 public class NullQuickFIXSender implements IQuickFIXSender {
 

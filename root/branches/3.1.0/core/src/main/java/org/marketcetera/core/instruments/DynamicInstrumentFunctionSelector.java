@@ -25,10 +25,10 @@ import com.google.common.collect.ImmutableList;
  * @param <S> The type of function handler selected by this instance.
  *
  * @author anshul@marketcetera.com
- * @version $Id: DynamicInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: DynamicInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class DynamicInstrumentFunctionSelector<T,S extends DynamicInstrumentHandler<T>> {
     /**
      * Creates an instance.

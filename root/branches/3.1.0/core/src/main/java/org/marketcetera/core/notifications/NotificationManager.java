@@ -18,10 +18,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * </pre>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.8.0
  */
-@ClassVersion("$Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class NotificationManager
         implements INotificationManager
 {
@@ -90,10 +90,10 @@ public class NotificationManager
      * <code>org.marketcetera.notifications.log</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 0.8.0
      */
-    @ClassVersion("$Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private static class NotificationLogger
         implements ISubscriber
     {

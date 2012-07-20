@@ -30,7 +30,7 @@ import com.espertech.esper.client.EPStatement;
 /**
  * Test the Esper module functionality
  * @author toli@marketcetera.com
- * @version $Id: EsperModuleTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public class EsperModuleTest extends CEPTestBase {

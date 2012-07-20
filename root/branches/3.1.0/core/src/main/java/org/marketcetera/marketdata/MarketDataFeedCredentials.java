@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Credentials for establishing access to an {@link MarketDataFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: MarketDataFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface MarketDataFeedCredentials
 {
 }

@@ -24,7 +24,7 @@ import org.marketcetera.trade.UserID;
  * Mock execution report implementing only what is necessary for {@link PositionEngineImpl}.
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MockExecutionReport.java 16076 2012-04-28 14:59:26Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class MockExecutionReport implements ExecutionReport {

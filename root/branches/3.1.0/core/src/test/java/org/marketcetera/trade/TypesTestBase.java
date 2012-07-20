@@ -28,10 +28,10 @@ import quickfix.*;
  * Base class for testing various enums based on FIX enum values.
  *
  * @author anshul@marketcetera.com
- * @version $Id: TypesTestBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: TypesTestBase.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class TypesTestBase {
     /**
      * Initialize Logger and system FIX dictionary.

@@ -10,10 +10,10 @@ import java.util.Hashtable;
  * when unit testing module implementations that export MXBean attributes.
  * 
  * @author anshul@marketcetera.com
- * @version $Id: MockConfigProvider.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: MockConfigProvider.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class MockConfigProvider implements ModuleConfigurationProvider {
 
     @Override

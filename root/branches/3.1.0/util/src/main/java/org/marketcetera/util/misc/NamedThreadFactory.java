@@ -20,10 +20,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * resets their name to the desired value.
  *
  * @author anshul@marketcetera.com
- * @version $Id: NamedThreadFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: NamedThreadFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class NamedThreadFactory implements ThreadFactory {
     /**
      * Creates an instance that will create threads whose names begin with

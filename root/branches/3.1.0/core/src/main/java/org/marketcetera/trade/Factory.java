@@ -9,10 +9,10 @@ import quickfix.Message;
  * Factory for creating the messages in this package.
  *
  * @author anshul@marketcetera.com
- * @version $Id: Factory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Factory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public abstract class Factory {
     /**
      * Returns a factory instance that can be used to create various messages.

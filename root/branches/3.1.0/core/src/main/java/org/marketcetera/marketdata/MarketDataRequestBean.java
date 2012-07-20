@@ -21,11 +21,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Contains the data necessary to compose a {@link MarketDataRequest}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRequestBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @ThreadSafe
-@ClassVersion("$Id: MarketDataRequestBean.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class MarketDataRequestBean
         implements Serializable, Cloneable
 {

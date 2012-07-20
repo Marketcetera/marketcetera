@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Tests {@link OptionType}
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionTypeTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ClassVersion("$Id")

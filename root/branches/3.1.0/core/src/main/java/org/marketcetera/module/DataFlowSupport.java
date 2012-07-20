@@ -30,10 +30,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * be <code>metc:cep:vendor:hedgme</code>.
  *
  * @author anshul@marketcetera.com
- * @version $Id: DataFlowSupport.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataFlowSupport.java 16063 2012-01-31 18:21:55Z colin $")   //$NON-NLS-1$
+@ClassVersion("$Id$")   //$NON-NLS-1$
 public interface DataFlowSupport {
     /**
      * Initiates a data flow request. Invoking this API will

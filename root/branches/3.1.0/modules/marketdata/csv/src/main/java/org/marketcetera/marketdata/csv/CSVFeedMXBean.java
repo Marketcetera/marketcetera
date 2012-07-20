@@ -12,11 +12,11 @@ import javax.management.MXBean;
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 @MXBean(true)
 @DisplayName("Management Interface for CSV Market Data Adapter")
-@ClassVersion("$Id: CSVFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface CSVFeedMXBean
         extends AbstractMarketDataModuleMXBean
 {

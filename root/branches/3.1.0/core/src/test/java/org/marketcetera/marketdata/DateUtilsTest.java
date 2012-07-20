@@ -21,7 +21,7 @@ import org.marketcetera.core.ExpectedFailure;
  * Tests {@link DateUtil}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DateUtilsTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class DateUtilsTest

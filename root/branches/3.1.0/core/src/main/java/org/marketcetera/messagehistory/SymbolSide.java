@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author gmiller
  *
  */
-@ClassVersion("$Id: SymbolSide.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class SymbolSide extends MemoizedHashCombinator<Instrument, String> {
     /**
      * Create a new SymbolSide with the specified {@link Instrument} and

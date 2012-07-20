@@ -12,7 +12,7 @@ import org.marketcetera.module.ModuleURN;
  * Module factory implementation for {@link MockMarketDataFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MockMarketDataFeedModuleFactory.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public class MockMarketDataFeedModuleFactory

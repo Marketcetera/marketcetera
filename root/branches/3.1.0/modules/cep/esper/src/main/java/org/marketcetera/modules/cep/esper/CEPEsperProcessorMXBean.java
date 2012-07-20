@@ -11,10 +11,10 @@ import javax.management.MXBean;
  *
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com
- * @version $Id: CEPEsperProcessorMXBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: CEPEsperProcessorMXBean.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 @MXBean(true)
 @DisplayName("The Management Interface for Esper Module Instance")
 public interface CEPEsperProcessorMXBean {

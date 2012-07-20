@@ -17,10 +17,10 @@ import java.util.HashSet;
  * all the data flows.
  *
  * @author anshul@marketcetera.com
- * @version $Id: DataFlow.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataFlow.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 class DataFlow {
 
     /**

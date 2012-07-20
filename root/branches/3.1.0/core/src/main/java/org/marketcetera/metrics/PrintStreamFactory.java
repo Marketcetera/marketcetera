@@ -11,10 +11,10 @@ import java.io.IOException;
  * is invoked.
  *
  * @author anshul@marketcetera.com
- * @version $Id: PrintStreamFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: PrintStreamFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 interface PrintStreamFactory {
     /**
      * Gets the print stream to write metrics for the thread identified by

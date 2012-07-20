@@ -9,10 +9,10 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  * An XML adapter to serialize ModuleURN into XML and back.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ModuleURNXmlAdapter.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: ModuleURNXmlAdapter.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class ModuleURNXmlAdapter extends XmlAdapter<String,ModuleURN> {
     @Override
     public ModuleURN unmarshal(String inValue) throws Exception {

@@ -10,7 +10,7 @@ import static org.marketcetera.util.test.ComparableAssert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: CompSerWrapperTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

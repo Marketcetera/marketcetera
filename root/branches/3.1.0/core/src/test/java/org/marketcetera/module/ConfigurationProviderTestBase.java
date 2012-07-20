@@ -13,7 +13,7 @@ import java.math.BigInteger;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ConfigurationProviderTestBase.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ConfigurationProviderTestBase extends ModuleTestBase {
     @After
     public void cleanup() throws Exception {

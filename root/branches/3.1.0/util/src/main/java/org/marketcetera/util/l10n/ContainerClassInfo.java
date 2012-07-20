@@ -21,12 +21,12 @@ import org.marketcetera.util.misc.ReflectUtils;
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: ContainerClassInfo.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ContainerClassInfo.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class ContainerClassInfo
     implements MessageInfoProvider
 {

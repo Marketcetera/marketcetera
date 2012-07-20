@@ -30,7 +30,7 @@ import quickfix.field.Text;
  * running data flows through and checking for output
  *
  * @author toli@marketcetera.com
- * @version $Id: CEPTestBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public abstract class CEPTestBase extends ModuleTestBase {

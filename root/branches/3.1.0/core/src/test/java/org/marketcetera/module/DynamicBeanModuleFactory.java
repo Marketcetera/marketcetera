@@ -11,10 +11,10 @@ import javax.management.*;
  * dynamic mbean.
  *
  * @author anshul@marketcetera.com
- * @version $Id: DynamicBeanModuleFactory.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: DynamicBeanModuleFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class DynamicBeanModuleFactory extends ModuleFactory implements DynamicMBean {
     /**
      * Creates an instance.

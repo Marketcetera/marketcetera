@@ -9,10 +9,10 @@ import org.apache.commons.lang.builder.CompareToBuilder;
  * A comparator for {@link Equity} instruments.
  *
  * @author anshul@marketcetera.com
- * @version $Id: EquityPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: EquityPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class EquityPositionKeyComparator extends InstrumentPositionKeyComparator<Equity> {
     /**
      * Creates an instance.

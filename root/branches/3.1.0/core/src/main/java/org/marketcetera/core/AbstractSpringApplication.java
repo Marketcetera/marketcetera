@@ -24,11 +24,11 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * {@link #start start} it, and invoke {@link #waitForever()}. 
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractSpringApplication.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @ThreadSafe
-@ClassVersion("$Id: AbstractSpringApplication.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public abstract class AbstractSpringApplication
         implements Lifecycle
 {

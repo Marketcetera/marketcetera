@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Represents a grouping of {@link User} and {@link Authority} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Group.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: Group.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface Group
         extends SystemObject, VersionedObject, NamedObject
 {

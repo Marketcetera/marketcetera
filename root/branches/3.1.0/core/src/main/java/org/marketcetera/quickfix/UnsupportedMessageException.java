@@ -7,7 +7,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * An unsupported QuickFix message was received. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UnsupportedMessageException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public class UnsupportedMessageException
         extends CoreException

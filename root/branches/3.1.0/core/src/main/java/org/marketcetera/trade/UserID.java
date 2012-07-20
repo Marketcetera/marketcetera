@@ -14,10 +14,10 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.5.0
- * @version $Id: UserID.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@ClassVersion("$Id: UserID.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class UserID implements Serializable {
 
     /**

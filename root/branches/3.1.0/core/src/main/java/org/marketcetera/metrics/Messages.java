@@ -8,10 +8,10 @@ import org.marketcetera.util.log.*;
  * The message constants for internationalized messages used in this package.
  *
  * @author anshul@marketcetera.com
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: Messages.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface Messages {
     /**
      * The message provider

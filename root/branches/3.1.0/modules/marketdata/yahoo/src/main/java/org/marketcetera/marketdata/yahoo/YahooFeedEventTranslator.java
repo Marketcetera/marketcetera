@@ -21,11 +21,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Translates events from the Yahoo market data supplier.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
 @ThreadSafe
-@ClassVersion("$Id: YahooFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum YahooFeedEventTranslator
         implements EventTranslator
 {

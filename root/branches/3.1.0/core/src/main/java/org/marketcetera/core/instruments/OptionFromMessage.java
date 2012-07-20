@@ -18,10 +18,10 @@ import java.math.BigDecimal;
  * found in the message.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionFromMessage.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionFromMessage.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class OptionFromMessage extends InstrumentFromMessage {
 
     @Override

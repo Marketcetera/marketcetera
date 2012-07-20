@@ -17,10 +17,10 @@ import ca.odell.glazedlists.event.ListEventListener;
  * This class maintains a summary position row based on its child positions.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: SummaryRowUpdater.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: SummaryRowUpdater.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class SummaryRowUpdater {
 
     private final EventList<PositionRow> mChildren;

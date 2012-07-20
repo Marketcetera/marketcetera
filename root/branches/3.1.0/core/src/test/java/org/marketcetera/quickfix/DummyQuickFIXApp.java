@@ -5,7 +5,7 @@ import quickfix.*;
 /**
  * Dymmy quickfix app that does nothing
  * @author toli
- * @version $Id: DummyQuickFIXApp.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 public class DummyQuickFIXApp implements Application {

@@ -15,10 +15,10 @@ import java.util.regex.Pattern;
  * Adds the appropriate fields for an option instrument to a FIX Message.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionToMessage.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionToMessage.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class OptionToMessage extends InstrumentToMessage<Option> {
     /**
      * Creates an instance that handles options.

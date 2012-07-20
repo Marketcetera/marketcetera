@@ -20,10 +20,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides a <code>YahooClient</code> implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooClientImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooClientImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class YahooClientImpl
         implements Runnable, YahooClient
 {

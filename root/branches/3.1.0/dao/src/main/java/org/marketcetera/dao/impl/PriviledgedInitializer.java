@@ -19,10 +19,10 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  * Performs a set of initialization tasks with temporarily increased priviledges.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PriviledgedInitializer.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: PriviledgedInitializer.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class PriviledgedInitializer
         implements InitializingBean
 {

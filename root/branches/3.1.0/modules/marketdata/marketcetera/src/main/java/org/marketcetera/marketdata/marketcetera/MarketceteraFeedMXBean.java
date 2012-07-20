@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Defines the set of attributes and operations available from the {@link MarketceteraFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketceteraFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: MarketceteraFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 @MXBean(true)
 @DisplayName("Management Interface for Marketcetera Marketdata Feed")
 public interface MarketceteraFeedMXBean

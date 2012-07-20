@@ -13,10 +13,10 @@ import quickfix.field.ExecType;
  * Specific execution report status.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ExecutionType.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionType.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum ExecutionType {
     /**
      * Sentinel value for Execution Type that the system is not currently

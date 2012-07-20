@@ -11,10 +11,10 @@ import java.util.Date;
  * meant to be used directly, use one of its sub-types instead.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ReportBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportBase.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface ReportBase extends Serializable {
     /**
      * The client assigned orderID of the order that generated this report.

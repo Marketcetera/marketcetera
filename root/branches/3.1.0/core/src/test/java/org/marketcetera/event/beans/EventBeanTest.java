@@ -15,7 +15,7 @@ import org.marketcetera.util.test.EqualityAssert;
  * Tests {@link EventBean}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: EventBeanTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class EventBeanTest

@@ -16,11 +16,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>Price is compared first, followed by size, if necessary.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PriceAndSizeComparator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 @Immutable
-@ClassVersion("$Id: PriceAndSizeComparator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class PriceAndSizeComparator
         implements Comparator<QuoteEvent>
 {

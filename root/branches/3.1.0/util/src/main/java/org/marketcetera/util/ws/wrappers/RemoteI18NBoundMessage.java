@@ -22,12 +22,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 2.0.0
- * @version $Id: RemoteI18NBoundMessage.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: RemoteI18NBoundMessage.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class RemoteI18NBoundMessage
     implements Serializable
 {

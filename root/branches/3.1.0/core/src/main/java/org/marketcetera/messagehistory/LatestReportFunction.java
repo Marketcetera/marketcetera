@@ -19,10 +19,10 @@ import ca.odell.glazedlists.FunctionList.Function;
  * @author gmiller
  * @author anshul@marketcetera.com
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: LatestReportFunction.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: LatestReportFunction.java 82384 2012-07-20 19:09:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class LatestReportFunction implements
   Function<List<ReportHolder>, ReportHolder>{
 

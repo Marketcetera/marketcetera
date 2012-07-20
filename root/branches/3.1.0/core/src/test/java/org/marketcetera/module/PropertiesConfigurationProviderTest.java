@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: PropertiesConfigurationProviderTest.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class PropertiesConfigurationProviderTest
         extends ConfigurationProviderTestBase {
     @Before

@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.6.0
- * @version $Id: FileDecoderFileTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

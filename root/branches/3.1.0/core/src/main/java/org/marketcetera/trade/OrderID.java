@@ -15,10 +15,10 @@ import java.io.Serializable;
  * <code>ClOrdID</code> or <code>OrigClOrdID</code> fields.
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderID.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderID.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 @Embeddable
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OrderID implements Serializable {

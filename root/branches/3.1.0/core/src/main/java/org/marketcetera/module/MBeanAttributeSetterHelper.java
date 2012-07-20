@@ -13,10 +13,10 @@ import javax.management.*;
  * appropriate types. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: MBeanAttributeSetterHelper.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: MBeanAttributeSetterHelper.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 class MBeanAttributeSetterHelper {
     /**
      * Returns true if the attributes of the type as indicated

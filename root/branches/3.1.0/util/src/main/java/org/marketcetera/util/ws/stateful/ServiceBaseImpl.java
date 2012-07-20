@@ -9,12 +9,12 @@ import org.marketcetera.util.ws.stateless.StatelessServiceBaseImpl;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: ServiceBaseImpl.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ServiceBaseImpl.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ServiceBaseImpl<T>
     extends StatelessServiceBaseImpl
     implements ServiceBase

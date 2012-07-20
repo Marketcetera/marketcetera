@@ -11,10 +11,10 @@ import java.io.Serializable;
  * This message type is not meant to be used directly.   
  *
  * @author anshul@marketcetera.com
- * @version $Id: NewOrReplaceOrder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: NewOrReplaceOrder.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface NewOrReplaceOrder extends OrderBase, Serializable {
     /**
      * Gets the OrderType for the Order.

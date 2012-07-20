@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: FlowRequesterModuleFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class FlowRequesterModuleFactory
         extends ModuleFactory {
     public FlowRequesterModule create(Object... parameters)

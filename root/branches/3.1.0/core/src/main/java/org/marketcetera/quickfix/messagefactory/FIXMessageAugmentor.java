@@ -14,7 +14,7 @@ import quickfix.FieldNotFound;
  * NOTE: this class has nothing to with the other kind of augmentor:
  *    augmentor. A duct usually enclosing the exhaust jet behind the nozzle exit section of rocket to provide increased thrust.
  * @author toli
- * @version $Id: FIXMessageAugmentor.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public interface FIXMessageAugmentor {
     /** Add the version-specific fields to a {@link quickfix.field.MsgType#ORDER_SINGLE} message */

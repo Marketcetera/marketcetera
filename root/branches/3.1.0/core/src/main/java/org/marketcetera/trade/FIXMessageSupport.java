@@ -11,10 +11,10 @@ import java.io.Serializable;
  * Interface that is implemented by types that wrap a FIX Message instance.
  *
  * @author anshul@marketcetera.com
- * @version $Id: FIXMessageSupport.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: FIXMessageSupport.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface FIXMessageSupport extends HasFIXMessage, Serializable {
     /**
      * Returns a map of all the fields on the FIX Message with

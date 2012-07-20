@@ -14,10 +14,10 @@ import quickfix.field.*;
 
 /**
  * @author toli
- * @version $Id: FIXMessageAugmentor_40.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: FIXMessageAugmentor_40.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
 
     // list of messages that need transactTime

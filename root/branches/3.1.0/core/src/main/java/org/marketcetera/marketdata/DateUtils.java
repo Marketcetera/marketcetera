@@ -16,10 +16,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Offers date translation utilities for {@link MarketDataRequest} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DateUtils.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: DateUtils.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class DateUtils
 {
     private static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,

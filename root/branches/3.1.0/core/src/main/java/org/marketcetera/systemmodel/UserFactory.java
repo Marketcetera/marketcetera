@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Creates <code>User</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserFactory.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: UserFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface UserFactory
 {
     /**

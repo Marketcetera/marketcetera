@@ -11,10 +11,10 @@ import java.util.Collections;
  * The time in force for an Order.
  *
  * @author anshul@marketcetera.com
- * @version $Id: TimeInForce.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: TimeInForce.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum TimeInForce {
     /**
      * Sentinel value for Time In Force that the system is not currently

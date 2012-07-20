@@ -29,10 +29,10 @@ import ca.odell.glazedlists.event.ListEventListener;
  * 
  * @author anshul@marketcetera.com
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: AveragePriceReportList.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: AveragePriceReportList.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class AveragePriceReportList extends AbstractEventList<ReportHolder> implements ListEventListener<ReportHolder> {
 
     private final HashMap<SymbolSide, Integer> mAveragePriceIndexes = new HashMap<SymbolSide, Integer>();

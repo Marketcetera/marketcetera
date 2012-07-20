@@ -12,10 +12,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * Provides data access for {@link Authority} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AuthorityDao.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: AuthorityDao.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface AuthorityDao
 {
     /**

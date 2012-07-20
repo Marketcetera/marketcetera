@@ -7,7 +7,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: TestMessages.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

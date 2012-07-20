@@ -17,10 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * be removed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AuthorityInitializer.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: AuthorityInitializer.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class AuthorityInitializer
         implements Initializer
 {

@@ -9,10 +9,10 @@ import org.springframework.context.Lifecycle;
  * Provides access to the Yahoo data source.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooClient.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooClient.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 interface YahooClient
         extends Lifecycle
 {

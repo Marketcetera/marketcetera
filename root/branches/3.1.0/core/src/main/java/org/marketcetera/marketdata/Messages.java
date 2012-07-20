@@ -10,9 +10,9 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author klim@marketcetera.com
  * @since 0.6.0
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: Messages.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
     /**

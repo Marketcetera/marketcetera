@@ -13,11 +13,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Attempts to convert symbols to {@link ConvertibleBond} instruments.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ConvertibleBondSymbolResolver.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @Immutable
-@ClassVersion("$Id: ConvertibleBondSymbolResolver.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ConvertibleBondSymbolResolver
         implements SymbolResolver
 {

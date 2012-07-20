@@ -14,7 +14,7 @@ import org.junit.Test;
  * Tests {@link AssetClass}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AssetClassTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public class AssetClassTest

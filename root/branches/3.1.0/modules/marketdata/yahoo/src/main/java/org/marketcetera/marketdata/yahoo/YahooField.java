@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Represents a field in a Yahoo market data request. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooField.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooField.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 enum YahooField
 {
     ASK("a"), //$NON-NLS-1$

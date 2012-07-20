@@ -19,11 +19,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>To create an <code>ExchangeRequest</code>, use an {@link ExchangeRequestBuilder}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ExchangeRequest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @Immutable
-@ClassVersion("$Id: ExchangeRequest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class ExchangeRequest
         implements Serializable, HasInstrument, HasUnderlyingInstrument
 {

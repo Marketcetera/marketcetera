@@ -17,10 +17,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * information given the sequence of method invocations.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionMetricsCalculator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionMetricsCalculator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface PositionMetricsCalculator {
 
     /**

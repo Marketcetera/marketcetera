@@ -21,11 +21,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * called.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DividendEventBuilder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: DividendEventBuilder.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public abstract class DividendEventBuilder
         implements EventBuilder<DividendEvent>
 {

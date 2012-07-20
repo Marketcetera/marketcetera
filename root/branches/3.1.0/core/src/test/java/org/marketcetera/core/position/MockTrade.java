@@ -18,10 +18,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Simple implementation of the {@link Trade} interface.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: MockTrade.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: MockTrade.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class MockTrade<T extends Instrument> implements Trade<T> {
 
     protected final PositionKey<T> mKey;

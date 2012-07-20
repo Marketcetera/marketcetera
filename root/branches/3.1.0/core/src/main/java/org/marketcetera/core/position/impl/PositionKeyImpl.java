@@ -19,10 +19,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Implementation of {@link PositionKey}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionKeyImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionKeyImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PositionKeyImpl<T extends Instrument> implements PositionKey<T> {

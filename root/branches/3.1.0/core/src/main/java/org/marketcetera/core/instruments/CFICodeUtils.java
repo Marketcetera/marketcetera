@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * standard.
  *
  * @author anshul@marketcetera.com
- * @version $Id: CFICodeUtils.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: CFICodeUtils.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class CFICodeUtils {
     /**
      * Returns true if the specified CFI code string specifies an Option

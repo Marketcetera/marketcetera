@@ -44,11 +44,11 @@ import org.marketcetera.util.ws.wrappers.RemoteProperties;
  * <p>Note that this object is <em>not</em> thread-safe.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: LogEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: LogEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 final class LogEventImpl
         implements LogEvent, HasEventBean
 {

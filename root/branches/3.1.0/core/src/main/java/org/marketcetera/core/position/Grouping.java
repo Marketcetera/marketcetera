@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @see PositionEngine#getGroupedData(Grouping...)
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: Grouping.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: Grouping.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum Grouping {
     Underlying {
         @Override

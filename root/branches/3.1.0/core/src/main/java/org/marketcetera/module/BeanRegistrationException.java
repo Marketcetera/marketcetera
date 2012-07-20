@@ -9,10 +9,10 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * module factory or instance mxbeans with the mbean server.
  *
  * @author anshul@marketcetera.com
- * @version $Id: BeanRegistrationException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: BeanRegistrationException.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public class BeanRegistrationException extends MXBeanOperationException {
     /**
      * Creates an instance.

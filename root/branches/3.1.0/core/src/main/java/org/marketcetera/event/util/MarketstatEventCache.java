@@ -18,11 +18,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>The cache retains the most recent non-null attributes available.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketstatEventCache.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: MarketstatEventCache.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class MarketstatEventCache
 {
     /**

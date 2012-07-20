@@ -19,7 +19,7 @@ import java.util.Map;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: EmitterModule.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class EmitterModule extends ModuleBase implements DataEmitter {
     protected EmitterModule() {
         super(EmitterModuleFactory.INSTANCE_URN);

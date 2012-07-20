@@ -61,9 +61,9 @@ import java.util.*;
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com
  * @since 1.0.0
- * @version $Id: CEPEsperProcessor.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: CEPEsperProcessor.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CEPEsperProcessor extends Module
         implements DataReceiver, DataEmitter, CEPEsperProcessorMXBean {
 

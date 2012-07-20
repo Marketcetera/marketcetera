@@ -10,7 +10,7 @@ import java.util.HashMap;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ModuleBase.java 82384 2012-07-20 19:09:59Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public abstract class ModuleBase extends Module {
 
     @Override

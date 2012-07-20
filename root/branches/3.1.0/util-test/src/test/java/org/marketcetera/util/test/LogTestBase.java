@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  * subclasses.
  *
  * @author tlerios@marketcetera.com
- * @version $Id: LogTestBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 

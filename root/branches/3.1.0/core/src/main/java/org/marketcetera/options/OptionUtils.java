@@ -14,10 +14,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Various option related utilities. 
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: OptionUtils.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionUtils.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class OptionUtils {
 
     private static Calendar getSaturdayAfterThirdFriday(int month, int year) {

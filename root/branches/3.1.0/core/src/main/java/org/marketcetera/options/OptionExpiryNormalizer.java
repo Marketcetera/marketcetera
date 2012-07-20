@@ -20,10 +20,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * in the lib directory for every platform application. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: OptionExpiryNormalizer.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionExpiryNormalizer.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface OptionExpiryNormalizer {
     /**
      * Normalizes the supplied expiry date with a day if it doesn't

@@ -11,10 +11,10 @@ import static org.junit.Assert.assertEquals;
  * Tests {@link ApplicationVersion}
  *
  * @author anshul@marketcetera.com
- * @version $Id: ApplicationVersionTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: ApplicationVersionTest.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ApplicationVersionTest
 {
     /**

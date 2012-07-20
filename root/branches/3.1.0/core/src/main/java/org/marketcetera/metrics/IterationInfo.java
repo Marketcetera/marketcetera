@@ -13,11 +13,11 @@ import java.util.Iterator;
  * the csv file.
  *
  * @author anshul@marketcetera.com
- * @version $Id: IterationInfo.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  * @see PerThreadInfo
  */
-@ClassVersion("$Id: IterationInfo.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 final class IterationInfo implements Iterable<CheckpointInfo> {
     /**
      * Clears the saved information. Resets the state back to as it was

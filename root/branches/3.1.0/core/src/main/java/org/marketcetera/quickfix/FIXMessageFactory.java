@@ -21,9 +21,9 @@ import quickfix.field.*;
  * fields to each newly created message.
  *
  * @author toli
- * @version $Id: FIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: FIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class FIXMessageFactory {
 
     private MessageFactory msgFactory;

@@ -37,7 +37,7 @@ import com.google.common.collect.Multimap;
  * Tests {@link SimulatedExchange}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SimulatedExchangeTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class SimulatedExchangeTest
@@ -1896,7 +1896,7 @@ public class SimulatedExchangeTest
      * Subscribes to top-of-book and captures the state of the exchange top every time it changes.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: SimulatedExchangeTest.java 82384 2012-07-20 19:09:59Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
     @ThreadSafe
@@ -1959,7 +1959,7 @@ public class SimulatedExchangeTest
     * Captures any events from a <code>SimulatedExchange</code>.
     *
     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-    * @version $Id: SimulatedExchangeTest.java 82384 2012-07-20 19:09:59Z colin $
+    * @version $Id$
     * @since 1.5.0
     */
    private static class AllEventsSubscriber
@@ -1991,7 +1991,7 @@ public class SimulatedExchangeTest
     * at an unspecified point in time.
     *
     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-    * @version $Id: SimulatedExchangeTest.java 82384 2012-07-20 19:09:59Z colin $
+    * @version $Id$
     * @since 2.0.0
     */
    private static class InstrumentState
@@ -2028,7 +2028,7 @@ public class SimulatedExchangeTest
     * Organizes actual results from an exchange by <code>Instrument</code>.
     *
     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-    * @version $Id: SimulatedExchangeTest.java 82384 2012-07-20 19:09:59Z colin $
+    * @version $Id$
     * @since 2.0.0
     */
    private static class EventOrganizer
@@ -2144,7 +2144,7 @@ public class SimulatedExchangeTest
         * Indicates the type of request made to the exchange.
         *
         * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-        * @version $Id: SimulatedExchangeTest.java 82384 2012-07-20 19:09:59Z colin $
+        * @version $Id$
         * @since 2.0.0
         */
        private static enum RequestType

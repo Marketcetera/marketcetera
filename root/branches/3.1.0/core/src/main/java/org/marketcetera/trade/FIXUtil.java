@@ -13,10 +13,10 @@ import java.util.Date;
  * Utility class for FIX.
  *
  * @author anshul@marketcetera.com
- * @version $Id: FIXUtil.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: FIXUtil.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class FIXUtil {
     static String getAccount(Message inMessage) {
         if (inMessage.isSetField(Account.FIELD)) {

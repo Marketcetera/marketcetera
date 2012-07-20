@@ -15,11 +15,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * is set to true.
  *
  * @author anshul@marketcetera.com
- * @version $Id: JmxUtils.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  * @see ThreadedMetricMXBean
  */
-@ClassVersion("$Id: JmxUtils.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class JmxUtils {
     /**
      * Registers the {@link ThreadedMetric} management interface with

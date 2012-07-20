@@ -77,10 +77,10 @@ import java.util.Collections;
  * </ul> 
  *
  * @author anshul@marketcetera.com
- * @version $Id: ModuleState.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleState.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public enum ModuleState {
     /**
      * Module has been created. It hasn't been started or stopped yet.

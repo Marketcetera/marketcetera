@@ -14,11 +14,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides an Equity implementation of {@link AskEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: EquityAskEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: EquityAskEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class EquityAskEventImpl
         extends AbstractQuoteEventImpl
         implements AskEvent, EquityEvent

@@ -9,12 +9,12 @@ import org.apache.commons.lang.SystemUtils;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: OperatingSystem.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: OperatingSystem.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum OperatingSystem
 {
     WINDOWS_2000("Windows 2000"), //$NON-NLS-1$

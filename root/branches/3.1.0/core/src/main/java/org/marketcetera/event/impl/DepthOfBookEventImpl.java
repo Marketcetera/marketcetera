@@ -25,11 +25,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Implements {@link DepthOfBookEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DepthOfBookEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: DepthOfBookEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 final class DepthOfBookEventImpl
         implements DepthOfBookEvent, HasEventBean
 {

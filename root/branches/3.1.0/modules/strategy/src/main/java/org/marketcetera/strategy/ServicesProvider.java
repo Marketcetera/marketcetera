@@ -24,9 +24,9 @@ import quickfix.Message;
  * implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: ServicesProvider.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: ServicesProvider.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 interface ServicesProvider
 {
     /**

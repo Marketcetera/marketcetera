@@ -12,11 +12,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Base class for versioned system objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentVersionedObject.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @MappedSuperclass
-@ClassVersion("$Id: PersistentVersionedObject.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public abstract class PersistentVersionedObject
         extends PersistentSystemObject
         implements VersionedObject

@@ -12,10 +12,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * {@link ThreadedMetric#end(java.util.concurrent.Callable, Object[])}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ConditionsFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: ConditionsFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class ConditionsFactory {
     /**
      * Returns a condition that is true on every n<sup>th</sup>

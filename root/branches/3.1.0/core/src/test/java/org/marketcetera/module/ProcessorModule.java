@@ -16,7 +16,7 @@ import java.util.HashSet;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ProcessorModule.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ProcessorModule extends ModuleBase
         implements DataEmitter, DataReceiver {
     public ProcessorModule(ModuleURN inModuleURN) {

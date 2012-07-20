@@ -16,10 +16,10 @@ import ca.odell.glazedlists.EventList;
  * positions.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionRow.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionRow.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface PositionRow {
 
     /**

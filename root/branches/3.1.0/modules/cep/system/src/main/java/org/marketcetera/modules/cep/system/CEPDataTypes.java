@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * Set of constants naming pre-defined CEP data types
  * @author toli@marketcetera.com
- * @version $Id: CEPDataTypes.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: CEPDataTypes.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CEPDataTypes {
     public static final String MARKET_DATA  = "mdata";          //$NON-NLS-1$
     public static final String BID          = "bid";            //$NON-NLS-1$

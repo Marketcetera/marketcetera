@@ -10,12 +10,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: ConsoleContext.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: ConsoleContext.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ConsoleContext
     extends Context<ConsoleSetter<?>>
 {

@@ -19,11 +19,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Implementation of {@link DividendEvent}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: DividendEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: DividendEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 final class DividendEventImpl
         implements DividendEvent, HasEventBean
 {

@@ -27,7 +27,7 @@ import quickfix.field.*;
  * Tests {@link MarketceteraFeedMessageTranslator}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketceteraFeedMessageTranslatorTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class MarketceteraFeedMessageTranslatorTest

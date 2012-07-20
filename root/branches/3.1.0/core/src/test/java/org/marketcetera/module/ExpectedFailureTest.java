@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ExpectedFailureTest.java 82384 2012-07-20 19:09:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ExpectedFailureTest {
     /**
      * Verifies i18N exception testing

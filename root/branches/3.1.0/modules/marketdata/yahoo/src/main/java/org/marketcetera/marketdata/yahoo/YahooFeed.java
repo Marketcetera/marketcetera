@@ -23,10 +23,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Market data feed implementation for the Yahoo market data supplier.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooFeed.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooFeed.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class YahooFeed
         extends AbstractMarketDataFeed<YahooFeedToken,
                                        YahooFeedCredentials,

@@ -16,12 +16,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: CliContext.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: CliContext.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class CliContext
     extends Context<CliSetter<?>>
 {

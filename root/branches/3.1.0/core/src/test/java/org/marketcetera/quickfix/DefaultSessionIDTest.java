@@ -11,7 +11,7 @@ import quickfix.SessionID;
 
 /**
  * @author Graham Miller
- * @version $Id: DefaultSessionIDTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public class DefaultSessionIDTest extends TestCase {
     public DefaultSessionIDTest(String inName) {

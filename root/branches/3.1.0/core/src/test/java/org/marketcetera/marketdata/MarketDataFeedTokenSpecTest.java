@@ -14,7 +14,7 @@ import org.marketcetera.core.publisher.MockSubscriber;
  * Tests {@link MarketDataFeedTokenSpec}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataFeedTokenSpecTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
 public class MarketDataFeedTokenSpecTest

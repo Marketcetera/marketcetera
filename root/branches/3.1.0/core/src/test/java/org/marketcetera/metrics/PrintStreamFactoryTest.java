@@ -18,10 +18,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * {@link StdErrFactory}
  *
  * @author anshul@marketcetera.com
- * @version $Id: PrintStreamFactoryTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: PrintStreamFactoryTest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class PrintStreamFactoryTest {
     @BeforeClass
     public static void setup() {

@@ -19,10 +19,10 @@ import quickfix.field.OrdType;
  * Tests {@link OrderType}
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderTypeTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderTypeTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderTypeTest extends FIXCharEnumTestBase <OrderType>{
     @Override
     protected OrderType getInstanceForFIXValue(Character inFIXValue) {

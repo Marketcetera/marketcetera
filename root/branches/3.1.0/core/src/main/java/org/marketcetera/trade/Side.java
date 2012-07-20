@@ -10,10 +10,10 @@ import java.util.Collections;
  * Enumeration of Sides of an order.
 *
 * @author anshul@marketcetera.com
-* @version $Id: Side.java 16063 2012-01-31 18:21:55Z colin $
+* @version $Id$
 * @since 1.0.0
 */
-@ClassVersion("$Id: Side.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum Side {
     /**
      * Sentinel value for Side that the system is not currently

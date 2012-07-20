@@ -16,7 +16,7 @@ import quickfix.field.*;
 /* $License$ */
 /**
  * @author Graham Miller
- * @version $Id: FIXMessageUtilTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public class FIXMessageUtilTest extends FIXVersionedTestCase {
 	/// this is to prevent errors on windows where orderIDs get same system.currentMillis

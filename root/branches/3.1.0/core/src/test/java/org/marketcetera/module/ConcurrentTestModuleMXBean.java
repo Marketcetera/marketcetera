@@ -9,10 +9,10 @@ import javax.management.MXBean;
  * ConcurrentTestModuleMXBean
  *
  * @author anshul@marketcetera.com
- * @version $Id: ConcurrentTestModuleMXBean.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.1.0
  */
-@ClassVersion("$Id: ConcurrentTestModuleMXBean.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 @MXBean(true)
 public interface ConcurrentTestModuleMXBean {
     /**

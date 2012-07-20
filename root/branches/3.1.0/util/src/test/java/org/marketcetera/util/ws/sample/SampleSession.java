@@ -9,12 +9,12 @@ import org.marketcetera.util.ws.stateful.SessionHolder;
  * 
  * @author tlerios@marketcetera.com
  * @since 1.0.0
- * @version $Id: SampleSession.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SampleSession.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SampleSession
 {
 

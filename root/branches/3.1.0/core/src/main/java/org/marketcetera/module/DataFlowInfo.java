@@ -11,10 +11,10 @@ import java.io.Serializable;
  * Instances of this class describe the current state of a data flow.
  *
  * @author anshul@marketcetera.com
- * @version $Id: DataFlowInfo.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataFlowInfo.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public final class DataFlowInfo implements Serializable {
     /**
      * Returns information on individual data flow steps

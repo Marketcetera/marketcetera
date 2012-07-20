@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * data into it. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: StopDataFlowException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: StopDataFlowException.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public class StopDataFlowException extends ReceiveDataException {
     private static final long serialVersionUID = 6507623674619493868L;
 

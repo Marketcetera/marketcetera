@@ -13,13 +13,13 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * JAXB and is not intended for general use.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ReportBaseImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @XmlSeeAlso
     ({ExecutionReportImpl.class,
       OrderCancelRejectImpl.class})
-@ClassVersion("$Id: ReportBaseImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
 
     @Override

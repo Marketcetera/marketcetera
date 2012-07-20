@@ -10,10 +10,10 @@ import java.io.Serializable;
  * Identifies data needed for an order suggestion.
  *
  * @author anshul@marketcetera.com
- * @version $Id: Suggestion.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Suggestion.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Suggestion extends Serializable {
     /**
      * The identifier for this suggestion.

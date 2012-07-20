@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Represents an object that has a version number.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: VersionedObject.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: VersionedObject.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public interface VersionedObject
 {
     /**

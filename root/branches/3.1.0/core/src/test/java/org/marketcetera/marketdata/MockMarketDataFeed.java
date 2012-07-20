@@ -22,10 +22,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Test implementation of <code>AbstractMarketDataFeed</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MockMarketDataFeed.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: MockMarketDataFeed.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class MockMarketDataFeed
     extends AbstractMarketDataFeed<MockMarketDataFeedToken,
                                    MockMarketDataFeedCredentials,

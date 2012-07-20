@@ -11,7 +11,7 @@ import java.net.URI;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: SingleParmModuleFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class SingleParmModuleFactory extends ModuleFactory {
     @Override
     public SingletonModule create(Object... parameters)

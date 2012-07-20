@@ -7,9 +7,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * Java VM.  They are simply the string representation of a counter that is incremented
  * every time getNext is called.
  * @author gmiller
- * $Id: InMemoryIDFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * $Id$
  */
-@ClassVersion("$Id: InMemoryIDFactory.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class InMemoryIDFactory implements IDFactory {
 
     long mNextID = 0;

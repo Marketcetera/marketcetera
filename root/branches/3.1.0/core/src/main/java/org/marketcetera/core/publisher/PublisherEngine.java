@@ -16,10 +16,10 @@ import org.marketcetera.util.misc.NamedThreadFactory;
  * <p>This object is meant to be used by means of a "has-a" relationship.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PublisherEngine.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: PublisherEngine.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class PublisherEngine
     implements IPublisher
 {

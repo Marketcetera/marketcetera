@@ -11,10 +11,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Tests {@link ModuleURNXmlAdapter}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ModuleURNXmlAdapterTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: ModuleURNXmlAdapterTest.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ModuleURNXmlAdapterTest {
     private static final ModuleURNXmlAdapter sAdapter = new ModuleURNXmlAdapter();
 

@@ -21,7 +21,7 @@ import java.math.BigDecimal;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: SinkModuleTest.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class SinkModuleTest extends ModuleTestBase {
     @BeforeClass
     public static void setup() throws Exception {

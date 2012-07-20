@@ -10,10 +10,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Defines the set of strategy languages available.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Language.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Language.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum Language
 {
     /**

@@ -24,11 +24,11 @@ import com.google.common.collect.ImmutableMap;
  * @param <T> the type of handler selected by this instance. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: StaticInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @SuppressWarnings("rawtypes")
-@ClassVersion("$Id: StaticInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public final class StaticInstrumentFunctionSelector<T extends InstrumentFunctionHandler> {
     /**
      * Creates an instance.

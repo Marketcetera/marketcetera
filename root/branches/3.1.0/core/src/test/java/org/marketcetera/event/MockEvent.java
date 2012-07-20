@@ -11,7 +11,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
  * Test implementation of {@link Event}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MockEvent.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class MockEvent

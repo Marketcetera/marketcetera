@@ -29,10 +29,10 @@ import java.util.Properties;
  * ConvertUtilsBean</a>
  *
  * @author anshul@marketcetera.com
- * @version $Id: StringToTypeConverter.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: StringToTypeConverter.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 class StringToTypeConverter {
     /**
      * Returns true if conversion from the supplied type

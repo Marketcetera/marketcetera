@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Indicates the status of a running strategy.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Status.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Status.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum Status
 {
     /**

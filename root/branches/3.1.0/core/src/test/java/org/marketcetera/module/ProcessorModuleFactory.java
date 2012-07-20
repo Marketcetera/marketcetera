@@ -8,7 +8,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ProcessorModuleFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ProcessorModuleFactory extends ModuleFactory {
     @Override
     public ProcessorModule create(Object... parameters)

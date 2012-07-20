@@ -12,10 +12,10 @@ import java.util.Hashtable;
  * out various module framework operations. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: ConcurrentTestModule.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.1.0
  */
-@ClassVersion("$Id: ConcurrentTestModule.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ConcurrentTestModule extends Module
         implements DataReceiver, DataEmitter, DataFlowRequester,
         ConcurrentTestModuleMXBean {

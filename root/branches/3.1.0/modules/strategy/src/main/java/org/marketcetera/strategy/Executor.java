@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Executes a strategy.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Executor.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Executor.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 interface Executor
 {
     /**

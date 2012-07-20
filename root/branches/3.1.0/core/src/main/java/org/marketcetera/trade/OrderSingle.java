@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * created via {@link org.marketcetera.trade.Factory#createOrderSingle()}
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderSingle.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderSingle.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface OrderSingle extends TradeMessage, OrderBase, NewOrReplaceOrder, Cloneable {
     /**
      * Creates clone of this order.

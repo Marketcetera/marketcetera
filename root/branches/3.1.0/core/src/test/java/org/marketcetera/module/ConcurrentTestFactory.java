@@ -10,10 +10,10 @@ import java.util.concurrent.locks.Lock;
  * Factory for {@link ConcurrentTestModule}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ConcurrentTestFactory.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.1.0
  */
-@ClassVersion("$Id: ConcurrentTestFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ConcurrentTestFactory extends ModuleFactory {
     public ConcurrentTestFactory() {
         super(PROVIDER_URN, new I18NMessage0P(Messages.LOGGER, "provider"),

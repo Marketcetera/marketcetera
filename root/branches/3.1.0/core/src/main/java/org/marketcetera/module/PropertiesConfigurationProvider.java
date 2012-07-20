@@ -32,10 +32,10 @@ import java.io.IOException;
  * <code>attribute-name=attribute-value</code>
  * 
  * @author anshul@marketcetera.com
- * @version $Id: PropertiesConfigurationProvider.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: PropertiesConfigurationProvider.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class PropertiesConfigurationProvider
         implements ModuleConfigurationProvider {
     /**

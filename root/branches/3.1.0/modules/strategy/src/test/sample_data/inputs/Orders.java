@@ -23,7 +23,7 @@ import java.util.Deque;
  * Sample strategy to test the ability to send orders.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Orders.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public class Orders

@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Persistent implementation of {@link Authority}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: PersistentAuthority.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @ThreadSafe
@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NamedQueries( { @NamedQuery(name="findUserByName",query="from PersistentAuthority s where s.authority = :name"),
                  @NamedQuery(name="findAllAuthorities",query="from PersistentAuthority")})
 @Table(name="authorities", uniqueConstraints = { @UniqueConstraint(columnNames= { "authority" } ) } )
-@ClassVersion("$Id: PersistentAuthority.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class PersistentAuthority
         extends PersistentVersionedObject
         implements Authority

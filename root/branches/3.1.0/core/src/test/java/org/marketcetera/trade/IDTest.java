@@ -24,10 +24,10 @@ import org.marketcetera.util.test.SerializableAssert;
  * {@link Factory#setOrderIDFactory(org.marketcetera.core.IDFactory)} 
  *
  * @author anshul@marketcetera.com
- * @version $Id: IDTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: IDTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class IDTest {
     /**
      * Verify {@link OrderID}
@@ -161,7 +161,7 @@ public class IDTest {
      * and a prefix.
      *
      */
-    @ClassVersion("$Id: IDTest.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public static class TestIDFactory implements IDFactory {
         public TestIDFactory(long initValue, String inPrefix) {
             mPrefix = inPrefix;

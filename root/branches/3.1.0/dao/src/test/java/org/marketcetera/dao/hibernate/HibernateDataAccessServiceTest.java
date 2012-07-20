@@ -11,7 +11,7 @@ import org.junit.Test;
  * Tests {@link HibernategetDao()}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HibernateDataAccessServiceTest.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class HibernateDataAccessServiceTest

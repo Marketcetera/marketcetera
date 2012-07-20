@@ -31,7 +31,7 @@ import org.marketcetera.trade.OptionType;
  * Tests {@link BasicCSVFeedEventTranslator}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BasicCSVFeedEventTranslatorTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public class BasicCSVFeedEventTranslatorTest

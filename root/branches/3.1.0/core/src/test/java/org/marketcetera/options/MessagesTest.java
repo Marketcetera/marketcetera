@@ -11,7 +11,7 @@ import org.marketcetera.util.l10n.MessageComparator;
  * Tests that all messages in this package are mapped correctly
  *
  * @author anshul@marketcetera.com
- * @version $Id: MessagesTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class MessagesTest {

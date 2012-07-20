@@ -11,10 +11,10 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * operation. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: ModuleStateException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleStateException.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public class ModuleStateException extends ModuleException {
     /**
      * Creates an instance.

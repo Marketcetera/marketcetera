@@ -12,10 +12,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * <p>In this context, <em>content</em> refers to the type of market data request.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Content.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: Content.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum Content
 {
     /**

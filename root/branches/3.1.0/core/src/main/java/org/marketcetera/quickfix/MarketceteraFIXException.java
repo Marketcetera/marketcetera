@@ -14,9 +14,9 @@ import quickfix.Message;
  * for various FIX-related errors
  *
  * @author Toli Kuznets
- * @version $Id: MarketceteraFIXException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: MarketceteraFIXException.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class MarketceteraFIXException extends CoreException {
     public MarketceteraFIXException(I18NBoundMessage message) {
         super(message);

@@ -15,10 +15,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * or all of the attributes may be null if the data was not available.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketstatEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: MarketstatEvent.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface MarketstatEvent
         extends Event, HasInstrument, HasEventType
 {

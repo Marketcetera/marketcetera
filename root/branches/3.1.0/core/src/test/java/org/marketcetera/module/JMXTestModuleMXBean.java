@@ -11,7 +11,7 @@ import java.math.BigInteger;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: JMXTestModuleMXBean.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 @DisplayName("JMX Testing module")
 public interface JMXTestModuleMXBean {
     @DisplayName("primitive boolean type")

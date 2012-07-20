@@ -19,7 +19,7 @@ import quickfix.field.TimeInForce;
  * this is testing the fix for bug QFJ-300 (http://www.quickfixj.org/jira/browse/QFJ-300)
  *
  * @author toli
- * @version $Id: DecimalFieldTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 public class DecimalFieldTest extends TestCase {

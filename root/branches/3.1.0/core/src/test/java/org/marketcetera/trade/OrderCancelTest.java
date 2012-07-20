@@ -27,10 +27,10 @@ import quickfix.fix44.OrderCancelRequest;
  * Tests {@link OrderReplace}
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderCancelTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderCancelTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderCancelTest extends TypesTestBase {
     /**
      * Verifies default attributes of objects returned via

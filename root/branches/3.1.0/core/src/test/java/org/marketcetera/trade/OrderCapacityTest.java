@@ -14,10 +14,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Tests {@link OrderCapacity}
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderCapacityTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderCapacityTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderCapacityTest extends FIXCharEnumTestBase<OrderCapacity> {
 
     @Override

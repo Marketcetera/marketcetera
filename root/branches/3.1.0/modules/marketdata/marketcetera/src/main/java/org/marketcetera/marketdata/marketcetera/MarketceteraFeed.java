@@ -44,7 +44,7 @@ import com.google.common.collect.SetMultimap;
  * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
  * @since 0.5.0
  */
-@ClassVersion("$Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class MarketceteraFeed 
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
                                    MarketceteraFeedCredentials,
@@ -587,10 +587,10 @@ public class MarketceteraFeed
      * Represents a request made to the marketcetera adapter.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
-    @ClassVersion("$Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     static final class Request
     {
         /**

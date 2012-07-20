@@ -32,7 +32,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: JMXIntegrationTest.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class JMXIntegrationTest extends ModuleTestBase {
     @BeforeClass
     public static void setup() throws Exception {

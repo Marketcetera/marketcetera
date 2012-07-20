@@ -25,7 +25,7 @@ import java.io.IOException;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ModuleTestClassLoader.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 class ModuleTestClassLoader extends ClassLoader{
     /**
      * Creates an instance.

@@ -18,10 +18,10 @@ import org.marketcetera.util.misc.NamedThreadFactory;
  * 
  * @author anshul@marketcetera.com
  * @author toli@marketcetera.com
- * @version $Id: CopierModule.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: CopierModule.java 82384 2012-07-20 19:09:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CopierModule extends Module implements DataEmitter {
     protected CopierModule() {
         super(CopierModuleFactory.INSTANCE_URN, true);
@@ -110,7 +110,7 @@ public class CopierModule extends Module implements DataEmitter {
      * of the payload may, of course, choose to act asynchronously itself.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: CopierModule.java 82384 2012-07-20 19:09:59Z colin $
+     * @version $Id$
      * @since 1.0.0
      */
     public static class SynchronousRequest

@@ -13,7 +13,7 @@ import ca.odell.glazedlists.event.ListEventListener;
  * Utility for asserting expected GlazedList list events.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: ExpectedListChanges.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public class ExpectedListChanges<E> implements ListEventListener<E> {

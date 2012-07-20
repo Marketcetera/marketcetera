@@ -9,7 +9,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
  * @author Toli Kuznets
- * @version $Id: MarketceteraTestSuite.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 @Ignore
 public class MarketceteraTestSuite extends TestSuite {

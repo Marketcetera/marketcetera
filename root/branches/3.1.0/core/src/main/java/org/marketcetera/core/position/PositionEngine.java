@@ -11,16 +11,16 @@ import ca.odell.glazedlists.EventList;
  * key elements.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: PositionEngine.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionEngine.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface PositionEngine {
 
     /**
      * Base interface for position data. This is not intended to be implemented directly.
      */
-    @ClassVersion("$Id: PositionEngine.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     public interface PositionData {
 
         /**

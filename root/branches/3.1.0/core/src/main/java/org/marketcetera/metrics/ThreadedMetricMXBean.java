@@ -12,10 +12,10 @@ import java.util.Map;
  * {@link ThreadedMetric}.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ThreadedMetricMXBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id: ThreadedMetricMXBean.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 @MXBean(true)
 public interface ThreadedMetricMXBean {
     /**

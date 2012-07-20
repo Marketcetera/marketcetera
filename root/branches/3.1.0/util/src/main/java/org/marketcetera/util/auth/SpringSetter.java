@@ -15,12 +15,12 @@ import org.springframework.context.support.GenericApplicationContext;
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: SpringSetter.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: SpringSetter.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public abstract class SpringSetter<T extends Holder<?>>
     extends Setter<T>
 {

@@ -9,7 +9,7 @@ import java.util.Locale;
 
 import org.marketcetera.util.misc.ClassVersion;
 
-@ClassVersion("$Id: BigDecimalUtils.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class BigDecimalUtils {
 //	 default to read a double primitive value of 18 digit
 //	 precision

@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * wrapper around java.lang.String.
  * @author gmiller
  */
-@ClassVersion("$Id: InternalID.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class InternalID {
     final String mID;
     final Class<?> mClass = this.getClass();

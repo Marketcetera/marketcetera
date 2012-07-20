@@ -28,10 +28,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * it has been initialized.
  *
  * @author anshul@marketcetera.com
- * @version $Id: Module.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: Module.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public abstract class Module {
 
     /**

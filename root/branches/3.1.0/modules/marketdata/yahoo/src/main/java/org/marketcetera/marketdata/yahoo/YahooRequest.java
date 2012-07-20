@@ -27,11 +27,11 @@ import com.google.common.collect.Multimap;
  * Represents a market data request to the Yahoo market data provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooRequest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
 @ThreadSafe
-@ClassVersion("$Id: YahooRequest.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 class YahooRequest
 {
     /* (non-Javadoc)

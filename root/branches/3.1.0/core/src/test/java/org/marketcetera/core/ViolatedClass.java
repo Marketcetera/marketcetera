@@ -2,7 +2,7 @@ package org.marketcetera.core;
 
 /**
  * @author Graham Miller
- * @version $Id: ViolatedClass.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 @SuppressWarnings("unused")
 class ViolatedClass{

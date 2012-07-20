@@ -15,7 +15,7 @@ import java.util.EnumSet;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ModuleStateTest.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ModuleStateTest extends ModuleTestBase {
 
     /**

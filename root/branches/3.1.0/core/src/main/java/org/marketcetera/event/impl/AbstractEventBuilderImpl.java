@@ -14,11 +14,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * Provides event builder utilities for subclasses of {@link Event}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractEventBuilderImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: AbstractEventBuilderImpl.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 abstract class AbstractEventBuilderImpl<E extends Event>
         implements EventBuilder<E>
 {

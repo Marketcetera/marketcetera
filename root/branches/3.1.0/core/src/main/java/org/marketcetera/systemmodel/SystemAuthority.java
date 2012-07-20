@@ -9,10 +9,10 @@ import org.springframework.security.core.GrantedAuthority;
  * Describes authority levels in the system.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: SystemAuthority.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: SystemAuthority.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public enum SystemAuthority
 {
     /**

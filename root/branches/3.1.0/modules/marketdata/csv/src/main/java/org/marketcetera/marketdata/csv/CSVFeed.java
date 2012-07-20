@@ -35,9 +35,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author toli kuznets
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-@ClassVersion("$Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class CSVFeed 
         extends AbstractMarketDataFeed<CSVFeedToken,
                                        CSVFeedCredentials,
@@ -282,10 +282,10 @@ public class CSVFeed
      * Corresponds to a single market data request submitted to {@link CSVFeed}.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
-    @ClassVersion("$Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private class CsvFeedRequest
             implements Runnable
     {

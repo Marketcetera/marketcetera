@@ -12,7 +12,7 @@ import java.io.File;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: LoggerConfiguration.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class LoggerConfiguration {
     /**
      * Sets up logging.

@@ -8,10 +8,10 @@ import quickfix.Message;
 /**
  * Dummy noop implementation of the {@link FIXMessageAugmentor}
  * @author toli
- * @version $Id: NoOpFIXMessageAugmentor.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: NoOpFIXMessageAugmentor.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class NoOpFIXMessageAugmentor implements FIXMessageAugmentor{
     public Message newOrderSingleAugment(Message inMessage) {
         return inMessage;

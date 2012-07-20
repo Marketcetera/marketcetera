@@ -19,12 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
  * Provides Hibernate data access for {@link Authority} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HibernateAuthorityDao.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @Repository
 @Transactional(readOnly=true)
-@ClassVersion("$Id: HibernateAuthorityDao.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class HibernateAuthorityDao
         implements AuthorityDao
 {

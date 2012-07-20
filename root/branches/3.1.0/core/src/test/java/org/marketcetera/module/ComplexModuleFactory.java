@@ -17,7 +17,7 @@ import java.net.URL;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ComplexModuleFactory.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ComplexModuleFactory extends ModuleFactory {
     public ComplexModuleFactory() {
         super(PROVIDER_URN, TestMessages.MULTIPLE_2_PROVIDER, true, false,

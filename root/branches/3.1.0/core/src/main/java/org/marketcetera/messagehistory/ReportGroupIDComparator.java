@@ -11,10 +11,10 @@ import java.util.Comparator;
  *
  * @author anshul@marketcetera.com
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: ReportGroupIDComparator.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportGroupIDComparator.java 82384 2012-07-20 19:09:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ReportGroupIDComparator implements Comparator<ReportHolder> {
 
     public int compare(ReportHolder inHolder1, ReportHolder inHolder2) {

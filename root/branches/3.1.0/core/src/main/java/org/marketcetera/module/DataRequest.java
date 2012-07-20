@@ -42,10 +42,10 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  *
  * @author anshul@marketcetera.com
- * @version $Id: DataRequest.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataRequest.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public final class DataRequest extends DataRequestBase {
     /**
      * Creates an instance.

@@ -9,10 +9,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * not meant to be used directly. Use one of its subtypes. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: RelatedOrder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: RelatedOrder.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface RelatedOrder extends OrderBase {
     /**
      * The original order ID of the order that is being cancelled or replaced.

@@ -47,7 +47,7 @@ import org.marketcetera.util.misc.NamedThreadFactory;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 0.5.0
  */
-@ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedToken<F>, 
                                              C extends MarketDataFeedCredentials, 
                                              X extends DataRequestTranslator<D>, 
@@ -782,10 +782,10 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * types and must call several non-static methods on the parent.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 0.5.0
      */
-    @ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private class ExecutorThread
         implements Callable<T>
     {
@@ -855,10 +855,10 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * to use the parent class's generic types.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 0.5.0
      */    
-    @ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private class HandleHolder
     {
         /**
@@ -987,10 +987,10 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * </ol>
      *       
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 0.5.0
      */
-    @ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private class MarketDataHandle
     {
         /**
@@ -1073,10 +1073,10 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * the {@link IFeedComponentListener} objects.
      * 
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 0.5.0
      */
-    @ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private static class FeedComponentListenerWrapper
         implements ISubscriber
     {

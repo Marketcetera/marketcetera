@@ -8,10 +8,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * CopierModuleFactory
  *
  * @author anshul@marketcetera.com
- * @version $Id: CopierModuleFactory.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: CopierModuleFactory.java 82384 2012-07-20 19:09:59Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CopierModuleFactory extends ModuleFactory {
     public CopierModuleFactory() {
         super(PROVIDER_URN, new I18NMessage0P(Messages.LOGGER, "provider"), false, false);

@@ -14,10 +14,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * and build number.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ApplicationVersion.java 82384 2012-07-20 19:09:59Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: ApplicationVersion.java 82384 2012-07-20 19:09:59Z colin $")
+@ClassVersion("$Id$")
 public class ApplicationVersion
 {
     /**

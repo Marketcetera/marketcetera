@@ -13,10 +13,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * Translates market data requests to a format Yahoo can understand.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: YahooFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public enum YahooFeedMessageTranslator
         implements DataRequestTranslator<List<YahooRequest>>
 {

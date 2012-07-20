@@ -10,12 +10,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: I18NBoundMessage.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NBoundMessage.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public interface I18NBoundMessage
     extends Serializable
 {

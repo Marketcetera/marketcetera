@@ -22,10 +22,10 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * as a unit testing class because many unit tests may still depend on it. 
  *
  * @author anshul@marketcetera.com
- * @version $Id: CurrentFIXDataDictionary.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: CurrentFIXDataDictionary.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CurrentFIXDataDictionary {
     /**
      * Gets the current FIX Data dictionary instance.

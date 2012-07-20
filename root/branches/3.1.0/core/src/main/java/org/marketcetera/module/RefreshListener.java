@@ -11,10 +11,10 @@ import java.io.IOException;
  * requests are completed.
  *
  * @author anshul@marketcetera.com
- * @version $Id: RefreshListener.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: RefreshListener.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface RefreshListener {
     /**
      * Allows the implementor to determine if a refresh initiated by the

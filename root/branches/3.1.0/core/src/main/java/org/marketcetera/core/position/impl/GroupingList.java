@@ -39,10 +39,10 @@ import ca.odell.glazedlists.matchers.Matcher;
  * GroupList-notification-td21879305.html</a>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $")
+@ClassVersion("$Id$")
 public class GroupingList<E> extends TransformedList<E, EventList<E>> {
 
     /**
@@ -300,10 +300,10 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
      * EventList implementation used for groups.
      * 
      * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-     * @version $Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $
+     * @version $Id$
      * @since 1.5.0
      */
-    @ClassVersion("$Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $")
+    @ClassVersion("$Id$")
     private class GroupList extends AbstractEventList<E> implements Comparable<GroupList> {
 
         private GroupMatcher<E> matcher;

@@ -18,10 +18,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * </table>
  *
  * @author anshul@marketcetera.com
- * @version $Id: SinkModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id: SinkModuleFactory.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
+@ClassVersion("$Id$")  //$NON-NLS-1$
 public final class SinkModuleFactory extends ModuleFactory {
     /**
      * Creates a new sink module instance.
