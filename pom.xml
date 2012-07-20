@@ -213,6 +213,12 @@
 	<artifactId>cxf-rt-frontend-jaxrs</artifactId>
         <version>${mvn.cxf.version}</version>
       </dependency>      
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-local</artifactId>
+      <version>${mvn.cxf.version}</version>
+      <scope>test</scope>
+    </dependency>
       <dependency>
 	<groupId>javax.ws.rs</groupId>
 	<artifactId>jsr311-api</artifactId>
