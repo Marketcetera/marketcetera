@@ -1,0 +1,3 @@
+org.marketcetera.photon.internal.marketdata.EquityRequestAdapter
+org.marketcetera.photon.internal.marketdata.OptionRequestAdapter
+org.marketcetera.photon.internal.marketdata.FutureRequestAdapter

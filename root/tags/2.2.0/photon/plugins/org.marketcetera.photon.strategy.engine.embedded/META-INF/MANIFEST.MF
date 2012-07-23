@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Embedded Strategy Engine
+Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.embedded;singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.photon.strategy.engine,
+ org.marketcetera.photon.module,
+ org.marketcetera.modules.strategy,
+ org.marketcetera.photon.commons,
+ org.eclipse.core.runtime
+Export-Package: org.marketcetera.photon.strategy.engine.embedded
+Bundle-ActivationPolicy: lazy
+Eclipse-ExtensibleAPI: true
+Bundle-Activator: org.marketcetera.photon.internal.strategy.engine.embedded.Activator

@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: org.marketcetera.photon.commons.tests
+Bundle-Version: 2.2.0
+Fragment-Host: org.marketcetera.photon.commons
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.stubbing
+Require-Bundle: org.marketcetera.util-test,
+ org.marketcetera.photon.test
+Export-Package: org.marketcetera.photon.commons.tests

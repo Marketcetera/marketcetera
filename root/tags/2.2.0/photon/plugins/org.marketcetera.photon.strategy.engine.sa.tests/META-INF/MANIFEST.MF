@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Strategy Agent Engine Tests
+Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.sa.tests
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Fragment-Host: org.marketcetera.photon.strategy.engine.sa
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.invocation,
+ org.mockito.stubbing
+Require-Bundle: org.marketcetera.photon.test,
+ org.marketcetera.core.tests
+Export-Package: org.marketcetera.photon.strategy.engine.sa.tests

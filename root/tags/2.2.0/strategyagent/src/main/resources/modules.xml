@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+  <!--
+   This file initializes the module manager bean used by the Strategy Agent.
+  -->
+  <!-- This bean is instantiated to get to the class loader instance -->
+  <bean id="class" class="java.lang.Class" factory-method="forName">
+    <constructor-arg value="org.marketcetera.strategyagent.JarClassLoader"/>
+  </bean>
+  <!-- The current classloader -->
+  <bean id="currentLoader"
+        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+    <property name="targetObject" ref="class"/>
+    <property name="propertyPath" value="classLoader"/>
+  </bean>
+  <!-- The jar class loader to use for loading modules & their configurations -->
+  <bean id="moduleLoader" class="org.marketcetera.strategyagent.JarClassLoader">
+    <!-- This variable is set within StrategyAgent -->
+    <constructor-arg ref="modulesDir"/>
+    <constructor-arg ref="currentLoader"/>
+  </bean>
+  <!-- The default configuration provider -->
+  <bean id="propertyConfig"
+        class="org.marketcetera.strategyagent.AgentConfigurationProvider">
+    <constructor-arg ref="moduleLoader"/>
+    <!-- load receiver properties-->
+    <property name="receiverProperties">
+      <util:map>
+        <entry key="URL" value="${metc.sa.recv.url}"/>
+        <entry key="LogLevel" value="${metc.sa.recv.logLevel}"/>
+        <entry key="SkipJAASConfiguration" value="${metc.sa.recv.skipJAASConfiguration}"/>
+      </util:map>
+    </property>
+    <!-- load client properties-->
+    <property name="clientProperties">
+      <util:map>
+        <entry key="URL" value="${metc.sa.client.URL}"/>
+        <entry key="Username" value="${metc.sa.client.username}"/>
+        <entry key="Password" value="${metc.sa.client.password}"/>
+        <entry key="Hostname" value="${metc.sa.client.hostname}"/>
+        <entry key="Port" value="${metc.sa.client.port}"/>
+        <entry key="IDPrefix" value="${metc.sa.client.idPrefix}"/>
+      </util:map>
+    </property>
+  </bean>
+  <!-- The module manager instance -->
+  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager"
+        destroy-method="stop">
+    <constructor-arg ref="moduleLoader"/>
+    <property name="configurationProvider" ref="propertyConfig"/>
+    <property name="refreshListener" ref="moduleLoader"/>
+  </bean>
+  <!--
+    - The properties files: property values in the later ones
+    - override those in the earlier ones. 
+    -->
+  <util:list
+   id="propertiesFiles">
+    <value>file:${org.marketcetera.appDir}/conf/default.properties</value>
+    <value>file:${org.marketcetera.appDir}/conf/user.properties</value>
+  </util:list>
+  <!--
+    - Resolves the property names defined inside the property files
+    - into their values, when they appear inside Spring bean definitions.
+    -->
+  <bean
+   class=
+    "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+    <property
+     name="locations"
+     ref="propertiesFiles">
+    </property>
+    <!-- This property is set to help with resetting properties for unit testing -->
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+  </bean>
+  <bean id="wsServerHost" class="java.lang.String">
+    <constructor-arg value="${metc.sa.ws.host}"/>
+  </bean>
+  <bean id="wsServerPort" class="java.lang.Integer">
+    <constructor-arg value="${metc.sa.ws.port}"/>
+  </bean>
+</beans>
