@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests
 Bundle-SymbolicName: org.marketcetera.photon.commons.tests
-Bundle-Version: 2.2.0
+Bundle-Version: 2.4.0
 Fragment-Host: org.marketcetera.photon.commons
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.hamcrest,
