@@ -53,7 +53,7 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
+      <groupId>org.marketcetera.fork</groupId>
       <artifactId>commons-i18n</artifactId>
     </dependency>
     <dependency>
