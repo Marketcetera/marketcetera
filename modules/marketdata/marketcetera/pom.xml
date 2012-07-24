@@ -18,8 +18,8 @@
     </dependency>
     <!-- Compile: quickfix/j -->
     <dependency>
-      <groupId>quickfixj</groupId>
-      <artifactId>quickfixj-all</artifactId>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.quickfix</artifactId>
     </dependency>
     <!-- test: local -->
     <dependency>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE org.apache.commons.menus SYSTEM '../../commons-build/menus/menus.dtd'>
+<project name="Commons&#xA0;I18n">
+    <title>Commons&#xA0;I18n</title>
+    <body>
+        <menu name="Commons&#xA0;I18n">
+            <item name="Overview" href="/index.html" />
+            <item name="Getting started" href="/quickstart.html" />
+            <item name="Examples" href="/examples.html" />
+        </menu>
+        &common-menus;
+    </body>
+</project>
