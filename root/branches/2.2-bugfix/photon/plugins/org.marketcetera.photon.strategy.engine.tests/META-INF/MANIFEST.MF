@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests
+Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.tests;singleton:=true
+Fragment-Host: org.marketcetera.photon.strategy.engine
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.marketcetera.photon.strategy.engine.model.core.test,
+ org.marketcetera.photon.strategy.engine.model.core.tests
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners
+Require-Bundle: org.marketcetera.photon.test,
+ org.marketcetera.core.tests

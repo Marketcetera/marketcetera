@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_l4QbcJyzEd6Tj_U1s5Wkjg" type="EcoreTools" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_l4XJIJyzEd6Tj_U1s5Wkjg" type="1001">
+    <children xmi:type="notation:Node" xmi:id="_l4YXQJyzEd6Tj_U1s5Wkjg" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_l4YXQZyzEd6Tj_U1s5Wkjg" type="5001">
+      <children xmi:type="notation:Node" xmi:id="_l4bakJyzEd6Tj_U1s5Wkjg" type="2001">
+        <element xmi:type="ecore:EAttribute" href="strategy-agent-engine.ecore#//StrategyAgentEngine/jmsUrl"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_l4bakZyzEd6Tj_U1s5Wkjg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_l4bakpyzEd6Tj_U1s5Wkjg" type="2001">
+        <element xmi:type="ecore:EAttribute" href="strategy-agent-engine.ecore#//StrategyAgentEngine/webServiceHostname"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_l4bak5yzEd6Tj_U1s5Wkjg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_l4balJyzEd6Tj_U1s5Wkjg" type="2001">
+        <element xmi:type="ecore:EAttribute" href="strategy-agent-engine.ecore#//StrategyAgentEngine/webServicePort"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_l4balZyzEd6Tj_U1s5Wkjg"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_l4YXQpyzEd6Tj_U1s5Wkjg"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_l4YXQ5yzEd6Tj_U1s5Wkjg"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_l4YXRJyzEd6Tj_U1s5Wkjg"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_l4Y-UJyzEd6Tj_U1s5Wkjg" type="5002">
+      <children xmi:type="notation:Node" xmi:id="_l4balpyzEd6Tj_U1s5Wkjg" type="2002">
+        <element xmi:type="ecore:EOperation" href="strategy-agent-engine.ecore#//StrategyAgentEngine/connect"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_l4bal5yzEd6Tj_U1s5Wkjg"/>
+      </children>
+      <children xmi:type="notation:Node" xmi:id="_l4cBoJyzEd6Tj_U1s5Wkjg" type="2002">
+        <element xmi:type="ecore:EOperation" href="strategy-agent-engine.ecore#//StrategyAgentEngine/disconnect"/>
+        <layoutConstraint xmi:type="notation:Location" xmi:id="_l4cBoZyzEd6Tj_U1s5Wkjg"/>
+      </children>
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_l4Y-UZyzEd6Tj_U1s5Wkjg"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_l4Y-UpyzEd6Tj_U1s5Wkjg"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_l4Y-U5yzEd6Tj_U1s5Wkjg"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_l4XJIZyzEd6Tj_U1s5Wkjg" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="strategy-agent-engine.ecore#//StrategyAgentEngine"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_l4XJIpyzEd6Tj_U1s5Wkjg" x="84" y="156"/>
+  </children>
+  <children xmi:type="notation:Node" xmi:id="_p3YjcJyzEd6Tj_U1s5Wkjg" type="1001">
+    <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_p312cJyzEd6Tj_U1s5Wkjg" source="Shortcut">
+      <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_p36H4JyzEd6Tj_U1s5Wkjg" key="modelID" value="EcoreTools"/>
+    </eAnnotations>
+    <children xmi:type="notation:Node" xmi:id="_p3a_sJyzEd6Tj_U1s5Wkjg" type="4001"/>
+    <children xmi:type="notation:Node" xmi:id="_p3bmwJyzEd6Tj_U1s5Wkjg" type="5001">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_p3bmwZyzEd6Tj_U1s5Wkjg" collapsed="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_p3bmwpyzEd6Tj_U1s5Wkjg"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_p3bmw5yzEd6Tj_U1s5Wkjg"/>
+    </children>
+    <children xmi:type="notation:Node" xmi:id="_p3bmxJyzEd6Tj_U1s5Wkjg" type="5002">
+      <styles xmi:type="notation:DrawerStyle" xmi:id="_p3bmxZyzEd6Tj_U1s5Wkjg" collapsed="true"/>
+      <styles xmi:type="notation:SortingStyle" xmi:id="_p3bmxpyzEd6Tj_U1s5Wkjg"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_p3bmx5yzEd6Tj_U1s5Wkjg"/>
+    </children>
+    <styles xmi:type="notation:ShapeStyle" xmi:id="_p3YjcZyzEd6Tj_U1s5Wkjg" fontColor="4210752" fontName="Segoe UI" fontHeight="10" fillColor="13761016" lineColor="8421504"/>
+    <element xmi:type="ecore:EClass" href="platform:/resource/org.marketcetera.photon.strategy.engine/model/strategy-engine-core.ecore#//StrategyEngine"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_p3YjcpyzEd6Tj_U1s5Wkjg" x="96" y="36" width="171"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_l4QbcZyzEd6Tj_U1s5Wkjg"/>
+  <element xmi:type="ecore:EPackage" href="strategy-agent-engine.ecore#/"/>
+  <edges xmi:type="notation:Edge" xmi:id="_p3lXwJyzEd6Tj_U1s5Wkjg" type="3003" source="_l4XJIJyzEd6Tj_U1s5Wkjg" target="_p3YjcJyzEd6Tj_U1s5Wkjg">
+    <styles xmi:type="notation:ConnectorStyle" xmi:id="_p3lXwZyzEd6Tj_U1s5Wkjg" routing="Rectilinear" lineColor="4210752"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_p3lXwpyzEd6Tj_U1s5Wkjg" fontName="Segoe UI"/>
+    <element xsi:nil="true"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_p3lXw5yzEd6Tj_U1s5Wkjg" points="[-66, -54, 234, 193]$[-299, -246, 1, 1]"/>
+  </edges>
+</notation:Diagram>

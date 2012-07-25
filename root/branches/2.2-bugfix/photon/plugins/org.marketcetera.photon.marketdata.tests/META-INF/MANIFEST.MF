@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Market Data Tests
+Bundle-SymbolicName: org.marketcetera.photon.marketdata.tests;singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Fragment-Host: org.marketcetera.photon.marketdata
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.core.tests,
+ org.marketcetera.photon.test
+Eclipse-RegisterBuddy: org.marketcetera.core
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.stubbing
+Export-Package: org.marketcetera.photon.marketdata.tests

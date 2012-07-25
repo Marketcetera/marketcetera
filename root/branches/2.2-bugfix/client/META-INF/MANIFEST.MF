@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.client;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Marketcetera Client Library
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.core,
+ org.marketcetera.core.tests;resolution:=optional
+Eclipse-RegisterBuddy: org.marketcetera.core
+Export-Package: org.marketcetera.client,
+ org.marketcetera.client.brokers,
+ org.marketcetera.client.config,
+ org.marketcetera.client.instruments,
+ org.marketcetera.client.jms,
+ org.marketcetera.client.users,
+ org.marketcetera.client.utils
+Import-Package: junit.framework;resolution:=optional,
+ org.hamcrest;resolution:=optional,
+ org.junit;resolution:=optional,
+ org.mockito;resolution:=optional

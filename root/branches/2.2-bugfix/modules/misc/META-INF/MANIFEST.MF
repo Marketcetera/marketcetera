@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.modules.misc;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Miscellaneous Modules
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.core,
+ org.marketcetera.core.tests;resolution:=optional
+Eclipse-RegisterBuddy: org.marketcetera.core
+Import-Package: org.hamcrest,
+ org.junit

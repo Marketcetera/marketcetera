@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.modules.cep.esper;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Marketcetera CEP Esper Library
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.core,
+ org.marketcetera.core.tests;resolution:=optional,
+ org.junit4;resolution:=optional,
+ org.marketcetera.modules.cep.system
+Eclipse-RegisterBuddy: org.marketcetera.core
+Export-Package: org.marketcetera.modules.cep.esper

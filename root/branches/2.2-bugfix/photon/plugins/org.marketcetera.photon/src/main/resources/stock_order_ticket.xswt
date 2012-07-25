@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <import xmlns="http://sweet_swt.sf.net/xswt">
+        <package name="java.lang"/>
+        <package name="org.eclipse.swt.widgets"/>
+        <package name="org.eclipse.swt.layout"/>
+        <package name="org.eclipse.ui.forms.widgets"/>
+        <package name="org.eclipse.jface.viewers"/>
+        <class name="org.eclipse.ui.forms.widgets.ExpandableComposite"/>
+    </import>
+
+    <layout x:class="gridLayout" numColumns="2" marginWidth="0" marginHeight="0"/>
+
+	<scrolledForm x:id="Form" text="New Equity Order">
+        <layoutData x:class="gridData" grabExcessHorizontalSpace="true"
+            grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" 
+            verticalAlignment="GridData.FILL" horizontalSpan="2"/>
+		<getBody>
+		    <layout x:class="gridLayout" numColumns="7" marginWidth="6" marginHeight="1" verticalSpacing="1" horizontalSpacing="10"/>
+	        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+	            grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" 
+	            verticalAlignment="GridData.FILL" horizontalSpan="5"/>
+			<x:children>
+				<label text="Side"/>
+				<label text="Quantity"/>
+				<label text="Symbol"/>
+				<label text="Order Type"/>
+				<label text="Price"/>
+				<label text="Broker"/>
+				<label text="TIF"/>
+				<combo x:style="BORDER|READ_ONLY" x:id="SideCombo"/>
+				<text x:style="SINGLE|BORDER" x:id="QuantityText" text="">
+			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
+			            horizontalAlignment="GridData.FILL" 
+			            verticalAlignment="GridData.CENTER"/>
+				</text>
+				<text x:style="SINGLE|BORDER" x:id="SymbolText" text="">
+			        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+			            horizontalAlignment="GridData.FILL" 
+			            verticalAlignment="GridData.CENTER"/>
+				</text>
+				<combo x:style="BORDER|READ_ONLY" x:id="OrderTypeCombo"/>
+				<text x:style="SINGLE|BORDER" x:id="PriceText" text="">
+			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
+			            horizontalAlignment="GridData.FILL" 
+			            verticalAlignment="GridData.CENTER"/>
+				</text>
+				<combo x:style="BORDER|READ_ONLY" x:id="BrokerCombo" text="">
+			        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+			            horizontalAlignment="GridData.FILL" 
+			            verticalAlignment="GridData.CENTER"/>
+				</combo>
+				<combo x:style="BORDER|READ_ONLY" x:id="TifCombo" text="">
+			        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
+			            horizontalAlignment="GridData.FILL" 
+			            verticalAlignment="GridData.CENTER"/>
+				</combo>
+				<composite>
+					<layout x:class="rowLayout" x:style="HORIZONTAL"/>
+					<layoutData x:class="gridData" horizontalAlignment="GridData.END" horizontalSpan="7"/>
+					<button x:id="SendButton" x:style="PUSH" text="Send" enabled="false"/>
+					<button x:id="ClearButton" x:style="PUSH" text="Clear"/>
+				</composite>
+				<section x:id="OtherExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Other" expanded="true" client="_other_composite">
+					<layoutData x:class="gridData" horizontalSpan="3"
+					     verticalAlignment="BEGINNING" horizontalAlignment="FILL" heightHint="200"/>
+					<composite x:id="_other_composite">
+						<layoutData x:class="gridData" horizontalSpan="2" verticalAlignment="BEGINNING"
+							horizontalAlignment="FILL"/>
+						<layout x:class="rowLayout" x:style="HORIZONTAL"/>
+						<label text="Account:"/>
+						<text x:style="BORDER" x:id="AccountText" text="">
+							<layoutData x:class="rowData" />
+						</text>
+					</composite>
+				</section>
+				<section x:id="CustomExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Custom fields" expanded="true" client="_custom_composite">
+					<layoutData x:class="gridData" horizontalSpan="4" grabExcessHorizontalSpace="true"
+					      grabExcessVerticalSpace="true" verticalAlignment="FILL" horizontalAlignment="FILL" heightHint="200"/>
+					<composite x:id="_custom_composite">
+						<layout x:class="gridLayout" numColumns="2" marginWidth="1"
+							verticalSpacing="1" horizontalSpacing="1" marginHeight="1" />
+						<table x:id="CustomFieldsTable" x:style="BORDER|FULL_SELECTION|SWT.CHECK" headerVisible="true">
+							<layoutData x:class="gridData" verticalAlignment="FILL"
+								grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL"/>
+							<tableColumn text="Enabled/Key" width="100"/>
+							<tableColumn text="Value" width="120"/>
+						</table>
+					</composite>
+				</section>
+			</x:children>
+		</getBody>
+	</scrolledForm>
+	<label x:id="ErrorIconLabel" text="">
+		<layoutData x:class="gridData" 
+			horizontalAlignment="GridData.BEGINNING"
+			verticalAlignment="GridData.CENTER"
+			horizontalIndent="3"
+			widthHint="7" />
+	</label>
+	<label x:id="ErrorMessageLabel" text="">
+		<layoutData x:class="gridData"
+			horizontalAlignment="GridData.FILL"
+			grabExcessHorizontalSpace="true"
+			verticalAlignment="GridData.END"
+			/>
+	</label>
+</xswt>

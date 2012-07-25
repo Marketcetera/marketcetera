@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: XSWT Plugin
+Bundle-Version: 2.2.0
+Export-Package: com.swtworkbench.community.xswt,
+ com.swtworkbench.community.xswt.codegen,
+ com.swtworkbench.community.xswt.codegens,
+ com.swtworkbench.community.xswt.dataparser,
+ com.swtworkbench.community.xswt.dataparser.parsers,
+ com.swtworkbench.community.xswt.dataparser.parsers.color,
+ com.swtworkbench.community.xswt.dom,
+ com.swtworkbench.community.xswt.examples.newsyntax,
+ com.swtworkbench.community.xswt.examples.oldsyntax,
+ com.swtworkbench.community.xswt.layoutbuilder,
+ com.swtworkbench.community.xswt.metalogger,
+ com.swtworkbench.community.xswt.scripting,
+ com.swtworkbench.community.xswt.xmlhandler,
+ com.swtworkbench.community.xswt.xmlparser
+Require-Bundle: org.eclipse.core.runtime,
+      org.eclipse.ui,
+      org.eclipse.ui.forms,
+      org.kxml,
+      org.eclipse.swt
+Bundle-SymbolicName: com.swtworkbench.community.xswt;singleton:=true
+Bundle-ClassPath: .
+Bundle-Vendor: SWTWorkbench
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

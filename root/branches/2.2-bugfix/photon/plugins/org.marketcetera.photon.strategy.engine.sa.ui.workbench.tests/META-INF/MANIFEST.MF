@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Strategy Agent Engine Workbench UI Tests
+Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.sa.ui.workbench.tests;singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Fragment-Host: org.marketcetera.photon.strategy.engine.sa.ui.workbench
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners
+Export-Package: org.marketcetera.photon.strategy.engine.sa.ui.workbench.tests
+Require-Bundle: org.marketcetera.photon.test,
+ org.eclipse.swtbot.swt.finder,
+ org.eclipse.swtbot.eclipse.finder

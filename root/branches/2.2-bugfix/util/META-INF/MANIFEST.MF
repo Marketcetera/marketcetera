@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.util;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Marketcetera Utilities
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.thirdparty;visibility:=reexport,
+ org.marketcetera.util-test;resolution:=optional,
+ org.junit4;resolution:=optional
+Export-Package: org.marketcetera.util.auth,
+ org.marketcetera.util.collections,
+ org.marketcetera.util.except,
+ org.marketcetera.util.exec,
+ org.marketcetera.util.file,
+ org.marketcetera.util.l10n,
+ org.marketcetera.util.log,
+ org.marketcetera.util.misc,
+ org.marketcetera.util.quickfix,
+ org.marketcetera.util.spring,
+ org.marketcetera.util.unicode,
+ org.marketcetera.util.ws.stateful,
+ org.marketcetera.util.ws.stateless,
+ org.marketcetera.util.ws.tags,
+ org.marketcetera.util.ws.types,
+ org.marketcetera.util.ws.wrappers
+Eclipse-BuddyPolicy: dependent

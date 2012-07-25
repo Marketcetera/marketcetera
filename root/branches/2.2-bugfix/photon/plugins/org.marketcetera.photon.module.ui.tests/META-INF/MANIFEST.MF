@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Module Framework Support UI Tests
+Bundle-SymbolicName: org.marketcetera.photon.module.ui.tests;singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Fragment-Host: org.marketcetera.photon.module.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.photon.test
+Import-Package: org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.stubbing
+Export-Package: org.marketcetera.photon.module.ui.tests

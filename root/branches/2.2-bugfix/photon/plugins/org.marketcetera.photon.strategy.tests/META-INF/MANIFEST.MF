@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tests Fragment
+Bundle-SymbolicName: org.marketcetera.photon.strategy.tests;singleton:=true
+Bundle-Version: 2.2.0
+Fragment-Host: org.marketcetera.photon.strategy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.marketcetera.photon.test,
+ org.marketcetera.core.tests,
+ org.eclipse.swtbot.swt.finder,
+ org.eclipse.swtbot.eclipse.finder,
+ org.eclipse.emf.ecore.xmi
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners,
+ org.mockito,
+ org.mockito.stubbing
+Export-Package: org.marketcetera.photon.strategy.tests
