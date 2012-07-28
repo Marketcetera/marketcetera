@@ -15,7 +15,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 /* $License$ */
 
 /**
- *
+ * Provides a test base that exercises test conditions in all FIX versions.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -36,10 +36,9 @@ public abstract class NewFixVersionedTestCase
         LoggerConfiguration.logSetup();
     }
     /**
-     * 
+     * Generates the parameters necessary to run test conditions in all FIX versions.
      *
-     *
-     * @return
+     * @return a <code>Collection&lt;Object[]&gt;</code> value
      */
     @Parameters
     public static Collection<Object[]> generateParamters()
@@ -51,10 +50,9 @@ public abstract class NewFixVersionedTestCase
         return parameters;
     }
     /**
-     * 
+     * Runs once before each test. 
      *
-     *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @Before
     public void setup()
@@ -75,7 +73,7 @@ public abstract class NewFixVersionedTestCase
     /**
      * Create a new NewFixVersionedTestCase instance.
      *
-     * @param inVersion
+     * @param inVersion a <code>FIXVersion</code> value
      */
     protected NewFixVersionedTestCase(FIXVersion inVersion)
     {
@@ -109,16 +107,15 @@ public abstract class NewFixVersionedTestCase
         return fixDD;
     }
     /**
-     * 
+     * fix message factory value
      */
     private FIXMessageFactory msgFactory;
     /**
-     * 
+     * fix version value
      */
     private FIXVersion fixVersion;
     /**
-     * 
+     * fix data dictionary value
      */
     private FIXDataDictionary fixDD;
 }
-
