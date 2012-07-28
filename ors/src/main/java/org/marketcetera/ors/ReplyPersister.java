@@ -171,26 +171,31 @@ public class ReplyPersister
         try {
             orderID = getOrderIDFrom(inMessage,
                                      ClOrdID.FIELD);
-        } catch (FieldNotFound e) {
-            SLF4JLoggerProxy.warn(ReplyPersister.class,
-                                  e,
-                                  "An error occurred retrieving field {} from {} so the principals cannot be determined", // TODO this message needs to go to the order catalog
-                                  ClOrdID.FIELD,
-                                  inMessage);
+        } catch (FieldNotFound ignored) {
+            Messages.RP_COULD_NOT_DETERMINE_PRINCIPALS.warn(ReplyPersister.class,
+                                                            ClOrdID.FIELD,
+                                                            inMessage);
             return Principals.UNKNOWN;
         }
         OrderInfo info;
         if(orderID != null) {
             info = getCache().get(orderID);
-            if(info != null) {
-                Principals principals = getPrincipalsFromInfo(inMessage,
-                                                              isAck,
-                                                              info);
-                if(principals.getActorID() != null &&
-                   principals.getViewerID() != null) {
-                    return principals;
-                }
+            if(info != null){
+            	return getPrincipalsFromInfo(inMessage,
+            	                             isAck,
+            	                             info);
             }
+			try {
+				Principals principals = getHistoryServices().getPrincipals(orderID);
+				if(principals != null &&
+				   principals.getActorID() != null	&&
+				   principals.getViewerID() != null) {
+					return principals;
+				}
+			} catch (PersistenceException ex) {
+				Messages.RP_GET_FROM_DB_FAILED.warn(this, ex, orderID);
+				return Principals.UNKNOWN;
+			} 
         }
         // hmm, couldn't find info from the orderID,
         //  try using the origOrderID
@@ -199,29 +204,34 @@ public class ReplyPersister
             origOrderID = getOrderIDFrom(inMessage,
                                          OrigClOrdID.FIELD);
         } catch (FieldNotFound e) {
-            SLF4JLoggerProxy.warn(ReplyPersister.class,
-                                  e,
-                                  "An error occurred retrieving field {} from {} so the principals cannot be determined", // TODO this message needs to go to the order catalog
-                                  OrigClOrdID.FIELD,
-                                  inMessage);
+            Messages.RP_COULD_NOT_DETERMINE_PRINCIPALS.warn(ReplyPersister.class,
+                                                            OrigClOrdID.FIELD,
+                                                            inMessage);
             return Principals.UNKNOWN;
         }
         if(origOrderID == null) {
-            SLF4JLoggerProxy.warn(ReplyPersister.class,
-                                  "Message {} contains neither ClOrdID (11) nor OrigClOrdID (41) so the principals cannot be determined", // TODO this message needs to go to the order catalog
-                                  inMessage);
+            Messages.RP_NO_ORDER_INFO.warn(ReplyPersister.class,
+                                           inMessage);
             return Principals.UNKNOWN;
         }
         info = getCache().get(origOrderID);
-        if(info != null) {
-            Principals principals = getPrincipalsFromInfo(inMessage,
-                                                          isAck,
-                                                          info);
-            if(principals.getActorID() != null &&
-               principals.getViewerID() != null) {
-                return principals;
-            }
+        if(info != null){
+        	return getPrincipalsFromInfo(inMessage,
+                    isAck,
+                    info);
         }
+		try {
+			Principals principals = getHistoryServices().getPrincipals(origOrderID);
+			if(principals != null &&
+			   principals.getActorID() != null	&&
+			   principals.getViewerID() != null) {
+				return principals;
+			}
+		} catch (PersistenceException ex) {
+			Messages.RP_GET_FROM_DB_FAILED.warn(this, ex, orderID);
+			return Principals.UNKNOWN;
+		} 
+        
         // so now, we're stuck, we don't have any other way of getting the principals 
         SLF4JLoggerProxy.warn(ReplyPersister.class,
                               "Message {} could not be mapped to a known order so the principals cannot be determined", // TODO this message needs to go to the order catalog
