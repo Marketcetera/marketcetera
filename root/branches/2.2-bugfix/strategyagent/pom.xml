@@ -18,9 +18,10 @@
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
-      <version>2.2.0</version>
+      <version>1-SNAPSHOT</version>
   </parent>
   <artifactId>strategyagent</artifactId>
+  <version>2.2.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Strategy Agent</name>
@@ -64,6 +65,11 @@
     <dependency>
       <groupId>org.apache.mina</groupId>
       <artifactId>mina-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- Testing. -->

@@ -47,7 +47,7 @@ public enum OrderType {
      *
      * @return the corresponding OrderType instance.
      */
-    static OrderType getInstanceForFIXValue(char inValue) {
+    public static OrderType getInstanceForFIXValue(char inValue) {
         OrderType ot = mFIXValueMap.get(inValue);
         return ot == null
                 ? Unknown

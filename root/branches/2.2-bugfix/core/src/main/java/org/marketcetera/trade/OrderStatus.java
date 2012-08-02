@@ -63,7 +63,7 @@ public enum OrderStatus {
      *
      * @return the corresponding OrderStatus instance.
      */
-    static OrderStatus getInstanceForFIXValue(char inValue) {
+    public static OrderStatus getInstanceForFIXValue(char inValue) {
         OrderStatus status = mFIXValueTable.get(inValue);
         return status == null
                 ? Unknown

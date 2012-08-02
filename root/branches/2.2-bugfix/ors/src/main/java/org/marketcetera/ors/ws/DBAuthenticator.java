@@ -9,7 +9,6 @@ import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.NoResultException;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -75,7 +74,7 @@ public class DBAuthenticator
          char[] password)
         throws IncompatibleComponentsException
     {
-        String serverVersion=ApplicationVersion.getVersion();
+        String serverVersion=ApplicationVersion.getDialectNumber();
         String clientName=Util.getName(context.getAppId());
         String clientVersion=Util.getVersion(context.getAppId());
         if (!compatibleApp(clientName)) {

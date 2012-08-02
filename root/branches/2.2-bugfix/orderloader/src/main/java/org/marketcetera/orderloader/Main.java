@@ -42,8 +42,8 @@ public class Main {
             (CONF_DIR + LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
         LOG_APP_COPYRIGHT.info(Main.class);
         LOG_APP_VERSION_BUILD.info(Main.class,
-                ApplicationVersion.getVersion(),
-                ApplicationVersion.getBuildNumber());
+                                   ApplicationVersion.getApplicationNumber(),
+                                   ApplicationVersion.getBuildNumber());
         Main main = new Main();
         run(inArgs, main);
     }
@@ -235,9 +235,8 @@ public class Main {
      */
     static void run(String[] inArgs, Main inMain){
         inMain.printMessage(LOG_APP_COPYRIGHT.getText());
-        inMain.printMessage(LOG_APP_VERSION_BUILD.getText(
-                ApplicationVersion.getVersion(),
-                ApplicationVersion.getBuildNumber()));
+        inMain.printMessage(LOG_APP_VERSION_BUILD.getText(ApplicationVersion.getApplicationNumber(),
+                                                          ApplicationVersion.getBuildNumber()));
         if (inMain.processArguments(inArgs)) {
             try {
                 inMain.doProcessing();

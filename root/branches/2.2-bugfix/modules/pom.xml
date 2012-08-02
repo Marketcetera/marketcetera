@@ -18,10 +18,11 @@
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
-      <version>2.2.0</version>
+      <version>1-SNAPSHOT</version>
   </parent>
   <artifactId>modules</artifactId>
   <packaging>pom</packaging>
+  <version>1-SNAPSHOT</version>
 
   <name>Modules</name>
 

@@ -71,8 +71,8 @@ public class StrategyAgent
         initializeLogger(LOGGER_CONF_FILE);
         Messages.LOG_APP_COPYRIGHT.info(StrategyAgent.class);
         Messages.LOG_APP_VERSION_BUILD.info(StrategyAgent.class,
-                ApplicationVersion.getVersion(),
-                ApplicationVersion.getBuildNumber());
+                                            ApplicationVersion.getApplicationNumber(),
+                                            ApplicationVersion.getBuildNumber());
         //Run the application.
         run(new StrategyAgent(), args);
     }
@@ -379,7 +379,7 @@ public class StrategyAgent
                                 char[] password)
             throws I18NException {
         //Verify client version
-        String serverVersion = ApplicationVersion.getVersion();
+        String serverVersion = ApplicationVersion.getDialectNumber();
         String clientName = Util.getName(context.getAppId());
         String clientVersion = Util.getVersion(context.getAppId());
         if (!compatibleApp(clientName)) {
