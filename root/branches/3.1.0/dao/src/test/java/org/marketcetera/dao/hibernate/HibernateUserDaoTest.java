@@ -202,11 +202,37 @@ public class HibernateUserDaoTest
         return getDao().getUserDao().getById(inId);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#delete(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void delete(User inData)
+    {
+        getDao().getUserDao().delete(inData);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#clearTable()
      */
     @Override
     protected void clearTable()
             throws Exception
     {
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#modifyKeyData(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void modifyKeyData(User inData)
+    {
+        PersistentUser user = (PersistentUser)inData;
+        user.setUsername(user.getName() + "-modified");
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#modifyNonKeyData(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void modifyNonKeyData(User inData)
+    {
+        PersistentUser user = (PersistentUser)inData;
+        user.setPassword("new-password-" + System.nanoTime());
     }
 }

@@ -40,10 +40,4 @@ public abstract class PersistentVersionedObjectDaoTestBase<DataType extends Vers
             }
         };
     }
-    /**
-     * Save the given <code>DataType</code>.
-     *
-     * @param inData a <code>DataType</code> value
-     */
-    protected abstract void save(DataType inData);
 }

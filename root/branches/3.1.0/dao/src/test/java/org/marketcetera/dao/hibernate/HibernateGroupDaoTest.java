@@ -118,4 +118,29 @@ public class HibernateGroupDaoTest
     {
         getDao().getGroupDao().save(inData);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#delete(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void delete(Group inData)
+    {
+        getDao().getGroupDao().delete(inData);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#modifyKeyData(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void modifyKeyData(Group inData)
+    {
+        PersistentGroup group = (PersistentGroup)inData;
+        group.setName(inData.getName() + "-modified");
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#modifyNonKeyData(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void modifyNonKeyData(Group inData)
+    {
+        // no non-key modifications
+    }
 }

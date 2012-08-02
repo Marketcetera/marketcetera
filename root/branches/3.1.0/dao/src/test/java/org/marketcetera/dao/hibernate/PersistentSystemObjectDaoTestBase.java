@@ -36,7 +36,7 @@ public abstract class PersistentSystemObjectDaoTestBase<DataType extends SystemO
         clearTable();
     }
     /**
-     * Tests adding a new object the test type.
+     * Tests adding a new object of the test type.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -64,6 +64,35 @@ public abstract class PersistentSystemObjectDaoTestBase<DataType extends SystemO
                      typeToCompare);
     }
     /**
+     * Tests deleting a new object of the test type.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testDelete()
+            throws Exception
+    {
+        final DataType newObject = createNew();
+        add(newObject);
+        delete(newObject);
+    }
+    /**
+     * Tests the ability to modify and save objects. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testSave()
+            throws Exception
+    {
+        DataType data = createNew();
+        add(data);
+        modifyNonKeyData(data);
+        save(data);
+        modifyKeyData(data);
+        save(data);
+    }
+    /**
      * Tests the ability to retrieve objects by id.
      *
      * @throws Exception if an unexpected error occurs
@@ -72,7 +101,7 @@ public abstract class PersistentSystemObjectDaoTestBase<DataType extends SystemO
     public void getById()
             throws Exception
     {
-        // odds are poor that this will be a valid ID
+        // odds are poor that this will not be a valid ID
         long badId = System.nanoTime();
         assertNull(getById(badId));
         final DataType newObject = createNew();
@@ -93,13 +122,38 @@ public abstract class PersistentSystemObjectDaoTestBase<DataType extends SystemO
         session.beginTransaction();
         session.createQuery("delete from " + getTableClass().getName()).executeUpdate();
         session.getTransaction().commit();
+        session.close();
     }
+    /**
+     * Modify the key data of the given object. 
+     *
+     * @param inData a <code>DataType</code> value
+     */
+    protected abstract void modifyKeyData(DataType inData);
+    /**
+     * Modify the non-key data of the given object.
+     *
+     * @param inData a <code>DataType</code> value
+     */
+    protected abstract void modifyNonKeyData(DataType inData);
     /**
      * Add the given <code>DataType</code>. 
      *
      * @param inData a <code>DataType</code> value
      */
     protected abstract void add(DataType inData);
+    /**
+     * Save the given <code>DataType</code> value.
+     *
+     * @param inData a <code>DataType</code> value
+     */
+    protected abstract void save(DataType inData);
+    /**
+     * Delete the given <code>DataType</code> value.
+     *
+     * @param inData a <code>DataType</code> value
+     */
+    protected abstract void delete(DataType inData);
     /**
      * Get the <code>DataType</code> by id.
      *

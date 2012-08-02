@@ -118,4 +118,29 @@ public class HibernateAuthorityDaoTest
     {
         getDao().getAuthorityDao().save(inData);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#delete(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void delete(Authority inData)
+    {
+        // TODO
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#modifyKeyData(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void modifyKeyData(Authority inData)
+    {
+        PersistentAuthority authority = (PersistentAuthority)inData;
+        authority.setAuthority(inData.getAuthority() + "-modified");
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.hibernate.PersistentSystemObjectDaoTestBase#modifyNonKeyData(org.marketcetera.systemmodel.SystemObject)
+     */
+    @Override
+    protected void modifyNonKeyData(Authority inData)
+    {
+        // no modifiable non-key data
+    }
 }
