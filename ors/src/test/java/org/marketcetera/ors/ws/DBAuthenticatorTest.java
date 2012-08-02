@@ -57,12 +57,12 @@ public class DBAuthenticatorTest
                 new I18NBoundMessage2P(Messages.APP_MISMATCH,null,null),
                 ctx,null,null);
         //no app name
-        ctx.setAppId(Util.getAppId("",ApplicationVersion.getVersion()));
+        ctx.setAppId(Util.getAppId("",ApplicationVersion.getDialectNumber()));
         shouldAllowFailure(
                 new I18NBoundMessage2P(Messages.APP_MISMATCH,null,null),
                 ctx,null,null);
         //invalid app name
-        ctx.setAppId(Util.getAppId("x",ApplicationVersion.getVersion()));
+        ctx.setAppId(Util.getAppId("x",ApplicationVersion.getDialectNumber()));
         shouldAllowFailure(
                 new I18NBoundMessage2P(Messages.APP_MISMATCH,"x",null),
                 ctx,null,null);
@@ -70,17 +70,17 @@ public class DBAuthenticatorTest
         ctx.setAppId(Util.getAppId(ClientVersion.APP_ID_NAME,""));
         shouldAllowFailure(
                 new I18NBoundMessage3P(Messages.VERSION_MISMATCH, null,
-                        ApplicationVersion.getVersion(),null),
+                        ApplicationVersion.getDialectNumber(),null),
                 ctx,null,null);
         //invalid app version
         ctx.setAppId(Util.getAppId(ClientVersion.APP_ID_NAME,"x"));
         shouldAllowFailure(
                 new I18NBoundMessage3P(Messages.VERSION_MISMATCH, "x",
-                        ApplicationVersion.getVersion(),null),
+                        ApplicationVersion.getDialectNumber(),null),
                 ctx,null,null);
         //valid app name & version
         ctx.setAppId(Util.getAppId(ClientVersion.APP_ID_NAME,
-                ApplicationVersion.getVersion()));
+                ApplicationVersion.getDialectNumber()));
         assertFalse(new DBAuthenticator().shouldAllow(ctx,"x",null));
     }
 

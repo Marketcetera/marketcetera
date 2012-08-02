@@ -37,10 +37,14 @@ public class ApplicationVersionTest
     public void basic()
             throws Exception
     {
+        assertEquals(ApplicationVersion.DEFAULT_DIALECT,
+                     ApplicationVersion.getDialectNumber());
         assertEquals(ApplicationVersion.DEFAULT_VERSION,
-                     ApplicationVersion.getVersion());
+                     ApplicationVersion.getVersionNumber());
         assertEquals(ApplicationVersion.DEFAULT_BUILD,
                      ApplicationVersion.getBuildNumber());
+        assertEquals(ApplicationVersion.DEFAULT_APPLICATION,
+                     ApplicationVersion.getApplicationNumber());
     }
     /**
      * Tests that a class with no embedded resource still returns a value.
@@ -51,9 +55,13 @@ public class ApplicationVersionTest
     public void testsMissingResource()
             throws Exception
     {
+        assertEquals(ApplicationVersion.DEFAULT_DIALECT,
+                     ApplicationVersion.getDialectNumber(UnicodeData.class));
         assertEquals(ApplicationVersion.DEFAULT_VERSION,
-                     ApplicationVersion.getVersion(UnicodeData.class));
+                     ApplicationVersion.getVersionNumber(UnicodeData.class));
         assertEquals(ApplicationVersion.DEFAULT_BUILD,
                      ApplicationVersion.getBuildNumber(UnicodeData.class));
+        assertEquals(ApplicationVersion.DEFAULT_APPLICATION,
+                     ApplicationVersion.getApplicationNumber(UnicodeData.class));
     }
 }

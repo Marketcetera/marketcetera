@@ -44,7 +44,7 @@ public enum Side {
      *
      * @return the Side instance.
      */
-    static Side getInstanceForFIXValue(char inValue) {
+    public static Side getInstanceForFIXValue(char inValue) {
         Side s = mFIXValueMap.get(inValue);
         return s == null
                 ? Unknown
@@ -64,7 +64,7 @@ public enum Side {
      *
      * @param inFIXValue the FIX char value for this instance.
      */
-    Side(char inFIXValue) {
+    private Side(char inFIXValue) {
         mFIXValue = inFIXValue;
     }
 

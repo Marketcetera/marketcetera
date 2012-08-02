@@ -171,7 +171,7 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
             }
         };
         //context with invalid appID
-        ctx.setAppId(Util.getAppId("invalid", ApplicationVersion.getVersion()));
+        ctx.setAppId(Util.getAppId("invalid", ApplicationVersion.getDialectNumber()));
         new ExpectedFailure<I18NException>(Messages.APP_MISMATCH,
                 "invalid", DEFAULT_CREDENTIAL){
             @Override
@@ -183,7 +183,7 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
         //context with invalid version
         ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, "invalid"));
         new ExpectedFailure<I18NException>(Messages.VERSION_MISMATCH,
-                "invalid", ApplicationVersion.getVersion(), DEFAULT_CREDENTIAL){
+                "invalid", ApplicationVersion.getDialectNumber(), DEFAULT_CREDENTIAL){
             @Override
             protected void run() throws Exception {
                StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
@@ -195,7 +195,7 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
                 ApplicationVersion.DEFAULT_VERSION));
         new ExpectedFailure<I18NException>(Messages.VERSION_MISMATCH,
                 ApplicationVersion.DEFAULT_VERSION,
-                ApplicationVersion.getVersion(), DEFAULT_CREDENTIAL){
+                ApplicationVersion.getDialectNumber(), DEFAULT_CREDENTIAL){
             @Override
             protected void run() throws Exception {
                StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
@@ -203,7 +203,7 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
             }
         };
         //context with correct name & version number
-        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getVersion()));
+        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getDialectNumber()));
         assertTrue(StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray()));
         //valid contexts

@@ -3,7 +3,6 @@ package org.marketcetera.ors;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -48,7 +47,10 @@ import quickfix.DefaultMessageFactory;
 import quickfix.Message;
 import quickfix.SessionNotFound;
 import quickfix.SocketInitiator;
-import quickfix.field.*;
+import quickfix.field.MsgType;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.TargetCompID;
 
 /**
  * The main application. See {@link SpringConfig} for configuration
@@ -73,8 +75,8 @@ public class OrderRoutingSystem
     private static final String APP_CONTEXT_CFG_BASE=
         "file:"+CONF_DIR+ //$NON-NLS-1$
         "properties.xml"; //$NON-NLS-1$
-    private static final String TRADE_RECORDER_QUEUE=
-        "trade-recorder"; //$NON-NLS-1$
+    @SuppressWarnings("unused")
+    private static final String TRADE_RECORDER_QUEUE = "trade-recorder"; //$NON-NLS-1$
     private static final String JMX_NAME=
         "org.marketcetera.ors.mbean:type=ORSAdmin"; //$NON-NLS-1$
 
@@ -213,7 +215,7 @@ public class OrderRoutingSystem
         // Initiate JMX (for QuickFIX/J and application MBeans).
 
         MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
-        (new JmxExporter(mbeanServer)).export(mInitiator);
+        (new JmxExporter(mbeanServer)).register(mInitiator);
         mbeanServer.registerMBean
             (new ORSAdmin(getBrokers(),qSender,localIdFactory,userManager),
              new ObjectName(JMX_NAME));
@@ -242,13 +244,9 @@ public class OrderRoutingSystem
         getAuth().printUsage(System.err);
         throw new I18NException(message);
     }
-
     /**
      * Stops worker threads of the receiver.
-     *
-     * @return The context.
      */
-    private static final AtomicInteger counter = new AtomicInteger(0);
     synchronized void stop()
     {
         Brokers brokers = getBrokers();
@@ -341,8 +339,8 @@ public class OrderRoutingSystem
 
         Messages.APP_COPYRIGHT.info(LOGGER_CATEGORY);
         Messages.APP_VERSION_BUILD.info(LOGGER_CATEGORY,
-                ApplicationVersion.getVersion(),
-                ApplicationVersion.getBuildNumber());
+                                        ApplicationVersion.getApplicationNumber(),
+                                        ApplicationVersion.getBuildNumber());
         Messages.APP_START.info(LOGGER_CATEGORY);
 
         // Start ORS.

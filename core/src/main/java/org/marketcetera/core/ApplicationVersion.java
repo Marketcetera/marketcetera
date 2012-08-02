@@ -25,9 +25,9 @@ public class ApplicationVersion
      *
      * @return a <code>String</code> value containing the application version number
      */
-    public static String getVersion()
+    public static String getVersionNumber()
     {
-        return getProperty("VersionNumber", //$NON-NLS-1$
+        return getProperty(VERSION_NUMBER_IDENTIFIER,
                            DEFAULT_VERSION,
                            ApplicationVersion.class);
     }
@@ -37,20 +37,43 @@ public class ApplicationVersion
      * @param inResourceClass a <code>Class&lt;?&gt;</code> value
      * @return a <code>String</code> value containing the application version number
      */
-    public static String getVersion(Class<?> inResourceClass)
+    public static String getVersionNumber(Class<?> inResourceClass)
     {
-        return getProperty("VersionNumber", //$NON-NLS-1$
+        return getProperty(VERSION_NUMBER_IDENTIFIER,
                            DEFAULT_VERSION,
                            inResourceClass);
     }
     /**
-     * Returns the applicatino build number.
+     * Returns the dialect number.
      *
-     * @return a <code>String</code> value containing the application build number
+     * @return a <code>String</code> value containing the application dialect number
+     */
+    public static String getDialectNumber()
+    {
+        return getProperty(DIALECT_NUMBER_IDENTIFIER,
+                           DEFAULT_DIALECT,
+                           ApplicationVersion.class);
+    }
+    /**
+     * Returns the dialect number.
+     *
+     * @param inResourceClass a <code>Class&lt;?&gt;</code> value
+     * @return a <code>String</code> value containing the application dialect number
+     */
+    public static String getDialectNumber(Class<?> inResourceClass)
+    {
+        return getProperty(DIALECT_NUMBER_IDENTIFIER,
+                           DEFAULT_DIALECT,
+                           inResourceClass);
+    }
+    /**
+     * Returns the build number.
+     *
+     * @return a <code>String</code> value
      */
     public static String getBuildNumber()
     {
-        return getProperty("BuildNumber", //$NON-NLS-1$
+        return getProperty(BUILD_NUMBER_IDENTIFIER,
                            DEFAULT_BUILD,
                            ApplicationVersion.class);
     }
@@ -62,8 +85,31 @@ public class ApplicationVersion
      */
     public static String getBuildNumber(Class<?> inResourceClass)
     {
-        return getProperty("BuildNumber", //$NON-NLS-1$
+        return getProperty(BUILD_NUMBER_IDENTIFIER,
                            DEFAULT_BUILD,
+                           inResourceClass);
+    }
+    /**
+     * Returns the application number.
+     *
+     * @return a <code>String</code> value
+     */
+    public static String getApplicationNumber()
+    {
+        return getProperty(APPLICATION_NUMBER_IDENTIFIER,
+                           DEFAULT_APPLICATION,
+                           ApplicationVersion.class);
+    }
+    /**
+     * Gets the application number using the given class as a resource source.
+     *
+     * @param inResourceClass a <code>Class&lt;?&gt;</code> value
+     * @return a <code>String</code> value
+     */
+    public static String getApplicationNumber(Class<?> inResourceClass)
+    {
+        return getProperty(APPLICATION_NUMBER_IDENTIFIER,
+                           DEFAULT_APPLICATION,
                            inResourceClass);
     }
     /**
@@ -119,11 +165,38 @@ public class ApplicationVersion
      */
     private ApplicationVersion() {
     }
-
-    static final String DEFAULT_BUILD = "No Build";   //$NON-NLS-1$
-
-    public static final String DEFAULT_VERSION =
-        "No Version"; //$NON-NLS-1$
+    /**
+     * identifier tag for the library application number
+     */
+    public static final String APPLICATION_NUMBER_IDENTIFIER = "ApplicationNumber"; //$NON-NLS-1$
+    /**
+     * identifier tag for the library build number
+     */
+    public static final String BUILD_NUMBER_IDENTIFIER = "BuildNumber"; //$NON-NLS-1$
+    /**
+     * identifier tag for the library version number
+     */
+    public static final String VERSION_NUMBER_IDENTIFIER = "VersionNumber"; //$NON-NLS-1$
+    /**
+     * identifier tag for the library dialect number
+     */
+    public static final String DIALECT_NUMBER_IDENTIFIER = "DialectNumber"; //$NON-NLS-1$
+    /**
+     * indicates that no application number is available
+     */
+    public static final String DEFAULT_APPLICATION = "No Application";   //$NON-NLS-1$
+    /**
+     * indicates that no build number is available
+     */
+    public static final String DEFAULT_BUILD = "No Build";   //$NON-NLS-1$
+    /**
+     * indicates that no version number is available
+     */
+    public static final String DEFAULT_VERSION = "No Version"; //$NON-NLS-1$
+    /**
+     * indicates that no dialect number is available
+     */
+    public static final String DEFAULT_DIALECT = "No Dialect"; //$NON-NLS-1$
     public static final String VERSION_1_5_0 =
         "1.5.0"; //$NON-NLS-1$
     public static final String VERSION_1_5_1 =
@@ -138,5 +211,6 @@ public class ApplicationVersion
     public static final String VERSION_2_1_2 = "2.1.2"; //$NON-NLS-1$
     public static final String VERSION_2_1_3 = "2.1.3"; //$NON-NLS-1$
     public static final String VERSION_2_1_4 = "2.1.4"; //$NON-NLS-1$
-    public static final String VERSION_2_2_0 = "2.2.0"; //$NON-NLS-1$
+    public static final String VERSION_2_2 = "2.2"; //$NON-NLS-1$
+    public static final String DIALECT_VERSION_100 = "100"; //$NON-NLS-1$
 }

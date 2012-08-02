@@ -18,9 +18,10 @@
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
-      <version>2.2.0</version>
+      <version>1-SNAPSHOT</version>
   </parent>
   <artifactId>saclient</artifactId>
+  <version>2.2.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Strategy Agent Client Libraries</name>

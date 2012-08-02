@@ -45,7 +45,7 @@ public enum PositionEffect {
      *
      * @return the PositionEffect instance.
      */
-    static PositionEffect getInstanceForFIXValue(char inValue) {
+    public static PositionEffect getInstanceForFIXValue(char inValue) {
         PositionEffect s = mFIXValueMap.get(inValue);
         return s == null
                 ? Unknown
@@ -57,7 +57,7 @@ public enum PositionEffect {
      *
      * @return the FIX char value for this instance.
      */
-    char getFIXValue() {
+    public char getFIXValue() {
         return mFIXValue;
     }
 
