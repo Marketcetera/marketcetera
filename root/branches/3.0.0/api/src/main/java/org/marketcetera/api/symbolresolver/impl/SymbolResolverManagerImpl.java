@@ -1,4 +1,4 @@
-package org.marketcetera.core.symbolresolver.impl;
+package org.marketcetera.api.symbolresolver.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,11 +7,11 @@ import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.marketcetera.api.symbolresolver.Messages;
+import org.marketcetera.api.symbolresolver.NoInstrumentForSymbol;
+import org.marketcetera.api.symbolresolver.SymbolResolver;
+import org.marketcetera.api.symbolresolver.SymbolResolverManager;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.core.symbolresolver.Messages;
-import org.marketcetera.core.symbolresolver.NoInstrumentForSymbol;
-import org.marketcetera.core.symbolresolver.SymbolResolver;
-import org.marketcetera.core.symbolresolver.SymbolResolverManager;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;

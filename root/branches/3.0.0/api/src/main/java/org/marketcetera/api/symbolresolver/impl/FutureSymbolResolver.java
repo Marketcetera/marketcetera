@@ -1,8 +1,9 @@
-package org.marketcetera.core.symbolresolver.impl;
+package org.marketcetera.api.symbolresolver.impl;
 
 import javax.annotation.concurrent.Immutable;
+
+import org.marketcetera.api.symbolresolver.SymbolResolver;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.core.symbolresolver.SymbolResolver;
 import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.Instrument;
 

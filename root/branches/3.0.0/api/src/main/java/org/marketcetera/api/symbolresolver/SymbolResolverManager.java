@@ -1,4 +1,4 @@
-package org.marketcetera.core.symbolresolver;
+package org.marketcetera.api.symbolresolver;
 
 import java.util.List;
 

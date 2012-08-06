@@ -1,23 +1,24 @@
-package org.marketcetera.core.symbolresolver.impl;
+package org.marketcetera.api.symbolresolver.impl;
 
 import javax.annotation.concurrent.Immutable;
+
+import org.marketcetera.api.symbolresolver.SymbolResolver;
 import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.core.options.OptionUtils;
-import org.marketcetera.core.symbolresolver.SymbolResolver;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 
 /**
- * Attempts to resolve symbols to {@link org.marketcetera.core.trade.Option} instruments.
+ * Attempts to resolve symbols as {@link org.marketcetera.core.trade.Equity} instruments.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: OsiOptionSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
+ * @version $Id: EquitySymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */
 @Immutable
-@ClassVersion("$Id: OsiOptionSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $")
-public class OsiOptionSymbolResolver
+@ClassVersion("$Id: EquitySymbolResolver.java 82347 2012-05-03 19:30:54Z colin $")
+public class EquitySymbolResolver
         implements SymbolResolver
 {
     /* (non-Javadoc)
@@ -36,11 +37,6 @@ public class OsiOptionSymbolResolver
     public Instrument resolve(String inSymbol,
                               Object inContext)
     {
-        try {
-            return OptionUtils.getOsiOptionFromString(inSymbol);
-        } catch (IllegalArgumentException e) {
-            // no option, no soup
-        }
-        return null;
+        return new Equity(inSymbol);
     }
 }
