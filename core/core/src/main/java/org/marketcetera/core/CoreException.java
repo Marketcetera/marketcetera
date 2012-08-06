@@ -15,8 +15,14 @@ import org.marketcetera.core.attributes.ClassVersion;
 public class CoreException
     extends I18NException
 {
-    private static final long serialVersionUID = 2L;
-
+    private static final long serialVersionUID = 3L;
+    /**
+     * Create a new CoreException instance.
+     */
+    public CoreException()
+    {
+        super();
+    }
     /**
      * Constructs a new throwable without a message, but with the 
      * given underlying cause.

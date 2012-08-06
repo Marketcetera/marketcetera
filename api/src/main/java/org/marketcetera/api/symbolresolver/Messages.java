@@ -1,4 +1,4 @@
-package org.marketcetera.core.symbolresolver;
+package org.marketcetera.api.symbolresolver;
 
 import org.marketcetera.core.util.log.I18NLoggerProxy;
 import org.marketcetera.core.util.log.I18NMessage1P;
@@ -20,7 +20,7 @@ public interface Messages
     /**
      * The message provider.
      */
-    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("core_symbolresolver", //$NON-NLS-1$
+    static final I18NMessageProvider PROVIDER = new I18NMessageProvider("symbolresolver", //$NON-NLS-1$
                                                                         Messages.class.getClassLoader());
     /**
      * The logger.

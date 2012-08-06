@@ -1,4 +1,4 @@
-package org.marketcetera.core.symbolresolver;
+package org.marketcetera.api.symbolresolver;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
@@ -17,6 +17,13 @@ import org.marketcetera.core.attributes.ClassVersion;
 public class NoInstrumentForSymbol
         extends CoreException
 {
+    /**
+     * Create a new NoInstrumentForSymbol instance.
+     */
+    public NoInstrumentForSymbol()
+    {
+        super();
+    }
     /**
      * Create a new NoInstrumentForSymbol instance.
      *
@@ -47,5 +54,5 @@ public class NoInstrumentForSymbol
         super(inNested,
               inMessage);
     }
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 }
