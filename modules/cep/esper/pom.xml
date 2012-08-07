@@ -36,6 +36,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cep-system</artifactId>
+      <version>2.2.1-SNAPSHOT</version>
     </dependency>
 
     <!-- Testing -->
@@ -43,6 +44,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cep-system</artifactId>
       <type>test-jar</type>
+      <version>2.2.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
