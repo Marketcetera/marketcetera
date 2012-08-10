@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.marketcetera</groupId>
         <artifactId>public-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.marketcetera.modules</groupId>
     <artifactId>modules-parent</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -20,5 +20,6 @@
         <module>cep</module>
         <module>misc</module>
         <module>marketdata</module>
+        <module>symbolresolver</module>
     </modules>
 </project>

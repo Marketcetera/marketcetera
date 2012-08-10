@@ -1,10 +1,5 @@
 package org.marketcetera.core;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -23,6 +19,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
+import static org.junit.Assert.*;
+
 /* $License$ */
 
 /**
@@ -32,6 +30,7 @@ import org.springframework.context.support.StaticApplicationContext;
  * @version $Id: AbstractSpringApplicationTest.java 82306 2012-02-29 23:18:25Z colin $
  * @since $Release$
  */
+@Ignore
 public class AbstractSpringApplicationTest
 {
     /**
