@@ -2,7 +2,7 @@ package org.marketcetera.core.quickfix.messagefactory;
 
 import java.util.Arrays;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.field.MsgType;
 

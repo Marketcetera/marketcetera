@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.marketcetera.core.symbology.IEquityOptionSymbol;
 import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 @ClassVersion("$Id: MarketceteraOptionSymbol.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class MarketceteraOptionSymbol 

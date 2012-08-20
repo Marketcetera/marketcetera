@@ -1,7 +1,7 @@
 package org.marketcetera.core.ws.wrappers;
 
 import java.util.Map;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A wrapper for marshalling a map value via JAXB.

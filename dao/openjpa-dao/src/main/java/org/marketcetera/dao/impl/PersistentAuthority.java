@@ -4,7 +4,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
 
 import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -35,7 +35,7 @@ public class PersistentAuthority
         return authority;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.NamedObject#getName()
+     * @see org.marketcetera.api.systemmodel.NamedObject#getName()
      */
     @Transient
     @Override

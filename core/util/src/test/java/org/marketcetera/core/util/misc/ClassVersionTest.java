@@ -2,7 +2,7 @@ package org.marketcetera.core.util.misc;
 
 import java.lang.annotation.Annotation;
 import org.junit.Test;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;

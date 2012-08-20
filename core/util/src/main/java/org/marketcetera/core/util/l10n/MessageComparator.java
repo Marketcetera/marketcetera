@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A comparator of two message meta-information holders.

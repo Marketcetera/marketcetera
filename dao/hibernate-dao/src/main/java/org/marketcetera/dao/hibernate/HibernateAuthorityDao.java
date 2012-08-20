@@ -8,7 +8,7 @@ import org.hibernate.SessionFactory;
 import org.marketcetera.dao.AuthorityDao;
 import org.marketcetera.dao.impl.PersistentAuthority;
 import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

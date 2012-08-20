@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A partial, client-side representation of a server exception, when

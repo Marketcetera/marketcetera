@@ -27,7 +27,7 @@ import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Implementation of the market data feed that reads from a CSV file.

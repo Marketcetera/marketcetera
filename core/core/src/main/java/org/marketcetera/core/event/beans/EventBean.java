@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.util.EventServices;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;

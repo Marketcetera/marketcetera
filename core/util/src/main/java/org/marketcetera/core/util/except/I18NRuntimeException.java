@@ -2,7 +2,7 @@ package org.marketcetera.core.util.except;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.util.log.LogUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized runtime exception.

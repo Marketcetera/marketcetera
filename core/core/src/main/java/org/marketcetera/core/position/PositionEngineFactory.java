@@ -9,7 +9,7 @@ import ca.odell.glazedlists.FunctionList.Function;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.util.concurrent.Lock;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.messagehistory.ReportHolder;
 import org.marketcetera.core.position.impl.Messages;

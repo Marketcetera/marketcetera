@@ -3,7 +3,7 @@ package org.marketcetera.core.module;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 /* $License$ */
 /**
  * A mock configuration provider for testing. This class may be used

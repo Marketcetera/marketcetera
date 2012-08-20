@@ -1,6 +1,6 @@
 package org.marketcetera.core.util.file;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Special names used to denote standard streams or operations on

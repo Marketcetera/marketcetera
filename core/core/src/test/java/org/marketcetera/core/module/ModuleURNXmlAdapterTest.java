@@ -2,7 +2,7 @@ package org.marketcetera.core.module;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.assertEquals;
 

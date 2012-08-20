@@ -2,7 +2,7 @@ package org.marketcetera.core.ws.tags;
 
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateful.SessionManager;
 
 /**

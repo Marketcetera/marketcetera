@@ -14,7 +14,7 @@ import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEven
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 import ca.odell.glazedlists.EventList;

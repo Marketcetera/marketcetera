@@ -2,7 +2,7 @@ package org.marketcetera.core.trade;
 
 import java.io.Serializable;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

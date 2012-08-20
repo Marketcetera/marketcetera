@@ -7,7 +7,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.attributes.ApplicationVersion;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;

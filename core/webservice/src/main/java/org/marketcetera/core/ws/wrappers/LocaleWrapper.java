@@ -2,7 +2,7 @@ package org.marketcetera.core.ws.wrappers;
 
 import java.util.Locale;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a locale. The raw form is

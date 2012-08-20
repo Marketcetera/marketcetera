@@ -3,7 +3,7 @@ package org.marketcetera.security;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A setter that obtains holder data via a command-line. It is

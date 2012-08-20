@@ -1,7 +1,7 @@
 package org.marketcetera.core.ws.wrappers;
 
 import java.io.Serializable;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a comparable and serializable

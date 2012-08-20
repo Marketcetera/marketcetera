@@ -7,7 +7,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 @ClassVersion("$Id: BigDecimalUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public class BigDecimalUtils {

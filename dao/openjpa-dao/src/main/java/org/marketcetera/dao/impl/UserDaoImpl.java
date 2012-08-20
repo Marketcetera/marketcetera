@@ -5,7 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.marketcetera.dao.UserDao;
-import org.marketcetera.core.systemmodel.User;
+import org.marketcetera.api.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,7 +56,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = getByName(username);
         if(user == null) {
             throw new UsernameNotFoundException(username);

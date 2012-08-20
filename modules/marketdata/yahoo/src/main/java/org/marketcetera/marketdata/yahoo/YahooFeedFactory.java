@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.yahoo;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedFactory;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -8,7 +8,7 @@ import java.util.Set;
 
 import ca.odell.glazedlists.FunctionList.Function;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.ExecutionReport;
 import org.marketcetera.core.trade.OrderCancelReject;
 import org.marketcetera.core.trade.OrderID;

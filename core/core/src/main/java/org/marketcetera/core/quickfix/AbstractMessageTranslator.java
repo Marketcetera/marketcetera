@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;

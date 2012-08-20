@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

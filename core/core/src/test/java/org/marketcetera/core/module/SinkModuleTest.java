@@ -12,7 +12,7 @@ import javax.management.JMX;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.*;
 

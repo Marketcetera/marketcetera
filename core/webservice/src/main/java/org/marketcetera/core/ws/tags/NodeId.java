@@ -1,7 +1,7 @@
 package org.marketcetera.core.ws.tags;
 
 import java.util.UUID;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A node ID. Each communication endpoint (client or server class

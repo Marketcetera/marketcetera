@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.util.Properties;
 
 import org.marketcetera.core.Util;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

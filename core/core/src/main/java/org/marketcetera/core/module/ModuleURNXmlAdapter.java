@@ -1,7 +1,7 @@
 package org.marketcetera.core.module;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

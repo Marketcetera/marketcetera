@@ -20,7 +20,7 @@ import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

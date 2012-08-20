@@ -3,7 +3,7 @@ package org.marketcetera.security;
 import java.io.Console;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A setter for a string holder that obtains the data via the

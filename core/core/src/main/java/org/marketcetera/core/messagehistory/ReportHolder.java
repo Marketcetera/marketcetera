@@ -3,7 +3,7 @@ package org.marketcetera.core.messagehistory;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.trade.OrderID;
 import org.marketcetera.core.trade.ReportBase;

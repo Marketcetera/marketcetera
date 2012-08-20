@@ -9,7 +9,7 @@ import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTranslator;
 import org.marketcetera.core.event.UnsupportedEventException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

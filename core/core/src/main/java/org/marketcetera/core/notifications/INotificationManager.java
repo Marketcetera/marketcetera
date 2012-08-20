@@ -2,7 +2,7 @@ package org.marketcetera.core.notifications;
 
 import org.marketcetera.core.publisher.IPublisher;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

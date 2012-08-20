@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXDataDictionary;

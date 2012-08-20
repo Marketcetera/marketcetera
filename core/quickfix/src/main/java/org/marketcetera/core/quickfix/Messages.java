@@ -6,7 +6,7 @@ import org.marketcetera.core.util.log.I18NMessage1P;
 import org.marketcetera.core.util.log.I18NMessage2P;
 import org.marketcetera.core.util.log.I18NMessage4P;
 import org.marketcetera.core.util.log.I18NMessageProvider;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * The internationalization constants used by this package.

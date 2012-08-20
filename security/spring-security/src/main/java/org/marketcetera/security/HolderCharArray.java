@@ -2,7 +2,7 @@ package org.marketcetera.security;
 
 import java.util.Arrays;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A holder of a character array.

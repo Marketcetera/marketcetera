@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.management.MXBean;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

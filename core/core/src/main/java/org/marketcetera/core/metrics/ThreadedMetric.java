@@ -7,7 +7,7 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.Pair;
 
 import javax.management.*;

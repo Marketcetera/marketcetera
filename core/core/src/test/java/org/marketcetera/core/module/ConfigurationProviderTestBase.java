@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import javax.management.JMX;
 import org.junit.After;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

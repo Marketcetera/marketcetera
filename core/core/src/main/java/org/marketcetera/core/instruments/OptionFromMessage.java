@@ -2,7 +2,7 @@ package org.marketcetera.core.instruments;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;

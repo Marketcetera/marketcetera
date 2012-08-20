@@ -3,7 +3,7 @@ package org.marketcetera.core.event.impl;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.beans.EventBean;
 

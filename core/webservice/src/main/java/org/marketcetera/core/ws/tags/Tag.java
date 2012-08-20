@@ -3,7 +3,7 @@ package org.marketcetera.core.ws.tags;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlValue;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A generic ID tag.

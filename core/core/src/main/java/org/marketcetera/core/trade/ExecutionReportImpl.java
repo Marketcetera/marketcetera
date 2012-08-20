@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.FIXMessageUtil;
 import quickfix.Message;
 

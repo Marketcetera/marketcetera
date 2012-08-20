@@ -6,7 +6,7 @@ import java.util.ServiceLoader;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 

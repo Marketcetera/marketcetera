@@ -3,7 +3,7 @@ package org.marketcetera.core.trade;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.quickfix.FIXMessageUtil;

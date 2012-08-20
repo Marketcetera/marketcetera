@@ -2,7 +2,7 @@ package org.marketcetera.core.messagehistory;
 
 import java.util.List;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import ca.odell.glazedlists.FunctionList.Function;
 

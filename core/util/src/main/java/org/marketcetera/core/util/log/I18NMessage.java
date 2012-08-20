@@ -2,7 +2,7 @@ package org.marketcetera.core.util.log;
 
 import java.io.Serializable;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized message, represented using a pair of textual

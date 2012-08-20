@@ -9,7 +9,7 @@ import java.util.List;
 import org.marketcetera.core.util.except.ExceptUtils;
 import org.marketcetera.core.util.file.CloseableRegistry;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.*;
 import quickfix.field.MsgType;

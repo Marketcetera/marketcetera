@@ -7,7 +7,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

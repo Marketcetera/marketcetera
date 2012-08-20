@@ -12,7 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.AggregateEvent;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTestBase;

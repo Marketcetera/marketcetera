@@ -3,8 +3,8 @@ package org.marketcetera.dao.impl;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
-import org.marketcetera.core.systemmodel.VersionedObject;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.systemmodel.VersionedObject;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

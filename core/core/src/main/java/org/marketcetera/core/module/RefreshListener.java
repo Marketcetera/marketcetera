@@ -2,7 +2,7 @@ package org.marketcetera.core.module;
 
 import java.io.IOException;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

@@ -1,6 +1,6 @@
 package org.marketcetera.core.quickfix.messagefactory;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

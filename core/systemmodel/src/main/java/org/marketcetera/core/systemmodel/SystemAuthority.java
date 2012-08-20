@@ -1,6 +1,6 @@
 package org.marketcetera.core.systemmodel;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.security.core.GrantedAuthority;
 
 /* $License$ */

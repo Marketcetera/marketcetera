@@ -2,10 +2,10 @@ package org.marketcetera.dao;
 
 import java.util.List;
 
-import org.marketcetera.core.systemmodel.User;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
+import org.marketcetera.api.security.User;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /* $License$ */
 
@@ -17,9 +17,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  * @since $Release$
  */
 @ClassVersion("$Id: UserDao.java 82354 2012-05-11 17:46:11Z colin $")
-public interface UserDao
-        extends UserDetailsService
-{
+public interface UserDao {
+    User loadUserByUsername(String username) throws UsernameNotFoundException;
+
     /**
      * Gets the <code>User</code> corresponding to the given username.
      *
@@ -27,6 +27,7 @@ public interface UserDao
      * @return a <code>User</code> value
      */
     public User getByName(String inUsername);
+
     /**
      * Adds the given <code>User</code> to the database.
      *
@@ -34,6 +35,7 @@ public interface UserDao
      */
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void add(User inData);
+
     /**
      * Saves the given <code>User</code> to the database.
      *
@@ -41,6 +43,7 @@ public interface UserDao
      */
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void save(User inData);
+
     /**
      * Deletes the given <code>User</code> from the database.
      *
@@ -48,6 +51,7 @@ public interface UserDao
      */
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void delete(User inData);
+
     /**
      * Gets the <code>User</code> corresponding to the given id.
      *
@@ -55,6 +59,7 @@ public interface UserDao
      * @return a <code>User</code> value
      */
     public User getById(long inId);
+
     /**
      * Gets all <code>User</code> values.
      *

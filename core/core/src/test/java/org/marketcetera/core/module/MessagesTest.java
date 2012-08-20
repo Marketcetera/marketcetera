@@ -1,7 +1,7 @@
 package org.marketcetera.core.module;
 
 import org.junit.Test;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.l10n.MessageComparator;
 
 import static org.junit.Assert.assertTrue;

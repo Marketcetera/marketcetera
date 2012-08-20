@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import quickfix.FieldNotFound;

@@ -8,7 +8,7 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

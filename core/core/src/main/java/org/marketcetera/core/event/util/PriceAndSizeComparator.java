@@ -3,7 +3,7 @@ package org.marketcetera.core.event.util;
 import java.util.Comparator;
 
 import javax.annotation.concurrent.Immutable;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.QuoteEvent;
 
 /* $License$ */

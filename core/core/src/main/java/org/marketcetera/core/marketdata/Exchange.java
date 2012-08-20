@@ -7,7 +7,7 @@ import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.QuoteEvent;
 import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

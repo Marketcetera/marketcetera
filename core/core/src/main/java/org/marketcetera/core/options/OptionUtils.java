@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
 

@@ -1,6 +1,6 @@
 package org.marketcetera.modules.csv;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 import org.marketcetera.core.util.unicode.UnicodeInputStreamReader;
 import org.marketcetera.core.util.unicode.DecodingStrategy;

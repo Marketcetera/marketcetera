@@ -3,7 +3,7 @@ package org.marketcetera.core.util.misc;
 import java.nio.charset.Charset;
 import java.util.Random;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Utilities for random string generation. All random distributions

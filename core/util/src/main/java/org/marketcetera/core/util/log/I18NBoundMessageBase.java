@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A bound message implementation, representing the combination of an

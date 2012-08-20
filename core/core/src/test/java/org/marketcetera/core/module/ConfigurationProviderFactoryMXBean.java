@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import javax.management.MXBean;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

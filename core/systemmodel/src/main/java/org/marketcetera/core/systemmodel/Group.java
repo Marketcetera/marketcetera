@@ -2,12 +2,16 @@ package org.marketcetera.core.systemmodel;
 
 import java.util.Collection;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
+import org.marketcetera.api.security.User;
+import org.marketcetera.api.systemmodel.NamedObject;
+import org.marketcetera.api.systemmodel.SystemObject;
+import org.marketcetera.api.systemmodel.VersionedObject;
 
 /* $License$ */
 
 /**
- * Represents a grouping of {@link User} and {@link Authority} objects.
+ * Represents a grouping of {@link org.marketcetera.api.security.User} and {@link Authority} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Group.java 82316 2012-03-21 21:13:27Z colin $

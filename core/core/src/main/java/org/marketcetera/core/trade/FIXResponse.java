@@ -1,6 +1,6 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Represents an ORS response that wraps a generic FIX message which

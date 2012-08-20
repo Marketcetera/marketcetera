@@ -1,7 +1,7 @@
 package org.marketcetera.core.ws.stateless;
 
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A server node for stateless communication.

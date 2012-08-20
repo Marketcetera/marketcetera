@@ -2,7 +2,7 @@ package org.marketcetera.core.util.l10n;
 
 import java.util.Properties;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Holder of meta-information about a generic message.

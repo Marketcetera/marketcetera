@@ -3,7 +3,7 @@ package org.marketcetera.core.trade;
 import java.util.Arrays;
 import java.util.List;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

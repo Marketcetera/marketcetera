@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Implementation of IDFactory that provides identifiers unique to this run of the

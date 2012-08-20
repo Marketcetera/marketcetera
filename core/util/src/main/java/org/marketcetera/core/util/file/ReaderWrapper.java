@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.unicode.DecodingStrategy;
 import org.marketcetera.core.util.unicode.UnicodeFileReader;
 import org.marketcetera.core.util.unicode.UnicodeInputStreamReader;

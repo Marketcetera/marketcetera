@@ -7,14 +7,19 @@ import java.util.Set;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.persistence.*;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import org.marketcetera.api.attributes.ClassVersion;
+import org.marketcetera.api.security.GrantedAuthority;
+import org.marketcetera.api.security.User;
 import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.core.systemmodel.User;
-import org.marketcetera.core.attributes.ClassVersion;
-import org.marketcetera.dao.impl.PersistentAuthority;
-import org.marketcetera.dao.impl.PersistentVersionedObject;
-import org.springframework.security.core.GrantedAuthority;
 
 /* $License$ */
 
@@ -37,7 +42,7 @@ public class PersistentUser
         implements User
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.NamedObject#getName()
+     * @see org.marketcetera.api.systemmodel.NamedObject#getName()
      */
     @Transient
     @Override

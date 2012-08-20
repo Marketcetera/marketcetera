@@ -3,7 +3,7 @@ package org.marketcetera.core.symbology;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * @author Graham Miller

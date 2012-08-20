@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.yahoo;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.context.Lifecycle;
 
 /* $License$ */

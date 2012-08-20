@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import javax.management.JMX;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import static org.junit.Assert.*;

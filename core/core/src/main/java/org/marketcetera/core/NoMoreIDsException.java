@@ -1,7 +1,7 @@
 package org.marketcetera.core;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Excpetion to denote that we ran out of IDs while getting them

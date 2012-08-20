@@ -3,7 +3,7 @@ package org.marketcetera.core.event.beans;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.DividendFrequency;
 import org.marketcetera.core.event.DividendStatus;
 import org.marketcetera.core.event.DividendType;

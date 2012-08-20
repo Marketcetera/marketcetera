@@ -3,7 +3,7 @@ package org.marketcetera.core.ws.sample;
 import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.util.log.I18NMessage2P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.core.ws.stateful.Server;
 import org.marketcetera.core.ws.stateful.SessionManager;

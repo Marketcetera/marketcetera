@@ -20,7 +20,7 @@ import org.marketcetera.core.marketdata.Capability;
 import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.marketdata.*;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.marketcetera.api.attributes.ClassVersion;
+
 /* $License$ */
 /**
  * A class that is used to keep track of the application version

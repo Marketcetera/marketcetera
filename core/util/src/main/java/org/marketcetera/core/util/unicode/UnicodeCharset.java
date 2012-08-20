@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import org.apache.commons.lang.CharEncoding;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A thin wrapper around {@link Charset} for the Unicode charsets.

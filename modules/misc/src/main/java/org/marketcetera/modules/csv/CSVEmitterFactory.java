@@ -1,6 +1,6 @@
 package org.marketcetera.modules.csv;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.module.ModuleFactory;
 import org.marketcetera.core.module.ModuleCreationException;
 import org.marketcetera.core.module.ModuleURN;

@@ -1,6 +1,6 @@
 package org.marketcetera.core.util.misc;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.Executors;

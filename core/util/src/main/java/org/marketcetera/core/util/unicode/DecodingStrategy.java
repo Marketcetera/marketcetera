@@ -1,7 +1,7 @@
 package org.marketcetera.core.util.unicode;
 
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A list of one or more {@link Serialization} instances. This list
