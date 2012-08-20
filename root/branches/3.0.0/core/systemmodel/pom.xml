@@ -28,14 +28,6 @@
             <artifactId>util</artifactId>
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

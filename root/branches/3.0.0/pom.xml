@@ -80,11 +80,11 @@
                 <artifactId>spring-expression</artifactId>
                 <version>${mvn.spring.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-core</artifactId>
-                <version>${mvn.spring.security.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-core</artifactId>-->
+                <!--<version>${mvn.spring.security.version}</version>-->
+            <!--</dependency>-->
             <!-- compile: other -->
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -245,16 +245,16 @@
                 <artifactId>spring-web</artifactId>
                 <version>${mvn.spring.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-config</artifactId>
-                <version>${mvn.spring.security.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-web</artifactId>
-                <version>${mvn.spring.security.version}</version>
-            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-config</artifactId>-->
+                <!--<version>${mvn.spring.security.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.security</groupId>-->
+                <!--<artifactId>spring-security-web</artifactId>-->
+                <!--<version>${mvn.spring.security.version}</version>-->
+            <!--</dependency>-->
             <!-- runtime: other -->
             <dependency>
                 <groupId>log4j</groupId>

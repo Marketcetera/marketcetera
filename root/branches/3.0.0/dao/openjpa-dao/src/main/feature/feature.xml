@@ -13,11 +13,11 @@
         <bundle>mvn:org.apache.openjpa/openjpa/2.2.0</bundle>
         <bundle>wrap:mvn:com.google.code.findbugs/jsr305/2.0.0</bundle>
         <bundle>wrap:mvn:aopalliance/aopalliance/1.0</bundle>
-        <bundle>wrap:mvn:org.springframework.security/spring-security-crypto/3.1.0.RELEASE</bundle>
+        <!--<bundle>wrap:mvn:org.springframework.security/spring-security-crypto/3.1.0.RELEASE</bundle>-->
         <bundle>mvn:commons-lang/commons-lang/2.6</bundle>
         <bundle>mvn:commons-collections/commons-collections/3.2.1</bundle>
         <bundle>mvn:commons-io/commons-io/2.1</bundle>
-        <bundle>mvn:org.springframework.security/spring-security-core/3.1.0.RELEASE</bundle>
+        <!--<bundle>mvn:org.springframework.security/spring-security-core/3.1.0.RELEASE</bundle>-->
         <bundle>mvn:org.springframework/spring-expression/3.1.1.RELEASE</bundle>
         <bundle>mvn:org.springframework/spring-core/3.1.1.RELEASE</bundle>
         <bundle>mvn:org.springframework/spring-asm/3.1.1.RELEASE</bundle>

@@ -11,8 +11,8 @@ import org.marketcetera.dao.impl.PersistentUser;
 import org.marketcetera.core.systemmodel.User;
 import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+//import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -3,7 +3,7 @@ package org.marketcetera.dao;
 import java.util.List;
 
 import org.marketcetera.core.systemmodel.Authority;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 
 /* $License$ */
 
@@ -21,14 +21,14 @@ public interface AuthorityDao
      *
      * @param inData an <code>Authority</code> value
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void add(Authority inData);
     /**
      * Saves the given <code>Authority</code> to the database.
      *
      * @param inData an <code>Authority</code> value
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void save(Authority inData);
     /**
      * Gets the <code>Authority</code> corresponding to the given name.
