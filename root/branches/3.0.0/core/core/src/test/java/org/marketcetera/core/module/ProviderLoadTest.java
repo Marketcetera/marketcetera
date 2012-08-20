@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.MockMarketDataFeedModuleFactory;
 
 import static org.junit.Assert.*;

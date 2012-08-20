@@ -1,7 +1,7 @@
 package org.marketcetera.core.ws.stateless;
 
 import org.apache.cxf.endpoint.Server;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A service interface handle. It is used to terminate a service.

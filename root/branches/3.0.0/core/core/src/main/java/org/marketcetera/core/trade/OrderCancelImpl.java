@@ -1,7 +1,7 @@
 package org.marketcetera.core.trade;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

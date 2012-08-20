@@ -1,6 +1,6 @@
 package org.marketcetera.core.metrics;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Instances of this class keeps track of information on every checkpoint.

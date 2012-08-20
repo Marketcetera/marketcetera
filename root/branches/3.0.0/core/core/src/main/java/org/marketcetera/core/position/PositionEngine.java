@@ -1,6 +1,6 @@
 package org.marketcetera.core.position;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 

@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.DividendEventBuilder;
 import org.marketcetera.core.event.impl.MarketstatEventBuilder;

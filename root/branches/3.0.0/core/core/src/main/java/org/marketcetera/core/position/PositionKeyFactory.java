@@ -3,7 +3,7 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.core.trade.ConvertibleBond;
 import org.marketcetera.core.trade.Equity;

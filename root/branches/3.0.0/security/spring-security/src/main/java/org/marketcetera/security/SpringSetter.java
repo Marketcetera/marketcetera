@@ -3,7 +3,7 @@ package org.marketcetera.security;
 import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.container.SpringUtils;
 import org.springframework.context.support.GenericApplicationContext;
 

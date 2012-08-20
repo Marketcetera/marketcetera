@@ -8,7 +8,7 @@ import org.marketcetera.core.util.except.ExceptUtils;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.unicode.DecodingStrategy;
 import org.marketcetera.core.util.unicode.SignatureCharset;
 import org.marketcetera.core.util.unicode.UnicodeInputStreamReader;

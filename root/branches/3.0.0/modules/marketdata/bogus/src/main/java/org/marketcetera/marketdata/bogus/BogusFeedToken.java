@@ -2,7 +2,7 @@ package org.marketcetera.marketdata.bogus;
 
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Token for {@link BogusFeed}.

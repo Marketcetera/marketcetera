@@ -2,7 +2,7 @@ package org.marketcetera.core.util.unicode;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A byte stream signature ({@link Signature}) coupled with a charset

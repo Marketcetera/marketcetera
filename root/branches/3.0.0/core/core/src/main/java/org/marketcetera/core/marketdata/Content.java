@@ -3,7 +3,7 @@ package org.marketcetera.core.marketdata;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.MarketstatEvent;

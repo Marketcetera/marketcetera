@@ -1,12 +1,15 @@
 package org.marketcetera.core.systemmodel;
 
-import org.marketcetera.core.attributes.ClassVersion;
-import org.springframework.security.core.GrantedAuthority;
+import org.marketcetera.api.attributes.ClassVersion;
+import org.marketcetera.api.security.GrantedAuthority;
+import org.marketcetera.api.systemmodel.NamedObject;
+import org.marketcetera.api.systemmodel.SystemObject;
+import org.marketcetera.api.systemmodel.VersionedObject;
 
 /* $License$ */
 
 /**
- * Represents a role granted to a {@link User}.
+ * Represents a role granted to a {@link org.marketcetera.api.security.User}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Authority.java 82316 2012-03-21 21:13:27Z colin $

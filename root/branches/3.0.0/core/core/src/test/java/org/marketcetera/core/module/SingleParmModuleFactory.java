@@ -2,7 +2,7 @@ package org.marketcetera.core.module;
 
 import java.net.URI;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

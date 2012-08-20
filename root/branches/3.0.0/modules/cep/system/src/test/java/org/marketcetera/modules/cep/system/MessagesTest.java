@@ -1,6 +1,6 @@
 package org.marketcetera.modules.cep.system;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.l10n.MessageComparator;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;

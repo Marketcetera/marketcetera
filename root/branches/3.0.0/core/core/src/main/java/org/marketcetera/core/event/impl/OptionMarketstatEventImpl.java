@@ -3,7 +3,7 @@ package org.marketcetera.core.event.impl;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasOption;
 import org.marketcetera.core.event.OptionMarketstatEvent;
 import org.marketcetera.core.event.beans.MarketstatBean;

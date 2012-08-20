@@ -1,7 +1,7 @@
 package org.marketcetera.core.ws.wrappers;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A wrapper for any object, allowing it to become a root element in

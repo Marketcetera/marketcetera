@@ -3,7 +3,7 @@ package org.marketcetera.core.messagehistory;
 import java.math.BigDecimal;
 
 import ca.odell.glazedlists.matchers.Matcher;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.ExecutionReport;
 import org.marketcetera.core.trade.OrderStatus;
 import org.marketcetera.core.trade.ReportBase;

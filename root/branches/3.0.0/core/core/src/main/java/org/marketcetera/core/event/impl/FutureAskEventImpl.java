@@ -1,7 +1,7 @@
 package org.marketcetera.core.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.FutureEvent;
 import org.marketcetera.core.event.beans.FutureBean;

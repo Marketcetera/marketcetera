@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

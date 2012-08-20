@@ -7,7 +7,7 @@ import org.marketcetera.core.util.except.ExceptUtils;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.except.I18NInterruptedException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A simple process executor. The executed process requires no input,

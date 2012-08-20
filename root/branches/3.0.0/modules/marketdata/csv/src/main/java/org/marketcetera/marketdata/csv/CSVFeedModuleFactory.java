@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata.csv;
 
 import static org.marketcetera.marketdata.csv.Messages.PROVIDER_DESCRIPTION;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.module.ModuleFactory;
 import org.marketcetera.core.module.ModuleCreationException;
 import org.marketcetera.core.module.ModuleURN;

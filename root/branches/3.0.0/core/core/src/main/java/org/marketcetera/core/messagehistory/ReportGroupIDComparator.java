@@ -2,7 +2,7 @@ package org.marketcetera.core.messagehistory;
 
 import java.util.Comparator;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.OrderID;
 
 /* $License$ */

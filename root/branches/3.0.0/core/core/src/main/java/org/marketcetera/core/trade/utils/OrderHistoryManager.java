@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.trade.ExecutionReport;
 import org.marketcetera.core.trade.Messages;

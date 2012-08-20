@@ -11,7 +11,7 @@ import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 

@@ -2,7 +2,7 @@ package org.marketcetera.core.quickfix.customfields;
 
 import java.util.Date;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.UtcTimeStampField;
 

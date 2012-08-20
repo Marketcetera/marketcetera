@@ -5,7 +5,7 @@ import org.marketcetera.dao.Messages;
 import org.marketcetera.core.systemmodel.GroupFactory;
 import org.marketcetera.core.systemmodel.SystemGroup;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 

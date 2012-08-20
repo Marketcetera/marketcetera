@@ -2,7 +2,7 @@ package org.marketcetera.core.module;
 
 import java.util.concurrent.locks.Lock;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NMessage0P;
 
 /* $License$ */

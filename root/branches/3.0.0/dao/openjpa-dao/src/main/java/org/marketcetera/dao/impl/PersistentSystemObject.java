@@ -4,8 +4,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
-import org.marketcetera.core.systemmodel.SystemObject;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.systemmodel.SystemObject;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -22,7 +22,7 @@ public abstract class PersistentSystemObject
         implements SystemObject
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.SystemObject#getId()
+     * @see org.marketcetera.api.systemmodel.SystemObject#getId()
      */
     @Override
     @GeneratedValue

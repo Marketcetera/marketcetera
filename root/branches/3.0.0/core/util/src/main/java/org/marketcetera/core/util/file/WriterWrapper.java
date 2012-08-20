@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.unicode.SignatureCharset;
 import org.marketcetera.core.util.unicode.UnicodeFileWriter;
 import org.marketcetera.core.util.unicode.UnicodeOutputStreamWriter;

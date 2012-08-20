@@ -3,7 +3,7 @@ package org.marketcetera.core.metrics;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A factory that abstracts the location to which the instrumentation metrics

@@ -1,6 +1,6 @@
 package org.marketcetera.core.event.beans;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -1,6 +1,6 @@
 package org.marketcetera.core.marketdata;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Encapsulates the credentials necessary to authenticate a connection with an 

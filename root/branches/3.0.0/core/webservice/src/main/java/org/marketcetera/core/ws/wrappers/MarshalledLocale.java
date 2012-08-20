@@ -3,7 +3,7 @@ package org.marketcetera.core.ws.wrappers;
 import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * The marshalled form for a locale whose raw form is {@link Locale}.

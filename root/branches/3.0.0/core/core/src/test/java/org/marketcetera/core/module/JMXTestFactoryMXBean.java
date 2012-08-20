@@ -1,7 +1,7 @@
 package org.marketcetera.core.module;
 
 import javax.management.MXBean;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

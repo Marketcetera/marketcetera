@@ -2,7 +2,7 @@ package org.marketcetera.dao.impl;
 
 import java.util.Set;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -15,7 +15,14 @@
 
     <packaging>bundle</packaging>
 
-    <name>API</name>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License (LGPL)</name>
+            <url>http://www.fsf.org/licensing/licenses/lgpl.txt</url>
+        </license>
+    </licenses>
+
+    <name>Marketcetera API</name>
 
     <build>
         <plugins>

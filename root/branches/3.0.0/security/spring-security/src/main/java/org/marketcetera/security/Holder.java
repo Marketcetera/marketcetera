@@ -1,7 +1,7 @@
 package org.marketcetera.security;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A holder of a piece of data.

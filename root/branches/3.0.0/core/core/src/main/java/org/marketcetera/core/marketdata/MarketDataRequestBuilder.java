@@ -12,7 +12,7 @@ import java.util.Properties;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.core.Util;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 import static org.marketcetera.core.marketdata.Messages.INVALID_ASSET_CLASS;

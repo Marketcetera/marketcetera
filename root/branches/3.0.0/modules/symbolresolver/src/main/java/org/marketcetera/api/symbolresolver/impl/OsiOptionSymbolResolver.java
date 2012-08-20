@@ -3,7 +3,7 @@ package org.marketcetera.api.symbolresolver.impl;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.api.symbolresolver.SymbolResolver;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.options.OptionUtils;
 import org.marketcetera.core.trade.Instrument;
 

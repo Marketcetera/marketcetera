@@ -1,6 +1,5 @@
 package org.marketcetera.dao.impl;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,8 +8,8 @@ import javax.persistence.*;
 
 import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.core.systemmodel.Group;
-import org.marketcetera.core.systemmodel.User;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.security.User;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

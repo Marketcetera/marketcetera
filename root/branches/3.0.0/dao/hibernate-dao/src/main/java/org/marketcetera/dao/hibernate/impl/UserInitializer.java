@@ -7,7 +7,7 @@ import java.util.Set;
 import org.marketcetera.dao.DataAccessService;
 import org.marketcetera.core.systemmodel.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;

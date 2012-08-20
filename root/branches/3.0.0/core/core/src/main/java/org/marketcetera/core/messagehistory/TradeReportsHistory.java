@@ -15,7 +15,7 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.GroupingList;
 import ca.odell.glazedlists.impl.ReadOnlyList;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.trade.ExecutionReport;

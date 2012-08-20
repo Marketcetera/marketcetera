@@ -11,7 +11,7 @@ import org.marketcetera.api.symbolresolver.Messages;
 import org.marketcetera.api.symbolresolver.NoInstrumentForSymbol;
 import org.marketcetera.api.symbolresolver.SymbolResolver;
 import org.marketcetera.api.symbolresolver.SymbolResolverManager;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;

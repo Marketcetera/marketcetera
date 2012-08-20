@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.QuoteAction;
 import org.marketcetera.core.event.QuoteEvent;

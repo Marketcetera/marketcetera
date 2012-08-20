@@ -3,7 +3,7 @@ package org.marketcetera.marketdata.csv;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.AbstractMarketDataModule;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * StrategyAgent module for {@link CSVFeed}.

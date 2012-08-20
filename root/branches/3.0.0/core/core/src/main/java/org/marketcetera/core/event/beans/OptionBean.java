@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.OptionEvent;
 import org.marketcetera.core.event.util.EventServices;

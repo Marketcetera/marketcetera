@@ -69,6 +69,11 @@
             <type>tar.gz</type>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>util</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

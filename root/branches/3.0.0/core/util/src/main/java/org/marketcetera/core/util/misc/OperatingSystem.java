@@ -1,7 +1,7 @@
 package org.marketcetera.core.util.misc;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An enumeration of operating systems. The expected value of the

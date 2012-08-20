@@ -3,7 +3,7 @@ package org.marketcetera.core.marketdata;
 import java.io.Serializable;
 
 import javax.annotation.concurrent.Immutable;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.event.HasUnderlyingInstrument;
 import org.marketcetera.core.trade.Instrument;

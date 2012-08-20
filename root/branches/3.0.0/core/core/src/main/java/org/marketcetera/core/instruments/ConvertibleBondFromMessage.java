@@ -2,7 +2,7 @@ package org.marketcetera.core.instruments;
 
 import org.marketcetera.core.trade.ConvertibleBond;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

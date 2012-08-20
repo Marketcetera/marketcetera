@@ -11,7 +11,7 @@ import java.util.Set;
 import javax.annotation.concurrent.Immutable;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 import static org.marketcetera.core.marketdata.AssetClass.EQUITY;

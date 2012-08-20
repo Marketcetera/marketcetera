@@ -2,7 +2,7 @@ package org.marketcetera.core.util.unicode;
 
 import java.util.EnumSet;
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A list of signature/charset pairs. This list defines a sequence of

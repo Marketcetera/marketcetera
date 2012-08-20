@@ -1,6 +1,6 @@
 package org.marketcetera.modules.cep.esper;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.*;
 
 /* $License$ */

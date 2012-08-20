@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.marketcetera.core.util.except.I18NRuntimeException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.container.LazyBean;
 
 import quickfix.*;

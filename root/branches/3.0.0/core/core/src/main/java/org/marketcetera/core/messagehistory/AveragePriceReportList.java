@@ -8,7 +8,7 @@ import ca.odell.glazedlists.AbstractEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.quickfix.FIXMessageFactory;

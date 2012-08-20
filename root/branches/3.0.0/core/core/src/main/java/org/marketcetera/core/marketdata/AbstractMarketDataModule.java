@@ -16,7 +16,7 @@ import com.google.common.collect.HashBiMap;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.metrics.ThreadedMetric;
 import org.marketcetera.core.module.*;

@@ -2,7 +2,7 @@ package org.marketcetera.core.quickfix;
 
 import java.util.HashMap;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor_40;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor_41;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor_42;

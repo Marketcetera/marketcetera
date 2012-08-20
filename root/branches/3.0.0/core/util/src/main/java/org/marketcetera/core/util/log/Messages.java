@@ -1,6 +1,6 @@
 package org.marketcetera.core.util.log;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * The internationalization constants used by this package.

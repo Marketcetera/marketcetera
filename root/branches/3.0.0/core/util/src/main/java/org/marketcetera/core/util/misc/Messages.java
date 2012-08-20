@@ -1,6 +1,6 @@
 package org.marketcetera.core.util.misc;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NLoggerProxy;
 import org.marketcetera.core.util.log.I18NMessageProvider;
 

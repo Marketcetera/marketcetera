@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A class loader that is used to test provider refresh behavior. The

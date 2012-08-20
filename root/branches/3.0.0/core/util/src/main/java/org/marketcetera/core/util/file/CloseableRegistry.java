@@ -3,7 +3,7 @@ package org.marketcetera.core.util.file;
 import java.io.Closeable;
 import java.util.LinkedList;
 import org.marketcetera.core.util.except.ExceptUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A registry of {@link Closeable} instances.

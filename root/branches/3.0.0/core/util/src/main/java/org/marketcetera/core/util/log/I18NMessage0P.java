@@ -3,7 +3,7 @@ package org.marketcetera.core.util.log;
 import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang.ArrayUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized message, requiring exactly zero parameters.

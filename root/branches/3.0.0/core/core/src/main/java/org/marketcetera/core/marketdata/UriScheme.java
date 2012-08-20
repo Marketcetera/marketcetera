@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

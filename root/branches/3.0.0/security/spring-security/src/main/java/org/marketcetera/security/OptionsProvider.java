@@ -1,7 +1,7 @@
 package org.marketcetera.security;
 
 import org.apache.commons.cli.Options;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A provider of extra command line options.

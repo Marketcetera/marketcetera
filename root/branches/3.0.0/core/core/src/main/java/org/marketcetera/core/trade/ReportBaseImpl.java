@@ -3,7 +3,7 @@ package org.marketcetera.core.trade;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.Message;
 
 /* $License$ */

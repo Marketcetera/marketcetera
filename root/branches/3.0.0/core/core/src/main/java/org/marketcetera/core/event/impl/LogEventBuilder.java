@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.LogEvent;
 import org.marketcetera.core.event.LogEventLevel;
 import org.marketcetera.core.util.log.I18NMessage;

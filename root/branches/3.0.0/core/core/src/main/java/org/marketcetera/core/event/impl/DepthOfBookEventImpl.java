@@ -7,7 +7,7 @@ import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.DepthOfBookEvent;

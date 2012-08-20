@@ -2,7 +2,7 @@ package org.marketcetera.core.util.log;
 
 import java.io.Serializable;
 import java.util.Locale;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A bound message, representing the combination of an {@link

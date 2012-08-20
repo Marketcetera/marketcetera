@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.field.OrdStatus;
 
 import static org.marketcetera.core.trade.OrderStatus.*;

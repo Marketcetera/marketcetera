@@ -1,6 +1,6 @@
-package org.marketcetera.core.systemmodel;
+package org.marketcetera.api.systemmodel;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

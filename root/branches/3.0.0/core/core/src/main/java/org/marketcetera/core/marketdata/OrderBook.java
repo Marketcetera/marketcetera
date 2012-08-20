@@ -22,7 +22,7 @@ import org.marketcetera.core.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.core.event.util.BookPriceComparator;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 

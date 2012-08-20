@@ -3,7 +3,7 @@ package org.marketcetera.core.ws.sample;
 import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.util.log.ActiveLocale;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.core.ws.stateful.Client;
 import org.marketcetera.core.ws.tags.AppId;

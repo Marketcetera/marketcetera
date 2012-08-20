@@ -1,6 +1,6 @@
 package org.marketcetera.core.util.misc;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Utilities for string management.

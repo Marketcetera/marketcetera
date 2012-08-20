@@ -2,7 +2,7 @@ package org.marketcetera.core.util.except;
 
 import java.io.Serializable;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized throwable. At creation, the message may be

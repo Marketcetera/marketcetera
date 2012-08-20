@@ -2,7 +2,7 @@ package org.marketcetera.core.trade;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.InvalidMessage;
 import quickfix.Message;
 

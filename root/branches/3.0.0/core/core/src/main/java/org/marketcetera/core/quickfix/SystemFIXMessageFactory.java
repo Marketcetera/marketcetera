@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor_44;
 import org.marketcetera.core.quickfix.messagefactory.SystemMessageFactory;
 import quickfix.Message;

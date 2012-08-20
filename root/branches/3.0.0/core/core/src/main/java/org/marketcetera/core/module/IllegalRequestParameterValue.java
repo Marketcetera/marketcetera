@@ -3,7 +3,7 @@ package org.marketcetera.core.module;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**

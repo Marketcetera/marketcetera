@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.quickfix.cficode.OptionCFICode;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.attributes.ClassVersion;
+import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.*;
 import quickfix.Message.Header;
