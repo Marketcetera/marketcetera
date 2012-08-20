@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Implementations of this interface are used to listen to
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: SinkDataListener.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: SinkDataListener.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public interface SinkDataListener {
     /**
      * Receives data received by the sink module. This method

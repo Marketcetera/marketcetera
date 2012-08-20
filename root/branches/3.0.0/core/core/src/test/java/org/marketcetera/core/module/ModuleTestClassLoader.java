@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -25,7 +24,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ModuleTestClassLoader.java 82330 2012-04-10 16:29:13Z colin $")
 class ModuleTestClassLoader extends ClassLoader{
     /**
      * Creates an instance.

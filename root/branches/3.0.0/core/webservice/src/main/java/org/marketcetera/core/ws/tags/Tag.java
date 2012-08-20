@@ -3,7 +3,6 @@ package org.marketcetera.core.ws.tags;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlValue;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A generic ID tag.
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: Tag.java 82324 2012-04-09 20:56:08Z colin $")
 public class Tag
     implements Serializable
 {

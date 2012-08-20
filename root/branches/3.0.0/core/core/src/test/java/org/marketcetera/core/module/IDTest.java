@@ -2,7 +2,6 @@ package org.marketcetera.core.module;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.*;
 
@@ -12,7 +11,6 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: IDTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class IDTest extends ModuleTestBase {
     /**
      * Tests the {@link org.marketcetera.core.module.RequestID}.

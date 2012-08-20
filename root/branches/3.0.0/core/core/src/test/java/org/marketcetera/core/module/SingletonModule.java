@@ -1,14 +1,11 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A singleton module for testing.
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: SingletonModule.java 82330 2012-04-10 16:29:13Z colin $")
 public class SingletonModule extends ModuleBase {
 
     public SingletonModule(ModuleURN inModuleURN) {

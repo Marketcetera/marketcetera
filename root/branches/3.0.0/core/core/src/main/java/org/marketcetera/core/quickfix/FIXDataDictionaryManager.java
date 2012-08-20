@@ -3,8 +3,6 @@ package org.marketcetera.core.quickfix;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Singleton class that is a mapping of all {@link FIXVersion} to
  * their corresponding {@link quickfix.DataDictionary} classes.
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: FIXDataDictionaryManager.java 16063 2012-01-31 18:21:55Z colin $
  */
 
-@ClassVersion("$Id: FIXDataDictionaryManager.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXDataDictionaryManager {
 
     /**

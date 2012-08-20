@@ -1,7 +1,6 @@
 package org.marketcetera.executioncontainer;
 
 import org.marketcetera.core.container.AbstractSpringApplication;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -12,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ExecutionContainer.java 82351 2012-05-04 21:46:58Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: ExecutionContainer.java 82351 2012-05-04 21:46:58Z colin $")
 public class ExecutionContainer
         extends AbstractSpringApplication
 {

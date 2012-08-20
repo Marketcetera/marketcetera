@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.except.I18NException;
 
 /* $License$ */
@@ -19,7 +18,6 @@ import org.marketcetera.core.util.except.I18NException;
  * @version $Id: ModuleManagerMXBeanImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleManagerMXBeanImpl.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 class ModuleManagerMXBeanImpl implements ModuleManagerMXBean {
     @Override
     public List<String> getProviders() {

@@ -3,7 +3,6 @@ package org.marketcetera.core.ws.wrappers;
 import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * The marshalled form for a locale whose raw form is {@link Locale}.
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: MarshalledLocale.java 82324 2012-04-09 20:56:08Z colin $")
 public class MarshalledLocale
     implements Serializable
 {

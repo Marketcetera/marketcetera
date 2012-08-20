@@ -1,6 +1,5 @@
 package org.marketcetera.core.util.log;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -17,7 +16,6 @@ import org.slf4j.spi.LocationAwareLogger;
 
 /* $License$ */
 
-@ClassVersion("$Id: SLF4JLoggerProxy.java 16063 2012-01-31 18:21:55Z colin $")
 public final class SLF4JLoggerProxy
 {
 

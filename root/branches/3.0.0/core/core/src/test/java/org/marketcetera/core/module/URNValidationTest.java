@@ -2,7 +2,6 @@ package org.marketcetera.core.module;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NMessage;
 import org.marketcetera.core.util.log.I18NMessage1P;
 
@@ -15,7 +14,6 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: URNValidationTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class URNValidationTest extends ModuleTestBase {
     /**
      * Tests module URN construction and string parsing.

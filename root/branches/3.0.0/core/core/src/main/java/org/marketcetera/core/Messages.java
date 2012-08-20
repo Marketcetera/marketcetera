@@ -1,7 +1,6 @@
 package org.marketcetera.core;
 
 import org.marketcetera.core.util.log.*;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -12,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: Messages.java 82324 2012-04-09 20:56:08Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: Messages.java 82324 2012-04-09 20:56:08Z colin $")
 public interface Messages
 {
     /**

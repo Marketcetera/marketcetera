@@ -1,7 +1,6 @@
 package org.marketcetera.core.marketdata;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Translates between the specified external data type <code>T</code> and {@link MarketDataRequest} format.
@@ -10,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DataRequestTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: DataRequestTranslator.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface DataRequestTranslator<T>
 {
     /**

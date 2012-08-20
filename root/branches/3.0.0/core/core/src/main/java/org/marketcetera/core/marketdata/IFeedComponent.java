@@ -1,9 +1,7 @@
 package org.marketcetera.core.marketdata;
 
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.api.attributes.ClassVersion;
 
-@ClassVersion("$Id: IFeedComponent.java 16063 2012-01-31 18:21:55Z colin $")
 public interface IFeedComponent {
 
 	public enum FeedType {

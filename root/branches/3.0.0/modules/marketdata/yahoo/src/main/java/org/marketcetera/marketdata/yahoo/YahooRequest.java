@@ -16,7 +16,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.marketdata.Content;
 import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -31,7 +30,6 @@ import com.google.common.collect.Multimap;
  * @since 2.1.4
  */
 @ThreadSafe
-@ClassVersion("$Id: YahooRequest.java 16063 2012-01-31 18:21:55Z colin $")
 class YahooRequest
 {
     /* (non-Javadoc)

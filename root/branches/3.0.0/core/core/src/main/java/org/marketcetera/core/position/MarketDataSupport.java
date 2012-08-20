@@ -5,7 +5,6 @@ import java.util.EventObject;
 
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -20,7 +19,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $")
 public interface MarketDataSupport {
 
     /**
@@ -88,8 +86,7 @@ public interface MarketDataSupport {
      * Interface to notify listeners of changes. Instead of implementing this
      * interface, extend {@link InstrumentMarketDataListenerBase}.
      */
-    @ClassVersion("$Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $")
-    public interface InstrumentMarketDataListener {
+        public interface InstrumentMarketDataListener {
 
         /**
          * Callback for receiving trade notifications.
@@ -120,8 +117,7 @@ public interface MarketDataSupport {
      * No-op implementation of {@link InstrumentMarketDataListener}. Subclasses can
      * extend callbacks they care about.
      */
-    @ClassVersion("$Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $")
-    public abstract class InstrumentMarketDataListenerBase implements
+        public abstract class InstrumentMarketDataListenerBase implements
             InstrumentMarketDataListener {
 
         @Override
@@ -140,8 +136,7 @@ public interface MarketDataSupport {
     /**
      * Event object for {@link InstrumentMarketDataListener}.
      */
-    @ClassVersion("$Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $")
-    public static class InstrumentMarketDataEvent extends EventObject {
+        public static class InstrumentMarketDataEvent extends EventObject {
 
         /**
          * Constructor.

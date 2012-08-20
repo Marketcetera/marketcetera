@@ -22,7 +22,6 @@ import org.marketcetera.core.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.core.event.util.BookPriceComparator;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -47,7 +46,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderBook.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.6.0
  */
-@ClassVersion("$Id: OrderBook.java 16063 2012-01-31 18:21:55Z colin $")
 public class OrderBook
     implements Messages
 {
@@ -424,8 +422,7 @@ public class OrderBook
      * @version $Id: OrderBook.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.6.0
      */
-    @ClassVersion("$Id: OrderBook.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
-    private static class BookCollection<E extends QuoteEvent>
+        private static class BookCollection<E extends QuoteEvent>
     {
         /**
          * the set of events that make of the book

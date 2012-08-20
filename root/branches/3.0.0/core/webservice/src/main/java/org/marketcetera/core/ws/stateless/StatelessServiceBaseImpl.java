@@ -1,7 +1,5 @@
 package org.marketcetera.core.ws.stateless;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * The base class for all web services.
  * 
@@ -12,6 +10,5 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: StatelessServiceBaseImpl.java 82324 2012-04-09 20:56:08Z colin $")
 public class StatelessServiceBaseImpl
     implements StatelessServiceBase {}

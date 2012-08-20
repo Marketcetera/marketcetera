@@ -2,8 +2,6 @@ package org.marketcetera.core.quickfix.messagefactory;
 
 import java.util.Arrays;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import quickfix.field.MsgType;
 
 /**
@@ -11,7 +9,6 @@ import quickfix.field.MsgType;
  * @version $Id: FIXMessageAugmentor_44.java 16063 2012-01-31 18:21:55Z colin $
  */
 
-@ClassVersion("$Id: FIXMessageAugmentor_44.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXMessageAugmentor_44 extends FIXMessageAugmentor_43 {
     private  static String[] TT_APPLICABLE_MESSAGE_CODES = new String[] {
             MsgType.QUOTE_RESPONSE,

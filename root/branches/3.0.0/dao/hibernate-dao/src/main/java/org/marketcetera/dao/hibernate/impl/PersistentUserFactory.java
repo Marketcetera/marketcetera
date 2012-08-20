@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
  * @since $Release$
  */
 @Component
-@ClassVersion("$Id: PersistentUserFactory.java 82320 2012-04-02 17:03:23Z colin $")
 public class PersistentUserFactory
         implements UserFactory
 {

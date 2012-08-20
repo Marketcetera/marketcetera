@@ -1,6 +1,5 @@
 package org.marketcetera.core.container;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -18,7 +17,6 @@ import org.springframework.context.support.GenericApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id: SpringUtils.java 82323 2012-04-09 16:32:23Z colin $")
 public final class SpringUtils
 {
 

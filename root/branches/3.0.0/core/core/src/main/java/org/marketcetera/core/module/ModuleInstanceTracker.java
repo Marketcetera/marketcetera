@@ -3,7 +3,6 @@ package org.marketcetera.core.module;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage3P;
 
 /* $License$ */
@@ -19,7 +18,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage3P;
  * @version $Id: ModuleInstanceTracker.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleInstanceTracker.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 class ModuleInstanceTracker {
 
     @Override

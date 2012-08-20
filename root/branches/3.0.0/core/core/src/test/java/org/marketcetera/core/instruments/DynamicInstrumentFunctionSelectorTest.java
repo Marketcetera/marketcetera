@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.ConvertibleBond;
@@ -37,7 +36,6 @@ import static org.junit.Assert.assertThat;
  * @version $Id: DynamicInstrumentFunctionSelectorTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: DynamicInstrumentFunctionSelectorTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class DynamicInstrumentFunctionSelectorTest {
 
     @BeforeClass

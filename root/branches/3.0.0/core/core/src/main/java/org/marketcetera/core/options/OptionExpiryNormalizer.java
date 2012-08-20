@@ -1,7 +1,5 @@
 package org.marketcetera.core.options;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Normalizes the option expiry strings that lack expiration day.
@@ -23,7 +21,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OptionExpiryNormalizer.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionExpiryNormalizer.java 16063 2012-01-31 18:21:55Z colin $")
 public interface OptionExpiryNormalizer {
     /**
      * Normalizes the supplied expiry date with a day if it doesn't

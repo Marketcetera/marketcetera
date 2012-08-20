@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Instances of this class are supplied to modules that need
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DataFlowSupportImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataFlowSupportImpl.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 class DataFlowSupportImpl implements DataFlowSupport {
     /**
      * Creates a new instance.

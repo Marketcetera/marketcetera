@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.marketcetera.core.trade.OptionType.*;
 
@@ -17,7 +16,6 @@ import static org.marketcetera.core.trade.OptionType.*;
  * @version $Id: OptionTypeTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id")
 public class OptionTypeTest extends FIXEnumTestBase<Integer, OptionType> {
     @Override
     protected OptionType getInstanceForFIXValue(Integer inFIXValue) {

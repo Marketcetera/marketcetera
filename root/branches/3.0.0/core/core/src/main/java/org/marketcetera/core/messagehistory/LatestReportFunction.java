@@ -2,8 +2,6 @@ package org.marketcetera.core.messagehistory;
 
 import java.util.List;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import ca.odell.glazedlists.FunctionList.Function;
 
 /**
@@ -22,7 +20,6 @@ import ca.odell.glazedlists.FunctionList.Function;
  * @version $Id: LatestReportFunction.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: LatestReportFunction.java 82326 2012-04-10 16:27:07Z colin $") //$NON-NLS-1$
 public class LatestReportFunction implements
   Function<List<ReportHolder>, ReportHolder>{
 

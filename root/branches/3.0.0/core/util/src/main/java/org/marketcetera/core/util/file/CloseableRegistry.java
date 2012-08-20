@@ -3,7 +3,6 @@ package org.marketcetera.core.util.file;
 import java.io.Closeable;
 import java.util.LinkedList;
 import org.marketcetera.core.util.except.ExceptUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A registry of {@link Closeable} instances.
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: CloseableRegistry.java 16063 2012-01-31 18:21:55Z colin $")
 public class CloseableRegistry
     implements Closeable
 {

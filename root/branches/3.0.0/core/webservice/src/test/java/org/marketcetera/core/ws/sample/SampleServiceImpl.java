@@ -2,7 +2,6 @@ package org.marketcetera.core.ws.sample;
 
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateful.ClientContext;
 import org.marketcetera.core.ws.stateful.RemoteCaller;
 import org.marketcetera.core.ws.stateful.ServiceBaseImpl;
@@ -20,7 +19,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@ClassVersion("$Id: SampleServiceImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class SampleServiceImpl
     extends ServiceBaseImpl<SampleSession>
     implements SampleService

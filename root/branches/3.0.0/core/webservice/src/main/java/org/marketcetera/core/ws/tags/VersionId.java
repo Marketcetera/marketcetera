@@ -1,7 +1,5 @@
 package org.marketcetera.core.ws.tags;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A version ID. Each set of collaborating web service classes has a
  * unique version ID, covering all services together. Accordingly, one
@@ -18,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: VersionId.java 82324 2012-04-09 20:56:08Z colin $")
 public class VersionId
     extends Tag
 {

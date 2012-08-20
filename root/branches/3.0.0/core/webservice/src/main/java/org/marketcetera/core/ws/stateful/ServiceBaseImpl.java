@@ -1,6 +1,5 @@
 package org.marketcetera.core.ws.stateful;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateless.StatelessServiceBaseImpl;
 
 /**
@@ -14,7 +13,6 @@ import org.marketcetera.core.ws.stateless.StatelessServiceBaseImpl;
 
 /* $License$ */
 
-@ClassVersion("$Id: ServiceBaseImpl.java 82324 2012-04-09 20:56:08Z colin $")
 public class ServiceBaseImpl<T>
     extends StatelessServiceBaseImpl
     implements ServiceBase

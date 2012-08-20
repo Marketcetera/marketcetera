@@ -6,7 +6,6 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.position.PositionMetrics;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: PositionMetricsImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionMetricsImpl.java 16063 2012-01-31 18:21:55Z colin $")
 class PositionMetricsImpl implements PositionMetrics {
 
     private final BigDecimal mIncomingPosition;

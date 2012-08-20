@@ -1,7 +1,5 @@
 package org.marketcetera.core.marketdata;
 
-import static org.marketcetera.core.marketdata.TestMessages.EXPECTED_EXCEPTION;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -13,13 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.event.Event;
-import org.marketcetera.core.marketdata.AbstractMarketDataFeed;
-import org.marketcetera.core.marketdata.AssetClass;
-import org.marketcetera.core.marketdata.Capability;
-import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.core.event.MockEventTranslator;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -30,7 +22,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MockMarketDataFeed.java 82329 2012-04-10 16:28:13Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: MockMarketDataFeed.java 82329 2012-04-10 16:28:13Z colin $")
 public class MockMarketDataFeed
     extends AbstractMarketDataFeed<MockMarketDataFeedToken,
                                        MockMarketDataFeedCredentials,

@@ -9,7 +9,6 @@ import org.marketcetera.core.marketdata.AbstractMarketDataFeedCredentials;
 import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Encapsulates the data necessary to initialize an instance of {@link CSVFeed}.
@@ -19,8 +18,7 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.1.0
  * @version $Id: CSVFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $")
-public final class CSVFeedCredentials 
+public final class CSVFeedCredentials
 	    extends AbstractMarketDataFeedCredentials
 {
     /* (non-Javadoc)

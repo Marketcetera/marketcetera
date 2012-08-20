@@ -18,7 +18,6 @@ import org.marketcetera.core.metrics.ThreadedMetric;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage3P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /* $License$ */
@@ -47,8 +46,7 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 0.5.0
  */
-@ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $")
-public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedToken<F>, 
+public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedToken<F>,
                                              C extends MarketDataFeedCredentials, 
                                              X extends DataRequestTranslator<D>, 
                                              E extends EventTranslator,
@@ -785,8 +783,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */
-    @ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
-    private class ExecutorThread
+        private class ExecutorThread
         implements Callable<T>
     {
         /**
@@ -858,8 +855,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */    
-    @ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
-    private class HandleHolder
+        private class HandleHolder
     {
         /**
          * stores client response handles by token - note that these two collections must be kept in sync
@@ -990,8 +986,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */
-    @ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
-    private class MarketDataHandle
+        private class MarketDataHandle
     {
         /**
          * the handle value
@@ -1076,8 +1071,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */
-    @ClassVersion("$Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
-    private static class FeedComponentListenerWrapper
+        private static class FeedComponentListenerWrapper
         implements ISubscriber
     {
         /**

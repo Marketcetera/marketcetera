@@ -3,7 +3,6 @@ package org.marketcetera.core.notifications;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -21,7 +20,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.8.0
  */
-@ClassVersion("$Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $")
 public class NotificationManager
         implements INotificationManager
 {
@@ -93,8 +91,7 @@ public class NotificationManager
      * @version $Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.8.0
      */
-    @ClassVersion("$Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
-    private static class NotificationLogger
+        private static class NotificationLogger
         implements ISubscriber
     {
         /**

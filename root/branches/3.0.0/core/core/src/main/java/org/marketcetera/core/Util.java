@@ -9,7 +9,6 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Collection of random utilities.
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Util.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: Util.java 16063 2012-01-31 18:21:55Z colin $")
 public class Util
 {
     /** Tries to load the named file from a classpath

@@ -1,6 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /* $License$ */
@@ -13,7 +12,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * @since 1.0.0
  * @see DataEmitter#requestData(DataRequest, DataEmitterSupport)
  */
-@ClassVersion("$Id: RequestDataException.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class RequestDataException extends ModuleException {
     /**
      * Creates an instance.

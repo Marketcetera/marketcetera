@@ -1,7 +1,5 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Represents the rejection of an {@link OrderCancel} or a
@@ -19,6 +17,5 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderCancelReject.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderCancelReject.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface OrderCancelReject extends TradeMessage, ReportBase {
 }

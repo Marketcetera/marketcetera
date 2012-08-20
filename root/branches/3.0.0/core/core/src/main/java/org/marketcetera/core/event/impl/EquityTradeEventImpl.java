@@ -1,7 +1,6 @@
 package org.marketcetera.core.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.EquityEvent;
 import org.marketcetera.core.event.beans.MarketDataBean;
 import org.marketcetera.core.trade.Equity;
@@ -16,7 +15,6 @@ import org.marketcetera.core.trade.Equity;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: EquityTradeEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
 final class EquityTradeEventImpl
         extends AbstractTradeEventImpl
         implements EquityEvent

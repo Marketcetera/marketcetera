@@ -2,8 +2,6 @@ package org.marketcetera.core.trade;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Implementation of {@link NewOrReplaceOrder}
@@ -12,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: NewOrReplaceOrderImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: NewOrReplaceOrderImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 class NewOrReplaceOrderImpl extends OrderBaseImpl
         implements NewOrReplaceOrder {
     @Override

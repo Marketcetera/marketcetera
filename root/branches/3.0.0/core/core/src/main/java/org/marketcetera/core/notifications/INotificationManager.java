@@ -2,7 +2,6 @@ package org.marketcetera.core.notifications;
 
 import org.marketcetera.core.publisher.IPublisher;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: INotificationManager.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.8.0
  */
-@ClassVersion("$Id: INotificationManager.java 16063 2012-01-31 18:21:55Z colin $")
 public interface INotificationManager
     extends IPublisher
 {

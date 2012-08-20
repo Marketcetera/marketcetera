@@ -4,7 +4,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
 import org.marketcetera.core.util.log.I18NMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A tag filter that accepts any tag that is equal to a specific
@@ -20,7 +19,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: EqualsTagFilter.java 82324 2012-04-09 20:56:08Z colin $")
 public class EqualsTagFilter
     implements TagFilter
 {

@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.LogEvent;
 import org.marketcetera.core.event.LogEventLevel;
 import org.marketcetera.core.event.beans.EventBean;
@@ -30,7 +29,6 @@ import org.marketcetera.core.ws.wrappers.RemoteProperties;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: LogEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
 final class LogEventImpl
         implements LogEvent, HasEventBean
 {

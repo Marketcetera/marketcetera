@@ -3,8 +3,6 @@ package org.marketcetera.core.trade;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Orders sent out by the system to Brokers. Orders of this type can 
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderBase.java 16063 2012-01-31 18:21:55Z colin $")
 public interface OrderBase extends Order {
     /**
      * The client assigned OrderID for this order. The factory

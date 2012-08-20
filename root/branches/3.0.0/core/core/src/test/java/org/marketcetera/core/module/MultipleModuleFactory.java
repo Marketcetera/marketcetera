@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * This provider supports multiple module instances that
@@ -9,7 +7,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: MultipleModuleFactory.java 82330 2012-04-10 16:29:13Z colin $")
 public class MultipleModuleFactory extends ModuleFactory {
     @Override
     public MultipleModule create(Object... parameters)

@@ -1,7 +1,5 @@
 package org.marketcetera.core.position;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: Grouping.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: Grouping.java 16063 2012-01-31 18:21:55Z colin $")
 public enum Grouping {
     Underlying {
         @Override

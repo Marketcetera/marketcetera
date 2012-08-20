@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.DividendFrequency;
 import org.marketcetera.core.event.DividendStatus;
@@ -28,7 +27,6 @@ import org.marketcetera.core.trade.Equity;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: DividendEventBuilder.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class DividendEventBuilder
         implements EventBuilder<DividendEvent>
 {

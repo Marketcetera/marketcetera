@@ -2,8 +2,6 @@ package org.marketcetera.core.module;
 
 import java.util.Hashtable;
 import java.util.Map;
-
-import org.marketcetera.api.attributes.ClassVersion;
 /* $License$ */
 /**
  * A mock configuration provider for testing. This class may be used
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MockConfigProvider.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: MockConfigProvider.java 82330 2012-04-10 16:29:13Z colin $")
 public class MockConfigProvider implements ModuleConfigurationProvider {
 
     @Override

@@ -3,7 +3,6 @@ package org.marketcetera.security;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A setter for a string holder that obtains the data via a
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: CliSetterString.java 82324 2012-04-09 20:56:08Z colin $")
 public class CliSetterString
     extends CliSetter<Holder<String>>
 {

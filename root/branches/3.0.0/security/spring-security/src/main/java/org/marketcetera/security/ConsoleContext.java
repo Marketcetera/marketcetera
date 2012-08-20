@@ -4,7 +4,6 @@ import java.io.Console;
 
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A context for console setters ({@link ConsoleSetter}).
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: ConsoleContext.java 82324 2012-04-09 20:56:08Z colin $")
 public class ConsoleContext
     extends Context<ConsoleSetter<?>>
 {

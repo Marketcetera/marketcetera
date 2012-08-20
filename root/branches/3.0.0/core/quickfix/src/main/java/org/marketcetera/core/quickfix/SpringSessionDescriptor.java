@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.marketcetera.core.util.except.I18NRuntimeException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.container.LazyBean;
 
 import quickfix.*;
@@ -35,7 +34,6 @@ import quickfix.*;
 
 /* $License$ */
 
-@ClassVersion("$Id: SpringSessionDescriptor.java 82323 2012-04-09 16:32:23Z colin $")
 public class SpringSessionDescriptor
     extends LazyBean
 {

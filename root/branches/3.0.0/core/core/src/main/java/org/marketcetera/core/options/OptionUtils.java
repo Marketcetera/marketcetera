@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
 
@@ -19,7 +18,6 @@ import org.marketcetera.core.trade.OptionType;
  * @version $Id: OptionUtils.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public class OptionUtils
 {
     /**

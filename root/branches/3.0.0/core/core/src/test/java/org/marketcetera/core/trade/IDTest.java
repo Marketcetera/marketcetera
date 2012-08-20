@@ -10,7 +10,6 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.util.test.ComparableAssert;
 import org.marketcetera.util.test.EqualityAssert;
 import org.marketcetera.util.test.SerializableAssert;
@@ -185,8 +184,7 @@ public class IDTest
      * and a prefix.
      *
      */
-    @ClassVersion("$Id: IDTest.java 16063 2012-01-31 18:21:55Z colin $")
-    public static class TestIDFactory implements IDFactory {
+        public static class TestIDFactory implements IDFactory {
         public TestIDFactory(long initValue, String inPrefix) {
             mPrefix = inPrefix;
             mGenerator.set(initValue);

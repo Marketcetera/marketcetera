@@ -1,7 +1,6 @@
 package org.marketcetera.core.trade;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.Message;
 
 /**
@@ -17,7 +16,6 @@ import quickfix.Message;
 /* $License$ */
 
 @XmlRootElement
-@ClassVersion("$Id: FIXResponseImpl.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXResponseImpl
     extends FIXMessageWrapper
     implements FIXResponse

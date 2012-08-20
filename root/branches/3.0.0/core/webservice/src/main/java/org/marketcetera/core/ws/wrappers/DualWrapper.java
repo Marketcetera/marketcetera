@@ -6,7 +6,6 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlTransient;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a data value via JAXB or
@@ -42,7 +41,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: DualWrapper.java 82324 2012-04-09 20:56:08Z colin $")
 public abstract class DualWrapper<R,M>
     extends BaseWrapper<R>
     implements Externalizable

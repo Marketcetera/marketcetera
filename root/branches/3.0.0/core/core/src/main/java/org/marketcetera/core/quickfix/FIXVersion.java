@@ -2,7 +2,6 @@ package org.marketcetera.core.quickfix;
 
 import java.util.HashMap;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor_40;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor_41;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor_42;
@@ -18,7 +17,6 @@ import quickfix.field.BeginString;
  * @version $Id: FIXVersion.java 16063 2012-01-31 18:21:55Z colin $
  */
 
-@ClassVersion("$Id: FIXVersion.java 16063 2012-01-31 18:21:55Z colin $")
 public enum FIXVersion {
     FIX40(FIXDataDictionary.FIX_4_0_BEGIN_STRING, 4.0, "FIX40.xml", //$NON-NLS-1$
           new FIXMessageFactory(FIXDataDictionary.FIX_4_0_BEGIN_STRING, new quickfix.fix40.MessageFactory(), new FIXMessageAugmentor_40())),

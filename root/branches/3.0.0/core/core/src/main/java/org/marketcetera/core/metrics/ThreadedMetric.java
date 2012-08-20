@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.Pair;
 
 import javax.management.*;
@@ -139,7 +138,6 @@ import javax.management.*;
  * @version $Id: ThreadedMetric.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: ThreadedMetric.java 16063 2012-01-31 18:21:55Z colin $")
 public final class ThreadedMetric {
 
     /**

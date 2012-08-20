@@ -14,7 +14,6 @@ import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEven
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 import ca.odell.glazedlists.EventList;
@@ -30,7 +29,6 @@ import ca.odell.glazedlists.event.ListEventListener;
  * @version $Id: PositionRowUpdater.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionRowUpdater.java 16063 2012-01-31 18:21:55Z colin $")
 public final class PositionRowUpdater {
 
     private final ListEventListener<Trade<?>> mListChangeListener;

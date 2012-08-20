@@ -5,7 +5,6 @@ import java.util.List;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTranslator;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Provides the base implementation of a CSV event translator.
@@ -26,7 +25,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.1.0
  * @version $Id: CSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $")
 public class CSVFeedEventTranslator
         implements EventTranslator
 {

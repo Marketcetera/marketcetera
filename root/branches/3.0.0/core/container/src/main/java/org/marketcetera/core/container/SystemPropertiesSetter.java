@@ -1,7 +1,6 @@
 package org.marketcetera.core.container;
 
 import java.util.Map;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Sets system properties from a map. Its intended usage is to enable
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: SystemPropertiesSetter.java 82323 2012-04-09 16:32:23Z colin $")
 public class SystemPropertiesSetter
 {
 

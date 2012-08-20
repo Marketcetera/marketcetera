@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * An enumeration used to identify if an option is a Put or a Call option.
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OptionType.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionType.java 16063 2012-01-31 18:21:55Z colin $")
 public enum OptionType
         implements HasCFICode
 {

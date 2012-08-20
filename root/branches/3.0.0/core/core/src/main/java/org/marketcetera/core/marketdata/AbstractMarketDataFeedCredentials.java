@@ -1,7 +1,5 @@
 package org.marketcetera.core.marketdata;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Encapsulates the credentials necessary to authenticate a connection with an 
  * {@link MarketDataFeed} instance.
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: AbstractMarketDataFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: AbstractMarketDataFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class AbstractMarketDataFeedCredentials
     implements MarketDataFeedCredentials
 {

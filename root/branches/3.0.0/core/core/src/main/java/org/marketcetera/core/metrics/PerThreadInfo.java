@@ -5,8 +5,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Instances of this class keep track of per thread metrics. Following metrics
  * are kept track of.
@@ -49,7 +47,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: PerThreadInfo.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: PerThreadInfo.java 16063 2012-01-31 18:21:55Z colin $")
 final class PerThreadInfo implements Iterable<IterationInfo> {
 
     /**

@@ -3,8 +3,6 @@ package org.marketcetera.core.module;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * The system sink module. The Sink module accepts data of any type.
@@ -50,7 +48,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: SinkModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: SinkModule.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public class SinkModule extends Module
         implements DataReceiver, SinkModuleMXBean {
 

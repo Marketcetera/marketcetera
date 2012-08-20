@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.stateless;
 
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.tags.EqualsTagFilter;
 import org.marketcetera.core.ws.tags.Tag;
 import org.marketcetera.core.ws.tags.TagFilter;
@@ -21,7 +20,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@ClassVersion("$Id: StatelessRemoteCall.java 82324 2012-04-09 20:56:08Z colin $")
 public class StatelessRemoteCall
 {
 

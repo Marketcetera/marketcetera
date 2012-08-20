@@ -19,8 +19,6 @@ import org.marketcetera.core.marketdata.AssetClass;
 import org.marketcetera.core.marketdata.Capability;
 import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.marketdata.*;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -31,7 +29,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: YahooFeed.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooFeed.java 16063 2012-01-31 18:21:55Z colin $")
 class YahooFeed
         extends AbstractMarketDataFeed<YahooFeedToken,
                                                YahooFeedCredentials,

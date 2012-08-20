@@ -3,8 +3,6 @@ package org.marketcetera.core.metrics;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A factory that abstracts the location to which the instrumentation metrics
  * are summarized when {@link ThreadedMetric#summarizeResults(PrintStreamFactory)} 
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: PrintStreamFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: PrintStreamFactory.java 16063 2012-01-31 18:21:55Z colin $")
 interface PrintStreamFactory {
     /**
      * Gets the print stream to write metrics for the thread identified by

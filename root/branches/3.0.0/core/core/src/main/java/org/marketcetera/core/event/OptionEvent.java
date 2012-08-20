@@ -3,7 +3,6 @@ package org.marketcetera.core.event;
 import java.math.BigDecimal;
 
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OptionEvent.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionEvent.java 16063 2012-01-31 18:21:55Z colin $")
 public interface OptionEvent
         extends HasUnderlyingInstrument, HasOption, Event, HasProviderSymbol
 {

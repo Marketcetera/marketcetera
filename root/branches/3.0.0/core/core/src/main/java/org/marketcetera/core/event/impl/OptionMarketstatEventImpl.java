@@ -3,7 +3,6 @@ package org.marketcetera.core.event.impl;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasOption;
 import org.marketcetera.core.event.OptionMarketstatEvent;
 import org.marketcetera.core.event.beans.MarketstatBean;
@@ -22,7 +21,6 @@ import org.marketcetera.core.trade.Option;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: OptionMarketstatEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
 class OptionMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements HasOption, OptionMarketstatEvent

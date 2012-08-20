@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.field.ExecType;
 
 /* $License$ */
@@ -15,7 +14,6 @@ import quickfix.field.ExecType;
  * @version $Id: ExecutionType.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionType.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public enum ExecutionType {
     /**
      * Sentinel value for Execution Type that the system is not currently

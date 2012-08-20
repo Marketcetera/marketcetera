@@ -1,6 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.*;
 
 /* $License$ */
@@ -9,7 +8,6 @@ import org.marketcetera.core.util.log.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: TestMessages.java 82330 2012-04-10 16:29:13Z colin $")
 public interface TestMessages {
     /**
      * The message provider

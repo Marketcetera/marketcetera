@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.misc;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An enumeration of operating systems. The expected value of the
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: OperatingSystem.java 16063 2012-01-31 18:21:55Z colin $")
 public enum OperatingSystem
 {
     WINDOWS_2000("Windows 2000"), //$NON-NLS-1$

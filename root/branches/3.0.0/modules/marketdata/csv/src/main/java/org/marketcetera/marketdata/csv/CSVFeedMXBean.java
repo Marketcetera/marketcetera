@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata.csv;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.module.DisplayName;
 import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
 
@@ -16,7 +15,6 @@ import javax.management.MXBean;
  */
 @MXBean(true)
 @DisplayName("Management Interface for CSV Market Data Adapter")
-@ClassVersion("$Id: CSVFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $")
 public interface CSVFeedMXBean
         extends AbstractMarketDataModuleMXBean
 {

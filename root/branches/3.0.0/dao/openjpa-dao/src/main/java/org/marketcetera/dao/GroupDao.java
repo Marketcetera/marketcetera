@@ -3,7 +3,6 @@ package org.marketcetera.dao;
 import java.util.List;
 
 import org.marketcetera.core.systemmodel.Group;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /* $License$ */
@@ -15,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * @version $Id: GroupDao.java 82354 2012-05-11 17:46:11Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: GroupDao.java 82354 2012-05-11 17:46:11Z colin $")
 public interface GroupDao
 {
     /**

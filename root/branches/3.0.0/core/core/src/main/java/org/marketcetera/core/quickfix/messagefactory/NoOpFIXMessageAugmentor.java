@@ -1,7 +1,5 @@
 package org.marketcetera.core.quickfix.messagefactory;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import quickfix.FieldNotFound;
 import quickfix.Message;
 
@@ -11,7 +9,6 @@ import quickfix.Message;
  * @version $Id: NoOpFIXMessageAugmentor.java 16063 2012-01-31 18:21:55Z colin $
  */
 
-@ClassVersion("$Id: NoOpFIXMessageAugmentor.java 16063 2012-01-31 18:21:55Z colin $")
 public class NoOpFIXMessageAugmentor implements FIXMessageAugmentor{
     public Message newOrderSingleAugment(Message inMessage) {
         return inMessage;

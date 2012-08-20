@@ -3,8 +3,6 @@ package org.marketcetera.marketdata.yahoo;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: YahooField.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooField.java 16063 2012-01-31 18:21:55Z colin $")
 enum YahooField
 {
     ASK("a"), //$NON-NLS-1$

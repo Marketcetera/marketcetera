@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata.yahoo;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.context.Lifecycle;
 
 /* $License$ */
@@ -12,7 +11,6 @@ import org.springframework.context.Lifecycle;
  * @version $Id: YahooClient.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooClient.java 16063 2012-01-31 18:21:55Z colin $")
 interface YahooClient
         extends Lifecycle
 {

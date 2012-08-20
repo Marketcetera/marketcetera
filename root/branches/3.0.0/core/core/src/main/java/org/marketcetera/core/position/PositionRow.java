@@ -4,7 +4,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 
@@ -19,7 +18,6 @@ import ca.odell.glazedlists.EventList;
  * @version $Id: PositionRow.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionRow.java 16063 2012-01-31 18:21:55Z colin $")
 public interface PositionRow {
 
     /**

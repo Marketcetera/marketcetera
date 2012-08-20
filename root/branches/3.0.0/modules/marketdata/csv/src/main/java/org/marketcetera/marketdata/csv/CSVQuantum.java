@@ -3,7 +3,6 @@ package org.marketcetera.marketdata.csv;
 import java.util.Arrays;
 
 import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.1.0
  * @version $Id: CSVQuantum.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVQuantum.java 16063 2012-01-31 18:21:55Z colin $")
 public class CSVQuantum
 {
     /**

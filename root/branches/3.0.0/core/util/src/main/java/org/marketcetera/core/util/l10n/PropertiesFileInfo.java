@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NMessageProvider;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Holder of meta-information about a properties file that maps
@@ -27,7 +26,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: PropertiesFileInfo.java 16063 2012-01-31 18:21:55Z colin $")
 public class PropertiesFileInfo
     implements MessageInfoProvider
 {

@@ -2,7 +2,6 @@ package org.marketcetera.core.util.l10n;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.util.log.I18NMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Holder of meta-information about an internationalized message.
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NMessageInfo.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NMessageInfo
     extends MessageInfo
 {

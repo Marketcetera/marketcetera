@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.WeakHashMap;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
@@ -35,7 +34,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @version $Id: PropertiesConfigurationProvider.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: PropertiesConfigurationProvider.java 16063 2012-01-31 18:21:55Z colin $")
 public class PropertiesConfigurationProvider
         implements ModuleConfigurationProvider {
     /**

@@ -2,7 +2,6 @@ package org.marketcetera.core.util.except;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.util.log.LogUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized error.
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NError.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NError
     extends Error
     implements I18NThrowable

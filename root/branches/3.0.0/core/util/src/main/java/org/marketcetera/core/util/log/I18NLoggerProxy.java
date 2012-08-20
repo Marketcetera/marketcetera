@@ -2,7 +2,6 @@ package org.marketcetera.core.util.log;
 
 import java.io.Serializable;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A logger which supports internationalized messages.
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NLoggerProxy.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NLoggerProxy
     implements Serializable
 {

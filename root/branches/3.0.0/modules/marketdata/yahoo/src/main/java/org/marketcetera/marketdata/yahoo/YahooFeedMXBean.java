@@ -4,7 +4,6 @@ import javax.management.MXBean;
 
 import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.core.module.DisplayName;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  */
 @MXBean(true)
 @DisplayName("Management Interface for the Yahoo Marketdata Feed")
-@ClassVersion("$Id: YahooFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $")
 public interface YahooFeedMXBean
         extends AbstractMarketDataModuleMXBean
 {

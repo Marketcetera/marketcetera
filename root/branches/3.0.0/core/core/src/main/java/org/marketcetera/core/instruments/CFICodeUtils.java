@@ -4,7 +4,6 @@ import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: CFICodeUtils.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: CFICodeUtils.java 16063 2012-01-31 18:21:55Z colin $")
 class CFICodeUtils {
     /**
      * Returns true if the specified CFI code string specifies an Option

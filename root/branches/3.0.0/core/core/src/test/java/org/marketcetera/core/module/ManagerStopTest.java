@@ -1,7 +1,6 @@
 package org.marketcetera.core.module;
 
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.*;
 
@@ -11,7 +10,6 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ManagerStopTest.java 82330 2012-04-10 16:29:13Z colin $") //$NON-NLS-1$
 public class ManagerStopTest extends ModuleTestBase {
     /**
      * Verifies that all the data flows and modules are stopped when the

@@ -1,6 +1,5 @@
 package org.marketcetera.core.quickfix.messagefactory;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.MessageFactory;
 import quickfix.Message;
 import quickfix.Group;
@@ -19,7 +18,6 @@ import quickfix.field.BeginString;
  * @version $Id: SystemMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: SystemMessageFactory.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class SystemMessageFactory implements MessageFactory {
     @Override
     public Message create(String inBeginString, String inMsgType) {

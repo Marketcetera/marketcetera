@@ -11,7 +11,6 @@ import org.marketcetera.api.symbolresolver.Messages;
 import org.marketcetera.api.symbolresolver.NoInstrumentForSymbol;
 import org.marketcetera.api.symbolresolver.SymbolResolver;
 import org.marketcetera.api.symbolresolver.SymbolResolverManager;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
@@ -26,7 +25,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @since $Release$
  */
 @ThreadSafe
-@ClassVersion("$Id: SymbolResolverManagerImpl.java 82347 2012-05-03 19:30:54Z colin $")
 public class SymbolResolverManagerImpl
         implements SymbolResolverManager
 {

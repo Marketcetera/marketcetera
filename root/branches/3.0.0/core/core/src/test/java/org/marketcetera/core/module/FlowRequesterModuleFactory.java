@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A Factory that creates modules that are capable of
@@ -9,7 +7,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: FlowRequesterModuleFactory.java 82330 2012-04-10 16:29:13Z colin $")
 public class FlowRequesterModuleFactory
         extends ModuleFactory {
     public FlowRequesterModule create(Object... parameters)

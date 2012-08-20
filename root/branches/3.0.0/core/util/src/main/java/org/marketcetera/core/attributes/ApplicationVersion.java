@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A class that is used to keep track of the application version
@@ -17,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ApplicationVersion.java 82306 2012-02-29 23:18:25Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: ApplicationVersion.java 82306 2012-02-29 23:18:25Z colin $")
 public class ApplicationVersion
 {
     /**

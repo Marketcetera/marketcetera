@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.sample;
 
 import javax.jws.WebService;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateless.StatelessClientContext;
 import org.marketcetera.core.ws.stateless.StatelessServiceBase;
 import org.marketcetera.core.ws.wrappers.RemoteException;
@@ -19,7 +18,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
 /* $License$ */
 
 @WebService
-@ClassVersion("$Id: SampleStatelessService.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface SampleStatelessService
     extends StatelessServiceBase
 {

@@ -1,7 +1,5 @@
 package org.marketcetera.core.event;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Indicates the action to be taken.
  *
@@ -9,8 +7,7 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: QuoteAction.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.6.0
  */
-@ClassVersion("$Id: QuoteAction.java 16063 2012-01-31 18:21:55Z colin $")
-public enum QuoteAction 
+public enum QuoteAction
 {
     /**
      * the quote should be added

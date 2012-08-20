@@ -10,7 +10,6 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Translates {@link MarketDataRequest} objects to a format that the {@link CSVFeed} can understand.
@@ -20,8 +19,7 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.1.0
  * @version $Id: CSVFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $")
-public class CSVFeedMessageTranslator     
+public class CSVFeedMessageTranslator
         implements DataRequestTranslator<MarketDataRequest>
 {
     /* (non-Javadoc)

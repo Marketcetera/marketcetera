@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.field.MaturityMonthYear;
 
@@ -25,7 +24,6 @@ import quickfix.field.MaturityMonthYear;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@ClassVersion("$Id: Future.java 16063 2012-01-31 18:21:55Z colin $")
 public class Future
         extends Instrument
 {

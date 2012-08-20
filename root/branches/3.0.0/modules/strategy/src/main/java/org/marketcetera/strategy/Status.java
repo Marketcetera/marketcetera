@@ -11,7 +11,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * @version $Id: Status.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: Status.java 16063 2012-01-31 18:21:55Z colin $")
 public enum Status
 {
     /**

@@ -3,7 +3,6 @@ package org.marketcetera.core.event.impl;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.OptionEvent;
 import org.marketcetera.core.event.beans.MarketDataBean;
 import org.marketcetera.core.event.beans.OptionBean;
@@ -21,7 +20,6 @@ import org.marketcetera.core.trade.Option;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: OptionTradeEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
 final class OptionTradeEventImpl
         extends AbstractTradeEventImpl
         implements OptionEvent

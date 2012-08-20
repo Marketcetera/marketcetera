@@ -1,7 +1,6 @@
 package org.marketcetera.core.trade;
 
 import java.io.Serializable;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A tagging interface for all trade messages.
@@ -13,6 +12,5 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: TradeMessage.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface TradeMessage
     extends Serializable {}

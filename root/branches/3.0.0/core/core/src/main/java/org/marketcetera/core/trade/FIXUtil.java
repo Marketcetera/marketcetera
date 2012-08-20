@@ -3,7 +3,6 @@ package org.marketcetera.core.trade;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -17,7 +16,6 @@ import quickfix.field.*;
  * @version $Id: FIXUtil.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: FIXUtil.java 16063 2012-01-31 18:21:55Z colin $")
 class FIXUtil {
     static String getAccount(Message inMessage) {
         if (inMessage.isSetField(Account.FIELD)) {

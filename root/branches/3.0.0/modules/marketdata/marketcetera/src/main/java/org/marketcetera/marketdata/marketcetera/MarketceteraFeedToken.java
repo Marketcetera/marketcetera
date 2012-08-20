@@ -3,7 +3,6 @@ package org.marketcetera.marketdata.marketcetera;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
 import org.marketcetera.core.marketdata.MarketDataFeedToken;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MarketceteraFeedToken.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: MarketceteraFeedToken.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class MarketceteraFeedToken
     extends AbstractMarketDataFeedToken<MarketceteraFeed>
 {

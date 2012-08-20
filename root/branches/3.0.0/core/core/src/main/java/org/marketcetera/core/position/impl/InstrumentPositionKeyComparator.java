@@ -1,6 +1,5 @@
 package org.marketcetera.core.position.impl;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFunctionHandler;
 import org.marketcetera.core.instruments.StaticInstrumentFunctionSelector;
 import org.marketcetera.core.trade.Instrument;
@@ -23,7 +22,6 @@ import java.util.Comparator;
  * @version $Id: InstrumentPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class InstrumentPositionKeyComparator<I extends Instrument>
         extends InstrumentFunctionHandler<I>
         implements Comparator<I> {

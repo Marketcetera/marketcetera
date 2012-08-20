@@ -2,15 +2,12 @@ package org.marketcetera.core.module;
 
 import java.util.HashMap;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Base module class for testing.
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ModuleBase.java 82330 2012-04-10 16:29:13Z colin $")  //$NON-NLS-1$
 public abstract class ModuleBase extends Module {
 
     @Override

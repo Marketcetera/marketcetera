@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.field.OrdStatus;
 
 import static org.marketcetera.core.trade.OrderStatus.*;
@@ -18,7 +17,6 @@ import static org.marketcetera.core.trade.OrderStatus.*;
  * @version $Id: OrderStatusTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderStatusTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class OrderStatusTest extends FIXCharEnumTestBase<OrderStatus> {
 
     @Override

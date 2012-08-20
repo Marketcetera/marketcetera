@@ -1,8 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-import org.marketcetera.core.module.DisplayName;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -12,7 +9,6 @@ import java.math.BigInteger;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: JMXTestModuleMXBean.java 82330 2012-04-10 16:29:13Z colin $")
 @DisplayName("JMX Testing module")
 public interface JMXTestModuleMXBean {
     @DisplayName("primitive boolean type")

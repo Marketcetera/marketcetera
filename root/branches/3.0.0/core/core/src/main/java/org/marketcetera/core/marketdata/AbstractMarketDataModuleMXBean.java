@@ -5,7 +5,6 @@ import java.util.Set;
 import javax.management.MXBean;
 
 import org.marketcetera.core.module.DisplayName;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: AbstractMarketDataModuleMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: AbstractMarketDataModuleMXBean.java 16063 2012-01-31 18:21:55Z colin $")
 @MXBean(true)
 @DisplayName("Management Interface for Marketdata Feeds")
 public interface AbstractMarketDataModuleMXBean

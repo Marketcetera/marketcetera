@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
  * @since $Release$
  */
 @Component
-@ClassVersion("$Id: PersistentAuthorityFactory.java 82315 2012-03-17 01:58:54Z colin $")
 class PersistentAuthorityFactory
         implements AuthorityFactory
 {

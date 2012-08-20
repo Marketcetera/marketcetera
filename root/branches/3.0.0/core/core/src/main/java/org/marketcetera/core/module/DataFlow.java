@@ -6,7 +6,6 @@ import java.util.HashSet;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
@@ -20,7 +19,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @version $Id: DataFlow.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataFlow.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 class DataFlow {
 
     /**

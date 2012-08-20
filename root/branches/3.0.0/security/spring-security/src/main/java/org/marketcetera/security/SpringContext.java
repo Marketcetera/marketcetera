@@ -3,7 +3,6 @@ package org.marketcetera.security;
 import java.util.Properties;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.container.SpringUtils;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -47,7 +46,6 @@ import org.springframework.context.support.GenericApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id: SpringContext.java 82324 2012-04-09 20:56:08Z colin $")
 public class SpringContext
     extends Context<SpringSetter<?>>
 {

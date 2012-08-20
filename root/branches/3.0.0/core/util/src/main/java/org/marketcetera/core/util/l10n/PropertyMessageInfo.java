@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.l10n;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Holder of meta-information about a message stored in a properties
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: PropertyMessageInfo.java 16063 2012-01-31 18:21:55Z colin $")
 public class PropertyMessageInfo
     extends MessageInfo
 {

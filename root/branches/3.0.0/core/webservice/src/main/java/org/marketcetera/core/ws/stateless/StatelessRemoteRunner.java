@@ -2,7 +2,6 @@ package org.marketcetera.core.ws.stateless;
 
 import java.util.Locale;
 import org.marketcetera.core.util.log.ActiveLocale;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.tags.TagFilter;
 import org.marketcetera.core.ws.wrappers.RemoteException;
 
@@ -17,7 +16,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@ClassVersion("$Id: StatelessRemoteRunner.java 82324 2012-04-09 20:56:08Z colin $")
 public abstract class StatelessRemoteRunner
     extends StatelessRemoteCall
 {

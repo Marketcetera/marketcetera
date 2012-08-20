@@ -1,7 +1,5 @@
 package org.marketcetera.core.event;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -12,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: TradeEvent.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: TradeEvent.java 16063 2012-01-31 18:21:55Z colin $")
 public interface TradeEvent
         extends MarketDataEvent
 {

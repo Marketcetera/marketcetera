@@ -2,7 +2,6 @@ package org.marketcetera.security;
 
 import java.io.Console;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A setter for a character array holder that obtains the data via the
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: ConsoleSetterCharArray.java 82324 2012-04-09 20:56:08Z colin $")
 public class ConsoleSetterCharArray
     extends ConsoleSetter<Holder<char[]>>
 {

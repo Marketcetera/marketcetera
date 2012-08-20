@@ -2,8 +2,6 @@ package org.marketcetera.core.metrics;
 
 import javax.management.*;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Class for exporting {@link ThreadedMetric} management interface
@@ -19,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.0.0
  * @see ThreadedMetricMXBean
  */
-@ClassVersion("$Id: JmxUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public class JmxUtils {
     /**
      * Registers the {@link ThreadedMetric} management interface with

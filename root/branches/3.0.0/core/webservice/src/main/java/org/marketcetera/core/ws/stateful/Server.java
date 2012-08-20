@@ -1,6 +1,5 @@
 package org.marketcetera.core.ws.stateful;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateless.ServiceInterface;
 import org.marketcetera.core.ws.stateless.StatelessServer;
 
@@ -16,7 +15,6 @@ import org.marketcetera.core.ws.stateless.StatelessServer;
 
 /* $License$ */
 
-@ClassVersion("$Id: Server.java 82324 2012-04-09 20:56:08Z colin $")
 public class Server<T>
     extends StatelessServer
 {

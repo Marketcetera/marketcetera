@@ -1,7 +1,5 @@
 package org.marketcetera.core.util.log;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * The internationalization constants used by this package.
  *
@@ -12,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: Messages.java 16063 2012-01-31 18:21:55Z colin $")
 public interface Messages
 {
 

@@ -3,7 +3,6 @@ package org.marketcetera.core.marketdata;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.MarketstatEvent;
@@ -19,7 +18,6 @@ import org.marketcetera.core.event.TradeEvent;
  * @version $Id: Content.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: Content.java 16063 2012-01-31 18:21:55Z colin $")
 public enum Content
 {
     /**

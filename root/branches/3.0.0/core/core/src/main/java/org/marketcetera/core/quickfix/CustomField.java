@@ -1,7 +1,5 @@
 package org.marketcetera.core.quickfix;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import quickfix.Field;
 
 /**
@@ -12,7 +10,6 @@ import quickfix.Field;
  * @author <a href="mailto:colin@whiskerfish.com">Colin DuPlantis</a>
  * @version $Id: CustomField.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CustomField.java 16063 2012-01-31 18:21:55Z colin $")
 public class CustomField<T>
     extends Field<T>
 {

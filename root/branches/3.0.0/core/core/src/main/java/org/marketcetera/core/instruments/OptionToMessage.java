@@ -2,7 +2,6 @@ package org.marketcetera.core.instruments;
 
 import java.util.regex.Pattern;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
@@ -25,7 +24,6 @@ import quickfix.field.Symbol;
  * @version $Id: OptionToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionToMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public class OptionToMessage extends InstrumentToMessage<Option> {
     /**
      * Creates an instance that handles options.

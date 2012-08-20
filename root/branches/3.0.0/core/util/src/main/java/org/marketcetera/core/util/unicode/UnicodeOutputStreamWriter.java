@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A variation of {@link OutputStreamWriter} that is BOM-aware. It can
@@ -33,7 +32,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: UnicodeOutputStreamWriter.java 16063 2012-01-31 18:21:55Z colin $")
 public class UnicodeOutputStreamWriter
     extends Writer
 {

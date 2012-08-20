@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
@@ -32,7 +31,6 @@ import static org.junit.Assert.*;
  * @version $Id: TypesTestBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: TypesTestBase.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class TypesTestBase {
     /**
      * Initialize Logger and system FIX dictionary.

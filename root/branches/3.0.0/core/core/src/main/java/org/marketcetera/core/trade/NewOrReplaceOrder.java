@@ -3,8 +3,6 @@ package org.marketcetera.core.trade;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Details that are common between new and replace orders.
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: NewOrReplaceOrder.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: NewOrReplaceOrder.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface NewOrReplaceOrder extends OrderBase, Serializable {
     /**
      * Gets the OrderType for the Order.

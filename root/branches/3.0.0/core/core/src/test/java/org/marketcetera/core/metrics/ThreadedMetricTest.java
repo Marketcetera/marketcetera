@@ -24,7 +24,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 import org.marketcetera.util.test.RegExAssert;
 
@@ -38,7 +37,6 @@ import static org.junit.Assert.*;
  * @version $Id: ThreadedMetricTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: ThreadedMetricTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class ThreadedMetricTest {
 
     @BeforeClass

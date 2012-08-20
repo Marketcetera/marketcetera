@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.marketcetera.core.util.file.SpecialNames.*;
 
@@ -25,7 +24,6 @@ import static org.marketcetera.core.util.file.SpecialNames.*;
 
 /* $License$ */
 
-@ClassVersion("$Id: OutputStreamWrapper.java 16063 2012-01-31 18:21:55Z colin $")
 public class OutputStreamWrapper
     implements Closeable
 {

@@ -8,7 +8,6 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: PositionMetricsCalculatorImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionMetricsCalculatorImpl.java 16063 2012-01-31 18:21:55Z colin $")
 public final class PositionMetricsCalculatorImpl implements PositionMetricsCalculator {
 
     private final BigDecimal mIncomingPosition;

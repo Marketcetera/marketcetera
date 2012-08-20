@@ -2,8 +2,6 @@ package org.marketcetera.core.module;
 
 import java.io.Serializable;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * The base class for data request instances. This class is
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DataRequestBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataRequestBase.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public class DataRequestBase implements Serializable {
     /**
      * Creates an instance.

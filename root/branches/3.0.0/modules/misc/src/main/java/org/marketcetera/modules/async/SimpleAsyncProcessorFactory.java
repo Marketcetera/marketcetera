@@ -1,6 +1,5 @@
 package org.marketcetera.modules.async;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.module.ModuleFactory;
 import org.marketcetera.core.module.ModuleCreationException;
 import org.marketcetera.core.module.ModuleURN;
@@ -25,7 +24,6 @@ import org.marketcetera.core.module.ModuleURN;
  * @version $Id: SimpleAsyncProcessorFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: SimpleAsyncProcessorFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public final class SimpleAsyncProcessorFactory extends ModuleFactory {
     /**
      * Creates an instance.

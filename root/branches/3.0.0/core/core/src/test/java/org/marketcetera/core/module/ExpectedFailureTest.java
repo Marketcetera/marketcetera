@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.except.I18NInterruptedException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
@@ -22,7 +21,6 @@ import static org.junit.Assert.fail;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ExpectedFailureTest.java 82330 2012-04-10 16:29:13Z colin $") //$NON-NLS-1$
 public class ExpectedFailureTest {
     /**
      * Verifies i18N exception testing

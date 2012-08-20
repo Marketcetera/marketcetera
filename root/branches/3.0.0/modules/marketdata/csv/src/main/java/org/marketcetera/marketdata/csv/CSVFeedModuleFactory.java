@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata.csv;
 
 import static org.marketcetera.marketdata.csv.Messages.PROVIDER_DESCRIPTION;
-import org.marketcetera.api.attributes.ClassVersion;
+
 import org.marketcetera.core.module.ModuleFactory;
 import org.marketcetera.core.module.ModuleCreationException;
 import org.marketcetera.core.module.ModuleURN;
@@ -15,8 +15,7 @@ import org.marketcetera.core.CoreException;
  * @since 2.1.0
  * @version $Id: CSVFeedModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVFeedModuleFactory.java 16063 2012-01-31 18:21:55Z colin $")
-public class CSVFeedModuleFactory 
+public class CSVFeedModuleFactory
         extends ModuleFactory
 {
     /**

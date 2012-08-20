@@ -8,7 +8,6 @@ import java.util.Set;
 
 import ca.odell.glazedlists.FunctionList.Function;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.ExecutionReport;
 import org.marketcetera.core.trade.OrderCancelReject;
 import org.marketcetera.core.trade.OrderID;
@@ -33,7 +32,6 @@ import org.marketcetera.core.trade.ReportBase;
  * @version $Id: OpenOrderListFunction.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: OpenOrderListFunction.java 82326 2012-04-10 16:27:07Z colin $")
 final class OpenOrderListFunction implements Function<List<ReportHolder>, ReportHolder> {
 
     private static final Comparator<ReportHolder> sComparator = new Comparator<ReportHolder>() {

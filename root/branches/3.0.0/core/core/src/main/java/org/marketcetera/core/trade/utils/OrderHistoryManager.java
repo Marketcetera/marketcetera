@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.trade.ExecutionReport;
 import org.marketcetera.core.trade.Messages;
@@ -38,7 +37,6 @@ import org.nocrala.tools.texttablefmt.Table;
  * @since 2.1.4
  */
 @ThreadSafe
-@ClassVersion("$Id: OrderHistoryManager.java 16063 2012-01-31 18:21:55Z colin $")
 public class OrderHistoryManager
 {
     /**
@@ -401,8 +399,7 @@ public class OrderHistoryManager
      * @since 2.1.4
      */
     @NotThreadSafe
-    @ClassVersion("$Id: OrderHistoryManager.java 16063 2012-01-31 18:21:55Z colin $")
-    private static class OrderHistory
+        private static class OrderHistory
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()

@@ -6,7 +6,6 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedFactory;
 import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -17,8 +16,7 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MarketceteraFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: MarketceteraFeedFactory.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
-public class MarketceteraFeedFactory 
+public class MarketceteraFeedFactory
     extends AbstractMarketDataFeedFactory<MarketceteraFeed,MarketceteraFeedCredentials> 
 {
     private final static MarketceteraFeedFactory sInstance = new MarketceteraFeedFactory();

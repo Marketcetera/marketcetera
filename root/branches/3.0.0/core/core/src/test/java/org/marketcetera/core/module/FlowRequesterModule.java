@@ -3,15 +3,12 @@ package org.marketcetera.core.module;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A processor module that is capable of creating / canceling data flows.
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: FlowRequesterModule.java 82330 2012-04-10 16:29:13Z colin $")
 public class FlowRequesterModule extends ProcessorModule
         implements DataFlowRequester {
     public FlowRequesterModule(ModuleURN inModuleURN) {

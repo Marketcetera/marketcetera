@@ -11,7 +11,6 @@ import java.util.Set;
 import javax.annotation.concurrent.Immutable;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 import static org.marketcetera.core.marketdata.AssetClass.EQUITY;
@@ -31,7 +30,6 @@ import static org.marketcetera.core.marketdata.Messages.*;
  * @since 1.0.0
  */
 @Immutable
-@ClassVersion("$Id: MarketDataRequest.java 16063 2012-01-31 18:21:55Z colin $")
 public class MarketDataRequest
         implements Serializable
 {

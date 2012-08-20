@@ -1,7 +1,6 @@
 package org.marketcetera.core.module;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * 
  * @see DataEmitter
  */
-@ClassVersion("$Id: DataEmitterSupport.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public interface DataEmitterSupport {
     /**
      * Sends the data to any downstream module

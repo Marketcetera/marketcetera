@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
-import org.marketcetera.api.attributes.ClassVersion;
+
 import org.marketcetera.core.util.unicode.DecodingStrategy;
 import org.marketcetera.core.util.unicode.UnicodeFileReader;
 import org.marketcetera.core.util.unicode.UnicodeInputStreamReader;
@@ -27,7 +27,6 @@ import static org.marketcetera.core.util.file.SpecialNames.*;
 
 /* $License$ */
 
-@ClassVersion("$Id: ReaderWrapper.java 16063 2012-01-31 18:21:55Z colin $")
 public class ReaderWrapper
     implements Closeable
 {

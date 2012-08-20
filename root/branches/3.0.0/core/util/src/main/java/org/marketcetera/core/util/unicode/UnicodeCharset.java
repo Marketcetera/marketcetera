@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import org.apache.commons.lang.CharEncoding;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A thin wrapper around {@link Charset} for the Unicode charsets.
@@ -31,7 +30,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: UnicodeCharset.java 16063 2012-01-31 18:21:55Z colin $")
 public enum UnicodeCharset
 {
     UTF8(CharEncoding.UTF_8),

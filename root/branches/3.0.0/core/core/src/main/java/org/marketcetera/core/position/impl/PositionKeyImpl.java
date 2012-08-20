@@ -11,7 +11,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -22,7 +21,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: PositionKeyImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionKeyImpl.java 16063 2012-01-31 18:21:55Z colin $")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PositionKeyImpl<T extends Instrument> implements PositionKey<T> {

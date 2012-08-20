@@ -4,7 +4,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
 
 import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -20,7 +19,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 @NamedQueries( { @NamedQuery(name="findUserByName",query="from PersistentAuthority s where s.authority = :name"),
                  @NamedQuery(name="findAllAuthorities",query="from PersistentAuthority")})
 @Table(name="authorities", uniqueConstraints = { @UniqueConstraint(columnNames= { "authority" } ) } )
-@ClassVersion("$Id: PersistentAuthority.java 82353 2012-05-10 21:56:11Z colin $")
 public class PersistentAuthority
         extends PersistentVersionedObject
         implements Authority

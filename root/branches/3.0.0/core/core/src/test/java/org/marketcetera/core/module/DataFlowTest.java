@@ -11,7 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: DataFlowTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class DataFlowTest extends ModuleTestBase {
     @BeforeClass
     public static void setup() throws Exception {

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -18,7 +17,6 @@ import static org.junit.Assert.assertNull;
  * @version $Id: OrderSingleSuggestionTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderSingleSuggestionTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class OrderSingleSuggestionTest extends TypesTestBase {
     /**
      * Verifies default attributes of objects returned via

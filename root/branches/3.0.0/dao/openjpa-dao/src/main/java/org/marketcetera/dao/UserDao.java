@@ -2,7 +2,6 @@ package org.marketcetera.dao;
 
 import java.util.List;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.api.security.User;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +15,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * @version $Id: UserDao.java 82354 2012-05-11 17:46:11Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: UserDao.java 82354 2012-05-11 17:46:11Z colin $")
 public interface UserDao {
     User loadUserByUsername(String username) throws UsernameNotFoundException;
 

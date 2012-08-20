@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.marketcetera.core.util.file.CloseableRegistry;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A thread that consumes an input stream.
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: InputThread.java 16063 2012-01-31 18:21:55Z colin $")
 class InputThread
     extends Thread
 {

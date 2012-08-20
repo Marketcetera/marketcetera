@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.stateless;
 
 import javax.jws.WebService;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * The base interface for all web services. It is a tagging interface.
@@ -14,5 +13,4 @@ import org.marketcetera.api.attributes.ClassVersion;
 /* $License$ */
 
 @WebService
-@ClassVersion("$Id: StatelessServiceBase.java 82324 2012-04-09 20:56:08Z colin $")
 public interface StatelessServiceBase {}

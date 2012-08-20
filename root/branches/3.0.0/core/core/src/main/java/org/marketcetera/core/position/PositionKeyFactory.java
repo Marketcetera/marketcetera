@@ -3,7 +3,6 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.core.trade.ConvertibleBond;
 import org.marketcetera.core.trade.Equity;
@@ -21,7 +20,6 @@ import org.marketcetera.core.trade.OptionType;
  * @version $Id: PositionKeyFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: PositionKeyFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public class PositionKeyFactory {
 
     /**

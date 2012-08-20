@@ -4,7 +4,6 @@ import org.marketcetera.core.trade.DeliveryType;
 import org.marketcetera.core.trade.FutureType;
 import org.marketcetera.core.trade.FutureUnderlyingAssetType;
 import org.marketcetera.core.trade.StandardType;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: FutureEvent.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */
-@ClassVersion("$Id: FutureEvent.java 16063 2012-01-31 18:21:55Z colin $")
 public interface FutureEvent
         extends HasFuture, Event, HasProviderSymbol
 {

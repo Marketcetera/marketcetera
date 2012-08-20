@@ -7,7 +7,6 @@ import java.io.PushbackInputStream;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import java.util.Arrays;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A variation of {@link InputStreamReader} that is BOM-aware. It can
@@ -34,7 +33,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: UnicodeInputStreamReader.java 16063 2012-01-31 18:21:55Z colin $")
 public class UnicodeInputStreamReader
     extends Reader
 {

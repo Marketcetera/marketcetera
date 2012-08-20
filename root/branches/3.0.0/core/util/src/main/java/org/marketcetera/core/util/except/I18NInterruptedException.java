@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.except;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized exception indicating interruption.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NInterruptedException.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NInterruptedException
     extends I18NException
 {

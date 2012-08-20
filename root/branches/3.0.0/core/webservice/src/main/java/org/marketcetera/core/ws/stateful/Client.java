@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.stateful;
 
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateless.StatelessClient;
 import org.marketcetera.core.ws.tags.AppId;
 import org.marketcetera.core.ws.tags.SessionId;
@@ -20,7 +19,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@ClassVersion("$Id: Client.java 82324 2012-04-09 20:56:08Z colin $")
 public class Client
     extends StatelessClient
 {

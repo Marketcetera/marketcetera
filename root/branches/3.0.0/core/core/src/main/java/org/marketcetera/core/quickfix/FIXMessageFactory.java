@@ -9,8 +9,6 @@ import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.*;
 import quickfix.field.*;
@@ -24,7 +22,6 @@ import quickfix.field.*;
  * @author toli
  * @version $Id: FIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: FIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXMessageFactory {
 
     private MessageFactory msgFactory;

@@ -1,12 +1,9 @@
 package org.marketcetera.core;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * @author Graham Miller
  * @version $Id: MemoizedHashCombinator.java 82326 2012-04-10 16:27:07Z colin $
  */
-@ClassVersion("$Id: MemoizedHashCombinator.java 82326 2012-04-10 16:27:07Z colin $") //$NON-NLS-1$
 public class MemoizedHashCombinator<T1, T2> extends Pair<T1, T2>{
 	String hashString;
 	int hashCode;

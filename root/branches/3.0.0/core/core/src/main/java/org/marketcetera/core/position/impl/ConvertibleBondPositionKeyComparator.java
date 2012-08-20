@@ -2,7 +2,6 @@ package org.marketcetera.core.position.impl;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.core.trade.ConvertibleBond;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$")
 public class ConvertibleBondPositionKeyComparator
         extends InstrumentPositionKeyComparator<ConvertibleBond>
 {

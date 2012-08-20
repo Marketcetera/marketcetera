@@ -2,7 +2,6 @@ package org.marketcetera.core.util.l10n;
 
 import java.util.Properties;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Holder of meta-information about a generic message.
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: MessageInfo.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class MessageInfo
 {
 

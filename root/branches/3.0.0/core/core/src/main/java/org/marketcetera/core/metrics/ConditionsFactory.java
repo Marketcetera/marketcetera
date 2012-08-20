@@ -3,7 +3,6 @@ package org.marketcetera.core.metrics;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -15,7 +14,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @version $Id: ConditionsFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: ConditionsFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public final class ConditionsFactory {
     /**
      * Returns a condition that is true on every n<sup>th</sup>

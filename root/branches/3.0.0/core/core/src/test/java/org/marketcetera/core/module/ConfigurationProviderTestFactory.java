@@ -3,15 +3,12 @@ package org.marketcetera.core.module;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A factory to test module configuration provider.
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ConfigurationProviderTestFactory.java 82330 2012-04-10 16:29:13Z colin $")
 public class ConfigurationProviderTestFactory
         extends ModuleFactory
         implements ConfigurationProviderFactoryMXBean {

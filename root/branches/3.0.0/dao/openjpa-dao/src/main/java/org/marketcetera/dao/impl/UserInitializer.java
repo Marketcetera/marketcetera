@@ -2,7 +2,6 @@ package org.marketcetera.dao.impl;
 
 import java.util.Set;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.systemmodel.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
@@ -20,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$")
 public class UserInitializer
         implements Initializer
 {

@@ -4,9 +4,8 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedFactory;
 import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.api.attributes.ClassVersion;
 
- /* $License$ */
+/* $License$ */
 
 /**
  * {@link BogusFeed} constructor factory.
@@ -15,8 +14,7 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: BogusFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeedFactory.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
-public class BogusFeedFactory 
+public class BogusFeedFactory
     extends AbstractMarketDataFeedFactory<BogusFeed,BogusFeedCredentials> 
 {
     private final static BogusFeedFactory sInstance = new BogusFeedFactory();

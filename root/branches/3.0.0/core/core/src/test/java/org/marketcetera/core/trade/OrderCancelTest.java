@@ -9,7 +9,6 @@ import java.util.Map;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
@@ -33,7 +32,6 @@ import static org.junit.Assert.*;
  * @version $Id: OrderCancelTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderCancelTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class OrderCancelTest extends TypesTestBase {
     /**
      * Verifies default attributes of objects returned via

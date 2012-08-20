@@ -1,6 +1,5 @@
 package org.marketcetera.core;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -12,7 +11,6 @@ import java.io.File;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: LoggerConfiguration.java 82306 2012-02-29 23:18:25Z colin $")
 public class LoggerConfiguration {
     /**
      * Sets up logging.

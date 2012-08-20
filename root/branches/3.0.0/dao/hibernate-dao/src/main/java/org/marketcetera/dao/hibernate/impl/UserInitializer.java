@@ -29,7 +29,6 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  * @version $Id: UserInitializer.java 82374 2012-06-06 23:46:53Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: UserInitializer.java 82374 2012-06-06 23:46:53Z colin $")
 public class UserInitializer
         implements InitializingBean
 {

@@ -1,6 +1,5 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.apache.commons.lang.Validate;
 
@@ -28,7 +27,6 @@ import com.google.common.collect.ImmutableList;
  * @version $Id: DynamicInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: DynamicInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $")
 public class DynamicInstrumentFunctionSelector<T,S extends DynamicInstrumentHandler<T>> {
     /**
      * Creates an instance.

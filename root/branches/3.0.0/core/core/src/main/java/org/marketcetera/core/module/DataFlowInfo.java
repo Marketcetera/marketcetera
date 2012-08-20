@@ -4,8 +4,6 @@ import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Instances of this class describe the current state of a data flow.
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DataFlowInfo.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataFlowInfo.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public final class DataFlowInfo implements Serializable {
     /**
      * Returns information on individual data flow steps

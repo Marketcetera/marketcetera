@@ -2,7 +2,6 @@ package org.marketcetera.core.ws.stateless;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.tags.AppId;
 import org.marketcetera.core.ws.tags.NodeId;
 import org.marketcetera.core.ws.tags.VersionId;
@@ -22,7 +21,6 @@ import org.marketcetera.core.ws.wrappers.LocaleWrapper;
 
 /* $License$ */
 
-@ClassVersion("$Id: StatelessClientContext.java 82324 2012-04-09 20:56:08Z colin $")
 public class StatelessClientContext
 {
 

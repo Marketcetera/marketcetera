@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
@@ -30,7 +29,6 @@ import quickfix.field.UnderlyingSymbol;
  * @version $Id: AbstractMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: AbstractMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public abstract class AbstractMessageTranslator<T>
 {
     /**

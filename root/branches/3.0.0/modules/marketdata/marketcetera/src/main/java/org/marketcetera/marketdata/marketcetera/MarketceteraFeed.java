@@ -31,7 +31,6 @@ import org.marketcetera.core.quickfix.FIXMessageUtil;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.*;
 import quickfix.Message.Header;
@@ -51,8 +50,7 @@ import com.google.common.collect.SetMultimap;
  * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
  * @since 0.5.0
  */
-@ClassVersion("$Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $")
-public class MarketceteraFeed 
+public class MarketceteraFeed
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
                                        MarketceteraFeedCredentials,
                                        MarketceteraFeedMessageTranslator,
@@ -597,8 +595,7 @@ public class MarketceteraFeed
      * @version $Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
-    @ClassVersion("$Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $")
-    static final class Request
+        static final class Request
     {
         /**
          * the FIX message actually sent to the marketcetera feed

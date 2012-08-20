@@ -7,7 +7,6 @@ import java.util.Properties;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since $Release$
  */
 @ThreadSafe
-@ClassVersion("$Id: InMemoryPropertiesConfigurationProvider.java 82377 2012-06-08 14:50:39Z colin $")
 public class InMemoryPropertiesConfigurationProvider
         implements ModuleConfigurationProvider
 {

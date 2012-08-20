@@ -1,6 +1,5 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import quickfix.Message;
 
@@ -12,7 +11,6 @@ import quickfix.Message;
  * @version $Id: Factory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: Factory.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class Factory {
     /**
      * Returns a factory instance that can be used to create various messages.

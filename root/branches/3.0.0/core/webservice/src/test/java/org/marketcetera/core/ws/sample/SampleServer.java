@@ -3,7 +3,6 @@ package org.marketcetera.core.ws.sample;
 import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.util.log.I18NMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.core.ws.stateful.Server;
 import org.marketcetera.core.ws.stateful.SessionManager;
@@ -19,7 +18,6 @@ import org.marketcetera.core.ws.stateful.SessionManager;
 
 /* $License$ */
 
-@ClassVersion("$Id: SampleServer.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class SampleServer
     extends TestCaseBase
 {

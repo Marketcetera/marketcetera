@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Indicates the type of Security.
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: SecurityType.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: SecurityType.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public enum SecurityType {
     /**
      * Sentinel value for Security Types that the system is not currently

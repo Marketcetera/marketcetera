@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Enumerates various states of a module.
@@ -80,7 +78,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ModuleState.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleState.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public enum ModuleState {
     /**
      * Module has been created. It hasn't been started or stopped yet.

@@ -1,7 +1,5 @@
 package org.marketcetera.core.metrics;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Instances of this class keeps track of information on every checkpoint.
  *
@@ -10,7 +8,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.0.0
  * @see PerThreadInfo
  */
-@ClassVersion("$Id: CheckpointInfo.java 16063 2012-01-31 18:21:55Z colin $")
 final class CheckpointInfo {
     private final String mIdentifier;
     private final long mTimestamp;

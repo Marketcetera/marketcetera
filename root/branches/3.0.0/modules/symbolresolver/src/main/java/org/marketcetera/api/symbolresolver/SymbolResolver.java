@@ -1,6 +1,5 @@
 package org.marketcetera.api.symbolresolver;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
@@ -12,7 +11,6 @@ import org.marketcetera.core.trade.Instrument;
  * @version $Id: SymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: SymbolResolver.java 82347 2012-05-03 19:30:54Z colin $")
 public interface SymbolResolver
 {
     /**

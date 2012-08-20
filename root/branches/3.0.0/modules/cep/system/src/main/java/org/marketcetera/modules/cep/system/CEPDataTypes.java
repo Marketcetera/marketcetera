@@ -6,7 +6,6 @@ import org.marketcetera.core.Pair;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: CEPDataTypes.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: CEPDataTypes.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class CEPDataTypes {
     public static final String MARKET_DATA  = "mdata";          //$NON-NLS-1$
     public static final String BID          = "bid";            //$NON-NLS-1$

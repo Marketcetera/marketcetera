@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.wrappers;
 
 import java.util.Date;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a date. The raw form is {@link
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: DateWrapper.java 82324 2012-04-09 20:56:08Z colin $")
 public class DateWrapper
     extends DualWrapper<Date,Long>
     implements Comparable<DateWrapper>

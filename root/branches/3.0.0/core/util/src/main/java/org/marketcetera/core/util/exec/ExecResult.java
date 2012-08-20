@@ -1,7 +1,5 @@
 package org.marketcetera.core.util.exec;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A container for the result of a process execution. This comprises
  * an exit code and (if {@link Disposition#MEMORY} is elected) the
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: ExecResult.java 16063 2012-01-31 18:21:55Z colin $")
 public class ExecResult
 {
 

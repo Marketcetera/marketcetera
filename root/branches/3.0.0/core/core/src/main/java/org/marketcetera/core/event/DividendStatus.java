@@ -1,7 +1,5 @@
 package org.marketcetera.core.event;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Indicates the status of a dividend.
  *
@@ -9,7 +7,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DividendStatus.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: DividendStatus.java 16063 2012-01-31 18:21:55Z colin $")
 public enum DividendStatus
 {
     /**

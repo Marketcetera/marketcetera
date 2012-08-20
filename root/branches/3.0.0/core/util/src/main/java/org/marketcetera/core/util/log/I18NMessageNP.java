@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.log;
 
 import java.util.Locale;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized message, accepting an arbitrary number of
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NMessageNP.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NMessageNP
     extends I18NMessage
 {

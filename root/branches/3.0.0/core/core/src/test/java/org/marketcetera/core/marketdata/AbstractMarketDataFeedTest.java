@@ -12,7 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.AggregateEvent;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTestBase;
@@ -38,7 +37,6 @@ import static org.marketcetera.core.marketdata.AssetClass.*;
  * @version $Id: AbstractMarketDataFeedTest.java 82329 2012-04-10 16:28:13Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: AbstractMarketDataFeedTest.java 82329 2012-04-10 16:28:13Z colin $")
 public class AbstractMarketDataFeedTest
     extends MarketDataFeedTestBase
 {

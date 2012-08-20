@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: PositionKey.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionKey.java 16063 2012-01-31 18:21:55Z colin $")
 @Immutable
 public interface PositionKey<T extends Instrument> {
 

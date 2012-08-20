@@ -4,7 +4,6 @@ import java.math.BigInteger;
 
 import javax.management.JMX;
 import org.junit.After;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ConfigurationProviderTestBase.java 82330 2012-04-10 16:29:13Z colin $")
 public class ConfigurationProviderTestBase extends ModuleTestBase {
     @After
     public void cleanup() throws Exception {

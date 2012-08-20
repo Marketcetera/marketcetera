@@ -1,6 +1,5 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 import quickfix.Message;
 import quickfix.FieldNotFound;
@@ -21,7 +20,6 @@ import quickfix.field.Symbol;
  * @version $Id: InstrumentFromMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentFromMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class InstrumentFromMessage extends DynamicInstrumentHandler<Message> {
 
     /**

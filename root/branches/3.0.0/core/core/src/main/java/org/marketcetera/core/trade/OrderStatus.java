@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.marketcetera.core.quickfix.FIXMessageUtil;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderStatus.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderStatus.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public enum OrderStatus {
     /**
      * Sentinel value for Order Status that the system is not currently

@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import javax.management.JMX;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import static org.junit.Assert.*;
@@ -21,7 +20,6 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ConfigurationProviderTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
     /**
      * Verifies the behavior without configuration provider.

@@ -7,7 +7,6 @@ import org.apache.commons.beanutils.ConversionException;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.Converter;
 import org.marketcetera.core.Util;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 /* $License$ */
@@ -32,7 +31,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
  * @version $Id: StringToTypeConverter.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: StringToTypeConverter.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 class StringToTypeConverter {
     /**
      * Returns true if conversion from the supplied type

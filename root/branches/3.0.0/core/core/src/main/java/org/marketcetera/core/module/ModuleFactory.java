@@ -3,7 +3,6 @@ package org.marketcetera.core.module;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.ActiveLocale;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 
@@ -51,7 +50,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * @version $Id: ModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleFactory.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public abstract class ModuleFactory {
     /**
      * Creates an instance of the factory, given the parameters.

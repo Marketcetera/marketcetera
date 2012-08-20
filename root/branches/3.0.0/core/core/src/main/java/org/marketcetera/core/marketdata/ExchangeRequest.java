@@ -3,7 +3,6 @@ package org.marketcetera.core.marketdata;
 import java.io.Serializable;
 
 import javax.annotation.concurrent.Immutable;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.event.HasUnderlyingInstrument;
 import org.marketcetera.core.trade.Instrument;
@@ -19,7 +18,6 @@ import org.marketcetera.core.trade.Option;
  * @since 2.0.0
  */
 @Immutable
-@ClassVersion("$Id: ExchangeRequest.java 16063 2012-01-31 18:21:55Z colin $")
 public final class ExchangeRequest
         implements Serializable, HasInstrument, HasUnderlyingInstrument
 {

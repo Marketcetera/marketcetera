@@ -1,6 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /* $License$ */
@@ -14,7 +13,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * @version $Id: ModuleStateException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleStateException.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public class ModuleStateException extends ModuleException {
     /**
      * Creates an instance.

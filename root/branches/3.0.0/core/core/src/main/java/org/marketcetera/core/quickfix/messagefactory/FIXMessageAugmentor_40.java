@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
-import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -18,7 +16,6 @@ import quickfix.field.*;
  * @version $Id: FIXMessageAugmentor_40.java 16063 2012-01-31 18:21:55Z colin $
  */
 
-@ClassVersion("$Id: FIXMessageAugmentor_40.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
 
     // list of messages that need transactTime

@@ -1,7 +1,6 @@
 package org.marketcetera.core.marketdata;
 
 import org.marketcetera.core.util.log.*;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -12,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 0.6.0
  * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: Messages.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface Messages
 {
     /**

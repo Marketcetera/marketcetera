@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.FIXMessageUtil;
 import quickfix.Message;
 
@@ -17,7 +16,6 @@ import quickfix.Message;
  * @version $Id: ExecutionReportImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionReportImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 @XmlRootElement
 public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
 

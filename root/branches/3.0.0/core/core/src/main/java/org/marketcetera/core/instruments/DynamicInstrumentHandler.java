@@ -1,7 +1,5 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A dynamic instrument specific function. This function is queried
@@ -31,7 +29,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DynamicInstrumentHandler.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: DynamicInstrumentHandler.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class DynamicInstrumentHandler<T> {
 
     /**

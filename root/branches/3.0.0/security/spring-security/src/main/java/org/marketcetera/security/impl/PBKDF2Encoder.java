@@ -16,7 +16,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.security.Messages;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +33,6 @@ import org.springframework.stereotype.Component;
  */
 @NotThreadSafe
 @Component
-@ClassVersion("$Id: PBKDF2Encoder.java 82320 2012-04-02 17:03:23Z colin $")
 public class PBKDF2Encoder
         implements PasswordEncoder
 {

@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A partial, client-side representation of a server exception, when
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: RemoteProxyException.java 82324 2012-04-09 20:56:08Z colin $")
 public class RemoteProxyException
     extends Exception
 {

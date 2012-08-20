@@ -2,8 +2,6 @@ package org.marketcetera.core.module;
 
 import java.io.IOException;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Subscribes to refresh requests from {@link ModuleManager#refresh()}.
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: RefreshListener.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: RefreshListener.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface RefreshListener {
     /**
      * Allows the implementor to determine if a refresh initiated by the

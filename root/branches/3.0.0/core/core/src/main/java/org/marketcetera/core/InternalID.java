@@ -6,8 +6,6 @@
 
 package org.marketcetera.core;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 
 /**
  * The superclass of all identifiers in the trading library.  Does simple things
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * wrapper around java.lang.String.
  * @author gmiller
  */
-@ClassVersion("$Id: InternalID.java 16063 2012-01-31 18:21:55Z colin $")
 public class InternalID {
     final String mID;
     final Class<?> mClass = this.getClass();

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.marketcetera.core.trade.PositionEffect.*;
 
@@ -17,7 +16,6 @@ import static org.marketcetera.core.trade.PositionEffect.*;
  * @version $Id: PositionEffectTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: PositionEffectTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class PositionEffectTest extends FIXCharEnumTestBase<PositionEffect> {
 
     @Override

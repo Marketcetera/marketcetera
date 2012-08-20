@@ -2,7 +2,6 @@ package org.marketcetera.core.module;
 
 import java.util.concurrent.locks.Lock;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NMessage0P;
 
 /* $License$ */
@@ -13,7 +12,6 @@ import org.marketcetera.core.util.log.I18NMessage0P;
  * @version $Id: ConcurrentTestFactory.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.1.0
  */
-@ClassVersion("$Id: ConcurrentTestFactory.java 82330 2012-04-10 16:29:13Z colin $")
 public class ConcurrentTestFactory extends ModuleFactory {
     public ConcurrentTestFactory() {
         super(PROVIDER_URN, new I18NMessage0P(Messages.LOGGER, "provider"),

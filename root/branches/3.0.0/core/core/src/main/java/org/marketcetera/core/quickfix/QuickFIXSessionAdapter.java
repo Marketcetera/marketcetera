@@ -1,7 +1,5 @@
 package org.marketcetera.core.quickfix;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import quickfix.*;
 
 /**
@@ -11,7 +9,6 @@ import quickfix.*;
  * @author gmiller
  * @version $Id: QuickFIXSessionAdapter.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: QuickFIXSessionAdapter.java 16063 2012-01-31 18:21:55Z colin $")
 public interface QuickFIXSessionAdapter
 {
 

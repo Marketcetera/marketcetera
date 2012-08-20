@@ -7,7 +7,6 @@ import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MockTrade.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: MockTrade.java 16063 2012-01-31 18:21:55Z colin $")
 public class MockTrade<T extends Instrument> implements Trade<T> {
 
     protected final PositionKey<T> mKey;

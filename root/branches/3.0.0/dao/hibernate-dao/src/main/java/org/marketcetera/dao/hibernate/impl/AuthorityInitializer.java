@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id: AuthorityInitializer.java 82316 2012-03-21 21:13:27Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: AuthorityInitializer.java 82316 2012-03-21 21:13:27Z colin $")
 public class AuthorityInitializer
         implements InitializingBean
 {

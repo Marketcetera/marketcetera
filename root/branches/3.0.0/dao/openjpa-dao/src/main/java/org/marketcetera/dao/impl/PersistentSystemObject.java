@@ -5,7 +5,6 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 import org.marketcetera.api.systemmodel.SystemObject;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since $Release$
  */
 @MappedSuperclass
-@ClassVersion("$Id: PersistentSystemObject.java 82307 2012-03-02 03:13:45Z colin $")
 public abstract class PersistentSystemObject
         implements SystemObject
 {

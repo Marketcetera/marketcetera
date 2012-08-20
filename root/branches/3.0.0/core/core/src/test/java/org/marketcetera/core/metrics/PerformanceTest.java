@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -48,7 +47,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @version $Id: PerformanceTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: PerformanceTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class PerformanceTest {
     
     @BeforeClass

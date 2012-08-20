@@ -7,7 +7,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 /**
@@ -17,7 +16,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
  * @version $Id: DateUtils.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: DateUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public class DateUtils
 {
     private static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,

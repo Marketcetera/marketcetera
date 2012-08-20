@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.marketcetera.core.trade.TimeInForce.*;
 
@@ -17,7 +16,6 @@ import static org.marketcetera.core.trade.TimeInForce.*;
  * @version $Id: TimeInForceTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: TimeInForceTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class TimeInForceTest extends FIXCharEnumTestBase <TimeInForce>{
     @Override
     protected TimeInForce getInstanceForFIXValue(Character inFIXValue) {

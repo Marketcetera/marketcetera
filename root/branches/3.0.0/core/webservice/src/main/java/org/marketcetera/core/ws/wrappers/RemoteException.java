@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A remote exception. It wraps any {@link Throwable} in a manner that
@@ -33,7 +32,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: RemoteException.java 82324 2012-04-09 20:56:08Z colin $")
 public class RemoteException
     extends Exception
     implements Externalizable

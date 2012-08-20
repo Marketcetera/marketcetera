@@ -5,7 +5,6 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A {@link UnicodeInputStreamReader} which gets its input from a
@@ -20,7 +19,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: UnicodeFileReader.java 16063 2012-01-31 18:21:55Z colin $")
 public class UnicodeFileReader
     extends UnicodeInputStreamReader
 {

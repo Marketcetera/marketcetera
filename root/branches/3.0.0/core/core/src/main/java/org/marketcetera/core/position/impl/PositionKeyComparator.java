@@ -5,7 +5,6 @@ import java.util.Comparator;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: PositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: PositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
 final class PositionKeyComparator implements Comparator<PositionKey<?>> {
 
     public final static PositionKeyComparator INSTANCE = new PositionKeyComparator();
@@ -38,8 +36,7 @@ final class PositionKeyComparator implements Comparator<PositionKey<?>> {
      * Comparator for Instruments that imposes a default ordering across all
      * instruments.
      */
-    @ClassVersion("$Id: PositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
-    private final static class InstrumentComparator implements
+        private final static class InstrumentComparator implements
             Comparator<Instrument> {
 
         public final static InstrumentComparator INSTANCE = new InstrumentComparator();

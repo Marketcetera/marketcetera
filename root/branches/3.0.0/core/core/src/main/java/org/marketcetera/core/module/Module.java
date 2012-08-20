@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * An abstraction representing a module that can emit data, consume data or
@@ -31,7 +29,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: Module.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: Module.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public abstract class Module {
 
     /**

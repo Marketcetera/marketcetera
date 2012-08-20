@@ -23,7 +23,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * @version $Id: StrategyMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: StrategyMXBean.java 16063 2012-01-31 18:21:55Z colin $")
 @MXBean(true)
 @DisplayName("Management Interface for Strategy")
 public interface StrategyMXBean

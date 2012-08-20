@@ -3,7 +3,6 @@ package org.marketcetera.core.metrics;
 import java.util.Iterator;
 
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.*;
@@ -16,7 +15,6 @@ import static org.junit.Assert.*;
  * @version $Id: InfoTests.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: InfoTests.java 16063 2012-01-31 18:21:55Z colin $")
 public class InfoTests {
     /**
      * Tests {@link org.marketcetera.core.metrics.CheckpointInfo}

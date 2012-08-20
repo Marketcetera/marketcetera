@@ -3,7 +3,6 @@ package org.marketcetera.core.event.beans;
 import java.io.Serializable;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.FutureEvent;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.util.EventServices;
@@ -24,7 +23,6 @@ import org.marketcetera.core.trade.StandardType;
  * @since 2.1.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: FutureBean.java 16063 2012-01-31 18:21:55Z colin $")
 public class FutureBean
         implements Serializable
 {

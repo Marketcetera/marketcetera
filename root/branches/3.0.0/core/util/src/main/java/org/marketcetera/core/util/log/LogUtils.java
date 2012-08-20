@@ -1,7 +1,5 @@
 package org.marketcetera.core.util.log;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * General-purpose utilities.
  * 
@@ -12,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: LogUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public final class LogUtils
 {
 

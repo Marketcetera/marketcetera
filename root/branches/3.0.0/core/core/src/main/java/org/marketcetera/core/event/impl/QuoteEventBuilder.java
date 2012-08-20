@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.EquityEvent;
@@ -42,7 +41,6 @@ import org.marketcetera.core.trade.StandardType;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: QuoteEventBuilder.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class QuoteEventBuilder<E extends QuoteEvent>
         implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>, FutureEventBuilder<QuoteEventBuilder<E>>
 {

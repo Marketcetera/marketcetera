@@ -2,7 +2,6 @@ package org.marketcetera.marketdata.marketcetera;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.AbstractMarketDataModule;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -24,7 +23,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MarketceteraFeedModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: MarketceteraFeedModule.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public class MarketceteraFeedModule
         extends AbstractMarketDataModule<MarketceteraFeedToken,
                                          MarketceteraFeedCredentials>

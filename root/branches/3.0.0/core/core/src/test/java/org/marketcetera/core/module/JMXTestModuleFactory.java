@@ -6,8 +6,6 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.Properties;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A factory that is used to test data conversions
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: JMXTestModuleFactory.java 82330 2012-04-10 16:29:13Z colin $")
 public class JMXTestModuleFactory extends ModuleFactory
         implements JMXTestFactoryMXBean {
     @Override

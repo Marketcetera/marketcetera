@@ -41,7 +41,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * @version $Id: StrategyModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: StrategyModuleFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public final class StrategyModuleFactory
         extends ModuleFactory
 {

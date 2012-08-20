@@ -3,8 +3,6 @@ package org.marketcetera.core.util.misc;
 import java.util.HashMap;
 import java.util.Vector;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A meta-information holder for a {@link UCPFilter}.
  *
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: UCPFilterInfo.java 16063 2012-01-31 18:21:55Z colin $")
 public class UCPFilterInfo
 {
 

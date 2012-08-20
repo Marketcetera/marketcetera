@@ -2,7 +2,6 @@ package org.marketcetera.core.ws.sample;
 
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateless.StatelessClientContext;
 import org.marketcetera.core.ws.stateless.StatelessRemoteCaller;
 import org.marketcetera.core.ws.stateless.StatelessServiceBaseImpl;
@@ -18,7 +17,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@ClassVersion("$Id: SampleStatelessServiceImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class SampleStatelessServiceImpl
     extends StatelessServiceBaseImpl
     implements SampleStatelessService

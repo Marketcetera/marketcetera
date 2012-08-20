@@ -3,7 +3,6 @@ package org.marketcetera.core.quickfix;
 import java.io.InputStream;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.ConfigError;
 import quickfix.DataDictionary;
@@ -16,7 +15,6 @@ import quickfix.DataDictionary;
  * @author Toli Kuznets
  * @version $Id: FIXDataDictionary.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: FIXDataDictionary.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXDataDictionary {
     public static final String FIX_SYSTEM_BEGIN_STRING = "FIX.0.0"; //$NON-NLS-1$
     public static final String FIX_4_0_BEGIN_STRING = "FIX.4.0"; //$NON-NLS-1$

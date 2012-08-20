@@ -1,6 +1,5 @@
 package org.marketcetera.modules.cep.system;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.module.ModuleFactory;
 import org.marketcetera.core.module.ModuleCreationException;
 import org.marketcetera.core.module.ModuleURN;
@@ -24,7 +23,6 @@ import org.marketcetera.core.module.ModuleURN;
  * @since 1.0.0
  * @version $Id: CEPSystemFactory.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CEPSystemFactory.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public final class CEPSystemFactory extends ModuleFactory {
     /**
      * Creates an instance.

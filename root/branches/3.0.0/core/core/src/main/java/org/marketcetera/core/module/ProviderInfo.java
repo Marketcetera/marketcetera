@@ -5,8 +5,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * This class provides detailed information on a module provider.
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ProviderInfo.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ProviderInfo.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public final class ProviderInfo implements Serializable {
 
     /**

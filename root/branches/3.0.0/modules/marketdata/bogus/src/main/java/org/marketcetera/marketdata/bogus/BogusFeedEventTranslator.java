@@ -9,7 +9,6 @@ import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTranslator;
 import org.marketcetera.core.event.UnsupportedEventException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -20,7 +19,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: BogusFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $")
 public class BogusFeedEventTranslator
         implements EventTranslator, Messages
 {

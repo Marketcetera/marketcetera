@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Indicates whether the resulting position after a trade should be an
@@ -19,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: PositionEffect.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: PositionEffect.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public enum PositionEffect {
     /**
      * Sentinel value for PositionEffect that the system is not currently

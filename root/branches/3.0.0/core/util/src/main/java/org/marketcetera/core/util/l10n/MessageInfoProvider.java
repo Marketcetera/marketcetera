@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.l10n;
 
 import java.util.List;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A provider of meta-information for a message collection.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: MessageInfoProvider.java 16063 2012-01-31 18:21:55Z colin $")
 public interface MessageInfoProvider
 {
     /**

@@ -11,7 +11,6 @@ import java.util.Set;
 import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.marketcetera.core.Util.*;
 
@@ -25,7 +24,6 @@ import static org.marketcetera.core.Util.*;
  * @since 2.1.0
  */
 @ThreadSafe
-@ClassVersion("$Id: MarketDataRequestBean.java 16063 2012-01-31 18:21:55Z colin $")
 public final class MarketDataRequestBean
         implements Serializable, Cloneable
 {

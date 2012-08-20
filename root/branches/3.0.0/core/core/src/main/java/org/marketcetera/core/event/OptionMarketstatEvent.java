@@ -2,8 +2,6 @@ package org.marketcetera.core.event;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OptionMarketstatEvent.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionMarketstatEvent.java 16063 2012-01-31 18:21:55Z colin $")
 public interface OptionMarketstatEvent
         extends MarketstatEvent, OptionEvent
 {

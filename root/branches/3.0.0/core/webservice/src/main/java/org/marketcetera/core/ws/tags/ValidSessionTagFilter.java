@@ -2,7 +2,6 @@ package org.marketcetera.core.ws.tags;
 
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateful.SessionManager;
 
 /**
@@ -17,7 +16,6 @@ import org.marketcetera.core.ws.stateful.SessionManager;
 
 /* $License$ */
 
-@ClassVersion("$Id: ValidSessionTagFilter.java 82324 2012-04-09 20:56:08Z colin $")
 public class ValidSessionTagFilter<T>
     implements TagFilter
 {

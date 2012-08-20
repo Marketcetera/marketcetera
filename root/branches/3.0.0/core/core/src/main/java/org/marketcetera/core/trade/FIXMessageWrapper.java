@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.Field;
 import quickfix.Message;
 import quickfix.StringField;
@@ -22,7 +21,6 @@ import quickfix.StringField;
  * @since 1.0.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@ClassVersion("$Id: FIXMessageWrapper.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 class FIXMessageWrapper implements FIXMessageSupport {
     /**
      * Creates an instance.

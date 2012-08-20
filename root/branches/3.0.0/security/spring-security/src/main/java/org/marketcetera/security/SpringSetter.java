@@ -3,7 +3,6 @@ package org.marketcetera.security;
 import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.container.SpringUtils;
 import org.springframework.context.support.GenericApplicationContext;
 
@@ -20,7 +19,6 @@ import org.springframework.context.support.GenericApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id: SpringSetter.java 82324 2012-04-09 20:56:08Z colin $")
 public abstract class SpringSetter<T extends Holder<?>>
     extends Setter<T>
 {

@@ -6,7 +6,6 @@ import java.util.ServiceLoader;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
@@ -27,7 +26,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @since 2.0.0
  */
 @SuppressWarnings("rawtypes")
-@ClassVersion("$Id: StaticInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $")
 public final class StaticInstrumentFunctionSelector<T extends InstrumentFunctionHandler> {
     /**
      * Creates an instance.

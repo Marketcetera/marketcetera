@@ -2,7 +2,6 @@ package org.marketcetera.api.security;
 
 import java.util.Collection;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.api.systemmodel.NamedObject;
 import org.marketcetera.api.systemmodel.SystemObject;
 import org.marketcetera.api.systemmodel.VersionedObject;
@@ -16,7 +15,6 @@ import org.marketcetera.api.systemmodel.VersionedObject;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$")
 public interface User extends VersionedObject, NamedObject, SystemObject {
     //~ Methods ========================================================================================================
 

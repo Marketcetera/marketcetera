@@ -6,7 +6,6 @@ import static org.marketcetera.marketdata.marketcetera.Messages.URL_REQUIRED;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedURLCredentials;
 import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MarketceteraFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.6.0
 */
-@ClassVersion("$Id: MarketceteraFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class MarketceteraFeedCredentials
     extends AbstractMarketDataFeedURLCredentials
 {

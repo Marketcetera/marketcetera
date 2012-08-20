@@ -1,7 +1,5 @@
 package org.marketcetera.core.marketdata;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * The asset class for market data requests.
  *
@@ -9,7 +7,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: AssetClass.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: AssetClass.java 16063 2012-01-31 18:21:55Z colin $")
 public enum AssetClass
 {
     /**

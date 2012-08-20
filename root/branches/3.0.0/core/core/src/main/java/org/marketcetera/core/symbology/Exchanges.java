@@ -8,7 +8,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
 
@@ -16,7 +15,6 @@ import org.skife.csv.SimpleReader;
  * @author Graham Miller
  * @version $Id: Exchanges.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: Exchanges.java 16063 2012-01-31 18:21:55Z colin $")
 public class Exchanges {
 
     private static Map<String, Exchange> micMap = new HashMap<String, Exchange>();

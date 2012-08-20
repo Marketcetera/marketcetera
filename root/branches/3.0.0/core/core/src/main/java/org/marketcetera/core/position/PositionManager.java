@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.ReportBase;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$")
 public interface PositionManager
 {
     /**

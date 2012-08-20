@@ -1,7 +1,6 @@
 package org.marketcetera.security;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A holder of a piece of data.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: Holder.java 82324 2012-04-09 20:56:08Z colin $")
 public class Holder<T>
 {
 

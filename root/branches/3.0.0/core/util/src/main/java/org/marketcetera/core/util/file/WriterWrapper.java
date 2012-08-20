@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
-import org.marketcetera.api.attributes.ClassVersion;
+
 import org.marketcetera.core.util.unicode.SignatureCharset;
 import org.marketcetera.core.util.unicode.UnicodeFileWriter;
 import org.marketcetera.core.util.unicode.UnicodeOutputStreamWriter;
@@ -27,7 +27,6 @@ import static org.marketcetera.core.util.file.SpecialNames.*;
 
 /* $License$ */
 
-@ClassVersion("$Id: WriterWrapper.java 16063 2012-01-31 18:21:55Z colin $")
 public class WriterWrapper
     implements Closeable
 {

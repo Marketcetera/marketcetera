@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.MockMarketDataFeedModuleFactory;
 
 import static org.junit.Assert.*;
@@ -18,7 +17,6 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ProviderLoadTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class ProviderLoadTest extends ModuleTestBase {
     @After
     public void cleanup() throws Exception {

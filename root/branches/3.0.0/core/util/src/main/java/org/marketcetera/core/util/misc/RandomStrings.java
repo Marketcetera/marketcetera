@@ -3,8 +3,6 @@ package org.marketcetera.core.util.misc;
 import java.nio.charset.Charset;
 import java.util.Random;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Utilities for random string generation. All random distributions
  * are uniform.
@@ -16,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: RandomStrings.java 16063 2012-01-31 18:21:55Z colin $")
 public final class RandomStrings
 {
 
