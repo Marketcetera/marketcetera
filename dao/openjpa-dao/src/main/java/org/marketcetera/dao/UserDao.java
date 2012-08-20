@@ -3,8 +3,8 @@ package org.marketcetera.dao;
 import java.util.List;
 
 import org.marketcetera.api.security.User;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+//import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /* $License$ */
 
@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * @since $Release$
  */
 public interface UserDao {
-    User loadUserByUsername(String username) throws UsernameNotFoundException;
+//    User loadUserByUsername(String username) throws UsernameNotFoundException;
 
     /**
      * Gets the <code>User</code> corresponding to the given username.
@@ -31,7 +31,7 @@ public interface UserDao {
      *
      * @param inData a <code>User</code> value
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void add(User inData);
 
     /**
@@ -39,7 +39,7 @@ public interface UserDao {
      *
      * @param inData a <code>User</code> value
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void save(User inData);
 
     /**
@@ -47,7 +47,7 @@ public interface UserDao {
      *
      * @param inData a <code>User</code> value
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void delete(User inData);
 
     /**

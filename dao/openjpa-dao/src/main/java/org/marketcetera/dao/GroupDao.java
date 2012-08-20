@@ -3,7 +3,7 @@ package org.marketcetera.dao;
 import java.util.List;
 
 import org.marketcetera.core.systemmodel.Group;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 
 /* $License$ */
 
@@ -28,14 +28,14 @@ public interface GroupDao
      *
      * @param inData a <code>Group</code> value
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void add(Group inData);
     /**
      * Saves the given <code>Group</code> to the database.
      *
      * @param inData a <code>Group</code> value
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void save(Group inData);
     /**
      * Gets the <code>Group</code> corresponding to the given id.
@@ -55,6 +55,6 @@ public interface GroupDao
      *
      * @param inData a <code>Group</code> value
      */
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void delete(Group inData);
 }

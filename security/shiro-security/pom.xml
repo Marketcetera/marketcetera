@@ -46,7 +46,6 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.marketcetera.security.shiro.impl</Export-Package>
-                        <Bundle-Blueprint>OSGI-INF/services.xml</Bundle-Blueprint>
                     </instructions>
                 </configuration>
             </plugin>

@@ -8,8 +8,8 @@ import org.marketcetera.dao.UserDao;
 import org.marketcetera.api.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+//import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
@@ -55,14 +55,14 @@ public class UserDaoImpl implements UserDao {
         return entityManager.createNamedQuery("findAllUsers").getResultList();
     }
 
-    @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = getByName(username);
-        if(user == null) {
-            throw new UsernameNotFoundException(username);
-        }
-        return user;
-    }
+//    @Override
+//    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+//        User user = getByName(username);
+//        if(user == null) {
+//            throw new UsernameNotFoundException(username);
+//        }
+//        return user;
+//    }
 
     @PersistenceContext
     public void setEntityManager(EntityManager entityManager) {

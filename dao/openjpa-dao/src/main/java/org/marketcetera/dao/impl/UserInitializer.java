@@ -7,8 +7,8 @@ import org.marketcetera.core.systemmodel.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.util.misc.Initializer;
 import org.marketcetera.dao.DataAccessService;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 
 /* $License$ */
 
@@ -61,7 +61,7 @@ public class UserInitializer
             return;
         } finally {
             // remove temp authentication
-            SecurityContextHolder.getContext().setAuthentication(null);
+//            SecurityContextHolder.getContext().setAuthentication(null);
         }
     }
     /**
@@ -89,8 +89,9 @@ public class UserInitializer
      */
     private void execute(UserSpecification inUserSpecification)
     {
-        User user = userFactory.create(inUserSpecification.getUsername(),
-                                       passwordEncoder.encode(inUserSpecification.getPassword()));
+//        String password = passwordEncoder.encode(inUserSpecification.getPassword());
+        String password = inUserSpecification.getPassword();
+        User user = userFactory.create(inUserSpecification.getUsername(), password);
         dataService.getUserDao().add(user);
         SLF4JLoggerProxy.info(UserInitializer.class,
                               "{} created",
@@ -139,5 +140,5 @@ public class UserInitializer
     /**
      * password encoder value
      */
-    private PasswordEncoder passwordEncoder;
+//    private PasswordEncoder passwordEncoder;
 }

@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.security.Messages;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /* $License$ */
@@ -34,12 +34,12 @@ import org.springframework.stereotype.Component;
 @NotThreadSafe
 @Component
 public class PBKDF2Encoder
-        implements PasswordEncoder
+//        implements PasswordEncoder
 {
     /* (non-Javadoc)
      * @see org.springframework.security.crypto.password.PasswordEncoder#encode(java.lang.CharSequence)
      */
-    @Override
+//    @Override
     public String encode(CharSequence inRawPassword)
     {
         try {
@@ -55,7 +55,7 @@ public class PBKDF2Encoder
     /* (non-Javadoc)
      * @see org.springframework.security.crypto.password.PasswordEncoder#matches(java.lang.CharSequence, java.lang.String)
      */
-    @Override
+//    @Override
     public boolean matches(CharSequence inRawPassword,
                            String inEncodedPassword)
     {

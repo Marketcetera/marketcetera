@@ -1,8 +1,8 @@
 package org.marketcetera.core.systemmodel;
 
-import org.springframework.security.core.GrantedAuthority;
-
 /* $License$ */
+
+import org.marketcetera.api.security.GrantedAuthority;
 
 /**
  * Describes authority levels in the system.
