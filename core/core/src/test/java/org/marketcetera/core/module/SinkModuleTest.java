@@ -12,7 +12,6 @@ import javax.management.JMX;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.*;
 
@@ -22,7 +21,6 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: SinkModuleTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class SinkModuleTest extends ModuleTestBase {
     @BeforeClass
     public static void setup() throws Exception {

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.Message;
 import quickfix.field.*;
 import quickfix.field.converter.DecimalConverter;
@@ -23,7 +22,6 @@ import static org.junit.Assert.*;
  * @version $Id: ExecutionReportTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionReportTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class ExecutionReportTest extends TypesTestBase {
     /**
      * Tests various failures when creating execution reports.

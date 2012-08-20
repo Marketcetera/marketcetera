@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A class loader that is used to test provider refresh behavior. The
  * class loader dynamically returns properties files based on the
@@ -18,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DynamicResourceLoader.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DynamicResourceLoader.java 82330 2012-04-10 16:29:13Z colin $")
 public class DynamicResourceLoader extends ClassLoader {
     @Override
     public InputStream getResourceAsStream(String name) {

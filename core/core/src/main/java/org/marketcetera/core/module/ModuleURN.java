@@ -7,7 +7,6 @@ import java.util.Arrays;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 /* $License$ */
@@ -48,7 +47,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
  * @version $Id: ModuleURN.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleURN.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 @XmlJavaTypeAdapter(ModuleURNXmlAdapter.class)
 public final class ModuleURN implements Serializable {
     /**

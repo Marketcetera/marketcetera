@@ -7,7 +7,6 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: BogusFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $")
 public class BogusFeedMessageTranslator
     implements DataRequestTranslator<MarketDataRequest>
 {

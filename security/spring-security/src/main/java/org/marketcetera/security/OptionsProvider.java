@@ -1,7 +1,6 @@
 package org.marketcetera.security;
 
 import org.apache.commons.cli.Options;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A provider of extra command line options.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: OptionsProvider.java 82324 2012-04-09 20:56:08Z colin $")
 public interface OptionsProvider
 {
 

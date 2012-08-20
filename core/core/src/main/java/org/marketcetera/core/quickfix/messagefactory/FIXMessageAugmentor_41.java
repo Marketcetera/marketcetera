@@ -3,8 +3,6 @@ package org.marketcetera.core.quickfix.messagefactory;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
@@ -14,7 +12,6 @@ import quickfix.field.*;
  * @version $Id: FIXMessageAugmentor_41.java 16063 2012-01-31 18:21:55Z colin $
  */
 
-@ClassVersion("$Id: FIXMessageAugmentor_41.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
 
     private static String[] TT_APPLICABLE_MESSAGE_CODES = new String[] {

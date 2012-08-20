@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.options.OptionUtils;
 
 /* $License$ */
@@ -30,7 +29,6 @@ import org.marketcetera.core.options.OptionUtils;
  * @version $Id: Option.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: Option.java 16063 2012-01-31 18:21:55Z colin $")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Option extends Instrument {

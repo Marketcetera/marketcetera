@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * The type of coupling to use between two modules
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DataCoupling.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataCoupling.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public enum DataCoupling {
     /**
      * Data is communicated synchronously, ie. the data receiver

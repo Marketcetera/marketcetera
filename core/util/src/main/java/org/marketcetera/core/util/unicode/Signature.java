@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.unicode;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A byte stream signature. It appears in the beginning (header) of a
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: Signature.java 16063 2012-01-31 18:21:55Z colin $")
 public enum Signature
 {
     NONE(ArrayUtils.EMPTY_BYTE_ARRAY),

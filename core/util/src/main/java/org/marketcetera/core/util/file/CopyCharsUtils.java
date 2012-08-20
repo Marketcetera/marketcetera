@@ -8,7 +8,6 @@ import org.marketcetera.core.util.except.ExceptUtils;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Utilities for copying textual data, in the default JVM charset. The
@@ -22,7 +21,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: CopyCharsUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public final class CopyCharsUtils
 {
 

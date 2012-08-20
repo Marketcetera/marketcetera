@@ -8,7 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: Equity.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: Equity.java 16063 2012-01-31 18:21:55Z colin $")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Equity extends Instrument {

@@ -3,7 +3,7 @@ package org.marketcetera.core.ws.stateful;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.marketcetera.api.attributes.ClassVersion;
+
 import org.marketcetera.core.ws.tags.NodeId;
 import org.marketcetera.core.ws.tags.SessionId;
 
@@ -23,7 +23,6 @@ import org.marketcetera.core.ws.tags.SessionId;
 
 /* $License$ */
 
-@ClassVersion("$Id: SessionManager.java 82324 2012-04-09 20:56:08Z colin $")
 public class SessionManager<T>
 {
 
@@ -57,8 +56,7 @@ public class SessionManager<T>
      * The reaper.
      */
 
-    @ClassVersion("$Id: SessionManager.java 82324 2012-04-09 20:56:08Z colin $")
-    final class Reaper
+        final class Reaper
         extends Thread
     {
 

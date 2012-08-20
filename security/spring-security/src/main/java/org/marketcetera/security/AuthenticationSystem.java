@@ -6,7 +6,6 @@ import java.util.LinkedList;
 
 import org.marketcetera.core.util.except.ExceptUtils;
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An authentication system. It is responsible for using a series of
@@ -48,7 +47,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: AuthenticationSystem.java 82324 2012-04-09 20:56:08Z colin $")
 public class AuthenticationSystem
 {
 

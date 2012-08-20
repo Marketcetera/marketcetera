@@ -3,7 +3,6 @@ package org.marketcetera.core.messagehistory;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.trade.OrderID;
 import org.marketcetera.core.trade.ReportBase;
@@ -19,7 +18,6 @@ import quickfix.Message;
  * @version $Id: ReportHolder.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportHolder.java 82326 2012-04-10 16:27:07Z colin $")
 public class ReportHolder
     implements Comparable<ReportHolder> {
 

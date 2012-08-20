@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.module.*;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -28,7 +27,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: EmitterTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class EmitterTest extends ModuleTestBase {
 
     @BeforeClass

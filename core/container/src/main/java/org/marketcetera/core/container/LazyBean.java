@@ -1,7 +1,6 @@
 package org.marketcetera.core.container;
 
 import org.marketcetera.core.util.except.I18NRuntimeException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A base class for a Spring bean which allows for on-demand
@@ -23,7 +22,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: LazyBean.java 82323 2012-04-09 16:32:23Z colin $")
 public abstract class LazyBean
 {
 

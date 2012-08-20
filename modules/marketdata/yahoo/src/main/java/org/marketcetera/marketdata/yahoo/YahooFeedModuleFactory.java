@@ -5,7 +5,6 @@ import org.marketcetera.core.module.Module;
 import org.marketcetera.core.module.ModuleCreationException;
 import org.marketcetera.core.module.ModuleFactory;
 import org.marketcetera.core.module.ModuleURN;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: YahooFeedModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooFeedModuleFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public class YahooFeedModuleFactory
         extends ModuleFactory
 {

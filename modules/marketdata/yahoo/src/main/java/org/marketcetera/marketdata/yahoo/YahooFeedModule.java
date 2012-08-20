@@ -7,7 +7,6 @@ import org.apache.commons.lang.Validate;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.AbstractMarketDataModule;
 import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -30,7 +29,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: YahooFeedModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooFeedModule.java 16063 2012-01-31 18:21:55Z colin $")
 public class YahooFeedModule
         extends AbstractMarketDataModule<YahooFeedToken,YahooFeedCredentials>
         implements YahooFeedMXBean

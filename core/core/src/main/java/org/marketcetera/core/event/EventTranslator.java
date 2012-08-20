@@ -3,7 +3,6 @@ package org.marketcetera.core.event;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Translates to and from {@link Event} format.
@@ -12,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: EventTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: EventTranslator.java 16063 2012-01-31 18:21:55Z colin $")
 public interface EventTranslator
 {
     /**

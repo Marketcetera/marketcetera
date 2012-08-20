@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.DepthOfBookEvent;
@@ -26,7 +25,6 @@ import org.marketcetera.core.trade.Instrument;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: DepthOfBookEventBuilder.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class DepthOfBookEventBuilder
         extends AbstractEventBuilderImpl<DepthOfBookEvent>
 {

@@ -1,7 +1,6 @@
 package org.marketcetera.core.messagehistory;
 
 import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: LatestExecutionReportFunction.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: LatestExecutionReportFunction.java 82326 2012-04-10 16:27:07Z colin $") //$NON-NLS-1$
 public class LatestExecutionReportFunction extends LatestReportFunction {
 
     /**

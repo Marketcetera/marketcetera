@@ -1,7 +1,5 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Orders that are related to an existing order. These orders
@@ -12,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: RelatedOrder.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: RelatedOrder.java 16063 2012-01-31 18:21:55Z colin $")
 public interface RelatedOrder extends OrderBase {
     /**
      * The original order ID of the order that is being cancelled or replaced.

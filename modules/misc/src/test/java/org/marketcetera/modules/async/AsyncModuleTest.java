@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.module.*;
-import org.marketcetera.api.attributes.ClassVersion;
 
 
 /* $License$ */
@@ -33,7 +32,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: AsyncModuleTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: AsyncModuleTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class AsyncModuleTest extends ModuleTestBase {
 
     @BeforeClass

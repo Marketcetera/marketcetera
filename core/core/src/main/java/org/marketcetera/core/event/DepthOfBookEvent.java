@@ -2,8 +2,6 @@ package org.marketcetera.core.event;
 
 import java.util.List;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DepthOfBookEvent.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: DepthOfBookEvent.java 16063 2012-01-31 18:21:55Z colin $")
 public interface DepthOfBookEvent
         extends AggregateEvent, HasInstrument
 {

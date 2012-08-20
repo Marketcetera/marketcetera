@@ -2,7 +2,6 @@ package org.marketcetera.security;
 
 import java.util.Arrays;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A holder of a character array.
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: HolderCharArray.java 82324 2012-04-09 20:56:08Z colin $")
 public class HolderCharArray
     extends Holder<char[]>
 {

@@ -1,7 +1,5 @@
 package org.marketcetera.core.systemmodel;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: GroupFactory.java 82315 2012-03-17 01:58:54Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: GroupFactory.java 82315 2012-03-17 01:58:54Z colin $")
 public interface GroupFactory
 {
     /**

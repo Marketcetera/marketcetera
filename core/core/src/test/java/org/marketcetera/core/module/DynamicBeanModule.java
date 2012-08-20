@@ -6,7 +6,6 @@ import javax.management.AttributeNotFoundException;
 import javax.management.DynamicMBean;
 import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DynamicBeanModule.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: DynamicBeanModule.java 82330 2012-04-10 16:29:13Z colin $")
 class DynamicBeanModule extends Module implements DynamicMBean {
     /**
      * Creates an instance.

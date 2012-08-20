@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.Date;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 /* $License$ */
@@ -17,7 +16,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ComplexModuleFactory.java 82330 2012-04-10 16:29:13Z colin $")
 public class ComplexModuleFactory extends ModuleFactory {
     public ComplexModuleFactory() {
         super(PROVIDER_URN, TestMessages.MULTIPLE_2_PROVIDER, true, false,

@@ -18,8 +18,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
-import org.marketcetera.core.module.*;
 
 /* $License$ */
 /**
@@ -27,7 +25,6 @@ import org.marketcetera.core.module.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: LifecycleTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class LifecycleTest extends ModuleTestBase {
     @BeforeClass
     public static void setup() throws Exception {

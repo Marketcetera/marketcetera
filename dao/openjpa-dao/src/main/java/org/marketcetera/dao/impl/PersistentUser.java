@@ -16,7 +16,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.api.security.GrantedAuthority;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.systemmodel.Authority;
@@ -36,7 +35,6 @@ import org.marketcetera.core.systemmodel.Authority;
 @NamedNativeQueries( { @NamedNativeQuery(name="findAuthoritiesByUserId",query="select distinct authorities.id, authorities.authority, authorities.version from authorities as authorities where authorities.id in (select groups_authorities.authorities_id from groups_authorities as groups_authorities where groups_authorities.groups_id in (select groups.id from groups as groups where groups.id in (select groups_id from groups_users as groups_users, users as users where users.id = groups_users.users_id and users.id=?)))",resultClass=PersistentAuthority.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
-@ClassVersion("$Id: PersistentUser.java 82353 2012-05-10 21:56:11Z colin $")
 public class PersistentUser
         extends PersistentVersionedObject
         implements User

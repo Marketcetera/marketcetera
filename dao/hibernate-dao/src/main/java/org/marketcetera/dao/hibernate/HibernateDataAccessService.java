@@ -21,7 +21,6 @@ import org.springframework.stereotype.Repository;
  */
 @MappedSuperclass
 @Repository
-@ClassVersion("$Id: HibernateDataAccessService.java 82355 2012-05-17 23:29:18Z colin $")
 public class HibernateDataAccessService
         implements DataAccessService
 {

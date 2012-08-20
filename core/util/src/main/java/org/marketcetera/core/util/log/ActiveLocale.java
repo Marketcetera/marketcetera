@@ -4,7 +4,7 @@ import java.util.EmptyStackException;
 import java.util.Locale;
 import java.util.Stack;
 import java.util.concurrent.Callable;
-import org.marketcetera.api.attributes.ClassVersion;
+
 import org.marketcetera.core.util.misc.CollectionUtils;
 
 /**
@@ -42,7 +42,6 @@ import org.marketcetera.core.util.misc.CollectionUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id: ActiveLocale.java 16063 2012-01-31 18:21:55Z colin $")
 public class ActiveLocale
 {
 

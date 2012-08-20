@@ -3,7 +3,6 @@ package org.marketcetera.modules.cep.system;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.module.*;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,6 @@ import java.util.Map;
  * @since 1.0.0
  * @version $Id: CEPSystemProcessor.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CEPSystemProcessor.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class CEPSystemProcessor extends Module
         implements DataReceiver, DataEmitter {
 

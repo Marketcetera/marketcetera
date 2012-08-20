@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -20,7 +19,6 @@ import ca.odell.glazedlists.event.ListEventListener;
  * @version $Id: SummaryRowUpdater.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: SummaryRowUpdater.java 16063 2012-01-31 18:21:55Z colin $")
 public class SummaryRowUpdater {
 
     private final EventList<PositionRow> mChildren;

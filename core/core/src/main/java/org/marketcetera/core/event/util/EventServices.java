@@ -1,7 +1,6 @@
 package org.marketcetera.core.event.util;
 
 import javax.annotation.concurrent.Immutable;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.beans.HasEventBean;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 
@@ -15,7 +14,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * @since 2.0.0
  */
 @Immutable
-@ClassVersion("$Id: EventServices.java 16063 2012-01-31 18:21:55Z colin $")
 public final class EventServices
 {
     /**

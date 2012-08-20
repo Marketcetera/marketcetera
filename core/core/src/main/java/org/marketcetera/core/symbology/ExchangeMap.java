@@ -3,13 +3,10 @@ package org.marketcetera.core.symbology;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * @author Graham Miller
  * @version $Id: ExchangeMap.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: ExchangeMap.java 16063 2012-01-31 18:21:55Z colin $")
 public class ExchangeMap {
     private SymbolScheme scheme;
     private Map<String, Exchange> schemeToStandardTranslation;

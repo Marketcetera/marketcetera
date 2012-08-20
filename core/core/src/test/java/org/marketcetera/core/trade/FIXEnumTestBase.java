@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.*;
 
@@ -21,7 +20,6 @@ import static org.junit.Assert.*;
  * @version $Id: FIXEnumTestBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: FIXEnumTestBase.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public abstract class FIXEnumTestBase<F,E extends Enum<E>> {
     /**
      * Verifies all enum values.

@@ -13,7 +13,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.util.test.UnicodeData;
 
 import static org.junit.Assert.*;
@@ -24,7 +23,6 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: StringToTypeConvertTest.java 82330 2012-04-10 16:29:13Z colin $") //$NON-NLS-1$
 public class StringToTypeConvertTest {
     @BeforeClass
     public static void initLogger() {

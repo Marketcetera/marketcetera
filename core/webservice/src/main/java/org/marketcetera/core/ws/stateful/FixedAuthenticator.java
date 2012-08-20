@@ -2,7 +2,6 @@ package org.marketcetera.core.ws.stateful;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateless.StatelessClientContext;
 
 /**
@@ -16,7 +15,6 @@ import org.marketcetera.core.ws.stateless.StatelessClientContext;
 
 /* $License$ */
 
-@ClassVersion("$Id: FixedAuthenticator.java 82324 2012-04-09 20:56:08Z colin $")
 public class FixedAuthenticator
     implements Authenticator
 {

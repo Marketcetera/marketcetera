@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.wrappers;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A wrapper for any object, allowing it to become a root element in
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 /* $License$ */
 
 @XmlRootElement
-@ClassVersion("$Id: RootElementWrapper.java 82324 2012-04-09 20:56:08Z colin $")
 public class RootElementWrapper<T>
     extends BaseWrapper<T>
 {

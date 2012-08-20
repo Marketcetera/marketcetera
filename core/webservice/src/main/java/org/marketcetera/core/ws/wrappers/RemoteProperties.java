@@ -6,7 +6,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.core.util.except.I18NThrowable;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A container for the information marshalled/serialized by a {@link
@@ -31,7 +30,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: RemoteProperties.java 82324 2012-04-09 20:56:08Z colin $")
 public class RemoteProperties
     implements Serializable
 {

@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
@@ -28,7 +27,6 @@ import static org.junit.Assert.fail;
 
 /* $License$ */
 
-@ClassVersion("$Id: FIXConverterTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXConverterTest
     extends TypesTestBase
 {

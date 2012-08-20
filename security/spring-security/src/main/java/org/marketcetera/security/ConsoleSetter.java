@@ -2,7 +2,6 @@ package org.marketcetera.security;
 
 import java.io.Console;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A setter that obtains holder data via the console. It is supported
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: ConsoleSetter.java 82324 2012-04-09 20:56:08Z colin $")
 public abstract class ConsoleSetter<T extends Holder<?>>
     extends Setter<T>
 {

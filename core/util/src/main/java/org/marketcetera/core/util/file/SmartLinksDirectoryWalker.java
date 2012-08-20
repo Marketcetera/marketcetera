@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Collection;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A {@link DirectoryWalker} which provides convenience methods to
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 /* $License$ */
 
 @SuppressWarnings("rawtypes")
-@ClassVersion("$Id: SmartLinksDirectoryWalker.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class SmartLinksDirectoryWalker
     extends DirectoryWalker
 {

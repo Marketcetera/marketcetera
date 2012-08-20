@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata.csv;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 
@@ -13,7 +12,6 @@ import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
  * @since 2.1.0
  * @version $Id: CSVFeedToken.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVFeedToken.java 16063 2012-01-31 18:21:55Z colin $")
 public class CSVFeedToken
         extends AbstractMarketDataFeedToken<CSVFeed>
 {

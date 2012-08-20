@@ -40,7 +40,6 @@ import quickfix.Message;
  * @version $Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $")
 public abstract class AbstractRunningStrategy
         implements RunningStrategy
 {
@@ -1656,8 +1655,7 @@ public abstract class AbstractRunningStrategy
      * @version $Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $")
-    private static final class Callback
+        private static final class Callback
             implements Runnable
     {
         /**

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import javax.management.MXBean;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ConfigurationProviderFactoryMXBean.java 82330 2012-04-10 16:29:13Z colin $")
 @MXBean(true)
 @DisplayName("Management interface for configuration provider bean")
 public interface ConfigurationProviderFactoryMXBean {

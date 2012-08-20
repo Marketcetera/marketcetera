@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A factory that summarizes the output onto files created via
  * {@link java.io.File#createTempFile(String, String)}.
@@ -18,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: FileStreamFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: FileStreamFactory.java 16063 2012-01-31 18:21:55Z colin $")
 class FileStreamFactory implements PrintStreamFactory {
     /**
      * The singleton instance.

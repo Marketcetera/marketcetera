@@ -29,7 +29,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
 public class JavaCompilerExecutionEngine
         implements ExecutionEngine, Messages
 {
@@ -235,8 +234,7 @@ public class JavaCompilerExecutionEngine
      * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
-    private static class SourceJavaFileObject
+        private static class SourceJavaFileObject
         extends SimpleJavaFileObject
     {
         /**
@@ -281,8 +279,7 @@ public class JavaCompilerExecutionEngine
      * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
-    private static class InMemoryClassLoader
+        private static class InMemoryClassLoader
         extends ClassLoader
     {
         /**
@@ -329,8 +326,7 @@ public class JavaCompilerExecutionEngine
      * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
-    private class InMemoryFileManager
+        private class InMemoryFileManager
         extends ForwardingJavaFileManager<StandardJavaFileManager>
     {
         /**
@@ -463,8 +459,7 @@ public class JavaCompilerExecutionEngine
      * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $")
-    private static class InMemoryJavaFileObject
+        private static class InMemoryJavaFileObject
         extends SimpleJavaFileObject
     {
         /**

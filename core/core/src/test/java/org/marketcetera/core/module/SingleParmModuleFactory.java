@@ -2,8 +2,6 @@ package org.marketcetera.core.module;
 
 import java.net.URI;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A module factory that supports single instance only and does require
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: SingleParmModuleFactory.java 82330 2012-04-10 16:29:13Z colin $")
 public class SingleParmModuleFactory extends ModuleFactory {
     @Override
     public SingletonModule create(Object... parameters)

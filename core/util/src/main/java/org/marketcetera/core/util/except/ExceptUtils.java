@@ -6,7 +6,6 @@ import java.nio.channels.FileLockInterruptionException;
 import javax.naming.InterruptedNamingException;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * General-purpose utilities.
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: ExceptUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public final class ExceptUtils
 {
 

@@ -2,7 +2,6 @@ package org.marketcetera.marketdata.bogus;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.AbstractMarketDataModule;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: BogusFeedModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: BogusFeedModule.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public final class BogusFeedModule
         extends AbstractMarketDataModule<BogusFeedToken,
                                          BogusFeedCredentials>

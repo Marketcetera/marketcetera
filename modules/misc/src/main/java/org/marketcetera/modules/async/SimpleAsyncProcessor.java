@@ -1,6 +1,5 @@
 package org.marketcetera.modules.async;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.core.module.*;
@@ -91,7 +90,6 @@ import javax.management.*;
  * @version $Id: SimpleAsyncProcessor.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: SimpleAsyncProcessor.java 16063 2012-01-31 18:21:55Z colin $")
 public class SimpleAsyncProcessor extends Module
         implements DataEmitter, DataReceiver, DynamicMBean {
 

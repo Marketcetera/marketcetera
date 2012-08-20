@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.quickfix.cficode.OptionCFICode;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.*;
 import quickfix.Message.Header;
@@ -22,7 +21,6 @@ import quickfix.field.*;
  * @author gmiller
  *         $Id: FIXMessageUtil.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: FIXMessageUtil.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXMessageUtil {
 
     private static final String LOGGER_NAME = FIXMessageUtil.class.getName();

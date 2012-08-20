@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A context, comprising a group of setters. The context provides an
@@ -22,7 +21,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: Context.java 82324 2012-04-09 20:56:08Z colin $")
 public abstract class Context<T extends Setter<?>>
 {
 

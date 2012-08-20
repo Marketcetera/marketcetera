@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
  * @version $Id: ApplicationVersionTest.java 82306 2012-02-29 23:18:25Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: ApplicationVersionTest.java 82306 2012-02-29 23:18:25Z colin $")
 public class ApplicationVersionTest
 {
     /**

@@ -16,7 +16,6 @@ import javax.management.JMX;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
 import org.marketcetera.core.util.log.I18NBoundMessage3P;
@@ -72,7 +71,6 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
-@ClassVersion("$Id: ModuleManager.java 16063 2012-01-31 18:21:55Z colin $")
 public final class ModuleManager {
     /**
      * Gets the singleton instance of <code>ModuleManager</code> if one

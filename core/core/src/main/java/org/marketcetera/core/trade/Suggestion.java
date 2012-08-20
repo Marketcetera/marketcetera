@@ -3,8 +3,6 @@ package org.marketcetera.core.trade;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Identifies data needed for an order suggestion.
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: Suggestion.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: Suggestion.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface Suggestion extends Serializable {
     /**
      * The identifier for this suggestion.

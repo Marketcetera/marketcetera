@@ -1,7 +1,5 @@
 package org.marketcetera.core.event;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import quickfix.Message;
 
 /* $License$ */
@@ -15,7 +13,6 @@ import quickfix.Message;
  * @version $Id: HasFIXMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.6.0
  */
-@ClassVersion("$Id: HasFIXMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public interface HasFIXMessage
 {
     /**

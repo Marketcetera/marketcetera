@@ -7,8 +7,6 @@ import java.util.Iterator;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Provides a <code>Deque</code> implementation that cannot be modified.
  * 
@@ -20,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.1.4
  */
 @NotThreadSafe
-@ClassVersion("$Id: UnmodifiableDeque.java 16063 2012-01-31 18:21:55Z colin $")
 public class UnmodifiableDeque<T>
         implements Deque<T>
 {
@@ -351,8 +348,7 @@ public class UnmodifiableDeque<T>
      * @since 2.1.4
      */
     @ThreadSafe
-    @ClassVersion("$Id: UnmodifiableDeque.java 16063 2012-01-31 18:21:55Z colin $")
-    private class UnmodifiableIterator
+        private class UnmodifiableIterator
             implements Iterator<T>
     {
         /* (non-Javadoc)

@@ -10,7 +10,6 @@ import org.apache.commons.i18n.MessageNotFoundException;
 import org.apache.commons.i18n.ResourceBundleMessageProvider;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.util.except.ExceptUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized message provider, mapping instances of {@link
@@ -33,7 +32,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NMessageProvider.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NMessageProvider
     implements Serializable
 {

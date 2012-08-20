@@ -4,8 +4,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A filter for Unicode code points. It also maintains a cache of
  * filters associated with {@link Charset} instances.
@@ -27,7 +25,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: UCPFilter.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class UCPFilter
 {
 
@@ -38,8 +35,7 @@ public abstract class UCPFilter
      * specific charset.
      */
 
-    @ClassVersion("$Id: UCPFilter.java 16063 2012-01-31 18:21:55Z colin $")
-    private static final class UCPCharsetFilter
+        private static final class UCPCharsetFilter
         extends UCPFilter
     {
 

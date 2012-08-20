@@ -1,7 +1,6 @@
 package org.marketcetera.executioncontainer;
 
 import org.marketcetera.core.module.ModuleManager;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Id: MarketceteraCore.java 82351 2012-05-04 21:46:58Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: MarketceteraCore.java 82351 2012-05-04 21:46:58Z colin $")
 public class MarketceteraCore
         implements InitializingBean
 {

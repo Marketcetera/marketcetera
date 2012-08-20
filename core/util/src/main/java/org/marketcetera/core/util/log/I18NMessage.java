@@ -2,7 +2,6 @@ package org.marketcetera.core.util.log;
 
 import java.io.Serializable;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized message, represented using a pair of textual
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class I18NMessage
     implements Serializable
 {

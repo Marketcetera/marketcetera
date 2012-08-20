@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.tags;
 
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A tag filter.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: TagFilter.java 82324 2012-04-09 20:56:08Z colin $")
 public interface TagFilter
 {
 

@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.Message;
 
 import static org.junit.Assert.assertEquals;
@@ -19,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 
 /* $License$ */
 
-@ClassVersion("$Id: FIXResponseTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class FIXResponseTest
     extends TypesTestBase
 {

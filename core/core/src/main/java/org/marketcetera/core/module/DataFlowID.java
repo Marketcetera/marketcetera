@@ -6,7 +6,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlValue;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DataFlowID.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataFlowID.java 16063 2012-01-31 18:21:55Z colin $")   //$NON-NLS-1$
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class DataFlowID implements Serializable {
     /**

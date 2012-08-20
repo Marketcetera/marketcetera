@@ -1,6 +1,5 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Equity;
 import quickfix.Message;
@@ -18,7 +17,6 @@ import quickfix.field.CFICode;
  * @version $Id: EquityFromMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: EquityFromMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public class EquityFromMessage extends InstrumentFromMessage {
 
     @Override

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import quickfix.FieldNotFound;
@@ -33,7 +32,6 @@ import static org.junit.Assert.*;
  * @version $Id: OrderSingleTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderSingleTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class OrderSingleTest extends TypesTestBase {
     
     /**

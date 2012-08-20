@@ -3,8 +3,6 @@ package org.marketcetera.core.trade;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Declares common fields between various reports. This type is not
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ReportBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportBase.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface ReportBase extends Serializable {
     /**
      * The client assigned orderID of the order that generated this report.

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.QuoteAction;
 import org.marketcetera.core.event.QuoteEvent;
@@ -24,7 +23,6 @@ import org.marketcetera.core.trade.Instrument;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: AbstractQuoteEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class AbstractQuoteEventImpl
         implements QuoteEvent, HasEventBean
 {

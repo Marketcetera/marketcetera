@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.OptionEvent;
 import org.marketcetera.core.event.util.EventServices;
@@ -22,7 +21,6 @@ import org.marketcetera.core.trade.Option;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: OptionBean.java 16063 2012-01-31 18:21:55Z colin $")
 public final class OptionBean
         implements Serializable, Messages
 {

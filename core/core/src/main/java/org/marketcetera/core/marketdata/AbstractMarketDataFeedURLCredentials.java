@@ -1,7 +1,5 @@
 package org.marketcetera.core.marketdata;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import static org.marketcetera.core.marketdata.Messages.NULL_URL;
 
 /* $License$ */
@@ -13,7 +11,6 @@ import static org.marketcetera.core.marketdata.Messages.NULL_URL;
  * @version $Id: AbstractMarketDataFeedURLCredentials.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.1.0
  */
-@ClassVersion("$Id: AbstractMarketDataFeedURLCredentials.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class AbstractMarketDataFeedURLCredentials
         implements MarketDataFeedURLCredentials
 {

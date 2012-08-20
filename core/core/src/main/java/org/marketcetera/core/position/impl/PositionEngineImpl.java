@@ -24,7 +24,6 @@ import org.marketcetera.fork.glazed.GroupingList;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcher;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcherFactory;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -47,14 +46,12 @@ import com.google.common.collect.Maps;
  * @version $Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
 public final class PositionEngineImpl implements PositionEngine {
 
     /**
      * Comparator for PositionRows that imposes a default ordering of the data.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
-    private final static class PositionRowComparator implements
+        private final static class PositionRowComparator implements
             Comparator<PositionRow> {
 
         @Override
@@ -69,8 +66,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Supports grouping of trades by trader id, symbol, and account.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
-    private final static class TradeGroupMatcher implements
+        private final static class TradeGroupMatcher implements
             GroupMatcher<Trade<?>> {
 
         private final PositionKey<?> mKey;
@@ -98,8 +94,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Creates group matchers from trades. Used by {@link org.marketcetera.fork.glazed.GroupingList}.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
-    private final static class TradeGroupMatcherFactory implements
+        private final static class TradeGroupMatcherFactory implements
             GroupMatcherFactory<Trade<?>, GroupMatcher<Trade<?>>> {
 
         @Override
@@ -111,8 +106,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Supports grouping of positions by a number of grouping criteria.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
-    private final static class GroupingMatcher implements
+        private final static class GroupingMatcher implements
             GroupMatcher<PositionRow> {
 
         private final String[] mValues;
@@ -147,8 +141,7 @@ public final class PositionEngineImpl implements PositionEngine {
     /**
      * Creates group matchers from position rows.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
-    private final static class GroupingMatcherFactory implements
+        private final static class GroupingMatcherFactory implements
             GroupMatcherFactory<PositionRow, GroupMatcher<PositionRow>> {
 
         private final Grouping[] mGroupings;
@@ -167,8 +160,7 @@ public final class PositionEngineImpl implements PositionEngine {
      * Converts an {@link EventList} of positions into a dynamically updated
      * summary {@link PositionRow}. Used by {@link FunctionList}.
      */
-    @ClassVersion("$Id: PositionEngineImpl.java 16063 2012-01-31 18:21:55Z colin $")
-    private final static class SummarizeFunction implements
+        private final static class SummarizeFunction implements
             AdvancedFunction<EventList<PositionRow>, PositionRow> {
 
         private final Map<EventList<PositionRow>, SummaryRowUpdater> map = new IdentityHashMap<EventList<PositionRow>, SummaryRowUpdater>();

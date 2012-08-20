@@ -6,7 +6,6 @@ import java.util.Set;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.ConvertibleBond;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -21,7 +20,6 @@ import quickfix.field.Symbol;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$")
 public class ConvertibleBondToMessage
         extends InstrumentToMessage<ConvertibleBond>
 {

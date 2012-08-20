@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(readOnly=true)
-@ClassVersion("$Id: HibernateGroupDao.java 82354 2012-05-11 17:46:11Z colin $")
 public class HibernateGroupDao
         implements GroupDao
 {

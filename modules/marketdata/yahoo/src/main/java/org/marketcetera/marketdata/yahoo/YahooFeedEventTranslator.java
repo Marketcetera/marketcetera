@@ -13,7 +13,6 @@ import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -25,7 +24,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.1.4
  */
 @ThreadSafe
-@ClassVersion("$Id: YahooFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $")
 public enum YahooFeedEventTranslator
         implements EventTranslator
 {

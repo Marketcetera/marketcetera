@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A bound message implementation, representing the combination of an
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NBoundMessageBase.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NBoundMessageBase<T extends I18NMessage>
     implements I18NBoundMessage
 {

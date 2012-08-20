@@ -8,7 +8,6 @@ import org.marketcetera.core.util.except.ExceptUtils;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Utilities for copying binary data. The participating media include
@@ -21,7 +20,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: CopyBytesUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public final class CopyBytesUtils
 {
 

@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.field.OrdType;
 
 import static org.marketcetera.core.trade.OrderType.*;
@@ -18,7 +17,6 @@ import static org.marketcetera.core.trade.OrderType.*;
  * @version $Id: OrderTypeTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderTypeTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class OrderTypeTest extends FIXCharEnumTestBase <OrderType>{
     @Override
     protected OrderType getInstanceForFIXValue(Character inFIXValue) {

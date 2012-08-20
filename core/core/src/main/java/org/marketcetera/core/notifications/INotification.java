@@ -3,8 +3,6 @@ package org.marketcetera.core.notifications;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: INotification.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.8.0
  */
-@ClassVersion("$Id: INotification.java 16063 2012-01-31 18:21:55Z colin $")
 public interface INotification
     extends Serializable
 {
@@ -25,8 +22,7 @@ public interface INotification
      * @version $Id: INotification.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.8.0
      */
-    @ClassVersion("$Id: INotification.java 16063 2012-01-31 18:21:55Z colin $")
-    public enum Severity
+        public enum Severity
     {
         LOW,
         MEDIUM,

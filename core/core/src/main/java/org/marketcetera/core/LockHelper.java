@@ -3,8 +3,6 @@ package org.marketcetera.core;
 import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: LockHelper.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: LockHelper.java 16063 2012-01-31 18:21:55Z colin $")
 public class LockHelper
 {
     /**

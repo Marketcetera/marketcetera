@@ -1,6 +1,5 @@
 package org.marketcetera.core.systemmodel;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.api.security.GrantedAuthority;
 import org.marketcetera.api.systemmodel.NamedObject;
 import org.marketcetera.api.systemmodel.SystemObject;
@@ -15,7 +14,6 @@ import org.marketcetera.api.systemmodel.VersionedObject;
  * @version $Id: Authority.java 82316 2012-03-21 21:13:27Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: Authority.java 82316 2012-03-21 21:13:27Z colin $")
 public interface Authority
         extends GrantedAuthority, SystemObject, NamedObject, VersionedObject
 {

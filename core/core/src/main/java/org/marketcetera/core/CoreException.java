@@ -2,7 +2,6 @@ package org.marketcetera.core;
 
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -11,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 0.6.0
  * @version $Id: CoreException.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CoreException.java 16063 2012-01-31 18:21:55Z colin $")
 public class CoreException
     extends I18NException
 {

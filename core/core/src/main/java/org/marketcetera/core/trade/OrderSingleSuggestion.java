@@ -1,7 +1,5 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A Suggestion for a single order. Instances of this type
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderSingleSuggestion.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderSingleSuggestion.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface OrderSingleSuggestion extends Suggestion {
     /**
      * Returns the order suggested by this suggestion.

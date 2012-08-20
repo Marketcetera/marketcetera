@@ -3,7 +3,6 @@ package org.marketcetera.dao;
 import java.util.List;
 
 import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /* $License$ */
@@ -15,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
  * @version $Id: AuthorityDao.java 82353 2012-05-10 21:56:11Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: AuthorityDao.java 82353 2012-05-10 21:56:11Z colin $")
 public interface AuthorityDao
 {
     /**

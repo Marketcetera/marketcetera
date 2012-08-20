@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.wrappers;
 
 import java.util.Map;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A wrapper for marshalling a map value via JAXB.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: MapWrapper.java 82324 2012-04-09 20:56:08Z colin $")
 public class MapWrapper<K,V>
     extends BaseWrapper<Map<K,V>>
 {

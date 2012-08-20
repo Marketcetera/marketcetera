@@ -1,7 +1,5 @@
 package org.marketcetera.core.position;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import ca.odell.glazedlists.EventList;
 
 /**
@@ -14,14 +12,12 @@ import ca.odell.glazedlists.EventList;
  * @version $Id: PositionEngine.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionEngine.java 16063 2012-01-31 18:21:55Z colin $")
 public interface PositionEngine {
 
     /**
      * Base interface for position data. This is not intended to be implemented directly.
      */
-    @ClassVersion("$Id: PositionEngine.java 16063 2012-01-31 18:21:55Z colin $")
-    public interface PositionData {
+        public interface PositionData {
 
         /**
          * Returns a dynamic view of the position data.

@@ -4,8 +4,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A module for testing locking within module framework when carrying
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ConcurrentTestModule.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.1.0
  */
-@ClassVersion("$Id: ConcurrentTestModule.java 82330 2012-04-10 16:29:13Z colin $")
 public class ConcurrentTestModule extends Module
         implements DataReceiver, DataEmitter, DataFlowRequester,
         ConcurrentTestModuleMXBean {

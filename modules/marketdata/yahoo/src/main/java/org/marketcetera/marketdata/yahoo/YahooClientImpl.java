@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.concurrent.GuardedBy;
 
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -23,7 +22,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: YahooClientImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooClientImpl.java 16063 2012-01-31 18:21:55Z colin $")
 class YahooClientImpl
         implements Runnable, YahooClient
 {

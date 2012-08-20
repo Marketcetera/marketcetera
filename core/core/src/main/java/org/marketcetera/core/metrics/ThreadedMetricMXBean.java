@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.management.MXBean;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ThreadedMetricMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: ThreadedMetricMXBean.java 16063 2012-01-31 18:21:55Z colin $")
 @MXBean(true)
 public interface ThreadedMetricMXBean {
     /**

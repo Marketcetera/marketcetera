@@ -16,7 +16,6 @@ import javax.management.openmbean.SimpleType;
 import org.junit.BeforeClass;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.MockMarketDataFeedModuleFactory;
 import org.marketcetera.util.test.CollectionAssert;
 
@@ -28,7 +27,6 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ModuleTestBase.java 82330 2012-04-10 16:29:13Z colin $")
 public class ModuleTestBase {
 
     /**

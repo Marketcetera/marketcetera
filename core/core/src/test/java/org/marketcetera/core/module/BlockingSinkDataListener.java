@@ -3,8 +3,6 @@ package org.marketcetera.core.module;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A test sink data listener that receives data without blocking and enables
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: BlockingSinkDataListener.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: BlockingSinkDataListener.java 82330 2012-04-10 16:29:13Z colin $")
 public class BlockingSinkDataListener implements SinkDataListener {
     @Override
     public void receivedData(DataFlowID inFlowID, Object inData) {

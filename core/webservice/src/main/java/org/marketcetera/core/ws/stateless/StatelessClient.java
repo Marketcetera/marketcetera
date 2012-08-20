@@ -5,7 +5,6 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.marketcetera.core.util.log.ActiveLocale;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.tags.AppId;
 import org.marketcetera.core.ws.tags.VersionId;
 import org.marketcetera.core.ws.wrappers.LocaleWrapper;
@@ -21,7 +20,6 @@ import org.marketcetera.core.ws.wrappers.LocaleWrapper;
 
 /* $License$ */
 
-@ClassVersion("$Id: StatelessClient.java 82324 2012-04-09 20:56:08Z colin $")
 public class StatelessClient
     extends Node
 {

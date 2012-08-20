@@ -2,7 +2,6 @@ package org.marketcetera.core.event.util;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.OptionMarketstatEvent;
 import org.marketcetera.core.event.impl.MarketstatEventBuilder;
@@ -21,7 +20,6 @@ import org.marketcetera.core.trade.Instrument;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: MarketstatEventCache.java 16063 2012-01-31 18:21:55Z colin $")
 public class MarketstatEventCache
 {
     /**

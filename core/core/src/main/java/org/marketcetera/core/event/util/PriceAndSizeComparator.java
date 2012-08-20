@@ -3,7 +3,6 @@ package org.marketcetera.core.event.util;
 import java.util.Comparator;
 
 import javax.annotation.concurrent.Immutable;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.QuoteEvent;
 
 /* $License$ */
@@ -19,7 +18,6 @@ import org.marketcetera.core.event.QuoteEvent;
  * @since 1.5.0
  */
 @Immutable
-@ClassVersion("$Id: PriceAndSizeComparator.java 16063 2012-01-31 18:21:55Z colin $")
 public class PriceAndSizeComparator
         implements Comparator<QuoteEvent>
 {

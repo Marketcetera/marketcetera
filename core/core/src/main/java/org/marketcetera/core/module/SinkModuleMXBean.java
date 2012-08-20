@@ -3,7 +3,6 @@ package org.marketcetera.core.module;
 import java.util.Map;
 
 import javax.management.MXBean;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: SinkModuleMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: SinkModuleMXBean.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 @MXBean(true)
 @DisplayName("Sink Module")
 public interface SinkModuleMXBean {

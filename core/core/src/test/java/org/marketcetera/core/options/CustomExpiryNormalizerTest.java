@@ -3,7 +3,6 @@ package org.marketcetera.core.options;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,7 +16,6 @@ import static org.junit.Assert.assertFalse;
  * @version $Id: CustomExpiryNormalizerTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: CustomExpiryNormalizerTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class CustomExpiryNormalizerTest
 {
     /**

@@ -9,7 +9,6 @@ import org.marketcetera.core.event.TimestampCarrier;
 import org.marketcetera.core.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.w3c.dom.Node;
 
 import java.io.File;
@@ -63,7 +62,6 @@ import java.util.*;
  * @since 1.0.0
  * @version $Id: CEPEsperProcessor.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CEPEsperProcessor.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class CEPEsperProcessor extends Module
         implements DataReceiver, DataEmitter, CEPEsperProcessorMXBean {
 

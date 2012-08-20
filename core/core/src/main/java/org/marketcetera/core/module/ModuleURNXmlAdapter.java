@@ -1,7 +1,6 @@
 package org.marketcetera.core.module;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -11,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ModuleURNXmlAdapter.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: ModuleURNXmlAdapter.java 16063 2012-01-31 18:21:55Z colin $")
 class ModuleURNXmlAdapter extends XmlAdapter<String,ModuleURN> {
     @Override
     public ModuleURN unmarshal(String inValue) throws Exception {

@@ -3,8 +3,6 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import com.google.common.collect.ImmutableMap;
 
 /* $License$ */
@@ -16,7 +14,6 @@ import com.google.common.collect.ImmutableMap;
  * @version $Id: ImmutablePositionSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: ImmutablePositionSupport.java 16063 2012-01-31 18:21:55Z colin $")
 public class ImmutablePositionSupport implements IncomingPositionSupport {
 
     private final ImmutableMap<? extends PositionKey<?>, BigDecimal> mPositions;

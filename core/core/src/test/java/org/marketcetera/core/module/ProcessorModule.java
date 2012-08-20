@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ProcessorModule.java 82330 2012-04-10 16:29:13Z colin $")
 public class ProcessorModule extends ModuleBase
         implements DataEmitter, DataReceiver {
     public ProcessorModule(ModuleURN inModuleURN) {

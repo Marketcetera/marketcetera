@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * The factory for Sink Module.
@@ -21,7 +19,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: SinkModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: SinkModuleFactory.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public final class SinkModuleFactory extends ModuleFactory {
     /**
      * Creates a new sink module instance.

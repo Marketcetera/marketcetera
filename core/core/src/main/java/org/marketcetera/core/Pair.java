@@ -2,8 +2,6 @@ package org.marketcetera.core;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 0.5.0
  */
 @Immutable
-@ClassVersion("$Id: Pair.java 16063 2012-01-31 18:21:55Z colin $")
 public class Pair<T1, T2>
 {
 	/**

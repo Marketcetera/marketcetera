@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /**
@@ -19,7 +18,6 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
  * @version $Id: PublisherEngine.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: PublisherEngine.java 16063 2012-01-31 18:21:55Z colin $")
 public final class PublisherEngine
     implements IPublisher
 {

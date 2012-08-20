@@ -2,7 +2,6 @@ package org.marketcetera.core.position.impl;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.core.trade.Future;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: FuturePositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */
-@ClassVersion("$Id: FuturePositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
 public class FuturePositionKeyComparator
         extends InstrumentPositionKeyComparator<Future>
 {

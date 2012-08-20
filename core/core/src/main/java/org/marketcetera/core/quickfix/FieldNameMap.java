@@ -6,14 +6,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  *
  * @author gmiller
  * $Id: FieldNameMap.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: FieldNameMap.java 16063 2012-01-31 18:21:55Z colin $")
 public class FieldNameMap<T> {
 
     /** Creates a new instance of NameManager */

@@ -2,8 +2,6 @@ package org.marketcetera.dao.impl;
 
 import java.util.Set;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$")
 public class UserSpecification
 {
     /**

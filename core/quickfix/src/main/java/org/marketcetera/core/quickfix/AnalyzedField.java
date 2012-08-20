@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.*;
 
@@ -20,7 +19,6 @@ import quickfix.*;
 
 /* $License$ */
 
-@ClassVersion("$Id: AnalyzedField.java 82323 2012-04-09 16:32:23Z colin $")
 public class AnalyzedField
 {
 

@@ -4,7 +4,6 @@ import java.io.PrintStream;
 
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A standard authentication system. A standard system comprises a
@@ -24,7 +23,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: StandardAuthentication.java 82324 2012-04-09 20:56:08Z colin $")
 public class StandardAuthentication
 {
 

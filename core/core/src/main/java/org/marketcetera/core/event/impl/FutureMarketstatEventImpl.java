@@ -1,7 +1,6 @@
 package org.marketcetera.core.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.FutureEvent;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.beans.FutureBean;
@@ -22,7 +21,6 @@ import org.marketcetera.core.trade.StandardType;
  * @since 2.1.0
  */
 @ThreadSafe
-@ClassVersion("$Id: FutureMarketstatEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
 class FutureMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements FutureEvent

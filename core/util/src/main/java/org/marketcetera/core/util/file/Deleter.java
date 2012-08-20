@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Collection;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Deletes a file or directory recursively. It does not follow
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: Deleter.java 16063 2012-01-31 18:21:55Z colin $")
 public class Deleter
 {
 
@@ -29,8 +27,7 @@ public class Deleter
      * symbolic links, and deletes all files it traverses.
      */
 
-    @ClassVersion("$Id: Deleter.java 16063 2012-01-31 18:21:55Z colin $")
-    private static final class RecursiveDeleter
+        private static final class RecursiveDeleter
         extends SmartLinksDirectoryWalker
     {
 

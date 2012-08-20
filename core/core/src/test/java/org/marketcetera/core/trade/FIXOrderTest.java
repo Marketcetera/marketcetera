@@ -7,7 +7,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.FIXVersion;
 import quickfix.Message;
 import quickfix.field.Account;
@@ -27,7 +26,6 @@ import static org.junit.Assert.*;
  * @version $Id: FIXOrderTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: FIXOrderTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class FIXOrderTest extends TypesTestBase {
     /**
      * Tests FIX Message field accessors.

@@ -1,7 +1,6 @@
 package org.marketcetera.core.marketdata;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: IMarketDataFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: IMarketDataFeedFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public interface IMarketDataFeedFactory<F extends MarketDataFeed<? extends MarketDataFeedToken,C>,
                                         C extends MarketDataFeedCredentials> 
 {

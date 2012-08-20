@@ -2,7 +2,6 @@ package org.marketcetera.api.symbolresolver;
 
 import java.util.List;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
@@ -14,7 +13,6 @@ import org.marketcetera.core.trade.Instrument;
  * @version $Id: SymbolResolverManager.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: SymbolResolverManager.java 82347 2012-05-03 19:30:54Z colin $")
 public interface SymbolResolverManager
 {
     /**

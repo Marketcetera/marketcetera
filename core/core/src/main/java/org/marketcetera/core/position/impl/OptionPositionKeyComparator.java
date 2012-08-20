@@ -1,6 +1,5 @@
 package org.marketcetera.core.position.impl;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Option;
 import org.apache.commons.lang.builder.CompareToBuilder;
 
@@ -12,7 +11,6 @@ import org.apache.commons.lang.builder.CompareToBuilder;
  * @version $Id: OptionPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: OptionPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $")
 public class OptionPositionKeyComparator extends InstrumentPositionKeyComparator<Option> {
     /**
      * Creates an instance.

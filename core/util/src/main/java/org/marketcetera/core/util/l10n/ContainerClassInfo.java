@@ -9,7 +9,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage3P;
 import org.marketcetera.core.util.log.I18NMessage;
 import org.marketcetera.core.util.log.I18NMessageProvider;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.ReflectUtils;
 
 /**
@@ -26,7 +25,6 @@ import org.marketcetera.core.util.misc.ReflectUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id: ContainerClassInfo.java 16063 2012-01-31 18:21:55Z colin $")
 public class ContainerClassInfo
     implements MessageInfoProvider
 {

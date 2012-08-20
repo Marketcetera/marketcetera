@@ -2,8 +2,6 @@ package org.marketcetera.core.quickfix.customfields;
 
 import java.util.Date;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import quickfix.UtcTimeStampField;
 
 /**
@@ -12,7 +10,6 @@ import quickfix.UtcTimeStampField;
  * @version $Id: DateFrom.java 16063 2012-01-31 18:21:55Z colin $
  */
 
-@ClassVersion("$Id: DateFrom.java 16063 2012-01-31 18:21:55Z colin $")
 public class DateFrom extends UtcTimeStampField {
     public static final int FIELD = 9883;
     public DateFrom() {

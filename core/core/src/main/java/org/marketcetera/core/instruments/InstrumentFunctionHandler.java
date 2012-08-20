@@ -1,6 +1,5 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
@@ -20,7 +19,6 @@ import org.marketcetera.core.trade.Instrument;
  * @version $Id: InstrumentFunctionHandler.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentFunctionHandler.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class InstrumentFunctionHandler<I extends Instrument> {
     /**
      * Creates an instance that handles the specified instrument subclass.

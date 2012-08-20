@@ -4,7 +4,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.SerializationException;
 import org.apache.commons.lang.SerializationUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a serializable object. The raw
@@ -31,7 +30,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: SerWrapper.java 82324 2012-04-09 20:56:08Z colin $")
 public class SerWrapper<T extends Serializable>
     extends DualWrapper<T,byte[]>
 {

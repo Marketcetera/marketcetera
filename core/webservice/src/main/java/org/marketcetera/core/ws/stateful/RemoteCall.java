@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.stateful;
 
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateless.StatelessRemoteCall;
 import org.marketcetera.core.ws.tags.SessionId;
 import org.marketcetera.core.ws.tags.TagFilter;
@@ -21,7 +20,6 @@ import org.marketcetera.core.ws.tags.ValidSessionTagFilter;
 
 /* $License$ */
 
-@ClassVersion("$Id: RemoteCall.java 82324 2012-04-09 20:56:08Z colin $")
 public class RemoteCall<T>
     extends StatelessRemoteCall
 {

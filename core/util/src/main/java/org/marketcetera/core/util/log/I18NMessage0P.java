@@ -3,7 +3,6 @@ package org.marketcetera.core.util.log;
 import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang.ArrayUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized message, requiring exactly zero parameters.
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NMessage0P.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NMessage0P
     extends I18NMessage
     implements I18NBoundMessage

@@ -11,7 +11,6 @@ import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 
@@ -24,7 +23,6 @@ import ca.odell.glazedlists.EventList;
  * @version $Id: PositionRowImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionRowImpl.java 16063 2012-01-31 18:21:55Z colin $")
 class PositionRowImpl implements PositionRow {
 
     private final Instrument mInstrument;

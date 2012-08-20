@@ -6,7 +6,6 @@ import javax.persistence.Embeddable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlValue;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderID.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderID.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 @Embeddable
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OrderID implements Serializable {

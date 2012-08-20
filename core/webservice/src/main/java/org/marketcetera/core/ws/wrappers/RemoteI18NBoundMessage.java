@@ -4,7 +4,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A wrapper for an {@link I18NBoundMessage}. The message is
@@ -27,7 +26,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: RemoteI18NBoundMessage.java 82324 2012-04-09 20:56:08Z colin $")
 public class RemoteI18NBoundMessage
     implements Serializable
 {

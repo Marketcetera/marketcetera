@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: YahooFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
-@ClassVersion("$Id: YahooFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $")
 public enum YahooFeedMessageTranslator
         implements DataRequestTranslator<List<YahooRequest>>
 {

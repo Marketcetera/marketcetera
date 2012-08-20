@@ -1,7 +1,6 @@
 package org.marketcetera.core.instruments;
 
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: UnderlyingSymbolSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: UnderlyingSymbolSupport.java 16063 2012-01-31 18:21:55Z colin $")
 public interface UnderlyingSymbolSupport {
 
     /**

@@ -1,7 +1,6 @@
 package org.marketcetera.core.module;
 
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.l10n.MessageComparator;
 
 import static org.junit.Assert.assertTrue;
@@ -12,7 +11,6 @@ import static org.junit.Assert.assertTrue;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: MessagesTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {

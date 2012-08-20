@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.stateless;
 
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A server node for stateless communication.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: StatelessServer.java 82324 2012-04-09 20:56:08Z colin $")
 public class StatelessServer
     extends Node
 {

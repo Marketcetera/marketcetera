@@ -4,8 +4,6 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import quickfix.DataDictionary;
 import quickfix.Group;
 
@@ -20,7 +18,6 @@ import quickfix.Group;
 
 /* $License$ */
 
-@ClassVersion("$Id: AnalyzedGroup.java 82323 2012-04-09 16:32:23Z colin $")
 public class AnalyzedGroup
 {
 

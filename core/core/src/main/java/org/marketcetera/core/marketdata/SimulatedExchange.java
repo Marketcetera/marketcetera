@@ -16,7 +16,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.DividendEventBuilder;
 import org.marketcetera.core.event.impl.MarketstatEventBuilder;
@@ -66,7 +65,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @since 1.5.0
  */
 @ThreadSafe
-@ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
 public class SimulatedExchange
         implements Exchange<SimulatedExchange.Token>
 {
@@ -1251,8 +1249,7 @@ public class SimulatedExchange
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
-    @ThreadSafe
+        @ThreadSafe
     public static enum Status
     {
         /**
@@ -1333,8 +1330,7 @@ public class SimulatedExchange
      * @since 2.0.0
      */
     @ThreadSafe
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
-    private class PrivateInstrumentInfo
+        private class PrivateInstrumentInfo
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -1533,8 +1529,7 @@ public class SimulatedExchange
      * @since 2.0.0
      */
     @ThreadSafe
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
-    private static class SharedInstrumentInfo
+        private static class SharedInstrumentInfo
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -1695,8 +1690,7 @@ public class SimulatedExchange
      * @since 1.5.0
      */
     @ThreadSafe
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
-    private static class FilteringSubscriber
+        private static class FilteringSubscriber
             implements ISubscriber
     {
         /* (non-Javadoc)
@@ -2057,8 +2051,7 @@ public class SimulatedExchange
      * @since 2.0.0
      */
     @Immutable
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
-    static class TopOfBook
+        static class TopOfBook
             extends Pair<BidEvent,AskEvent>
             implements Comparable<TopOfBook>
     {
@@ -2183,8 +2176,7 @@ public class SimulatedExchange
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
-    @ClassVersion("$Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $")
-    public static final class Token
+        public static final class Token
     {
         /**
          * the original requester of the data

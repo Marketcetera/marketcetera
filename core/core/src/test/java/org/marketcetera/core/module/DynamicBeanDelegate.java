@@ -7,7 +7,6 @@ import javax.management.DynamicMBean;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A dynamic mbean delegate that provides a dynamic mbean with a single string
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DynamicBeanDelegate.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: DynamicBeanDelegate.java 82330 2012-04-10 16:29:13Z colin $")
 class DynamicBeanDelegate implements DynamicMBean {
     /**
      * Creates an instance.

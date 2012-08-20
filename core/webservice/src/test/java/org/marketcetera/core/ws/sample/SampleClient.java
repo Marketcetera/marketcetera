@@ -3,7 +3,6 @@ package org.marketcetera.core.ws.sample;
 import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.util.log.ActiveLocale;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.core.ws.stateful.Client;
 import org.marketcetera.core.ws.tags.AppId;
@@ -20,7 +19,6 @@ import org.marketcetera.core.ws.wrappers.MarshalledLocale;
 
 /* $License$ */
 
-@ClassVersion("$Id: SampleClient.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class SampleClient
     extends TestCaseBase
 {

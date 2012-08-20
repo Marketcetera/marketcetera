@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Designates the capacity of the firm placing the order.
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderCapacity.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderCapacity.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public enum OrderCapacity {
     /**
      * Sentinel value for OrderCapacity that the system is not currently

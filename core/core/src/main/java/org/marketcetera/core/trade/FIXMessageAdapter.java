@@ -2,7 +2,6 @@ package org.marketcetera.core.trade;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.InvalidMessage;
 import quickfix.Message;
 
@@ -18,7 +17,6 @@ import quickfix.Message;
 
 /* $License$ */
 
-@ClassVersion("$Id: FIXMessageAdapter.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class FIXMessageAdapter
     extends XmlAdapter<String,Message>
 {

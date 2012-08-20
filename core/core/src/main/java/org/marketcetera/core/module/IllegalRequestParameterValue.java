@@ -3,7 +3,6 @@ package org.marketcetera.core.module;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: IllegalRequestParameterValue.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: IllegalRequestParameterValue.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public class IllegalRequestParameterValue extends RequestDataException {
     private static final long serialVersionUID = 7502538172056373356L;
 

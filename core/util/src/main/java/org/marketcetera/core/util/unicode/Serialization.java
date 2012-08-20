@@ -2,7 +2,6 @@ package org.marketcetera.core.util.unicode;
 
 import java.util.EnumSet;
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A list of signature/charset pairs. This list defines a sequence of
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: Serialization.java 16063 2012-01-31 18:21:55Z colin $")
 public enum Serialization
 {
     UTF8(SignatureCharset.UTF8_UTF8),

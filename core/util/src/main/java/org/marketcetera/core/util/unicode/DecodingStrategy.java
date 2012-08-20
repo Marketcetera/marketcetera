@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.unicode;
 
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A list of one or more {@link Serialization} instances. This list
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: DecodingStrategy.java 16063 2012-01-31 18:21:55Z colin $")
 public enum DecodingStrategy
 {
     UTF8_DEFAULT(new Serialization[]

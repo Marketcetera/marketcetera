@@ -16,7 +16,6 @@ import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -33,7 +32,6 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * @version $Id: MarketceteraFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: MarketceteraFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class MarketceteraFeedEventTranslator
     implements EventTranslator, Messages
 {

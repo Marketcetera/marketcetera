@@ -13,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: UserSpecification.java 82374 2012-06-06 23:46:53Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: UserSpecification.java 82374 2012-06-06 23:46:53Z colin $")
 public class UserSpecification
 {
     /**

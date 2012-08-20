@@ -1,6 +1,5 @@
 package org.marketcetera.core.event;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
@@ -12,7 +11,6 @@ import org.marketcetera.core.trade.Equity;
  * @version $Id: HasEquity.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: HasEquity.java 16063 2012-01-31 18:21:55Z colin $")
 public interface HasEquity
         extends HasInstrument
 {

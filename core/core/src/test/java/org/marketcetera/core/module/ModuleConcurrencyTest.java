@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.util.log.I18NMessage0P;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /* $License$ */
@@ -28,7 +27,6 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
  * @version $Id: ModuleConcurrencyTest.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.1.0
  */
-@ClassVersion("$Id: ModuleConcurrencyTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class ModuleConcurrencyTest extends ModuleTestBase {
     /**
      * Tests locks acquisition when creating module instances

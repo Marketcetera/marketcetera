@@ -3,7 +3,6 @@ package org.marketcetera.marketdata.csv;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.AbstractMarketDataModule;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * StrategyAgent module for {@link CSVFeed}.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.1.0
  * @version $Id: CSVFeedModule.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVFeedModule.java 16063 2012-01-31 18:21:55Z colin $")
 public class CSVFeedModule
         extends AbstractMarketDataModule<CSVFeedToken,
                                          CSVFeedCredentials>

@@ -1,14 +1,11 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Multiple instances of this module can exist.
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: MultipleModule.java 82330 2012-04-10 16:29:13Z colin $")
 public class MultipleModule extends ModuleBase {
     public MultipleModule(ModuleURN inURN, boolean inAutoStart) {
         super(inURN, inAutoStart);

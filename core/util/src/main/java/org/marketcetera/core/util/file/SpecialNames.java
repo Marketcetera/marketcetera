@@ -1,7 +1,5 @@
 package org.marketcetera.core.util.file;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Special names used to denote standard streams or operations on
  * regular files.
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: SpecialNames.java 16063 2012-01-31 18:21:55Z colin $")
 public interface SpecialNames
 {
     /**

@@ -27,7 +27,6 @@ import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Implementation of the market data feed that reads from a CSV file.
@@ -42,8 +41,7 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.1.0
  * @version $Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $")
-public class CSVFeed 
+public class CSVFeed
         extends AbstractMarketDataFeed<CSVFeedToken,
                                                CSVFeedCredentials,
                                                CSVFeedMessageTranslator,
@@ -290,8 +288,7 @@ public class CSVFeed
      * @version $Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
-    @ClassVersion("$Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $")
-    private class CsvFeedRequest
+        private class CsvFeedRequest
             implements Runnable
     {
         /* (non-Javadoc)

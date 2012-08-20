@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * This class is used to track data flows, the modules
@@ -23,7 +21,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DataFlowTracker.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataFlowTracker.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 class DataFlowTracker {
     /**
      * Adds a data flow.

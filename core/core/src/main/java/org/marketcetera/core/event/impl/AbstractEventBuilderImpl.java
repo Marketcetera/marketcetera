@@ -3,7 +3,6 @@ package org.marketcetera.core.event.impl;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.beans.EventBean;
 
@@ -17,7 +16,6 @@ import org.marketcetera.core.event.beans.EventBean;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: AbstractEventBuilderImpl.java 16063 2012-01-31 18:21:55Z colin $")
 abstract class AbstractEventBuilderImpl<E extends Event>
         implements EventBuilder<E>
 {

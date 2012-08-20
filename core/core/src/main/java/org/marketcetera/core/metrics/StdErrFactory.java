@@ -3,8 +3,6 @@ package org.marketcetera.core.metrics;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A factory that summarizes the metrics to stderr. Before the metrics
  * are written out, a prefatory line, identifying the thread for which
@@ -14,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: StdErrFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: StdErrFactory.java 16063 2012-01-31 18:21:55Z colin $")
 class StdErrFactory implements PrintStreamFactory {
     /**
      * The singleton instance.

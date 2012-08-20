@@ -3,7 +3,6 @@ package org.marketcetera.core.marketdata;
 import org.marketcetera.core.util.log.I18NLoggerProxy;
 import org.marketcetera.core.util.log.I18NMessage0P;
 import org.marketcetera.core.util.log.I18NMessageProvider;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 0.6.0
  * @version $Id: TestMessages.java 82329 2012-04-10 16:28:13Z colin $
  */
-@ClassVersion("$Id: TestMessages.java 82329 2012-04-10 16:28:13Z colin $") //$NON-NLS-1$
 public interface TestMessages
 {
     /**

@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Instances of this classes provide means to provide default
@@ -33,7 +31,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ModuleConfigurationProvider.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleConfigurationProvider.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public interface ModuleConfigurationProvider {
     /**
      * Returns the default value, if available, for the specified

@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.stateless;
 
 import org.apache.cxf.endpoint.Server;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A service interface handle. It is used to terminate a service.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: ServiceInterface.java 82324 2012-04-09 20:56:08Z colin $")
 public class ServiceInterface
 {
 

@@ -1,7 +1,5 @@
 package org.marketcetera.core.marketdata;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id$")
 public interface FeedServices
 {
     /**

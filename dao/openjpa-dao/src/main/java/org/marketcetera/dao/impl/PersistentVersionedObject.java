@@ -4,7 +4,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
 import org.marketcetera.api.systemmodel.VersionedObject;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since $Release$
  */
 @MappedSuperclass
-@ClassVersion("$Id: PersistentVersionedObject.java 82316 2012-03-21 21:13:27Z colin $")
 public abstract class PersistentVersionedObject
         extends PersistentSystemObject
         implements VersionedObject

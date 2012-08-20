@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MultiplierCalculator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: MultiplierCalculator.java 16063 2012-01-31 18:21:55Z colin $")
 public class MultiplierCalculator implements PositionMetricsCalculator {
 
     private final PositionMetricsCalculator mDelegate;

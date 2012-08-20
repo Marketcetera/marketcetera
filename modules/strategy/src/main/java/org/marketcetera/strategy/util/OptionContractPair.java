@@ -22,7 +22,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $")
 public final class OptionContractPair
         implements Comparable<OptionContractPair>
 {
@@ -178,8 +177,7 @@ public final class OptionContractPair
      * @version $Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.0.0
      */
-    @ClassVersion("$Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $")
-    static class OptionContractPairKey
+        static class OptionContractPairKey
             implements Comparable<OptionContractPairKey>
     {
         /* (non-Javadoc)

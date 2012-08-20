@@ -57,7 +57,6 @@ import com.google.common.collect.HashBiMap;
  * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $")
 final class StrategyModule
         extends Module
         implements DataEmitter, DataFlowRequester, DataReceiver, ServicesProvider, StrategyMXBean, NotificationEmitter
@@ -1464,8 +1463,7 @@ final class StrategyModule
      * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $")
-    private static class InternalRequest
+        private static class InternalRequest
     {
         /**
          * the URN of the module that made the original request for data 
@@ -1488,8 +1486,7 @@ final class StrategyModule
      * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $")
-    private class DataRequester
+        private class DataRequester
         implements ISubscriber
     {
         /**
@@ -1580,8 +1577,7 @@ final class StrategyModule
      * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.1.0
      */
-    @ClassVersion("$Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $")
-    static interface ClientFactory
+        static interface ClientFactory
     {
         /**
          * Returns the <code>Client</code> instance to use to connect to the server. 

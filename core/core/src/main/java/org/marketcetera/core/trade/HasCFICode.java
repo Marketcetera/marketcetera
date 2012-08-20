@@ -1,7 +1,5 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: HasCFICode.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */
-@ClassVersion("$Id: HasCFICode.java 16063 2012-01-31 18:21:55Z colin $")
 public interface HasCFICode
 {
     /**

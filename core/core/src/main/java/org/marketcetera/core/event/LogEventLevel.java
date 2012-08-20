@@ -1,7 +1,6 @@
 package org.marketcetera.core.event;
 
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -12,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: LogEventLevel.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: LogEventLevel.java 16063 2012-01-31 18:21:55Z colin $")
 public enum LogEventLevel
 {
     DEBUG,

@@ -2,7 +2,6 @@ package org.marketcetera.marketdata.marketcetera;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Testing the {@link MarketceteraFeed} class.
@@ -10,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MarketceteraFeedTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 
-@ClassVersion("$Id: MarketceteraFeedTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class MarketceteraFeedTest
 {
     @Before

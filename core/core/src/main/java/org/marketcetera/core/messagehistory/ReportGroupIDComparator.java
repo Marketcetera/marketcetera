@@ -2,7 +2,6 @@ package org.marketcetera.core.messagehistory;
 
 import java.util.Comparator;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.OrderID;
 
 /* $License$ */
@@ -14,7 +13,6 @@ import org.marketcetera.core.trade.OrderID;
  * @version $Id: ReportGroupIDComparator.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ReportGroupIDComparator.java 82326 2012-04-10 16:27:07Z colin $") //$NON-NLS-1$
 public class ReportGroupIDComparator implements Comparator<ReportHolder> {
 
     public int compare(ReportHolder inHolder1, ReportHolder inHolder2) {

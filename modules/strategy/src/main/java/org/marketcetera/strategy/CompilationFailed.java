@@ -17,7 +17,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $")
 public class CompilationFailed
         extends StrategyException
 {
@@ -88,8 +87,7 @@ public class CompilationFailed
      * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $")
-    public static enum Type
+        public static enum Type
     {
         /**
          * a compilation warning
@@ -107,8 +105,7 @@ public class CompilationFailed
      * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
-    @ClassVersion("$Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $")
-    public static class Diagnostic
+        public static class Diagnostic
     {
         /**
          * Creates a warning diagnostic.

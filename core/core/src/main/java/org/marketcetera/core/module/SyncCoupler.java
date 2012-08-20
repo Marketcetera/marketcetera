@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A coupler that delivers the message to the next module within
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: SyncCoupler.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: SyncCoupler.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 class SyncCoupler extends AbstractDataCoupler {
     /**
      * Creates an instance.

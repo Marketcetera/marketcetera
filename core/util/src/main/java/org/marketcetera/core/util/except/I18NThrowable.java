@@ -2,7 +2,6 @@ package org.marketcetera.core.util.except;
 
 import java.io.Serializable;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * An internationalized throwable. At creation, the message may be
@@ -24,7 +23,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NThrowable.java 16063 2012-01-31 18:21:55Z colin $")
 public interface I18NThrowable
     extends Serializable
 {

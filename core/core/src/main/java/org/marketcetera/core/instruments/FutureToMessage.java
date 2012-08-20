@@ -3,7 +3,6 @@ package org.marketcetera.core.instruments;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -21,7 +20,6 @@ import quickfix.field.Symbol;
  * @version $Id: FutureToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */
-@ClassVersion("$Id: FutureToMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public class FutureToMessage
         extends InstrumentToMessage<Future>
 {

@@ -8,7 +8,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -19,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ConvertibleBond.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: ConvertibleBond.java 82347 2012-05-03 19:30:54Z colin $")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ConvertibleBond

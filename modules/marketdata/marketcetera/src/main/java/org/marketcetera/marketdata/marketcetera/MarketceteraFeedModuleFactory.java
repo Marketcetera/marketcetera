@@ -6,7 +6,6 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.module.ModuleCreationException;
 import org.marketcetera.core.module.ModuleFactory;
 import org.marketcetera.core.module.ModuleURN;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -28,7 +27,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: MarketceteraFeedModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: MarketceteraFeedModuleFactory.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class MarketceteraFeedModuleFactory
         extends ModuleFactory
 {

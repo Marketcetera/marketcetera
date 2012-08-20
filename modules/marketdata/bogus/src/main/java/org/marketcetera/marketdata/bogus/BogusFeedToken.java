@@ -2,7 +2,6 @@ package org.marketcetera.marketdata.bogus;
 
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
 import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Token for {@link BogusFeed}.
@@ -11,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: BogusFeedToken.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeedToken.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class BogusFeedToken
         extends AbstractMarketDataFeedToken<BogusFeed>
 {

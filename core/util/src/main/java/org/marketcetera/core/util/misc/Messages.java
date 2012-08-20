@@ -1,6 +1,5 @@
 package org.marketcetera.core.util.misc;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NLoggerProxy;
 import org.marketcetera.core.util.log.I18NMessageProvider;
 
@@ -14,7 +13,6 @@ import org.marketcetera.core.util.log.I18NMessageProvider;
 
 /* $License$ */
 
-@ClassVersion("$Id: Messages.java 16063 2012-01-31 18:21:55Z colin $")
 public interface Messages
 {
 

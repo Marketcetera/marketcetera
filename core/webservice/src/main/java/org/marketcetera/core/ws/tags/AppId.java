@@ -1,7 +1,5 @@
 package org.marketcetera.core.ws.tags;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * An application ID. Each Java application has a unique application
  * ID, which is usually the name of the application. A single JVM
@@ -18,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: AppId.java 82324 2012-04-09 20:56:08Z colin $")
 public class AppId
     extends Tag
 {

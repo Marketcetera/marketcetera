@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.DividendFrequency;
 import org.marketcetera.core.event.DividendStatus;
@@ -26,7 +25,6 @@ import org.marketcetera.core.trade.Equity;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: DividendEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
 final class DividendEventImpl
         implements DividendEvent, HasEventBean
 {

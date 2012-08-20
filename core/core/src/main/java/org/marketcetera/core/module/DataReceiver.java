@@ -1,7 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * This interface is implemented by a module that is capable of
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DataReceiver.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DataReceiver.java 16063 2012-01-31 18:21:55Z colin $")   //$NON-NLS-1$
 public interface DataReceiver {
     /**
      * The module framework invokes this method to supply data to this module.

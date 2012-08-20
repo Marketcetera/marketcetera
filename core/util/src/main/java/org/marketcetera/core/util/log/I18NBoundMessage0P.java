@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.log;
 
 import java.io.Serializable;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A bound message, representing a {@link I18NMessage0P}.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NBoundMessage0P.java 16063 2012-01-31 18:21:55Z colin $")
 public class I18NBoundMessage0P
     extends I18NBoundMessageBase<I18NMessage0P>
 {

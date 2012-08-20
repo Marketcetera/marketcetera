@@ -16,7 +16,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * @version $Id: RubyExecutor.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: RubyExecutor.java 16063 2012-01-31 18:21:55Z colin $")
 class RubyExecutor
     extends AbstractExecutor
 {

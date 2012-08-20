@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.wrappers;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A generic wrapper for marshalling a data value via JAXB. This class
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: BaseWrapper.java 82324 2012-04-09 20:56:08Z colin $")
 public abstract class BaseWrapper<T>
 {
 

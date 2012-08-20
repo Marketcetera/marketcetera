@@ -3,7 +3,6 @@ package org.marketcetera.core.module;
 import java.util.List;
 
 import javax.management.MXBean;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -112,7 +111,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ModuleManagerMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ModuleManagerMXBean.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 @MXBean(true)
 @DisplayName("Module Framework Operations")
 public interface ModuleManagerMXBean {

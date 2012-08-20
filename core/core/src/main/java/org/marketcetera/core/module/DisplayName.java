@@ -6,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.management.DescriptorKey;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -33,7 +32,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: DisplayName.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: DisplayName.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 @Target({
         ElementType.TYPE,
         ElementType.METHOD,

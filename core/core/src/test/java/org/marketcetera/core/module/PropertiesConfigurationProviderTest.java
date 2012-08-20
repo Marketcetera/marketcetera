@@ -8,7 +8,6 @@ import javax.management.JMX;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -19,7 +18,6 @@ import static org.junit.Assert.assertNull;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: PropertiesConfigurationProviderTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class PropertiesConfigurationProviderTest
         extends ConfigurationProviderTestBase {
     @Before

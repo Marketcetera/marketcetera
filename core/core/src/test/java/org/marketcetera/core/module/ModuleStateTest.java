@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,7 +16,6 @@ import static org.marketcetera.core.module.ModuleState.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: ModuleStateTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class ModuleStateTest extends ModuleTestBase {
 
     /**

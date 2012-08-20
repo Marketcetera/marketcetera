@@ -1,7 +1,5 @@
 package org.marketcetera.core.util.misc;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version $Id: NamedThreadFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: NamedThreadFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public class NamedThreadFactory implements ThreadFactory {
     /**
      * Creates an instance that will create threads whose names begin with

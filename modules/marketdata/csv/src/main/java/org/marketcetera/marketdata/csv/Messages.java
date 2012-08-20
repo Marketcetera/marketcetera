@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata.csv;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.*;
 
 /* $License$ */
@@ -12,7 +11,6 @@ import org.marketcetera.core.util.log.*;
  * @since 2.1.0
  * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: Messages.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("csv", Messages.class.getClassLoader());  //$NON-NLS-1$

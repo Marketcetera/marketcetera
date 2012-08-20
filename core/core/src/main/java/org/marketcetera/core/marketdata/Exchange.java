@@ -7,7 +7,6 @@ import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.QuoteEvent;
 import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: Exchange.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: Exchange.java 16063 2012-01-31 18:21:55Z colin $")
 public interface Exchange<T>
 {
     /**
@@ -153,8 +151,7 @@ public interface Exchange<T>
      * @version $Id: Exchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
-    @ClassVersion("$Id: Exchange.java 16063 2012-01-31 18:21:55Z colin $")
-    public static enum Type
+        public static enum Type
     {
         /**
          * the bid/ask set from the top of the order book, also known as best-bid-and-offer

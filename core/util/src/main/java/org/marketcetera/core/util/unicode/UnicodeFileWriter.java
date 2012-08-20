@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A {@link UnicodeOutputStreamWriter} which directs its output to a
@@ -29,7 +28,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: UnicodeFileWriter.java 16063 2012-01-31 18:21:55Z colin $")
 public class UnicodeFileWriter
     extends UnicodeOutputStreamWriter
 {

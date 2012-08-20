@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.misc;
 
 import org.junit.Test;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.*;
 
@@ -18,7 +17,6 @@ import java.util.concurrent.ThreadFactory;
  * @version $Id: NamedThreadFactoryTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: NamedThreadFactoryTest.java 16063 2012-01-31 18:21:55Z colin $")
 public class NamedThreadFactoryTest {
     /**
      * Verifies the class behavior when supplied a null prefix.

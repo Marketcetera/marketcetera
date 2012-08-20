@@ -1,7 +1,5 @@
 package org.marketcetera.core.systemmodel;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 
 /**
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: SystemGroup.java 82316 2012-03-21 21:13:27Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: SystemGroup.java 82316 2012-03-21 21:13:27Z colin $")
 public enum SystemGroup
 {
     /**

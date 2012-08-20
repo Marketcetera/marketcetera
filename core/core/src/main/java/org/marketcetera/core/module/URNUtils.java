@@ -1,6 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
 import org.marketcetera.core.util.log.I18NBoundMessage3P;
@@ -15,7 +14,6 @@ import org.marketcetera.core.util.log.I18NMessage1P;
  * @version $Id: URNUtils.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: URNUtils.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public final class URNUtils {
 
     /**

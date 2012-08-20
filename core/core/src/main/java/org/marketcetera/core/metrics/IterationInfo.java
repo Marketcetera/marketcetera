@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Records information about every iteration, through the checkpoints, from
@@ -17,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.0.0
  * @see PerThreadInfo
  */
-@ClassVersion("$Id: IterationInfo.java 16063 2012-01-31 18:21:55Z colin $")
 final class IterationInfo implements Iterable<CheckpointInfo> {
     /**
      * Clears the saved information. Resets the state back to as it was

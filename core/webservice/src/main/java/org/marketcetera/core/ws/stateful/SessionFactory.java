@@ -1,6 +1,5 @@
 package org.marketcetera.core.ws.stateful;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.ws.stateless.StatelessClientContext;
 import org.marketcetera.core.ws.tags.SessionId;
 
@@ -14,7 +13,6 @@ import org.marketcetera.core.ws.tags.SessionId;
 
 /* $License$ */
 
-@ClassVersion("$Id: SessionFactory.java 82324 2012-04-09 20:56:08Z colin $")
 public interface SessionFactory<T>
 {
 

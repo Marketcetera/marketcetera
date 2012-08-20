@@ -9,7 +9,6 @@ import ca.odell.glazedlists.FunctionList.Function;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.util.concurrent.Lock;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.messagehistory.ReportHolder;
 import org.marketcetera.core.position.impl.Messages;
@@ -31,7 +30,6 @@ import org.marketcetera.core.trade.UserID;
  * @version $Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $
  * @since 1.5.0
  */
-@ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
 public class PositionEngineFactory {
 
     /**
@@ -140,8 +138,7 @@ public class PositionEngineFactory {
     /**
      * Function extracting reports from report holders.
      */
-    @ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
-    private final static class ReportExtractor implements
+        private final static class ReportExtractor implements
             Function<ReportHolder, ReportBase> {
 
         @Override
@@ -157,8 +154,7 @@ public class PositionEngineFactory {
      * <p>
      * Invalid reports are logged and ignored.
      */
-    @ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
-    private final static class ValidFillsMatcher implements Matcher<ReportBase> {
+        private final static class ValidFillsMatcher implements Matcher<ReportBase> {
 
         @Override
         public boolean matches(ReportBase item) {
@@ -206,8 +202,7 @@ public class PositionEngineFactory {
      * elements must be ExecutionReport that represent fills or partial fills.
      * Use {@link ValidFillsMatcher} to ensure this.
      */
-    @ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
-    private final static class TradeFunction implements
+        private final static class TradeFunction implements
             Function<ReportBase, Trade<?>> {
 
         @Override
@@ -219,8 +214,7 @@ public class PositionEngineFactory {
     /**
      * Adapts an {@link ExecutionReport} to be used as a Trade.
      */
-    @ClassVersion("$Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $")
-    private final static class ExecutionReportAdapter implements
+        private final static class ExecutionReportAdapter implements
             Trade<Instrument> {
 
         private final ExecutionReport mReport;

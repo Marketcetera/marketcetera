@@ -15,7 +15,6 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.GroupingList;
 import ca.odell.glazedlists.impl.ReadOnlyList;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.trade.ExecutionReport;
@@ -37,7 +36,6 @@ import quickfix.Message;
  * @version $Id: TradeReportsHistory.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: TradeReportsHistory.java 82326 2012-04-10 16:27:07Z colin $")
 public class TradeReportsHistory {
 
     private final EventList<ReportHolder> mAllMessages;

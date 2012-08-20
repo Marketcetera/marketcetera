@@ -20,7 +20,6 @@ import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -35,8 +34,7 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $")
-public class BogusFeed 
+public class BogusFeed
     extends AbstractMarketDataFeed<BogusFeedToken,
                                        BogusFeedCredentials,
                                        BogusFeedMessageTranslator,
@@ -258,8 +256,7 @@ public class BogusFeed
      * @version $Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
-    @ClassVersion("$Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $")
-    private static class Request
+        private static class Request
     {
         /**
          * Executes the given <code>MarketDataRequest</code> and returns

@@ -5,7 +5,6 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlValue;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -17,7 +16,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 1.0.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@ClassVersion("$Id: BrokerID.java 16063 2012-01-31 18:21:55Z colin $")
 public class BrokerID implements Serializable {
 
     /**

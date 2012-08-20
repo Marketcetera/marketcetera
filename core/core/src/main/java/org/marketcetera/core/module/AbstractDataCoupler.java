@@ -2,7 +2,6 @@ package org.marketcetera.core.module;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
@@ -31,7 +30,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @version $Id: AbstractDataCoupler.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: AbstractDataCoupler.java 16063 2012-01-31 18:21:55Z colin $")   //$NON-NLS-1$
 abstract class AbstractDataCoupler implements DataEmitterSupport {
 
     @Override

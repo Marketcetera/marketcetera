@@ -1,7 +1,6 @@
 package org.marketcetera.core.util.misc;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * Utilities for iterables.
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: IterableUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public final class IterableUtils
 {
 

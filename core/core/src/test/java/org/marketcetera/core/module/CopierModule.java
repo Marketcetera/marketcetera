@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 /* $License$ */
@@ -21,7 +20,6 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
  * @version $Id: CopierModule.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: CopierModule.java 82330 2012-04-10 16:29:13Z colin $") //$NON-NLS-1$
 public class CopierModule extends Module implements DataEmitter {
     protected CopierModule() {
         super(CopierModuleFactory.INSTANCE_URN, true);

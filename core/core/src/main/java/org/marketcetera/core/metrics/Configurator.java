@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -31,7 +30,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @version $Id: Configurator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: Configurator.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class Configurator {
 
     /**

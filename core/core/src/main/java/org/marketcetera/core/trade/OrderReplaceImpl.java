@@ -1,7 +1,6 @@
 package org.marketcetera.core.trade;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -12,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderReplaceImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderReplaceImpl.java 16063 2012-01-31 18:21:55Z colin $")
 @XmlRootElement
 public class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {
 

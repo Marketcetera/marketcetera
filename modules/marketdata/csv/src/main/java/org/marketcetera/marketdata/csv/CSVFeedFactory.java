@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata.csv;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.marketdata.AbstractMarketDataFeedFactory;
 import org.marketcetera.core.marketdata.FeedException;
 import org.marketcetera.core.CoreException;
@@ -14,8 +13,7 @@ import org.marketcetera.core.NoMoreIDsException;
  * @since 2.1.0
  * @version $Id: CSVFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: CSVFeedFactory.java 16063 2012-01-31 18:21:55Z colin $")
-public class CSVFeedFactory  
+public class CSVFeedFactory
         extends AbstractMarketDataFeedFactory<CSVFeed,CSVFeedCredentials>
 {
     /**

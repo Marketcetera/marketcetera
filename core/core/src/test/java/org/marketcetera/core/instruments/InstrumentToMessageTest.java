@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.ConvertibleBond;
@@ -43,7 +42,6 @@ import static org.marketcetera.core.trade.FutureExpirationMonth.*;
  * @version $Id: InstrumentToMessageTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentToMessageTest.java 16063 2012-01-31 18:21:55Z colin $")
 @RunWith(Parameterized.class)
 public class InstrumentToMessageTest {
     /**

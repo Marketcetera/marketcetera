@@ -7,7 +7,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.attributes.ApplicationVersion;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;
@@ -28,7 +27,6 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * @since $Release$
  */
 @ThreadSafe
-@ClassVersion("$Id: AbstractSpringApplication.java 82347 2012-05-03 19:30:54Z colin $")
 public abstract class AbstractSpringApplication
         implements Lifecycle
 {

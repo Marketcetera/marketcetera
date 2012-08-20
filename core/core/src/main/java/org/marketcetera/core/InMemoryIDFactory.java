@@ -1,7 +1,5 @@
 package org.marketcetera.core;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Implementation of IDFactory that provides identifiers unique to this run of the
  * Java VM.  They are simply the string representation of a counter that is incremented
@@ -9,7 +7,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @author gmiller
  * $Id: InMemoryIDFactory.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: InMemoryIDFactory.java 16063 2012-01-31 18:21:55Z colin $")
 public class InMemoryIDFactory implements IDFactory {
 
     long mNextID = 0;

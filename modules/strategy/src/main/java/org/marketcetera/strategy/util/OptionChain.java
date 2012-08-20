@@ -83,7 +83,6 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: OptionChain.java 16063 2012-01-31 18:21:55Z colin $")
 public final class OptionChain
 {
     /**

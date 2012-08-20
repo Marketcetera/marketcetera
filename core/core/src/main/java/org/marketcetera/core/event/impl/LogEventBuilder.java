@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.LogEvent;
 import org.marketcetera.core.event.LogEventLevel;
 import org.marketcetera.core.util.log.I18NMessage;
@@ -33,7 +32,6 @@ import org.marketcetera.core.util.log.I18NMessageNP;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: LogEventBuilder.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class LogEventBuilder
         extends AbstractEventBuilderImpl<LogEvent>
 {

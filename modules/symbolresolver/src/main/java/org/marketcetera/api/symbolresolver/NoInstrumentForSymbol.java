@@ -2,7 +2,6 @@ package org.marketcetera.api.symbolresolver;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -13,7 +12,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: NoInstrumentForSymbol.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: NoInstrumentForSymbol.java 82347 2012-05-03 19:30:54Z colin $")
 public class NoInstrumentForSymbol
         extends CoreException
 {

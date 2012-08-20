@@ -2,7 +2,6 @@ package org.marketcetera.core.module;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,7 +13,6 @@ import static org.junit.Assert.assertEquals;
  * @version $Id: ModuleURNXmlAdapterTest.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: ModuleURNXmlAdapterTest.java 82330 2012-04-10 16:29:13Z colin $")
 public class ModuleURNXmlAdapterTest {
     private static final ModuleURNXmlAdapter sAdapter = new ModuleURNXmlAdapter();
 

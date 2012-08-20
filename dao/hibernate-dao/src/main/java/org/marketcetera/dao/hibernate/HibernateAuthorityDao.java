@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(readOnly=true)
-@ClassVersion("$Id: HibernateAuthorityDao.java 82353 2012-05-10 21:56:11Z colin $")
 public class HibernateAuthorityDao
         implements AuthorityDao
 {

@@ -1,6 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /* $License$ */
@@ -12,7 +11,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * @version $Id: BeanRegistrationException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: BeanRegistrationException.java 16063 2012-01-31 18:21:55Z colin $")  //$NON-NLS-1$
 public class BeanRegistrationException extends MXBeanOperationException {
     /**
      * Creates an instance.

@@ -1,7 +1,5 @@
 package org.marketcetera.core.options;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A test custom expiry normalizer that always appends 01 to an expiry
@@ -11,7 +9,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: CustomExpiryNormalizer.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: CustomExpiryNormalizer.java 16063 2012-01-31 18:21:55Z colin $")
 public class CustomExpiryNormalizer implements OptionExpiryNormalizer {
     @Override
     public String normalizeEquityOptionExpiry(String inExpiry) {

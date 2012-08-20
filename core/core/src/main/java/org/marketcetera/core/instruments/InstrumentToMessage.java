@@ -1,6 +1,5 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.quickfix.FIXVersion;
 import quickfix.Message;
@@ -31,7 +30,6 @@ import quickfix.field.Symbol;
  * @version $Id: InstrumentToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: InstrumentToMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class InstrumentToMessage<I extends Instrument> extends InstrumentFunctionHandler<I> {
 
     /**

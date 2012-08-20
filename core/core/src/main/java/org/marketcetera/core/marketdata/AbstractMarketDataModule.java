@@ -16,7 +16,6 @@ import com.google.common.collect.HashBiMap;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.metrics.ThreadedMetric;
 import org.marketcetera.core.module.*;
@@ -49,8 +48,7 @@ import static org.marketcetera.core.marketdata.Messages.FEED_STATUS_CHANGED;
  * @version $Id: AbstractMarketDataModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: AbstractMarketDataModule.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
-public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken, 
+public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                                                C extends MarketDataFeedCredentials>
         extends Module
         implements DataEmitter, AbstractMarketDataModuleMXBean, NotificationEmitter

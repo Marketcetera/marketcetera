@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor_44;
 import org.marketcetera.core.quickfix.messagefactory.SystemMessageFactory;
 import quickfix.Message;
@@ -22,7 +21,6 @@ import quickfix.field.*;
  * @version $Id: SystemFIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: SystemFIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class SystemFIXMessageFactory extends FIXMessageFactory {
     /**
      * Creates an instance.

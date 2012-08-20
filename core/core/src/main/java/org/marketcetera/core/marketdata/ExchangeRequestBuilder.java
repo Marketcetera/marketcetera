@@ -3,7 +3,6 @@ package org.marketcetera.core.marketdata;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: ExchangeRequestBuilder.java 16063 2012-01-31 18:21:55Z colin $")
 public class ExchangeRequestBuilder
 {
     /**

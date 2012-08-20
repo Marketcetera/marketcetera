@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Enumeration of Sides of an order.
 *
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 * @version $Id: Side.java 16063 2012-01-31 18:21:55Z colin $
 * @since 1.0.0
 */
-@ClassVersion("$Id: Side.java 16063 2012-01-31 18:21:55Z colin $")
 public enum Side {
     /**
      * Sentinel value for Side that the system is not currently

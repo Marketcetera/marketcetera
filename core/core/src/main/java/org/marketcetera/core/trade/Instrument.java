@@ -3,8 +3,6 @@ package org.marketcetera.core.trade;
 import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * A financial instrument.
@@ -20,7 +18,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: Instrument.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: Instrument.java 16063 2012-01-31 18:21:55Z colin $")
 @Immutable
 public abstract class Instrument implements Serializable {
 

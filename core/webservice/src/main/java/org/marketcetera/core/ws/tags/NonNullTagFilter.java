@@ -2,7 +2,6 @@ package org.marketcetera.core.ws.tags;
 
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A tag filter that accepts any non-null tag.
@@ -14,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: NonNullTagFilter.java 82324 2012-04-09 20:56:08Z colin $")
 public class NonNullTagFilter
     implements TagFilter
 {

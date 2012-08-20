@@ -1,6 +1,5 @@
 package org.marketcetera.core.systemmodel;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.springframework.security.core.GrantedAuthority;
 
 /* $License$ */
@@ -12,7 +11,6 @@ import org.springframework.security.core.GrantedAuthority;
  * @version $Id: SystemAuthority.java 82320 2012-04-02 17:03:23Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: SystemAuthority.java 82320 2012-04-02 17:03:23Z colin $")
 public enum SystemAuthority
 {
     /**

@@ -8,7 +8,6 @@ import java.util.Set;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageUtil;
@@ -29,7 +28,6 @@ import quickfix.field.BeginString;
  * @version $Id: FactoryImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: FactoryImpl.java 16063 2012-01-31 18:21:55Z colin $")
 class FactoryImpl extends Factory {
     @Override
     public OrderSingle createOrderSingle() {

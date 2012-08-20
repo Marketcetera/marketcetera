@@ -2,7 +2,6 @@ package org.marketcetera.core.instruments;
 
 import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -18,7 +17,6 @@ import quickfix.field.SecurityType;
  * @version $Id: FutureFromMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */
-@ClassVersion("$Id: FutureFromMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public class FutureFromMessage
         extends InstrumentFromMessage
 {

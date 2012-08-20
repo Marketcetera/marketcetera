@@ -3,7 +3,6 @@ package org.marketcetera.core.trade;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.Message;
 
 /* $License$ */
@@ -18,7 +17,6 @@ import quickfix.Message;
 @XmlSeeAlso
     ({ExecutionReportImpl.class,
       OrderCancelRejectImpl.class})
-@ClassVersion("$Id: ReportBaseImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
 
     @Override

@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.except.ExceptUtils;
 
 /**
@@ -18,7 +17,6 @@ import org.marketcetera.core.util.except.ExceptUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id: ReflectUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public final class ReflectUtils
 {
 

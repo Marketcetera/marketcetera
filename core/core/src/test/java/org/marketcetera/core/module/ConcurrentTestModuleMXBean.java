@@ -1,7 +1,6 @@
 package org.marketcetera.core.module;
 
 import javax.management.MXBean;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -11,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ConcurrentTestModuleMXBean.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.1.0
  */
-@ClassVersion("$Id: ConcurrentTestModuleMXBean.java 82330 2012-04-10 16:29:13Z colin $")
 @MXBean(true)
 public interface ConcurrentTestModuleMXBean {
     /**

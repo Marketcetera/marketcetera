@@ -1,7 +1,6 @@
 package org.marketcetera.core.messagehistory;
 
 import org.marketcetera.core.MemoizedHashCombinator;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.trade.Instrument;
 
 
@@ -15,7 +14,6 @@ import org.marketcetera.core.trade.Instrument;
  * @author gmiller
  *
  */
-@ClassVersion("$Id: SymbolSide.java 82326 2012-04-10 16:27:07Z colin $")
 public class SymbolSide extends MemoizedHashCombinator<Instrument, String> {
     /**
      * Create a new SymbolSide with the specified {@link Instrument} and

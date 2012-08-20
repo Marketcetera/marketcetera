@@ -3,7 +3,6 @@ package org.marketcetera.api.symbolresolver.impl;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.api.symbolresolver.SymbolResolver;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.options.OptionUtils;
 import org.marketcetera.core.trade.Instrument;
 
@@ -17,7 +16,6 @@ import org.marketcetera.core.trade.Instrument;
  * @since $Release$
  */
 @Immutable
-@ClassVersion("$Id: OsiOptionSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $")
 public class OsiOptionSymbolResolver
         implements SymbolResolver
 {

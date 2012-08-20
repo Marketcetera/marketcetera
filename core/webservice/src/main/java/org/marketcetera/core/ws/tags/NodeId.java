@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.tags;
 
 import java.util.UUID;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A node ID. Each communication endpoint (client or server class
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: NodeId.java 82324 2012-04-09 20:56:08Z colin $")
 public class NodeId
     extends Tag
 {

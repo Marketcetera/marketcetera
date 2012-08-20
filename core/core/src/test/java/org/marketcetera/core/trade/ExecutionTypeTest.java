@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.api.attributes.ClassVersion;
 import quickfix.field.ExecType;
 
 import static org.marketcetera.core.trade.ExecutionType.*;
@@ -19,7 +18,6 @@ import static org.marketcetera.core.trade.ExecutionType.OrderStatus;
  * @version $Id: ExecutionTypeTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionTypeTest.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class ExecutionTypeTest extends FIXCharEnumTestBase<ExecutionType> {
     @Override
     protected ExecutionType getInstanceForFIXValue(Character inFIXValue) {

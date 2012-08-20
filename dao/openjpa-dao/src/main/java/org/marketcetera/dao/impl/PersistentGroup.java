@@ -9,7 +9,6 @@ import javax.persistence.*;
 import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.core.systemmodel.Group;
 import org.marketcetera.api.security.User;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -25,7 +24,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 @NamedQueries( { @NamedQuery(name="findGroupByName",query="from PersistentGroup s where s.name = :name"),
                  @NamedQuery(name="findAllGroups",query="from PersistentGroup")})
 @Table(name="groups", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
-@ClassVersion("$Id: PersistentGroup.java 82353 2012-05-10 21:56:11Z colin $")
 public class PersistentGroup
         extends PersistentVersionedObject
         implements Group

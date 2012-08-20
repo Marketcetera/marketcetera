@@ -2,7 +2,6 @@ package org.marketcetera.core.systemmodel;
 
 import java.util.Collection;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.NamedObject;
 import org.marketcetera.api.systemmodel.SystemObject;
@@ -17,7 +16,6 @@ import org.marketcetera.api.systemmodel.VersionedObject;
  * @version $Id: Group.java 82316 2012-03-21 21:13:27Z colin $
  * @since $Release$
  */
-@ClassVersion("$Id: Group.java 82316 2012-03-21 21:13:27Z colin $")
 public interface Group
         extends SystemObject, VersionedObject, NamedObject
 {

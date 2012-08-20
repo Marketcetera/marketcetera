@@ -1,6 +1,5 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 
@@ -14,7 +13,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * @version $Id: MessageCreationException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: MessageCreationException.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public class MessageCreationException extends I18NException {
     /**
      * Creates a new instance.

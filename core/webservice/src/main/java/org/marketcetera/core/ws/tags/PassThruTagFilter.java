@@ -1,7 +1,5 @@
 package org.marketcetera.core.ws.tags;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * A tag filter that accepts all tags.
  * 
@@ -12,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: PassThruTagFilter.java 82324 2012-04-09 20:56:08Z colin $")
 public class PassThruTagFilter
     implements TagFilter
 {

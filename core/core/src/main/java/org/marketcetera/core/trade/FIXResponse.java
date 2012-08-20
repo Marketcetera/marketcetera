@@ -1,7 +1,5 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Represents an ORS response that wraps a generic FIX message which
  * cannot be wrapped by any other FIX Agnostic wrapper.
@@ -13,7 +11,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: FIXResponse.java 16063 2012-01-31 18:21:55Z colin $")
 public interface FIXResponse
     extends TradeMessage,
             FIXMessageSupport

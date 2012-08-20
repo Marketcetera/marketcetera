@@ -3,8 +3,6 @@ package org.marketcetera.core.util.misc;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Utilities for collections.
  * 
@@ -15,7 +13,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: CollectionUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public final class CollectionUtils
 {
 

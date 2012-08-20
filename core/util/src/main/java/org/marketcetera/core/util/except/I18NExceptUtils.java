@@ -1,7 +1,5 @@
 package org.marketcetera.core.util.except;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Utilities supporting message generation.
  * 
@@ -12,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NExceptUtils.java 16063 2012-01-31 18:21:55Z colin $")
 final class I18NExceptUtils
 {
 

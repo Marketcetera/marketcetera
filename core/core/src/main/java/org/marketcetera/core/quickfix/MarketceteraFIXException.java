@@ -4,7 +4,6 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.api.attributes.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -16,7 +15,6 @@ import quickfix.Message;
  * @author Toli Kuznets
  * @version $Id: MarketceteraFIXException.java 16063 2012-01-31 18:21:55Z colin $
  */
-@ClassVersion("$Id: MarketceteraFIXException.java 16063 2012-01-31 18:21:55Z colin $")
 public class MarketceteraFIXException extends CoreException {
     public MarketceteraFIXException(I18NBoundMessage message) {
         super(message);

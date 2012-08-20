@@ -3,8 +3,6 @@ package org.marketcetera.core.trade;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Represents an execution report of an order. Instances of this
@@ -22,7 +20,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ExecutionReport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: ExecutionReport.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface ExecutionReport extends TradeMessage, ReportBase {
 
     /**

@@ -1,6 +1,5 @@
 package org.marketcetera.core.module;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.util.log.I18NMessage0P;
 
 /* $License$ */
@@ -11,7 +10,6 @@ import org.marketcetera.core.util.log.I18NMessage0P;
  * @version $Id: CopierModuleFactory.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: CopierModuleFactory.java 82330 2012-04-10 16:29:13Z colin $") //$NON-NLS-1$
 public class CopierModuleFactory extends ModuleFactory {
     public CopierModuleFactory() {
         super(PROVIDER_URN, new I18NMessage0P(Messages.LOGGER, "provider"), false, false);

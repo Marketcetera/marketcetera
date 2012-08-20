@@ -3,8 +3,6 @@ package org.marketcetera.core.metrics;
 import java.io.IOException;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * An implementation of {@link ThreadedMetricMXBean} that invokes
@@ -16,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: ThreadedMetricBeanImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-@ClassVersion("$Id: ThreadedMetricBeanImpl.java 16063 2012-01-31 18:21:55Z colin $")
 class ThreadedMetricBeanImpl implements ThreadedMetricMXBean {
 
     @Override

@@ -3,7 +3,6 @@ package org.marketcetera.security;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A setter that obtains holder data via a command-line. It is
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: CliSetter.java 82324 2012-04-09 20:56:08Z colin $")
 public abstract class CliSetter<T extends Holder<?>>
     extends Setter<T>
 {

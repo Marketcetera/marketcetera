@@ -2,7 +2,6 @@ package org.marketcetera.core.util.unicode;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.marketcetera.core.util.except.I18NException;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A byte stream signature ({@link Signature}) coupled with a charset
@@ -20,7 +19,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: SignatureCharset.java 16063 2012-01-31 18:21:55Z colin $")
 public enum SignatureCharset
 {
     NONE_UTF8(Signature.NONE,UnicodeCharset.UTF8),

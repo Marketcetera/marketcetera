@@ -3,7 +3,6 @@ package org.marketcetera.core.event.impl;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.TopOfBookEvent;
@@ -24,7 +23,6 @@ import org.marketcetera.core.trade.Instrument;
  * @since 2.0.0
  */
 @NotThreadSafe
-@ClassVersion("$Id: TopOfBookEventBuilder.java 16063 2012-01-31 18:21:55Z colin $")
 public abstract class TopOfBookEventBuilder
         extends AbstractEventBuilderImpl<TopOfBookEvent>
 {

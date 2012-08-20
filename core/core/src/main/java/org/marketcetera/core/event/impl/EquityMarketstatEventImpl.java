@@ -6,7 +6,6 @@ import org.marketcetera.core.event.EquityEvent;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.beans.MarketstatBean;
 import org.marketcetera.core.trade.Equity;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
@@ -18,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
-@ClassVersion("$Id: EquityMarketstatEventImpl.java 16063 2012-01-31 18:21:55Z colin $")
 class EquityMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements EquityEvent

@@ -1,7 +1,6 @@
 package org.marketcetera.core.ws.wrappers;
 
 import java.io.Serializable;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A dual-form wrapper for marshalling a comparable and serializable
@@ -16,7 +15,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: CompSerWrapper.java 82324 2012-04-09 20:56:08Z colin $")
 public class CompSerWrapper<T extends Serializable &
                                       Comparable<? super T>>
     extends SerWrapper<T>

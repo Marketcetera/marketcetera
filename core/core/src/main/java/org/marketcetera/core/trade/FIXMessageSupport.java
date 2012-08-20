@@ -3,7 +3,6 @@ package org.marketcetera.core.trade;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.marketcetera.api.attributes.ClassVersion;
 import org.marketcetera.core.event.HasFIXMessage;
 
 /* $License$ */
@@ -14,7 +13,6 @@ import org.marketcetera.core.event.HasFIXMessage;
  * @version $Id: FIXMessageSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: FIXMessageSupport.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 public interface FIXMessageSupport extends HasFIXMessage, Serializable {
     /**
      * Returns a map of all the fields on the FIX Message with

@@ -1,7 +1,5 @@
 package org.marketcetera.core.util.misc;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /**
  * Utilities for string management.
  * 
@@ -12,7 +10,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: StringUtils.java 16063 2012-01-31 18:21:55Z colin $")
 public final class StringUtils
 {
 

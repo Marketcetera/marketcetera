@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
  * @since $Release$
  */
 @Component
-@ClassVersion("$Id: PersistentGroupFactory.java 82316 2012-03-21 21:13:27Z colin $")
 public class PersistentGroupFactory
         implements GroupFactory
 {

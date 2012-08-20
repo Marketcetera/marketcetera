@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.marketcetera.api.attributes.ClassVersion;
-
 /* $License$ */
 /**
  * Base class for orders. This class is public for the sake of
@@ -19,7 +17,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  * @version $Id: OrderBaseImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
-@ClassVersion("$Id: OrderBaseImpl.java 16063 2012-01-31 18:21:55Z colin $") //$NON-NLS-1$
 /*
  * Use field accessors otherwise custom fields do not get unmarshalled. This
  * happens because JAXB expects to be able to modify the Map after supplying it

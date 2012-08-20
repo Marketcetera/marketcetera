@@ -2,7 +2,6 @@ package org.marketcetera.core.util.log;
 
 import java.io.Serializable;
 import java.util.Locale;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /**
  * A bound message, representing the combination of an {@link
@@ -15,7 +14,6 @@ import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id: I18NBoundMessage.java 16063 2012-01-31 18:21:55Z colin $")
 public interface I18NBoundMessage
     extends Serializable
 {

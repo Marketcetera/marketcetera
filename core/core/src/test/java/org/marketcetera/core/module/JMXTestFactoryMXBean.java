@@ -1,7 +1,6 @@
 package org.marketcetera.core.module;
 
 import javax.management.MXBean;
-import org.marketcetera.api.attributes.ClassVersion;
 
 /* $License$ */
 /**
@@ -9,7 +8,6 @@ import org.marketcetera.api.attributes.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: JMXTestFactoryMXBean.java 82330 2012-04-10 16:29:13Z colin $")
 @MXBean(true)
 @DisplayName("A factory for testing JMX integration")
 public interface JMXTestFactoryMXBean {
