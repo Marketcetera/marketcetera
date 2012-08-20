@@ -23,6 +23,6 @@
         <module>quickfix</module>
         <module>systemmodel</module>
         <module>util</module>
-        <module>webservice</module>
+        <!--<module>webservice</module>-->
     </modules>
 </project>

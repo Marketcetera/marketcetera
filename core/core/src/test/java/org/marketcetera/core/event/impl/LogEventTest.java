@@ -171,25 +171,25 @@ public class LogEventTest
      *
      * @throws Exception if an unexpected error occurs
      */
-    @Test
-    public void serialization()
-            throws Exception
-    {
-        LogEventBuilder builder = setDefaults(getBuilder());
-        LogEvent beforeEvent = builder.create();
-        assertTrue(beforeEvent instanceof Serializable);
-        String beforeMessage = beforeEvent.getMessage();
-        assertNotNull(beforeMessage);
-        ByteArrayOutputStream outboundObjectData = new ByteArrayOutputStream();
-        ObjectOutputStream serializer = new ObjectOutputStream(outboundObjectData);
-        serializer.writeObject(beforeEvent);
-        serializer.close();
-        ByteArrayInputStream inboundObjectData = new ByteArrayInputStream(outboundObjectData.toByteArray()); 
-        ObjectInputStream deserializer = new ObjectInputStream(inboundObjectData);
-        LogEvent afterEvent = (LogEvent)deserializer.readObject();
-        assertEquals(beforeMessage,
-                     afterEvent.getMessage());
-    }
+//    @Test
+//    public void serialization()
+//            throws Exception
+//    {
+//        LogEventBuilder builder = setDefaults(getBuilder());
+//        LogEvent beforeEvent = builder.create();
+//        assertTrue(beforeEvent instanceof Serializable);
+//        String beforeMessage = beforeEvent.getMessage();
+//        assertNotNull(beforeMessage);
+//        ByteArrayOutputStream outboundObjectData = new ByteArrayOutputStream();
+//        ObjectOutputStream serializer = new ObjectOutputStream(outboundObjectData);
+//        serializer.writeObject(beforeEvent);
+//        serializer.close();
+//        ByteArrayInputStream inboundObjectData = new ByteArrayInputStream(outboundObjectData.toByteArray());
+//        ObjectInputStream deserializer = new ObjectInputStream(inboundObjectData);
+//        LogEvent afterEvent = (LogEvent)deserializer.readObject();
+//        assertEquals(beforeMessage,
+//                     afterEvent.getMessage());
+//    }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractEventBuilderTestBase#getBuilder()
      */
