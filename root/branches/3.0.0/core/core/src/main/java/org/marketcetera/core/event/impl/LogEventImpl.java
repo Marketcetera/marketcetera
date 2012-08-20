@@ -1,8 +1,6 @@
 package org.marketcetera.core.event.impl;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,8 +12,6 @@ import org.marketcetera.core.event.beans.HasEventBean;
 import org.marketcetera.core.event.util.EventServices;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.util.log.*;
-import org.marketcetera.core.ws.wrappers.RemoteI18NBoundMessage;
-import org.marketcetera.core.ws.wrappers.RemoteProperties;
 
 /* $License$ */
 
@@ -62,9 +58,9 @@ final class LogEventImpl
     @Override
     public String getMessage()
     {
-        if(serialized) {
-            return boundMessage.getText();
-        } 
+//        if(serialized) {
+//            return boundMessage.getText();
+//        }
         return getI18NBoundMessage().getText();
     }
     /* (non-Javadoc)
@@ -218,13 +214,13 @@ final class LogEventImpl
      * @serialData The <code>Level</code>, <code>exceptionInfo</code>,
      * and <code>boundMessage</code> are emitted.
      */
-    private void writeObject(ObjectOutputStream inStream)
-        throws IOException
-    {
-        boundMessage = new RemoteI18NBoundMessage(getI18NBoundMessage());
-        exceptionInfo = new RemoteProperties(exception);
-        inStream.defaultWriteObject();
-    }
+//    private void writeObject(ObjectOutputStream inStream)
+//        throws IOException
+//    {
+//        boundMessage = new RemoteI18NBoundMessage(getI18NBoundMessage());
+//        exceptionInfo = new RemoteProperties(exception);
+//        inStream.defaultWriteObject();
+//    }
     /**
      * Creates the object from a serialized stream.
      *
@@ -232,17 +228,17 @@ final class LogEventImpl
      * @throws IOException if an error occurs
      * @throws ClassNotFoundException if an error occurs
      */
-    private void readObject(ObjectInputStream inStream)
-        throws IOException, ClassNotFoundException
-    {
-        inStream.defaultReadObject();
-        exception = exceptionInfo.getThrowable();
-        serialized = true;
-    }
+//    private void readObject(ObjectInputStream inStream)
+//        throws IOException, ClassNotFoundException
+//    {
+//        inStream.defaultReadObject();
+//        exception = exceptionInfo.getThrowable();
+//        serialized = true;
+//    }
     /**
      * the event exception information or null valid only after serialization
      */
-    private RemoteProperties exceptionInfo;
+//    private RemoteProperties exceptionInfo;
     /**
      * the log level
      */
@@ -250,7 +246,7 @@ final class LogEventImpl
     /**
      * the bound event message valid only after serialization
      */
-    private RemoteI18NBoundMessage boundMessage;
+//    private RemoteI18NBoundMessage boundMessage;
     /**
      * the exception value or null, valid only before serialization
      */
