@@ -44,7 +44,7 @@ public enum OrderCapacity {
      *
      * @return the Side instance.
      */
-    static OrderCapacity getInstanceForFIXValue(char inValue) {
+    public static OrderCapacity getInstanceForFIXValue(char inValue) {
         OrderCapacity s = mFIXValueMap.get(inValue);
         return s == null
                 ? Unknown
@@ -56,7 +56,7 @@ public enum OrderCapacity {
      *
      * @return the FIX char value for this instance.
      */
-    char getFIXValue() {
+    public char getFIXValue() {
         return mFIXValue;
     }
     
