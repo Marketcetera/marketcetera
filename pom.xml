@@ -320,7 +320,7 @@
                                     <configuration>
                                         <artifacts>
                                             <artifact>
-                                                <file>src/main/feature/feature.xml</file>
+                                                <file>target/classes/feature.xml</file>
                                                 <type>xml</type>
                                                 <classifier>features</classifier>
                                             </artifact>
@@ -362,6 +362,12 @@
     </profiles>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -421,6 +427,19 @@
                         <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
                         </goals>
                     </execution>
                 </executions>

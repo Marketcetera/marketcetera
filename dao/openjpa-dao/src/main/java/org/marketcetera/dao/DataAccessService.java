@@ -2,6 +2,8 @@ package org.marketcetera.dao;
 
 /* $License$ */
 
+import org.marketcetera.api.dao.UserDao;
+
 /**
  * Provides access to database services.
  *
