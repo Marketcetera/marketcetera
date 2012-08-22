@@ -15,17 +15,11 @@
 
     <packaging>bundle</packaging>
 
-    <properties>
-        <aries.blueprint.version>1.0.0-SNAPSHOT</aries.blueprint.version>
-        <postgresql.version>8.4-701.jdbc4</postgresql.version>
-        <xapool.version>1.5.0</xapool.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.experlog</groupId>
             <artifactId>xapool</artifactId>
-            <version>${xapool.version}</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>
@@ -36,11 +30,6 @@
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
             <version>1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
         </dependency>
 
         <dependency>
@@ -88,7 +77,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Import-Package>org.postgresql,!oracle.jdbc.xa,!oracle.jdbc.xa.client,!org.enhydra.instantdb.jdbc,*</Import-Package>
+                        <Import-Package>org.postgresql;resolution:=optional,org.apache.derby.jdbc;resolution:=optional,com.mysql.jdbc;resolution:=optional,!oracle.jdbc.xa,!oracle.jdbc.xa.client,!org.enhydra.instantdb.jdbc,*</Import-Package>
                         <Export-Package>org.apache.commons.dbcp,org.apache.commons.pool,org.apache.commons.pool.impl</Export-Package>
                         <Embed-Dependency>xapool,commons-dbcp,commons-pool</Embed-Dependency>
                     </instructions>
@@ -97,6 +86,39 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>target/classes/feature.xml</file>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>target/classes/postgres.cfg</file>
+                                    <type>properties</type>
+                                    <classifier>postgrescfg</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>target/classes/derby.cfg</file>
+                                    <type>properties</type>
+                                    <classifier>derbycfg</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>target/classes/mysql.cfg</file>
+                                    <type>properties</type>
+                                    <classifier>mysqlcfg</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

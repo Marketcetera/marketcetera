@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.security.UserManagerService;
-import org.marketcetera.dao.UserDao;
+import org.marketcetera.api.dao.UserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

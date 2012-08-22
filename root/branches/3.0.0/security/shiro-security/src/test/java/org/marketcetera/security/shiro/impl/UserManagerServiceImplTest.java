@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.dao.UserDao;
+import org.marketcetera.api.dao.UserDao;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 

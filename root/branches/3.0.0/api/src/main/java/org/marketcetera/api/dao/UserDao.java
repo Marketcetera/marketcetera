@@ -1,4 +1,4 @@
-package org.marketcetera.dao;
+package org.marketcetera.api.dao;
 
 import java.util.List;
 

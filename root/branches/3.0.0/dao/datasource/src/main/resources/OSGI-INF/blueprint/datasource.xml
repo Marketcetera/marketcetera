@@ -5,10 +5,10 @@
         <cm:default-properties>
 
             <!-- JDBC Drivers -->
-            <cm:property name="jdbc.driverClassName" value="org.postgresql.Driver"/>
-            <cm:property name="jdbc.url" value="jdbc:postgresql:metc"/>
-            <cm:property name="jdbc.username" value="metc"/>
-            <cm:property name="jdbc.password" value="pw4metc"/>
+            <!--<cm:property name="jdbc.driverClassName" value="org.postgresql.Driver"/>-->
+            <!--<cm:property name="jdbc.url" value="jdbc:postgresql:metc"/>-->
+            <!--<cm:property name="jdbc.username" value="metc"/>-->
+            <!--<cm:property name="jdbc.password" value="pw4metc"/>-->
 
             <!-- Connection Pooling DBCP -->
             <cm:property name="jdbc.initialSize" value="5"/>

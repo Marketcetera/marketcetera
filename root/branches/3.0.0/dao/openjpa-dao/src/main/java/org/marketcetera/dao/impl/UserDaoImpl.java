@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.marketcetera.dao.UserDao;
+import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
