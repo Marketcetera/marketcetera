@@ -50,6 +50,7 @@ public class UserDaoImpl implements UserDao {
         return entityManager.find(PersistentUser.class, inId);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<User> getAll() {
         return entityManager.createNamedQuery("findAllUsers").getResultList();
