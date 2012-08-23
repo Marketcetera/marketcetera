@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
     <bean id="shiroSecurityService" class="org.marketcetera.security.shiro.impl.SecurityServiceImpl"/>
-    <bean id="shiroUserManagerService" class="org.marketcetera.security.shiro.impl.UserManagerServiceImpl"/>
+    <bean id="shiroUserManagerService" class="org.marketcetera.security.shiro.impl.UserManagerServiceImpl">
+        <property name="userDao" ref="userDao"/>
+    </bean>
+    <bean id="userManagerWebService" class="org.marketcetera.security.shiro.impl">
+        <property name="userManagerService" ref="userManagerService"/>
+    </bean>
 
     <service id="securityService" interface="org.marketcetera.api.security.SecurityService" ref="shiroSecurityService"/>
     <service id="userManagerService" interface="org.marketcetera.api.security.UserManagerService" ref="shiroUserManagerService"/>
+    <reference id="userDao" interface="org.marketcetera.api.dao.UserDao"/>
 </blueprint>
