@@ -13,9 +13,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.api.dao.UserDao;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -31,6 +33,17 @@ import org.mockito.stubbing.Answer;
  */
 public class UserManagerServiceImplTest
 {
+    /**
+     * Run once before all tests. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @BeforeClass
+    public static void once()
+            throws Exception
+    {
+        LoggerConfiguration.logSetup();
+    }
     /**
      * Run before each test.
      *
@@ -293,7 +306,7 @@ public class UserManagerServiceImplTest
      *
      * @return a <code>User</code> value
      */
-    private static User generateUser()
+    static User generateUser()
     {
         User user = mock(User.class);
         when(user.getId()).thenReturn(counter.incrementAndGet());

@@ -6,9 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.security.UserManagerService;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.api.dao.UserDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides user manager services integrated with Shiro security.
@@ -17,46 +16,72 @@ import org.slf4j.LoggerFactory;
  * @version $Id$
  * @date 8/21/12 1:32 AM
  */
-public class UserManagerServiceImpl implements UserManagerService {
-    private static final Logger log = LoggerFactory.getLogger(UserManagerServiceImpl.class);
+public class UserManagerServiceImpl
+        implements UserManagerService
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.UserManagerService#getUserByName(java.lang.String)
+     */
     @Override
-    public User getUserByName(String inUsername) {
-        log.trace("Entering getUserByName");
+    public User getUserByName(String inUsername)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Entering getUserByName");
         inUsername = StringUtils.trimToNull(inUsername);
         Validate.notNull(inUsername);
         return userDao.getByName(inUsername);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.UserManagerService#addUser(org.marketcetera.api.security.User)
+     */
     @Override
-    public void addUser(User inData) {
-        log.trace("Entering addUser");
+    public void addUser(User inData)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Entering addUser");
         Validate.notNull(inData);
         userDao.add(inData);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.UserManagerService#saveUser(org.marketcetera.api.security.User)
+     */
     @Override
-    public void saveUser(User inData) {
-        log.trace("Entering saveUser");
+    public void saveUser(User inData)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Entering saveUser");
         Validate.notNull(inData);
         userDao.save(inData);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.UserManagerService#deleteUser(org.marketcetera.api.security.User)
+     */
     @Override
-    public void deleteUser(User inData) {
-        log.trace("Entering deleteUser");
+    public void deleteUser(User inData)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Entering deleteUser");
         Validate.notNull(inData);
         userDao.delete(inData);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.UserManagerService#getUserById(long)
+     */
     @Override
-    public User getUserById(long inId) {
-        log.trace("Entering getUserById");
+    public User getUserById(long inId)
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Entering getUserById");
         return userDao.getById(inId);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.UserManagerService#getAllUsers()
+     */
     @Override
-    public List<User> getAllUsers() {
-        log.trace("Entering getAllUsers");
+    public List<User> getAllUsers()
+    {
+        SLF4JLoggerProxy.trace(this,
+                               "Entering getAllUsers");
         return userDao.getAll();
     }
     /**
