@@ -15,17 +15,17 @@
     <feature description="PostgreSQL Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.dao.postgresDS">
         <feature version="${pom.version}">org.marketcetera.dao.datasource</feature>
         <bundle>wrap:mvn:postgresql/postgresql/8.4-701.jdbc4</bundle>
-        <config name="org.marketcetera.dao.postgresDS">
+        <config name="org.marketcetera.dao.datasource">
             jdbc.driverClassName=org.postgresql.Driver
             jdbc.url=jdbc:postgresql:metc
             jdbc.username=metc
             jdbc.password=pw4metc
         </config>
     </feature>
-    <feature description="MySQL Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.dao.mydsqlDS">
+    <feature description="MySQL Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.dao.mysqlDS">
         <feature version="${pom.version}">org.marketcetera.dao.datasource</feature>
         <bundle>wrap:mvn:mysql/mysql-connector-java/5.1.21</bundle>
-        <config name="org.marketcetera.dao.postgresDS">
+        <config name="org.marketcetera.dao.datasource">
             jdbc.driverClassName=com.mysql.jdbc.Driver
             jdbc.url=jdbc:mysql://localhost/metc
             jdbc.username=metc
@@ -35,7 +35,7 @@
     <feature description="Derby Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.dao.derbyDS">
         <feature version="${pom.version}">org.marketcetera.dao.datasource</feature>
         <bundle>wrap:mvn:org.apache.derby/derbyclient/10.9.1.0</bundle>
-        <config name="org.marketcetera.dao.postgresDS">
+        <config name="org.marketcetera.dao.datasource">
             jdbc.driverClassName=org.apache.derby.jdbc.EmbeddedDriver
             jdbc.url=jdbc:derby:metc
             jdbc.username=metc
