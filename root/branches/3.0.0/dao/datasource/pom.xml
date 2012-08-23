@@ -100,21 +100,6 @@
                                     <type>xml</type>
                                     <classifier>features</classifier>
                                 </artifact>
-                                <artifact>
-                                    <file>target/classes/postgres.cfg</file>
-                                    <type>properties</type>
-                                    <classifier>postgrescfg</classifier>
-                                </artifact>
-                                <artifact>
-                                    <file>target/classes/derby.cfg</file>
-                                    <type>properties</type>
-                                    <classifier>derbycfg</classifier>
-                                </artifact>
-                                <artifact>
-                                    <file>target/classes/mysql.cfg</file>
-                                    <type>properties</type>
-                                    <classifier>mysqlcfg</classifier>
-                                </artifact>
                             </artifacts>
                         </configuration>
                     </execution>
