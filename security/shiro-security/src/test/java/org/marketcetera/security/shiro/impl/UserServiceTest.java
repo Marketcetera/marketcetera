@@ -1,12 +1,13 @@
 package org.marketcetera.security.shiro.impl;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -17,7 +18,6 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.api.security.UserManagerService;
 import org.marketcetera.core.LoggerConfiguration;
@@ -68,19 +68,19 @@ public class UserServiceTest
     {
         JAXRSServerFactoryBean serverFactory = new JAXRSServerFactoryBean();
         serverFactory.setResourceClasses(UserService.class);
-        List<Object> providers = new ArrayList<Object>();
-        providers.add(org.apache.cxf.jaxrs.provider.json.JSONProvider.class);
-        serverFactory.setProviders(providers);
+//        List<Object> providers = new ArrayList<Object>();
+//        providers.add(org.apache.cxf.jaxrs.provider.json.JSONProvider.class);
+//        serverFactory.setProviders(providers);
         serverFactory.setResourceProvider(UserService.class,
                                           new SingletonResourceProvider(testUserService,
                                                                         true));
         serverFactory.setAddress(ENDPOINT_ADDRESS);
-//        Map<Object,Object> mappings = new HashMap<Object,Object>();
-//        mappings.put("xml",
-//                     "application/xml");
-//        mappings.put("json",
-//                     "application/json");
-//        serverFactory.setExtensionMappings(mappings);
+        Map<Object,Object> mappings = new HashMap<Object,Object>();
+        mappings.put("xml",
+                     "application/xml");
+        mappings.put("json",
+                     "application/json");
+        serverFactory.setExtensionMappings(mappings);
         server = serverFactory.create();
         server.start();
     }
@@ -95,15 +95,16 @@ public class UserServiceTest
                 String line = null;
                 StringBuffer sb = new StringBuffer();
                 while((line = br.readLine()) != null) {
-                  sb.append(line).append("<eol>");
+                  sb.append(line);
                 }
                 SLF4JLoggerProxy.debug(UserServiceTest.class,
                                        "WADL: {}",
                                        sb);
-                break;
+                return;
             }
         }
         // no WADL is available yet - throw an exception or give tests a chance to run anyway
+        fail("no WADL!");
     }
     private static void startSoapServer()
     {
@@ -135,13 +136,13 @@ public class UserServiceTest
 //        server = sf.create();
 //        server.start();
 //    }
-    @Test@Ignore
+    @Test
     public void testOne()
             throws Exception
     {
-//        Thread.sleep(60000);
+        Thread.sleep(60000);
         ClientProxyFactoryBean cf = new ClientProxyFactoryBean();
-        cf.setAddress(ENDPOINT_ADDRESS);
+        cf.setAddress(ENDPOINT_ADDRESS + "/userservice");
         cf.setServiceClass(UserService.class);
         UserService testService = (UserService)cf.create();
         SLF4JLoggerProxy.debug(this,
@@ -154,7 +155,7 @@ public class UserServiceTest
 //        System.out.println("Users: " + client.get(List.class));
     }
 //    private final static String ENDPOINT_ADDRESS = "local://users";
-    private final static String ENDPOINT_ADDRESS = "http://localhost:9010/users";
+    private final static String ENDPOINT_ADDRESS = "http://localhost:9010/test";
     private final static String WADL_ADDRESS = ENDPOINT_ADDRESS + "?_wadl";
     private static Server server;
     private static UserManagerService userManagerService;

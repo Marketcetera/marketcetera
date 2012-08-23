@@ -62,12 +62,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-local</artifactId>
-            <version>2.6.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
             <version>2.6.1</version>
             <scope>test</scope>
@@ -83,6 +77,13 @@
             <artifactId>cxf-rt-rs-extension-providers</artifactId>
             <version>2.6.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>core</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+	    <type>test-jar</type>
+	    <scope>test</scope>
         </dependency>
     </dependencies>
 
