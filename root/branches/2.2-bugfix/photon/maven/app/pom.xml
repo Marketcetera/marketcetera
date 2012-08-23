@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>photon-maven</artifactId>
-    <version>1-SNAPSHOT</version>
+    <version>2.2.1-SNAPSHOT</version>
   </parent>
   <artifactId>photon-app</artifactId>
   <version>2.2.1-SNAPSHOT</version>
