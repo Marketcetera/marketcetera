@@ -1,12 +1,11 @@
 package org.marketcetera.security.shiro.impl;
 
-import java.util.List;
-
 import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.security.UserManagerService;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.security.shiro.Container;
 import org.marketcetera.security.shiro.UserService;
 
 /* $License$ */
@@ -93,11 +92,13 @@ public class UserServiceImpl
      * @see org.marketcetera.security.shiro.UserService#getUsers()
      */
     @Override
-    public List<User> getUsers()
+    public Container<User> getUsers()
     {
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
                                "UserService getUsers invoked");
-        return userManagerService.getAllUsers();
+        Container<User> response = new Container<User>();
+        response.list = userManagerService.getAllUsers();
+        return response;
     }
     /**
      * Sets the userManagerService value.
