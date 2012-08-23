@@ -17,7 +17,7 @@ import org.marketcetera.api.security.User;
  * @version $Id$
  * @since $Release$
  */
-@Path("/userservice")
+@Path("/userservice/")
 @WebService
 public interface UserService
 {

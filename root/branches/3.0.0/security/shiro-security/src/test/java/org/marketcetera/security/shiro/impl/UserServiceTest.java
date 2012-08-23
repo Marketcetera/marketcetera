@@ -82,7 +82,7 @@ public class UserServiceTest
                      "application/json");
         serverFactory.setExtensionMappings(mappings);
         server = serverFactory.create();
-        server.start();
+//        server.start();
     }
     private static void waitForWADL() throws Exception {
         WebClient client = WebClient.create(WADL_ADDRESS);
@@ -140,13 +140,13 @@ public class UserServiceTest
     public void testOne()
             throws Exception
     {
-        Thread.sleep(60000);
+//        Thread.sleep(60000);
         ClientProxyFactoryBean cf = new ClientProxyFactoryBean();
-        cf.setAddress(ENDPOINT_ADDRESS + "/userservice");
+        cf.setAddress(ENDPOINT_ADDRESS + "/userservice/users");
         cf.setServiceClass(UserService.class);
         UserService testService = (UserService)cf.create();
         SLF4JLoggerProxy.debug(this,
-                               String.valueOf(testService.getUsers()));
+                               String.valueOf(testService.getUser(String.valueOf(1))));
 //        WebClient client = WebClient.create(ENDPOINT_ADDRESS);
 //        WebClient.getConfig(client).getRequestContext().put(LocalConduit.DIRECT_DISPATCH,
 //                                                            Boolean.TRUE);
