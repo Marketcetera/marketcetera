@@ -1,7 +1,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0">
 
-    <cm:property-placeholder persistent-id="org.marketcetera.dao.datasource" id="marketcetera">
+    <cm:property-placeholder persistent-id="org.marketcetera.dao.datasource">
         <cm:default-properties>
 
             <!-- JDBC Drivers -->
