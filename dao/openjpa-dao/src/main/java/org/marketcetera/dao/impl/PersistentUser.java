@@ -7,15 +7,9 @@ import java.util.Set;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.api.security.GrantedAuthority;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.systemmodel.Authority;
@@ -35,6 +29,7 @@ import org.marketcetera.core.systemmodel.Authority;
 @NamedNativeQueries( { @NamedNativeQuery(name="findAuthoritiesByUserId",query="select distinct authorities.id, authorities.authority, authorities.version from authorities as authorities where authorities.id in (select groups_authorities.authorities_id from groups_authorities as groups_authorities where groups_authorities.groups_id in (select groups.id from groups as groups where groups.id in (select groups_id from groups_users as groups_users, users as users where users.id = groups_users.users_id and users.id=?)))",resultClass=PersistentAuthority.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
+@XmlRootElement
 public class PersistentUser
         extends PersistentVersionedObject
         implements User
@@ -220,6 +215,24 @@ public class PersistentUser
         return builder.toString();
     }
     /**
+     * Create a new PersistentUser instance.
+     */
+    PersistentUser()
+    {
+    }
+    /**
+     * Create a new PersistentUser instance.
+     *
+     * @param inName a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     */
+    PersistentUser(String inName,
+                   String inPassword)
+    {
+        username = inName;
+        password = inPassword;
+    }
+    /**
      * username value
      */
     private volatile String username;
@@ -243,6 +256,5 @@ public class PersistentUser
      * authorities for this user
      */
     @GuardedBy("authorities")
-    private final Set<Authority> authorities = new HashSet<Authority>();
-    private static final long serialVersionUID = 1L;
+    private transient final Set<Authority> authorities = new HashSet<Authority>();
 }

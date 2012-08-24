@@ -1,12 +1,12 @@
 package org.marketcetera.security.shiro;
 
-import javax.jws.WebMethod;
-import javax.jws.WebService;
+import java.util.List;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.api.security.User;
+import org.marketcetera.dao.impl.PersistentUser;
 
 /* $License$ */
 
@@ -18,7 +18,6 @@ import org.marketcetera.api.security.User;
  * @since $Release$
  */
 @Path("/userservice/")
-@WebService
 public interface UserService
 {
     /**
@@ -27,11 +26,10 @@ public interface UserService
      * @param inUser a <code>User</code> value
      * @return a <code>Response</code> value
      */
-    @WebMethod
     @POST
     @Path("/users")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response addUser(User inUser);
+    public Response addUser(PersistentUser inUser);
     /**
      * Gets the user with the given id.
      *
@@ -41,16 +39,16 @@ public interface UserService
     @GET
     @Path("/users/{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public User getUser(@PathParam("id")String inId);
+    public PersistentUser getUser(@PathParam("id")long inId);
     /**
      * Gets all users.
      *
      * @return a <code>List&lt;User&gt;</code> value
      */
-//    @GET
-//    @Path("/users")
-//    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Container<User> getUsers();
+    @GET
+    @Path("/users")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<PersistentUser> getUsers();
     /**
      * Updates the given user.
      *
@@ -60,7 +58,7 @@ public interface UserService
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("/users")
-    public Response updateUser(User inUser);
+    public Response updateUser(PersistentUser inUser);
     /**
      * Deletes the user with the given id.
      *
@@ -69,5 +67,5 @@ public interface UserService
      */
     @DELETE
     @Path("/users/{id}")
-    public Response deleteUser(@PathParam("id") String inId);
+    public Response deleteUser(@PathParam("id")long inId);
 }
