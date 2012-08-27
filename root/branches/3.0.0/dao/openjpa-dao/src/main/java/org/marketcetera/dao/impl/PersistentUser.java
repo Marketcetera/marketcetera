@@ -217,7 +217,7 @@ public class PersistentUser
     /**
      * Create a new PersistentUser instance.
      */
-    PersistentUser()
+    protected PersistentUser()
     {
     }
     /**
@@ -226,8 +226,8 @@ public class PersistentUser
      * @param inName a <code>String</code> value
      * @param inPassword a <code>String</code> value
      */
-    PersistentUser(String inName,
-                   String inPassword)
+    protected PersistentUser(String inName,
+                             String inPassword)
     {
         username = inName;
         password = inPassword;

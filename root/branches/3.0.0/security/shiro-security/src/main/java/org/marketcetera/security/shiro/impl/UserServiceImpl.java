@@ -1,9 +1,7 @@
 package org.marketcetera.security.shiro.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -37,8 +35,6 @@ public class UserServiceImpl
         Response response;
         try {
             userManagerService.addUser(inUser);
-            users.put(inUser.getId(),
-                      inUser);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             response = Response.notModified().build();
@@ -54,8 +50,7 @@ public class UserServiceImpl
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
                                "UserService getUser invoked with id {}",
                                inId);
-//        return userManagerService.getUserById(inId);
-        return users.get(inId);
+        return (PersistentUser)userManagerService.getUserById(inId);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.security.shiro.UserService#updateUser(org.marketcetera.api.security.User)
@@ -68,8 +63,6 @@ public class UserServiceImpl
                                inUser);
         Response response;
         try {
-            users.put(inUser.getId(),
-                      inUser);
             userManagerService.saveUser(inUser);
             response = Response.ok().build();
         } catch (RuntimeException e) {
@@ -90,7 +83,6 @@ public class UserServiceImpl
         try {
             User user = userManagerService.getUserById(inId);
             userManagerService.deleteUser(user);
-            users.remove(inId);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             response = Response.notModified().build();
@@ -105,8 +97,11 @@ public class UserServiceImpl
     {
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
                                "UserService getUsers invoked");
-//        return userManagerService.getAllUsers();
-        return new ArrayList<PersistentUser>(users.values());
+        List<PersistentUser> castUsers = new ArrayList<PersistentUser>();
+        for(User user : userManagerService.getAllUsers()) {
+            castUsers.add((PersistentUser)user);
+        }
+        return castUsers;
     }
     /**
      * Sets the userManagerService value.
@@ -121,5 +116,4 @@ public class UserServiceImpl
      * data access object
      */
     private UserManagerService userManagerService;
-    private final Map<Long,PersistentUser> users = new HashMap<Long,PersistentUser>();
 }
