@@ -209,9 +209,9 @@ public class PersistentUser
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("PersistentUser [username=").append(username).append(", enabled=").append(enabled)
+        builder.append("User ").append(username).append("[").append(getId()).append("] ").append(" enabled=").append(enabled)
                 .append(", locked=").append(locked).append(", credentialsExpired=").append(credentialsExpired)
-                .append("]");
+                .append(", authorities=").append(authorities);
         return builder.toString();
     }
     /**
@@ -256,5 +256,5 @@ public class PersistentUser
      * authorities for this user
      */
     @GuardedBy("authorities")
-    private transient final Set<Authority> authorities = new HashSet<Authority>();
+    private final Set<Authority> authorities = new HashSet<Authority>();
 }

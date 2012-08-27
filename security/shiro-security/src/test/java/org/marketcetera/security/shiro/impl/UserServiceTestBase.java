@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -17,6 +18,7 @@ import org.junit.BeforeClass;
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.systemmodel.Authority;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -107,15 +109,25 @@ public class UserServiceTestBase
         when(userDao.getAll()).thenReturn(new ArrayList<User>(usersByName.values()));
     }
     /**
+     * Generates a test <code>Authority</code> value.
+     *
+     * @return an <code>Authority</code> value
+     */
+    static Authority generateAuthority()
+    {
+        return new MockAuthority();
+    }
+    /**
      * Generates a test code>User</code> value.
      *
-     * @return a <code>User</code> value
+     * @return a <code>MockUser</code> value
      */
-    static User generateUser()
+    static MockUser generateUser()
     {
         MockUser user = new MockUser("User-" + counter.incrementAndGet(),
                                      "password");
         user.setId(counter.incrementAndGet());
+        user.setAuthorities(Arrays.asList(new Authority[] { generateAuthority(), generateAuthority(), generateAuthority() }));
         return user;
     }
     /**

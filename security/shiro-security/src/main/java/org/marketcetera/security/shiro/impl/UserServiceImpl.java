@@ -30,13 +30,15 @@ public class UserServiceImpl
     public Response addUser(PersistentUser inUser)
     {
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
-                               "UserService addUser invoked with user {}",
+                               "UserService addUser invoked with user {}", //$NON-NLS-1$
                                inUser);
         Response response;
         try {
             userManagerService.addUser(inUser);
             response = Response.ok().build();
         } catch (RuntimeException e) {
+            SLF4JLoggerProxy.warn(UserServiceImpl.class,
+                                  e);
             response = Response.notModified().build();
         }
         return response;
@@ -48,7 +50,7 @@ public class UserServiceImpl
     public PersistentUser getUser(long inId)
     {
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
-                               "UserService getUser invoked with id {}",
+                               "UserService getUser invoked with id {}", //$NON-NLS-1$
                                inId);
         return (PersistentUser)userManagerService.getUserById(inId);
     }
@@ -59,13 +61,15 @@ public class UserServiceImpl
     public Response updateUser(PersistentUser inUser)
     {
         SLF4JLoggerProxy.debug(UserServiceImpl.class,
-                               "UserService updateUser invoked with user {}",
+                               "UserService updateUser invoked with user {}", //$NON-NLS-1$
                                inUser);
         Response response;
         try {
             userManagerService.saveUser(inUser);
             response = Response.ok().build();
         } catch (RuntimeException e) {
+            SLF4JLoggerProxy.warn(UserServiceImpl.class,
+                                  e);
             response = Response.notModified().build();
         }
         return response;
@@ -77,7 +81,7 @@ public class UserServiceImpl
     public Response deleteUser(long inId)
     {
         SLF4JLoggerProxy.debug(UserServiceImpl.class,
-                               "UserService deleteUser invoked with user {}",
+                               "UserService deleteUser invoked with user {}", //$NON-NLS-1$
                                inId);
         Response response;
         try {
@@ -96,7 +100,7 @@ public class UserServiceImpl
     public List<PersistentUser> getUsers()
     {
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
-                               "UserService getUsers invoked");
+                               "UserService getUsers invoked"); //$NON-NLS-1$
         List<PersistentUser> castUsers = new ArrayList<PersistentUser>();
         for(User user : userManagerService.getAllUsers()) {
             castUsers.add((PersistentUser)user);

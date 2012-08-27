@@ -2,6 +2,7 @@ package org.marketcetera.dao.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.core.systemmodel.Authority;
 
@@ -19,6 +20,7 @@ import org.marketcetera.core.systemmodel.Authority;
 @NamedQueries( { @NamedQuery(name="findUserByName",query="from PersistentAuthority s where s.authority = :name"),
                  @NamedQuery(name="findAllAuthorities",query="from PersistentAuthority")})
 @Table(name="authorities", uniqueConstraints = { @UniqueConstraint(columnNames= { "authority" } ) } )
+@XmlRootElement
 public class PersistentAuthority
         extends PersistentVersionedObject
         implements Authority
