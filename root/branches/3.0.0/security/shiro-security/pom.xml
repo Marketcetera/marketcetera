@@ -66,6 +66,7 @@
             <version>2.6.1</version>
             <scope>test</scope>
         </dependency>
+        </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-extension-providers</artifactId>
