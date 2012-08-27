@@ -28,7 +28,7 @@ public interface UserService
      */
     @POST
     @Path("/users")
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public Response addUser(PersistentUser inUser);
     /**
      * Gets the user with the given id.
@@ -38,7 +38,7 @@ public interface UserService
      */
     @GET
     @Path("/users/{id}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public PersistentUser getUser(@PathParam("id")long inId);
     /**
      * Gets all users.
@@ -47,7 +47,7 @@ public interface UserService
      */
     @GET
     @Path("/users")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public List<PersistentUser> getUsers();
     /**
      * Updates the given user.
@@ -56,7 +56,7 @@ public interface UserService
      * @return a <code>Response</code> value
      */
     @PUT
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     @Path("/users")
     public Response updateUser(PersistentUser inUser);
     /**

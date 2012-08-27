@@ -4,23 +4,16 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.api.dao.UserDao;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /* $License$ */
 
@@ -32,82 +25,8 @@ import org.mockito.stubbing.Answer;
  * @since $Release$
  */
 public class UserManagerServiceImplTest
+        extends UserServiceTestBase
 {
-    /**
-     * Run once before all tests. 
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
-    /**
-     * Run before each test.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Before
-    public void setup()
-            throws Exception
-    {
-        userDao = mock(UserDao.class);
-        userManagerService = new UserManagerServiceImpl();
-        userManagerService.setUserDao(userDao);
-        usersByName = new HashMap<String,User>();
-        usersById = new HashMap<Long,User>();
-        // set up test users
-        for(int i=0;i<=3;i++) {
-            addUser(generateUser());
-        }
-        when(userDao.getByName(anyString())).thenAnswer(new Answer<User>() {
-            @Override
-            public User answer(InvocationOnMock inInvocation)
-                    throws Throwable
-            {
-                return usersByName.get((String)inInvocation.getArguments()[0]);
-            }
-        });
-        doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock inInvocation)
-                    throws Throwable
-            {
-                User user = (User)inInvocation.getArguments()[0];
-                addUser(user);
-                return null;
-            }
-        }).when(userDao).save((User)any());
-        doAnswer(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock inInvocation)
-                    throws Throwable
-            {
-                User user = (User)inInvocation.getArguments()[0];
-                removeUser(user);
-                return null;
-            }
-        }).when(userDao).delete((User)any());
-        when(userDao.getByName(anyString())).thenAnswer(new Answer<User>() {
-            @Override
-            public User answer(InvocationOnMock inInvocation)
-                    throws Throwable
-            {
-                return usersByName.get((String)inInvocation.getArguments()[0]);
-            }
-        });
-        when(userDao.getById(anyLong())).thenAnswer(new Answer<User>() {
-            @Override
-            public User answer(InvocationOnMock inInvocation)
-                    throws Throwable
-            {
-                return usersById.get((Long)inInvocation.getArguments()[0]);
-            }
-        });
-        when(userDao.getAll()).thenReturn(new ArrayList<User>(usersByName.values()));
-    }
     /**
      * Tests {@link UserManagerServiceImpl#getUserByName(String)}. 
      *
@@ -301,60 +220,4 @@ public class UserManagerServiceImplTest
                      actualUsersById);
         verify(userDao).getAll();
     }
-    /**
-     * Generates a test code>User</code> value.
-     *
-     * @return a <code>User</code> value
-     */
-    static User generateUser()
-    {
-        User user = mock(User.class);
-        when(user.getId()).thenReturn(counter.incrementAndGet());
-        when(user.getName()).thenReturn("User-" + counter.incrementAndGet());
-        when(user.getPassword()).thenReturn("password");
-        when(user.getVersion()).thenReturn(1);
-        return user;
-    }
-    /**
-     * Adds the given user to the test user store.
-     *
-     * @param inUser a <code>User</code> value
-     */
-    private void addUser(User inUser)
-    {
-        usersByName.put(inUser.getName(),
-                        inUser);
-        usersById.put(inUser.getId(),
-                      inUser);
-    }
-    /**
-     * Removes the given user from the test user store.
-     *
-     * @param inUser a <code>User</code> value
-     */
-    private void removeUser(User inUser)
-    {
-        usersByName.remove(inUser.getName());
-        usersById.remove(inUser.getId());
-    }
-    /**
-     * test user DAO object
-     */
-    private UserDao userDao;
-    /**
-     * user manager service test value
-     */
-    private UserManagerServiceImpl userManagerService;
-    /**
-     * test user values by username
-     */
-    private Map<String,User> usersByName;
-    /**
-     * test user values by id
-     */
-    private Map<Long,User> usersById;
-    /**
-     * counter used to guarantee unique test values
-     */
-    private static AtomicLong counter = new AtomicLong(0);
 }
