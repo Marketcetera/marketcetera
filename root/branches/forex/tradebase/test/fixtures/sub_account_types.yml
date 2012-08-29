@@ -1,0 +1,29 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+ShortTermInvestment:
+  id: 1
+  description: Short Term Investment
+  accounting_account_type: A
+Cash:
+  id: 2
+  description: Cash
+  accounting_account_type: A
+DividendRevenue:
+  id: 3
+  description: Dividend Revenue
+  accounting_account_type: R
+UnrealizedGainLoss:
+  id: 4
+  description: Unrealized Gain/Loss
+  accounting_account_type: A
+ChangeonCloseOfInvestment:
+  id: 5
+  description: Change on Close of Investment
+  accounting_account_type: R
+Commissions:
+  id: 6
+  description: Commissions
+  accounting_account_type: E
+InterestRevenue:
+  id: 7
+  description: Interest Revenue
+  accounting_account_type: R
