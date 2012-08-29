@@ -68,7 +68,9 @@ public class PersistentUser
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
-        return Collections.unmodifiableSet(authorities);
+        synchronized(authorities) {
+            return Collections.unmodifiableSet(authorities);
+        }
     }
     /**
      * Sets the authorities for this user.
@@ -77,11 +79,11 @@ public class PersistentUser
      */
     public void setAuthorities(Collection<Authority> inAuthorities)
     {
-        if(inAuthorities == null) {
-            return;
-        }
         synchronized(authorities) {
             authorities.clear();
+            if(inAuthorities == null) {
+                return;
+            }
             authorities.addAll(inAuthorities);
         }
     }
@@ -257,4 +259,5 @@ public class PersistentUser
      */
     @GuardedBy("authorities")
     private final Set<Authority> authorities = new HashSet<Authority>();
+    private static final long serialVersionUID = 1L;
 }

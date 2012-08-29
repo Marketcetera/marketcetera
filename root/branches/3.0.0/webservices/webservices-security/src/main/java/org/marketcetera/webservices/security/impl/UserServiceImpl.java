@@ -1,4 +1,4 @@
-package org.marketcetera.security.shiro.impl;
+package org.marketcetera.webservices.security.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,10 @@ import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.security.UserManagerService;
+import org.marketcetera.core.systemmodel.UserFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.dao.impl.PersistentUser;
-import org.marketcetera.security.shiro.UserService;
+import org.marketcetera.webservices.security.UserService;
+import org.marketcetera.webservices.security.WebServicesUser;
 
 /* $License$ */
 
@@ -17,24 +18,27 @@ import org.marketcetera.security.shiro.UserService;
  * Provides web-services access to the user service.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: UserServiceImpl.java 16218 2012-08-27 23:23:59Z colin $
  * @since $Release$
  */
 public class UserServiceImpl
         implements UserService
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.security.shiro.UserService#addUser(org.marketcetera.api.security.User)
+     * @see org.marketcetera.webservices.security.UserService#addUser(java.lang.String, java.lang.String)
      */
     @Override
-    public Response addUser(PersistentUser inUser)
+    public Response addUser(String inUsername,
+                            String inPassword)
     {
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
-                               "UserService addUser invoked with user {}", //$NON-NLS-1$
-                               inUser);
+                               "UserService addUser invoked with user {} and password ********", //$NON-NLS-1$
+                               inUsername);
         Response response;
         try {
-            userManagerService.addUser(inUser);
+            User user = userFactory.create(inUsername,
+                                           inPassword);
+            userManagerService.addUser(user);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(UserServiceImpl.class,
@@ -47,32 +51,16 @@ public class UserServiceImpl
      * @see org.marketcetera.security.shiro.UserService#getUser(java.lang.String)
      */
     @Override
-    public PersistentUser getUser(long inId)
+    public WebServicesUser getUser(long inId)
     {
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
                                "UserService getUser invoked with id {}", //$NON-NLS-1$
                                inId);
-        return (PersistentUser)userManagerService.getUserById(inId);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.security.shiro.UserService#updateUser(org.marketcetera.api.security.User)
-     */
-    @Override
-    public Response updateUser(PersistentUser inUser)
-    {
-        SLF4JLoggerProxy.debug(UserServiceImpl.class,
-                               "UserService updateUser invoked with user {}", //$NON-NLS-1$
-                               inUser);
-        Response response;
-        try {
-            userManagerService.saveUser(inUser);
-            response = Response.ok().build();
-        } catch (RuntimeException e) {
-            SLF4JLoggerProxy.warn(UserServiceImpl.class,
-                                  e);
-            response = Response.notModified().build();
+        User user = userManagerService.getUserById(inId);
+        if(user == null) {
+            return null;
         }
-        return response;
+        return new WebServicesUser(user);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.security.shiro.UserService#deleteUser(java.lang.String)
@@ -97,15 +85,15 @@ public class UserServiceImpl
      * @see org.marketcetera.security.shiro.UserService#getUsers()
      */
     @Override
-    public List<PersistentUser> getUsers()
+    public List<WebServicesUser> getUsers()
     {
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
                                "UserService getUsers invoked"); //$NON-NLS-1$
-        List<PersistentUser> castUsers = new ArrayList<PersistentUser>();
+        List<WebServicesUser> decoratedUsers = new ArrayList<WebServicesUser>();
         for(User user : userManagerService.getAllUsers()) {
-            castUsers.add((PersistentUser)user);
+            decoratedUsers.add(new WebServicesUser(user));
         }
-        return castUsers;
+        return decoratedUsers;
     }
     /**
      * Sets the userManagerService value.
@@ -117,7 +105,20 @@ public class UserServiceImpl
         userManagerService = inUserManagerService;
     }
     /**
+     * Sets the userFactory value.
+     *
+     * @param a <code>UserFactory</code> value
+     */
+    public void setUserFactory(UserFactory inUserFactory)
+    {
+        userFactory = inUserFactory;
+    }
+    /**
      * data access object
      */
     private UserManagerService userManagerService;
+    /**
+     * constructs user objects 
+     */
+    private UserFactory userFactory;
 }

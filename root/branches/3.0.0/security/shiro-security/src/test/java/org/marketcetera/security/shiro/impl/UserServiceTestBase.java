@@ -113,7 +113,7 @@ public class UserServiceTestBase
      *
      * @return an <code>Authority</code> value
      */
-    static Authority generateAuthority()
+    protected static Authority generateAuthority()
     {
         return new MockAuthority();
     }
@@ -122,7 +122,7 @@ public class UserServiceTestBase
      *
      * @return a <code>MockUser</code> value
      */
-    static MockUser generateUser()
+    protected static MockUser generateUser()
     {
         MockUser user = new MockUser("User-" + counter.incrementAndGet(),
                                      "password");

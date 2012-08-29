@@ -4,9 +4,6 @@
     <bean id="shiroUserManagerService" class="org.marketcetera.security.shiro.impl.UserManagerServiceImpl">
         <property name="userDao" ref="userDao"/>
     </bean>
-    <bean id="userManagerWebService" class="org.marketcetera.security.shiro.impl">
-        <property name="userManagerService" ref="userManagerService"/>
-    </bean>
 
     <service id="securityService" interface="org.marketcetera.api.security.SecurityService" ref="shiroSecurityService"/>
     <service id="userManagerService" interface="org.marketcetera.api.security.UserManagerService" ref="shiroUserManagerService"/>
