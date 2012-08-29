@@ -34,4 +34,5 @@ public class MockUser
         super(inName,
               inPassword);
     }
+    private static final long serialVersionUID = 1L;
 }

@@ -1,5 +1,6 @@
 package org.marketcetera.api.security;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import org.marketcetera.api.systemmodel.NamedObject;
@@ -15,7 +16,7 @@ import org.marketcetera.api.systemmodel.VersionedObject;
  * @version $Id$
  * @since $Release$
  */
-public interface User extends VersionedObject, NamedObject, SystemObject {
+public interface User extends VersionedObject, NamedObject, SystemObject, Serializable {
     //~ Methods ========================================================================================================
 
     /**

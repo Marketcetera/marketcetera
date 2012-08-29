@@ -491,5 +491,6 @@
         <module>modules</module>
         <module>security</module>
         <module>util-test</module>
+	<module>webservices</module>
     </modules>
 </project>

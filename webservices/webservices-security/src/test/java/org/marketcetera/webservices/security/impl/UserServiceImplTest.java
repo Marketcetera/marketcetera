@@ -1,10 +1,12 @@
-package org.marketcetera.security.shiro.impl;
+package org.marketcetera.webservices.security.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -22,8 +24,13 @@ import org.junit.Test;
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.security.UserManagerService;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.dao.impl.PersistentUser;
-import org.marketcetera.security.shiro.UserService;
+import org.marketcetera.core.systemmodel.UserFactory;
+import org.marketcetera.security.shiro.impl.MockUser;
+import org.marketcetera.security.shiro.impl.UserServiceTestBase;
+import org.marketcetera.webservices.security.UserService;
+import org.marketcetera.webservices.security.WebServicesUser;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 /* $License$ */
 
@@ -31,7 +38,7 @@ import org.marketcetera.security.shiro.UserService;
  * Tests {@link UserServiceImpl}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: UserServiceImplTest.java 16218 2012-08-27 23:23:59Z colin $
  * @since $Release$
  */
 public class UserServiceImplTest
@@ -48,8 +55,24 @@ public class UserServiceImplTest
     {
         super.setup();
         userManagerService = mock(UserManagerService.class);
+        userFactory = mock(UserFactory.class);
+        when(userFactory.create()).thenReturn(new MockUser());
+        when(userFactory.create(anyString(),
+                                anyString())).thenAnswer(new Answer<User>() {
+                                    @Override
+                                    public User answer(InvocationOnMock inInvocation)
+                                            throws Throwable
+                                    {
+                                        MockUser user = new MockUser();
+                                        user.setUsername((String)inInvocation.getArguments()[0]);
+                                        user.setPassword((String)inInvocation.getArguments()[1]);
+                                        user.setId(System.nanoTime());
+                                        return user;
+                                    }
+                                });
         testUserService = new UserServiceImpl();
         testUserService.setUserManagerService(userManagerService);
+        testUserService.setUserFactory(userFactory);
         startServer();
         service = JAXRSClientFactory.create(ENDPOINT_ADDRESS,
                                             UserService.class);
@@ -69,7 +92,7 @@ public class UserServiceImplTest
         }
     }
     /**
-     * Tests {@link UserServiceImpl#addUser(org.marketcetera.dao.impl.PersistentUser)}.
+     * Tests {@link UserServiceImpl#addUser(org.marketcetera.dao.impl.User)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -77,24 +100,38 @@ public class UserServiceImplTest
     public void testAddUser()
             throws Exception
     {
-        // null user
-        new ExpectedFailure<NullPointerException>() {
+        final MockUser newUser = generateUser();
+        assertNotNull(newUser.getUsername());
+        assertNotNull(newUser.getPassword());
+        // null username & password
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
             {
-                service.addUser(null);
+                service.addUser(null,
+                                newUser.getPassword());
+            }
+        };
+        new ExpectedFailure<IllegalArgumentException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                service.addUser(newUser.getUsername(),
+                                null);
             }
         };
         // successful add
-        MockUser newUser = generateUser();
-        Response response = service.addUser(newUser);
+        Response response = service.addUser(newUser.getUsername(),
+                                            newUser.getPassword());
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
         verify(userManagerService).addUser((User)any());
         // add user throws an exception
         doThrow(new RuntimeException("This exception is expected")).when(userManagerService).addUser((User)any());
-        response = service.addUser(newUser);
+        response = service.addUser(newUser.getUsername(),
+                                   newUser.getPassword());
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
         verify(userManagerService,
@@ -115,42 +152,10 @@ public class UserServiceImplTest
         // good result
         MockUser newUser = generateUser();
         when(userManagerService.getUserById(anyLong())).thenReturn(newUser);
-        assertEquals(newUser,
-                     service.getUser(newUser.getId()));
+        verifyUser(newUser,
+                   service.getUser(newUser.getId()));
         verify(userManagerService,
                times(2)).getUserById(anyLong());
-    }
-    /**
-     * Tests {@link UserServiceImpl#updateUser(org.marketcetera.dao.impl.PersistentUser)}. 
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Test
-    public void testUpdateUser()
-            throws Exception
-    {
-        // null user
-        new ExpectedFailure<NullPointerException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                service.updateUser(null);
-            }
-        };
-        // successful add
-        MockUser newUser = generateUser();
-        Response response = service.updateUser(newUser);
-        assertEquals(Response.Status.OK.getStatusCode(),
-                     response.getStatus());
-        verify(userManagerService).saveUser((User)any());
-        // add user throws an exception
-        doThrow(new RuntimeException("This exception is expected")).when(userManagerService).saveUser((User)any());
-        response = service.updateUser(newUser);
-        assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
-                     response.getStatus());
-        verify(userManagerService,
-               times(2)).saveUser((User)any());
     }
     /**
      * Tests {@link UserServiceImpl#deleteUser(long)}. 
@@ -188,20 +193,20 @@ public class UserServiceImplTest
         assertTrue(service.getUsers().isEmpty());
         verify(userManagerService).getAllUsers();
         // single result
-        PersistentUser user1 = generateUser();
+        User user1 = generateUser();
         when(userManagerService.getAllUsers()).thenReturn(Arrays.asList(new User[] { user1 }));
-        List<PersistentUser> expectedResults = new ArrayList<PersistentUser>();
+        List<User> expectedResults = new ArrayList<User>();
         expectedResults.add(user1);
-        assertEquals(expectedResults,
-                     service.getUsers());
+        verifyUsers(expectedResults,
+                    service.getUsers());
         verify(userManagerService,
                times(2)).getAllUsers();
         // multiple results
-        PersistentUser user2 = generateUser();
+        User user2 = generateUser();
         when(userManagerService.getAllUsers()).thenReturn(Arrays.asList(new User[] { user1, user2 }));
         expectedResults.add(user2);
-        assertEquals(expectedResults,
-                     service.getUsers());
+        verifyUsers(expectedResults,
+                    service.getUsers());
         verify(userManagerService,
                times(3)).getAllUsers();
     }
@@ -226,6 +231,41 @@ public class UserServiceImplTest
         server = serverFactory.create();
     }
     /**
+     * Verifies that the given expected value matches the given actual value.
+     *
+     * @param inExpectedUser a <code>User</code> value
+     * @param inActualUser a <code>WebServicesUser</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void verifyUser(User inExpectedUser,
+                            WebServicesUser inActualUser)
+            throws Exception
+    {
+        assertEquals(inExpectedUser.getName(),
+                     inActualUser.getUsername());
+        assertEquals(inExpectedUser.getId(),
+                     inActualUser.getId());
+    }
+    /**
+     * Verifies that the given expected user values match the given actual user values.
+     *
+     * @param inExpectedUsers a <code>Collection&lt;User&gt;</code> value
+     * @param inActualUsers a <code>Collection&lt;WebServicesUser&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void verifyUsers(Collection<User> inExpectedUsers,
+                             Collection<WebServicesUser> inActualUsers)
+            throws Exception
+    {
+        assertEquals(inExpectedUsers.size(),
+                     inActualUsers.size());
+        Iterator<WebServicesUser> actualIterator = inActualUsers.iterator();
+        for(User expectedUser : inExpectedUsers) {
+            verifyUser(expectedUser,
+                       actualIterator.next());
+        }
+    }
+    /**
      * address of service
      */
     private final static String ENDPOINT_ADDRESS = "http://localhost:9010/";
@@ -246,4 +286,8 @@ public class UserServiceImplTest
      * test client service
      */
     private UserService service;
+    /**
+     * test user factory object
+     */
+    private UserFactory userFactory;
 }
