@@ -14,11 +14,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.User;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.systemmodel.Authority;
+import org.marketcetera.core.systemmodel.SystemmodelTestBase;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -32,18 +31,8 @@ import org.mockito.stubbing.Answer;
  * @since $Release$
  */
 public class UserServiceTestBase
+        extends SystemmodelTestBase
 {
-    /**
-     * Run once before all tests. 
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @BeforeClass
-    public static void once()
-            throws Exception
-    {
-        LoggerConfiguration.logSetup();
-    }
     /**
      * Run before each test.
      *
@@ -53,6 +42,7 @@ public class UserServiceTestBase
     public void setup()
             throws Exception
     {
+        super.setup();
         userDao = mock(UserDao.class);
         userManagerService = new UserManagerServiceImpl();
         userManagerService.setUserDao(userDao);
@@ -109,20 +99,11 @@ public class UserServiceTestBase
         when(userDao.getAll()).thenReturn(new ArrayList<User>(usersByName.values()));
     }
     /**
-     * Generates a test <code>Authority</code> value.
-     *
-     * @return an <code>Authority</code> value
-     */
-    protected static Authority generateAuthority()
-    {
-        return new MockAuthority();
-    }
-    /**
      * Generates a test code>User</code> value.
      *
      * @return a <code>MockUser</code> value
      */
-    protected static MockUser generateUser()
+    protected MockUser generateUser()
     {
         MockUser user = new MockUser("User-" + counter.incrementAndGet(),
                                      "password");

@@ -4,10 +4,9 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.dao.AuthorityDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.marketcetera.core.systemmodel.AuthorityDao;
 
 /**
  * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
@@ -16,8 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class AuthorityDaoImpl implements AuthorityDao {
-    @SuppressWarnings("unused")
-    private static final Logger log = LoggerFactory.getLogger(AuthorityDaoImpl.class);
     private EntityManager entityManager;
 
 
@@ -41,11 +38,19 @@ public class AuthorityDaoImpl implements AuthorityDao {
         return entityManager.find(PersistentAuthority.class, inId);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Authority> getAll() {
         return entityManager.createNamedQuery("findAllAuthorities").getResultList();
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.systemmodel.AuthorityDao#delete(org.marketcetera.core.systemmodel.Authority)
+     */
+    @Override
+    public void delete(Authority inAuthority)
+    {
+        entityManager.remove(inAuthority);
+    }
     @PersistenceContext
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;

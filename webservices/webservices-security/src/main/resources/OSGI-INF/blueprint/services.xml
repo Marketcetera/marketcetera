@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
-    <bean id="userManagerWebService" class="org.marketcetera.security.shiro.impl">
+    <bean id="userManagerWebService" class="org.marketcetera.webservices.security.impl.UserServiceImpl">
         <property name="userManagerService" ref="userManagerService"/>
         <property name="userFactory" ref="userFactory"/>
     </bean>
