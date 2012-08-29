@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
+    <bean id="authorityManagerService" class="org.marketcetera.core.systemmodel.impl.AuthorityManagerServiceImpl">
+        <property name="authorityDao" ref="authorityDao"/>
+    </bean>
+
+    <reference id="authorityDao" interface="org.marketcetera.core.systemmodel.AuthorityDao"/>
+
+    <service id="authorityManagerService" interface="org.marketcetera.core.systemmodel.AuthorityManagerService" ref="authorityManagerWebService"/>
+</blueprint>
