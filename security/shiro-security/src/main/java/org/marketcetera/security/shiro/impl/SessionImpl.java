@@ -1,8 +1,6 @@
 package org.marketcetera.security.shiro.impl;
 
 import org.marketcetera.api.security.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
@@ -11,8 +9,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class SessionImpl implements Session {
-    @SuppressWarnings("unused")
-    private static final Logger log = LoggerFactory.getLogger(SessionImpl.class);
 
 
     @Override

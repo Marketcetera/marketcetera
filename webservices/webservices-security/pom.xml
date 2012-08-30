@@ -19,32 +19,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>systemmodel</artifactId>
+            <groupId>org.marketcetera.security</groupId>
+            <artifactId>shiro-security</artifactId>
             <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http-jetty</artifactId>
-            <version>2.6.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-extension-providers</artifactId>
-            <version>2.6.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-            <version>1.3.1</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
