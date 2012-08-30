@@ -98,6 +98,31 @@ public class BasicReportHistoryServices
     {
         return ExecutionReportSummary.getAllEquityPositionsAsOf(inUser,inDate);
     }
+    
+    
+    @Override
+    public BigDecimal getCurrencyPositionAsOf
+        (SimpleUser inUser,
+         Date inDate,
+         Currency inCurrency)
+        throws PersistenceException
+    {
+        return ExecutionReportSummary.getCurrencyPositionAsOf
+            (inUser,inDate,inCurrency);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.history.ReportHistoryServices#getAllCurrencyPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
+        (SimpleUser inUser,
+         Date inDate)
+        throws PersistenceException
+    {
+        return ExecutionReportSummary.getAllCurrencyPositionsAsOf(inUser,inDate);
+    }
+    
     /* (non-Javadoc)
      * @see org.marketcetera.ors.history.ReportHistoryServices#getAllFuturePositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
      */

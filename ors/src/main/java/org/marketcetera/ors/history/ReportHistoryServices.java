@@ -87,6 +87,29 @@ public interface ReportHistoryServices {
          Date inDate,
          Equity inEquity)
         throws PersistenceException;
+    
+    /**
+     * Returns the position of the currency based on all reports
+     * received for it before or on the supplied date, and which are visible
+     * to the given user.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only the reports
+     * that were received prior to or on this date will be used in this calculation.
+     * Cannot be null.
+     *
+     * @param inCurrency the currency whose position is desired. Cannot be null.
+     *
+     * @return the currency position.
+     *
+     * @throws PersistenceException if there were errors retrieving the currency
+     * position
+     */
+    public BigDecimal getCurrencyPositionAsOf
+        (SimpleUser inUser,
+         Date inDate,
+         Currency inCurrency)
+        throws PersistenceException;
 
     /**
      * Returns the aggregate position of each (equity,account,actor)
@@ -104,6 +127,27 @@ public interface ReportHistoryServices {
      * position map.
      */
     public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
+        (SimpleUser inUser,
+         Date inDate)
+        throws PersistenceException;
+    
+    
+    /**
+     * Returns the aggregate position of each (currency,account,actor)
+     * tuple based on all reports received for each tuple on or before
+     * the supplied date, and which are visible to the given user.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
+     *
+     * @return the position map.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
+     */
+    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
         (SimpleUser inUser,
          Date inDate)
         throws PersistenceException;

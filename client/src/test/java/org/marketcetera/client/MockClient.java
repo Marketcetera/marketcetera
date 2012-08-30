@@ -8,6 +8,7 @@ import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 
 /* $License$ */
 
@@ -604,4 +605,16 @@ public class MockClient
      * if non-null, will be thrown during {@link #sendCancel(OrderCancel)
      */
     private volatile OrderValidationException sendOrderCancelValidationException = null;
+	@Override
+	public BigDecimal getCurrencyPositionAsOf(Date inDate, Currency inCurrency)
+			throws ConnectionException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(
+			Date inDate) throws ConnectionException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

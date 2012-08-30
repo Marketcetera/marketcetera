@@ -3,6 +3,7 @@ package org.marketcetera.event.impl;
 import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -11,6 +12,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.beans.CurrencyBean;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.MarketstatBean;
 import org.marketcetera.event.beans.OptionBean;
@@ -35,7 +37,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class MarketstatEventBuilder
-        implements EventBuilder<MarketstatEvent>, OptionEventBuilder<MarketstatEventBuilder>, FutureEventBuilder<MarketstatEventBuilder>
+        implements EventBuilder<MarketstatEvent>, OptionEventBuilder<MarketstatEventBuilder>, FutureEventBuilder<MarketstatEventBuilder>, CurrencyEventBuilder<MarketstatEventBuilder>
 {
     /**
      * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object.
@@ -56,6 +58,8 @@ public abstract class MarketstatEventBuilder
             return optionMarketstat().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
             return futureMarketstat().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Currency) {
+        	return currencyMarketstat().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -80,7 +84,29 @@ public abstract class MarketstatEventBuilder
                 return new EquityMarketstatEventImpl(getMarketstat());
             }
         };
+    }    
+    /**
+     * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object
+     * of type <code>Currency</code>.
+     *
+     * @return a <code>MarketstatEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Currency}
+     */
+    public static MarketstatEventBuilder currencyMarketstat()
+    {
+        return new MarketstatEventBuilder()
+        {
+            @Override
+            public MarketstatEvent create()
+            {
+                if(!(getMarketstat().getInstrument() instanceof Currency)) {
+                    throw new IllegalArgumentException(VALIDATION_CURRENCY_REQUIRED.getText());
+                }
+                return new CurrencyMarketstatEventImpl(getMarketstat(),getCurrency());
+            }
+        };
     }
+    
     /**
      * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object
      * of type <code>Option</code>.
@@ -173,6 +199,8 @@ public abstract class MarketstatEventBuilder
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
+        }else if(inInstrument instanceof Currency) {
+            currency.setInstrument((Currency)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
@@ -528,6 +556,15 @@ public abstract class MarketstatEventBuilder
         return future;
     }
     /**
+     * Gets the currency value.
+     *
+     * @return a <code>CurrencyBean</code> value
+     */
+    protected final CurrencyBean getCurrency()
+    {
+        return currency;
+    }
+    /**
      * Gets the volume change value.
      *
      * @return a <code>BigDecimal</code> value
@@ -557,6 +594,10 @@ public abstract class MarketstatEventBuilder
      * the future attributes
      */
     private final FutureBean future = new FutureBean();
+    /**
+     * the currency attributes
+     */
+    private final CurrencyBean currency = new CurrencyBean();
     /**
      * the change in volume since the previous close, may be <code>null</code> 
      */

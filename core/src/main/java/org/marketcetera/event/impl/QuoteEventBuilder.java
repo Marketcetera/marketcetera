@@ -3,6 +3,7 @@ package org.marketcetera.event.impl;
 import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Date;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.*;
+import org.marketcetera.event.beans.CurrencyBean;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.OptionBean;
 import org.marketcetera.event.beans.QuoteBean;
@@ -247,6 +249,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             return optionAskEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
                 return futureAskEvent().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Currency) {
+            return currencyAskEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -270,6 +274,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             return optionBidEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
             return futureBidEvent().withInstrument(inInstrument);
+        } else if(inInstrument instanceof Currency) {
+            return currencyBidEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -411,6 +417,52 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         };
     }
     /**
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Currency <code>AskEvent</code> object.
+     *
+     * @return a <code>QuoteEventBuilder&lt;AskEvent&gt;</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Currency}
+     */
+    public static QuoteEventBuilder<AskEvent> currencyAskEvent()
+    {
+        return new QuoteEventBuilder<AskEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public AskEvent create()
+            {
+                if(getQuote().getInstrument() instanceof Currency) {
+                    return new CurrencyAskEventImpl(getQuote(),
+                                                  getCurrency());
+                }
+                throw new IllegalArgumentException(VALIDATION_CURRENCY_REQUIRED.getText());
+            }
+        };
+    }
+    /**
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new Currency <code>BidEvent</code> object.
+     *
+     * @return a <code>QuoteEventBuilder&lt;BidEvent&gt;</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Currency}
+     */
+    public static QuoteEventBuilder<BidEvent> currencyBidEvent()
+    {
+        return new QuoteEventBuilder<BidEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public BidEvent create()
+            {
+                if(getQuote().getInstrument() instanceof Currency) {
+                    return new CurrencyBidEventImpl(getQuote(),
+                                                  getCurrency());
+                }
+                throw new IllegalArgumentException(VALIDATION_CURRENCY_REQUIRED.getText());
+            }
+        };
+    }    
+    /**
      * Sets the message id to use with the new event. 
      *
      * @param inMessageId a <code>long</code> value
@@ -456,10 +508,13 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
+        } else if(inInstrument instanceof Currency) {
+            currency.setInstrument((Currency)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
+            currency.setInstrument(null);
         }
         return this;
     }
@@ -679,6 +734,15 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         return future;
     }
     /**
+     * Gets the currency value.
+     *
+     * @return a <code>CurrencyBean</code> value
+     */
+    protected final CurrencyBean getCurrency()
+    {
+        return currency;
+    }
+    /**
      * the quote attributes
      */
     private final QuoteBean quote = new QuoteBean();
@@ -690,4 +754,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * the future attributes
      */
     private final FutureBean future = new FutureBean();
+    /**
+     * the currency attributes
+     */
+    private final CurrencyBean currency = new CurrencyBean();
 }

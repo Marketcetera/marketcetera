@@ -21,6 +21,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
@@ -184,6 +185,38 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
         }
     }
+    
+    @Override
+    public BigDecimal getCurrencyPositionAsOf
+        (Date inDate,
+         Currency inCurrency)
+        throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.getCurrencyPositionAsOf
+                (getServiceContext(),new DateWrapper(inDate),inCurrency);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+
+    @Override
+    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
+        (Date inDate)
+        throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.getAllCurrencyPositionsAsOf
+                (getServiceContext(),new DateWrapper(inDate)).getMap();
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+    
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#getAllFuturePositionsAsOf(java.util.Date)
      */

@@ -1,8 +1,8 @@
 package org.marketcetera.trade;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -15,11 +15,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * Base class for orders. This class is public for the sake of
  * JAXB and is not intended for general use.
  *
- * @author anshul@marketcetera.com
- * @version $Id$
- * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id: OrderBaseImpl.java") //$NON-NLS-1$
 /*
  * Use field accessors otherwise custom fields do not get unmarshalled. This
  * happens because JAXB expects to be able to modify the Map after supplying it
@@ -33,7 +30,9 @@ import org.marketcetera.util.misc.ClassVersion;
       OrderSingleImpl.class,
       Equity.class,
       Option.class,
-      Future.class})
+      Future.class,
+      Currency.class
+      })
 //todo: figure out a way to dynamic add instrument types to the XmlSeeAlso list
 public class OrderBaseImpl implements OrderBase {
     @Override
@@ -80,14 +79,14 @@ public class OrderBaseImpl implements OrderBase {
     public Map<String, String> getCustomFields() {
         return mCustomFields == null
                 ? null
-                : new TreeMap<String,String>(mCustomFields);
+                : new HashMap<String,String>(mCustomFields);
     }
 
     @Override
     public void setCustomFields(Map<String, String> inCustomFields) {
         mCustomFields = inCustomFields == null
                 ? null
-                : new TreeMap<String,String>(inCustomFields);
+                : new HashMap<String,String>(inCustomFields);
     }
 
     @Override

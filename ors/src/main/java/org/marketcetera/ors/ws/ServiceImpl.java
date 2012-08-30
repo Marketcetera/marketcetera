@@ -154,6 +154,20 @@ public class ServiceImpl
         return new MapWrapper<PositionKey<Equity>, BigDecimal>(
                 getHistoryServices().getAllEquityPositionsAsOf(session.getUser(),date));
     }
+    
+	private BigDecimal getCurrencyPositionAsOfImpl(ClientSession session,
+			Date date, Currency currency) throws PersistenceException {
+		return getHistoryServices().getCurrencyPositionAsOf(session.getUser(),
+				date, currency);
+	}
+
+	private MapWrapper<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOfImpl(
+			ClientSession session, Date date) throws PersistenceException {
+		return new MapWrapper<PositionKey<Currency>, BigDecimal>(
+				getHistoryServices().getAllCurrencyPositionsAsOf(
+						session.getUser(), date));
+	}
+    
     /**
      * Gets the position for the given future.
      *
@@ -357,6 +371,47 @@ public class ServiceImpl
                     (sessionHolder.getSession(),date.getRaw());
             }}).execute(context);
     }
+   
+    @Override
+    public BigDecimal getCurrencyPositionAsOf
+        (ClientContext context,
+         final DateWrapper date,
+         final Currency currency)
+        throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,BigDecimal>
+                (getSessionManager()) {
+            @Override
+            protected BigDecimal call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws PersistenceException
+            {
+                return getCurrencyPositionAsOfImpl
+                    (sessionHolder.getSession(),date.getRaw(),currency);
+            }}).execute(context);
+    }
+
+    @Override
+    public MapWrapper<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf
+        (ClientContext context,
+         final DateWrapper date)
+        throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,MapWrapper<PositionKey<Currency>,
+                                                          BigDecimal>>
+                (getSessionManager()) {
+            @Override
+            protected MapWrapper<PositionKey<Currency>,BigDecimal> call
+                (ClientContext context,
+                 SessionHolder<ClientSession> sessionHolder)
+                throws PersistenceException
+            {
+                return getAllCurrencyPositionsAsOfImpl
+                    (sessionHolder.getSession(),date.getRaw());
+            }}).execute(context);
+    }
+    
     /* (non-Javadoc)
      * @see org.marketcetera.client.Service#getAllFuturePositionsAsOf(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.util.ws.wrappers.DateWrapper)
      */

@@ -152,6 +152,46 @@ public interface Service
          @WebParam(name= "date")DateWrapper date)
         throws RemoteException;
     /**
+     * Returns the position of the supplied currency instrument based on reports,
+     * generated and received on or before the supplied date in UTC to the
+     * client with the given context.
+     *
+     * @param context The context.
+     * @param date The date, in UTC.
+     * @param currency The currency instrument.
+     *
+     * @return The position.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+
+    BigDecimal getCurrencyPositionAsOf
+        (@WebParam(name= "context")ClientContext context,
+         @WebParam(name= "date")DateWrapper date,
+         @WebParam(name= "currency")Currency currency)
+        throws RemoteException;
+
+    /**
+     * Returns all the open positions for currency instruments based on reports,
+     * generated and received on or before the supplied date in UTC to the client
+     * with the given context.
+     *
+     * @param context The context.
+     * @param date The date, in UTC.
+     *
+     * @return The open positions.
+     *
+     * @throws RemoteException Thrown if the operation cannot be
+     * completed.
+     */
+
+    MapWrapper<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf
+        (@WebParam(name= "context")ClientContext context,
+         @WebParam(name= "date")DateWrapper date)
+        throws RemoteException;
+    
+    /**
      * Returns the position of the supplied future instrument based on reports,
      * generated and received on or before the supplied date in UTC to the
      * client with the given context.
