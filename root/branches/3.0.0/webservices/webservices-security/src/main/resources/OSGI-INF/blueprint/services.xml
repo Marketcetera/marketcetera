@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
-    <bean id="userManagerWebService" class="org.marketcetera.webservices.security.impl.UserServiceImpl">
-        <property name="userManagerService" ref="userManagerService"/>
-        <property name="userFactory" ref="userFactory"/>
+    <bean id="authenticationWebService" class="org.marketcetera.webservices.security.impl.AuthenticationServiceImpl">
+        <property name="authenticationManagerService" ref="subject"/>
     </bean>
 
-    <reference id="userManagerService" interface="org.marketcetera.api.security.UserManagerService"/>
-    <reference id="userFactory" interface="org.marketcetera.core.systemmodel.UserFactory"/>
+    <reference id="subject" interface="org.marketcetera.api.security.Subject"/>
 
-    <service id="userManagerWebService" interface="org.marketcetera.webservices.security.UserService" ref="userManagerWebService"/>
+    <service id="authenticationWebService" interface="org.marketcetera.webservices.security.AuthenticationService" ref="authenticationWebService"/>
 </blueprint>
