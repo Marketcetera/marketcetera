@@ -4,7 +4,6 @@ import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.security.Subject;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.security.shiro.impl.UsernamePasswordToken;
 import org.marketcetera.webservices.security.AuthenticationService;
 
 /* $License$ */

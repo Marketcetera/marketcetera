@@ -6,8 +6,6 @@ import java.util.Set;
 import org.marketcetera.api.security.AuthenticationToken;
 import org.marketcetera.api.security.Session;
 import org.marketcetera.api.security.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
@@ -16,8 +14,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class SubjectImpl implements Subject {
-    @SuppressWarnings("unused")
-    private static final Logger log = LoggerFactory.getLogger(SubjectImpl.class);
     private Set<AuthenticationToken> authenticationTokens = new HashSet<AuthenticationToken>();
     private Session session = null;
 
