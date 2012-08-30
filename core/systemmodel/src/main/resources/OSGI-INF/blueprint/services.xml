@@ -6,10 +6,15 @@
     <bean id="groupManagerService" class="org.marketcetera.core.systemmodel.impl.GroupManagerServiceImpl">
         <property name="groupDao" ref="groupDao"/>
     </bean>
+    <bean id="userManagerService" class="org.marketcetera.core.systemmodel.impl.UserManagerServiceImpl">
+        <property name="userDao" ref="userDao"/>
+    </bean>
 
     <reference id="authorityDao" interface="org.marketcetera.core.systemmodel.AuthorityDao"/>
     <reference id="groupDao" interface="org.marketcetera.core.systemmodel.GroupDao"/>
+    <reference id="userDao" interface="org.marketcetera.core.systemmodel.UserDao"/>
 
     <service id="authorityManagerService" interface="org.marketcetera.core.systemmodel.AuthorityManagerService" ref="authorityManagerService"/>
     <service id="groupManagerService" interface="org.marketcetera.core.systemmodel.GroupManagerService" ref="groupManagerService"/>
+    <service id="userManagerService" interface="org.marketcetera.core.systemmodel.UserManagerService" ref="userManagerService"/>
 </blueprint>

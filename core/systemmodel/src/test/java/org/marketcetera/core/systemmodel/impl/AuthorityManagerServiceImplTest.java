@@ -1,12 +1,16 @@
 package org.marketcetera.core.systemmodel.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,12 +84,12 @@ public class AuthorityManagerServiceImplTest
         };
         // no match
         Authority badAuthority = generateAuthority();
-        assertNull(getAuthorityByName(badAuthority.getName()));
+        assertNull(authorityDataStore.getByName(badAuthority.getName()));
         assertEquals(null,
                      authorityManagerService.getAuthorityByName(badAuthority.getName()));
         verify(authorityDao).getByName(badAuthority.getName());
         // good match
-        Authority goodAuthority = getAllAuthorities().iterator().next();
+        Authority goodAuthority = authorityDataStore.getAll().iterator().next();
         assertNotNull(goodAuthority);
         assertSame(goodAuthority,
                    authorityManagerService.getAuthorityByName(goodAuthority.getName()));
@@ -145,11 +149,11 @@ public class AuthorityManagerServiceImplTest
             }
         };
         Authority newAuthority = generateAuthority();
-        assertFalse(authoritiesByName.containsKey(newAuthority.getName()));
+        assertNull(authorityDataStore.getByName(newAuthority.getName()));
         authorityManagerService.saveAuthority(newAuthority);
         verify(authorityDao).save(newAuthority);
         assertSame(newAuthority,
-                   authoritiesByName.get(newAuthority.getName()));
+                   authorityDataStore.getByName(newAuthority.getName()));
     }
     /**
      * Tests {@link AuthorityManagerServiceImpl#deleteAuthority(Authority)}.
@@ -171,17 +175,17 @@ public class AuthorityManagerServiceImplTest
         };
         // delete non-existent authority
         Authority newAuthority = generateAuthority();
-        assertFalse(authoritiesByName.containsKey(newAuthority.getName()));
+        assertNull(authorityDataStore.getByName(newAuthority.getName()));
         authorityManagerService.deleteAuthority(newAuthority);
         verify(authorityDao).delete(newAuthority);
-        assertFalse(authoritiesByName.containsKey(newAuthority.getName()));
+        assertNull(authorityDataStore.getByName(newAuthority.getName()));
         // delete valid authority
-        Authority goodAuthority = authoritiesByName.values().iterator().next();
-        assertTrue(authoritiesByName.containsKey(goodAuthority.getName()));
+        Authority goodAuthority = authorityDataStore.getAll().iterator().next();
+        assertNotNull(authorityDataStore.getByName(goodAuthority.getName()));
         authorityManagerService.deleteAuthority(goodAuthority);
         verify(authorityDao,
                times(2)).delete((Authority)any());
-        assertFalse(authoritiesByName.containsKey(goodAuthority.getName()));
+        assertNull(authorityDataStore.getByName(goodAuthority.getName()));
     }
     /**
      * Tests {@link AuthorityManagerServiceImpl#getAuthorityById(long)}. 
@@ -193,23 +197,23 @@ public class AuthorityManagerServiceImplTest
             throws Exception
     {
         // missing ids
-        assertNull(authoritiesById.get(Long.MIN_VALUE));
+        assertNull(authorityDataStore.getById(Long.MIN_VALUE));
         assertNull(authorityManagerService.getAuthorityById(Long.MIN_VALUE));
         verify(authorityDao).getById(Long.MIN_VALUE);
         verify(authorityDao,
                times(1)).getById(anyLong());
-        assertNull(authoritiesById.get(Long.MAX_VALUE));
+        assertNull(authorityDataStore.getById(Long.MAX_VALUE));
         assertNull(authorityManagerService.getAuthorityById(Long.MAX_VALUE));
         verify(authorityDao).getById(Long.MAX_VALUE);
         verify(authorityDao,
                times(2)).getById(anyLong());
-        assertNull(authoritiesById.get(0));
+        assertNull(authorityDataStore.getById(0));
         assertNull(authorityManagerService.getAuthorityById(0));
         verify(authorityDao).getById(0);
         verify(authorityDao,
                times(3)).getById(anyLong());
         // existing id
-        Authority goodAuthority = authoritiesByName.values().iterator().next();
+        Authority goodAuthority = authorityDataStore.getAll().iterator().next();
         assertSame(goodAuthority,
                    authorityManagerService.getAuthorityById(goodAuthority.getId()));
         verify(authorityDao).getById(goodAuthority.getId());
@@ -226,14 +230,35 @@ public class AuthorityManagerServiceImplTest
             throws Exception
     {
         List<Authority> actualAllAuthorities = authorityManagerService.getAllAuthorities();
-        Map<Long,Authority> actualAuthoritiesById = new HashMap<Long,Authority>();
-        for(Authority authority : actualAllAuthorities) {
-            actualAuthoritiesById.put(authority.getId(),
-                                authority);
-        }
-        assertEquals(authoritiesById,
-                     actualAuthoritiesById);
+        verifyAuthorities(authorityDataStore.getAll(),
+                          actualAllAuthorities);
         verify(authorityDao).getAll();
+    }
+    /**
+     * Verifies that the given actual value matches the given expected value.
+     *
+     * @param inExpectedAuthority a <code>Collection&lt;Authority&gt;</code> value
+     * @param inActualAuthority a <code>Collection&lt;Authority&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void verifyAuthorities(Collection<Authority> inExpectedAuthorities,
+                                   Collection<Authority> inActualAuthorities)
+            throws Exception
+    {
+        assertEquals(inExpectedAuthorities.size(),
+                     inActualAuthorities.size());
+        Map<Long,Authority> expectedAuthoritys = new HashMap<Long,Authority>();
+        Map<Long,Authority> actualAuthoritys = new HashMap<Long,Authority>();
+        for(Authority user : inExpectedAuthorities) {
+            expectedAuthoritys.put(user.getId(),
+                              user);
+        }
+        for(Authority user : inActualAuthorities) {
+            actualAuthoritys.put(user.getId(),
+                            user);
+        }
+        assertEquals(expectedAuthoritys,
+                     actualAuthoritys);
     }
     /**
      * test authority manager service object

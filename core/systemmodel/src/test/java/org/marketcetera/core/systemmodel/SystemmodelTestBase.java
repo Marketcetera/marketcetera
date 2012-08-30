@@ -7,13 +7,13 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.marketcetera.api.dao.UserDao;
+import org.marketcetera.api.security.User;
 import org.marketcetera.core.LoggerConfiguration;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -51,6 +51,7 @@ public class SystemmodelTestBase
     {
         initializeAuthorities();
         initializeGroups();
+        initializeUsers();
     }
     /**
      * Initializes the authorities objects. 
@@ -61,17 +62,16 @@ public class SystemmodelTestBase
             throws Exception
     {
         authorityDao = mock(AuthorityDao.class);
-        authoritiesByName = new HashMap<String,Authority>();
-        authoritiesById = new HashMap<Long,Authority>();
+        authorityDataStore = new TestDataStore<Authority>();
         for(int i=0;i<=3;i++) {
-            addAuthority(generateAuthority());
+            authorityDataStore.add(generateAuthority());
         }
         when(authorityDao.getByName(anyString())).thenAnswer(new Answer<Authority>() {
             @Override
             public Authority answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return getAuthorityByName((String)inInvocation.getArguments()[0]);
+                return authorityDataStore.getByName((String)inInvocation.getArguments()[0]);
             }
         });
         doAnswer(new Answer<Object>() {
@@ -80,7 +80,7 @@ public class SystemmodelTestBase
                     throws Throwable
             {
                 Authority authority = (Authority)inInvocation.getArguments()[0];
-                addAuthority(authority);
+                authorityDataStore.add(authority);
                 return null;
             }
         }).when(authorityDao).save((Authority)any());
@@ -90,7 +90,7 @@ public class SystemmodelTestBase
                     throws Throwable
             {
                 Authority authority = (Authority)inInvocation.getArguments()[0];
-                removeAuthority(authority);
+                authorityDataStore.remove(authority);
                 return null;
             }
         }).when(authorityDao).delete((Authority)any());
@@ -99,7 +99,7 @@ public class SystemmodelTestBase
             public Authority answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return getAuthorityByName((String)inInvocation.getArguments()[0]);
+                return authorityDataStore.getByName((String)inInvocation.getArguments()[0]);
             }
         });
         when(authorityDao.getById(anyLong())).thenAnswer(new Answer<Authority>() {
@@ -107,10 +107,10 @@ public class SystemmodelTestBase
             public Authority answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return getAuthorityById((Long)inInvocation.getArguments()[0]);
+                return authorityDataStore.getById((Long)inInvocation.getArguments()[0]);
             }
         });
-        when(authorityDao.getAll()).thenReturn(new ArrayList<Authority>(getAllAuthorities()));
+        when(authorityDao.getAll()).thenReturn(new ArrayList<Authority>(authorityDataStore.getAll()));
     }
     /**
      * Initializes the groups objects. 
@@ -121,17 +121,16 @@ public class SystemmodelTestBase
             throws Exception
     {
         groupDao = mock(GroupDao.class);
-        groupsByName = new HashMap<String,Group>();
-        groupsById = new HashMap<Long,Group>();
+        groupDataStore = new TestDataStore<Group>();
         for(int i=0;i<=3;i++) {
-            addGroup(generateGroup());
+            groupDataStore.add(generateGroup());
         }
         when(groupDao.getByName(anyString())).thenAnswer(new Answer<Group>() {
             @Override
             public Group answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return getGroupByName((String)inInvocation.getArguments()[0]);
+                return groupDataStore.getByName((String)inInvocation.getArguments()[0]);
             }
         });
         doAnswer(new Answer<Object>() {
@@ -140,7 +139,7 @@ public class SystemmodelTestBase
                     throws Throwable
             {
                 Group group = (Group)inInvocation.getArguments()[0];
-                addGroup(group);
+                groupDataStore.add(group);
                 return null;
             }
         }).when(groupDao).save((Group)any());
@@ -150,7 +149,7 @@ public class SystemmodelTestBase
                     throws Throwable
             {
                 Group group = (Group)inInvocation.getArguments()[0];
-                removeGroup(group);
+                groupDataStore.remove(group);
                 return null;
             }
         }).when(groupDao).delete((Group)any());
@@ -159,7 +158,7 @@ public class SystemmodelTestBase
             public Group answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return getGroupByName((String)inInvocation.getArguments()[0]);
+                return groupDataStore.getByName((String)inInvocation.getArguments()[0]);
             }
         });
         when(groupDao.getById(anyLong())).thenAnswer(new Answer<Group>() {
@@ -167,10 +166,69 @@ public class SystemmodelTestBase
             public Group answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return getGroupById((Long)inInvocation.getArguments()[0]);
+                return groupDataStore.getById((Long)inInvocation.getArguments()[0]);
             }
         });
-        when(groupDao.getAll()).thenReturn(new ArrayList<Group>(getAllGroups()));
+        when(groupDao.getAll()).thenReturn(new ArrayList<Group>(groupDataStore.getAll()));
+    }
+    /**
+     * Initializes the user objects. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void initializeUsers()
+            throws Exception
+    {
+        userDao = mock(UserDao.class);
+        userDataStore = new TestDataStore<User>();
+        for(int i=0;i<=3;i++) {
+            userDataStore.add(generateUser());
+        }
+        when(userDao.getByName(anyString())).thenAnswer(new Answer<User>() {
+            @Override
+            public User answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                return userDataStore.getByName((String)inInvocation.getArguments()[0]);
+            }
+        });
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                User user = (User)inInvocation.getArguments()[0];
+                userDataStore.add(user);
+                return null;
+            }
+        }).when(userDao).save((User)any());
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                User user = (User)inInvocation.getArguments()[0];
+                userDataStore.remove(user);
+                return null;
+            }
+        }).when(userDao).delete((User)any());
+        when(userDao.getByName(anyString())).thenAnswer(new Answer<User>() {
+            @Override
+            public User answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                return userDataStore.getByName((String)inInvocation.getArguments()[0]);
+            }
+        });
+        when(userDao.getById(anyLong())).thenAnswer(new Answer<User>() {
+            @Override
+            public User answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                return userDataStore.getById((Long)inInvocation.getArguments()[0]);
+            }
+        });
+        when(userDao.getAll()).thenReturn(new ArrayList<User>(userDataStore.getAll()));
     }
     /**
      * Generates a unique <code>MockAuthority</code> value.
@@ -180,60 +238,9 @@ public class SystemmodelTestBase
     protected MockAuthority generateAuthority()
     {
         MockAuthority authority = new MockAuthority();
-        authority.setAuthority("authority-" + System.nanoTime());
-        authority.setId(System.nanoTime());
+        authority.setAuthority("authority-" + counter.incrementAndGet());
+        authority.setId(counter.incrementAndGet());
         return authority;
-    }
-    /**
-     * Adds the given authority to the test authority store.
-     *
-     * @param inAuthority an <code>Authority</code> value
-     */
-    protected void addAuthority(Authority inAuthority)
-    {
-        authoritiesByName.put(inAuthority.getName(),
-                              inAuthority);
-        authoritiesById.put(inAuthority.getId(),
-                            inAuthority);
-    }
-    /**
-     * Removes the given authority from the test authority store.
-     *
-     * @param inAuthority an <code>Authority</code> value
-     */
-    protected void removeAuthority(Authority inAuthority)
-    {
-        authoritiesByName.remove(inAuthority.getName());
-        authoritiesById.remove(inAuthority.getId());
-    }
-    /**
-     * Gets the authority with the given name from the test authority store.
-     *
-     * @param inName a <code>String</code> value
-     * @return an <code>Authority</code> value or <code>null</code>
-     */
-    protected Authority getAuthorityByName(String inName)
-    {
-        return authoritiesByName.get(inName);
-    }
-    /**
-     * Gets the authority with the given id from the test authority store.
-     *
-     * @param inId a <code>long</code> value
-     * @return an <code>Authority</code> value
-     */
-    protected Authority getAuthorityById(long inId)
-    {
-        return authoritiesById.get(inId);
-    }
-    /**
-     * Gets all authorities from the test authority store.
-     *
-     * @return a <code>Collection&lt;Authority&gt;</code> value
-     */
-    protected Collection<Authority> getAllAuthorities()
-    {
-        return authoritiesByName.values();
     }
     /**
      * Generates a unique <code>MockGroup</code> value.
@@ -243,83 +250,50 @@ public class SystemmodelTestBase
     protected MockGroup generateGroup()
     {
         MockGroup group = new MockGroup();
-        group.setName("group-" + System.nanoTime());
-        group.setId(System.nanoTime());
+        group.setName("group-" + counter.incrementAndGet());
+        group.setId(counter.incrementAndGet());
         return group;
     }
     /**
-     * Adds the given group to the test group store.
+     * Generates a test <code>User</code> value.
      *
-     * @param inGroup a <code>Group</code> value
+     * @return a <code>MockUser</code> value
      */
-    protected void addGroup(Group inGroup)
+    protected MockUser generateUser()
     {
-        groupsByName.put(inGroup.getName(),
-                         inGroup);
-        groupsById.put(inGroup.getId(),
-                       inGroup);
-    }
-    /**
-     * Removes the given group from the test group store.
-     *
-     * @param inGroup a <code>Group</code> value
-     */
-    protected void removeGroup(Group inGroup)
-    {
-        groupsByName.remove(inGroup.getName());
-        groupsById.remove(inGroup.getId());
-    }
-    /**
-     * Gets the group with the given name from the test group store.
-     *
-     * @param inName a <code>String</code> value
-     * @return a <code>Group</code> value or <code>null</code>
-     */
-    protected Group getGroupByName(String inName)
-    {
-        return groupsByName.get(inName);
-    }
-    /**
-     * Gets the group with the given id from the test group store.
-     *
-     * @param inId a <code>long</code> value
-     * @return a <code>Group</code> value
-     */
-    protected Group getGroupById(long inId)
-    {
-        return groupsById.get(inId);
-    }
-    /**
-     * Gets all groups from the test group store.
-     *
-     * @return a <code>Collection&lt;Group&gt;</code> value
-     */
-    protected Collection<Group> getAllGroups()
-    {
-        return groupsByName.values();
+        MockUser user = new MockUser();
+        user.setUsername("username-" + counter.incrementAndGet());
+        user.setPassword("password-" + counter.incrementAndGet());
+        user.setId(counter.incrementAndGet());
+        user.setAuthorities(Arrays.asList(new Authority[] { generateAuthority(), generateAuthority(), generateAuthority() }));
+        return user;
     }
     /**
      * authority DAO value
      */
     protected AuthorityDao authorityDao;
     /**
+     * user DAO value
+     */
+    protected UserDao userDao;
+    /**
      * group DAO value
      */
     protected GroupDao groupDao;
     /**
-     * test authority values by name
+     * data store for user test values 
      */
-    protected Map<String,Authority> authoritiesByName;
+    protected TestDataStore<User> userDataStore;
     /**
-     * test authority values by id
+     * data store for group test values 
      */
-    protected Map<Long,Authority> authoritiesById;
+    protected TestDataStore<Group> groupDataStore;
     /**
-     * test group values by name
+     * data store for authority test values 
      */
-    protected Map<String,Group> groupsByName;
+    protected TestDataStore<Authority> authorityDataStore;
     /**
-     * test group values by id
+     * counter used to guarantee unique test values
      */
-    protected Map<Long,Group> groupsById;
+    protected static AtomicLong counter = new AtomicLong(0);
 }

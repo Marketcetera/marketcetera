@@ -1,4 +1,4 @@
-package org.marketcetera.security.shiro.impl;
+package org.marketcetera.core.systemmodel.impl;
 
 import java.util.List;
 

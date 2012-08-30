@@ -22,7 +22,6 @@ import org.marketcetera.core.systemmodel.AuthorityManagerService;
 import org.marketcetera.core.systemmodel.MockAuthority;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.AuthorityService;
-import org.marketcetera.webservices.systemmodel.WebServicesAuthority;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -187,41 +186,6 @@ public class AuthorityServiceImplTest
     protected AuthorityServiceImpl getServiceImplementation()
     {
         return serviceImplementation;
-    }
-    /**
-     * Verifies that the given expected value matches the given actual value.
-     *
-     * @param inExpectedAuthority an <code>Authority</code> value
-     * @param inActualAuthority a <code>WebServicesAuthority</code> value
-     * @throws Exception if an unexpected error occurs
-     */
-    private void verifyAuthority(Authority inExpectedAuthority,
-                                 WebServicesAuthority inActualAuthority)
-            throws Exception
-    {
-        assertEquals(inExpectedAuthority.getName(),
-                     inActualAuthority.getAuthority());
-        assertEquals(inExpectedAuthority.getId(),
-                     inActualAuthority.getId());
-    }
-    /**
-     * Verifies that the given expected values match the given actual values.
-     *
-     * @param inExpectedAuthorities a <code>Collection&lt;Authority&gt;</code> value
-     * @param inActualAuthorities a <code>Collection&lt;WebServicesAuthority&gt;</code> value
-     * @throws Exception if an unexpected error occurs
-     */
-    private void verifyAuthorities(Collection<Authority> inExpectedAuthorities,
-                                   Collection<WebServicesAuthority> inActualAuthorities)
-            throws Exception
-    {
-        assertEquals(inExpectedAuthorities.size(),
-                     inActualAuthorities.size());
-        Iterator<WebServicesAuthority> actualIterator = inActualAuthorities.iterator();
-        for(Authority expectedUser : inExpectedAuthorities) {
-            verifyAuthority(expectedUser,
-                            actualIterator.next());
-        }
     }
     /**
      * test authority service implementation 
