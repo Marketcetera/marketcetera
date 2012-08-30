@@ -75,9 +75,9 @@ public class AuthorityServiceImplTest
     public void testAddAuthority()
             throws Exception
     {
-        final MockAuthority newUser = generateAuthority();
-        assertNotNull(newUser.getAuthority());
-        // null username & password
+        final MockAuthority newAuthority = generateAuthority();
+        assertNotNull(newAuthority.getAuthority());
+        // null authority name
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
@@ -87,13 +87,13 @@ public class AuthorityServiceImplTest
             }
         };
         // successful add
-        Response response = service.addAuthority(newUser.getAuthority());
+        Response response = service.addAuthority(newAuthority.getAuthority());
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
         verify(authorityManagerService).addAuthority((Authority)any());
-        // add user throws an exception
+        // add authority throws an exception
         doThrow(new RuntimeException("This exception is expected")).when(authorityManagerService).addAuthority((Authority)any());
-        response = service.addAuthority(newUser.getAuthority());
+        response = service.addAuthority(newAuthority.getAuthority());
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
         verify(authorityManagerService,
@@ -224,15 +224,15 @@ public class AuthorityServiceImplTest
         }
     }
     /**
-     * 
+     * test authority service implementation 
      */
     private AuthorityServiceImpl serviceImplementation;
     /**
-     * 
+     * test authority manager service value
      */
     private AuthorityManagerService authorityManagerService;
     /**
-     * 
+     * test authority factory value
      */
     private AuthorityFactory authorityFactory;
 }

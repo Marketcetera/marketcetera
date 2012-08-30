@@ -15,7 +15,7 @@ import org.marketcetera.webservices.systemmodel.WebServicesAuthority;
 /* $License$ */
 
 /**
- * Provides web-services access to the user service.
+ * Provides web-services access to the authority service.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AuthorityServiceImpl.java 16218 2012-08-27 23:23:59Z colin $

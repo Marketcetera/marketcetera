@@ -24,11 +24,9 @@
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.marketcetera.security</groupId>
-            <artifactId>shiro-security</artifactId>
+            <groupId>org.marketcetera.webservices</groupId>
+            <artifactId>webservices-security</artifactId>
             <version>3.0.0-SNAPSHOT</version>
-            <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

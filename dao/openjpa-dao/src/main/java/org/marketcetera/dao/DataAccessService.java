@@ -4,6 +4,7 @@ package org.marketcetera.dao;
 
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.core.systemmodel.AuthorityDao;
+import org.marketcetera.core.systemmodel.GroupDao;
 
 /**
  * Provides access to database services.

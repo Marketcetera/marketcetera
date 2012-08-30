@@ -1,5 +1,7 @@
 package org.marketcetera.webservices.security;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.api.security.User;
@@ -14,6 +16,7 @@ import org.marketcetera.api.security.User;
  * @since $Release$
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class WebServicesUser
 {
     /**

@@ -1,5 +1,7 @@
 package org.marketcetera.webservices.systemmodel;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.core.systemmodel.Authority;
@@ -14,14 +16,13 @@ import org.marketcetera.core.systemmodel.Authority;
  * @since $Release$
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class WebServicesAuthority
 {
     /**
      * Create a new WebServicesAuthority instance.
      */
-    public WebServicesAuthority()
-    {
-    }
+    public WebServicesAuthority() {}
     /**
      * Create a new WebServicesAuthority instance.
      *

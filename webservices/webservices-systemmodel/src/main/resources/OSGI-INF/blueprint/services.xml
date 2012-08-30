@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
-    <bean id="authorityManagerWebService" class="org.marketcetera.security.shiro.impl.AuthorityManagerWebServiceImpl">
+    <bean id="authorityManagerWebService" class="org.marketcetera.webservices.systemmodel.impl.AuthorityServiceImpl">
         <property name="authorityManagerService" ref="authorityManagerService"/>
         <property name="authorityFactory" ref="authorityFactory"/>
+    </bean>
+    <bean id="groupManagerWebService" class="org.marketcetera.webservices.systemmodel.impl.GroupServiceImpl">
+        <property name="groupManagerService" ref="groupManagerService"/>
+        <property name="groupFactory" ref="groupFactory"/>
     </bean>
 
     <reference id="authorityManagerService" interface="org.marketcetera.core.systemmodel.AuthorityManagerService"/>
     <reference id="authorityFactory" interface="org.marketcetera.core.systemmodel.AuthorityFactory"/>
+    <reference id="groupManagerService" interface="org.marketcetera.core.systemmodel.GroupManagerService"/>
+    <reference id="groupFactory" interface="org.marketcetera.core.systemmodel.GroupFactory"/>
 
     <service id="authorityManagerWebService" interface="org.marketcetera.webservices.systemmodel.AuthorityService" ref="authorityManagerWebService"/>
+    <service id="groupManagerWebService" interface="org.marketcetera.webservices.systemmodel.GroupService" ref="groupManagerWebService"/>
 </blueprint>
