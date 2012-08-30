@@ -50,6 +50,7 @@ public class SystemmodelTestBase
             throws Exception
     {
         initializeAuthorities();
+        initializeGroups();
     }
     /**
      * Initializes the authorities objects. 
@@ -110,6 +111,66 @@ public class SystemmodelTestBase
             }
         });
         when(authorityDao.getAll()).thenReturn(new ArrayList<Authority>(getAllAuthorities()));
+    }
+    /**
+     * Initializes the groups objects. 
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void initializeGroups()
+            throws Exception
+    {
+        groupDao = mock(GroupDao.class);
+        groupsByName = new HashMap<String,Group>();
+        groupsById = new HashMap<Long,Group>();
+        for(int i=0;i<=3;i++) {
+            addGroup(generateGroup());
+        }
+        when(groupDao.getByName(anyString())).thenAnswer(new Answer<Group>() {
+            @Override
+            public Group answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                return getGroupByName((String)inInvocation.getArguments()[0]);
+            }
+        });
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                Group group = (Group)inInvocation.getArguments()[0];
+                addGroup(group);
+                return null;
+            }
+        }).when(groupDao).save((Group)any());
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                Group group = (Group)inInvocation.getArguments()[0];
+                removeGroup(group);
+                return null;
+            }
+        }).when(groupDao).delete((Group)any());
+        when(groupDao.getByName(anyString())).thenAnswer(new Answer<Group>() {
+            @Override
+            public Group answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                return getGroupByName((String)inInvocation.getArguments()[0]);
+            }
+        });
+        when(groupDao.getById(anyLong())).thenAnswer(new Answer<Group>() {
+            @Override
+            public Group answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                return getGroupById((Long)inInvocation.getArguments()[0]);
+            }
+        });
+        when(groupDao.getAll()).thenReturn(new ArrayList<Group>(getAllGroups()));
     }
     /**
      * Generates a unique <code>MockAuthority</code> value.
@@ -175,9 +236,76 @@ public class SystemmodelTestBase
         return authoritiesByName.values();
     }
     /**
+     * Generates a unique <code>MockGroup</code> value.
+     *
+     * @return a <code>MockGroup</code> value
+     */
+    protected MockGroup generateGroup()
+    {
+        MockGroup group = new MockGroup();
+        group.setName("group-" + System.nanoTime());
+        group.setId(System.nanoTime());
+        return group;
+    }
+    /**
+     * Adds the given group to the test group store.
+     *
+     * @param inGroup a <code>Group</code> value
+     */
+    protected void addGroup(Group inGroup)
+    {
+        groupsByName.put(inGroup.getName(),
+                         inGroup);
+        groupsById.put(inGroup.getId(),
+                       inGroup);
+    }
+    /**
+     * Removes the given group from the test group store.
+     *
+     * @param inGroup a <code>Group</code> value
+     */
+    protected void removeGroup(Group inGroup)
+    {
+        groupsByName.remove(inGroup.getName());
+        groupsById.remove(inGroup.getId());
+    }
+    /**
+     * Gets the group with the given name from the test group store.
+     *
+     * @param inName a <code>String</code> value
+     * @return a <code>Group</code> value or <code>null</code>
+     */
+    protected Group getGroupByName(String inName)
+    {
+        return groupsByName.get(inName);
+    }
+    /**
+     * Gets the group with the given id from the test group store.
+     *
+     * @param inId a <code>long</code> value
+     * @return a <code>Group</code> value
+     */
+    protected Group getGroupById(long inId)
+    {
+        return groupsById.get(inId);
+    }
+    /**
+     * Gets all groups from the test group store.
+     *
+     * @return a <code>Collection&lt;Group&gt;</code> value
+     */
+    protected Collection<Group> getAllGroups()
+    {
+        return groupsByName.values();
+    }
+    /**
      * authority DAO value
      */
     protected AuthorityDao authorityDao;
+    /**
+     * group DAO value
+     */
+    protected GroupDao groupDao;
     /**
      * test authority values by name
      */
@@ -186,4 +314,12 @@ public class SystemmodelTestBase
      * test authority values by id
      */
     protected Map<Long,Authority> authoritiesById;
+    /**
+     * test group values by name
+     */
+    protected Map<String,Group> groupsByName;
+    /**
+     * test group values by id
+     */
+    protected Map<Long,Group> groupsById;
 }

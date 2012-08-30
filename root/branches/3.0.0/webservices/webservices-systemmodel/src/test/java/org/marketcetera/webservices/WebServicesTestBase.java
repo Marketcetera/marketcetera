@@ -40,7 +40,7 @@ public abstract class WebServicesTestBase<InterfaceClazz,ImplementationClazz>
         testServiceImplementation = getServiceImplementation();
         startServer();
         service = JAXRSClientFactory.create(ENDPOINT_ADDRESS,
-                                                         getServiceInterface());
+                                            getServiceInterface());
     }
     /**
      * Run after each test.
