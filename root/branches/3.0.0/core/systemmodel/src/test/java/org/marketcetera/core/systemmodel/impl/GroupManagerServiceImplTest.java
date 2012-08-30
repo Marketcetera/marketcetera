@@ -1,12 +1,16 @@
 package org.marketcetera.core.systemmodel.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,12 +84,12 @@ public class GroupManagerServiceImplTest
         };
         // no match
         Group badGroup = generateGroup();
-        assertNull(getGroupByName(badGroup.getName()));
+        assertNull(groupDataStore.getByName(badGroup.getName()));
         assertEquals(null,
                      groupManagerService.getGroupByName(badGroup.getName()));
         verify(groupDao).getByName(badGroup.getName());
         // good match
-        Group goodGroup = getAllGroups().iterator().next();
+        Group goodGroup = groupDataStore.getAll().iterator().next();
         assertNotNull(goodGroup);
         assertSame(goodGroup,
                    groupManagerService.getGroupByName(goodGroup.getName()));
@@ -145,11 +149,11 @@ public class GroupManagerServiceImplTest
             }
         };
         Group newGroup = generateGroup();
-        assertFalse(groupsByName.containsKey(newGroup.getName()));
+        assertNull(groupDataStore.getByName(newGroup.getName()));
         groupManagerService.saveGroup(newGroup);
         verify(groupDao).save(newGroup);
         assertSame(newGroup,
-                   groupsByName.get(newGroup.getName()));
+                   groupDataStore.getByName(newGroup.getName()));
     }
     /**
      * Tests {@link GroupManagerServiceImpl#deleteGroup(Group)}.
@@ -171,17 +175,17 @@ public class GroupManagerServiceImplTest
         };
         // delete non-existent group
         Group newGroup = generateGroup();
-        assertFalse(groupsByName.containsKey(newGroup.getName()));
+        assertNull(groupDataStore.getByName(newGroup.getName()));
         groupManagerService.deleteGroup(newGroup);
         verify(groupDao).delete(newGroup);
-        assertFalse(groupsByName.containsKey(newGroup.getName()));
+        assertNull(groupDataStore.getByName(newGroup.getName()));
         // delete valid group
-        Group goodGroup = groupsByName.values().iterator().next();
-        assertTrue(groupsByName.containsKey(goodGroup.getName()));
+        Group goodGroup = groupDataStore.getAll().iterator().next();
+        assertNotNull(groupDataStore.getByName(goodGroup.getName()));
         groupManagerService.deleteGroup(goodGroup);
         verify(groupDao,
                times(2)).delete((Group)any());
-        assertFalse(groupsByName.containsKey(goodGroup.getName()));
+        assertNull(groupDataStore.getByName(goodGroup.getName()));
     }
     /**
      * Tests {@link GroupManagerServiceImpl#getGroupById(long)}. 
@@ -193,23 +197,23 @@ public class GroupManagerServiceImplTest
             throws Exception
     {
         // missing ids
-        assertNull(groupsById.get(Long.MIN_VALUE));
+        assertNull(groupDataStore.getById(Long.MIN_VALUE));
         assertNull(groupManagerService.getGroupById(Long.MIN_VALUE));
         verify(groupDao).getById(Long.MIN_VALUE);
         verify(groupDao,
                times(1)).getById(anyLong());
-        assertNull(groupsById.get(Long.MAX_VALUE));
+        assertNull(groupDataStore.getById(Long.MAX_VALUE));
         assertNull(groupManagerService.getGroupById(Long.MAX_VALUE));
         verify(groupDao).getById(Long.MAX_VALUE);
         verify(groupDao,
                times(2)).getById(anyLong());
-        assertNull(groupsById.get(0));
+        assertNull(groupDataStore.getById(0));
         assertNull(groupManagerService.getGroupById(0));
         verify(groupDao).getById(0);
         verify(groupDao,
                times(3)).getById(anyLong());
         // existing id
-        Group goodGroup = groupsByName.values().iterator().next();
+        Group goodGroup = groupDataStore.getAll().iterator().next();
         assertSame(goodGroup,
                    groupManagerService.getGroupById(goodGroup.getId()));
         verify(groupDao).getById(goodGroup.getId());
@@ -226,14 +230,35 @@ public class GroupManagerServiceImplTest
             throws Exception
     {
         List<Group> actualAllGroups = groupManagerService.getAllGroups();
-        Map<Long,Group> actualGroupsById = new HashMap<Long,Group>();
-        for(Group group : actualAllGroups) {
-            actualGroupsById.put(group.getId(),
-                                group);
-        }
-        assertEquals(groupsById,
-                     actualGroupsById);
+        verifyGroups(groupDataStore.getAll(),
+                     actualAllGroups);
         verify(groupDao).getAll();
+    }
+    /**
+     * Verifies that the given actual value matches the given expected value.
+     *
+     * @param inExpectedGroup a <code>Collection&lt;Group&gt;</code> value
+     * @param inActualGroup a <code>Collection&lt;Group&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void verifyGroups(Collection<Group> inExpectedGroups,
+                              Collection<Group> inActualGroups)
+            throws Exception
+    {
+        assertEquals(inExpectedGroups.size(),
+                     inActualGroups.size());
+        Map<Long,Group> expectedGroups = new HashMap<Long,Group>();
+        Map<Long,Group> actualGroups = new HashMap<Long,Group>();
+        for(Group user : inExpectedGroups) {
+            expectedGroups.put(user.getId(),
+                              user);
+        }
+        for(Group user : inActualGroups) {
+            actualGroups.put(user.getId(),
+                            user);
+        }
+        assertEquals(expectedGroups,
+                     actualGroups);
     }
     /**
      * test group manager service object

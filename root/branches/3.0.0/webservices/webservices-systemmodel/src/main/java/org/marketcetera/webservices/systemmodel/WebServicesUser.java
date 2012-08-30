@@ -1,4 +1,4 @@
-package org.marketcetera.webservices.security;
+package org.marketcetera.webservices.systemmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

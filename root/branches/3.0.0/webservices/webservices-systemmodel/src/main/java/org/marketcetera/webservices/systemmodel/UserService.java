@@ -1,4 +1,4 @@
-package org.marketcetera.webservices.security;
+package org.marketcetera.webservices.systemmodel;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import javax.ws.rs.core.Response;
  * Provides web-services access to the user service.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserService.java 16217 2012-08-27 19:42:33Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @Path("/userservice/")

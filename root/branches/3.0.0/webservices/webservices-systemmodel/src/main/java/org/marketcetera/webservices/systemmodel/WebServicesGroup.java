@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.core.systemmodel.Group;
-import org.marketcetera.webservices.security.WebServicesUser;
 
 /* $License$ */
 

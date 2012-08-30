@@ -8,12 +8,19 @@
         <property name="groupManagerService" ref="groupManagerService"/>
         <property name="groupFactory" ref="groupFactory"/>
     </bean>
+    <bean id="userManagerWebService" class="org.marketcetera.webservices.systemmodel.impl.UserServiceImpl">
+        <property name="userManagerService" ref="userManagerService"/>
+        <property name="userFactory" ref="userFactory"/>
+    </bean>
 
     <reference id="authorityManagerService" interface="org.marketcetera.core.systemmodel.AuthorityManagerService"/>
     <reference id="authorityFactory" interface="org.marketcetera.core.systemmodel.AuthorityFactory"/>
     <reference id="groupManagerService" interface="org.marketcetera.core.systemmodel.GroupManagerService"/>
     <reference id="groupFactory" interface="org.marketcetera.core.systemmodel.GroupFactory"/>
+    <reference id="userManagerService" interface="org.marketcetera.core.systemmodel.UserManagerService"/>
+    <reference id="userFactory" interface="org.marketcetera.core.systemmodel.UserFactory"/>
 
     <service id="authorityManagerWebService" interface="org.marketcetera.webservices.systemmodel.AuthorityService" ref="authorityManagerWebService"/>
     <service id="groupManagerWebService" interface="org.marketcetera.webservices.systemmodel.GroupService" ref="groupManagerWebService"/>
+    <service id="userManagerWebService" interface="org.marketcetera.webservices.systemmodel.UserService" ref="userManagerWebService"/>
 </blueprint>

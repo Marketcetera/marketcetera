@@ -22,7 +22,6 @@ import org.marketcetera.core.systemmodel.GroupManagerService;
 import org.marketcetera.core.systemmodel.MockGroup;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.GroupService;
-import org.marketcetera.webservices.systemmodel.WebServicesGroup;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -187,41 +186,6 @@ public class GroupServiceImplTest
     protected GroupServiceImpl getServiceImplementation()
     {
         return serviceImplementation;
-    }
-    /**
-     * Verifies that the given expected value matches the given actual value.
-     *
-     * @param inExpectedGroup a <code>Group</code> value
-     * @param inActualGroup a <code>WebServicesGroup</code> value
-     * @throws Exception if an unexpected error occurs
-     */
-    private void verifyGroup(Group inExpectedGroup,
-                             WebServicesGroup inActualGroup)
-            throws Exception
-    {
-        assertEquals(inExpectedGroup.getName(),
-                     inActualGroup.getName());
-        assertEquals(inExpectedGroup.getId(),
-                     inActualGroup.getId());
-    }
-    /**
-     * Verifies that the given expected values match the given actual values.
-     *
-     * @param inExpectedGroups a <code>Collection&lt;Group&gt;</code> value
-     * @param inActualGroups a <code>Collection&lt;WebServicesGroup&gt;</code> value
-     * @throws Exception if an unexpected error occurs
-     */
-    private void verifyGroups(Collection<Group> inExpectedGroups,
-                              Collection<WebServicesGroup> inActualGroups)
-            throws Exception
-    {
-        assertEquals(inExpectedGroups.size(),
-                     inActualGroups.size());
-        Iterator<WebServicesGroup> actualIterator = inActualGroups.iterator();
-        for(Group expectedUser : inExpectedGroups) {
-            verifyGroup(expectedUser,
-                        actualIterator.next());
-        }
     }
     /**
      * group service implementation test value

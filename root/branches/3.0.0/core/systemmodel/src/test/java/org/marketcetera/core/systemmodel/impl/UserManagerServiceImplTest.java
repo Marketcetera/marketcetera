@@ -1,19 +1,25 @@
-package org.marketcetera.security.shiro.impl;
+package org.marketcetera.core.systemmodel.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.systemmodel.SystemmodelTestBase;
 
 /* $License$ */
 
@@ -25,8 +31,21 @@ import org.marketcetera.core.ExpectedFailure;
  * @since $Release$
  */
 public class UserManagerServiceImplTest
-        extends UserServiceTestBase
+        extends SystemmodelTestBase
 {
+    /**
+     * Run before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void setup()
+            throws Exception
+    {
+        super.setup();
+        userManagerService = new UserManagerServiceImpl();
+        userManagerService.setUserDao(userDao);
+    }
     /**
      * Tests {@link UserManagerServiceImpl#getUserByName(String)}. 
      *
@@ -65,12 +84,12 @@ public class UserManagerServiceImplTest
         };
         // no match
         User badUser = generateUser();
-        assertFalse(usersByName.containsKey(badUser.getName()));
+        assertNull(userDataStore.getByName(badUser.getName()));
         assertEquals(null,
                      userManagerService.getUserByName(badUser.getName()));
         verify(userDao).getByName(badUser.getName());
         // good match
-        User goodUser = usersByName.values().iterator().next();
+        User goodUser = userDataStore.getAll().iterator().next();
         assertNotNull(goodUser);
         assertSame(goodUser,
                    userManagerService.getUserByName(goodUser.getName()));
@@ -79,7 +98,7 @@ public class UserManagerServiceImplTest
                times(2)).getByName(anyString());
     }
     /**
-     * Tests {@link UserManagerServiceImpl#addUser(org.marketcetera.api.security.User)}. 
+     * Tests {@link UserManagerServiceImpl#addUser(User)}. 
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -130,11 +149,11 @@ public class UserManagerServiceImplTest
             }
         };
         User newUser = generateUser();
-        assertFalse(usersByName.containsKey(newUser.getName()));
+        assertNull(userDataStore.getByName(newUser.getName()));
         userManagerService.saveUser(newUser);
         verify(userDao).save(newUser);
         assertSame(newUser,
-                   usersByName.get(newUser.getName()));
+                   userDataStore.getByName(newUser.getName()));
     }
     /**
      * Tests {@link UserManagerServiceImpl#deleteUser(User)}.
@@ -156,17 +175,17 @@ public class UserManagerServiceImplTest
         };
         // delete non-existent user
         User newUser = generateUser();
-        assertFalse(usersByName.containsKey(newUser.getName()));
+        assertNull(userDataStore.getByName(newUser.getName()));
         userManagerService.deleteUser(newUser);
         verify(userDao).delete(newUser);
-        assertFalse(usersByName.containsKey(newUser.getName()));
+        assertNull(userDataStore.getByName(newUser.getName()));
         // delete valid user
-        User goodUser = usersByName.values().iterator().next();
-        assertTrue(usersByName.containsKey(goodUser.getName()));
+        User goodUser = userDataStore.getAll().iterator().next();
+        assertNotNull(userDataStore.getByName(goodUser.getName()));
         userManagerService.deleteUser(goodUser);
         verify(userDao,
                times(2)).delete((User)any());
-        assertFalse(usersByName.containsKey(goodUser.getName()));
+        assertNull(userDataStore.getByName(goodUser.getName()));
     }
     /**
      * Tests {@link UserManagerServiceImpl#getUserById(long)}. 
@@ -178,23 +197,23 @@ public class UserManagerServiceImplTest
             throws Exception
     {
         // missing ids
-        assertNull(usersById.get(Long.MIN_VALUE));
+        assertNull(userDataStore.getById(Long.MIN_VALUE));
         assertNull(userManagerService.getUserById(Long.MIN_VALUE));
         verify(userDao).getById(Long.MIN_VALUE);
         verify(userDao,
                times(1)).getById(anyLong());
-        assertNull(usersById.get(Long.MAX_VALUE));
+        assertNull(userDataStore.getById(Long.MAX_VALUE));
         assertNull(userManagerService.getUserById(Long.MAX_VALUE));
         verify(userDao).getById(Long.MAX_VALUE);
         verify(userDao,
                times(2)).getById(anyLong());
-        assertNull(usersById.get(0));
+        assertNull(userDataStore.getById(0));
         assertNull(userManagerService.getUserById(0));
         verify(userDao).getById(0);
         verify(userDao,
                times(3)).getById(anyLong());
         // existing id
-        User goodUser = usersByName.values().iterator().next();
+        User goodUser = userDataStore.getAll().iterator().next();
         assertSame(goodUser,
                    userManagerService.getUserById(goodUser.getId()));
         verify(userDao).getById(goodUser.getId());
@@ -211,13 +230,38 @@ public class UserManagerServiceImplTest
             throws Exception
     {
         List<User> actualAllUsers = userManagerService.getAllUsers();
-        Map<Long,User> actualUsersById = new HashMap<Long,User>();
-        for(User user : actualAllUsers) {
-            actualUsersById.put(user.getId(),
-                                user);
-        }
-        assertEquals(usersById,
-                     actualUsersById);
+        verifyUsers(userDataStore.getAll(),
+                    actualAllUsers);
         verify(userDao).getAll();
     }
+    /**
+     * Verifies that the given actual value matches the given expected value.
+     *
+     * @param inExpectedUsers a <code>Collection&lt;User&gt;</code> value
+     * @param inActualUsers a <code>Collection&lt;User&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void verifyUsers(Collection<User> inExpectedUsers,
+                            Collection<User> inActualUsers)
+            throws Exception
+    {
+        assertEquals(inExpectedUsers.size(),
+                     inActualUsers.size());
+        Map<Long,User> expectedUsers = new HashMap<Long,User>();
+        Map<Long,User> actualUsers = new HashMap<Long,User>();
+        for(User user : inExpectedUsers) {
+            expectedUsers.put(user.getId(),
+                              user);
+        }
+        for(User user : inActualUsers) {
+            actualUsers.put(user.getId(),
+                            user);
+        }
+        assertEquals(expectedUsers,
+                     actualUsers);
+    }
+    /**
+     * test user manager service object
+     */
+    private UserManagerServiceImpl userManagerService;
 }

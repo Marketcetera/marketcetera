@@ -1,4 +1,4 @@
-package org.marketcetera.webservices.security.impl;
+package org.marketcetera.webservices.systemmodel.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.marketcetera.api.security.User;
 import org.marketcetera.api.security.UserManagerService;
 import org.marketcetera.core.systemmodel.UserFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.webservices.security.UserService;
-import org.marketcetera.webservices.security.WebServicesUser;
+import org.marketcetera.webservices.systemmodel.UserService;
+import org.marketcetera.webservices.systemmodel.WebServicesUser;
 
 /* $License$ */
 
@@ -18,7 +18,7 @@ import org.marketcetera.webservices.security.WebServicesUser;
  * Provides web-services access to the user service.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: UserServiceImpl.java 16218 2012-08-27 23:23:59Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class UserServiceImpl
