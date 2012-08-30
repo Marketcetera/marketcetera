@@ -3,12 +3,15 @@ package org.marketcetera.client;
 import java.math.BigDecimal;
 import java.util.*;
 
+import javax.jws.WebParam;
+
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.ClientContext;
 import org.marketcetera.util.ws.stateful.RemoteCaller;
@@ -457,4 +460,22 @@ public class MockServiceImpl
                             BigDecimal.ONE.negate());
         FUTURES_POSITIONS = Collections.unmodifiableMap(futurePositions);
     }
+	@Override
+	public BigDecimal getCurrencyPositionAsOf(
+			@WebParam(name = "context") ClientContext context,
+			@WebParam(name = "date") DateWrapper date,
+			@WebParam(name = "currency") Currency currency)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public MapWrapper<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(
+			@WebParam(name = "context") ClientContext context,
+			@WebParam(name = "date") DateWrapper date) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

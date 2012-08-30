@@ -3,6 +3,7 @@ package org.marketcetera.event.impl;
 import static org.marketcetera.event.Messages.VALIDATION_EQUITY_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_FUTURE_REQUIRED;
 import static org.marketcetera.event.Messages.VALIDATION_OPTION_REQUIRED;
+import static org.marketcetera.event.Messages.VALIDATION_CURRENCY_REQUIRED;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -11,6 +12,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.beans.CurrencyBean;
 import org.marketcetera.event.beans.FutureBean;
 import org.marketcetera.event.beans.MarketDataBean;
 import org.marketcetera.event.beans.OptionBean;
@@ -35,7 +37,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class TradeEventBuilder<E extends TradeEvent>
-        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>, FutureEventBuilder<TradeEventBuilder<E>>
+        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>, FutureEventBuilder<TradeEventBuilder<E>>,CurrencyEventBuilder<TradeEventBuilder<E>>
 {
     /**
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
@@ -58,6 +60,9 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         }
         if(inInstrument instanceof Future) {
             return futureTradeEvent().withInstrument(inInstrument);
+        }
+        if(inInstrument instanceof Currency) {
+            return currencyTradeEvent().withInstrument(inInstrument);
         }
         throw new UnsupportedOperationException();
     }
@@ -125,7 +130,31 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
                 throw new IllegalArgumentException(VALIDATION_FUTURE_REQUIRED.getText());
             }
         };
+    }    
+    /**
+     * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Currency <code>TradeEvent</code> object.
+     *
+     * @return a <code>TradeEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Currency}
+     */
+    public static TradeEventBuilder<TradeEvent> currencyTradeEvent()
+    {
+        return new TradeEventBuilder<TradeEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public TradeEvent create()
+            {
+                if(getMarketData().getInstrument() instanceof Currency) {
+                    return new CurrencyTradeEventImpl(getMarketData(),
+                                                    getCurrency());
+                }
+                throw new IllegalArgumentException(VALIDATION_CURRENCY_REQUIRED.getText());
+            }
+        };
     }
+    
     /**
      * Sets the message id to use with the new event. 
      *
@@ -172,10 +201,13 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
+        } else if(inInstrument instanceof Currency) {
+            future.setInstrument((Currency)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
+            currency.setInstrument(null);
         }
         return this;
     }
@@ -383,7 +415,17 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     protected final FutureBean getFuture()
     {
         return future;
+    }    
+    /**
+     * Gets the currency value.
+     *
+     * @return a <code>CurrencyBean</code> value
+     */
+    protected final CurrencyBean getCurrency()
+    {
+        return currency;
     }
+    
     /**
      * the market data attributes 
      */
@@ -396,4 +438,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * the future attributes
      */
     private final FutureBean future = new FutureBean();
+    /**
+     * the currency attributes
+     */
+    private final CurrencyBean currency = new CurrencyBean();
 }
