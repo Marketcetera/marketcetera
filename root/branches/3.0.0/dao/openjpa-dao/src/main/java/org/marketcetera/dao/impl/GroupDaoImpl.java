@@ -5,8 +5,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.marketcetera.core.systemmodel.Group;
-import org.marketcetera.core.systemmodel.GroupDao;
+import org.marketcetera.api.dao.Group;
+import org.marketcetera.api.dao.GroupDao;
 
 /**
  * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>

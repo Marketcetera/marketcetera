@@ -15,10 +15,10 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.dao.Group;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.systemmodel.Group;
 import org.marketcetera.core.systemmodel.GroupFactory;
-import org.marketcetera.core.systemmodel.GroupManagerService;
+import org.marketcetera.api.security.GroupManagerService;
 import org.marketcetera.core.systemmodel.MockGroup;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.GroupService;

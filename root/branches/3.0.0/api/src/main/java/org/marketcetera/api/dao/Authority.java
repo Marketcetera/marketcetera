@@ -1,4 +1,4 @@
-package org.marketcetera.core.systemmodel;
+package org.marketcetera.api.dao;
 
 import org.marketcetera.api.security.GrantedAuthority;
 import org.marketcetera.api.systemmodel.NamedObject;

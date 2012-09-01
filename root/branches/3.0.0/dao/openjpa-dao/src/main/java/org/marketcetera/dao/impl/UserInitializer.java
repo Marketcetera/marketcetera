@@ -2,6 +2,8 @@ package org.marketcetera.dao.impl;
 
 import java.util.Set;
 
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.dao.Group;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.systemmodel.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;

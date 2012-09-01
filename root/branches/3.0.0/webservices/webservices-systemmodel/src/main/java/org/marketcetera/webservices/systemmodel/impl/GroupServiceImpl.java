@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.core.systemmodel.Group;
+import org.marketcetera.api.dao.Group;
 import org.marketcetera.core.systemmodel.GroupFactory;
-import org.marketcetera.core.systemmodel.GroupManagerService;
+import org.marketcetera.api.security.GroupManagerService;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webservices.systemmodel.GroupService;
 import org.marketcetera.webservices.systemmodel.WebServicesGroup;

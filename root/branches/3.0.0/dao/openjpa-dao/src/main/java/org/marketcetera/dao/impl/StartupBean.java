@@ -2,7 +2,7 @@ package org.marketcetera.dao.impl;
 
 import java.util.Date;
 
-import org.marketcetera.core.systemmodel.AuthorityDao;
+import org.marketcetera.api.dao.AuthorityDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

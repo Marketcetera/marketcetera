@@ -12,6 +12,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.dao.AuthorityDao;
+import org.marketcetera.api.dao.Group;
+import org.marketcetera.api.dao.GroupDao;
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.LoggerConfiguration;

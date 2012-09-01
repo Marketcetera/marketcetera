@@ -2,8 +2,10 @@ package org.marketcetera.core.systemmodel;
 
 /* $License$ */
 
+import org.marketcetera.api.dao.Authority;
+
 /**
- * Constructs {@link Authority} objects.
+ * Constructs {@link org.marketcetera.api.dao.Authority} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AuthorityFactory.java 82315 2012-03-17 01:58:54Z colin $

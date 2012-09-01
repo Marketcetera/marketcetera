@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.systemmodel.Group;
-import org.marketcetera.core.systemmodel.GroupDao;
-import org.marketcetera.core.systemmodel.GroupManagerService;
+import org.marketcetera.api.dao.Group;
+import org.marketcetera.api.dao.GroupDao;
+import org.marketcetera.api.security.GroupManagerService;
 
 /* $License$ */
 
@@ -21,7 +21,7 @@ public class GroupManagerServiceImpl
         implements GroupManagerService
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.GroupManagerService#getGroupByName(java.lang.String)
+     * @see org.marketcetera.api.security.GroupManagerService#getGroupByName(java.lang.String)
      */
     @Override
     public Group getGroupByName(String inName)
@@ -31,7 +31,7 @@ public class GroupManagerServiceImpl
         return groupDao.getByName(inName);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.GroupManagerService#getGroupById(long)
+     * @see org.marketcetera.api.security.GroupManagerService#getGroupById(long)
      */
     @Override
     public Group getGroupById(long inId)
@@ -39,7 +39,7 @@ public class GroupManagerServiceImpl
         return groupDao.getById(inId);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.GroupManagerService#getAllGroups()
+     * @see org.marketcetera.api.security.GroupManagerService#getAllGroups()
      */
     @Override
     public List<Group> getAllGroups()
@@ -47,7 +47,7 @@ public class GroupManagerServiceImpl
         return groupDao.getAll();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.GroupManagerService#addGroup(org.marketcetera.core.systemmodel.Group)
+     * @see org.marketcetera.api.security.GroupManagerService#addGroup(org.marketcetera.api.dao.Group)
      */
     @Override
     public void addGroup(Group inGroup)
@@ -56,7 +56,7 @@ public class GroupManagerServiceImpl
         groupDao.add(inGroup);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.GroupManagerService#saveGroup(org.marketcetera.core.systemmodel.Group)
+     * @see org.marketcetera.api.security.GroupManagerService#saveGroup(org.marketcetera.api.dao.Group)
      */
     @Override
     public void saveGroup(Group inGroup)
@@ -65,7 +65,7 @@ public class GroupManagerServiceImpl
         groupDao.save(inGroup);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.GroupManagerService#deleteGroup(org.marketcetera.core.systemmodel.Group)
+     * @see org.marketcetera.api.security.GroupManagerService#deleteGroup(org.marketcetera.api.dao.Group)
      */
     @Override
     public void deleteGroup(Group inGroup)

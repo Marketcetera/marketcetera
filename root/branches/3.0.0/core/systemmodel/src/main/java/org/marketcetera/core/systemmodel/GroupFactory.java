@@ -2,6 +2,8 @@ package org.marketcetera.core.systemmodel;
 
 /* $License$ */
 
+import org.marketcetera.api.dao.Group;
+
 /**
  * Creates <code>Group</code> objects.
  *

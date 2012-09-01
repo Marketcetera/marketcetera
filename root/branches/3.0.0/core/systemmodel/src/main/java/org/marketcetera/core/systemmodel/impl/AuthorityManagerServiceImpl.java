@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.core.systemmodel.AuthorityDao;
-import org.marketcetera.core.systemmodel.AuthorityManagerService;
+import org.marketcetera.api.dao.AuthorityDao;
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.security.AuthorityManagerService;
 
 /* $License$ */
 
@@ -21,7 +21,7 @@ public class AuthorityManagerServiceImpl
         implements AuthorityManagerService
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.AuthorityManagerService#getAuthorityByName(java.lang.String)
+     * @see org.marketcetera.api.security.AuthorityManagerService#getAuthorityByName(java.lang.String)
      */
     @Override
     public Authority getAuthorityByName(String inName)
@@ -31,7 +31,7 @@ public class AuthorityManagerServiceImpl
         return authorityDao.getByName(inName);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.AuthorityManagerService#getAuthorityById(long)
+     * @see org.marketcetera.api.security.AuthorityManagerService#getAuthorityById(long)
      */
     @Override
     public Authority getAuthorityById(long inId)
@@ -39,7 +39,7 @@ public class AuthorityManagerServiceImpl
         return authorityDao.getById(inId);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.AuthorityManagerService#getAllAuthorities()
+     * @see org.marketcetera.api.security.AuthorityManagerService#getAllAuthorities()
      */
     @Override
     public List<Authority> getAllAuthorities()
@@ -47,7 +47,7 @@ public class AuthorityManagerServiceImpl
         return authorityDao.getAll();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.AuthorityManagerService#addAuthority(org.marketcetera.core.systemmodel.Authority)
+     * @see org.marketcetera.api.security.AuthorityManagerService#addAuthority(org.marketcetera.api.dao.Authority)
      */
     @Override
     public void addAuthority(Authority inAuthority)
@@ -56,7 +56,7 @@ public class AuthorityManagerServiceImpl
         authorityDao.add(inAuthority);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.AuthorityManagerService#saveAuthority(org.marketcetera.core.systemmodel.Authority)
+     * @see org.marketcetera.api.security.AuthorityManagerService#saveAuthority(org.marketcetera.api.dao.Authority)
      */
     @Override
     public void saveAuthority(Authority inAuthority)
@@ -65,7 +65,7 @@ public class AuthorityManagerServiceImpl
         authorityDao.save(inAuthority);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.AuthorityManagerService#deleteAuthority(org.marketcetera.core.systemmodel.Authority)
+     * @see org.marketcetera.api.security.AuthorityManagerService#deleteAuthority(org.marketcetera.api.dao.Authority)
      */
     @Override
     public void deleteAuthority(Authority inAuthority)

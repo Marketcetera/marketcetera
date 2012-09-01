@@ -5,14 +5,27 @@
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
 
-    <service ref="authorityDao" interface="org.marketcetera.dao.AuthorityDao"></service>
-    <bean id="authorityDao" class="org.marketcetera.dao.impl.AuthorityDaoImpl">
+    <service ref="authorityDaoBean" interface="org.marketcetera.api.dao.AuthorityDao"/>
+    <service ref="groupDaoBean" interface="org.marketcetera.api.dao.GroupDao"/>
+    <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
+
+    <bean id="authorityDaoBean" class="org.marketcetera.dao.impl.AuthorityDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="groupDaoBean" class="org.marketcetera.dao.impl.GroupDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="userDaoBean" class="org.marketcetera.dao.impl.UserDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
 
     <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
-        <property name="authorityDao" ref="authorityDao"/>
+        <property name="authorityDao" ref="authorityDaoBean"/>
     </bean>
 
 </blueprint>

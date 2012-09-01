@@ -9,8 +9,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.api.security.User;
-import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.core.systemmodel.Group;
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.dao.Group;
 
 /* $License$ */
 

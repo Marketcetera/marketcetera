@@ -2,6 +2,8 @@ package org.marketcetera.core.systemmodel;
 
 /* $License$ */
 
+import org.marketcetera.api.dao.Authority;
+
 /**
  * Provides a mutable view of an <code>Authority</code> object.
  *

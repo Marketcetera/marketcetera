@@ -5,8 +5,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.core.systemmodel.AuthorityDao;
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.dao.AuthorityDao;
 
 /**
  * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
@@ -44,7 +44,7 @@ public class AuthorityDaoImpl implements AuthorityDao {
         return entityManager.createNamedQuery("findAllAuthorities").getResultList();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.AuthorityDao#delete(org.marketcetera.core.systemmodel.Authority)
+     * @see org.marketcetera.api.dao.AuthorityDao#delete(org.marketcetera.core.systemmodel.Authority)
      */
     @Override
     public void delete(Authority inAuthority)

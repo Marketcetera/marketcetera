@@ -17,8 +17,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.dao.Group;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.systemmodel.Group;
 import org.marketcetera.core.systemmodel.SystemmodelTestBase;
 
 /* $License$ */
