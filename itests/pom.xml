@@ -75,7 +75,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.9</version>
                 <configuration>
-                    <debugForkedProcess>true</debugForkedProcess>
+                    <!--<debugForkedProcess>true</debugForkedProcess>-->
                 </configuration>
             </plugin>
         </plugins>
