@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since $Release$
  */
-@Path("/v1")
 public interface GroupService
 {
     /**

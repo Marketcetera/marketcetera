@@ -16,7 +16,6 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since $Release$
  */
-@Path("/v1")
 public interface AuthenticationService
 {
     /**
@@ -27,7 +26,7 @@ public interface AuthenticationService
      * @return a <code>Response</code> value
      */
     @POST
-    @Path("/authenticate/{username}/{password}")
+    @Path("authenticate/{username}/{password}")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response authenticate(@PathParam("username")String inUsername,
                                  @PathParam("password")String inPassword);

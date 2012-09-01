@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since $Release$
  */
-@Path("/v1")
 public interface UserService
 {
     /**
@@ -26,7 +25,7 @@ public interface UserService
      * @return a <code>Response</code> value
      */
     @POST
-    @Path("/users/{username}/{password}")
+    @Path("users/{username}/{password}")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response addUser(@PathParam("username")String inUsername,
                             @PathParam("password")String inPassword);
@@ -37,7 +36,7 @@ public interface UserService
      * @return a <cod>User</code> value
      */
     @GET
-    @Path("/users/{id}")
+    @Path("users/{id}")
     @Produces({MediaType.APPLICATION_JSON})
     public WebServicesUser getUser(@PathParam("id")long inId);
     /**
@@ -46,7 +45,7 @@ public interface UserService
      * @return a <code>List&lt;User&gt;</code> value
      */
     @GET
-    @Path("/users")
+    @Path("users")
     @Produces({MediaType.APPLICATION_JSON})
     public List<WebServicesUser> getUsers();
     /**
@@ -56,6 +55,6 @@ public interface UserService
      * @return a <code>Response</code> value
      */
     @DELETE
-    @Path("/users/{id}")
+    @Path("users/{id}")
     public Response deleteUser(@PathParam("id")long inId);
 }
