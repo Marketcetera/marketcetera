@@ -38,6 +38,8 @@ public class SecurityServiceImpl implements SecurityService {
             }
 
             @Override
+            // @todo total borkage, just lets anyone log in by creating a token from whatever credentials are provided!
+            // @todo should go to the database, etc.
             public AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
                 org.apache.shiro.authc.UsernamePasswordToken upToken = (org.apache.shiro.authc.UsernamePasswordToken) token;
                 return new SimpleAuthenticationInfo(upToken.getPrincipal(), upToken.getCredentials(), name);
