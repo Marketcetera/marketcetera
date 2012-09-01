@@ -13,7 +13,7 @@
         </cxf:features>
     </cxf:bus>
 
-    <jaxrs:server id="cstsUserService" address="/userservice">
+    <jaxrs:server id="cstsUserService" address="/userservice/v1">
         <jaxrs:serviceBeans>
             <ref component-id="authorityManagerWebServiceBean"/>
             <ref component-id="groupManagerWebServiceBean"/>

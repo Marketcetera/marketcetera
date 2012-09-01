@@ -13,7 +13,7 @@
         </cxf:features>
     </cxf:bus>
 
-    <jaxrs:server id="cstsAuthenticationService" address="/authenticationservice">
+    <jaxrs:server id="cstsAuthenticationService" address="/authenticationservice/v1">
         <jaxrs:serviceBeans>
             <ref component-id="authenticationWebServiceBean"/>
         </jaxrs:serviceBeans>
