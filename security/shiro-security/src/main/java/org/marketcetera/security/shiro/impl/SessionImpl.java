@@ -1,5 +1,7 @@
 package org.marketcetera.security.shiro.impl;
 
+import java.io.Serializable;
+
 import org.marketcetera.api.security.Session;
 
 /**
@@ -11,18 +13,20 @@ import org.marketcetera.api.security.Session;
 public class SessionImpl implements Session {
 
 
-    @Override
-    public Session findSession(String identifier) {
-        return null;
+    private org.apache.shiro.session.Session session;
+
+    public SessionImpl(org.apache.shiro.session.Session session) {
+        this.session = session;
     }
 
     @Override
-    public String identifier() {
-        return null;
+    public Serializable identifier() {
+        return session.getId();
     }
 
     @Override
     public void invalidate() {
-
+        session.stop();
+        session = null;
     }
 }

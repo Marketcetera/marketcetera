@@ -1,5 +1,7 @@
 package org.marketcetera.api.security;
 
+import java.io.Serializable;
+
 /**
  * Provides long-running context for a {@link Subject} across multiple stateless calls.
  *
@@ -9,7 +11,6 @@ package org.marketcetera.api.security;
  */
 
 public interface Session {
-    Session findSession(String identifier);
-    String identifier();
+    Serializable identifier();
     void invalidate();
 }

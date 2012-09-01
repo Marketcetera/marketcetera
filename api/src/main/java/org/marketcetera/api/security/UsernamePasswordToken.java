@@ -1,6 +1,4 @@
-package org.marketcetera.webservices.security.impl;
-
-import org.marketcetera.api.security.AuthenticationToken;
+package org.marketcetera.api.security;
 
 /**
  * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
@@ -18,12 +16,12 @@ public class UsernamePasswordToken implements AuthenticationToken {
     }
 
     @Override
-    public Object getPrincipal() {
+    public String getPrincipal() {
         return principal;
     }
 
     @Override
-    public Object getCredentials() {
+    public String getCredentials() {
         return credentials;
     }
 }
