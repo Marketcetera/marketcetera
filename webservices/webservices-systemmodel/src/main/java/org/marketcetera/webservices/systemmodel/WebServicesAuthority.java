@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.core.systemmodel.Authority;
+import org.marketcetera.api.dao.Authority;
 
 /* $License$ */
 

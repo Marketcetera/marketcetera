@@ -2,6 +2,8 @@ package org.marketcetera.core.systemmodel;
 
 import java.util.Collection;
 
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.dao.Group;
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.MutableNamedObject;
 

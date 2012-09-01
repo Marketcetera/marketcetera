@@ -15,10 +15,10 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.security.AuthorityManagerService;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.systemmodel.Authority;
 import org.marketcetera.core.systemmodel.AuthorityFactory;
-import org.marketcetera.core.systemmodel.AuthorityManagerService;
 import org.marketcetera.core.systemmodel.MockAuthority;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.AuthorityService;

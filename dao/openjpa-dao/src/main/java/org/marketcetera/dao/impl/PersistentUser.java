@@ -10,9 +10,9 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.marketcetera.api.dao.Authority;
 import org.marketcetera.api.security.GrantedAuthority;
 import org.marketcetera.api.security.User;
-import org.marketcetera.core.systemmodel.Authority;
 
 /* $License$ */
 

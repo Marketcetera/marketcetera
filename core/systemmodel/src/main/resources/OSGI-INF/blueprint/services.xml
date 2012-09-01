@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
-    <bean id="authorityManagerService" class="org.marketcetera.core.systemmodel.impl.AuthorityManagerServiceImpl">
+    <bean id="authorityManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.AuthorityManagerServiceImpl">
         <property name="authorityDao" ref="authorityDao"/>
     </bean>
-    <bean id="groupManagerService" class="org.marketcetera.core.systemmodel.impl.GroupManagerServiceImpl">
+    <bean id="groupManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.GroupManagerServiceImpl">
         <property name="groupDao" ref="groupDao"/>
     </bean>
-    <bean id="userManagerService" class="org.marketcetera.core.systemmodel.impl.UserManagerServiceImpl">
+    <bean id="userManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.UserManagerServiceImpl">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <reference id="authorityDao" interface="org.marketcetera.core.systemmodel.AuthorityDao"/>
-    <reference id="groupDao" interface="org.marketcetera.core.systemmodel.GroupDao"/>
-    <reference id="userDao" interface="org.marketcetera.core.systemmodel.UserDao"/>
+    <reference id="authorityDao" interface="org.marketcetera.api.dao.AuthorityDao"/>
+    <reference id="groupDao" interface="org.marketcetera.api.dao.GroupDao"/>
+    <reference id="userDao" interface="org.marketcetera.api.dao.UserDao"/>
 
-    <service id="authorityManagerService" interface="org.marketcetera.core.systemmodel.AuthorityManagerService" ref="authorityManagerService"/>
-    <service id="groupManagerService" interface="org.marketcetera.core.systemmodel.GroupManagerService" ref="groupManagerService"/>
-    <service id="userManagerService" interface="org.marketcetera.core.systemmodel.UserManagerService" ref="userManagerService"/>
+    <service id="authorityManagerService" interface="org.marketcetera.api.security.AuthorityManagerService" ref="authorityManagerServiceBean"/>
+    <service id="groupManagerService" interface="org.marketcetera.api.security.GroupManagerService" ref="groupManagerServiceBean"/>
+    <service id="userManagerService" interface="org.marketcetera.api.security.UserManagerService" ref="userManagerServiceBean"/>
 </blueprint>

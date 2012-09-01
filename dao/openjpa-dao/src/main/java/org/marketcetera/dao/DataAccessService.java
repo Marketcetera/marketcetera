@@ -3,8 +3,8 @@ package org.marketcetera.dao;
 /* $License$ */
 
 import org.marketcetera.api.dao.UserDao;
-import org.marketcetera.core.systemmodel.AuthorityDao;
-import org.marketcetera.core.systemmodel.GroupDao;
+import org.marketcetera.api.dao.AuthorityDao;
+import org.marketcetera.api.dao.GroupDao;
 
 /**
  * Provides access to database services.

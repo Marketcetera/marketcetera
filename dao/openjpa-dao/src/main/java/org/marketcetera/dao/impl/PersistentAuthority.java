@@ -4,12 +4,12 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.core.systemmodel.Authority;
+import org.marketcetera.api.dao.Authority;
 
 /* $License$ */
 
 /**
- * Persistent implementation of {@link Authority}.
+ * Persistent implementation of {@link org.marketcetera.api.dao.Authority}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: PersistentAuthority.java 82353 2012-05-10 21:56:11Z colin $

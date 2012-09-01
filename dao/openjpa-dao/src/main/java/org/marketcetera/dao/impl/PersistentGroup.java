@@ -6,14 +6,14 @@ import java.util.Set;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
 
-import org.marketcetera.core.systemmodel.Authority;
-import org.marketcetera.core.systemmodel.Group;
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.dao.Group;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
 
 /**
- * Persistent implementation of {@link Group}.
+ * Persistent implementation of {@link org.marketcetera.api.dao.Group}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: PersistentGroup.java 82353 2012-05-10 21:56:11Z colin $
@@ -29,7 +29,7 @@ public class PersistentGroup
         implements Group
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.Group#getName()
+     * @see org.marketcetera.api.dao.Group#getName()
      */
     @Override
     @Column(nullable=false,unique=true)
@@ -47,7 +47,7 @@ public class PersistentGroup
         name = inName;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.Group#getUsers()
+     * @see org.marketcetera.api.dao.Group#getUsers()
      */
     @Override
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
@@ -65,7 +65,7 @@ public class PersistentGroup
         users = inUsers;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.Group#getAuthorities()
+     * @see org.marketcetera.api.dao.Group#getAuthorities()
      */
     @Override
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentAuthority.class)

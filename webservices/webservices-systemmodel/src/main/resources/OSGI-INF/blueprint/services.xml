@@ -1,26 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
-    <bean id="authorityManagerWebService" class="org.marketcetera.webservices.systemmodel.impl.AuthorityServiceImpl">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+           xmlns:cxf="http://cxf.apache.org/blueprint/core"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs
+                               http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd">
+
+    <cxf:bus>
+        <cxf:features>
+            <cxf:logging/>
+        </cxf:features>
+    </cxf:bus>
+
+    <jaxrs:server id="cstsUserService" address="/userservice">
+        <jaxrs:serviceBeans>
+            <ref component-id="cstsUserServiceBean"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
+    <bean id="authorityManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.AuthorityServiceImpl">
         <property name="authorityManagerService" ref="authorityManagerService"/>
         <property name="authorityFactory" ref="authorityFactory"/>
     </bean>
-    <bean id="groupManagerWebService" class="org.marketcetera.webservices.systemmodel.impl.GroupServiceImpl">
+    <bean id="groupManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.GroupServiceImpl">
         <property name="groupManagerService" ref="groupManagerService"/>
         <property name="groupFactory" ref="groupFactory"/>
     </bean>
-    <bean id="userManagerWebService" class="org.marketcetera.webservices.systemmodel.impl.UserServiceImpl">
+    <bean id="userManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.UserServiceImpl">
         <property name="userManagerService" ref="userManagerService"/>
         <property name="userFactory" ref="userFactory"/>
     </bean>
 
-    <reference id="authorityManagerService" interface="org.marketcetera.core.systemmodel.AuthorityManagerService"/>
+    <reference id="authorityManagerService" interface="org.marketcetera.api.security.AuthorityManagerService"/>
     <reference id="authorityFactory" interface="org.marketcetera.core.systemmodel.AuthorityFactory"/>
-    <reference id="groupManagerService" interface="org.marketcetera.core.systemmodel.GroupManagerService"/>
+    <reference id="groupManagerService" interface="org.marketcetera.api.security.GroupManagerService"/>
     <reference id="groupFactory" interface="org.marketcetera.core.systemmodel.GroupFactory"/>
-    <reference id="userManagerService" interface="org.marketcetera.core.systemmodel.UserManagerService"/>
+    <reference id="userManagerService" interface="org.marketcetera.api.security.UserManagerService"/>
     <reference id="userFactory" interface="org.marketcetera.core.systemmodel.UserFactory"/>
 
-    <service id="authorityManagerWebService" interface="org.marketcetera.webservices.systemmodel.AuthorityService" ref="authorityManagerWebService"/>
-    <service id="groupManagerWebService" interface="org.marketcetera.webservices.systemmodel.GroupService" ref="groupManagerWebService"/>
-    <service id="userManagerWebService" interface="org.marketcetera.webservices.systemmodel.UserService" ref="userManagerWebService"/>
+    <service id="authorityManagerWebService" interface="org.marketcetera.webservices.systemmodel.AuthorityService" ref="authorityManagerWebServiceBean"/>
+    <service id="groupManagerWebService" interface="org.marketcetera.webservices.systemmodel.GroupService" ref="groupManagerWebServiceBean"/>
+    <service id="userManagerWebService" interface="org.marketcetera.webservices.systemmodel.UserService" ref="userManagerWebServiceBean"/>
 </blueprint>

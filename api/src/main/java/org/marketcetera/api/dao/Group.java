@@ -1,4 +1,4 @@
-package org.marketcetera.core.systemmodel;
+package org.marketcetera.api.dao;
 
 import java.util.Collection;
 

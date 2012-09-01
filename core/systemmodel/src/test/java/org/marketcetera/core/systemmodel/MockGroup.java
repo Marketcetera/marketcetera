@@ -3,6 +3,7 @@ package org.marketcetera.core.systemmodel;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.marketcetera.api.dao.Authority;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -27,7 +28,7 @@ public class MockGroup
         return name;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.Group#getUsers()
+     * @see org.marketcetera.api.dao.Group#getUsers()
      */
     @Override
     public Collection<User> getUsers()
@@ -35,7 +36,7 @@ public class MockGroup
         return users;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.Group#getAuthorities()
+     * @see org.marketcetera.api.dao.Group#getAuthorities()
      */
     @Override
     public Collection<Authority> getAuthorities()

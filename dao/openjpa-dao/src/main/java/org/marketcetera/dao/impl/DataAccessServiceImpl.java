@@ -1,7 +1,7 @@
 package org.marketcetera.dao.impl;
 
-import org.marketcetera.core.systemmodel.AuthorityDao;
-import org.marketcetera.core.systemmodel.GroupDao;
+import org.marketcetera.api.dao.AuthorityDao;
+import org.marketcetera.api.dao.GroupDao;
 import org.marketcetera.dao.DataAccessService;
 import org.marketcetera.api.dao.UserDao;
 import org.slf4j.Logger;

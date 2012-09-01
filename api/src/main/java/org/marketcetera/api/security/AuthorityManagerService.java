@@ -1,6 +1,8 @@
-package org.marketcetera.core.systemmodel;
+package org.marketcetera.api.security;
 
 import java.util.List;
+
+import org.marketcetera.api.dao.Authority;
 
 /* $License$ */
 

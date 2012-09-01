@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.core.systemmodel.Authority;
+import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.security.AuthorityManagerService;
 import org.marketcetera.core.systemmodel.AuthorityFactory;
-import org.marketcetera.core.systemmodel.AuthorityManagerService;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webservices.systemmodel.AuthorityService;
 import org.marketcetera.webservices.systemmodel.WebServicesAuthority;
