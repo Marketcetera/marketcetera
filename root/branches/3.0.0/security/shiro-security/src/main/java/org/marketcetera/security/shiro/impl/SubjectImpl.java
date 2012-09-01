@@ -16,35 +16,43 @@ import org.marketcetera.api.security.Subject;
 public class SubjectImpl implements Subject {
     private Set<AuthenticationToken> authenticationTokens = new HashSet<AuthenticationToken>();
     private Session session = null;
+    private org.apache.shiro.subject.Subject subject;
+
+    public SubjectImpl(org.apache.shiro.subject.Subject subject) {
+        this.subject = subject;
+    }
 
 
     @Override
-    public void login(AuthenticationToken token) {
-        authenticationTokens.add(token);
+    public void login(final AuthenticationToken token) {
+        subject.login(new org.apache.shiro.authc.UsernamePasswordToken(token.getPrincipal(), token.getCredentials()));
     }
 
     @Override
     public void logout() {
-        authenticationTokens.clear();
+        subject.logout();
     }
 
     @Override
     public Session getSession() {
+        if (session == null) {
+            session = new SessionImpl(subject.getSession());
+        }
         return session;
     }
 
     @Override
     public boolean isAuthenticated() {
-        return !authenticationTokens.isEmpty();
+        return subject.isAuthenticated();
     }
 
     @Override
     public boolean hasRole(String role) {
-        return false;
+        return subject.hasRole(role);
     }
 
     @Override
     public boolean isPermitted(String permission) {
-        return false;
+        return subject.isPermitted(permission);
     }
 }

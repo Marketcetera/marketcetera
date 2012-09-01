@@ -1,8 +1,8 @@
 package org.marketcetera.webservices.security.impl;
 
 import javax.ws.rs.core.Response;
-
 import org.marketcetera.api.security.SecurityService;
+import org.marketcetera.api.security.UsernamePasswordToken;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webservices.security.AuthenticationService;
 
@@ -44,7 +44,7 @@ public class AuthenticationServiceImpl
     /**
      * Sets the authenticationManagerService value.
      *
-     * @param a <code>Subject</code> value
+     * @param securityService <code>Subject</code> value
      */
     public void setSecurityService(SecurityService securityService)
     {

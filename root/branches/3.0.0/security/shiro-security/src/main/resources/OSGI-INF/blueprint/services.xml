@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
 
-    <bean id="shiroSecurityService" class="org.marketcetera.security.shiro.impl.SecurityServiceImpl"/>
+    <bean id="shiroSecurityService" class="org.marketcetera.security.shiro.impl.SecurityServiceImpl" init-method="init"/>
 
     <service id="securityService" interface="org.marketcetera.api.security.SecurityService" ref="shiroSecurityService"/>
 </blueprint>

@@ -10,6 +10,6 @@ package org.marketcetera.api.security;
  */
 
 public interface AuthenticationToken {
-    Object getPrincipal();
-    Object getCredentials();
+    String getPrincipal();
+    String getCredentials();
 }

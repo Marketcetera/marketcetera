@@ -24,5 +24,6 @@
         <bundle>mvn:org.marketcetera.fork/commons-i18n/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:commons-io/commons-io/2.1</bundle>
         <bundle>mvn:commons-lang/commons-lang/2.6</bundle>
+        <bundle>mvn:org.apache.shiro/shiro-core/1.2.1</bundle>
     </feature>
 </features>
