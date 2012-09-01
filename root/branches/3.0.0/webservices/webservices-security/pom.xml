@@ -28,8 +28,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.marketcetera.webservices.security</Export-Package>
-                        <Export-Package>org.marketcetera.webservices.security.impl</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
