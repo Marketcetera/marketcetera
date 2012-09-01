@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since $Release$
  */
-@Path("/userservice/")
+@Path("/v1")
 public interface UserService
 {
     /**

@@ -9,6 +9,10 @@
     <service ref="groupDaoBean" interface="org.marketcetera.api.dao.GroupDao"/>
     <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
 
+    <service ref="authorityFactoryBean" interface="org.marketcetera.core.systemmodel.AuthorityFactory"/>
+    <service ref="groupFactoryBean" interface="org.marketcetera.core.systemmodel.GroupFactory"/>
+    <service ref="userFactoryBean" interface="org.marketcetera.core.systemmodel.UserFactory"/>
+
     <bean id="authorityDaoBean" class="org.marketcetera.dao.impl.AuthorityDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera"/>
         <tx:transaction method="*" value="Required"/>
@@ -23,6 +27,10 @@
         <jpa:context property="entityManager" unitname="marketcetera"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
+
+    <bean id="authorityFactoryBean" class="org.marketcetera.dao.impl.PersistentAuthorityFactory"/>
+    <bean id="groupFactoryBean" class="org.marketcetera.dao.impl.PersistentGroupFactory"/>
+    <bean id="userFactoryBean" class="org.marketcetera.dao.impl.PersistentUserFactory"/>
 
     <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
         <property name="authorityDao" ref="authorityDaoBean"/>

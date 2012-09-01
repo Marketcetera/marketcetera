@@ -2,7 +2,7 @@ package org.marketcetera.webservices.security.impl;
 
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.api.security.Subject;
+import org.marketcetera.api.security.SecurityService;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webservices.security.AuthenticationService;
 
@@ -32,7 +32,7 @@ public class AuthenticationServiceImpl
         try {
             UsernamePasswordToken token = new UsernamePasswordToken(inUsername,
                                                                     inPassword);
-            authenticationManagerService.login(token);
+            securityService.getSubject().login(token);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(AuthenticationServiceImpl.class,
@@ -46,12 +46,12 @@ public class AuthenticationServiceImpl
      *
      * @param a <code>Subject</code> value
      */
-    public void setAuthenticationManagerService(Subject inAuthenticationManagerService)
+    public void setSecurityService(SecurityService securityService)
     {
-        authenticationManagerService = inAuthenticationManagerService;
+        this.securityService = securityService;
     }
     /**
      * authentication manager subject
      */
-    private Subject authenticationManagerService;
+    private SecurityService securityService;
 }

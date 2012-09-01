@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
  * @version $Id: UserService.java 16217 2012-08-27 19:42:33Z colin $
  * @since $Release$
  */
-@Path("/authorityservice/")
+@Path("/v1")
 public interface AuthorityService
 {
     /**

@@ -15,7 +15,9 @@
 
     <jaxrs:server id="cstsUserService" address="/userservice">
         <jaxrs:serviceBeans>
-            <ref component-id="cstsUserServiceBean"/>
+            <ref component-id="authorityManagerWebServiceBean"/>
+            <ref component-id="groupManagerWebServiceBean"/>
+            <ref component-id="userManagerWebServiceBean"/>
         </jaxrs:serviceBeans>
     </jaxrs:server>
 
@@ -39,7 +41,4 @@
     <reference id="userManagerService" interface="org.marketcetera.api.security.UserManagerService"/>
     <reference id="userFactory" interface="org.marketcetera.core.systemmodel.UserFactory"/>
 
-    <service id="authorityManagerWebService" interface="org.marketcetera.webservices.systemmodel.AuthorityService" ref="authorityManagerWebServiceBean"/>
-    <service id="groupManagerWebService" interface="org.marketcetera.webservices.systemmodel.GroupService" ref="groupManagerWebServiceBean"/>
-    <service id="userManagerWebService" interface="org.marketcetera.webservices.systemmodel.UserService" ref="userManagerWebServiceBean"/>
 </blueprint>
