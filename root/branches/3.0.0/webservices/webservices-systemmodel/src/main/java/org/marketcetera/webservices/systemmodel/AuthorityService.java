@@ -2,8 +2,11 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.List;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /* $License$ */
@@ -15,6 +18,7 @@ import javax.ws.rs.core.Response;
  * @version $Id: UserService.java 16217 2012-08-27 19:42:33Z colin $
  * @since $Release$
  */
+@Path("authorities")
 public interface AuthorityService
 {
     /**
@@ -24,8 +28,8 @@ public interface AuthorityService
      * @return a <code>Response</code> value
      */
     @POST
-    @Path("/authorities/{authority}")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("{authority}")
+//    @Consumes({MediaType.APPLICATION_JSON})
     public Response addAuthority(@PathParam("authority")String inAuthority);
     /**
      * Gets the authority with the given id.
@@ -34,8 +38,8 @@ public interface AuthorityService
      * @return a <code>WebServicesAuthority</code> value
      */
     @GET
-    @Path("/authorities/{id}")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Path("{id}")
+//    @Produces({MediaType.APPLICATION_JSON})
     public WebServicesAuthority getAuthority(@PathParam("id")long inId);
     /**
      * Gets all authorities.
@@ -43,8 +47,7 @@ public interface AuthorityService
      * @return a <code>List&lt;WebServicesAuthority&gt;</code> value
      */
     @GET
-    @Path("/authorities")
-    @Produces({MediaType.APPLICATION_JSON})
+//    @Produces({MediaType.APPLICATION_JSON})
     public List<WebServicesAuthority> getAuthorities();
     /**
      * Deletes the authority with the given id.
@@ -53,6 +56,6 @@ public interface AuthorityService
      * @return a <code>Response</code> value
      */
     @DELETE
-    @Path("/authorities/{id}")
+    @Path("{id}")
     public Response deleteAuthority(@PathParam("id")long inId);
 }

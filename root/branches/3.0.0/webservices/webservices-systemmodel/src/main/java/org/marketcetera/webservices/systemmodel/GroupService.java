@@ -2,8 +2,11 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.List;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /* $License$ */
@@ -15,6 +18,7 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since $Release$
  */
+@Path("groups")
 public interface GroupService
 {
     /**
@@ -24,8 +28,8 @@ public interface GroupService
      * @return a <code>Response</code> value
      */
     @POST
-    @Path("/groups/{group}")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("{group}")
+//    @Consumes({MediaType.APPLICATION_JSON})
     public Response addGroup(@PathParam("group")String inGroup);
     /**
      * Gets the group with the given id.
@@ -34,8 +38,8 @@ public interface GroupService
      * @return a <code>WebServicesGroup</code> value
      */
     @GET
-    @Path("/groups/{id}")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Path("{id}")
+//    @Produces({MediaType.APPLICATION_JSON})
     public WebServicesGroup getGroup(@PathParam("id")long inId);
     /**
      * Gets all groups.
@@ -43,8 +47,7 @@ public interface GroupService
      * @return a <code>List&lt;WebServicesGroup&gt;</code> value
      */
     @GET
-    @Path("/groups")
-    @Produces({MediaType.APPLICATION_JSON})
+//    @Produces({MediaType.APPLICATION_JSON})
     public List<WebServicesGroup> getGroups();
     /**
      * Deletes the group with the given id.
@@ -53,6 +56,6 @@ public interface GroupService
      * @return a <code>Response</code> value
      */
     @DELETE
-    @Path("/groups/{id}")
+    @Path("{id}")
     public Response deleteGroup(@PathParam("id")long inId);
 }
