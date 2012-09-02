@@ -10,7 +10,7 @@ public class UsernamePasswordToken implements AuthenticationToken {
     private String principal;
     private String credentials;
 
-    public UsernamePasswordToken(String credentials, String principal) {
+    public UsernamePasswordToken(String principal, String credentials) {
         this.credentials = credentials;
         this.principal = principal;
     }
