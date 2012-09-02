@@ -17,8 +17,8 @@ import org.marketcetera.api.dao.Authority;
  */
 @ThreadSafe
 @Entity
-@NamedQueries( { @NamedQuery(name="findUserByName",query="from PersistentAuthority s where s.authority = :name"),
-                 @NamedQuery(name="findAllAuthorities",query="from PersistentAuthority")})
+@NamedQueries( { @NamedQuery(name="findUserByName",query="select s from PersistentAuthority s where s.authority = :name"),
+                 @NamedQuery(name="findAllAuthorities",query="select s from PersistentAuthority s")})
 @Table(name="authorities", uniqueConstraints = { @UniqueConstraint(columnNames= { "authority" } ) } )
 @XmlRootElement
 public class PersistentAuthority
