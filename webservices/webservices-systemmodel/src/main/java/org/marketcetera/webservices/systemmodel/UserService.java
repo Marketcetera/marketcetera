@@ -2,8 +2,11 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.List;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 /* $License$ */
@@ -15,6 +18,7 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since $Release$
  */
+@Path("users")
 public interface UserService
 {
     /**
@@ -25,8 +29,8 @@ public interface UserService
      * @return a <code>Response</code> value
      */
     @POST
-    @Path("users/{username}/{password}")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("{username}/{password}")
+//    @Consumes({MediaType.APPLICATION_JSON})
     public Response addUser(@PathParam("username")String inUsername,
                             @PathParam("password")String inPassword);
     /**
@@ -36,8 +40,8 @@ public interface UserService
      * @return a <cod>User</code> value
      */
     @GET
-    @Path("users/{id}")
-    @Produces({MediaType.APPLICATION_JSON})
+    @Path("{id}")
+//    @Produces({MediaType.APPLICATION_JSON})
     public WebServicesUser getUser(@PathParam("id")long inId);
     /**
      * Gets all users.
@@ -45,8 +49,8 @@ public interface UserService
      * @return a <code>List&lt;User&gt;</code> value
      */
     @GET
-    @Path("users")
-    @Produces({MediaType.APPLICATION_JSON})
+//    @Path("users")
+//    @Produces({MediaType.APPLICATION_JSON})
     public List<WebServicesUser> getUsers();
     /**
      * Deletes the user with the given id.
@@ -55,6 +59,6 @@ public interface UserService
      * @return a <code>Response</code> value
      */
     @DELETE
-    @Path("users/{id}")
+    @Path("{id}")
     public Response deleteUser(@PathParam("id")long inId);
 }
