@@ -24,8 +24,8 @@ import org.marketcetera.api.security.User;
  * @since $Release$
  */
 @ThreadSafe
-@NamedQueries({ @NamedQuery(name="findUserByUsername",query="from PersistentUser s where s.username = :username"),
-                @NamedQuery(name="findAllUsers",query="from PersistentUser")})
+@NamedQueries({ @NamedQuery(name="findUserByUsername",query="select s from PersistentUser s where s.username = :username"),
+        @NamedQuery(name="findAllUsers",query="select s from PersistentUser s")})
 @NamedNativeQueries( { @NamedNativeQuery(name="findAuthoritiesByUserId",query="select distinct authorities.id, authorities.authority, authorities.version from authorities as authorities where authorities.id in (select groups_authorities.authorities_id from groups_authorities as groups_authorities where groups_authorities.groups_id in (select groups.id from groups as groups where groups.id in (select groups_id from groups_users as groups_users, users as users where users.id = groups_users.users_id and users.id=?)))",resultClass=PersistentAuthority.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )

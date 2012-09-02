@@ -21,8 +21,8 @@ import org.marketcetera.api.security.User;
  */
 @ThreadSafe
 @Entity
-@NamedQueries( { @NamedQuery(name="findGroupByName",query="from PersistentGroup s where s.name = :name"),
-                 @NamedQuery(name="findAllGroups",query="from PersistentGroup")})
+@NamedQueries( { @NamedQuery(name="findGroupByName",query="select s from PersistentGroup s where s.name = :name"),
+                 @NamedQuery(name="findAllGroups",query="select s from PersistentGroup s")})
 @Table(name="groups", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
 public class PersistentGroup
         extends PersistentVersionedObject
