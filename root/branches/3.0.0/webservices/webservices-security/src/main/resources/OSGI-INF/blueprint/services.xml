@@ -17,11 +17,16 @@
         <jaxrs:serviceBeans>
             <ref component-id="authenticationWebServiceBean"/>
         </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref component-id="cors-filter" />
+        </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="authenticationWebServiceBean" class="org.marketcetera.webservices.security.impl.AuthenticationServiceImpl">
         <property name="securityService" ref="securityService"/>
     </bean>
+
+    <bean id="cors-filter" class="org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter"/>
 
     <reference id="securityService" interface="org.marketcetera.api.security.SecurityService"/>
 </blueprint>

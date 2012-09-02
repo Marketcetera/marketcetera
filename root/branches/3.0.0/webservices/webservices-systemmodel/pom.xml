@@ -23,11 +23,6 @@
             <artifactId>systemmodel</artifactId>
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.marketcetera</groupId>
-            <artifactId>api</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <build>

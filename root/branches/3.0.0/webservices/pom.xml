@@ -59,6 +59,14 @@
             <version>2.6.1</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- FOR TESTING ONLY!! -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-security-cors</artifactId>
+            <version>2.6.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
