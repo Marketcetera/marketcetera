@@ -16,7 +16,7 @@
     <jaxrs:server id="cstsUserService" address="/userservice/v1">
         <jaxrs:serviceBeans>
             <ref component-id="permissionManagerWebServiceBean"/>
-            <ref component-id="groupManagerWebServiceBean"/>
+            <ref component-id="roleManagerWebServiceBean"/>
             <ref component-id="userManagerWebServiceBean"/>
         </jaxrs:serviceBeans>
     </jaxrs:server>
@@ -25,9 +25,9 @@
         <property name="permissionManagerService" ref="permissionManagerService"/>
         <property name="permissionFactory" ref="permissionFactory"/>
     </bean>
-    <bean id="groupManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.RoleServiceImpl">
-        <property name="groupManagerService" ref="groupManagerService"/>
-        <property name="groupFactory" ref="groupFactory"/>
+    <bean id="roleManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.RoleServiceImpl">
+        <property name="roleManagerService" ref="roleManagerService"/>
+        <property name="roleFactory" ref="roleFactory"/>
     </bean>
     <bean id="userManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.UserServiceImpl">
         <property name="userManagerService" ref="userManagerService"/>
@@ -36,8 +36,8 @@
 
     <reference id="permissionManagerService" interface="org.marketcetera.api.security.PermissionManagerService"/>
     <reference id="permissionFactory" interface="org.marketcetera.core.systemmodel.PermissionFactory"/>
-    <reference id="groupManagerService" interface="org.marketcetera.api.security.GroupManagerService"/>
-    <reference id="groupFactory" interface="org.marketcetera.core.systemmodel.RoleFactory"/>
+    <reference id="roleManagerService" interface="org.marketcetera.api.security.RoleManagerService"/>
+    <reference id="roleFactory" interface="org.marketcetera.core.systemmodel.RoleFactory"/>
     <reference id="userManagerService" interface="org.marketcetera.api.security.UserManagerService"/>
     <reference id="userFactory" interface="org.marketcetera.core.systemmodel.UserFactory"/>
 

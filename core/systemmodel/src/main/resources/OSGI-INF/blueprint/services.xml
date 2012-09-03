@@ -3,7 +3,7 @@
     <bean id="permissionManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.PermissionManagerServiceImpl">
         <property name="permissionDao" ref="permissionDao"/>
     </bean>
-    <bean id="groupManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.RoleManagerServiceImpl">
+    <bean id="roleManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.RoleManagerServiceImpl">
         <property name="roleDao" ref="roleDao"/>
     </bean>
     <bean id="userManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.UserManagerServiceImpl">
@@ -15,6 +15,6 @@
     <reference id="userDao" interface="org.marketcetera.api.dao.UserDao"/>
 
     <service id="permissionManagerService" interface="org.marketcetera.api.security.PermissionManagerService" ref="permissionManagerServiceBean"/>
-    <service id="groupManagerService" interface="org.marketcetera.api.security.GroupManagerService" ref="groupManagerServiceBean"/>
+    <service id="roleManagerService" interface="org.marketcetera.api.security.RoleManagerService" ref="roleManagerServiceBean"/>
     <service id="userManagerService" interface="org.marketcetera.api.security.UserManagerService" ref="userManagerServiceBean"/>
 </blueprint>
