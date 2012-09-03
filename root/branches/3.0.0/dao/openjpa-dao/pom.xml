@@ -60,6 +60,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
                         <ExportPackage>org.marketcetera.dao.openjpa</ExportPackage>
+                        <Export-Package>org.marketcetera.dao.impl</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

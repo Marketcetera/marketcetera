@@ -5,7 +5,7 @@
         <feature>jpa</feature>
         <bundle>mvn:org.marketcetera.dao/openjpa-dao/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.core/systemmodel/3.0.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.marketcetera.core/util/3.0.0-SNAPSHOT</bundle>
+        <!-- bundle>mvn:org.marketcetera.core/util/3.0.0-SNAPSHOT</bundle-->
         <bundle>mvn:org.marketcetera.fork/commons-i18n/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.apache.openjpa/openjpa/2.2.0</bundle>
         <bundle>wrap:mvn:com.google.code.findbugs/jsr305/2.0.0</bundle>
