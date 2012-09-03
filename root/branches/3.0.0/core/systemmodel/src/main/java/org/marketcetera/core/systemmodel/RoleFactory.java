@@ -5,7 +5,7 @@ package org.marketcetera.core.systemmodel;
 import org.marketcetera.api.dao.Role;
 
 /**
- * Creates <code>Group</code> objects.
+ * Creates <code>Role</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: RoleFactory.java 82315 2012-03-17 01:58:54Z colin $
@@ -14,16 +14,16 @@ import org.marketcetera.api.dao.Role;
 public interface RoleFactory
 {
     /**
-     * Creates a <code>Group</code> object with the given attributes.
+     * Creates a <code>Role</code> object with the given attributes.
      *
-     * @param inGroupname a <code>String</code> value
-     * @return a <code>Group</code> value
+     * @param inRolename a <code>String</code> value
+     * @return a <code>Role</code> value
      */
-    public Role create(String inGroupname);
+    public Role create(String inRolename);
     /**
-     * Creates a <code>Group</code> object.
+     * Creates a <code>Role</code> object.
      *
-     * @return a <code>Group</code> value
+     * @return a <code>Role</code> value
      */
     public Role create();
 }
