@@ -85,7 +85,6 @@
               <configuration>
                   <instructions>
                       <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                      <ExportPackage>org.apache.commons.csv.*</ExportPackage>
                   </instructions>
               </configuration>
           </plugin>

@@ -102,7 +102,6 @@
             <configuration>
                 <instructions>
                     <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                    <ExportPackage>org.apache.commons.i18n.*</ExportPackage>
                 </instructions>
             </configuration>
         </plugin>
