@@ -7,11 +7,18 @@ import java.util.Set;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.marketcetera.api.dao.Authority;
-import org.marketcetera.api.security.GrantedAuthority;
+import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.security.GrantedPermission;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -26,7 +33,7 @@ import org.marketcetera.api.security.User;
 @ThreadSafe
 @NamedQueries({ @NamedQuery(name="findUserByUsername",query="select s from PersistentUser s where s.username = :username"),
         @NamedQuery(name="findAllUsers",query="select s from PersistentUser s")})
-@NamedNativeQueries( { @NamedNativeQuery(name="findAuthoritiesByUserId",query="select distinct authorities.id, authorities.authority, authorities.version from authorities as authorities where authorities.id in (select groups_authorities.authorities_id from groups_authorities as groups_authorities where groups_authorities.groups_id in (select groups.id from groups as groups where groups.id in (select groups_id from groups_users as groups_users, users as users where users.id = groups_users.users_id and users.id=?)))",resultClass=PersistentAuthority.class)})
+@NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.permission, permissions.version from permissions as permissions where permissions.id in (select groups_permissions.permissions_id from groups_permissions as groups_permissions where groups_permissions.groups_id in (select groups.id from groups as groups where groups.id in (select groups_id from groups_users as groups_users, users as users where users.id = groups_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
 @XmlRootElement
@@ -62,29 +69,29 @@ public class PersistentUser
         username = inUsername;
     }
     /* (non-Javadoc)
-     * @see org.springframework.security.core.userdetails.UserDetails#getAuthorities()
+     * @see org.springframework.security.core.userdetails.UserDetails#getPermissions()
      */
     @Transient
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities()
+    public Collection<? extends GrantedPermission> getPermissions()
     {
-        synchronized(authorities) {
-            return Collections.unmodifiableSet(authorities);
+        synchronized(permissions) {
+            return Collections.unmodifiableSet(permissions);
         }
     }
     /**
-     * Sets the authorities for this user.
+     * Sets the permissions for this user.
      *
-     * @param inAuthorities a <code>Collection&lt;Authority&gt;</code> value
+     * @param inPermissions a <code>Collection&lt;Permission&gt;</code> value
      */
-    public void setAuthorities(Collection<Authority> inAuthorities)
+    public void setPermissions(Collection<Permission> inPermissions)
     {
-        synchronized(authorities) {
-            authorities.clear();
-            if(inAuthorities == null) {
+        synchronized(permissions) {
+            permissions.clear();
+            if(inPermissions == null) {
                 return;
             }
-            authorities.addAll(inAuthorities);
+            permissions.addAll(inPermissions);
         }
     }
     /* (non-Javadoc)
@@ -213,7 +220,7 @@ public class PersistentUser
         StringBuilder builder = new StringBuilder();
         builder.append("User ").append(username).append("[").append(getId()).append("] ").append(" enabled=").append(enabled)
                 .append(", locked=").append(locked).append(", credentialsExpired=").append(credentialsExpired)
-                .append(", authorities=").append(authorities);
+                .append(", permissions=").append(permissions);
         return builder.toString();
     }
     /**
@@ -255,9 +262,9 @@ public class PersistentUser
      */
     private volatile boolean credentialsExpired = false;
     /**
-     * authorities for this user
+     * permissions for this user
      */
-    @GuardedBy("authorities")
-    private final Set<Authority> authorities = new HashSet<Authority>();
+    @GuardedBy("permissions")
+    private final Set<Permission> permissions = new HashSet<Permission>();
     private static final long serialVersionUID = 1L;
 }

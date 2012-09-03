@@ -19,8 +19,8 @@
         <!-- Required by openJPA to update sequence table outside of Global Tx Management -->
         <non-jta-data-source>osgi:service/javax.sql.DataSource/(transactional=false)</non-jta-data-source>
 
-        <class>org.marketcetera.dao.impl.PersistentAuthority</class>
-        <class>org.marketcetera.dao.impl.PersistentGroup</class>
+        <class>org.marketcetera.dao.impl.PersistentPermission</class>
+        <class>org.marketcetera.dao.impl.PersistentRole</class>
         <class>org.marketcetera.dao.impl.PersistentSystemObject</class>
         <class>org.marketcetera.dao.impl.PersistentUser</class>
         <class>org.marketcetera.dao.impl.PersistentVersionedObject</class>

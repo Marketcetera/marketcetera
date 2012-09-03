@@ -2,7 +2,7 @@ package org.marketcetera.dao.impl;
 
 import java.util.Date;
 
-import org.marketcetera.api.dao.AuthorityDao;
+import org.marketcetera.api.dao.PermissionDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,15 +15,15 @@ import org.slf4j.LoggerFactory;
 public class StartupBean {
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory.getLogger(StartupBean.class);
-    private AuthorityDao authorityDao;
+    private PermissionDao permissionDao;
 
-    public void setAuthorityDao(AuthorityDao authorityDao) {
-        this.authorityDao = authorityDao;
+    public void setPermissionDao(PermissionDao permissionDao) {
+        this.permissionDao = permissionDao;
     }
 
     public void activate() {
-        PersistentAuthority authority = new PersistentAuthority();
-        authority.setAuthority(new Date().toString());
-        authorityDao.save(authority);
+        PersistentPermission permission = new PersistentPermission();
+        permission.setPermission(new Date().toString());
+        permissionDao.save(permission);
     }
 }

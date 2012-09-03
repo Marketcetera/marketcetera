@@ -23,8 +23,8 @@ public interface Messages
      */
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
     // the messages
-    static final I18NMessage1P CANNOT_ADD_AUTHORITY = new I18NMessage1P(LOGGER,
-                                                                        "cannot_add_authority"); //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_ADD_PERMISSION = new I18NMessage1P(LOGGER,
+                                                                        "cannot_add_permission"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_ADD_GROUP = new I18NMessage1P(LOGGER,
                                                                     "cannot_add_group"); //$NON-NLS-1$
 }

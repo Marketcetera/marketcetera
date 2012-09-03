@@ -1,26 +1,25 @@
 package org.marketcetera.core.systemmodel;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.marketcetera.api.dao.Authority;
-import org.marketcetera.api.dao.AuthorityDao;
-import org.marketcetera.api.dao.Group;
-import org.marketcetera.api.dao.GroupDao;
+import org.marketcetera.api.dao.PermissionDao;
+import org.marketcetera.api.dao.Role;
+import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.RoleDao;
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.LoggerConfiguration;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 /* $License$ */
 
@@ -53,29 +52,29 @@ public class SystemmodelTestBase
     public void setup()
             throws Exception
     {
-        initializeAuthorities();
-        initializeGroups();
+        initializePermissions();
+        initializeRoles();
         initializeUsers();
     }
     /**
-     * Initializes the authorities objects. 
+     * Initializes the permissions objects.
      *
      * @throws Exception if an unexpected error occurs
      */
-    protected void initializeAuthorities()
+    protected void initializePermissions()
             throws Exception
     {
-        authorityDao = mock(AuthorityDao.class);
-        authorityDataStore = new TestDataStore<Authority>();
+        permissionDao = mock(PermissionDao.class);
+        permissionDataStore = new TestDataStore<Permission>();
         for(int i=0;i<=3;i++) {
-            authorityDataStore.add(generateAuthority());
+            permissionDataStore.add(generatePermission());
         }
-        when(authorityDao.getByName(anyString())).thenAnswer(new Answer<Authority>() {
+        when(permissionDao.getByName(anyString())).thenAnswer(new Answer<Permission>() {
             @Override
-            public Authority answer(InvocationOnMock inInvocation)
+            public Permission answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return authorityDataStore.getByName((String)inInvocation.getArguments()[0]);
+                return permissionDataStore.getByName((String)inInvocation.getArguments()[0]);
             }
         });
         doAnswer(new Answer<Object>() {
@@ -83,58 +82,58 @@ public class SystemmodelTestBase
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                Authority authority = (Authority)inInvocation.getArguments()[0];
-                authorityDataStore.add(authority);
+                Permission permission = (Permission)inInvocation.getArguments()[0];
+                permissionDataStore.add(permission);
                 return null;
             }
-        }).when(authorityDao).save((Authority)any());
+        }).when(permissionDao).save((Permission)any());
         doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                Authority authority = (Authority)inInvocation.getArguments()[0];
-                authorityDataStore.remove(authority);
+                Permission permission = (Permission)inInvocation.getArguments()[0];
+                permissionDataStore.remove(permission);
                 return null;
             }
-        }).when(authorityDao).delete((Authority)any());
-        when(authorityDao.getByName(anyString())).thenAnswer(new Answer<Authority>() {
+        }).when(permissionDao).delete((Permission)any());
+        when(permissionDao.getByName(anyString())).thenAnswer(new Answer<Permission>() {
             @Override
-            public Authority answer(InvocationOnMock inInvocation)
+            public Permission answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return authorityDataStore.getByName((String)inInvocation.getArguments()[0]);
+                return permissionDataStore.getByName((String)inInvocation.getArguments()[0]);
             }
         });
-        when(authorityDao.getById(anyLong())).thenAnswer(new Answer<Authority>() {
+        when(permissionDao.getById(anyLong())).thenAnswer(new Answer<Permission>() {
             @Override
-            public Authority answer(InvocationOnMock inInvocation)
+            public Permission answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return authorityDataStore.getById((Long)inInvocation.getArguments()[0]);
+                return permissionDataStore.getById((Long)inInvocation.getArguments()[0]);
             }
         });
-        when(authorityDao.getAll()).thenReturn(new ArrayList<Authority>(authorityDataStore.getAll()));
+        when(permissionDao.getAll()).thenReturn(new ArrayList<Permission>(permissionDataStore.getAll()));
     }
     /**
-     * Initializes the groups objects. 
+     * Initializes the roles objects. 
      *
      * @throws Exception if an unexpected error occurs
      */
-    protected void initializeGroups()
+    protected void initializeRoles()
             throws Exception
     {
-        groupDao = mock(GroupDao.class);
-        groupDataStore = new TestDataStore<Group>();
+        roleDao = mock(RoleDao.class);
+        roleDataStore = new TestDataStore<Role>();
         for(int i=0;i<=3;i++) {
-            groupDataStore.add(generateGroup());
+            roleDataStore.add(generateRole());
         }
-        when(groupDao.getByName(anyString())).thenAnswer(new Answer<Group>() {
+        when(roleDao.getByName(anyString())).thenAnswer(new Answer<Role>() {
             @Override
-            public Group answer(InvocationOnMock inInvocation)
+            public Role answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return groupDataStore.getByName((String)inInvocation.getArguments()[0]);
+                return roleDataStore.getByName((String)inInvocation.getArguments()[0]);
             }
         });
         doAnswer(new Answer<Object>() {
@@ -142,38 +141,38 @@ public class SystemmodelTestBase
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                Group group = (Group)inInvocation.getArguments()[0];
-                groupDataStore.add(group);
+                Role role = (Role)inInvocation.getArguments()[0];
+                roleDataStore.add(role);
                 return null;
             }
-        }).when(groupDao).save((Group)any());
+        }).when(roleDao).save((Role)any());
         doAnswer(new Answer<Object>() {
             @Override
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                Group group = (Group)inInvocation.getArguments()[0];
-                groupDataStore.remove(group);
+                Role role = (Role)inInvocation.getArguments()[0];
+                roleDataStore.remove(role);
                 return null;
             }
-        }).when(groupDao).delete((Group)any());
-        when(groupDao.getByName(anyString())).thenAnswer(new Answer<Group>() {
+        }).when(roleDao).delete((Role)any());
+        when(roleDao.getByName(anyString())).thenAnswer(new Answer<Role>() {
             @Override
-            public Group answer(InvocationOnMock inInvocation)
+            public Role answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return groupDataStore.getByName((String)inInvocation.getArguments()[0]);
+                return roleDataStore.getByName((String)inInvocation.getArguments()[0]);
             }
         });
-        when(groupDao.getById(anyLong())).thenAnswer(new Answer<Group>() {
+        when(roleDao.getById(anyLong())).thenAnswer(new Answer<Role>() {
             @Override
-            public Group answer(InvocationOnMock inInvocation)
+            public Role answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                return groupDataStore.getById((Long)inInvocation.getArguments()[0]);
+                return roleDataStore.getById((Long)inInvocation.getArguments()[0]);
             }
         });
-        when(groupDao.getAll()).thenReturn(new ArrayList<Group>(groupDataStore.getAll()));
+        when(roleDao.getAll()).thenReturn(new ArrayList<Role>(roleDataStore.getAll()));
     }
     /**
      * Initializes the user objects. 
@@ -235,28 +234,28 @@ public class SystemmodelTestBase
         when(userDao.getAll()).thenReturn(new ArrayList<User>(userDataStore.getAll()));
     }
     /**
-     * Generates a unique <code>MockAuthority</code> value.
+     * Generates a unique <code>MockPermission</code> value.
      *
-     * @return a <code>MockAuthority</code> value
+     * @return a <code>MockPermission</code> value
      */
-    protected MockAuthority generateAuthority()
+    protected MockPermission generatePermission()
     {
-        MockAuthority authority = new MockAuthority();
-        authority.setAuthority("authority-" + counter.incrementAndGet());
-        authority.setId(counter.incrementAndGet());
-        return authority;
+        MockPermission permission = new MockPermission();
+        permission.setPermission("permission-" + counter.incrementAndGet());
+        permission.setId(counter.incrementAndGet());
+        return permission;
     }
     /**
-     * Generates a unique <code>MockGroup</code> value.
+     * Generates a unique <code>MockRole</code> value.
      *
-     * @return a <code>MockGroup</code> value
+     * @return a <code>MockRole</code> value
      */
-    protected MockGroup generateGroup()
+    protected MockRole generateRole()
     {
-        MockGroup group = new MockGroup();
-        group.setName("group-" + counter.incrementAndGet());
-        group.setId(counter.incrementAndGet());
-        return group;
+        MockRole role = new MockRole();
+        role.setName("role-" + counter.incrementAndGet());
+        role.setId(counter.incrementAndGet());
+        return role;
     }
     /**
      * Generates a test <code>User</code> value.
@@ -269,33 +268,33 @@ public class SystemmodelTestBase
         user.setUsername("username-" + counter.incrementAndGet());
         user.setPassword("password-" + counter.incrementAndGet());
         user.setId(counter.incrementAndGet());
-        user.setAuthorities(Arrays.asList(new Authority[] { generateAuthority(), generateAuthority(), generateAuthority() }));
+        user.setPermissions(Arrays.asList(new Permission[]{generatePermission(), generatePermission(), generatePermission()}));
         return user;
     }
     /**
-     * authority DAO value
+     * permission DAO value
      */
-    protected AuthorityDao authorityDao;
+    protected PermissionDao permissionDao;
     /**
      * user DAO value
      */
     protected UserDao userDao;
     /**
-     * group DAO value
+     * role DAO value
      */
-    protected GroupDao groupDao;
+    protected RoleDao roleDao;
     /**
      * data store for user test values 
      */
     protected TestDataStore<User> userDataStore;
     /**
-     * data store for group test values 
+     * data store for role test values 
      */
-    protected TestDataStore<Group> groupDataStore;
+    protected TestDataStore<Role> roleDataStore;
     /**
-     * data store for authority test values 
+     * data store for permission test values
      */
-    protected TestDataStore<Authority> authorityDataStore;
+    protected TestDataStore<Permission> permissionDataStore;
     /**
      * counter used to guarantee unique test values
      */

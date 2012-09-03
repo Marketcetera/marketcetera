@@ -2,7 +2,7 @@ package org.marketcetera.core.systemmodel;
 
 import java.util.Collection;
 
-import org.marketcetera.api.security.GrantedAuthority;
+import org.marketcetera.api.security.GrantedPermission;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -18,11 +18,11 @@ public interface MutableUser
         extends User
 {
     /**
-     * Set the authorities value.
+     * Set the permissions value.
      *
-     * @param inAuthorities a <code>Collection&lt;? extends GrantedAuthority&gt;</code> value
+     * @param inPermissions a <code>Collection&lt;? extends GrantedPermission&gt;</code> value
      */
-    public void setAuthorities(Collection<? extends GrantedAuthority> inAuthorities);
+    public void setPermissions(Collection<? extends GrantedPermission> inPermissions);
     /**
      * Set the password value. 
      *

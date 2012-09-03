@@ -36,9 +36,9 @@ public class UserSpecification
      *
      * @param a <code>Set&lt;String&gt;</code> value
      */
-    public void setGroups(Set<String> inGroups)
+    public void setRoles(Set<String> inRoles)
     {
-        groups = inGroups;
+        roles = inRoles;
     }
     /**
      * Get the username value.
@@ -63,9 +63,9 @@ public class UserSpecification
      *
      * @return a <code>Set&lt;String&gt;</code> value
      */
-    public Set<String> getGroups()
+    public Set<String> getRoles()
     {
-        return groups;
+        return roles;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -110,7 +110,7 @@ public class UserSpecification
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("UserSpecification [username=").append(username).append(", groups=").append(groups).append("]");
+        builder.append("UserSpecification [username=").append(username).append(", groups=").append(roles).append("]");
         return builder.toString();
     }
     /**
@@ -124,5 +124,5 @@ public class UserSpecification
     /**
      * groups value
      */
-    private Set<String> groups;
+    private Set<String> roles;
 }

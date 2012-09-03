@@ -2,9 +2,9 @@ package org.marketcetera.dao;
 
 /* $License$ */
 
+import org.marketcetera.api.dao.PermissionDao;
+import org.marketcetera.api.dao.RoleDao;
 import org.marketcetera.api.dao.UserDao;
-import org.marketcetera.api.dao.AuthorityDao;
-import org.marketcetera.api.dao.GroupDao;
 
 /**
  * Provides access to database services.
@@ -22,15 +22,15 @@ public interface DataAccessService
      */
     public UserDao getUserDao();
     /**
-     * Gets the <code>AuthorityDao</code> value.
+     * Gets the <code>PermissionDao</code> value.
      *
-     * @return an <code>AuthorityDao</code> value
+     * @return an <code>PermissionDao</code> value
      */
-    public AuthorityDao getAuthorityDao();
+    public PermissionDao getPermissionDao();
     /**
-     * Gets the <code>GroupDao</code> value.
+     * Gets the <code>RoleDao</code> value.
      *
-     * @return a <code>Group</code> value
+     * @return a <code>Role</code> value
      */
-    public GroupDao getGroupDao();
+    public RoleDao getRoleDao();
 }

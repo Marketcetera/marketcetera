@@ -5,20 +5,20 @@
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
 
-    <service ref="authorityDaoBean" interface="org.marketcetera.api.dao.AuthorityDao"/>
-    <service ref="groupDaoBean" interface="org.marketcetera.api.dao.GroupDao"/>
+    <service ref="permissionDaoBean" interface="org.marketcetera.api.dao.PermissionDao"/>
+    <service ref="groupDaoBean" interface="org.marketcetera.api.dao.RoleDao"/>
     <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
 
-    <service ref="authorityFactoryBean" interface="org.marketcetera.core.systemmodel.AuthorityFactory"/>
-    <service ref="groupFactoryBean" interface="org.marketcetera.core.systemmodel.GroupFactory"/>
+    <service ref="permissionFactoryBean" interface="org.marketcetera.core.systemmodel.PermissionFactory"/>
+    <service ref="groupFactoryBean" interface="org.marketcetera.core.systemmodel.RoleFactory"/>
     <service ref="userFactoryBean" interface="org.marketcetera.core.systemmodel.UserFactory"/>
 
-    <bean id="authorityDaoBean" class="org.marketcetera.dao.impl.AuthorityDaoImpl">
+    <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
 
-    <bean id="groupDaoBean" class="org.marketcetera.dao.impl.GroupDaoImpl">
+    <bean id="groupDaoBean" class="org.marketcetera.dao.impl.RoleDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
@@ -28,12 +28,12 @@
         <tx:transaction method="*" value="Required"/>
     </bean>
 
-    <bean id="authorityFactoryBean" class="org.marketcetera.dao.impl.PersistentAuthorityFactory"/>
-    <bean id="groupFactoryBean" class="org.marketcetera.dao.impl.PersistentGroupFactory"/>
+    <bean id="permissionFactoryBean" class="org.marketcetera.dao.impl.PersistentPermissionFactory"/>
+    <bean id="groupFactoryBean" class="org.marketcetera.dao.impl.PersistentRoleFactory"/>
     <bean id="userFactoryBean" class="org.marketcetera.dao.impl.PersistentUserFactory"/>
 
     <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
-        <property name="authorityDao" ref="authorityDaoBean"/>
+        <property name="permissionDao" ref="permissionDaoBean"/>
     </bean>
 
 </blueprint>

@@ -18,7 +18,6 @@
     <description>Different DAO projects.  These should probably be paired or merged with their clients in the bigger SOA picture.</description>
 
     <modules>
-        <!--<module>hibernate-dao</module>-->
         <module>openjpa-dao</module>
         <module>datasource</module>
     </modules>
