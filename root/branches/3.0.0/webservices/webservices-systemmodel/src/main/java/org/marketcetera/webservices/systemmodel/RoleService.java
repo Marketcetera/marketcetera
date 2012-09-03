@@ -12,27 +12,27 @@ import javax.ws.rs.core.Response;
 /* $License$ */
 
 /**
- * Provides web-services access to the group service.
+ * Provides web-services access to the role service.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-@Path("groups")
+@Path("roles")
 public interface RoleService
 {
     /**
-     * Adds a group with the given name.
+     * Adds a role with the given name.
      *
      * @param inRole a <code>String</code> value
      * @return a <code>Response</code> value
      */
     @POST
-    @Path("{group}")
+    @Path("{role}")
 //    @Consumes({MediaType.APPLICATION_JSON})
-    public Response addRole(@PathParam("group")String inRole);
+    public Response addRole(@PathParam("role")String inRole);
     /**
-     * Gets the group with the given id.
+     * Gets the role with the given id.
      *
      * @param inId a <code>String</code> value
      * @return a <code>WebServicesRole</code> value
@@ -42,7 +42,7 @@ public interface RoleService
 //    @Produces({MediaType.APPLICATION_JSON})
     public WebServicesRole getRole(@PathParam("id")long inId);
     /**
-     * Gets all groups.
+     * Gets all roles.
      *
      * @return a <code>List&lt;WebServicesRole&gt;</code> value
      */
@@ -50,7 +50,7 @@ public interface RoleService
 //    @Produces({MediaType.APPLICATION_JSON})
     public List<WebServicesRole> getRoles();
     /**
-     * Deletes the group with the given id.
+     * Deletes the role with the given id.
      *
      * @param inId a <code>long</code> value
      * @return a <code>Response</code> value
