@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.marketcetera.api.security.GrantedAuthority;
+import org.marketcetera.api.security.GrantedPermission;
+import org.marketcetera.api.security.GrantedPermission;
 
 /* $License$ */
 
@@ -20,12 +21,12 @@ public class MockUser
         implements MutableUser
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.api.security.User#getAuthorities()
+     * @see org.marketcetera.api.security.User#getPermissions()
      */
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities()
+    public Collection<? extends GrantedPermission> getPermissions()
     {
-        return Collections.unmodifiableCollection(authorities);
+        return Collections.unmodifiableCollection(permissions);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.security.User#getPassword()
@@ -84,14 +85,14 @@ public class MockUser
         return username;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.MutableUser#setAuthorities(java.util.Collection)
+     * @see org.marketcetera.core.systemmodel.MutableUser#setPermissions(java.util.Collection)
      */
     @Override
-    public void setAuthorities(Collection<? extends GrantedAuthority> inAuthorities)
+    public void setPermissions(Collection<? extends GrantedPermission> inPermissions)
     {
-        authorities.clear();
-        if(inAuthorities != null) {
-            authorities.addAll(inAuthorities);
+        permissions.clear();
+        if(inPermissions != null) {
+            permissions.addAll(inPermissions);
         }
     }
     /* (non-Javadoc)
@@ -149,16 +150,16 @@ public class MockUser
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("MockUser [authorities=").append(authorities).append(", password=").append(password)
+        builder.append("MockUser [permissions=").append(permissions).append(", password=").append(password)
                 .append(", username=").append(username).append(", isAccountNonExpired=").append(isAccountNonExpired)
                 .append(", isNonLocked=").append(isNonLocked).append(", isCredentialsNonExpired=")
                 .append(isCredentialsNonExpired).append(", isEnabled=").append(isEnabled).append("]");
         return builder.toString();
     }
     /**
-     * authorities value
+     * permissions value
      */
-    private final Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+    private final Collection<GrantedPermission> permissions = new ArrayList<GrantedPermission>();
     /**
      * password value
      */

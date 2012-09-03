@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"  >
-    <bean id="authorityManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.AuthorityManagerServiceImpl">
-        <property name="authorityDao" ref="authorityDao"/>
+    <bean id="permissionManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.PermissionManagerServiceImpl">
+        <property name="permissionDao" ref="permissionDao"/>
     </bean>
-    <bean id="groupManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.GroupManagerServiceImpl">
-        <property name="groupDao" ref="groupDao"/>
+    <bean id="groupManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.RoleManagerServiceImpl">
+        <property name="roleDao" ref="roleDao"/>
     </bean>
     <bean id="userManagerServiceBean" class="org.marketcetera.core.systemmodel.impl.UserManagerServiceImpl">
         <property name="userDao" ref="userDao"/>
     </bean>
 
-    <reference id="authorityDao" interface="org.marketcetera.api.dao.AuthorityDao"/>
-    <reference id="groupDao" interface="org.marketcetera.api.dao.GroupDao"/>
+    <reference id="permissionDao" interface="org.marketcetera.api.dao.PermissionDao"/>
+    <reference id="roleDao" interface="org.marketcetera.api.dao.RoleDao"/>
     <reference id="userDao" interface="org.marketcetera.api.dao.UserDao"/>
 
-    <service id="authorityManagerService" interface="org.marketcetera.api.security.AuthorityManagerService" ref="authorityManagerServiceBean"/>
+    <service id="permissionManagerService" interface="org.marketcetera.api.security.PermissionManagerService" ref="permissionManagerServiceBean"/>
     <service id="groupManagerService" interface="org.marketcetera.api.security.GroupManagerService" ref="groupManagerServiceBean"/>
     <service id="userManagerService" interface="org.marketcetera.api.security.UserManagerService" ref="userManagerServiceBean"/>
 </blueprint>

@@ -17,7 +17,6 @@
     <name>Security</name>
 
     <modules>
-        <module>spring-security</module>
         <module>shiro-security</module>
     </modules>
 </project>

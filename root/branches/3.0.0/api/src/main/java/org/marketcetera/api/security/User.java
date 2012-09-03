@@ -20,11 +20,11 @@ public interface User extends VersionedObject, NamedObject, SystemObject, Serial
     //~ Methods ========================================================================================================
 
     /**
-     * Returns the authorities granted to the user. Cannot return <code>null</code>.
+     * Returns the permissions granted to the user. Cannot return <code>null</code>.
      *
-     * @return the authorities, sorted by natural key (never <code>null</code>)
+     * @return the permissions, sorted by natural key (never <code>null</code>)
      */
-    Collection<? extends GrantedAuthority> getAuthorities();
+    Collection<? extends GrantedPermission> getPermissions();
 
     /**
      * Returns the password used to authenticate the user. Cannot return <code>null</code>.

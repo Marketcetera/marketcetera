@@ -15,17 +15,17 @@
 
     <jaxrs:server id="cstsUserService" address="/userservice/v1">
         <jaxrs:serviceBeans>
-            <ref component-id="authorityManagerWebServiceBean"/>
+            <ref component-id="permissionManagerWebServiceBean"/>
             <ref component-id="groupManagerWebServiceBean"/>
             <ref component-id="userManagerWebServiceBean"/>
         </jaxrs:serviceBeans>
     </jaxrs:server>
 
-    <bean id="authorityManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.AuthorityServiceImpl">
-        <property name="authorityManagerService" ref="authorityManagerService"/>
-        <property name="authorityFactory" ref="authorityFactory"/>
+    <bean id="permissionManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.PermissionServiceImpl">
+        <property name="permissionManagerService" ref="permissionManagerService"/>
+        <property name="permissionFactory" ref="permissionFactory"/>
     </bean>
-    <bean id="groupManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.GroupServiceImpl">
+    <bean id="groupManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.RoleServiceImpl">
         <property name="groupManagerService" ref="groupManagerService"/>
         <property name="groupFactory" ref="groupFactory"/>
     </bean>
@@ -34,10 +34,10 @@
         <property name="userFactory" ref="userFactory"/>
     </bean>
 
-    <reference id="authorityManagerService" interface="org.marketcetera.api.security.AuthorityManagerService"/>
-    <reference id="authorityFactory" interface="org.marketcetera.core.systemmodel.AuthorityFactory"/>
+    <reference id="permissionManagerService" interface="org.marketcetera.api.security.PermissionManagerService"/>
+    <reference id="permissionFactory" interface="org.marketcetera.core.systemmodel.PermissionFactory"/>
     <reference id="groupManagerService" interface="org.marketcetera.api.security.GroupManagerService"/>
-    <reference id="groupFactory" interface="org.marketcetera.core.systemmodel.GroupFactory"/>
+    <reference id="groupFactory" interface="org.marketcetera.core.systemmodel.RoleFactory"/>
     <reference id="userManagerService" interface="org.marketcetera.api.security.UserManagerService"/>
     <reference id="userFactory" interface="org.marketcetera.core.systemmodel.UserFactory"/>
 

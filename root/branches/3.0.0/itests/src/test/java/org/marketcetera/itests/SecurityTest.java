@@ -1,6 +1,7 @@
 package org.marketcetera.itests;
 
 import javax.inject.Inject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.marketcetera.api.security.SecurityService;
@@ -21,6 +22,7 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
  * @version $Id$
  * @date 8/19/12 4:01 AM
  */
+@Ignore
 @RunWith(JUnit4TestRunner.class)
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
 public class SecurityTest {

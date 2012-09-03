@@ -1,8 +1,11 @@
 package org.marketcetera.webservices;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -11,13 +14,15 @@ import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
 import org.apache.cxf.jaxrs.provider.json.JSONProvider;
 import org.junit.After;
 import org.junit.Before;
-import org.marketcetera.api.dao.Authority;
+import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.security.User;
-import org.marketcetera.api.dao.Group;
 import org.marketcetera.core.systemmodel.SystemmodelTestBase;
-import org.marketcetera.webservices.systemmodel.WebServicesAuthority;
-import org.marketcetera.webservices.systemmodel.WebServicesGroup;
+import org.marketcetera.webservices.systemmodel.WebServicesPermission;
+import org.marketcetera.webservices.systemmodel.WebServicesRole;
 import org.marketcetera.webservices.systemmodel.WebServicesUser;
+
+import static org.junit.Assert.assertEquals;
 
 /* $License$ */
 
@@ -84,35 +89,35 @@ public abstract class WebServicesTestBase<InterfaceClazz,ImplementationClazz>
     /**
      * Verifies that the given expected value matches the given actual value.
      *
-     * @param inExpectedGroup a <code>Group</code> value
-     * @param inActualGroup a <code>WebServicesGroup</code> value
+     * @param inExpectedRole a <code>Role</code> value
+     * @param inActualRole a <code>WebServicesRole</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected void verifyGroup(Group inExpectedGroup,
-                               WebServicesGroup inActualGroup)
+    protected void verifyRole(Role inExpectedRole,
+                               WebServicesRole inActualRole)
             throws Exception
     {
-        assertEquals(inExpectedGroup.getName(),
-                     inActualGroup.getName());
-        assertEquals(inExpectedGroup.getId(),
-                     inActualGroup.getId());
+        assertEquals(inExpectedRole.getName(),
+                     inActualRole.getName());
+        assertEquals(inExpectedRole.getId(),
+                     inActualRole.getId());
     }
     /**
      * Verifies that the given expected values match the given actual values.
      *
-     * @param inExpectedGroups a <code>Collection&lt;Group&gt;</code> value
-     * @param inActualGroups a <code>Collection&lt;WebServicesGroup&gt;</code> value
+     * @param inExpectedRoles a <code>Collection&lt;Role&gt;</code> value
+     * @param inActualRoles a <code>Collection&lt;WebServicesRole&gt;</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected void verifyGroups(Collection<Group> inExpectedGroups,
-                                Collection<WebServicesGroup> inActualGroups)
+    protected void verifyRoles(Collection<Role> inExpectedRoles,
+                                Collection<WebServicesRole> inActualRoles)
             throws Exception
     {
-        assertEquals(inExpectedGroups.size(),
-                     inActualGroups.size());
-        Iterator<WebServicesGroup> actualIterator = inActualGroups.iterator();
-        for(Group expectedUser : inExpectedGroups) {
-            verifyGroup(expectedUser,
+        assertEquals(inExpectedRoles.size(),
+                     inActualRoles.size());
+        Iterator<WebServicesRole> actualIterator = inActualRoles.iterator();
+        for(Role expectedUser : inExpectedRoles) {
+            verifyRole(expectedUser,
                         actualIterator.next());
         }
     }
@@ -154,36 +159,35 @@ public abstract class WebServicesTestBase<InterfaceClazz,ImplementationClazz>
     /**
      * Verifies that the given expected value matches the given actual value.
      *
-     * @param inExpectedAuthority an <code>Authority</code> value
-     * @param inActualAuthority a <code>WebServicesAuthority</code> value
+     * @param inExpectedPermission an <code>Permission</code> value
+     * @param inActualPermission a <code>WebServicesPermission</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected void verifyAuthority(Authority inExpectedAuthority,
-                                      WebServicesAuthority inActualAuthority)
+    protected void verifyPermission(Permission inExpectedPermission,
+                                      WebServicesPermission inActualPermission)
             throws Exception
     {
-        assertEquals(inExpectedAuthority.getName(),
-                     inActualAuthority.getAuthority());
-        assertEquals(inExpectedAuthority.getId(),
-                     inActualAuthority.getId());
+        assertEquals(inExpectedPermission.getName(),
+                     inActualPermission.getPermission());
+        assertEquals(inExpectedPermission.getId(),
+                     inActualPermission.getId());
     }
     /**
      * Verifies that the given expected values match the given actual values.
      *
-     * @param inExpectedAuthorities a <code>Collection&lt;Authority&gt;</code> value
-     * @param inActualAuthorities a <code>Collection&lt;WebServicesAuthority&gt;</code> value
+     * @param inExpectedPermissions a <code>Collection&lt;Permission&gt;</code> value
+     * @param inActualPermissions a <code>Collection&lt;WebServicesPermission&gt;</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected void verifyAuthorities(Collection<Authority> inExpectedAuthorities,
-                                        Collection<WebServicesAuthority> inActualAuthorities)
+    protected void verifyPermissions(Collection<Permission> inExpectedPermissions,
+                                        Collection<WebServicesPermission> inActualPermissions)
             throws Exception
     {
-        assertEquals(inExpectedAuthorities.size(),
-                     inActualAuthorities.size());
-        Iterator<WebServicesAuthority> actualIterator = inActualAuthorities.iterator();
-        for(Authority expectedUser : inExpectedAuthorities) {
-            verifyAuthority(expectedUser,
-                            actualIterator.next());
+        assertEquals(inExpectedPermissions.size(),
+                     inActualPermissions.size());
+        Iterator<WebServicesPermission> actualIterator = inActualPermissions.iterator();
+        for(Permission expectedUser : inExpectedPermissions) {
+            verifyPermission(expectedUser, actualIterator.next());
         }
     }
     /**

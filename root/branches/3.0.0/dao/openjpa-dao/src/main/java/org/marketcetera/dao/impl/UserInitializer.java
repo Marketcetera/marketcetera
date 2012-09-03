@@ -2,8 +2,8 @@ package org.marketcetera.dao.impl;
 
 import java.util.Set;
 
-import org.marketcetera.api.dao.Authority;
-import org.marketcetera.api.dao.Group;
+import org.marketcetera.api.dao.Role;
+import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.systemmodel.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
@@ -31,18 +31,18 @@ public class UserInitializer
     public void initialize()
     {
         try {
-            // assign default authorities to default groups
-            Group adminGroup = dataService.getGroupDao().getByName(SystemGroup.ADMINISTRATORS.name());
-            // add admin authority to admin group
-            Authority adminAuthority = dataService.getAuthorityDao().getByName(SystemAuthority.ROLE_ADMIN.name());
-            adminGroup.getAuthorities().add(adminAuthority);
+            // assign default permissions to default groups
+            Role adminRole = dataService.getRoleDao().getByName(SystemRole.ADMINISTRATORS.name());
+            // add admin permission to admin group
+            Permission adminPermission = dataService.getPermissionDao().getByName(SystemPermission.ROLE_ADMIN.name());
+            adminRole.getPermissions().add(adminPermission);
             // update admin group
-            dataService.getGroupDao().save(adminGroup);
-            // add user authority to user group
-            Group userGroup = dataService.getGroupDao().getByName(SystemGroup.USERS.name());
-            Authority userAuthority = dataService.getAuthorityDao().getByName(SystemAuthority.ROLE_USER.name());
-            userGroup.getAuthorities().add(userAuthority);
-            dataService.getGroupDao().save(userGroup);
+            dataService.getRoleDao().save(adminRole);
+            // add user permission to user group
+            Role userRole = dataService.getRoleDao().getByName(SystemRole.USERS.name());
+            Permission userPermission = dataService.getPermissionDao().getByName(SystemPermission.ROLE_USER.name());
+            userRole.getPermissions().add(userPermission);
+            dataService.getRoleDao().save(userRole);
             // add users as specified
             if(users != null) {
                 for(UserSpecification spec : users) {
@@ -59,7 +59,7 @@ public class UserInitializer
         } catch (Exception e) {
             SLF4JLoggerProxy.warn(UserInitializer.class,
                                   e,
-                                  "Could not initialize authorities, quitting"); // TODO
+                                  "Could not initialize permissions, quitting"); // TODO
             return;
         } finally {
             // remove temp authentication
@@ -78,7 +78,7 @@ public class UserInitializer
     /**
      * Sets the users value.
      *
-     * @param a <code>Set<UserSpecification></code> value
+     * @param inUsers <code>Set<UserSpecification></code> value
      */
     public void setUsers(Set<UserSpecification> inUsers)
     {
@@ -98,8 +98,8 @@ public class UserInitializer
         SLF4JLoggerProxy.info(UserInitializer.class,
                               "{} created",
                               user);
-        for(String group : inUserSpecification.getGroups()) {
-            addUserToGroup(user,
+        for(String group : inUserSpecification.getRoles()) {
+            addUserToRole(user,
                            group);
         }
     }
@@ -107,15 +107,15 @@ public class UserInitializer
      * Adds the given user to the group with the given name.
      *
      * @param inUser a <code>User</code> value
-     * @param inGroupName a <code>String</code> value
+     * @param inRoleName a <code>String</code> value
      */
-    private void addUserToGroup(User inUser,
-                                String inGroupName)
+    private void addUserToRole(User inUser,
+                                String inRoleName)
     {
-        Group group = dataService.getGroupDao().getByName(inGroupName);
+        Role group = dataService.getRoleDao().getByName(inRoleName);
         if(group != null) {
             group.getUsers().add(inUser);
-            dataService.getGroupDao().save(group);
+            dataService.getRoleDao().save(group);
             SLF4JLoggerProxy.info(UserInitializer.class,
                                   "{} added to {}",
                                   inUser,
@@ -124,7 +124,7 @@ public class UserInitializer
             SLF4JLoggerProxy.warn(UserInitializer.class,
                                   "Cannot add {} to {} because group does not exist",
                                   inUser,
-                                  inGroupName);
+                                  inRoleName);
         }
     }
     /**
