@@ -32,7 +32,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <ExportPackage>org.skife.csv.*</ExportPackage>
                     </instructions>
                 </configuration>
             </plugin>
