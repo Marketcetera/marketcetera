@@ -14,17 +14,17 @@
     <service ref="userFactoryBean" interface="org.marketcetera.core.systemmodel.UserFactory"/>
 
     <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
-        <jpa:context property="entityManager" unitname="marketcetera"/>
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
 
     <bean id="groupDaoBean" class="org.marketcetera.dao.impl.RoleDaoImpl">
-        <jpa:context property="entityManager" unitname="marketcetera"/>
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
 
     <bean id="userDaoBean" class="org.marketcetera.dao.impl.UserDaoImpl">
-        <jpa:context property="entityManager" unitname="marketcetera"/>
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
 
