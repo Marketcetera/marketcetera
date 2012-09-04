@@ -17,6 +17,10 @@
         <jaxrs:serviceBeans>
             <ref component-id="authenticationWebServiceBean"/>
         </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json" />
+            <entry key="xml" value="application/xml" />
+        </jaxrs:extensionMappings>
     </jaxrs:server>
 
     <bean id="authenticationWebServiceBean" class="org.marketcetera.webservices.security.impl.AuthenticationServiceImpl">

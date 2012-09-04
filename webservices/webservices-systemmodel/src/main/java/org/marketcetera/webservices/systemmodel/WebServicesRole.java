@@ -21,7 +21,7 @@ import org.marketcetera.api.dao.Role;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name = "role")
+@XmlRootElement(name = "roles")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebServicesRole
 {
