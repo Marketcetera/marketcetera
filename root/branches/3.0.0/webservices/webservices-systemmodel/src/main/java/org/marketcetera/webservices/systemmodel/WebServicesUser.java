@@ -2,7 +2,6 @@ package org.marketcetera.webservices.systemmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.api.security.User;
 
@@ -15,7 +14,7 @@ import org.marketcetera.api.security.User;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name = "user")
+@XmlRootElement(name = "users")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebServicesUser
 {
@@ -31,7 +30,7 @@ public class WebServicesUser
     /**
      * Sets the username value.
      *
-     * @param a <code>String</code> value
+     * @param inUsername <code>String</code> value
      */
     public void setUsername(String inUsername)
     {
@@ -49,7 +48,7 @@ public class WebServicesUser
     /**
      * Sets the id value.
      *
-     * @param a <code>long</code> value
+     * @param inId <code>long</code> value
      */
     public void setId(long inId)
     {

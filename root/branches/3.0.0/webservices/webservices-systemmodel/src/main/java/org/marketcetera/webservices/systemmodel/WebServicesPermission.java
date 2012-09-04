@@ -14,7 +14,7 @@ import org.marketcetera.api.dao.Permission;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name = "permission")
+@XmlRootElement(name = "permissions")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WebServicesPermission
 {
@@ -44,7 +44,7 @@ public class WebServicesPermission
     /**
      * Sets the permission value.
      *
-     * @param a <code>String</code> value
+     * @param inPermission <code>String</code> value
      */
     public void setPermission(String inPermission)
     {
@@ -62,7 +62,7 @@ public class WebServicesPermission
     /**
      * Sets the id value.
      *
-     * @param a <code>long</code> value
+     * @param inId <code>long</code> value
      */
     public void setId(long inId)
     {

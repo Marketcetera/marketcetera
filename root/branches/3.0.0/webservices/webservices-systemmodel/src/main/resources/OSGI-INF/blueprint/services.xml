@@ -19,6 +19,10 @@
             <ref component-id="roleManagerWebServiceBean"/>
             <ref component-id="userManagerWebServiceBean"/>
         </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json" />
+            <entry key="xml" value="application/xml" />
+        </jaxrs:extensionMappings>
     </jaxrs:server>
 
     <bean id="permissionManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.PermissionServiceImpl">
