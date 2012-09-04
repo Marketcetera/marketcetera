@@ -64,7 +64,7 @@ public class SystemmodelTestBase
             throws Exception
     {
         permissionDao = mock(PermissionDao.class);
-        permissionDataStore = new TestDataStore<Permission>();
+        permissionDataStore = new NamedTestDataStore<Permission>();
         for(int i=0;i<=3;i++) {
             permissionDataStore.add(generatePermission());
         }
@@ -123,7 +123,7 @@ public class SystemmodelTestBase
             throws Exception
     {
         roleDao = mock(RoleDao.class);
-        roleDataStore = new TestDataStore<Role>();
+        roleDataStore = new NamedTestDataStore<Role>();
         for(int i=0;i<=3;i++) {
             roleDataStore.add(generateRole());
         }
@@ -182,7 +182,7 @@ public class SystemmodelTestBase
             throws Exception
     {
         userDao = mock(UserDao.class);
-        userDataStore = new TestDataStore<User>();
+        userDataStore = new NamedTestDataStore<User>();
         for(int i=0;i<=3;i++) {
             userDataStore.add(generateUser());
         }
@@ -285,15 +285,15 @@ public class SystemmodelTestBase
     /**
      * data store for user test values 
      */
-    protected TestDataStore<User> userDataStore;
+    protected NamedTestDataStore<User> userDataStore;
     /**
      * data store for role test values 
      */
-    protected TestDataStore<Role> roleDataStore;
+    protected NamedTestDataStore<Role> roleDataStore;
     /**
      * data store for permission test values
      */
-    protected TestDataStore<Permission> permissionDataStore;
+    protected NamedTestDataStore<Permission> permissionDataStore;
     /**
      * counter used to guarantee unique test values
      */

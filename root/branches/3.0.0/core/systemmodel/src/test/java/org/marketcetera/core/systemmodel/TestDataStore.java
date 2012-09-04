@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.api.systemmodel.NamedObject;
 import org.marketcetera.api.systemmodel.SystemObject;
 
 /* $License$ */
@@ -15,14 +14,13 @@ import org.marketcetera.api.systemmodel.SystemObject;
  * @version $Id$
  * @since $Release$
  */
-public class TestDataStore<DataClazz extends NamedObject & SystemObject>
+public class TestDataStore<DataClazz extends SystemObject>
 {
     /**
      * Create a new TestDataStore instance.
      */
     public TestDataStore()
     {
-        dataByName = new HashMap<String,DataClazz>();
         dataById = new HashMap<Long,DataClazz>();
     }
     /**
@@ -32,8 +30,6 @@ public class TestDataStore<DataClazz extends NamedObject & SystemObject>
      */
     public void add(DataClazz inData)
     {
-        dataByName.put(inData.getName(),
-                       inData);
         dataById.put(inData.getId(),
                      inData);
     }
@@ -44,18 +40,7 @@ public class TestDataStore<DataClazz extends NamedObject & SystemObject>
      */
     public void remove(DataClazz inData)
     {
-        dataByName.remove(inData.getName());
         dataById.remove(inData.getId());
-    }
-    /**
-     * Gets the data with the given name from the test data store.
-     *
-     * @param inName a <code>String</code> value
-     * @return a <code>DataClazz</code> value or <code>null</code>
-     */
-    public DataClazz getByName(String inName)
-    {
-        return dataByName.get(inName);
     }
     /**
      * Gets the data with the given id from the test data store.
@@ -74,12 +59,8 @@ public class TestDataStore<DataClazz extends NamedObject & SystemObject>
      */
     public Collection<DataClazz> getAll()
     {
-        return dataByName.values();
+        return dataById.values();
     }
-    /**
-     * test data values by name
-     */
-    private final Map<String,DataClazz> dataByName;
     /**
      * test data values by id
      */
