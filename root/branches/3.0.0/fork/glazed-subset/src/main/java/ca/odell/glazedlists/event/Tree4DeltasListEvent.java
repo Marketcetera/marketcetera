@@ -11,7 +11,6 @@ import ca.odell.glazedlists.impl.event.Tree4Deltas;
  * A list event that iterates {@link ca.odell.glazedlists.impl.event.Tree4Deltas} as the
  * datastore.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 class Tree4DeltasListEvent<E> extends ListEvent<E> {
 

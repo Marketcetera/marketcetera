@@ -73,7 +73,6 @@ import java.util.List;
  * 50% of the nodes in an arbitrary tree are leaf nodes, and these leaf nodes
  * now don't have counts.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 class FourColorNode<  T0>   implements Element<T0> {
 

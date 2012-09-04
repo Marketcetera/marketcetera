@@ -5,7 +5,6 @@ package org.marketcetera.core.ordermanager;
 /**
  *
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

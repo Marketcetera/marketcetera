@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * An XML adapter to serialize ModuleURN into XML and back.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleURNXmlAdapter.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

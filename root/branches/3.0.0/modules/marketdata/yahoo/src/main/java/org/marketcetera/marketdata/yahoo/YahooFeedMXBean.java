@@ -10,7 +10,6 @@ import org.marketcetera.core.module.DisplayName;
 /**
  * Provides an MX interface for the Yahoo market data feed.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: YahooFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */

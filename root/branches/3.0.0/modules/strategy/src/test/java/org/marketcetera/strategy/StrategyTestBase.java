@@ -62,7 +62,6 @@ import com.google.common.collect.Multimap;
 /**
  * Base class for <code>Strategy</code> tests.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
  * @since 1.0.0
  */
@@ -75,7 +74,6 @@ public class StrategyTestBase
     /**
      * Tuple which describes the location and name of a strategy.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
      * @since 1.0.0
      */
@@ -117,7 +115,6 @@ public class StrategyTestBase
     /**
      * A {@link DataReceiver} implementation that stores the data it receives.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
      * @since 1.0.0
      */
@@ -251,7 +248,6 @@ public class StrategyTestBase
         /**
          * The {@link ModuleFactory} implementation for {@link MockRecorderModule}.
          *
-         * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
          * @since 1.0.0
          */
@@ -294,7 +290,6 @@ public class StrategyTestBase
         /**
          * Stores the data received by {@link MockRecorderModule}.
          *
-         * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
          * @since 1.0.0
          */
@@ -382,7 +377,6 @@ public class StrategyTestBase
     /**
      * A {@link DataEmitter} implementation that emits each type of data a {@link RunningStrategy} can receive.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
      * @since 1.0.0
      */
@@ -535,7 +529,6 @@ public class StrategyTestBase
         /**
          * The {@link ModuleFactory} implementation for {@link StrategyDataEmissionModule}.
          *
-         * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
          * @since 1.0.0
          */
@@ -1019,7 +1012,6 @@ public class StrategyTestBase
     /**
      * Compares the sending times of two <code>ReportBase</code> values.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
      * @since 2.1.4
      */
@@ -1066,7 +1058,6 @@ public class StrategyTestBase
      * of intervals, find the intersection of the desired date (D) and the interval
      * where: D > interval1.getDate() && D < interval2.getDate().
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
      * @since 1.0.0
      */
@@ -1165,7 +1156,6 @@ public class StrategyTestBase
     /**
      * A set of intervals representing the change of the position of a security over time.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
      * @since 1.0.0
      */

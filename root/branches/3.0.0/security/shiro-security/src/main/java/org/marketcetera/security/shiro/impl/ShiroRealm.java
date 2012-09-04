@@ -10,7 +10,6 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 
 /**
-* @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
 * @version $Id$
 * @date 9/3/12 12:49 PM
 */

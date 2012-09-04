@@ -8,7 +8,6 @@ import java.io.Serializable;
  * not meant to be used directly. It only unifies the common elements
  * from its subclasses.  
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataRequestBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

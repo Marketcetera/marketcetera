@@ -25,7 +25,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link org.marketcetera.core.marketdata.OrderBook}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OrderBookTest.java 82329 2012-04-10 16:28:13Z colin $
  * @since 0.6.0
  */
@@ -631,7 +630,6 @@ public class OrderBookTest
     /**
      * Wrapper around a {@link QuantityTuple} {@link List} that accepts {@link QuoteEvent} inputs.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: OrderBookTest.java 82329 2012-04-10 16:28:13Z colin $
      * @since 1.5.0
      */

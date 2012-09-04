@@ -7,7 +7,6 @@ import junit.framework.TestCase;
 import org.marketcetera.core.MarketceteraTestSuite;
 
 /**
- * @author Graham Miller
  * @version $Id: ExchangeTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class ExchangeTest extends TestCase

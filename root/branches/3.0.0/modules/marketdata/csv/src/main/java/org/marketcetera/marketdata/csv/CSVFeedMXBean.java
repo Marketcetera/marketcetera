@@ -8,8 +8,6 @@ import javax.management.MXBean;
 /**
  * Exposes {@link CSVFeedCredentials} attributes.
  * 
- * @author toli kuznets
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
  * @version $Id: CSVFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $
  */

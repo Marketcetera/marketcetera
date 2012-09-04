@@ -13,8 +13,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 /**
  * Encapsulates the data necessary to initialize an instance of {@link CSVFeed}.
  * 
- * @author toli kuznets
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
  * @version $Id: CSVFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
  */

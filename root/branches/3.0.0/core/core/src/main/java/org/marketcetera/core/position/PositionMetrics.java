@@ -9,7 +9,6 @@ import java.math.BigDecimal;
  * dependent on market data, they should never be null. Other values may be null if the necessary
  * market data is unavailable.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionMetrics.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

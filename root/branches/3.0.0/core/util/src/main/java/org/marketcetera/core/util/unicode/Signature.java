@@ -7,7 +7,6 @@ import org.apache.commons.lang.ArrayUtils;
  * byte stream, and identifies the charset necessary to interpret the
  * remaining bytes as text.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: Signature.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -7,7 +7,6 @@ import org.marketcetera.api.systemmodel.SystemObject;
 /**
  * Provides a test <code>SystemObject</code> implementation.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

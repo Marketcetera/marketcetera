@@ -13,7 +13,6 @@ import quickfix.field.BeginString;
 
 /**
  * An enum for all the supported FIX versions, with the default URL for the data dictionary file.
- * @author toli
  * @version $Id: FIXVersion.java 16063 2012-01-31 18:21:55Z colin $
  */
 

@@ -6,7 +6,6 @@ package org.marketcetera.core.util.exec;
  * captured contents of the interleaved standard output and error
  * streams.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: ExecResult.java 16063 2012-01-31 18:21:55Z colin $
  */

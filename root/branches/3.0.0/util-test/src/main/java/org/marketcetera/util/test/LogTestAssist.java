@@ -11,8 +11,6 @@ import static org.junit.Assert.*;
 /**
  * A log message test helper.
  *
- * @author tlerios@marketcetera.com
- * @author anshul@marketcetera.com
  * @since 2.0.0
  * @version $Id: LogTestAssist.java 16063 2012-01-31 18:21:55Z colin $
  */

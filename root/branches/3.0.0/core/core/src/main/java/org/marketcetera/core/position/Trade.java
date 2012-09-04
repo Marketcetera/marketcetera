@@ -11,7 +11,6 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * A trade that is used to compute position information.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: Trade.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

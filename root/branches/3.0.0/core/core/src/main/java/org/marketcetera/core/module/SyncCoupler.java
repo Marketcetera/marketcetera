@@ -7,7 +7,6 @@ package org.marketcetera.core.module;
  * to emit data is blocked until the receiving module's invocation
  * to receive data completes.
  *
- * @author anshul@marketcetera.com
  * @version $Id: SyncCoupler.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

@@ -12,7 +12,6 @@ import java.util.List;
  * A poor man's multimap, used only to reduce the complexity code that deals
  * with these otherwise painful structures.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public class IdentityMultimap<K,V> extends IdentityHashMap<K, List<V>> {
     public void addValue(K key, V value) {

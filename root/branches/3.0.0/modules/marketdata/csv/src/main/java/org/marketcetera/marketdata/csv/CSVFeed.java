@@ -36,8 +36,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * name in the specified directory. Market data is read
  * from the file or files until exhausted.
  * 
- * @author toli kuznets
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
  * @version $Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $
  */
@@ -284,7 +282,6 @@ public class CSVFeed
     /**
      * Corresponds to a single market data request submitted to {@link CSVFeed}.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: CSVFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */

@@ -5,7 +5,6 @@ import org.apache.cxf.endpoint.Server;
 /**
  * A service interface handle. It is used to terminate a service.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.5.0
  * @version $Id: ServiceInterface.java 82324 2012-04-09 20:56:08Z colin $
  */

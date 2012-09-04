@@ -9,7 +9,6 @@ import org.marketcetera.core.event.HasFIXMessage;
 /**
  * Interface that is implemented by types that wrap a FIX Message instance.
  *
- * @author anshul@marketcetera.com
  * @version $Id: FIXMessageSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

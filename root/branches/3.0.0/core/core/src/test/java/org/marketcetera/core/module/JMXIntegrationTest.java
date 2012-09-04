@@ -29,7 +29,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * Also tests string to object conversion done as a part
  * of various jmx invocations.
  *
- * @author anshul@marketcetera.com
  */
 public class JMXIntegrationTest extends ModuleTestBase {
     @BeforeClass

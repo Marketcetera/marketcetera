@@ -9,7 +9,6 @@ import java.io.File;
 /**
  * This class provides means to configure the logger for unit tests.
  *
- * @author anshul@marketcetera.com
  */
 public class LoggerConfiguration {
     /**

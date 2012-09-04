@@ -16,7 +16,6 @@ import org.marketcetera.webservices.systemmodel.WebServicesRole;
 /**
  * Provides web-services access to the group service.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

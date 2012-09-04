@@ -6,7 +6,6 @@ import org.apache.commons.lang.ObjectUtils;
  * Holder of meta-information about a message stored in a properties
  * file.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: PropertyMessageInfo.java 16063 2012-01-31 18:21:55Z colin $
  */

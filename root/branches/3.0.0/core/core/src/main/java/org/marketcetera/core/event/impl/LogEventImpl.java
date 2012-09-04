@@ -20,7 +20,6 @@ import org.marketcetera.core.util.log.*;
  * 
  * <p>Note that this object is <em>not</em> thread-safe.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: LogEventImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

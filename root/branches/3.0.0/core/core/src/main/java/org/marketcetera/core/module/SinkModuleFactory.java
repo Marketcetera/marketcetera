@@ -15,7 +15,6 @@ package org.marketcetera.core.module;
  * <tr><th>Module Type:</th><td>{@link SinkModule}</td></tr>
  * </table>
  *
- * @author anshul@marketcetera.com
  * @version $Id: SinkModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

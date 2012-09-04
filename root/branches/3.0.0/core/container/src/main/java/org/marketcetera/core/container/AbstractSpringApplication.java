@@ -22,7 +22,6 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * a subclass with a static main method. In that method, instantiate this object,
  * {@link #start start} it, and invoke {@link #waitForever()}. 
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractSpringApplication.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */

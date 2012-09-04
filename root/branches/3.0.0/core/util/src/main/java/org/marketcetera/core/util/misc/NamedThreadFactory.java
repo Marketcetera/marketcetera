@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * thread has been created by the delegated factory, this class simply
  * resets their name to the desired value.
  *
- * @author anshul@marketcetera.com
  * @version $Id: NamedThreadFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

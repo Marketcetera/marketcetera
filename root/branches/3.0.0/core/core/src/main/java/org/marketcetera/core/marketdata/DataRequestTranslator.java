@@ -5,7 +5,6 @@ import org.marketcetera.core.CoreException;
 /**
  * Translates between the specified external data type <code>T</code> and {@link MarketDataRequest} format.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: DataRequestTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

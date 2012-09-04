@@ -6,7 +6,6 @@ import org.apache.commons.lang.ObjectUtils;
 /**
  * Holder of meta-information about a generic message.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: MessageInfo.java 16063 2012-01-31 18:21:55Z colin $
  */

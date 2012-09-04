@@ -21,7 +21,6 @@ import static org.junit.Assert.*;
 /**
  * Tests various aspects of {@link org.marketcetera.core.module.StringToTypeConverter}
  *
- * @author anshul@marketcetera.com
  */
 public class StringToTypeConvertTest {
     @BeforeClass

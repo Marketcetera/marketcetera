@@ -30,7 +30,6 @@ import org.marketcetera.core.trade.StandardType;
  * the builder does no validation.  The object does its own validation when {@link #create()} is
  * called.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: TradeEventBuilder.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

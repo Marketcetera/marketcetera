@@ -14,7 +14,6 @@ import java.beans.ConstructorProperties;
  * It's not meant to be used when creating data flows. Only {@link DataRequest}
  * instances can be used to issue create data flow requests.
  *
- * @author anshul@marketcetera.com
  * @version $Id: StringDataRequest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

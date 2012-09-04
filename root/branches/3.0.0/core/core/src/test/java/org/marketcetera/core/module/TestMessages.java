@@ -6,7 +6,6 @@ import org.marketcetera.core.util.log.*;
 /**
  * Messages used by test code.
  *
- * @author anshul@marketcetera.com
  */
 public interface TestMessages {
     /**

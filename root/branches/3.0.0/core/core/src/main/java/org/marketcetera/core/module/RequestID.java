@@ -6,7 +6,6 @@ package org.marketcetera.core.module;
  * A handle that identifies a request. This handle can be used
  * to pause / cancel the request.
  *
- * @author anshul@marketcetera.com
  * @version $Id: RequestID.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

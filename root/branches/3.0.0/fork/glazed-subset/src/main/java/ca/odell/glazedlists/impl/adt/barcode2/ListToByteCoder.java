@@ -12,7 +12,6 @@ import java.util.List;
  * by using bytes as values rather than full-size objects. This exploits
  * a limitation that there's at most 8 possible values in the list of colors.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public class ListToByteCoder<C> {
     private final List<C> allColors;

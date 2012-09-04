@@ -6,7 +6,6 @@ import quickfix.UtcTimeStampField;
 
 /**
  * Implementation of a custom field 9884: DateTo
- * @author toli
  * @version $Id: DateTo.java 16063 2012-01-31 18:21:55Z colin $
  */
 

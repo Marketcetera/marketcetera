@@ -8,7 +8,6 @@ import org.marketcetera.core.ws.stateless.StatelessClientContext;
  * An authenticator which accepts a single pair of user name/password
  * credentials.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: FixedAuthenticator.java 82324 2012-04-09 20:56:08Z colin $
  */

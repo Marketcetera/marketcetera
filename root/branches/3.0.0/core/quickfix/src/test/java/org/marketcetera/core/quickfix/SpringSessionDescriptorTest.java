@@ -17,7 +17,6 @@ import quickfix.SessionSettings;
 import static org.junit.Assert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SpringSessionDescriptorTest.java 82323 2012-04-09 16:32:23Z colin $
  */

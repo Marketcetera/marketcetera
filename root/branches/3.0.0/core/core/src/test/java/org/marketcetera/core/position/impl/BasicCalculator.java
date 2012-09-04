@@ -15,7 +15,6 @@ import org.marketcetera.core.position.Trade;
  * Basic implementation of {@link PositionMetricsCalculator} that recomputes each value from scratch
  * every time.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: BasicCalculator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

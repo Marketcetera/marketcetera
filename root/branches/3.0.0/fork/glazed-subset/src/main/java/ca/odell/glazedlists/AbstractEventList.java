@@ -29,7 +29,6 @@ import ca.odell.glazedlists.util.concurrent.ReadWriteLock;
  * <p>Documentation Note: Javadoc tags have been copied from the {@link java.util.List} API
  * because the <code>javadoc</code> tool does not inherit external descriptions.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public abstract class AbstractEventList<E> implements EventList<E> {
 

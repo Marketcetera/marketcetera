@@ -17,7 +17,6 @@ import ca.odell.glazedlists.impl.matchers.*;
 /**
  * A factory for creating Matchers.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class Matchers {
 

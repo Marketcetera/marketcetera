@@ -8,7 +8,6 @@ import java.util.Date;
 /**
  * Instances of this class describe the current state of a data flow.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataFlowInfo.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

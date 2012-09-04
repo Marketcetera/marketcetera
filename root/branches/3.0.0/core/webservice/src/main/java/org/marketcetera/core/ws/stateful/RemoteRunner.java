@@ -10,7 +10,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
  * is implemented by overriding {@link
  * #run(ClientContext,SessionHolder)}.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: RemoteRunner.java 82324 2012-04-09 20:56:08Z colin $
  */

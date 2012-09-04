@@ -12,7 +12,6 @@ import java.io.PrintStream;
  * <code>thread_name-metrics*.csv</code>, where <i>thread_name</i> is the
  * name of the thread as supplied to {@link #getStream(String)} method.
  *
- * @author anshul@marketcetera.com
  * @version $Id: FileStreamFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

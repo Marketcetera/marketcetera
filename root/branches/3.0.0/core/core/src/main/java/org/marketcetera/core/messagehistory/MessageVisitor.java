@@ -4,7 +4,6 @@ import org.marketcetera.core.trade.ReportBase;
 
 /**
  * Visitor Patter - visit all the messages and perfrom an operation on them
- * @author toli
  * @version $Id: MessageVisitor.java 82326 2012-04-10 16:27:07Z colin $
  */
 

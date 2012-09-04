@@ -23,7 +23,6 @@ import org.marketcetera.core.util.except.I18NThrowable;
  * <p>Equality and hash code generation ignore the receiver's
  * throwable, its wrapper, and its class name.</p>
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: RemoteProperties.java 82324 2012-04-09 20:56:08Z colin $
  */

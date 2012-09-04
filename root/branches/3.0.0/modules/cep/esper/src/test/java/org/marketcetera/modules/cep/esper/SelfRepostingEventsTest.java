@@ -13,7 +13,6 @@ import org.marketcetera.core.trade.Factory;
 /**
  * Test having a receiver that reposts events back into Esper
  *
- * @author toli kuznets
  * @version $Id: SelfRepostingEventsTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 

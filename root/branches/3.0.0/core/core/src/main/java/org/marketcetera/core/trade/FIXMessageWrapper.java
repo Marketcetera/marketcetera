@@ -16,7 +16,6 @@ import quickfix.StringField;
 /**
  * Base class for all messages that wrap a FIX Message.
  *
- * @author anshul@marketcetera.com
  * @version $Id: FIXMessageWrapper.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

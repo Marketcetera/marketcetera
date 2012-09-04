@@ -11,7 +11,6 @@ import java.util.Properties;
  * A factory that is used to test data conversions
  * during JMX invocations.
  *
- * @author anshul@marketcetera.com
  */
 public class JMXTestModuleFactory extends ModuleFactory
         implements JMXTestFactoryMXBean {

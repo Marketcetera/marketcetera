@@ -16,7 +16,6 @@ import org.marketcetera.core.util.log.I18NMessageProvider;
 /**
  * Test messages for event tests.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: TestMessages.java 82331 2012-04-10 16:29:48Z colin $
  * @since 1.5.0
  */

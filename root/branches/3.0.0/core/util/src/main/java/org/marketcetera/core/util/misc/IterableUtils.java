@@ -5,7 +5,6 @@ import org.apache.commons.collections.CollectionUtils;
 /**
  * Utilities for iterables.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: IterableUtils.java 16063 2012-01-31 18:21:55Z colin $
  */

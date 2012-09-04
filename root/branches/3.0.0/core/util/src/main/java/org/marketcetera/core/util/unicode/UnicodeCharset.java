@@ -23,7 +23,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
  *
  * <p>UTF-32 encodings may not be supported on all platforms.</p>
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: UnicodeCharset.java 16063 2012-01-31 18:21:55Z colin $
  */

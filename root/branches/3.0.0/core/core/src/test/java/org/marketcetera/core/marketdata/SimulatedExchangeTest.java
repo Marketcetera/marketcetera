@@ -46,7 +46,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link org.marketcetera.core.marketdata.SimulatedExchange}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: SimulatedExchangeTest.java 82346 2012-05-03 15:14:44Z colin $
  * @since 1.5.0
  */
@@ -1905,7 +1904,6 @@ public class SimulatedExchangeTest
     /**
      * Subscribes to top-of-book and captures the state of the exchange top every time it changes.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: SimulatedExchangeTest.java 82346 2012-05-03 15:14:44Z colin $
      * @since 1.5.0
      */
@@ -1968,7 +1966,6 @@ public class SimulatedExchangeTest
    /**
     * Captures any events from a <code>SimulatedExchange</code>.
     *
-    * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
     * @version $Id: SimulatedExchangeTest.java 82346 2012-05-03 15:14:44Z colin $
     * @since 1.5.0
     */
@@ -2000,7 +1997,6 @@ public class SimulatedExchangeTest
     * Describes the expected state of a given <code>Instrument</code> in an unspecified exchange
     * at an unspecified point in time.
     *
-    * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
     * @version $Id: SimulatedExchangeTest.java 82346 2012-05-03 15:14:44Z colin $
     * @since 2.0.0
     */
@@ -2037,7 +2033,6 @@ public class SimulatedExchangeTest
    /**
     * Organizes actual results from an exchange by <code>Instrument</code>.
     *
-    * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
     * @version $Id: SimulatedExchangeTest.java 82346 2012-05-03 15:14:44Z colin $
     * @since 2.0.0
     */
@@ -2153,7 +2148,6 @@ public class SimulatedExchangeTest
        /**
         * Indicates the type of request made to the exchange.
         *
-        * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
         * @version $Id: SimulatedExchangeTest.java 82346 2012-05-03 15:14:44Z colin $
         * @since 2.0.0
         */

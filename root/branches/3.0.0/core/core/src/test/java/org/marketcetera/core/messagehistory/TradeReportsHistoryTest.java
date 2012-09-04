@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 /**
  * Test {@link org.marketcetera.core.messagehistory.TradeReportsHistory}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: TradeReportsHistoryTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

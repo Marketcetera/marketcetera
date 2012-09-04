@@ -5,7 +5,6 @@ package org.marketcetera.core.module;
  * The type of coupling to use between two modules
  * within a data flow.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataCoupling.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

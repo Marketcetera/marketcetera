@@ -16,7 +16,6 @@ package ca.odell.glazedlists.matchers;
  * can create immutable {@link Matcher} Objects each time the matching constraints
  * change.
  *
- * @author <a href="mailto:rob@starlight-systems.com">Rob Eden</a>
  * @see ca.odell.glazedlists.FilterList
  * @see MatcherEditor
  */

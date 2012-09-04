@@ -74,7 +74,6 @@ import java.util.Set;
  * operation that contains a reference to the module in question.</li>
  * </ul> 
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleState.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

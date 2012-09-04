@@ -12,7 +12,6 @@ import quickfix.*;
  * Analyzes a QuickFIX/J field, producing a human-readable
  * representation of its contents.
  *
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: AnalyzedField.java 82323 2012-04-09 16:32:23Z colin $
  */

@@ -3,7 +3,6 @@ package org.marketcetera.core.marketdata;
 /**
  * Test implementation for {@link org.marketcetera.core.marketdata.AbstractMarketDataFeedCredentials}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MockMarketDataFeedCredentials.java 82329 2012-04-10 16:28:13Z colin $
  * @since 0.5.0
  */

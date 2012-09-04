@@ -20,8 +20,6 @@ import org.marketcetera.core.event.EventTranslator;
  * absolutely be stateless.  A single instance of the subclass will be used to translate
  * all lines for all CSV files in the same session, with no concurrency guarantees.
  * 
- * @author toli kuznets
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
  * @version $Id: CSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
  */

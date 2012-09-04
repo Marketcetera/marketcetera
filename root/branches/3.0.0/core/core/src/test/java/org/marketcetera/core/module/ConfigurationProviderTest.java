@@ -18,7 +18,6 @@ import static org.junit.Assert.*;
  * Tests integration of module configuration provider
  * with module manager.
  *
- * @author anshul@marketcetera.com
  */
 public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
     /**

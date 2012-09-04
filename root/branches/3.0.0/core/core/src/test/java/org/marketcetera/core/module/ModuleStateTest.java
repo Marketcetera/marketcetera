@@ -14,7 +14,6 @@ import static org.marketcetera.core.module.ModuleState.*;
 /**
  * Tests various aspects of {@link org.marketcetera.core.module.ModuleState}
  *
- * @author anshul@marketcetera.com
  */
 public class ModuleStateTest extends ModuleTestBase {
 

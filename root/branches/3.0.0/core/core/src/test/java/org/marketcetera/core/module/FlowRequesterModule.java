@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * A processor module that is capable of creating / canceling data flows.
  *
- * @author anshul@marketcetera.com
  */
 public class FlowRequesterModule extends ProcessorModule
         implements DataFlowRequester {

@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
  * {@link DynamicInstrumentHandler} instance.
  * @param <S> The type of function handler selected by this instance.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DynamicInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

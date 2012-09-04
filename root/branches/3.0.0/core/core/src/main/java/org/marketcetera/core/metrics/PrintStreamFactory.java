@@ -8,7 +8,6 @@ import java.io.PrintStream;
  * are summarized when {@link ThreadedMetric#summarizeResults(PrintStreamFactory)} 
  * is invoked.
  *
- * @author anshul@marketcetera.com
  * @version $Id: PrintStreamFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

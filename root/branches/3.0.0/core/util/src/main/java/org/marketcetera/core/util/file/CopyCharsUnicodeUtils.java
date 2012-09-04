@@ -17,7 +17,6 @@ import org.marketcetera.core.util.unicode.UnicodeInputStreamReader;
  * participating media include files, arrays, readers/writers, or some
  * combinations thereof.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: CopyCharsUnicodeUtils.java 16063 2012-01-31 18:21:55Z colin $
  */

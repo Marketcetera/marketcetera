@@ -27,7 +27,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
  * <a href="http://commons.apache.org/beanutils/apidocs/org/apache/commons/beanutils/ConvertUtilsBean.html">
  * ConvertUtilsBean</a>
  *
- * @author anshul@marketcetera.com
  * @version $Id: StringToTypeConverter.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

@@ -20,8 +20,8 @@
     <dependencies>
         <!-- compile: local -->
         <dependency>
-            <groupId>org.marketcetera.dao</groupId>
-            <artifactId>openjpa-dao</artifactId>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>dao</artifactId>
             <version>3.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>

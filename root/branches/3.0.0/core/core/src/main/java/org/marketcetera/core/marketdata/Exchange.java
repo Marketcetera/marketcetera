@@ -13,7 +13,6 @@ import org.marketcetera.core.event.TradeEvent;
 /**
  * A market data provider.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Exchange.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
@@ -147,7 +146,6 @@ public interface Exchange<T>
     /**
      * The types of data that an {@link Exchange} can produce.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: Exchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */

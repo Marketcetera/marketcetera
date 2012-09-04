@@ -8,7 +8,6 @@ import ca.odell.glazedlists.EventList;
  * It can provide the data in a flat tabular form or a hierarchical form that groups positions by
  * key elements.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionEngine.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

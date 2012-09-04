@@ -16,7 +16,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 /**
  * Tests data flows
  *
- * @author anshul@marketcetera.com
  */
 public class DataFlowTest extends ModuleTestBase {
     @BeforeClass

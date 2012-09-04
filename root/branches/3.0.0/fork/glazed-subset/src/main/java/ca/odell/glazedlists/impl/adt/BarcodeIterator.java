@@ -10,7 +10,6 @@ import java.util.NoSuchElementException;
  * A BarcodeIterator is a specialized {@link java.util.Iterator} implementation for moving
  * over a Barcode efficiently.
  *
- * @author <a href="mailto:kevin@swank.ca">Kevin Maltby</a>
  */
 public class BarcodeIterator implements Iterator {
 

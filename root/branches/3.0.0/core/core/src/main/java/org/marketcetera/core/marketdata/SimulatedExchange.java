@@ -60,7 +60,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * continue to simulate behavior in a modified Monte Carlo method.  The exchange will continue simulating
  * market data until stopped. 
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
@@ -1245,7 +1244,6 @@ public class SimulatedExchange
     /**
      * The status of the exchange.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
@@ -1282,7 +1280,6 @@ public class SimulatedExchange
      * Compares <code>Instrument</code> values in the context of their use
      * as underlying instruments and option chain instruments.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.0.0
      */
@@ -1325,7 +1322,6 @@ public class SimulatedExchange
     /**
      * Holds information specific to a particular exchange for a given <code>Instrument</code>.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.0.0
      */
@@ -1524,7 +1520,6 @@ public class SimulatedExchange
     /**
      * Holds information common to all exchanges for a given <code>Instrument</code>.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.0.0
      */
@@ -1685,7 +1680,6 @@ public class SimulatedExchange
      * <code>ISubscriber</code> that filters publications to an enclosed <code>ISubscriber</code>
      * based on the original type of market data request and instrument.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */
@@ -2046,7 +2040,6 @@ public class SimulatedExchange
     /**
      * Represents the top of a given book at a particular point in time.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.0.0
      */
@@ -2172,7 +2165,6 @@ public class SimulatedExchange
      * given {@link ISubscriber} until the exchange is stopped or the request is canceled via
      * {@link Token#cancel()}.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */

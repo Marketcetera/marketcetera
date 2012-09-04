@@ -12,7 +12,6 @@ import org.marketcetera.api.dao.UserDao;
 /**
  * Provides user manager services integrated with Shiro security.
  * 
- * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
  * @version $Id$
  * @date 8/21/12 1:32 AM
  */

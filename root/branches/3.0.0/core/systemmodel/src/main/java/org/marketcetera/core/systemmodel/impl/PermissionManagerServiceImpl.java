@@ -13,7 +13,6 @@ import org.marketcetera.api.security.PermissionManagerService;
 /**
  * Provides Permission manager services.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

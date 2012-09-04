@@ -11,7 +11,6 @@ import org.marketcetera.core.ws.stateful.SessionManager;
  * A sample server. It exposes a single service, which is configured
  * via command-line arguments.
  *
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SampleServer.java 16063 2012-01-31 18:21:55Z colin $
  */

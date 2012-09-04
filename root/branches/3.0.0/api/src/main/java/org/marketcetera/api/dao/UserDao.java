@@ -9,7 +9,6 @@ import org.marketcetera.api.security.User;
 /**
  * Provides data access for {@link User} objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: UserDao.java 82354 2012-05-11 17:46:11Z colin $
  * @since $Release$
  */

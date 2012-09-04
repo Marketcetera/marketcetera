@@ -26,7 +26,6 @@ import org.marketcetera.core.systemmodel.SystemmodelTestBase;
 /**
  * Tests {@link UserManagerServiceImpl}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

@@ -6,7 +6,6 @@ import javax.management.MXBean;
 /**
  * MXBean interface to the factory for testing JMX integration.
  *
- * @author anshul@marketcetera.com
  */
 @MXBean(true)
 @DisplayName("A factory for testing JMX integration")

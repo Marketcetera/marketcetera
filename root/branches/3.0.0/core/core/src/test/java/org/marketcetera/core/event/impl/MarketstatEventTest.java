@@ -30,7 +30,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link org.marketcetera.core.event.impl.MarketstatEventBuilder}, {@link org.marketcetera.core.event.impl.EquityMarketstatEventImpl}, and {@link org.marketcetera.core.event.impl.OptionMarketstatEventImpl}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketstatEventTest.java 82331 2012-04-10 16:29:48Z colin $
  * @since 2.0.0
  */

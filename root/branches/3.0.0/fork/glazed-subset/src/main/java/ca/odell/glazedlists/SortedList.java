@@ -57,7 +57,6 @@ import ca.odell.glazedlists.impl.sort.ComparableComparator;
  * </td></tr>
  * </table>
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class SortedList<E> extends TransformedList<E,E> {
 

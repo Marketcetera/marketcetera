@@ -10,7 +10,6 @@ import org.marketcetera.core.util.except.ExceptUtils;
 /**
  * Utilities for reflection.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: ReflectUtils.java 16063 2012-01-31 18:21:55Z colin $
  */

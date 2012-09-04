@@ -9,7 +9,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
 /**
  * An exception thrown during execution of a {@link Strategy}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: StrategyException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

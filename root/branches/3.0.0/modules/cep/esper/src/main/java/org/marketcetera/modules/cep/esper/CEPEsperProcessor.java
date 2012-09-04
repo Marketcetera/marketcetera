@@ -57,8 +57,6 @@ import java.util.*;
  * <tr><th>Factory</th><td>{@link CEPEsperFactory}</td></tr>
  * </table>
  *
- * @author anshul@marketcetera.com
- * @author toli@marketcetera.com
  * @since 1.0.0
  * @version $Id: CEPEsperProcessor.java 16063 2012-01-31 18:21:55Z colin $
  */

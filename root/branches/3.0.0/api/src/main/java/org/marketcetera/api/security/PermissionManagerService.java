@@ -9,7 +9,6 @@ import org.marketcetera.api.dao.Permission;
 /**
  * Provides access to and management of <code>Permission</code> objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

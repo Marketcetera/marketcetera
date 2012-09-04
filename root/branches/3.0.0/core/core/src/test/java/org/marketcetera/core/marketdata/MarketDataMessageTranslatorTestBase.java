@@ -23,7 +23,6 @@ import static org.marketcetera.core.marketdata.Content.*;
 /**
  * Base class for market data message translator tests.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataMessageTranslatorTestBase.java 82329 2012-04-10 16:28:13Z colin $
  * @since 1.5.0
  */

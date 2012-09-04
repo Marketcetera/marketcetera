@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author Graham Miller
  * @version $Id: PropertiesExchangeMap.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class PropertiesExchangeMap extends ExchangeMap {

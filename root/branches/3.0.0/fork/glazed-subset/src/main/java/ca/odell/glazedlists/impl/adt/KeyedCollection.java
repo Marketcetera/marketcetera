@@ -8,8 +8,6 @@ import java.util.TreeSet;
 /**
  * A Collection that stores keys in a map, with positions as the values.
  *
- * @author jplemieux
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class KeyedCollection<P, V> {
 

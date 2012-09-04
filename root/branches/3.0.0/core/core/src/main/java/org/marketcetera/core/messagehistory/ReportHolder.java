@@ -13,8 +13,6 @@ import quickfix.Message;
 /**
  * Represents a Photon trading report.
  *
- * @author anshul@marketcetera.com
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: ReportHolder.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */

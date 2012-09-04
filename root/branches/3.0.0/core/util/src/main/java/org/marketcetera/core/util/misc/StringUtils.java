@@ -3,7 +3,6 @@ package org.marketcetera.core.util.misc;
 /**
  * Utilities for string management.
  * 
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: StringUtils.java 16063 2012-01-31 18:21:55Z colin $
  */

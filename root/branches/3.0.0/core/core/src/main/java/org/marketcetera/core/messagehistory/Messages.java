@@ -9,7 +9,6 @@ import org.marketcetera.core.util.log.I18NMessageProvider;
 /**
  * The internationalization constants used by this package.
  *
- * @author klim@marketcetera.com
  * @since 0.6.0
  * @version $Id: Messages.java 82326 2012-04-10 16:27:07Z colin $
  */

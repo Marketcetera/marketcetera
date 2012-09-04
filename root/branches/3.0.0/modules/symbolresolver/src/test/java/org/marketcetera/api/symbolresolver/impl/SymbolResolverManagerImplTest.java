@@ -23,8 +23,7 @@ import org.mockito.Mock;
 
 /**
  * Test the symbol resolver manager functionality.
- * @author <a href="mailto:valliappanr@codehaus.org">Valliappan Ramanathan</a>
- * 
+ *
  * @version $Id$
  * @since $Release$
  */

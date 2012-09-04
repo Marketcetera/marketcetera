@@ -12,7 +12,6 @@ import org.marketcetera.api.systemmodel.SystemObject;
 /**
  * Provides a test data store of a given object type.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

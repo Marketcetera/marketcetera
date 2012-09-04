@@ -11,7 +11,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
  * information). Certain argument values result in exceptions/errors
  * being thrown.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SampleService.java 16063 2012-01-31 18:21:55Z colin $
  */

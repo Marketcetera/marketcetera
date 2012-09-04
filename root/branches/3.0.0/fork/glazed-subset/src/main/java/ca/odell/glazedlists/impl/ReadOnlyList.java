@@ -32,7 +32,6 @@ import ca.odell.glazedlists.event.ListEvent;
  *
  * @see ca.odell.glazedlists.TransformedList
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class ReadOnlyList<E> extends TransformedList<E, E> {
 

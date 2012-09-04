@@ -43,8 +43,6 @@ import ca.odell.glazedlists.event.ListEventListener;
  * @see java.lang.ref.WeakReference
  * @see <a href="https://glazedlists.dev.java.net/issues/show_bug.cgi?id=21">Bug 21</a>
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
- * @author James Lemieux
  */
 public final class WeakReferenceProxy<E> implements ListEventListener<E> {
 

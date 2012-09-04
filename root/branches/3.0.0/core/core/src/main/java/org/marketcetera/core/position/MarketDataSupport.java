@@ -15,7 +15,6 @@ import org.marketcetera.core.trade.Option;
  * changes for an instrument. For options, listeners will also be notified of
  * changes to the multiplier.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: MarketDataSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

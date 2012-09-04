@@ -16,7 +16,6 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
 /**
  * A module that emits data.
  *
- * @author anshul@marketcetera.com
  */
 public class EmitterModule extends ModuleBase implements DataEmitter {
     protected EmitterModule() {

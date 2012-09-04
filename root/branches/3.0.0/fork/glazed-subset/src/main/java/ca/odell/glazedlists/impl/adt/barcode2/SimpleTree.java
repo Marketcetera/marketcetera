@@ -90,7 +90,6 @@ import ca.odell.glazedlists.impl.sort.ComparableComparator;
  * due to having to sort elements. As well, we might be able to keep a moved
  * value in the tree, to support moved elements in <code>ListEvent</code>s.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public class SimpleTree<  T0>   {
 

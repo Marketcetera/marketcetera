@@ -434,6 +434,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
                 <executions>
                     <execution>
                         <id>filter</id>
@@ -484,7 +485,7 @@
     <modules>
         <module>api</module>
         <module>core</module>
-        <module>dao</module>
+        <module>datasource</module>
         <module>execution-container</module>
         <module>fork</module>
         <module>itests</module>

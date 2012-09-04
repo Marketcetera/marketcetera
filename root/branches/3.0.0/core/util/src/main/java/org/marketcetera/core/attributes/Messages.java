@@ -5,7 +5,6 @@ import org.marketcetera.core.util.log.I18NMessage0P;
 import org.marketcetera.core.util.log.I18NMessageProvider;
 
 /**
- * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
  * @version $Id$
  * @date 6/28/12 4:57 PM
  */

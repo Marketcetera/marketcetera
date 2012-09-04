@@ -18,7 +18,6 @@ import quickfix.field.*;
 /**
  * Collection of utilities to create work with FIX messages
  *
- * @author gmiller
  *         $Id: FIXMessageUtil.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FIXMessageUtil {

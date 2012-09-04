@@ -34,8 +34,6 @@ import java.util.Map;
  * Glazed Lists project. The original, unmodified version of this class can be
  * found <a href="http://code.google.com/p/google-guice/source/browse/trunk/src/com/google/inject/internal/MoreTypes.java">here</a>.
  *
- * @author jessewilson@google.com (Jesse Wilson)
- * @author James Lemieux
  */
 class MoreTypes {
     private MoreTypes() {

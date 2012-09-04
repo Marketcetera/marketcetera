@@ -16,7 +16,6 @@ import quickfix.field.Symbol;
  * {@link InstrumentFromMessage}.{@link #SELECTOR}.{@link DynamicInstrumentFunctionSelector#forValue(Object) forValue}(message).{@link #extract(quickfix.Message) extract}(message);
  * </pre>
  *
- * @author anshul@marketcetera.com
  * @version $Id: InstrumentFromMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

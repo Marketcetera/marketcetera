@@ -5,7 +5,6 @@ package org.marketcetera.api.systemmodel;
 /**
  * Represents an object with a name.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: NamedObject.java 82316 2012-03-21 21:13:27Z colin $
  * @since $Release$
  */

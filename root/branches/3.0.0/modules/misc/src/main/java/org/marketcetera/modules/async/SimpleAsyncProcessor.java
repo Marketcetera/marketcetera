@@ -86,7 +86,6 @@ import javax.management.*;
  * <tr><th>Factory</th><td>{@link SimpleAsyncProcessorFactory}</td></tr>
  * </table>
  *
- * @author anshul@marketcetera.com
  * @version $Id: SimpleAsyncProcessor.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

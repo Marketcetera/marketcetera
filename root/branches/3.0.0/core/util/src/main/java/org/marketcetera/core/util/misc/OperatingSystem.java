@@ -7,7 +7,6 @@ import org.apache.commons.lang.SystemUtils;
  * <code>os.name</code> system property for each operating system is
  * associated with its corresponding enumerated value.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: OperatingSystem.java 16063 2012-01-31 18:21:55Z colin $
  */

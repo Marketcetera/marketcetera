@@ -8,7 +8,6 @@ import org.marketcetera.api.security.Session;
 import org.marketcetera.api.security.Subject;
 
 /**
- * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
  * @version $Id$
  * @date 8/19/12 7:03 AM
  */

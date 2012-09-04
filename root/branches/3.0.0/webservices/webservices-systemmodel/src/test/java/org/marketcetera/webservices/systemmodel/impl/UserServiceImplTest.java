@@ -30,7 +30,6 @@ import org.mockito.stubbing.Answer;
 /**
  * Tests {@link UserServiceImpl}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

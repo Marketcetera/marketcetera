@@ -22,7 +22,6 @@ import java.util.ListResourceBundle;
 /**
  * ListResourceBundle implementation used to test ClassCastException in
  * <code>ResourceBundleMessageProvider</code>
- * @author Mattias Jiderhamn
  */
 public class MyListResourceBundle extends ListResourceBundle {
     public Object[][] getContents() {

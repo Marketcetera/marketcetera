@@ -12,8 +12,6 @@ import org.marketcetera.core.trade.ReportBase;
 /**
  * Matches Fill Reports that have more than zero shares traded.
  * 
- * @author anshul@marketcetera.com
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: ReportFillMatcher.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */

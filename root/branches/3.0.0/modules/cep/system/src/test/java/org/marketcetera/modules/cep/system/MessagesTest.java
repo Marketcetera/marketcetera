@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Verifies that all the messages are correctly specified.
  *
- * @author anshul@marketcetera.com
  */
 public class MessagesTest {
     @Test

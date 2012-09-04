@@ -4,7 +4,6 @@ package org.marketcetera.core;
  * Implementation of IDFactory that provides identifiers unique to this run of the
  * Java VM.  They are simply the string representation of a counter that is incremented
  * every time getNext is called.
- * @author gmiller
  * $Id: InMemoryIDFactory.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class InMemoryIDFactory implements IDFactory {

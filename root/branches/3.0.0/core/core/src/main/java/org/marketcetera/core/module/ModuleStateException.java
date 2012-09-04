@@ -9,7 +9,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * is not in the right state to be able to carry out that
  * operation. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleStateException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

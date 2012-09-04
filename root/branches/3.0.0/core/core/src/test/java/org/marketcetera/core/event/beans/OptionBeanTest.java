@@ -27,7 +27,6 @@ import static org.junit.Assert.*;
  * <p>Note that this class intentionally does not extend {@link AbstractEventBeanTestBase}
  * because {@link org.marketcetera.core.event.beans.OptionBean} does not extend {@link org.marketcetera.core.event.beans.EventBean}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OptionBeanTest.java 82331 2012-04-10 16:29:48Z colin $
  * @since 2.0.0
  */

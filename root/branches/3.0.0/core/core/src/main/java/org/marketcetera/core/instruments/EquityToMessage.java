@@ -10,7 +10,6 @@ import quickfix.field.Symbol;
 /**
  * Adds the appropriate fields for an equity instrument to a FIX Message.
  *
- * @author anshul@marketcetera.com
  * @version $Id: EquityToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

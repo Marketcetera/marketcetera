@@ -21,7 +21,6 @@ import java.util.ResourceBundle;
 
 /**
  * This class holds utility methods useful when working with i18n.
- * @author Mattias Jiderhamn
  */
 public class I18nUtils {
 

@@ -25,7 +25,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * export that interface as the management interface for the module after
  * it has been initialized.
  *
- * @author anshul@marketcetera.com
  * @version $Id: Module.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

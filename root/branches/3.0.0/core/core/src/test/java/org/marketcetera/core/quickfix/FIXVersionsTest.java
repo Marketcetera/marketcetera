@@ -16,7 +16,6 @@ import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
 
 /**
- * @author toli
  * @version $Id: FIXVersionsTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 

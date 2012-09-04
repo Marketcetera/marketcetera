@@ -8,7 +8,6 @@ import org.marketcetera.core.trade.Future;
 /**
  * A comparator for {@link org.marketcetera.core.trade.Future} instruments.
  *
- * @author colin@marketcetera.com
  * @version $Id: FuturePositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */

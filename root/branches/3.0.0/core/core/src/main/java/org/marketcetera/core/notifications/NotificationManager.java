@@ -16,7 +16,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  *     NotificationManager.getNotificationManager().subscribe(ISubscriber);
  * </pre>
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.8.0
  */
@@ -87,7 +86,6 @@ public class NotificationManager
      * <p>All notifications are logged at <code>INFO</code> level to
      * <code>org.marketcetera.notifications.log</code>.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: NotificationManager.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.8.0
      */

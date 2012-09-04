@@ -7,7 +7,6 @@ package ca.odell.glazedlists.impl.adt;
  * A BarcodeNode models a node in an Barcode.  This class
  * does the bulk of the heavy lifting for Barcode.
  *
- * @author <a href="mailto:kevin@swank.ca">Kevin Maltby</a>
  *
  */
 final class BarcodeNode {

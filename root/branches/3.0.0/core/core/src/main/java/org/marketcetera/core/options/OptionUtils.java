@@ -13,8 +13,6 @@ import org.marketcetera.core.trade.OptionType;
 /**
  * Provides various option related utilities. 
  *
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OptionUtils.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

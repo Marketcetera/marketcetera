@@ -19,7 +19,6 @@ import org.marketcetera.core.marketdata.AbstractMarketDataModule;
  * <tr><th colspan="2">For all other aspects see {@link AbstractMarketDataModule parent}</th></tr>
  * </table>
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketceteraFeedModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

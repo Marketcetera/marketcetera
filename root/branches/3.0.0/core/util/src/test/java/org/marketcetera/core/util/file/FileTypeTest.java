@@ -13,7 +13,6 @@ import static org.junit.Assume.*;
 import static org.marketcetera.core.util.file.FileType.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: FileTypeTest.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -30,7 +30,6 @@ import ca.odell.glazedlists.impl.adt.IdentityMultimap;
  * by queueing events and not necessarily firing them during the {@link #fireEvent}
  * method.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 final class SequenceDependenciesEventPublisher implements ListEventPublisher, Serializable {
 

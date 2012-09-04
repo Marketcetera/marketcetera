@@ -19,7 +19,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * <p>Any changes made using the setters in this interface require the implementing module to be
  * restarted before the changes take effect.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: StrategyMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

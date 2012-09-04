@@ -8,7 +8,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /**
  * Indicates an error occurred creating a {@link MarketDataRequest}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataRequestException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

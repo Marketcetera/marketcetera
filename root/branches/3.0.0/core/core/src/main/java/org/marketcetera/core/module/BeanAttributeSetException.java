@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * Thrown when errors are encountered when
  * setting attributes on a provider or module MBean.
  *
- * @author anshul@marketcetera.com
  * @version $Id: BeanAttributeSetException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

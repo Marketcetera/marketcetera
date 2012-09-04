@@ -10,7 +10,6 @@ import org.marketcetera.core.module.*;
 /**
  * Tests the {@link CEPEsperProcessor} module.
  *
- * @author anshul@marketcetera.com
  */
 public class ParameterVerificationTest extends ModuleTestBase {
     private static ModuleURN TEST_URN = new ModuleURN(CEPEsperFactory.PROVIDER_URN, "toli");

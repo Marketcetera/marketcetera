@@ -8,8 +8,6 @@ import org.marketcetera.core.trade.OrderID;
 /**
  * Compares Report holders based on their OrderID values.
  *
- * @author anshul@marketcetera.com
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: ReportGroupIDComparator.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */

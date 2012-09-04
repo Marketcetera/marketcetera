@@ -5,7 +5,6 @@ import ca.odell.glazedlists.matchers.Matcher;
 /**
  * Matches only items that are one of the given class types.
  *
- * @author James Lemieux
  */
 public class TypeMatcher<E> implements Matcher<E> {
 

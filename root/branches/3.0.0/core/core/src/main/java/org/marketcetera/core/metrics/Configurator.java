@@ -26,7 +26,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * Note that these property values are only read once. These values are
  * not expected to change after they have been initialized.
  *
- * @author anshul@marketcetera.com
  * @version $Id: Configurator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

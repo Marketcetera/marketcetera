@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
  * An implementation of the {@link ca.odell.glazedlists.impl.reflect.ReturnTypeResolver} interface that is
  * appropriate for JDK 1.4 (before generics existed).
  *
- * @author James Lemieux
  */
 final class J2SE14ReturnTypeResolver implements ReturnTypeResolver {
     public Class<?> getReturnType(Class<?> clazz, Method method) {

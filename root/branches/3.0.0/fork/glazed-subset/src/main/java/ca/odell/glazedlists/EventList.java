@@ -54,7 +54,6 @@ import ca.odell.glazedlists.util.concurrent.ReadWriteLock;
  * you {@link #add(int,Object) add()} on a {@link ca.odell.glazedlists.SortedList}, it will ignore the specified
  * index so that the element will be inserted in sorted order.
  * *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public interface EventList<E> extends List<E> {
 

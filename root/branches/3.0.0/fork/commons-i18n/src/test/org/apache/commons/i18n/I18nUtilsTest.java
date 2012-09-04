@@ -21,7 +21,6 @@ import junit.framework.TestCase;
 import java.util.Locale;
 
 /**
- * @author Mattias Jiderhamn
  */
 public class I18nUtilsTest extends TestCase {
     public void testGetParentLocale() {

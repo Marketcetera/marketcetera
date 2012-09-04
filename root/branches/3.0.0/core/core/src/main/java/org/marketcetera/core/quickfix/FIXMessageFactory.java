@@ -19,7 +19,6 @@ import quickfix.field.*;
  * Uses an instance of the {@link FIXMessageAugmentor} to add version-specific
  * fields to each newly created message.
  *
- * @author toli
  * @version $Id: FIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FIXMessageFactory {

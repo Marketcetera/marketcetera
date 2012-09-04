@@ -6,7 +6,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /**
  * Throws when the {@link FIXDataDictionary} is not found for
  * the specified version of FIX Protocol
- * @author Toli Kuznets
  * @version $Id: FIXFieldConverterNotAvailable.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FIXFieldConverterNotAvailable extends CoreException {

@@ -20,7 +20,6 @@ import org.marketcetera.core.module.ModuleURN;
  * </table>
  *
  * @see CSVEmitter
- * @author anshul@marketcetera.com
  */
 public final class CSVEmitterFactory extends ModuleFactory {
     /**

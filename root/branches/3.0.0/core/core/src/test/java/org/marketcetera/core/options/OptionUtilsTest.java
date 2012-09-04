@@ -18,7 +18,6 @@ import static org.marketcetera.core.trade.OptionType.*;
 /**
  * Tests {@link org.marketcetera.core.options.OptionUtils}.
  *
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: OptionUtilsTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

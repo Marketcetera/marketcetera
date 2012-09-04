@@ -66,7 +66,6 @@ import org.springframework.stereotype.Component;
  *      are being carried out.</li>
  * </ol>
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleManager.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

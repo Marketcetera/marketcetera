@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 /**
  * Severity level of {@link LogEvent}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: LogEventLevel.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

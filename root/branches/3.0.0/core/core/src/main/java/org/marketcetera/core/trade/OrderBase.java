@@ -9,7 +9,6 @@ import java.util.Map;
  * be sent to any broker. The system will translate this order to the 
  * appropriate messages / protocol used by the broker. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: OrderBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

@@ -15,7 +15,6 @@ import static org.junit.Assert.*;
 /**
  * Tests module factory loading, refreshes and errors.
  *
- * @author anshul@marketcetera.com
  */
 public class ProviderLoadTest extends ModuleTestBase {
     @After

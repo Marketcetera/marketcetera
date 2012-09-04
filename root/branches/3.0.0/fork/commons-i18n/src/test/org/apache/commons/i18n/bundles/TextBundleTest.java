@@ -23,7 +23,6 @@ import org.apache.commons.i18n.MessageNotFoundException;
 import java.util.Locale;
 
 /**
- * @author Mattias Jiderhamn
  */
 public class TextBundleTest extends MockProviderTestBase {
     public void testWithoutArguments() {

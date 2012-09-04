@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
  * return type of a given {@link java.lang.reflect.Method} depending on whether the user is
  * running Glazed Lists under a 1.4 or 1.5+ JRE.
  *
- * @author James Lemieux
  */
 public interface ReturnTypeResolver {
 

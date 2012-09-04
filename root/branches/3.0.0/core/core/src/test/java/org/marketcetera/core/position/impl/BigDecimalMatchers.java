@@ -11,7 +11,6 @@ import org.hamcrest.Matcher;
 /**
  * Utility matchers for BigDecimals.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: BigDecimalMatchers.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

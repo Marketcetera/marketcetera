@@ -14,7 +14,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage3P;
  * to ensure that the concurrent modifications to the instance's state
  * do not corrupt it.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleInstanceTracker.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

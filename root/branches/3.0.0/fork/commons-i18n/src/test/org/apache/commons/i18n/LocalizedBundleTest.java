@@ -20,7 +20,6 @@ package org.apache.commons.i18n;
 import java.util.Locale;
 
 /**
- * @author Mattias Jiderhamn
  */
 public class LocalizedBundleTest extends MockProviderTestBase {
     public void testConstructors() {

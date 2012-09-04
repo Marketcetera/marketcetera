@@ -12,7 +12,6 @@ import static org.marketcetera.core.trade.PositionEffect.*;
 /**
  * Tests {@link org.marketcetera.core.trade.PositionEffect}
  *
- * @author anshul@marketcetera.com
  * @version $Id: PositionEffectTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

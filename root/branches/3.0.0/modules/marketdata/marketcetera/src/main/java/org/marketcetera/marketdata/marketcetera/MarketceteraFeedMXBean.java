@@ -10,7 +10,6 @@ import org.marketcetera.core.module.DisplayName;
 /**
  * Defines the set of attributes and operations available from the {@link MarketceteraFeed}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketceteraFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

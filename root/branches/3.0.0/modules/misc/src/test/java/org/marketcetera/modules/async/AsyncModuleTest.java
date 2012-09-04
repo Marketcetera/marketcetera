@@ -28,7 +28,6 @@ import org.marketcetera.core.module.*;
 /**
  * Tests the {@link SimpleAsyncProcessor} module.
  *
- * @author anshul@marketcetera.com
  * @version $Id: AsyncModuleTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

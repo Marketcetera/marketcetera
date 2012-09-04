@@ -9,7 +9,6 @@ import org.marketcetera.core.util.log.I18NMessageProvider;
 /**
  * Internationalized messages for this package. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

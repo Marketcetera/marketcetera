@@ -6,7 +6,6 @@ import org.marketcetera.core.ws.tags.SessionId;
 /**
  * A session (data object) factory.
  *
- * @author tlerios@marketcetera.com
  * @since 1.5.0
  * @version $Id: SessionFactory.java 82324 2012-04-09 20:56:08Z colin $
  */

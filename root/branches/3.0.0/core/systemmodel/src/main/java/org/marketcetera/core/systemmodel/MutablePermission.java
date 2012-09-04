@@ -7,7 +7,6 @@ import org.marketcetera.api.dao.Permission;
 /**
  * Provides a mutable view of an <code>Permission</code> object.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

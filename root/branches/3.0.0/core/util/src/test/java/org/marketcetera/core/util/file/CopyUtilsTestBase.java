@@ -8,7 +8,6 @@ import java.io.Writer;
 import org.marketcetera.util.test.TestCaseBase;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: CopyUtilsTestBase.java 16063 2012-01-31 18:21:55Z colin $
  */

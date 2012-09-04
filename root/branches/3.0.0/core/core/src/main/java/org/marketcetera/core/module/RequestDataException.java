@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * Instances of this exception are thrown when data emitters are
  * not able to fulfill a request to emit data.
  *
- * @author anshul@marketcetera.com
  * @version $Id: RequestDataException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  * @see DataEmitter#requestData(DataRequest, DataEmitterSupport)

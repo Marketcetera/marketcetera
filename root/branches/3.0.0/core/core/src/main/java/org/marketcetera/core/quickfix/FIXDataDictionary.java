@@ -12,7 +12,6 @@ import quickfix.DataDictionary;
  * This is mostly for better output/debugging purposes since we don't
  * want to memorize field numbers
  *
- * @author Toli Kuznets
  * @version $Id: FIXDataDictionary.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FIXDataDictionary {

@@ -27,7 +27,6 @@ package org.marketcetera.core.module;
  * system to look for the module instance when creating the data flow will
  * be <code>metc:cep:vendor:hedgme</code>.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataFlowSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

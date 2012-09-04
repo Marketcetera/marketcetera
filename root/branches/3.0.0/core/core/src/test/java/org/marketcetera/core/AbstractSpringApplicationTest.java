@@ -26,7 +26,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link org.marketcetera.core.container.AbstractSpringApplication}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractSpringApplicationTest.java 82306 2012-02-29 23:18:25Z colin $
  * @since $Release$
  */

@@ -15,7 +15,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
 /**
  * Bogus feed {@link EventTranslator} instance.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: BogusFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

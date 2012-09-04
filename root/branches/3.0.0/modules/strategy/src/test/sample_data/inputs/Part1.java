@@ -6,7 +6,6 @@ import org.marketcetera.strategy.java.Strategy;
 /**
  * Test strategy (part one of two parts) that tests what happens when a strategy helper-class is redefined. 
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Part1.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

@@ -28,7 +28,6 @@ import java.text.MessageFormat;
  * The <code>MockProviderTestBase</code> class serves as a base class for test cases using a mock
  * <code>MessageProvider</code>. After every test, it will remove the mock message provider to prepare
  * for other tests.
- * @author Mattias Jiderhamn
  */
 public abstract class MockProviderTestBase extends TestCase {
 

@@ -21,7 +21,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * {@link ExecutionEngine} implementation which uses <a href="http://jakarta.apache.org/bsf">Apache Bean Scriping Framewok</a>
  * to execute scripts.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: BeanScriptingFrameworkEngine.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

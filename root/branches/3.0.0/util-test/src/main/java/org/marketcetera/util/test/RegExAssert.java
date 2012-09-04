@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 /**
  * Assertions based on regular expression matching.
  * 
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: RegExAssert.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -6,7 +6,6 @@ package org.marketcetera.core;
  * attempts to compare Order IDs as numerics, falling back onto alphanumeric comparison
  * if either ID is not numerical.
  *
- * @author andrei@lissovski.org
  */
 public class NumericStringSortable implements Comparable<NumericStringSortable> {
 	

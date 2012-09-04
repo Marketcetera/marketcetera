@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * @author Graham Miller
  * @version $Id: AccessViolator.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class AccessViolator {

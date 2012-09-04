@@ -10,7 +10,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
  * argument in the context of a greeting. Certain argument values
  * result in exceptions/errors being thrown.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SampleStatelessService.java 16063 2012-01-31 18:21:55Z colin $
  */

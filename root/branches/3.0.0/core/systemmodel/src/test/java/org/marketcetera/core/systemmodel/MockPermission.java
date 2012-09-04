@@ -5,7 +5,6 @@ package org.marketcetera.core.systemmodel;
 /**
  * Provides a test <code>Permission</code> implementation.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

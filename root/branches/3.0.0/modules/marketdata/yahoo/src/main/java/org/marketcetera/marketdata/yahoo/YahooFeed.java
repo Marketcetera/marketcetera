@@ -25,7 +25,6 @@ import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
 /**
  * Market data feed implementation for the Yahoo market data supplier.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: YahooFeed.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */

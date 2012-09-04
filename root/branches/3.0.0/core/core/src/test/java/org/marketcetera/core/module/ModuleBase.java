@@ -6,7 +6,6 @@ import java.util.HashMap;
 /**
  * Base module class for testing.
  *
- * @author anshul@marketcetera.com
  */
 public abstract class ModuleBase extends Module {
 

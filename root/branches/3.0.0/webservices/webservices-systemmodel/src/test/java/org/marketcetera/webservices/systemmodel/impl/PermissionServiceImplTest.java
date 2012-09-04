@@ -28,7 +28,6 @@ import static org.mockito.Mockito.*;
 /**
  * Tests {@link PermissionServiceImpl}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

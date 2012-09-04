@@ -23,7 +23,6 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
 /**
  * Tests operation of various locks used within the ModuleManager.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleConcurrencyTest.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.1.0
  */

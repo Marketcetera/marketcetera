@@ -11,7 +11,6 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Attempts to resolve symbols to {@link org.marketcetera.core.trade.Future} instruments.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: FutureSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */

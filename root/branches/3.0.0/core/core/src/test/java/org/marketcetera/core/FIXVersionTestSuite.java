@@ -23,7 +23,6 @@ import org.marketcetera.core.quickfix.FIXVersion;
  * with a different set of versions. This is useful when some test cases are applicable
  * only under certain but not all versions.
  *
- * @author toli
  * @version $Id: FIXVersionTestSuite.java 16063 2012-01-31 18:21:55Z colin $
  */
 @Ignore

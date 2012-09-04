@@ -11,7 +11,6 @@ import org.marketcetera.core.trade.OptionType;
  * <a href="http://www.iso.org/iso/catalogue_detail?csnumber=32835">ISO 10962</a>
  * standard.
  *
- * @author anshul@marketcetera.com
  * @version $Id: CFICodeUtils.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

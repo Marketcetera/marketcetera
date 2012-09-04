@@ -12,7 +12,6 @@ import java.io.InputStream;
  * UnicodeInputStreamReader} constructor an {@link InputStream} that
  * is built using a {@link FileInputStream} constructor.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: UnicodeFileReader.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link org.marketcetera.core.trade.OrderReplace}
  *
- * @author anshul@marketcetera.com
  * @version $Id: OrderReplaceTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

@@ -11,7 +11,6 @@ import org.marketcetera.api.security.User;
 /**
  * Provides a test <code>Group</code> implementation.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

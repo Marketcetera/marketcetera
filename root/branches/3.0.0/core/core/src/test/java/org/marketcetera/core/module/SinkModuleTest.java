@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 /**
  * Tests sink module features.
  *
- * @author anshul@marketcetera.com
  */
 public class SinkModuleTest extends ModuleTestBase {
     @BeforeClass

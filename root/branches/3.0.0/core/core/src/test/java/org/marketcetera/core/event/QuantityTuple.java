@@ -6,7 +6,6 @@ import java.util.Comparator;
 /**
  * A wrapper class for the quantities associated with a symbol event.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: QuantityTuple.java 82331 2012-04-10 16:29:48Z colin $
  * @since 0.5.0
  */
@@ -119,7 +118,6 @@ public class QuantityTuple
     /**
      * Compares two {@link QuantityTuple} objects based on {@link QuantityTuple#getPrice()}.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: QuantityTuple.java 82331 2012-04-10 16:29:48Z colin $
      * @since 1.5.0
      */

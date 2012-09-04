@@ -12,7 +12,6 @@ import org.marketcetera.core.marketdata.FeedException;
 /**
  * Credentials instance for <code>MarketceteraFeed</code>.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketceteraFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.6.0
 */

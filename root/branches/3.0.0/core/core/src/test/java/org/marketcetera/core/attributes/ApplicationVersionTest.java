@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests {@link org.marketcetera.core.attributes.ApplicationVersion}
  *
- * @author anshul@marketcetera.com
  * @version $Id: ApplicationVersionTest.java 82306 2012-02-29 23:18:25Z colin $
  * @since 1.5.0
  */

@@ -7,7 +7,6 @@ import org.marketcetera.strategy.java.Strategy;
 /**
  * Tests a Java strategy that is not in the default package.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: PackageStrategy.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

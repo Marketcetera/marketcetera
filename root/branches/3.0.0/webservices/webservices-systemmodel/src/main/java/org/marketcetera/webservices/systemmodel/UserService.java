@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response;
 /**
  * Provides web-services access to the user service.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

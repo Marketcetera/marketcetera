@@ -28,7 +28,6 @@ import ca.odell.glazedlists.event.ListEventListener;
  * thread ready but not thread safe. See {@link ca.odell.glazedlists.EventList} for an example
  * of thread safe code.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public abstract class TransformedList<S, E> extends AbstractEventList<E> implements ListEventListener<S> {
 

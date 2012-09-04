@@ -11,7 +11,6 @@ import org.marketcetera.core.event.QuoteEvent;
  * <p>Note that this <code>Comparator</code> is not consistent with the result of
  * <code>equals(Object)</code>.  This is OK, but it should be noted.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: BookPriceComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.6.0
  */

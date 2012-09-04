@@ -7,7 +7,6 @@ import org.marketcetera.api.systemmodel.VersionedObject;
 /**
  * Provides a test <code>VersionedObject</code> implementation.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

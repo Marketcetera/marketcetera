@@ -48,7 +48,6 @@ import quickfix.field.TransactTime;
  * 
  * <p>Each new script language to support should extend this class.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: LanguageTestBase.java 16069 2012-03-24 00:57:05Z colin $
  * @since 1.0.0
  */
@@ -4880,7 +4879,6 @@ public abstract class LanguageTestBase
      * <p>As this annotation becomes more widely used, an appropriate home can be chosen for it.  In the
      * long run, <code>LanguageTestBase</code> is not the right owner.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: LanguageTestBase.java 16069 2012-03-24 00:57:05Z colin $
      * @since 1.0.0
      */

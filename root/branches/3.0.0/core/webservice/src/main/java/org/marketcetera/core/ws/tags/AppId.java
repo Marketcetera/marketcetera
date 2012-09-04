@@ -9,7 +9,6 @@ package org.marketcetera.core.ws.tags;
  * applications). New IDs should be created using {@link
  * #AppId(String)}.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: AppId.java 82324 2012-04-09 20:56:08Z colin $
  */

@@ -21,7 +21,6 @@ import quickfix.field.Side;
 import quickfix.field.TimeInForce;
 /* $License$ */
 /**
- * @author Graham Miller
  * @version $Id: FIXMessageUtilTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FIXMessageUtilTest extends FIXVersionedTestCase {

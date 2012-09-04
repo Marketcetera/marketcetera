@@ -16,7 +16,6 @@ import org.marketcetera.core.ws.tags.SessionId;
  * initiated during construction as part of the caller's thread group;
  * the interval between scans is normally 5% of the session lifespan.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SessionManager.java 82324 2012-04-09 20:56:08Z colin $
  */

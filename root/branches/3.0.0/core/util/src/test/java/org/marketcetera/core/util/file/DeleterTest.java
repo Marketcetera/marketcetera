@@ -14,7 +14,6 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: DeleterTest.java 16063 2012-01-31 18:21:55Z colin $
  */

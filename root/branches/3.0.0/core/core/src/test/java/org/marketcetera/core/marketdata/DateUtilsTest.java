@@ -20,7 +20,6 @@ import static org.marketcetera.core.marketdata.Messages.INVALID_DATE;
 /**
  * Tests {@link DateUtil}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: DateUtilsTest.java 82329 2012-04-10 16:28:13Z colin $
  * @since 1.5.0
  */

@@ -32,7 +32,6 @@ import org.nocrala.tools.texttablefmt.Table;
 /**
  * Manages order history for multiple orders throughout the order lifecycle.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OrderHistoryManager.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
@@ -394,7 +393,6 @@ public class OrderHistoryManager
      * <code>ReportBase</code> objects are truly part of the order chain: the
      * act of invoking <code>add</code> implicitly establishes this fact.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: OrderHistoryManager.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.1.4
      */

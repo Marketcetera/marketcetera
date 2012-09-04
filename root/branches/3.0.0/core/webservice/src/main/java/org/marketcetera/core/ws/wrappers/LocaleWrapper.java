@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * {@link Locale}, and the marshalled form is {@link
  * MarshalledLocale}.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: LocaleWrapper.java 82324 2012-04-09 20:56:08Z colin $
  */

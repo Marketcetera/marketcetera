@@ -55,7 +55,6 @@ import org.apache.commons.csv.CSVStrategy;
  * <tr><th>Factory</th><td>{@link CSVEmitterFactory}</td></tr>
  * </table>
  *
- * @author anshul@marketcetera.com
  */
 public class CSVEmitter extends Module implements DataEmitter {
     /**

@@ -12,7 +12,6 @@ import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
 
 /**
- * @author Graham Miller
  * @version $Id: Exchanges.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class Exchanges {

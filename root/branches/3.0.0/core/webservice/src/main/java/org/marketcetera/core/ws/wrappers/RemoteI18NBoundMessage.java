@@ -19,7 +19,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * <p>Equality and hash code generation rely only upon the result of
  * {@link #getText()}.</p>
  *
- * @author tlerios@marketcetera.com
  * @since 2.0.0
  * @version $Id: RemoteI18NBoundMessage.java 82324 2012-04-09 20:56:08Z colin $
  */

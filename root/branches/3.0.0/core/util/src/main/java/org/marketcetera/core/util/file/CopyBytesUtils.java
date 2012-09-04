@@ -13,7 +13,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage2P;
  * Utilities for copying binary data. The participating media include
  * files, arrays, streams, or some combinations thereof.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: CopyBytesUtils.java 16063 2012-01-31 18:21:55Z colin $
  */

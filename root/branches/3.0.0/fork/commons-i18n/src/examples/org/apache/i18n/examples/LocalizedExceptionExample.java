@@ -30,8 +30,7 @@ import org.apache.commons.i18n.MessageManager;
 import org.apache.commons.i18n.bundles.ErrorBundle;
 
 /**
- * @author Daniel Florey
- *  
+ *
  */
 public class LocalizedExceptionExample {
     private static final Logger logger = Logger

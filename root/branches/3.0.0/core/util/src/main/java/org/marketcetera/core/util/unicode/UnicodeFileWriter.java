@@ -21,7 +21,6 @@ import java.io.Reader;
  * check that, in this case, the existing signature BOM and associated
  * charset match the one supplied in the constructor.</p>
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: UnicodeFileWriter.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests {@link RoleManagerServiceImpl}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

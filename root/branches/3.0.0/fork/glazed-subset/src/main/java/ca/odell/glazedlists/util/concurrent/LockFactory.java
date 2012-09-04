@@ -7,8 +7,6 @@ package ca.odell.glazedlists.util.concurrent;
  * This factory provides an implementation of {@link ca.odell.glazedlists.util.concurrent.Lock} that is optimized
  * for the current Java Virtual Machine.
  *
- * @author <a "mailto:rob@starlight-systems.com">Rob Eden</a>
- * @author James Lemieux
  */
 public interface LockFactory {
 

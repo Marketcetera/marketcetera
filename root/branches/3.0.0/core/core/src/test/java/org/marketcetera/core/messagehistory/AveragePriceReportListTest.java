@@ -38,7 +38,6 @@ import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqu
 /**
  * Test {@link AveragePriceReportListTest}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: AveragePriceReportListTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

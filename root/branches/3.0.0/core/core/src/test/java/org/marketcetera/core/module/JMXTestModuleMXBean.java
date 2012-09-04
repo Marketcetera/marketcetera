@@ -7,7 +7,6 @@ import java.math.BigInteger;
 /**
  * MX Bean interface for testing module MX bean interfaces
  *
- * @author anshul@marketcetera.com
  */
 @DisplayName("JMX Testing module")
 public interface JMXTestModuleMXBean {

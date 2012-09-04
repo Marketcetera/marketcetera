@@ -19,7 +19,6 @@ import ca.odell.glazedlists.impl.adt.barcode2.ListToByteCoder;
  * target list changes. It's also possible that the source list can change,
  * which is necessary for long-lived buffered changes.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public class Tree4Deltas<E> {
 

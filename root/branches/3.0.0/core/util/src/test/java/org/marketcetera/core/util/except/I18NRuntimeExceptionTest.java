@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: I18NRuntimeExceptionTest.java 16063 2012-01-31 18:21:55Z colin $
  */

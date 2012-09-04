@@ -5,7 +5,6 @@ import java.util.Locale;
 /**
  * An internationalized message, requiring exactly one parameter.
  * 
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: I18NMessage1P.java 16063 2012-01-31 18:21:55Z colin $
  */

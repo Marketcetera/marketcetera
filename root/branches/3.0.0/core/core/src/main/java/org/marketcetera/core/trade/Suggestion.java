@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 /**
  * Identifies data needed for an order suggestion.
  *
- * @author anshul@marketcetera.com
  * @version $Id: Suggestion.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

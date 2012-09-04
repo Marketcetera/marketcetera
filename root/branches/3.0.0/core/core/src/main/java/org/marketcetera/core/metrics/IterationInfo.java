@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * begin to end. Each instance, when recorded, results in a row of data in
  * the csv file.
  *
- * @author anshul@marketcetera.com
  * @version $Id: IterationInfo.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  * @see PerThreadInfo

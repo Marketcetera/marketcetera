@@ -9,7 +9,6 @@ import org.apache.commons.lang.ObjectUtils;
  * A bound message implementation, representing the combination of an
  * {@link I18NMessage} and its parameters, if any.
  * 
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: I18NBoundMessageBase.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -14,7 +14,6 @@ import static org.junit.Assume.*;
 import static org.marketcetera.util.test.CollectionAssert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: SmartLinksDirectoryWalkerTest.java 16063 2012-01-31 18:21:55Z colin $
  */

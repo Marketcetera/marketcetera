@@ -5,7 +5,6 @@ package org.marketcetera.core.module;
 /**
  * A singleton module factory for {@link EmitterModule}
  *
- * @author anshul@marketcetera.com
  */
 public class EmitterModuleFactory extends ModuleFactory {
     public EmitterModuleFactory() {

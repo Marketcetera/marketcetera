@@ -30,7 +30,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * symbol for which a market data request is received.  Data is returned
  * from the feed via {@link Event} objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
@@ -252,7 +251,6 @@ public class BogusFeed
     /**
      * Corresponds to a single market data request submitted to {@link BogusFeed}.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: BogusFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */

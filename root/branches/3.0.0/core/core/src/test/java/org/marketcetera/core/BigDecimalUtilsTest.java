@@ -8,7 +8,6 @@ import java.math.RoundingMode;
 import junit.framework.TestCase;
 
 /**
- * @author Graham Miller
  */
 public class BigDecimalUtilsTest extends TestCase {
 

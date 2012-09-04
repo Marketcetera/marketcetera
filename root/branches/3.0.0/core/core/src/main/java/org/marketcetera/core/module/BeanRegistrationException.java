@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * Indicates errors are encountered registering or unregistering
  * module factory or instance mxbeans with the mbean server.
  *
- * @author anshul@marketcetera.com
  * @version $Id: BeanRegistrationException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

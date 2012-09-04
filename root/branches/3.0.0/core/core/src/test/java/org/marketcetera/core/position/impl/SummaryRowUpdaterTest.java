@@ -18,7 +18,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Test {@link SummaryRowUpdaterTest}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: SummaryRowUpdaterTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

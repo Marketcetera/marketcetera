@@ -89,7 +89,6 @@ import ca.odell.glazedlists.event.ListEvent;
  *   txList.commitEvent();
  * </pre>
  *
- * @author James Lemieux
  */
 public class TransactionList<E> extends TransformedList<E, E> {
 

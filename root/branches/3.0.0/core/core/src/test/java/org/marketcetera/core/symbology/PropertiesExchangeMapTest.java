@@ -7,7 +7,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * @author Graham Miller
  * @version $Id: PropertiesExchangeMapTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class PropertiesExchangeMapTest extends TestCase{

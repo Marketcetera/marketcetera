@@ -6,7 +6,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /**
  * This exception is thrown when a data flow cannot be found.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataFlowNotFoundException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

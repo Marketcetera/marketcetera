@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link OrderSingle}
  *
- * @author anshul@marketcetera.com
  * @version $Id: OrderSingleTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

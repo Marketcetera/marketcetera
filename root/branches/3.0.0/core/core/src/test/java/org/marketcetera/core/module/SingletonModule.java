@@ -4,7 +4,6 @@ package org.marketcetera.core.module;
 /**
  * A singleton module for testing.
  *
- * @author anshul@marketcetera.com
  */
 public class SingletonModule extends ModuleBase {
 

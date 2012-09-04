@@ -6,7 +6,6 @@ package org.marketcetera.core.module;
  * An interface that is implemented by modules that are capable
  * of requesting data flows.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataFlowRequester.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

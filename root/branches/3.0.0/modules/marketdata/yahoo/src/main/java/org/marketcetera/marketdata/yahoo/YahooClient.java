@@ -7,7 +7,6 @@ import org.springframework.context.Lifecycle;
 /**
  * Provides access to the Yahoo data source.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: YahooClient.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */

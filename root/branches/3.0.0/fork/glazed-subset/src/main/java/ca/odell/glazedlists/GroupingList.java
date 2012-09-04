@@ -42,7 +42,6 @@ import ca.odell.glazedlists.impl.sort.ComparableComparator;
  * </td></tr>
  * </table>
  *
- * @author James Lemieux
  */
 public final class GroupingList<E> extends TransformedList<E, List<E>> {
 

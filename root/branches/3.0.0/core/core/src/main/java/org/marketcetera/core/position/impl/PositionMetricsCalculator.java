@@ -15,7 +15,6 @@ import org.marketcetera.core.position.Trade;
  * returned build upon each other and always reflect the current position
  * information given the sequence of method invocations.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionMetricsCalculator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

@@ -5,7 +5,6 @@ package org.marketcetera.core.options;
  * A test custom expiry normalizer that always appends 01 to an expiry
  * of length 6.
  *
- * @author anshul@marketcetera.com
  * @version $Id: CustomExpiryNormalizer.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

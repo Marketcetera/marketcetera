@@ -20,7 +20,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * When that happens this class can be dispensed or may still be retained
  * as a unit testing class because many unit tests may still depend on it. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: CurrentFIXDataDictionary.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

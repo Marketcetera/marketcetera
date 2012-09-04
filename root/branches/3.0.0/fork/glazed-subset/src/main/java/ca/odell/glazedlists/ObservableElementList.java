@@ -38,8 +38,6 @@ import ca.odell.glazedlists.impl.adt.BarcodeIterator;
  * @see ca.odell.glazedlists.GlazedLists#beanConnector(Class, String, String)
  * @see <a href="https://glazedlists.dev.java.net/issues/show_bug.cgi?id=157">RFE 157</a>
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
- * @author James Lemieux
  */
 public class ObservableElementList<E> extends TransformedList<E, E> {
 

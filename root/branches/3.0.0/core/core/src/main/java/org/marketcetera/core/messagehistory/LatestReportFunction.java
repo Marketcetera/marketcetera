@@ -14,9 +14,6 @@ import ca.odell.glazedlists.FunctionList.Function;
  * Note that subclasses may restrict the messages that are considered by this
  * function by implementing the {@link #accept(ReportHolder)} method.
  * 
- * @author gmiller
- * @author anshul@marketcetera.com
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: LatestReportFunction.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */

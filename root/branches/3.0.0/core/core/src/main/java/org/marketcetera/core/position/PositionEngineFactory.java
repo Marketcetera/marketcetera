@@ -26,7 +26,6 @@ import org.marketcetera.core.trade.UserID;
 /**
  * Factory for creating position engines.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionEngineFactory.java 16076 2012-04-28 14:59:26Z colin $
  * @since 1.5.0
  */

@@ -4,7 +4,6 @@ package org.marketcetera.core.module;
 /**
  * Factory for creating {@link ProcessorModule} instances.
  *
- * @author anshul@marketcetera.com
  */
 public class ProcessorModuleFactory extends ModuleFactory {
     @Override

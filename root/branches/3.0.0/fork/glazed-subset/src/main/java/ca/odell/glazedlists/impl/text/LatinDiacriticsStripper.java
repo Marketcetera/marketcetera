@@ -28,7 +28,6 @@ package ca.odell.glazedlists.impl.text;
  *
  * <p>For more details see the <a href="http://www.unicode.org/charts/">Unicode Charts</a>.
  *
- * @author James Lemieux
  */
 public final class LatinDiacriticsStripper {
 

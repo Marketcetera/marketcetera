@@ -16,7 +16,6 @@ import ca.odell.glazedlists.impl.reflect.ReturnTypeResolverFactory;
 /**
  * Models a getter and setter for an abstract property.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public class BeanProperty<T> {
 

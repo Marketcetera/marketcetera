@@ -9,7 +9,6 @@ import quickfix.Message;
  * 
  * <p>Implementers that contain multiple FIX messages must decide which represents its <em>default</em> message.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: HasFIXMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.6.0
  */

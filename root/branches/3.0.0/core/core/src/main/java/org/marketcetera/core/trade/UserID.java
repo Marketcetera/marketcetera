@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlValue;
 /**
  * Instances of this class uniquely identify a user (trader).
  * 
- * @author tlerios@marketcetera.com
  * @since 1.5.0
  * @version $Id: UserID.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -8,7 +8,6 @@ import org.marketcetera.core.util.log.I18NMessage0P;
 /**
  * Factory for {@link ConcurrentTestModule}.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ConcurrentTestFactory.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.1.0
  */

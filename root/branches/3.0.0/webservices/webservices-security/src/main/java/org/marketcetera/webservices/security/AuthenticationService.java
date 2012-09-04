@@ -10,7 +10,6 @@ import javax.ws.rs.core.Response;
 /**
  * Provides web services authentication.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

@@ -10,7 +10,6 @@ import org.marketcetera.core.Util;
 /**
  * A module for testing JMX integration
  *
- * @author anshul@marketcetera.com
  */
 public class JMXTestModule extends Module implements JMXTestModuleMXBean {
     public JMXTestModule(ModuleURN inURN) {

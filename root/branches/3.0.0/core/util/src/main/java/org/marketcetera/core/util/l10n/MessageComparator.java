@@ -10,7 +10,6 @@ import org.marketcetera.core.util.except.I18NException;
 /**
  * A comparator of two message meta-information holders.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: MessageComparator.java 16063 2012-01-31 18:21:55Z colin $
  */

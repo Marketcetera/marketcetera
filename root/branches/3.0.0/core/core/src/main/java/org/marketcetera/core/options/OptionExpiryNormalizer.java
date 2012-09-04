@@ -17,7 +17,6 @@ package org.marketcetera.core.options;
  * that contains the absolute class name of that class. And place that jar
  * in the lib directory for every platform application. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: OptionExpiryNormalizer.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

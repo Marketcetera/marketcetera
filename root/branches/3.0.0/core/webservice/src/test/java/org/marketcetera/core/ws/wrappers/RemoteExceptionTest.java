@@ -14,7 +14,6 @@ import static org.junit.Assert.*;
 import static org.marketcetera.util.test.EqualityAssert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: RemoteExceptionTest.java 82335 2012-04-10 19:02:50Z colin $
  */

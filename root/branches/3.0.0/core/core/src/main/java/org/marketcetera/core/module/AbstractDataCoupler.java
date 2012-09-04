@@ -26,7 +26,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * eventually invoke {@link #receive(Object)} method to supply
  * the emitted data to the receiver module. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: AbstractDataCoupler.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

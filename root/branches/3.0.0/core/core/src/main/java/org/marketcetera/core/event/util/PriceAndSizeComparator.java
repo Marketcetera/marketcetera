@@ -13,7 +13,6 @@ import org.marketcetera.core.event.QuoteEvent;
  * 
  * <p>Price is compared first, followed by size, if necessary.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: PriceAndSizeComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

@@ -11,7 +11,6 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Attempts to convert symbols to {@link org.marketcetera.core.trade.ConvertibleBond} instruments.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: ConvertibleBondSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */

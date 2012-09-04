@@ -13,7 +13,6 @@ import java.util.Map;
  *
  * (formerly named: OpenClose prior to FIX 4.3)
  *
- * @author anshul@marketcetera.com
  * @version $Id: PositionEffect.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

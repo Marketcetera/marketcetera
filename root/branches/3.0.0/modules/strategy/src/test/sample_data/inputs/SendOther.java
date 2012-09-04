@@ -9,7 +9,6 @@ import org.marketcetera.strategy.java.Strategy;
 /**
  * Sample strategy to test the ability to send arbitrary data.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: SendOther.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

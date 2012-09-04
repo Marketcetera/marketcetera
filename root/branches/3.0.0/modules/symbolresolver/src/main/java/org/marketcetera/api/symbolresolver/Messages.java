@@ -9,7 +9,6 @@ import org.marketcetera.core.util.log.I18NMessageProvider;
 /**
  * Provides messages for the symbol resolver package.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

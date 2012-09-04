@@ -15,7 +15,6 @@ import static org.junit.Assert.assertFalse;
 /**
  * Tests {@link org.marketcetera.core.event.LogEventLevel}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: LogEventLevelTest.java 82331 2012-04-10 16:29:48Z colin $
  * @since 2.0.0
  */

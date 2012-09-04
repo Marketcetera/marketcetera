@@ -23,7 +23,6 @@ import org.marketcetera.core.ExpectedFailure;
 /**
  * Tests Module provider and module lifecycle & information reporting.
  *
- * @author anshul@marketcetera.com
  */
 public class LifecycleTest extends ModuleTestBase {
     @BeforeClass

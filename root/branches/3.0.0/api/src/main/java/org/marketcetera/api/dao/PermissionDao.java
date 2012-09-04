@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * Provides data access for {@link Permission} objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: PermissionDao.java 82353 2012-05-10 21:56:11Z colin $
  * @since $Release$
  */

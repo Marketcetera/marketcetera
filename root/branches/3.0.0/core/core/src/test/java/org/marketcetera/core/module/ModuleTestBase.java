@@ -25,7 +25,6 @@ import static org.junit.Assert.*;
 /**
  * A base class with colletion of all utility methods for testing modules
  *
- * @author anshul@marketcetera.com
  */
 public class ModuleTestBase {
 

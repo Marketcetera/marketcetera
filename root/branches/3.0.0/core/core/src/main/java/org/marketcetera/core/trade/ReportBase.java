@@ -8,7 +8,6 @@ import java.util.Date;
  * Declares common fields between various reports. This type is not
  * meant to be used directly, use one of its sub-types instead.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ReportBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

@@ -7,7 +7,6 @@ import org.marketcetera.api.dao.Role;
 /**
  * Creates <code>Role</code> objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: RoleFactory.java 82315 2012-03-17 01:58:54Z colin $
  * @since $Release$
  */

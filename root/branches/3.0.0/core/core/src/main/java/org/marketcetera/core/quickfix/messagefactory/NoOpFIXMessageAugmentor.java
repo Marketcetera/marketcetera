@@ -5,7 +5,6 @@ import quickfix.Message;
 
 /**
  * Dummy noop implementation of the {@link FIXMessageAugmentor}
- * @author toli
  * @version $Id: NoOpFIXMessageAugmentor.java 16063 2012-01-31 18:21:55Z colin $
  */
 

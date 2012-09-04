@@ -29,7 +29,6 @@ import quickfix.field.Text;
  * Base case for CEP test classes - has some basic functionality for
  * running data flows through and checking for output
  *
- * @author toli@marketcetera.com
  * @version $Id: CEPTestBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

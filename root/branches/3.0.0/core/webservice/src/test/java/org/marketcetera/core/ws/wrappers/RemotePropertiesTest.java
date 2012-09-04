@@ -8,7 +8,6 @@ import static org.marketcetera.util.test.EqualityAssert.*;
 import static org.marketcetera.util.test.RegExAssert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: RemotePropertiesTest.java 82324 2012-04-09 20:56:08Z colin $
  */

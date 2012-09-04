@@ -11,7 +11,6 @@ import org.marketcetera.core.ws.tags.SessionId;
  * context. It conveys key (but optional) information about the client
  * to the server.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: ClientContext.java 82324 2012-04-09 20:56:08Z colin $
  */

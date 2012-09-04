@@ -19,7 +19,6 @@ import static org.marketcetera.core.marketdata.Messages.OPTION_REQUIRES_UNDERLYI
 /**
  * Tests {@link org.marketcetera.core.marketdata.ExchangeRequest} and {@link org.marketcetera.core.marketdata.ExchangeRequestBuilder}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: ExchangeRequestTest.java 82329 2012-04-10 16:28:13Z colin $
  * @since 2.0.0
  */

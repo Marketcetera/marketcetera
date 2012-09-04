@@ -14,7 +14,6 @@ import static org.junit.Assert.*;
  * Tests {@link org.marketcetera.core.metrics.PrintStreamFactory} subclasses, {@link org.marketcetera.core.metrics.FileStreamFactory} &
  * {@link org.marketcetera.core.metrics.StdErrFactory}
  *
- * @author anshul@marketcetera.com
  * @version $Id: PrintStreamFactoryTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

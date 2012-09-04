@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Test {@link org.marketcetera.core.messagehistory.ReportGroupIDComparator}.
  *
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: ReportGroupIDComparatorTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

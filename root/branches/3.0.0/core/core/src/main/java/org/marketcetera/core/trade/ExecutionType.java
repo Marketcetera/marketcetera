@@ -10,7 +10,6 @@ import quickfix.field.ExecType;
 /**
  * Specific execution report status.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ExecutionType.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

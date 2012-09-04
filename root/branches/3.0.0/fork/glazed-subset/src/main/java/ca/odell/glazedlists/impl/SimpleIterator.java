@@ -12,7 +12,6 @@ import java.util.NoSuchElementException;
  * The SimpleTreeIterator is an iterator that allows the user to iterate
  * on a list.
  *
- * @author <a href="mailto:kevin@swank.ca">Kevin Maltby</a>
  */
 public class SimpleIterator<E> implements Iterator<E> {
 

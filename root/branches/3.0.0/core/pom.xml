@@ -10,7 +10,7 @@
 
     <groupId>org.marketcetera.core</groupId>
     <artifactId>core-parent</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -20,6 +20,7 @@
     <modules>
         <module>container</module>
         <module>core</module>
+        <module>dao</module>
         <module>quickfix</module>
         <module>systemmodel</module>
         <module>util</module>

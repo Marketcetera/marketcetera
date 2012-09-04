@@ -10,7 +10,6 @@ import org.springframework.context.support.GenericApplicationContext;
 /**
  * Utilities for the Spring framework.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: SpringUtils.java 82323 2012-04-09 16:32:23Z colin $
  */

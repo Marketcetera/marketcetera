@@ -22,7 +22,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * Found resources whose names match {@link #getFilterResources()} are
  * filtered out from enumerations returned from {@link ClassLoader#getResources(String)}
  *
- * @author anshul@marketcetera.com
  */
 class ModuleTestClassLoader extends ClassLoader{
     /**

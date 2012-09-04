@@ -13,7 +13,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 /**
  * Provides an in-memory configurable module configuration provider.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: InMemoryPropertiesConfigurationProvider.java 82377 2012-06-08 14:50:39Z colin $
  * @since $Release$
  */

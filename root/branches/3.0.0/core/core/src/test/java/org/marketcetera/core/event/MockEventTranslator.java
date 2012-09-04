@@ -15,7 +15,6 @@ import org.marketcetera.core.marketdata.MarketDataRequest;
 /**
  * Test implementation of <code>IEventTranslator</code>.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MockEventTranslator.java 82331 2012-04-10 16:29:48Z colin $
  * @since 0.5.0
  */

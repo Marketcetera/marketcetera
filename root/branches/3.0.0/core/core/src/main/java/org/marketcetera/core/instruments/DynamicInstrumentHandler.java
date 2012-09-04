@@ -25,7 +25,6 @@ package org.marketcetera.core.instruments;
  *
  * @param <T> The type of the object that is processed by this handler.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DynamicInstrumentHandler.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

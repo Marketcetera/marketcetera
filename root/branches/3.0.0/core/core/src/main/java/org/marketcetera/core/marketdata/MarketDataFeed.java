@@ -10,7 +10,6 @@ import quickfix.field.SubscriptionRequestType;
  * A market data feed capable of resolving FIX message queries and returning
  * market data. 
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

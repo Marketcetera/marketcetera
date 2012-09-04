@@ -10,7 +10,6 @@ import org.junit.After;
  * Base class for testing configuration provider integration
  * with the module manager.
  *
- * @author anshul@marketcetera.com
  */
 public class ConfigurationProviderTestBase extends ModuleTestBase {
     @After

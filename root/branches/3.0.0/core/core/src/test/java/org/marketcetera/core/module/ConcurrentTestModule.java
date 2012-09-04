@@ -9,7 +9,6 @@ import java.util.concurrent.locks.Lock;
  * A module for testing locking within module framework when carrying
  * out various module framework operations. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: ConcurrentTestModule.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.1.0
  */

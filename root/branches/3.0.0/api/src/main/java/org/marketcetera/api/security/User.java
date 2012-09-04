@@ -12,7 +12,6 @@ import org.marketcetera.api.systemmodel.VersionedObject;
 /**
  * Service object representing a system user.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

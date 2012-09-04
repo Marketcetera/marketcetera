@@ -11,7 +11,6 @@ import org.marketcetera.core.trade.Instrument;
  * derivative options). This interface is used to abstract the business logic
  * for determining that value.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: UnderlyingSymbolSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

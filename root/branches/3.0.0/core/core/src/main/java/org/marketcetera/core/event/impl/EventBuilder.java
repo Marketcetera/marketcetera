@@ -7,7 +7,6 @@ import org.marketcetera.core.event.Event;
 /**
  * Constructs objects of the given type of {@link org.marketcetera.core.event.Event}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: EventBuilder.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

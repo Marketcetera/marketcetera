@@ -8,7 +8,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: TI18NMessage5PTest.java 16063 2012-01-31 18:21:55Z colin $
  */

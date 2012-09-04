@@ -34,7 +34,6 @@ import java.util.Map;
  * we pull out all the classes, and remove the emitter subscribed to listen on that event type</li>
  * </ul>
  *
- * @author anshul@marketcetera.com
  * @since 1.0.0
  * @version $Id: CEPSystemProcessor.java 16063 2012-01-31 18:21:55Z colin $
  */

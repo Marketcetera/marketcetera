@@ -12,7 +12,6 @@ import org.marketcetera.core.ws.wrappers.MarshalledLocale;
  * A sample client. It calls into a single service. The call is
  * configured via command-line arguments.
  *
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SampleClient.java 16063 2012-01-31 18:21:55Z colin $
  */

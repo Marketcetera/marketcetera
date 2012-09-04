@@ -27,7 +27,6 @@ import java.util.List;
 /**
  * The CSVConfig is used to configure the CSV writer
  *
- * @author Martin van den Bemt
  * @version $Id: CSVConfig.java 73490 2008-05-14 23:59:36Z tlerios $
  */
 public class CSVConfig {

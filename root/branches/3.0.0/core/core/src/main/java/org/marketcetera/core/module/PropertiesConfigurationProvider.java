@@ -30,7 +30,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * the property name, ie. the attribute value is specified as
  * <code>attribute-name=attribute-value</code>
  * 
- * @author anshul@marketcetera.com
  * @version $Id: PropertiesConfigurationProvider.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

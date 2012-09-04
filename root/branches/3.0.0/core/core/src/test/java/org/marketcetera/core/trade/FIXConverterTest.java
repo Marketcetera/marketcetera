@@ -20,7 +20,6 @@ import static org.junit.Assert.fail;
 /**
  * Tests {@link FIXConverter}.
  *
- * @author tlerios@marketcetera.com
  * @since 2.0.0
  * @version $Id: FIXConverterTest.java 16063 2012-01-31 18:21:55Z colin $
  */

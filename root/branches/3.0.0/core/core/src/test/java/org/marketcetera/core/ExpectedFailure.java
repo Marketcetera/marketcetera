@@ -48,7 +48,6 @@ import org.marketcetera.core.util.log.I18NMessage;
  * than is done by this class, they can get the caught exception by
  * calling {@link #getException()} 
  *
- * @author anshul@marketcetera.com
  */
 public abstract class ExpectedFailure<T extends Exception> {
 
