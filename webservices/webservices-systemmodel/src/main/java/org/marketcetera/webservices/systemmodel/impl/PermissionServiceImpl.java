@@ -96,7 +96,7 @@ public class PermissionServiceImpl
     /**
      * Sets the permissionManagerService value.
      *
-     * @param an <code>PermissionManagerService</code> value
+     * @param inPermissionManagerService an <code>PermissionManagerService</code> value
      */
     public void setPermissionManagerService(PermissionManagerService inPermissionManagerService)
     {
@@ -105,7 +105,7 @@ public class PermissionServiceImpl
     /**
      * Sets the permissionFactory value.
      *
-     * @param an <code>PermissionFactory</code> value
+     * @param inPermissionFactory an <code>PermissionFactory</code> value
      */
     public void setPermissionFactory(PermissionFactory inPermissionFactory)
     {

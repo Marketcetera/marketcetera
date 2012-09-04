@@ -24,7 +24,7 @@ public interface PositionManager
      *
      *
      * @param inDate
-     * @return
+     * @return a <code>List&lt;ReportBase&gt;</code> value
      */
     public List<ReportBase> getReportsSince(Date inDate);
     /**
@@ -33,7 +33,7 @@ public interface PositionManager
      *
      * @param inDate
      * @param inInstrument
-     * @return
+     * @return a <code>BigDecimal</code> value
      */
     public BigDecimal getPositionAsOf(Date inDate,
                                       Instrument inInstrument);
@@ -42,7 +42,7 @@ public interface PositionManager
      *
      *
      * @param inDate
-     * @return
+     * @return a <code>Map&lt;PositionKey&lt;Instrument&gt;,BigDecimal&gt;</code> value
      */
     public Map<PositionKey<Instrument>,BigDecimal> getAllPositionsAsOf(Date inDate);
 }

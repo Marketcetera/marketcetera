@@ -98,7 +98,7 @@ public class UserServiceImpl
     /**
      * Sets the userManagerService value.
      *
-     * @param a <code>UserManagerService</code> value
+     * @param inUserManagerService a <code>UserManagerService</code> value
      */
     public void setUserManagerService(UserManagerService inUserManagerService)
     {
@@ -107,7 +107,7 @@ public class UserServiceImpl
     /**
      * Sets the userFactory value.
      *
-     * @param a <code>UserFactory</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
      */
     public void setUserFactory(UserFactory inUserFactory)
     {

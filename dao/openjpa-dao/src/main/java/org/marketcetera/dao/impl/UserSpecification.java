@@ -16,7 +16,7 @@ public class UserSpecification
     /**
      * Sets the username value.
      *
-     * @param a <code>String</code> value
+     * @param inUsername a <code>String</code> value
      */
     public void setUsername(String inUsername)
     {
@@ -25,7 +25,7 @@ public class UserSpecification
     /**
      * Sets the password value.
      *
-     * @param a <code>String</code> value
+     * @param inPassword a <code>String</code> value
      */
     public void setPassword(String inPassword)
     {
@@ -34,7 +34,7 @@ public class UserSpecification
     /**
      * Sets the groups value.
      *
-     * @param a <code>Set&lt;String&gt;</code> value
+     * @param inRoles a <code>Set&lt;String&gt;</code> value
      */
     public void setRoles(Set<String> inRoles)
     {

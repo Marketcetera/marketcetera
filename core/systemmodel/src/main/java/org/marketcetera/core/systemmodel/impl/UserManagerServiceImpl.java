@@ -87,7 +87,7 @@ public class UserManagerServiceImpl
     /**
      * Sets the userDao value.
      *
-     * @param a <code>UserDao</code> value
+     * @param inUserDao a <code>UserDao</code> value
      */
     public void setUserDao(UserDao inUserDao)
     {
