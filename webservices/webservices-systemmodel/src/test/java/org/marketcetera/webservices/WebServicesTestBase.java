@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Provides common services for web services tests.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

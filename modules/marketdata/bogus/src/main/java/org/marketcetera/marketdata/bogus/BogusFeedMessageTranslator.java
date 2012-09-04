@@ -13,7 +13,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
 /**
  * Bogus feed implementation of {@link DataRequestTranslator}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: BogusFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

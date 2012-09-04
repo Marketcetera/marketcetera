@@ -8,7 +8,6 @@ import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /**
- * @author Toli Kuznets
  * @version $Id: MarketceteraTestSuite.java 16063 2012-01-31 18:21:55Z colin $
  */
 @Ignore

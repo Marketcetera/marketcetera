@@ -17,7 +17,6 @@ import org.marketcetera.core.position.Trade;
  * Tests {@link BasicCalculator}. Other {@link PositionMetricsCalculator}
  * implementations are tested by comparing to BasicCalculator.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: BasicCalculatorTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

@@ -8,7 +8,6 @@ import java.math.BigDecimal;
  * Details that are common between new and replace orders.
  * This message type is not meant to be used directly.   
  *
- * @author anshul@marketcetera.com
  * @version $Id: NewOrReplaceOrder.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

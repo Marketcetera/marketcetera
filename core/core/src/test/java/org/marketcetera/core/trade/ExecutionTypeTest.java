@@ -14,7 +14,6 @@ import static org.marketcetera.core.trade.ExecutionType.OrderStatus;
 /**
  * Tests {@link org.marketcetera.core.trade.ExecutionType}
  *
- * @author anshul@marketcetera.com
  * @version $Id: ExecutionTypeTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

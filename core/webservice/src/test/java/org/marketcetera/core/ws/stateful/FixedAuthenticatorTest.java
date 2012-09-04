@@ -7,7 +7,6 @@ import org.marketcetera.core.ws.stateless.StatelessClientContext;
 import static org.junit.Assert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: FixedAuthenticatorTest.java 16063 2012-01-31 18:21:55Z colin $
  */

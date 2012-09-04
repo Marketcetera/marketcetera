@@ -22,7 +22,6 @@ import quickfix.field.Text;
 /**
  * FIX conversion utilities.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: FIXConverter.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -25,7 +25,6 @@ import java.io.Writer;
  *
  * </ul>
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: UnicodeOutputStreamWriter.java 16063 2012-01-31 18:21:55Z colin $
  */

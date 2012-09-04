@@ -78,7 +78,6 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
  * }
  * </pre>
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OptionChain.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

@@ -3,7 +3,6 @@ package org.marketcetera.api.security;
 import java.util.List;
 
 /**
- * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
  * @version $Id$
  * @date 8/20/12 3:46 PM
  */

@@ -9,7 +9,6 @@ import org.marketcetera.core.LoggerConfiguration;
 /**
  * Base class for market data provider <code>Module</code> tests that simulate data.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: SimulatedMarketDataModuleTestBase.java 82329 2012-04-10 16:28:13Z colin $
  * @since 1.0.0
  */

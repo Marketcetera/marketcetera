@@ -11,8 +11,6 @@ import org.marketcetera.core.CoreException;
  * Callers can optionally determine the set of properties that the feed understands.
  * Setting properties may be optional or required depending on the implementation of the data feed.
  *
- * @author gmiller
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: IMarketDataFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

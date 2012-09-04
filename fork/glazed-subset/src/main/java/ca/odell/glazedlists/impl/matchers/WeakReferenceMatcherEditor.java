@@ -31,7 +31,6 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
  * weakRefMatcherEditor.addMatcherEditorListener(customMatcherEditorListener);
  * </pre>
  *
- * @author James Lemieux
  */
 public final class WeakReferenceMatcherEditor<E> implements MatcherEditor<E>, MatcherEditor.Listener<E> {
 

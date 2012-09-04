@@ -40,7 +40,6 @@ package ca.odell.glazedlists.impl.adt;
  * have no memory impact on the data structure.
  *
  *
- * @author <a href="mailto:kevin@swank.ca">Kevin Maltby</a>
  *
  */
 public final class Barcode {

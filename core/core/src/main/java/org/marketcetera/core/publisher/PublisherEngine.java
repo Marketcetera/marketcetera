@@ -14,7 +14,6 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
  * 
  * <p>This object is meant to be used by means of a "has-a" relationship.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: PublisherEngine.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

@@ -8,7 +8,6 @@ import java.util.Map;
 /**
  * Designates the capacity of the firm placing the order.
  *
- * @author anshul@marketcetera.com
  * @version $Id: OrderCapacity.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

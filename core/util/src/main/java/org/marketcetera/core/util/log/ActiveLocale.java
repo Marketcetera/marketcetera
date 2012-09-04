@@ -35,7 +35,6 @@ import org.marketcetera.core.util.misc.CollectionUtils;
  * scope below (or, if null as well, the locale below it and so on) to
  * show through as the active locale.</p>
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: ActiveLocale.java 16063 2012-01-31 18:21:55Z colin $
  */

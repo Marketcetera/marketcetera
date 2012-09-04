@@ -18,7 +18,6 @@ import java.util.HashMap;
  * (even if the debugger does not indicate an interest in
  * exceptions).</p>
  * 
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: UCPFilter.java 16063 2012-01-31 18:21:55Z colin $
  */

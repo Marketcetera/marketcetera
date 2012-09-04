@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests {@link org.marketcetera.core.trade.FIXResponse} and {@link org.marketcetera.core.trade.FIXResponseImpl}.
  *
- * @author tlerios@marketcetera.com
  * @since 2.0.0
  * @version $Id: FIXResponseTest.java 16063 2012-01-31 18:21:55Z colin $
  */

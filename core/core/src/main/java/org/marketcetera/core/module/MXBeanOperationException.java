@@ -6,7 +6,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /**
  * Indicates errors when executing a module related JMX Operations.
  *
- * @author anshul@marketcetera.com
  * @version $Id: MXBeanOperationException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

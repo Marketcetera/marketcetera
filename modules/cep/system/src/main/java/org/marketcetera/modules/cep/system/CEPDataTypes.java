@@ -11,7 +11,6 @@ import org.marketcetera.core.trade.*;
 /**
  *
  * Set of constants naming pre-defined CEP data types
- * @author toli@marketcetera.com
  * @version $Id: CEPDataTypes.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

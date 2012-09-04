@@ -16,7 +16,6 @@ import quickfix.field.TimeInForce;
  * Verify that the round-tripping of BigDecimals works with QFJ
  * this is testing the fix for bug QFJ-300 (http://www.quickfixj.org/jira/browse/QFJ-300)
  *
- * @author toli
  * @version $Id: DecimalFieldTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 

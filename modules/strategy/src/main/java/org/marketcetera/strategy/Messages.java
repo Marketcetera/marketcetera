@@ -16,7 +16,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
 /**
  * Message keys for the strategy module.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Messages.java 16069 2012-03-24 00:57:05Z colin $
  * @since 1.0.0
  */

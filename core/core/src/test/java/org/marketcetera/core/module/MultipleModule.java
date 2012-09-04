@@ -4,7 +4,6 @@ package org.marketcetera.core.module;
 /**
  * Multiple instances of this module can exist.
  *
- * @author anshul@marketcetera.com
  */
 public class MultipleModule extends ModuleBase {
     public MultipleModule(ModuleURN inURN, boolean inAutoStart) {

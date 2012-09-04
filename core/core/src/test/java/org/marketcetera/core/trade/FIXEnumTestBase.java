@@ -16,7 +16,6 @@ import static org.junit.Assert.*;
  * @param <F> The fix parameter value type.
  * @param <E> The Enum type.
  *
- * @author anshul@marketcetera.com
  * @version $Id: FIXEnumTestBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

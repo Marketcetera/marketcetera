@@ -26,7 +26,6 @@ import static org.mockito.Mockito.*;
 /**
  * Provides common test services for systemmodel objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

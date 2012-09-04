@@ -33,7 +33,6 @@ import quickfix.Message;
 /**
  * Tests {@link AbstractRunningStrategy}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractRunningStrategyTest.java 16069 2012-03-24 00:57:05Z colin $
  * @since 2.1.4
  */
@@ -552,7 +551,6 @@ public class AbstractRunningStrategyTest
     /**
      * Test <code>Strategy</code> implementation.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractRunningStrategyTest.java 16069 2012-03-24 00:57:05Z colin $
      * @since 2.1.4
      */
@@ -653,7 +651,6 @@ public class AbstractRunningStrategyTest
     /**
      * Test <code>ServicesProvider</code>.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractRunningStrategyTest.java 16069 2012-03-24 00:57:05Z colin $
      * @since 2.1.4
      */
@@ -940,7 +937,6 @@ public class AbstractRunningStrategyTest
     /**
      * Test <code>AbstractRunningStrategy</code>.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractRunningStrategyTest.java 16069 2012-03-24 00:57:05Z colin $
      * @since 2.1.4
      */

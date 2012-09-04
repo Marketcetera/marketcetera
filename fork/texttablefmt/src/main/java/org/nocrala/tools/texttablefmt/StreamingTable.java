@@ -76,8 +76,7 @@ import org.apache.log4j.Logger;
  * <code>ShownBorders</code> and cell widths. Besides, cell rendering can be 
  * customized on a cell basis using <code>CellStyle</code>s.</p>  
  * 
- * @author valarcon
- * 
+ *
  */
 public class StreamingTable {
 

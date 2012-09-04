@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * This exception is thrown when the requested
  * module provider as identified by its URN, does not exist.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ProviderNotFoundException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

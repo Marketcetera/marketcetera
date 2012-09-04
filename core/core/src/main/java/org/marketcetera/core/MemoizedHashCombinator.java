@@ -1,7 +1,6 @@
 package org.marketcetera.core;
 
 /**
- * @author Graham Miller
  * @version $Id: MemoizedHashCombinator.java 82326 2012-04-10 16:27:07Z colin $
  */
 public class MemoizedHashCombinator<T1, T2> extends Pair<T1, T2>{

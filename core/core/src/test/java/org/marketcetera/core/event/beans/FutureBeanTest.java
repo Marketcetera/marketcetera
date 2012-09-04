@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Tests {@link org.marketcetera.core.event.beans.FutureBean}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: FutureBeanTest.java 82331 2012-04-10 16:29:48Z colin $
  * @since 2.1.4
  */

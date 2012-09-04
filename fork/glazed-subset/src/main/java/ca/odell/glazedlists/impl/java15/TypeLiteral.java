@@ -47,9 +47,6 @@ import static ca.odell.glazedlists.impl.Preconditions.checkNotNull;
  * Glazed Lists project. The original, unmodified version of this class can be
  * found <a href="http://code.google.com/p/google-guice/source/browse/trunk/src/com/google/inject/TypeLiteral.java">here</a>.
  *
- * @author crazybob@google.com (Bob Lee)
- * @author jessewilson@google.com (Jesse Wilson)
- * @author James Lemieux
  */
 public class TypeLiteral<T> {
 

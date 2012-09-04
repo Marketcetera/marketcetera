@@ -7,7 +7,6 @@ import java.util.UUID;
  * instance) has an unique node ID. New IDs should be obtained using
  * {@link #generate()}.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: NodeId.java 82324 2012-04-09 20:56:08Z colin $
  */

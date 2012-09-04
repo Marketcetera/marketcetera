@@ -6,7 +6,6 @@ import org.marketcetera.core.MarketceteraTestSuite;
 import quickfix.field.OrdStatus;
 
 /**
- * @author Graham Miller
  * @version $Id: FieldNameMapTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FieldNameMapTest extends TestCase {

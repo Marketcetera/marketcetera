@@ -13,7 +13,6 @@ import org.marketcetera.core.ws.wrappers.LocaleWrapper;
  * A client node for stateless communication. Its (optional)
  * application ID is that of the application which hosts the client.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: StatelessClient.java 82324 2012-04-09 20:56:08Z colin $
  */

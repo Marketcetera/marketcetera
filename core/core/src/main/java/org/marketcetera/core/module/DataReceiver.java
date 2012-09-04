@@ -5,7 +5,6 @@ package org.marketcetera.core.module;
  * This interface is implemented by a module that is capable of
  * receiving data from other modules within a data flow.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataReceiver.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

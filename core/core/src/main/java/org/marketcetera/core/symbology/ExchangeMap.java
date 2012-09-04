@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Graham Miller
  * @version $Id: ExchangeMap.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class ExchangeMap {

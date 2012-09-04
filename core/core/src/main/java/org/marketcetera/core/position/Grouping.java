@@ -8,7 +8,6 @@ package org.marketcetera.core.position;
  * @see PositionRow#getGrouping()
  * @see PositionEngine#getGroupedData(Grouping...)
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: Grouping.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

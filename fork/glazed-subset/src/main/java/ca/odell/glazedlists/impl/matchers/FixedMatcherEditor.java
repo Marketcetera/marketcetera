@@ -9,7 +9,6 @@ import ca.odell.glazedlists.matchers.Matcher;
 /**
  * A {@link ca.odell.glazedlists.matchers.MatcherEditor} whose {@link ca.odell.glazedlists.matchers.Matcher} never changes.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class FixedMatcherEditor<E> extends AbstractMatcherEditor<E> {
 

@@ -9,7 +9,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
  * An implementation wrapper for stateless services. The wrapped call
  * is implemented by overriding {@link #call(StatelessClientContext)}.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: StatelessRemoteCaller.java 82324 2012-04-09 20:56:08Z colin $
  */

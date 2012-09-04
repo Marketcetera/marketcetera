@@ -11,7 +11,6 @@ import org.marketcetera.core.trade.Instrument;
  * to group messages in a list based on a match of this
  * tuple, for example when calculating average prices.
  * 
- * @author gmiller
  *
  */
 public class SymbolSide extends MemoizedHashCombinator<Instrument, String> {

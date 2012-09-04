@@ -12,7 +12,6 @@ import org.marketcetera.core.module.DisplayName;
  * <code>MXBean</code> interface for an {@link AbstractMarketDataModule} enumerating the <code>MXBean</code>
  * methods available.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractMarketDataModuleMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

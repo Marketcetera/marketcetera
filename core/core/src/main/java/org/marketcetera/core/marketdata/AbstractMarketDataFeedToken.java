@@ -13,7 +13,6 @@ import org.marketcetera.core.publisher.PublisherEngine;
  * <code>MarketDataFeedTokenSpec</code> contains the information necessary to reproduce
  * the query represented by this token.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractMarketDataFeedToken.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

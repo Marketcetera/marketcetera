@@ -24,7 +24,6 @@ import java.util.Date;
 import java.text.MessageFormat;
 
 /**
- * @author Mattias Jiderhamn
  */
 public class MessageManagerTest extends MockProviderTestBase {
 

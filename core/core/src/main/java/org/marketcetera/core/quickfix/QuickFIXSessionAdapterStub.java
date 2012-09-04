@@ -10,7 +10,6 @@ import quickfix.*;
 
 /**
  * Simple no-op implementation of a Quickfix session adapter
- * @author gmiller
  */
 public class QuickFIXSessionAdapterStub implements QuickFIXSessionAdapter
 {

@@ -45,8 +45,6 @@ import ca.odell.glazedlists.matchers.Matchers;
  * </td></tr>
  * </table>
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
- * @author James Lemieux
  */
 public final class FilterList<E> extends TransformedList<E,E> {
 

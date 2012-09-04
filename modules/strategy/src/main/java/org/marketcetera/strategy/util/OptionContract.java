@@ -19,7 +19,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
 /**
  * Represents an option contract and its most recent market data, if available.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OptionContract.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

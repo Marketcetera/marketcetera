@@ -9,7 +9,6 @@ import org.marketcetera.api.dao.Role;
 /**
  * Provides access to and management of <code>Role</code> objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

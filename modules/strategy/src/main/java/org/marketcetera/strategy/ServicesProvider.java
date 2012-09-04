@@ -23,7 +23,6 @@ import quickfix.Message;
  * <p>Data transmitted via the methods in this interface will be emitted via the implementer's {@link DataEmitter}
  * implementation.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: ServicesProvider.java 16063 2012-01-31 18:21:55Z colin $
  */
 interface ServicesProvider

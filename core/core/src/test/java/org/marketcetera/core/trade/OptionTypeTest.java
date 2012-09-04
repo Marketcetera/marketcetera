@@ -12,7 +12,6 @@ import static org.marketcetera.core.trade.OptionType.*;
 /**
  * Tests {@link org.marketcetera.core.trade.OptionType}
  *
- * @author anshul@marketcetera.com
  * @version $Id: OptionTypeTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

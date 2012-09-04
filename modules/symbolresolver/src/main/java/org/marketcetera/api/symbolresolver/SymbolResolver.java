@@ -7,7 +7,6 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Resolves symbols to instruments.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: SymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */

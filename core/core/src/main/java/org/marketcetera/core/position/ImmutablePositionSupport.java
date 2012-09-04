@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableMap;
 /**
  * An implementation of IncomingPositionSupport that provides positions from an fixed map.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: ImmutablePositionSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

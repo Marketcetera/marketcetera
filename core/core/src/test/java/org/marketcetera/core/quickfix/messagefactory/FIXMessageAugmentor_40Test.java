@@ -14,7 +14,6 @@ import quickfix.field.Side;
 import quickfix.field.TimeInForce;
 
 /**
- * @author toli
  * @version $Id: FIXMessageAugmentor_40Test.java 16063 2012-01-31 18:21:55Z colin $
  */
 

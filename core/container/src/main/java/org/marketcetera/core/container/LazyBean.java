@@ -15,7 +15,6 @@ import org.marketcetera.core.util.except.I18NRuntimeException;
  * mutually dependent beans attempt to process each other during their
  * own processing, thereby leading to an endless cycle.
  *
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: LazyBean.java 82323 2012-04-09 16:32:23Z colin $
  */

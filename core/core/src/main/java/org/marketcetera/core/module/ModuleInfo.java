@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 /**
  * Provided detailed information on a module instance.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleInfo.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

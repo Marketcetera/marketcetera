@@ -29,7 +29,6 @@ import static org.junit.Assert.*;
  * 
  * <p>Unit tests for market data provider modules should extend this class.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataModuleTestBase.java 82329 2012-04-10 16:28:13Z colin $
  * @since 1.0.0
  */
@@ -290,7 +289,6 @@ public abstract class MarketDataModuleTestBase
     /**
      * Sample <code>SinkDataListener</code> implementation that stores the objects it receives.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: MarketDataModuleTestBase.java 82329 2012-04-10 16:28:13Z colin $
      * @since 1.0.0
      */

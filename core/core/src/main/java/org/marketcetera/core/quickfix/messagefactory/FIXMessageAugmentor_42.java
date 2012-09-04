@@ -5,7 +5,6 @@ import java.util.Arrays;
 import quickfix.field.MsgType;
 
 /**
- * @author toli
  * @version $Id: FIXMessageAugmentor_42.java 16063 2012-01-31 18:21:55Z colin $
  */
 

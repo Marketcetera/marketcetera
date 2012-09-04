@@ -17,8 +17,6 @@ import ca.odell.glazedlists.matchers.Matchers;
  * An {@link ca.odell.glazedlists.ObservableElementList.Connector} for the Java beans'
  * {@link java.beans.PropertyChangeListener}.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
- * @author James Lemieux
  */
 public class BeanConnector<E> implements ObservableElementList.Connector<E> {
 

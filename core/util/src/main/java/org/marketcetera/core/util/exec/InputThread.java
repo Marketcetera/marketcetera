@@ -9,7 +9,6 @@ import org.marketcetera.core.util.file.CloseableRegistry;
 /**
  * A thread that consumes an input stream.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: InputThread.java 16063 2012-01-31 18:21:55Z colin $
  */

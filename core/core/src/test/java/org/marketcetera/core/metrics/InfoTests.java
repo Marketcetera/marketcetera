@@ -11,7 +11,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link org.marketcetera.core.metrics.CheckpointInfo}, {@link org.marketcetera.core.metrics.IterationInfo} & {@link org.marketcetera.core.metrics.PerThreadInfo}.
  *
- * @author anshul@marketcetera.com
  * @version $Id: InfoTests.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

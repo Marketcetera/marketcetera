@@ -7,7 +7,6 @@ import org.apache.commons.lang.ObjectUtils;
 /**
  * The marshalled form for a locale whose raw form is {@link Locale}.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: MarshalledLocale.java 82324 2012-04-09 20:56:08Z colin $
  */

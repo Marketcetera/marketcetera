@@ -37,7 +37,6 @@ import java.io.InputStreamReader;
  * a) how to use qualified message providers, instead of searching through all available providers.
  * b) how to use i18n for messages stored in databases. For the sake of the example, we will create
  * an in memory database holding the i18n messages using HSQLDB.
- * @author Mattias Jiderhamn
  * @see <a href="http://hsqldb.org/">HSQLDB</a>
  */
 public class QualifiedJdbcExample {

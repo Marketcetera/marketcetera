@@ -8,7 +8,6 @@ import java.util.Date;
  * necessary because date objects are not marshalled correctly under
  * certain time zones, including GMT.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.5.0
  * @version $Id: DateWrapper.java 82324 2012-04-09 20:56:08Z colin $
  */

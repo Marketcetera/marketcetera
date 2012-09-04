@@ -14,7 +14,6 @@ import quickfix.field.Side;
  * Dummy implementation of a QuickfixSender that captures all the messages
  * but doesn't actually send them anywhere.
  * If there's a semaphore, signals on it that the element is available.
- * @author toli
 * @version $Id: NullQuickFIXSender.java 16063 2012-01-31 18:21:55Z colin $
 */
 public class NullQuickFIXSender implements IQuickFIXSender {

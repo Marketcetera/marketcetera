@@ -10,7 +10,6 @@ import quickfix.field.OrdType;
 import quickfix.field.TimeInForce;
 
 /**
- * @author toli
  * @version $Id: FIXMessageAugmentor_43.java 16063 2012-01-31 18:21:55Z colin $
  */
 

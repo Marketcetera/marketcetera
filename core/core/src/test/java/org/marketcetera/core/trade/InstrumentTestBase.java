@@ -17,7 +17,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Base class for testing {@link Instrument} implementations.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: InstrumentTestBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

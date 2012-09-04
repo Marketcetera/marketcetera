@@ -27,7 +27,6 @@ import static org.junit.Assert.*;
 /**
  * Base class for testing various enums based on FIX enum values.
  *
- * @author anshul@marketcetera.com
  * @version $Id: TypesTestBase.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.marketcetera.api.security.Session;
 
 /**
- * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
  * @version $Id$
  * @date 8/19/12 7:04 AM
  */

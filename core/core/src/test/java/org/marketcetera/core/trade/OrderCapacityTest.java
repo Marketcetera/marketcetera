@@ -12,7 +12,6 @@ import static org.marketcetera.core.trade.OrderCapacity.*;
 /**
  * Tests {@link org.marketcetera.core.trade.OrderCapacity}
  *
- * @author anshul@marketcetera.com
  * @version $Id: OrderCapacityTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

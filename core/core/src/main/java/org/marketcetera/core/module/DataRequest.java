@@ -39,7 +39,6 @@ package org.marketcetera.core.module;
  * parameter types and values supported by the module.
  *
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataRequest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

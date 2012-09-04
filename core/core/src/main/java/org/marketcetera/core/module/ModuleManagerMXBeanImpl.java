@@ -14,7 +14,6 @@ import org.marketcetera.core.util.except.I18NException;
  * accepts for its operations to the java types that are used by
  * the Module Manager.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleManagerMXBeanImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

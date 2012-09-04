@@ -12,7 +12,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
  * session starts with {@link #login(String,char[])} and ends with
  * {@link #logout()}.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: Client.java 82324 2012-04-09 20:56:08Z colin $
  */

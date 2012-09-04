@@ -53,7 +53,6 @@ import com.google.common.collect.HashBiMap;
  * <tr><th>Factory</th><td>{@link StrategyModuleFactory}</td></tr>
  * </table>
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
@@ -1459,7 +1458,6 @@ final class StrategyModule
     /**
      * Request for data that comes from within strategy to strategy.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
@@ -1482,7 +1480,6 @@ final class StrategyModule
     /**
      * Represents a request for a subscription to data this strategy can emit.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
@@ -1573,7 +1570,6 @@ final class StrategyModule
     /**
      * Constructs a <code>Client</code> connection.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.1.0
      */

@@ -17,7 +17,6 @@ import org.marketcetera.core.marketdata.MarketDataRequest;
 /**
  * Tests {@link BogusFeedMessageTranslator}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: BogusFeedMessageTranslatorTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

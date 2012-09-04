@@ -38,7 +38,6 @@ import ca.odell.glazedlists.event.ListEventListener;
  * <p>This class is agnostic to any particular GUI toolkit. As such it may be
  * used in a headless environment or can also be bound to a specific toolkit.
  *
- * @author James Lemieux
  */
 public final class UndoRedoSupport<E> {
 

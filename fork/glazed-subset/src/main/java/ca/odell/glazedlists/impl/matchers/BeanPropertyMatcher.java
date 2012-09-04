@@ -12,7 +12,6 @@ import ca.odell.glazedlists.matchers.Matcher;
  * from a given bean and check it for equality with a given value.
  * <code>null</code> property values are allowed.
  *
- * @author James Lemieux
  */
 public final class BeanPropertyMatcher<E> implements Matcher<E> {
 

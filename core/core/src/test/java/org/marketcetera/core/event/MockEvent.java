@@ -10,7 +10,6 @@ import org.marketcetera.core.marketdata.MarketDataRequest;
 /**
  * Test implementation of {@link org.marketcetera.core.event.Event}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MockEvent.java 82331 2012-04-10 16:29:48Z colin $
  * @since 2.0.0
  */

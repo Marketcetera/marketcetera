@@ -10,7 +10,6 @@ import org.apache.commons.lang.Validate;
 /**
  * Indicates the expiration month of a futures contract.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: FutureExpirationMonth.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */

@@ -14,7 +14,6 @@ import org.marketcetera.core.event.TradeEvent;
  * 
  * <p>In this context, <em>content</em> refers to the type of market data request.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Content.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

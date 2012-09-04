@@ -5,7 +5,6 @@ package org.marketcetera.core.module;
  * A module factory that supports single instance only and does not require
  * parameters to instantiate the instance.
  *
- * @author anshul@marketcetera.com
  */
 public class SingleModuleFactory extends ModuleFactory {
     @Override

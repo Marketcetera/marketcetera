@@ -13,7 +13,6 @@ import javax.annotation.concurrent.ThreadSafe;
  * <p>This class is not thread-safe: if thread-safety is required external
  * synchronization is necessary.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: UnmodifiableDeque.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */
@@ -343,7 +342,6 @@ public class UnmodifiableDeque<T>
      * Provides an <code>Iterator</code> implementation that cannot be used to modify
      * the underlying <code>Collection</code>.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: UnmodifiableDeque.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.1.4
      */

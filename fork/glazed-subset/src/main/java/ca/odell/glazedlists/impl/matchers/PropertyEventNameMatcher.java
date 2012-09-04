@@ -21,7 +21,6 @@ import ca.odell.glazedlists.matchers.Matcher;
  * 
  * @see #isMatchPropertyNames()
  * 
- * @author Holger Brands
  */
 public final class PropertyEventNameMatcher implements Matcher<PropertyChangeEvent> {
 

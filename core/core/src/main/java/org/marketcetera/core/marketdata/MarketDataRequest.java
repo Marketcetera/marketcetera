@@ -25,7 +25,6 @@ import static org.marketcetera.core.marketdata.Messages.*;
  * 
  * <p>Use a {@link MarketDataRequestBuilder builder} to create a <code>MarketDataRequest</code> object.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataRequest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

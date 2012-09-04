@@ -32,7 +32,6 @@ import java.io.ByteArrayInputStream;
 import org.apache.commons.i18n.bundles.MessageBundle;
 
 /**
- * @author Daniel Florey
  *
  */
 public class ResourceBundleMessageProviderTest extends MessageProviderTestBase {

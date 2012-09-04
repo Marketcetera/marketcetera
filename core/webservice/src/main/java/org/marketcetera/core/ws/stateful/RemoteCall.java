@@ -13,7 +13,6 @@ import org.marketcetera.core.ws.tags.ValidSessionTagFilter;
  * logging, exception wrapping, and (optionally) maps session IDs to
  * session holders.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: RemoteCall.java 82324 2012-04-09 20:56:08Z colin $
  */

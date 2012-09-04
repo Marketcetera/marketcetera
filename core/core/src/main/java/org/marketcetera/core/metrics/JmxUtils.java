@@ -12,7 +12,6 @@ import javax.management.*;
  * of the property {@link #METC_METRICS_JMX_ENABLE metc.metrics.jmx.enable}
  * is set to true.
  *
- * @author anshul@marketcetera.com
  * @version $Id: JmxUtils.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  * @see ThreadedMetricMXBean

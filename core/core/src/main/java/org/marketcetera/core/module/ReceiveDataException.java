@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * Instances of this exception are thrown when a receiver module is unable to
  * receive data within a data flow. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: ReceiveDataException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  * @see DataReceiver#receiveData(DataFlowID, Object) 

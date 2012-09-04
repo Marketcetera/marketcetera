@@ -69,7 +69,6 @@ import java.util.NoSuchElementException;
  *     used as the implicit parameter to overloaded versions of {@link #hasNext}
  *     and {@link #next}.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public class SimpleTreeIterator<  T0>   {
 

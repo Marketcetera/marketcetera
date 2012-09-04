@@ -19,7 +19,6 @@ import org.marketcetera.core.module.ModuleURN;
  * </table>
  *
  * @see CEPSystemProcessor
- * @author toli@marketcetera.com
  * @since 1.0.0
  * @version $Id: CEPSystemFactory.java 16063 2012-01-31 18:21:55Z colin $
  */

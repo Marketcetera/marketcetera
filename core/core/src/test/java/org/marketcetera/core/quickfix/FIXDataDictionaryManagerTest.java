@@ -7,7 +7,6 @@ import quickfix.field.ExecType;
 import quickfix.field.Side;
 
 /**
- * @author Toli Kuznets
  * @version $Id: FIXDataDictionaryManagerTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FIXDataDictionaryManagerTest extends TestCase {

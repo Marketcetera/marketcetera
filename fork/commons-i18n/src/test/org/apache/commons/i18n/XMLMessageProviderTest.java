@@ -25,7 +25,6 @@ import java.util.Locale;
 import org.apache.commons.i18n.bundles.MessageBundle;
 
 /**
- * @author Daniel Florey
  *
  */
 public class XMLMessageProviderTest extends MessageProviderTestBase {

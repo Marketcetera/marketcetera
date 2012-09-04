@@ -6,7 +6,6 @@ package ca.odell.glazedlists.impl.adt.barcode2;
 /**
  * The exposed interface of a node.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public interface Element<V> {
 

@@ -42,7 +42,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * The <code>Action</code> attribute dictates whether the event is inserted
  * into the book, or changes or deletes an existing order.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OrderBook.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.6.0
  */
@@ -418,7 +417,6 @@ public class OrderBook
     /**
      * Stores the orders of one side of a book.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: OrderBook.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.6.0
      */

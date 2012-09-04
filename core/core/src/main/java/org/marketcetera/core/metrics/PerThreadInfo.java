@@ -43,7 +43,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * used should guarantee that the reads from a different thread generate
  * consistent & correct results.
  *  
- * @author anshul@marketcetera.com
  * @version $Id: PerThreadInfo.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

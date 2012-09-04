@@ -11,7 +11,6 @@ import javax.management.MXBean;
  * This interface is used for testing if the configuration provider
  * can be used to set default properties on a factory.
  *
- * @author anshul@marketcetera.com
  */
 @MXBean(true)
 @DisplayName("Management interface for configuration provider bean")

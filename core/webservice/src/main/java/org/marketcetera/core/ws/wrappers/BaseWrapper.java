@@ -10,7 +10,6 @@ import org.apache.commons.lang.ArrayUtils;
  * suitable for (and is, in fact used by this class) to override
  * certain standard {@link Object} methods.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: BaseWrapper.java 82324 2012-04-09 20:56:08Z colin $
  */

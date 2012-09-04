@@ -10,7 +10,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * {@link DataEmitter#requestData(DataRequest, DataEmitterSupport)}
  * to enable emitters to emit data for a data flow. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataEmitterSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  * 

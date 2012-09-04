@@ -6,7 +6,6 @@ import org.marketcetera.core.ws.stateful.SessionHolder;
  * A sample session. It simply counts the number of calls made to the
  * {@link #getCallCount()} method.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SampleSession.java 16063 2012-01-31 18:21:55Z colin $
  */

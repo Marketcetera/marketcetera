@@ -41,9 +41,6 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
  *   <li>F - The market data feed type itself</li>
  * </ul>
  *
- * @author andrei@lissovski.org
- * @author gmiller
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 0.5.0
  */
 public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedToken<F>,
@@ -779,7 +776,6 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * because it must have access to the parent's <code>T</code> and <code>C</code>
      * types and must call several non-static methods on the parent.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */
@@ -851,7 +847,6 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * <p>Note that this class is declared non-static intentionally in order
      * to use the parent class's generic types.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */    
@@ -982,7 +977,6 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *       data feeds contains no duplicates</li>
      * </ol>
      *       
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */
@@ -1067,7 +1061,6 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * <p>The wrapper translates {@link ISubscriber} methods to
      * the {@link IFeedComponentListener} objects.
      * 
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */

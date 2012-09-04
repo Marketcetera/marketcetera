@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 import static org.marketcetera.util.test.ComparableAssert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.5.0
  * @version $Id: DateWrapperTest.java 82324 2012-04-09 20:56:08Z colin $
  */

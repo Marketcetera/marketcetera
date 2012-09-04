@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 /**
  * Test {@link MultiplierCalculator}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: MultiplierCalculatorTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

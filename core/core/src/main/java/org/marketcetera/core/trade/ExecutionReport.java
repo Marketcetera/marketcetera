@@ -16,7 +16,6 @@ import java.util.Date;
  * is returned to indicate that the value is set but is not currently
  * expressible through the current API.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ExecutionReport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

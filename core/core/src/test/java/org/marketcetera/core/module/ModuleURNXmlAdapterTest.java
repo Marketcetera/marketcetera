@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests {@link org.marketcetera.core.module.ModuleURNXmlAdapter}.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleURNXmlAdapterTest.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */

@@ -9,7 +9,6 @@ import java.util.List;
 /**
  * This class provides detailed information on a module provider.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ProviderInfo.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

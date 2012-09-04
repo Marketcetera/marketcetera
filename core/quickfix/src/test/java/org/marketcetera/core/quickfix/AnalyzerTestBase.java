@@ -10,7 +10,6 @@ import org.marketcetera.util.test.TestCaseBase;
 import quickfix.DataDictionary;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: AnalyzerTestBase.java 82323 2012-04-09 16:32:23Z colin $
  */

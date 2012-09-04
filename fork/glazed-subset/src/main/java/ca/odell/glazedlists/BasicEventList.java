@@ -41,7 +41,6 @@ import ca.odell.glazedlists.util.concurrent.ReadWriteLock;
  * <tr><td class="TableSubHeadingColor"><b>Issues:</b></td><td>N/A</td></tr>
  * </table>
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class BasicEventList<E> extends AbstractEventList<E> implements Serializable, RandomAccess {
 

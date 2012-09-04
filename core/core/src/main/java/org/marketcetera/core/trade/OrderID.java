@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlValue;
  * message protocol is FIX, this value typically translates to
  * <code>ClOrdID</code> or <code>OrigClOrdID</code> fields.
  *
- * @author anshul@marketcetera.com
  * @version $Id: OrderID.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

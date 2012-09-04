@@ -20,7 +20,6 @@ import static org.marketcetera.core.util.file.SpecialNames.*;
  * directly, that is, without going through the wrapper's {@link
  * #close()} method.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: ReaderWrapper.java 16063 2012-01-31 18:21:55Z colin $
  */

@@ -8,7 +8,6 @@ import quickfix.Message;
 import quickfix.field.*;
 
 /**
- * @author toli
  * @version $Id: FIXMessageAugmentor_41.java 16063 2012-01-31 18:21:55Z colin $
  */
 

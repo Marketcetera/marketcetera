@@ -33,8 +33,6 @@ package ca.odell.glazedlists.impl;
  * Glazed Lists project. The original, unmodified version of this class can be
  * found <a href="http://google-collections.googlecode.com/svn/trunk/src/com/google/common/base/Preconditions.java">here</a>.
  *
- * @author Kevin Bourrillion
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class Preconditions {
     private Preconditions() {

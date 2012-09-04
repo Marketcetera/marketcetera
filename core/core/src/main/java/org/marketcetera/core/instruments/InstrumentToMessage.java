@@ -26,7 +26,6 @@ import quickfix.field.Symbol;
  *
  * @param <I> The type of instrument handled by this function
  * 
- * @author anshul@marketcetera.com
  * @version $Id: InstrumentToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

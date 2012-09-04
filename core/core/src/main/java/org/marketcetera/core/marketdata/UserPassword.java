@@ -7,7 +7,6 @@ package org.marketcetera.core.marketdata;
  * for security reasons.  Essentially, this class should be used as
  * the inner half of a <em>decorator</em> pattern.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: UserPassword.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.43-SNAPSHOT
  */

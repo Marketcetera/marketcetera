@@ -16,7 +16,6 @@ import quickfix.field.SubscriptionRequestType;
 
 /**
  * Verify that custom fields are created and verified by data dictionary
- * @author toli
  * @version $Id: CustomFieldsTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 

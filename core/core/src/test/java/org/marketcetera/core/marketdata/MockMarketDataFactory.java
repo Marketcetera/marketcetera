@@ -6,7 +6,6 @@ import org.marketcetera.core.marketdata.IFeedComponent.FeedType;
 /**
  * Test implementation of {@link org.marketcetera.core.marketdata.IMarketDataFeedFactory}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MockMarketDataFactory.java 82329 2012-04-10 16:28:13Z colin $
  * @since 0.5.0
  */

@@ -7,7 +7,6 @@ package org.marketcetera.core.module;
  * of this class delegate to the respective {@link ModuleManager} methods
  * adding the URN of the module requesting data flow creation / cancelation. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataFlowSupportImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.*;
 /**
  * Messages for CSVFeed module.
  *
- * @author <a href="mailto:colin@marketcetera.com">Toli Kuznets</a>
  * @since 2.1.0
  * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
  */

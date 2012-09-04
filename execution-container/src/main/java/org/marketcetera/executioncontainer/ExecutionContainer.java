@@ -7,7 +7,6 @@ import org.marketcetera.core.container.AbstractSpringApplication;
 /**
  * Provides a base application for Marketcetera.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: ExecutionContainer.java 82351 2012-05-04 21:46:58Z colin $
  * @since $Release$
  */

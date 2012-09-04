@@ -4,7 +4,6 @@ package org.marketcetera.core.quickfix.customfields;
  * Collection of connstants for custom fields were FIX messages
  * were not regenerated to contain the custom constants in the
  * FIX dictionary file
- * @author toli
  * @version $Id: CustomFIXFieldConstants.java 16063 2012-01-31 18:21:55Z colin $
  */
 

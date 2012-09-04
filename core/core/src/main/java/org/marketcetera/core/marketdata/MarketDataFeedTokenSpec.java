@@ -19,7 +19,6 @@ import org.marketcetera.core.publisher.ISubscriber;
  * In the future, this will be more flexible and the token spec can
  * be used to initiate a request with any feed.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataFeedTokenSpec.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

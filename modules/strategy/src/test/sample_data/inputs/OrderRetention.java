@@ -15,7 +15,6 @@ import org.marketcetera.core.trade.TimeInForce;
 /**
  * Tests the Strategy API open order tracker.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OrderRetention.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

@@ -133,8 +133,6 @@
  *
  * </ul>
  *
- * @author tlerios@marketcetera.com
- * @author anshul@marketcetera.com
  * @since 1.0.0
  * @version $Id: package-info.java 82324 2012-04-09 20:56:08Z colin $
  */

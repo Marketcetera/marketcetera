@@ -11,7 +11,6 @@ import static org.marketcetera.core.marketdata.AssetClass.*;
 /**
  * Tests {@link org.marketcetera.core.marketdata.AssetClass}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AssetClassTest.java 82329 2012-04-10 16:28:13Z colin $
  * @since 2.1.0
  */

@@ -11,7 +11,6 @@ import org.apache.commons.lang.ObjectUtils;
  * and can be omitted (in which case it defaults to {@link
  * #UNKNOWN_ENTRY_ID}).
  * 
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: I18NMessage.java 16063 2012-01-31 18:21:55Z colin $
  */

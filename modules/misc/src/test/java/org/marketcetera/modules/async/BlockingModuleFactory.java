@@ -10,7 +10,6 @@ import org.marketcetera.core.module.ModuleURN;
 /**
  * Factory for a module that blocks when receiving data.
  *
- * @author anshul@marketcetera.com
  * @version $Id: BlockingModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

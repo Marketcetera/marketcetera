@@ -15,7 +15,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * These instances are used by the module framework to keep track of
  * all the data flows.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataFlow.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

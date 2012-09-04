@@ -17,7 +17,6 @@ import org.marketcetera.api.dao.Role;
 /**
  * Provides a web-services appropriate group implementation.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

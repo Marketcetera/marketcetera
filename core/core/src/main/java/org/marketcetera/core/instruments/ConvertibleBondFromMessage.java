@@ -13,7 +13,6 @@ import quickfix.field.SecurityType;
 /**
  * Extracts a <code>ConvertibleBond</code> instrument from a FIX Message.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

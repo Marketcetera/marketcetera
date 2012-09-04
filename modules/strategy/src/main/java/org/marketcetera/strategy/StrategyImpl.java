@@ -35,7 +35,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * which is not deterministic.  It is good practice to call {@link #stop()} on each
  * strategy at the appropriate time.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: StrategyImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

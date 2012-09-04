@@ -12,7 +12,6 @@ import quickfix.Message;
  * Exception with multiple constructors designed to handle and create messages
  * for various FIX-related errors
  *
- * @author Toli Kuznets
  * @version $Id: MarketceteraFIXException.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class MarketceteraFIXException extends CoreException {

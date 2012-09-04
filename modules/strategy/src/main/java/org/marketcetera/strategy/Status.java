@@ -7,7 +7,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
 /**
  * Indicates the status of a running strategy.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Status.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

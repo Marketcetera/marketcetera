@@ -5,7 +5,6 @@ import java.io.Serializable;
 /**
  * A tagging interface for all trade messages.
  *
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: TradeMessage.java 16063 2012-01-31 18:21:55Z colin $
  */

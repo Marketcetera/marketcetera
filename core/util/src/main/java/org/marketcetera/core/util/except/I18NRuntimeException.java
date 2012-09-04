@@ -6,7 +6,6 @@ import org.marketcetera.core.util.log.LogUtils;
 /**
  * An internationalized runtime exception.
  * 
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: I18NRuntimeException.java 16063 2012-01-31 18:21:55Z colin $
  */

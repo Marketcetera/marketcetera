@@ -3,7 +3,6 @@ package org.marketcetera.core.event;
 /**
  * Indicates the type of a dividend.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: DividendType.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

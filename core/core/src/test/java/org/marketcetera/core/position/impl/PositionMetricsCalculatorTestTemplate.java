@@ -21,7 +21,6 @@ import static org.marketcetera.core.position.impl.OrderingComparison.comparesEqu
  * Template for verifying that 2 {@link PositionMetricsCalculator}
  * implementations produce the same results with random data.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionMetricsCalculatorTestTemplate.java 10804 2009-10-08
  *          18:00:15Z will $
  * @since 1.5.0

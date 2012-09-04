@@ -3,7 +3,6 @@ package org.marketcetera.api.security;
 /**
  * Provides facilities for a client to manage authentication and authorization of a user or process in a protected system.
 
- * @author <a href="mailto:topping@codehaus.org">Brian Topping</a>
  * @version $Id$
  * @date 8/19/12 4:00 AM
  */

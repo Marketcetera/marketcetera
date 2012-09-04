@@ -8,7 +8,6 @@ import java.util.Map;
 
 /**
  *
- * @author gmiller
  * $Id: FieldNameMap.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FieldNameMap<T> {

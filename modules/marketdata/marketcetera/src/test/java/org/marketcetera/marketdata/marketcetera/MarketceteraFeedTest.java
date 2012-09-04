@@ -5,7 +5,6 @@ import org.junit.Test;
 
 /**
  * Testing the {@link MarketceteraFeed} class.
- * @author toli
  * @version $Id: MarketceteraFeedTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 

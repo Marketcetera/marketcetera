@@ -21,7 +21,6 @@ import javax.swing.event.EventListenerList;
  *    <li>{@link #fireMatchAll()}</li>
  * </ul>
  *
- * @author <a href="mailto:rob@starlight-systems.com">Rob Eden</a>
  */
 public abstract class AbstractMatcherEditor<E> implements MatcherEditor<E> {
 

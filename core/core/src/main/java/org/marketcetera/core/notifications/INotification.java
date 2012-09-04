@@ -8,7 +8,6 @@ import java.util.Date;
 /**
  * Represents an event that has occurred.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: INotification.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.8.0
  */
@@ -18,7 +17,6 @@ public interface INotification
     /**
      * Indicates the severity of an <code>INotification</code>.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: INotification.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.8.0
      */

@@ -5,7 +5,6 @@ package org.marketcetera.core.marketdata;
 /**
  * Credentials for establishing a connection to a {@link MarketDataFeed} that requires a URL.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataFeedURLCredentials.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.1.0
  */

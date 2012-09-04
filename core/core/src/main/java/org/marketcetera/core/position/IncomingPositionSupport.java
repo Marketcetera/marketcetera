@@ -10,7 +10,6 @@ import java.util.Map;
  * The incoming position is used to calculate
  * {@link PositionMetrics#getPositionPL() position PL}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: IncomingPositionSupport.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

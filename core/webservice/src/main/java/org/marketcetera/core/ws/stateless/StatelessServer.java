@@ -5,7 +5,6 @@ import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 /**
  * A server node for stateless communication.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: StatelessServer.java 82324 2012-04-09 20:56:08Z colin $
  */

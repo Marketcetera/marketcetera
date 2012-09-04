@@ -27,7 +27,6 @@ import junit.framework.TestCase;
 /**
  * The testcase for the csv writer.
  * 
- * @author Martin van den Bemt
  * @version $Id: CSVWriterTest.java 73490 2008-05-14 23:59:36Z tlerios $
  */
 public class CSVWriterTest extends TestCase {

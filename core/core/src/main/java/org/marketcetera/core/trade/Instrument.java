@@ -14,7 +14,6 @@ import javax.annotation.concurrent.Immutable;
  * {@link #hashCode()} methods to ensure that any two instrument instances that
  * refer to the same instrument are considered equal.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: Instrument.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

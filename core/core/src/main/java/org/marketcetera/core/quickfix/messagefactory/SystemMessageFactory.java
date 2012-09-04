@@ -14,7 +14,6 @@ import quickfix.field.BeginString;
  * {@link org.marketcetera.core.quickfix.FIXDataDictionary#FIX_SYSTEM_BEGIN_STRING}
  * after they have been created.
  *
- * @author anshul@marketcetera.com
  * @version $Id: SystemMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

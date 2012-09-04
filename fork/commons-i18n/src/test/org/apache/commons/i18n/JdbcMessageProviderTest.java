@@ -28,7 +28,6 @@ import java.util.Properties;
 import org.apache.commons.dbcp.BasicDataSource;
 
 /**
- * @author Mattias Jiderhamn
  */
 public class JdbcMessageProviderTest extends MessageProviderTestBase {
 

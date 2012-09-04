@@ -12,7 +12,6 @@ import org.marketcetera.core.marketdata.MarketDataRequest;
  * 
  * <p>Objects of this type are passed to {@link CSVFeedEventTranslator#toEvent(Object, String)} implementations.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
  * @version $Id: CSVQuantum.java 16063 2012-01-31 18:21:55Z colin $
  */

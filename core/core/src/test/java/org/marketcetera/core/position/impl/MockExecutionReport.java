@@ -23,7 +23,6 @@ import org.marketcetera.core.trade.UserID;
 /**
  * Mock execution report implementing only what is necessary for {@link PositionEngineImpl}.
  *
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: MockExecutionReport.java 16076 2012-04-28 14:59:26Z colin $
  * @since 1.5.0
  */

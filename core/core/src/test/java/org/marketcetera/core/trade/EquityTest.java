@@ -14,7 +14,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests {@link org.marketcetera.core.trade.Equity}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: EquityTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

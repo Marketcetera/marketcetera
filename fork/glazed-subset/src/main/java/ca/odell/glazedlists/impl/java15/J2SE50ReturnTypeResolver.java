@@ -11,7 +11,6 @@ import ca.odell.glazedlists.impl.reflect.ReturnTypeResolver;
  * An implementation of {@link ca.odell.glazedlists.impl.reflect.ReturnTypeResolver} that adapt's Google's
  * {@link ca.odell.glazedlists.impl.java15.TypeLiteral generic type resolver}.
  *
- * @author James Lemieux
  */
 public class J2SE50ReturnTypeResolver implements ReturnTypeResolver {
     public Class<?> getReturnType(Class<?> clazz, Method method) {

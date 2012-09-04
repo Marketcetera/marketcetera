@@ -26,7 +26,6 @@ import com.google.common.collect.Sets;
  * Test {@link PositionRowUpdater}. It simulates market data in one thread and creating/disposing
  * PositionRowUpdater objects in another thread.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionRowUpdaterConcurrencyTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

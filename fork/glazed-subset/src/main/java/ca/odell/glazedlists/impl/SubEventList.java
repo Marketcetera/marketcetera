@@ -25,7 +25,6 @@ import ca.odell.glazedlists.event.ListEvent;
  * breaks the contract required by {@link java.util.List}. See {@link ca.odell.glazedlists.EventList}
  * for an example.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class SubEventList<E> extends TransformedList<E, E> {
 

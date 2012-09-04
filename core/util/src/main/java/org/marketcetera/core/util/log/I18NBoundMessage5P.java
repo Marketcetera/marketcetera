@@ -6,7 +6,6 @@ import java.io.Serializable;
  * A bound message, representing the combination of an {@link
  * I18NMessage5P} and its five parameters.
  * 
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: I18NBoundMessage5P.java 16063 2012-01-31 18:21:55Z colin $
  */

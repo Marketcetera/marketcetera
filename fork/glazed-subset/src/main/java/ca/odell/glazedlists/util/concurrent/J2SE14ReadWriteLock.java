@@ -150,7 +150,6 @@ import ca.odell.glazedlists.impl.SerializedReadWriteLock;
  * {@link Error} throws from locking methods.
  *
  * @since 1.5
- * @author Doug Lea
  */
 public class J2SE14ReadWriteLock implements ReadWriteLock, java.io.Serializable  {
     private static final long serialVersionUID = -3463448656717690166L;

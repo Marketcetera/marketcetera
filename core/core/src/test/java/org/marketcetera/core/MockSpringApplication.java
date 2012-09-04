@@ -10,7 +10,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 /**
  * Sample application used for unit tests.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MockSpringApplication.java 82307 2012-03-02 03:13:45Z colin $
  * @since $Release$
  */

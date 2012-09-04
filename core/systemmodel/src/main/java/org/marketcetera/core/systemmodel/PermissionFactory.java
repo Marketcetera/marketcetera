@@ -7,7 +7,6 @@ import org.marketcetera.api.dao.Permission;
 /**
  * Constructs {@link org.marketcetera.api.dao.Permission} objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: PermissionFactory.java 82315 2012-03-17 01:58:54Z colin $
  * @since $Release$
  */

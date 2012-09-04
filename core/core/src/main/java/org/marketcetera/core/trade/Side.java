@@ -7,7 +7,6 @@ import java.util.Map;
 /**
  * Enumeration of Sides of an order.
 *
-* @author anshul@marketcetera.com
 * @version $Id: Side.java 16063 2012-01-31 18:21:55Z colin $
 * @since 1.0.0
 */

@@ -8,7 +8,6 @@ import java.util.Map;
 /**
  * An enumeration used to identify if an option is a Put or a Call option.
  *
- * @author anshul@marketcetera.com
  * @version $Id: OptionType.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

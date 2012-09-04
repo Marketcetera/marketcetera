@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * This exception is thrown by a module factory when its
  * unable to instantiate a module.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleCreationException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

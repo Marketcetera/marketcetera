@@ -13,7 +13,6 @@ import java.util.Arrays;
  * symbolic links (and so on) that eventually point to a file or
  * directory, respectively.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: FileType.java 16063 2012-01-31 18:21:55Z colin $
  */

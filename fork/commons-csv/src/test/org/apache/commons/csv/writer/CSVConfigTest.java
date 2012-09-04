@@ -25,7 +25,6 @@ import junit.framework.TestCase;
 /**
  * Testcase for the CSVConfig
  *
- * @author Martin van den Bemt
  * @version $Id: CSVConfigTest.java 73490 2008-05-14 23:59:36Z tlerios $
  */
 public class CSVConfigTest extends TestCase {

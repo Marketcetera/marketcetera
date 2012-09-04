@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Tests {@link ImmutablePositionSupport}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: ImmutablePositionSupportTest.java 10534 2009-04-25 00:38:38Z
  *          klim $
  * @since 1.5.0

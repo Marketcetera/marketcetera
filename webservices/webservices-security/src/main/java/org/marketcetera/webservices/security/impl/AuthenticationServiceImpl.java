@@ -11,7 +11,6 @@ import org.marketcetera.webservices.security.AuthenticationService;
 /**
  * Provides web services access to the authentication service.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

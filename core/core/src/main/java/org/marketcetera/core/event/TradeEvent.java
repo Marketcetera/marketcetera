@@ -5,8 +5,6 @@ package org.marketcetera.core.event;
 /**
  * Represents a Trade for a given security at a specific time.
  *
- * @author gmiller
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: TradeEvent.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

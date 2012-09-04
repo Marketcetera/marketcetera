@@ -34,7 +34,6 @@ import org.marketcetera.core.trade.SecurityType;
 /**
  * Provides services for event-based unit tests.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: EventTestBase.java 82331 2012-04-10 16:29:48Z colin $
  * @since 2.0.0
  */
@@ -879,7 +878,6 @@ public class EventTestBase
      * <code>Instrument</code> guaranteed to not be of the same type as any other
      * <code>Instrument</code> in the code base.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: EventTestBase.java 82331 2012-04-10 16:29:48Z colin $
      * @since 2.0.0
      */

@@ -25,7 +25,6 @@ import quickfix.field.UnderlyingSymbol;
  * other formats.  This class specifically provides common routines to
  * parse a <em>QuickFIX</em> message.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

@@ -17,7 +17,6 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Implementation of {@link PositionKey}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionKeyImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

@@ -8,7 +8,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link org.marketcetera.core.module.ModuleManager#stop}
  *
- * @author anshul@marketcetera.com
  */
 public class ManagerStopTest extends ModuleTestBase {
     /**

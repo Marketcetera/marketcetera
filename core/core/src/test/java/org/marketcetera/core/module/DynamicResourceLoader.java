@@ -12,7 +12,6 @@ import java.util.Properties;
  * class loader dynamically returns properties files based on the
  * resources that have been added to it.
  * 
- * @author anshul@marketcetera.com
  * @version $Id: DynamicResourceLoader.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.0.0
  */

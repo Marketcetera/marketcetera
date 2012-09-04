@@ -13,7 +13,6 @@ import org.marketcetera.core.Pair;
  * The module filters all the data it receives and only emits
  * data that is of the supplied type onward in the data pipe.
  *
- * @author anshul@marketcetera.com
  */
 public class ProcessorModule extends ModuleBase
         implements DataEmitter, DataReceiver {

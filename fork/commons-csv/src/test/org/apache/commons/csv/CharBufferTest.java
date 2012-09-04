@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 
 /**
  * 
- * @author Ortwin Glück
  */
 public class CharBufferTest extends TestCase {
     public void testCreate() {

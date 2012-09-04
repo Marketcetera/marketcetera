@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNull;
 /**
  * Tests the {@link org.marketcetera.core.module.PropertiesConfigurationProvider}
  *
- * @author anshul@marketcetera.com
  */
 public class PropertiesConfigurationProviderTest
         extends ConfigurationProviderTestBase {

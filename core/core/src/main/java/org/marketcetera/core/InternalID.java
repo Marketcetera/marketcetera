@@ -11,7 +11,6 @@ package org.marketcetera.core;
  * The superclass of all identifiers in the trading library.  Does simple things
  * like implement equals and hash for hashtable usage.  Really it is just a thin 
  * wrapper around java.lang.String.
- * @author gmiller
  */
 public class InternalID {
     final String mID;

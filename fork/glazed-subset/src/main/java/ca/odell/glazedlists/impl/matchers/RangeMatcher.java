@@ -18,7 +18,6 @@ import ca.odell.glazedlists.matchers.Matcher;
  *   <li> objects from which Comparable can be extracted via a {@link ca.odell.glazedlists.Filterator}
  * </ul>
  *
- * @author James Lemieux
  */
 public class RangeMatcher<D extends Comparable,E> implements Matcher<E> {
 

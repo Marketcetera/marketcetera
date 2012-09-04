@@ -7,7 +7,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Backing object for an order to trade a security. This class is public
  * for the sake of JAXB and is not intended for general use.
  *
- * @author anshul@marketcetera.com
  * @version $Id: OrderSingleImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

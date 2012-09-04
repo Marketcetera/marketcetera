@@ -18,7 +18,6 @@ import ca.odell.glazedlists.EventList;
  * performance benefit. To use this, use the nextBlock() method instead of the
  * next() method.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public abstract class ListEvent<E> extends EventObject {
     

@@ -10,7 +10,6 @@ import org.marketcetera.core.quickfix.FIXMessageUtil;
 /**
  * Order status values.
  *
- * @author anshul@marketcetera.com
  * @version $Id: OrderStatus.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

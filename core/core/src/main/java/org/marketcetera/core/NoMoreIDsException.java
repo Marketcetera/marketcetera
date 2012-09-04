@@ -4,7 +4,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 
 /**
  * Excpetion to denote that we ran out of IDs while getting them
- * @author Toli Kuznets
  * @version $Id: NoMoreIDsException.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class NoMoreIDsException extends CoreException

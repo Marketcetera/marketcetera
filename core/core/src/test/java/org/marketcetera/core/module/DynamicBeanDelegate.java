@@ -12,7 +12,6 @@ import javax.management.ReflectionException;
  * A dynamic mbean delegate that provides a dynamic mbean with a single string
  * attribute. This class is meant to help out with testing.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DynamicBeanDelegate.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */

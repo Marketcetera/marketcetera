@@ -46,7 +46,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * {@link #isAutoInstantiate()} value is ignored when the factory
  * doesn't support multiple instances. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

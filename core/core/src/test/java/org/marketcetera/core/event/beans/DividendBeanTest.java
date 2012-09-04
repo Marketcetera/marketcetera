@@ -20,7 +20,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link org.marketcetera.core.event.beans.DividendBean}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: DividendBeanTest.java 82331 2012-04-10 16:29:48Z colin $
  * @since 2.0.0
  */

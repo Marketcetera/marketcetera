@@ -10,7 +10,6 @@ import static org.marketcetera.util.test.EqualityAssert.*;
 import static org.marketcetera.util.test.SerializableAssert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: MarshalledLocaleTest.java 82324 2012-04-09 20:56:08Z colin $
  */

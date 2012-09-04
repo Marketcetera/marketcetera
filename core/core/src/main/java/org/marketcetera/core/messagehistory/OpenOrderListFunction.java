@@ -28,7 +28,6 @@ import org.marketcetera.core.trade.ReportBase;
  * A null report will be returned if the order chain is completely obsolete (canceled, filled,
  * etc.).
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: OpenOrderListFunction.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.5.0
  */

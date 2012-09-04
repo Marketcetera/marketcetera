@@ -8,7 +8,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /**
  * Indicates that no <code>Instrument</code> could be found for a given symbol.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: NoInstrumentForSymbol.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */

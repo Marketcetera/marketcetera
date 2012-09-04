@@ -9,7 +9,6 @@ import org.marketcetera.core.LoggerConfiguration;
 /**
  * Tests {@link EquitySymbolResolver}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

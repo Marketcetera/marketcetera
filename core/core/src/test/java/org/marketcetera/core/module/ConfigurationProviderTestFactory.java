@@ -7,7 +7,6 @@ import java.math.BigInteger;
 /**
  * A factory to test module configuration provider.
  *
- * @author anshul@marketcetera.com
  */
 public class ConfigurationProviderTestFactory
         extends ModuleFactory

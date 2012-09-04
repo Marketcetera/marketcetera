@@ -28,7 +28,6 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * Market data feed implementation that connects to Marketcetera's
  * exchange simulator.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketceteraFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

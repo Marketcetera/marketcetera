@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * A wrapper for any object, allowing it to become a root element in
  * JAXB marshalling.
  *
- * @author tlerios@marketcetera.com
  * @since 2.0.0
  * @version $Id: RootElementWrapper.java 82324 2012-04-09 20:56:08Z colin $
  */

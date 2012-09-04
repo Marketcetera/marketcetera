@@ -16,7 +16,6 @@ import quickfix.field.Symbol;
 /**
  * Prepares FIX messages with the fields necessary for <code>ConvertibleBond</code> instruments.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

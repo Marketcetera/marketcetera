@@ -10,7 +10,6 @@ import ca.odell.glazedlists.matchers.Matcher;
  * A {@link ca.odell.glazedlists.matchers.Matcher} implementation that always matches. Use {@link #getInstance()} to
  * obtain a singleton instance.
  *
- * @author <a href="mailto:rob@starlight-systems.com">Rob Eden</a>
  */
 public final class TrueMatcher<E> implements Matcher<E> {
 

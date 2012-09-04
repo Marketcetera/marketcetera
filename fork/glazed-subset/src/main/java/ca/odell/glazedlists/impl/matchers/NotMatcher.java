@@ -9,7 +9,6 @@ import ca.odell.glazedlists.matchers.Matcher;
  * A simple {@link ca.odell.glazedlists.matchers.Matcher} implementation that inverts the result of another
  * {@link ca.odell.glazedlists.matchers.Matcher Matcher's} {@link ca.odell.glazedlists.matchers.Matcher#matches(Object)} method.
  *
- * @author <a href="mailto:rob@starlight-systems.com">Rob Eden</a>
  */
 public class NotMatcher<E> implements Matcher<E> {
 	private Matcher<E> parent;

@@ -4,7 +4,6 @@ package org.marketcetera.core.util.file;
  * Special names used to denote standard streams or operations on
  * regular files.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: SpecialNames.java 16063 2012-01-31 18:21:55Z colin $
  */

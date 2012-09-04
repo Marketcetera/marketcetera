@@ -12,7 +12,6 @@ import org.marketcetera.core.util.log.I18NMessage2P;
  * configurable, and receives as parameters the target and (failed)
  * candidate tag.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: EqualsTagFilter.java 82324 2012-04-09 20:56:08Z colin $
  */

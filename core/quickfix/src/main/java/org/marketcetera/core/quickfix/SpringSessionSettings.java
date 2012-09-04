@@ -32,7 +32,6 @@ import quickfix.*;
  *
  * </ul>
  *
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SpringSessionSettings.java 82323 2012-04-09 16:32:23Z colin $
  */

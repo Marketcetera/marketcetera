@@ -8,7 +8,6 @@ import ca.odell.glazedlists.matchers.Matcher;
 /**
  * A simple {@link ca.odell.glazedlists.matchers.Matcher} implementation that only matches null objects.
  *
- * @author James Lemieux
  */
 public final class NullMatcher<E> implements Matcher<E> {
 

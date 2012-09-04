@@ -3,7 +3,6 @@ package org.marketcetera.core.util.log;
 /**
  * The internationalization constants used by this package.
  *
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
  */

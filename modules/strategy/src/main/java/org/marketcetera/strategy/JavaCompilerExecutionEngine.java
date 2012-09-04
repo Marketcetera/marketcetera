@@ -25,7 +25,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
 /**
  * Executes a Java strategy using the <a href="http://www.jcp.org/en/jsr/detail?id=199">Java Compiler API</code>.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */
@@ -230,7 +229,6 @@ public class JavaCompilerExecutionEngine
     /**
      * Represents the Java source of a strategy containing one or more classes to compile.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
@@ -275,7 +273,6 @@ public class JavaCompilerExecutionEngine
      * Classloader that caches the definitions of some classes in memory and
      * defers to its parent for others.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
@@ -322,7 +319,6 @@ public class JavaCompilerExecutionEngine
     /**
      * File manager which maintains file contents in memory.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */
@@ -455,7 +451,6 @@ public class JavaCompilerExecutionEngine
     /**
      * An in-memory representation of a Java File Object.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.0.0
      */

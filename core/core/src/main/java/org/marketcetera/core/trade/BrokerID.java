@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlValue;
  * Instances of this class uniquely identify a FIX Broker to which an order can
  * be sent or from which a response to a request can be received.
  * 
- * @author anshul@marketcetera.com
  * @version $Id: BrokerID.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

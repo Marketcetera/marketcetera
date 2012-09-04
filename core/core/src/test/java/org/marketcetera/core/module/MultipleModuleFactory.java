@@ -5,7 +5,6 @@ package org.marketcetera.core.module;
  * This provider supports multiple module instances that
  * can be auto-instantiated and auto-started
  *
- * @author anshul@marketcetera.com
  */
 public class MultipleModuleFactory extends ModuleFactory {
     @Override

@@ -7,7 +7,6 @@ import org.marketcetera.core.publisher.IPublisher;
 /**
  * Represents a transaction with an {@link MarketDataFeed}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataFeedToken.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */
@@ -17,7 +16,6 @@ public interface MarketDataFeedToken
     /**
      * Describes the set of states for a token.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: MarketDataFeedToken.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */

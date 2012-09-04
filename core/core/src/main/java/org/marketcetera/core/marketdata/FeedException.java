@@ -6,8 +6,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /**
  * Indicates an error throw during Market Data Feed operations.
  * 
- * @author Graham Miller
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: FeedException.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class FeedException

@@ -37,7 +37,6 @@ import ca.odell.glazedlists.matchers.Matcher;
  * See <a href="http://www.nabble.com/GroupList-notification-td21879305.html">http://www.nabble.com/
  * GroupList-notification-td21879305.html</a>
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */
@@ -296,7 +295,6 @@ public class GroupingList<E> extends TransformedList<E, EventList<E>> {
     /**
      * EventList implementation used for groups.
      * 
-     * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
      * @version $Id: GroupingList.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */

@@ -7,9 +7,7 @@ import java.util.Map;
  * Singleton class that is a mapping of all {@link FIXVersion} to
  * their corresponding {@link quickfix.DataDictionary} classes.
  *
- * @author toli
- * @author anshul@marketcetera.com
- * 
+ *
  * @version $Id: FIXDataDictionaryManager.java 16063 2012-01-31 18:21:55Z colin $
  */
 

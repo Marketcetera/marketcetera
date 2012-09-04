@@ -32,7 +32,6 @@ import static org.junit.Assert.*;
 import static org.marketcetera.util.test.UnicodeData.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: TypeTest.java 82324 2012-04-09 20:56:08Z colin $
  */

@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response;
 /**
  * Provides web-services access to the permission service.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: UserService.java 16217 2012-08-27 19:42:33Z colin $
  * @since $Release$
  */

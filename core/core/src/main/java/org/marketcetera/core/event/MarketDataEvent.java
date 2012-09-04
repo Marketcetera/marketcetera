@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 /**
  * Represents a single market data message from a market data provider.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataEvent.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

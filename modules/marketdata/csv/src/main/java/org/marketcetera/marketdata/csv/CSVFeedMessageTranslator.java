@@ -14,8 +14,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
 /**
  * Translates {@link MarketDataRequest} objects to a format that the {@link CSVFeed} can understand.
  * 
- * @author toli kuznets
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
  * @version $Id: CSVFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
  */

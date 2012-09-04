@@ -7,8 +7,6 @@ import javax.annotation.concurrent.Immutable;
 /**
  * Strongly-typed object duo.
  * 
- * @author gmiller
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Pair.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.5.0
  */

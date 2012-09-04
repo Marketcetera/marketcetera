@@ -7,7 +7,6 @@ import org.marketcetera.api.security.GrantedPermission;
 /**
  * Describes permission levels in the system.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: SystemPermission.java 82320 2012-04-02 17:03:23Z colin $
  * @since $Release$
  */

@@ -8,9 +8,6 @@ import org.marketcetera.core.trade.ExecutionReport;
  * LatestExecutionReportFunction is a subclass of LatestReportFunction that
  * filters for the latest execution report message.
  * 
- * @author gmiller
- * @author anshul@marketcetera.com
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: LatestExecutionReportFunction.java 82326 2012-04-10 16:27:07Z colin $
  * @since 1.0.0
  */

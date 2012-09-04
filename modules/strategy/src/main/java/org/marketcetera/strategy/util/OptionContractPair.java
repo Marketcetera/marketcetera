@@ -17,7 +17,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * 
  * <p>The put and the call in this pair are guaranteed to be for the same symbol, expiry, and strike.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
@@ -173,7 +172,6 @@ public final class OptionContractPair
      * Encapsulates the components of an <code>OptionContractPair</code> that correspond to
      * the unique key.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $
      * @since 2.0.0
      */

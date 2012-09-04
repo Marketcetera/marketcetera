@@ -16,8 +16,6 @@ import ca.odell.glazedlists.impl.adt.Barcode;
  * interface {@link Client} to fire the appropriate events as groups are
  * inserted, updated and changed.
  *
- * @author James Lemieux
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public class Grouper<E> {
 

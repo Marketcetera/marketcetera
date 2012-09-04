@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 import static org.marketcetera.util.test.CollectionAssert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: ContainerClassInfoTest.java 16063 2012-01-31 18:21:55Z colin $
  */

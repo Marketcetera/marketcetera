@@ -10,7 +10,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * A utility class for creating conditions that can be used with
  * {@link ThreadedMetric#end(java.util.concurrent.Callable, Object[])}.
  *
- * @author anshul@marketcetera.com
  * @version $Id: ConditionsFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

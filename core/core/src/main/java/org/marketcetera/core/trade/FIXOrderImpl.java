@@ -8,7 +8,6 @@ import quickfix.Message;
  * Message that wraps a FIX Message. This class is public for the sake
  * of JAXB and is not intended for general use.
  *
- * @author anshul@marketcetera.com
  * @version $Id: FIXOrderImpl.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

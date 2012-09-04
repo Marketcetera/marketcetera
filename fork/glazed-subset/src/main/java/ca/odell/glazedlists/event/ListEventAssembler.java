@@ -21,7 +21,6 @@ import ca.odell.glazedlists.impl.event.Tree4Deltas;
  * should be creating a change on the same list change queue when an atomic
  * change is being created.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public final class ListEventAssembler<E> {
 

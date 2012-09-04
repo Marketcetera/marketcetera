@@ -5,7 +5,6 @@ package org.marketcetera.api.systemmodel;
 /**
  * Provides a mutable view of a <code>NamedObject</code>.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

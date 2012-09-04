@@ -11,7 +11,6 @@ import org.marketcetera.core.util.except.I18NException;
  * href="http://www.icu-project.org/docs/papers/forms_of_unicode/">this
  * reference document</a>.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: Serialization.java 16063 2012-01-31 18:21:55Z colin $
  */

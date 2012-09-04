@@ -13,7 +13,6 @@ import ca.odell.glazedlists.impl.adt.gnutrove.TIntArrayList;
  * Manage a very simple list of list event blocks that occur in
  * increasing-only order.
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public class BlockSequence<E> {
 

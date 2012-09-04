@@ -43,7 +43,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
  * </ul>
  *
  *
- * @author anshul@marketcetera.com
  * @version $Id: ModuleURN.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

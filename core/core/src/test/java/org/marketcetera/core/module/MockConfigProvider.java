@@ -7,7 +7,6 @@ import java.util.Map;
  * A mock configuration provider for testing. This class may be used
  * when unit testing module implementations that export MXBean attributes.
  * 
- * @author anshul@marketcetera.com
  * @version $Id: MockConfigProvider.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.5.0
  */

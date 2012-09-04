@@ -17,7 +17,6 @@ import static org.junit.Assert.*;
 /**
  * Tests {@link NotificationManager}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: NotificationManagerTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.8.0
  */
@@ -103,7 +102,6 @@ public class NotificationManagerTest
     /**
      * Sample implementation of <code>INotification</code>.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: NotificationManagerTest.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.8.0
      */

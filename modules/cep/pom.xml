@@ -17,6 +17,14 @@
 
     <name>CEP Modules</name>
 
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <modules>
         <module>system</module>
         <module>esper</module>

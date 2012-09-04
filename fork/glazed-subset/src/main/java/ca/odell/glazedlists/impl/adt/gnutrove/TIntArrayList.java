@@ -33,7 +33,6 @@ import java.util.Random;
  *
  * Created: Sat Dec 29 14:21:12 2001
  *
- * @author Eric D. Friedman
  * @version $Id: TIntArrayList.java,v 1.2 2006/12/24 09:03:51 jplemieux Exp $
  */
 public class TIntArrayList implements Cloneable {

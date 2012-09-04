@@ -8,7 +8,6 @@ import org.marketcetera.core.publisher.ISubscriber;
 /**
  * Coordinates receipt and delivery of {@link INotification} objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: INotificationManager.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.8.0
  */

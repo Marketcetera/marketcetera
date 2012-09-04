@@ -7,7 +7,6 @@ import java.util.Random;
  * Utilities for random string generation. All random distributions
  * are uniform.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: RandomStrings.java 16063 2012-01-31 18:21:55Z colin $
  */

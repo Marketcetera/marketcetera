@@ -8,7 +8,6 @@ import org.marketcetera.core.ws.stateless.StatelessServer;
  * authenticator checks credentials and its (optional) session manager
  * maintains active sessions.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: Server.java 82324 2012-04-09 20:56:08Z colin $
  */

@@ -43,7 +43,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * You can change {@link #SAMPLING_INTERVAL} value to change how often are
  * the performance metrics sampled.
  *
- * @author anshul@marketcetera.com
  * @version $Id: PerformanceTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

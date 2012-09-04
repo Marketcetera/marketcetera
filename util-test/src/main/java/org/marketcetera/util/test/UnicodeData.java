@@ -12,7 +12,6 @@ import static org.junit.Assert.*;
  * converter</a> onto the results of <a
  * href="http://translate.google.com/">Google translation</a>.
  * 
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: UnicodeData.java 16063 2012-01-31 18:21:55Z colin $
  */

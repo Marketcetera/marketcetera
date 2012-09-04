@@ -9,7 +9,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * exception are typically thrown when a FIX Message cannot be wrapped
  * by the factory into a message that the system is capable of dealing with.
  *
- * @author anshul@marketcetera.com
  * @version $Id: MessageCreationException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

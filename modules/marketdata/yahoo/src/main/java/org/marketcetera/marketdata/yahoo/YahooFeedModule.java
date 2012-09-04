@@ -25,7 +25,6 @@ import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
  * whenever {@link #getFeedStatus()} changes. </td></tr>
  * </table>
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: YahooFeedModule.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.4
  */

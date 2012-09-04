@@ -8,7 +8,6 @@ import java.io.PrintStream;
  * are written out, a prefatory line, identifying the thread for which
  * the metrics are printed is added.
  *
- * @author anshul@marketcetera.com
  * @version $Id: StdErrFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

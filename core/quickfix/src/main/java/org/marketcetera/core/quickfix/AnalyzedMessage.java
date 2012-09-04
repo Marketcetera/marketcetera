@@ -17,7 +17,6 @@ import quickfix.field.MsgType;
  * Analyzes a QuickFIX/J message, producing a human-readable
  * representation of its contents.
  *
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: AnalyzedMessage.java 82323 2012-04-09 16:32:23Z colin $
  */

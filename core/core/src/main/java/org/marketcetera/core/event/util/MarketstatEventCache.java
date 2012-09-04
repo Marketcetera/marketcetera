@@ -15,7 +15,6 @@ import org.marketcetera.core.trade.Instrument;
  * 
  * <p>The cache retains the most recent non-null attributes available.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketstatEventCache.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

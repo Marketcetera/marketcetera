@@ -25,7 +25,6 @@ import ca.odell.glazedlists.event.ListEventListener;
 /**
  * Responsible for updating a PositionRow when trade or market data events occur.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionRowUpdater.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.5.0
  */

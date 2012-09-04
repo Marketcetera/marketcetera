@@ -15,8 +15,6 @@ import org.marketcetera.core.util.misc.NamedThreadFactory;
 /**
  * CopierModule passes the data coming in as part of DataRequest to the receiver.
  * 
- * @author anshul@marketcetera.com
- * @author toli@marketcetera.com
  * @version $Id: CopierModule.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.0.0
  */
@@ -107,7 +105,6 @@ public class CopierModule extends Module implements DataEmitter {
      * <p>Proper use of this class guarantees only that the payload will be delivered synchronously.  The recipient
      * of the payload may, of course, choose to act asynchronously itself.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: CopierModule.java 82330 2012-04-10 16:29:13Z colin $
      * @since 1.0.0
      */

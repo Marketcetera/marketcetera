@@ -21,7 +21,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  *
  * @param <T> the type of handler selected by this instance. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: StaticInstrumentFunctionSelector.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

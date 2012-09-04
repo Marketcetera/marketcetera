@@ -12,7 +12,6 @@ import static org.junit.Assert.*;
  * Tests module URNs and its methods. And validations within
  * URNUtils.
  *
- * @author anshul@marketcetera.com
  */
 public class URNValidationTest extends ModuleTestBase {
     /**

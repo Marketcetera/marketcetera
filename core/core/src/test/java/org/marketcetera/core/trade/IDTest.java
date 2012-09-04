@@ -24,7 +24,6 @@ import static org.junit.Assert.*;
  * Also tests 
  * {@link org.marketcetera.core.trade.Factory#setOrderIDFactory(org.marketcetera.core.IDFactory)}
  *
- * @author anshul@marketcetera.com
  * @version $Id: IDTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

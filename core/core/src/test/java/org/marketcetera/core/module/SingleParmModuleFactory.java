@@ -7,7 +7,6 @@ import java.net.URI;
  * A module factory that supports single instance only and does require
  * parameters to instantiate the instance.
  *
- * @author anshul@marketcetera.com
  */
 public class SingleParmModuleFactory extends ModuleFactory {
     @Override

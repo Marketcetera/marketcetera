@@ -24,8 +24,6 @@ import org.marketcetera.core.module.ModuleURN;
  * </table>
  *
  * @see CEPEsperProcessor
- * @author anshul@marketcetera.com
- * @author toli@marketcetera.com
  * @since 1.0.0
  * @version $Id: CEPEsperFactory.java 16063 2012-01-31 18:21:55Z colin $
  */

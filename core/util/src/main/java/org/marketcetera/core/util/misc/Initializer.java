@@ -5,7 +5,6 @@ package org.marketcetera.core.util.misc;
 /**
  * Performs some initialization functions
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

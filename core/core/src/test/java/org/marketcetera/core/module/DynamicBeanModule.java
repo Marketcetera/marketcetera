@@ -12,7 +12,6 @@ import javax.management.ReflectionException;
  * A module used for testing JMX integration when the module is a
  * dynamic MBean.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DynamicBeanModule.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */

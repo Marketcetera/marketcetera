@@ -25,7 +25,6 @@ import junit.framework.TestCase;
 /**
  * Tests for the config guesser.
  *
- * @author Martin van den Bemt
  * @version $Id: CSVConfigGuesserTest.java 73490 2008-05-14 23:59:36Z tlerios $
  */
 public class CSVConfigGuesserTest extends TestCase {

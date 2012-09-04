@@ -19,7 +19,6 @@ import static org.junit.Assert.fail;
 /**
  * Tests {@link ExpectedFailure} functionality.
  *
- * @author anshul@marketcetera.com
  */
 public class ExpectedFailureTest {
     /**

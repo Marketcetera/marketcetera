@@ -19,7 +19,6 @@ import org.marketcetera.core.util.log.I18NMessageProvider;
  *
  * @see org.marketcetera.core.util.log
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: PropertiesFileInfo.java 16063 2012-01-31 18:21:55Z colin $
  */

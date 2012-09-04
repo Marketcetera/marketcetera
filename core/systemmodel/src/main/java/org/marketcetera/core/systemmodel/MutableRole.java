@@ -12,7 +12,6 @@ import org.marketcetera.api.systemmodel.MutableNamedObject;
 /**
  * Provides a mutable view of a <code>Role</code> object.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */

@@ -8,7 +8,6 @@ import org.apache.commons.lang.ObjectUtils;
  * containing meta-information for two different representations of
  * the same message.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: MessageInfoPair.java 16063 2012-01-31 18:21:55Z colin $
  */

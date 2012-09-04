@@ -33,7 +33,6 @@ import static org.marketcetera.core.marketdata.AssetClass.*;
 /**
  * Tests {@link org.marketcetera.core.marketdata.AbstractMarketDataFeed}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractMarketDataFeedTest.java 82329 2012-04-10 16:28:13Z colin $
  * @since 0.5.0
  */

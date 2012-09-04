@@ -9,7 +9,6 @@ import org.marketcetera.core.ws.stateful.SessionManager;
  * session. If the session is active, the very filter check renews the
  * session's expiration counter.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: ValidSessionTagFilter.java 82324 2012-04-09 20:56:08Z colin $
  */

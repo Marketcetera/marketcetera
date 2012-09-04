@@ -8,7 +8,6 @@ import org.marketcetera.core.marketdata.FeedException;
 /**
  * Credentials implementation for {@link BogusFeed}.
  * 
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 0.5.0
  */
 public class BogusFeedCredentials

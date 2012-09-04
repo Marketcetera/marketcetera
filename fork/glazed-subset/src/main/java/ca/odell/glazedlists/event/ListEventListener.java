@@ -18,7 +18,6 @@ import java.util.EventListener;
  *
  * @see <a href="http://publicobject.com/glazedlists/tutorial/">Glazed Lists Tutorial</a>
  *
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
 public interface ListEventListener<E> extends EventListener {
 

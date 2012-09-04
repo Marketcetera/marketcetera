@@ -8,7 +8,6 @@ import org.marketcetera.core.util.except.I18NException;
  * match (in order) against a byte array header, and the associated
  * charset we should use if a match is found.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: DecodingStrategy.java 16063 2012-01-31 18:21:55Z colin $
  */

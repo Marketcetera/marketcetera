@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import org.marketcetera.core.MarketceteraTestSuite;
 
 /**
- * @author toli
  * @version $Id: FIXMessageAugmentor_42Test.java 16063 2012-01-31 18:21:55Z colin $
  */
 

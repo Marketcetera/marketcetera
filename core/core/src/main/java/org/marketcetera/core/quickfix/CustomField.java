@@ -6,8 +6,6 @@ import quickfix.Field;
  * Represents "custom" fields (i.e. non-predetermined fields) that can show up in the list of orders These can appear only as integers, and their value are
  * treated as either ints, doubles or strings (catch-all) Ex: Price,OrderQty,1324,Account
  * 
- * @author Toli Kuznets
- * @author <a href="mailto:colin@whiskerfish.com">Colin DuPlantis</a>
  * @version $Id: CustomField.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class CustomField<T>

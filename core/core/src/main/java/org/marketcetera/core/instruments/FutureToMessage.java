@@ -16,7 +16,6 @@ import quickfix.field.Symbol;
 /**
  * Adds the appropriate fields for a future instrument to a FIX Message.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: FutureToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */

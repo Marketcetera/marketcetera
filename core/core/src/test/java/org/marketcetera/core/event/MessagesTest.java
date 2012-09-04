@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 /* $License$ */
 
 /**
- * @author klim@marketcetera.com
  * @since 0.6.0
  * @version $Id: MessagesTest.java 82331 2012-04-10 16:29:48Z colin $
  */

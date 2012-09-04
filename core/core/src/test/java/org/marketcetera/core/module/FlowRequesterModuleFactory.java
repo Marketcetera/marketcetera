@@ -5,7 +5,6 @@ package org.marketcetera.core.module;
  * A Factory that creates modules that are capable of
  * requesting data flows.
  *
- * @author anshul@marketcetera.com
  */
 public class FlowRequesterModuleFactory
         extends ModuleFactory {

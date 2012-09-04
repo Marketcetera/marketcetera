@@ -7,7 +7,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * Thrown when a module receives data that it
  * doesn't know how to handle.
  *
- * @author anshul@marketcetera.com
  * @version $Id: UnsupportedDataTypeException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

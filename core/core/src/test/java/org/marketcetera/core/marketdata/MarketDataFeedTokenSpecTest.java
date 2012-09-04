@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests {@link org.marketcetera.core.marketdata.MarketDataFeedTokenSpec}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataFeedTokenSpecTest.java 82329 2012-04-10 16:28:13Z colin $
  * @since 0.5.0
  */

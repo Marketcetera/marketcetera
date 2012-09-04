@@ -6,7 +6,6 @@ import java.util.Vector;
 /**
  * A meta-information holder for a {@link UCPFilter}.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: UCPFilterInfo.java 16063 2012-01-31 18:21:55Z colin $
  */

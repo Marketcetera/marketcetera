@@ -6,7 +6,6 @@ import javax.management.MXBean;
 /**
  * ConcurrentTestModuleMXBean
  *
- * @author anshul@marketcetera.com
  * @version $Id: ConcurrentTestModuleMXBean.java 82330 2012-04-10 16:29:13Z colin $
  * @since 1.1.0
  */

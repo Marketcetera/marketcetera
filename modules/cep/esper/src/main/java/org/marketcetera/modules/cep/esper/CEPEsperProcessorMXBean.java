@@ -8,8 +8,6 @@ import javax.management.MXBean;
 /**
  * The management interface for esper module instances.
  *
- * @author anshul@marketcetera.com
- * @author toli@marketcetera.com
  * @version $Id: CEPEsperProcessorMXBean.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

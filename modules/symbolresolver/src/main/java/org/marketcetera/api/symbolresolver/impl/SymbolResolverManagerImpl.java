@@ -20,7 +20,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 /**
  * Provides symbol resolution services.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: SymbolResolverManagerImpl.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */

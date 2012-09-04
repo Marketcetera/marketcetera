@@ -7,7 +7,6 @@ import java.io.Serializable;
 /**
  * Instances of this class describe the state of a module in a data flow.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DataFlowStep.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

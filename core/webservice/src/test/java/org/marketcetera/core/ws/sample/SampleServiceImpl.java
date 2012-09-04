@@ -12,7 +12,6 @@ import org.marketcetera.core.ws.wrappers.RemoteException;
 /**
  * A sample stateful service: the implementation.
  * 
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: SampleServiceImpl.java 16063 2012-01-31 18:21:55Z colin $
  */

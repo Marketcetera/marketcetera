@@ -17,7 +17,6 @@ import quickfix.field.*;
  * add any fields on the messages that should not be added by a client
  * application.
  *
- * @author anshul@marketcetera.com
  * @version $Id: SystemFIXMessageFactory.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

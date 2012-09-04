@@ -1,7 +1,6 @@
 package org.marketcetera.core.symbology;
 
 /**
- * @author Graham Miller
  * @version $Id: SymbolScheme.java 16063 2012-01-31 18:21:55Z colin $
  */
 public enum SymbolScheme {

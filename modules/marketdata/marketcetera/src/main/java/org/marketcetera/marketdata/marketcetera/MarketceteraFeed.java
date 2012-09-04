@@ -47,7 +47,6 @@ import com.google.common.collect.SetMultimap;
  *
  * <p>This feed will return random market data for every symbol queried.
  *
- * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
  * @since 0.5.0
  */
 public class MarketceteraFeed
@@ -591,7 +590,6 @@ public class MarketceteraFeed
     /**
      * Represents a request made to the marketcetera adapter.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 1.5.0
      */

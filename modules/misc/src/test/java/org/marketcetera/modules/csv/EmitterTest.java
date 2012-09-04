@@ -25,7 +25,6 @@ import org.marketcetera.core.module.*;
 /**
  * Tests the {@link CSVEmitter} module.
  *
- * @author anshul@marketcetera.com
  */
 public class EmitterTest extends ModuleTestBase {
 

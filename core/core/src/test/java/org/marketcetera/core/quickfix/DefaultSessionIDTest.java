@@ -10,7 +10,6 @@ import org.marketcetera.core.MarketceteraTestSuite;
 import quickfix.SessionID;
 
 /**
- * @author Graham Miller
  * @version $Id: DefaultSessionIDTest.java 16063 2012-01-31 18:21:55Z colin $
  */
 public class DefaultSessionIDTest extends TestCase {

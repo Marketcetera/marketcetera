@@ -6,7 +6,6 @@ import static org.junit.Assert.*;
 import static org.marketcetera.util.test.ComparableAssert.*;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: ComparableAssertTest.java 16063 2012-01-31 18:21:55Z colin $
  */

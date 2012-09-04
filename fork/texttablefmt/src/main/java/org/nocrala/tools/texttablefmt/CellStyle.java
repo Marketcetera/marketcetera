@@ -7,7 +7,6 @@ import org.nocrala.tools.utils.Filler;
  * 
  *  </p>It allows to specify the text alignment, the abbreviation mode and rendering of null values.</p>
  *   
- * @author valarcon
  *
  */
 
@@ -21,7 +20,6 @@ public class CellStyle {
 
   /**
    * This enumeration is used to specify how a text is horizontally aligned in a cell.
-   * @author valarcon
    */
   public enum HorizontalAlign {
     /**
@@ -40,7 +38,6 @@ public class CellStyle {
 
   /**
    * This enumeration is used to specify how to reduce a text to fit it in a small cell.
-   * @author valarcon
    */
   public enum AbbreviationStyle {
     /**
@@ -59,7 +56,6 @@ public class CellStyle {
 
   /**
    * This enumeration is used to specify how to display cell with null values.
-   * @author valarcon
    */
   public enum NullStyle {
     /**

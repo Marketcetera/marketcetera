@@ -6,7 +6,6 @@ import java.util.List;
  * An interface for extracting a list of values to be considered by a Matcher
  * when matching a particular element of a list.
  *
- * @author James Lemieux
  */
 public interface Filterator<C,E> {
 

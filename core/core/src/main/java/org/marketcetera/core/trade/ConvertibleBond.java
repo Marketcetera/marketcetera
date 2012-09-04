@@ -14,7 +14,6 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * Represents a Convertible Bond instrument.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: ConvertibleBond.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */

@@ -13,7 +13,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.marketcetera.core.ws.wrappers.DateWrapper;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.5.0
  * @version $Id: DateWrapperHolder.java 82324 2012-04-09 20:56:08Z colin $
  */

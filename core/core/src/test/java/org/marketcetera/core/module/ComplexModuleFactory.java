@@ -14,7 +14,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage1P;
  * Moreover, this factory needs a complex set of parameters to
  * create new modules.
  *
- * @author anshul@marketcetera.com
  */
 public class ComplexModuleFactory extends ModuleFactory {
     public ComplexModuleFactory() {

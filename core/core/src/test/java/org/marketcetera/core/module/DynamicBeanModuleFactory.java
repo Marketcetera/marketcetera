@@ -13,7 +13,6 @@ import org.marketcetera.core.util.log.I18NMessage0P;
  * Factory for testing JMX integration when the module factory is a
  * dynamic mbean.
  *
- * @author anshul@marketcetera.com
  * @version $Id: DynamicBeanModuleFactory.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */

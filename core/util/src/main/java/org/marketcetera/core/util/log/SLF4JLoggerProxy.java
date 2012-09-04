@@ -9,7 +9,6 @@ import org.slf4j.spi.LocationAwareLogger;
  * SLF4J proxy with automatic logger selection and variable number of
  * arguments.
  * 
- * @author tlerios@marketcetera.com
  * @since 0.5.0
  * @version $Id: SLF4JLoggerProxy.java 16063 2012-01-31 18:21:55Z colin $
  */

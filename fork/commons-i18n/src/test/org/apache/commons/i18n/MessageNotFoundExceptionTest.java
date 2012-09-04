@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 /**
  * Meaningless test class for with the only purpose of making the
  * coverage report look better...
- * @author Mattias Jiderhamn
  */
 public class MessageNotFoundExceptionTest extends TestCase {
     public void testConstruction() {

@@ -21,7 +21,6 @@ import quickfix.field.StrikePrice;
  * Returns a null value, if all the expected attributes for an option are not
  * found in the message.
  *
- * @author anshul@marketcetera.com
  * @version $Id: OptionFromMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

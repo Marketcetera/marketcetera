@@ -27,7 +27,6 @@ import static org.junit.Assert.assertThat;
  * Utilizes the existing usage of the selector in {@link InstrumentToMessage}
  * to test the class.
  *
- * @author anshul@marketcetera.com
  * @version $Id: StaticInstrumentFunctionSelectorTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

@@ -8,7 +8,6 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
  * receive any more data and wants to stop the data flow thats emitting
  * data into it. 
  *
- * @author anshul@marketcetera.com
  * @version $Id: StopDataFlowException.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

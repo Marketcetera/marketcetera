@@ -12,7 +12,6 @@ import org.marketcetera.api.systemmodel.VersionedObject;
 /**
  * Represents a grouping of {@link org.marketcetera.api.security.User} and {@link Permission} objects.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Role.java 82316 2012-03-21 21:13:27Z colin $
  * @since $Release$
  */

@@ -16,7 +16,6 @@ import static org.marketcetera.core.position.PositionKeyFactory.*;
 /**
  * Tests {@link PositionKeyComparator}.
  * 
- * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id: PositionKeyComparatorTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

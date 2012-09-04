@@ -9,7 +9,6 @@ import static org.junit.Assert.*;
 /**
  * Tests various ID classes used in this package
  *
- * @author anshul@marketcetera.com
  */
 public class IDTest extends ModuleTestBase {
     /**

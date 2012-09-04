@@ -14,7 +14,6 @@ import org.marketcetera.core.util.misc.ClassVersion;
 /**
  * Executes a given {@link Strategy}.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractExecutor.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

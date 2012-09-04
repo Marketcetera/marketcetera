@@ -9,7 +9,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  * its clients to block when reading data received by the sink via
  * {@link #getNextData()}.
  *
- * @author anshul@marketcetera.com
  * @version $Id: BlockingSinkDataListener.java 82330 2012-04-10 16:29:13Z colin $
  * @since 2.0.0
  */

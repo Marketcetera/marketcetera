@@ -5,7 +5,6 @@ package org.marketcetera.core.module;
  * Implementations of this interface are used to listen to
  * all the data received by the sink module.
  *
- * @author anshul@marketcetera.com
  * @version $Id: SinkDataListener.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
  */

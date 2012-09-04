@@ -22,7 +22,6 @@ import org.apache.commons.i18n.bundles.ErrorBundle;
 import java.util.Locale;
 
 /**
- * @author Mattias Jiderhamn
  */
 public class LocalizedRuntimeExceptionTest extends MockProviderTestBase {
     public void testLocalizedErrorWithCause() {

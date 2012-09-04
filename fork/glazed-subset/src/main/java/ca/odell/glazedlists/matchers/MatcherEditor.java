@@ -18,9 +18,6 @@ import ca.odell.glazedlists.FilterList;
  * {@link ca.odell.glazedlists.matchers.Matcher}s work best when they are immutable. Further information
  * on this immutability can be found in the {@link ca.odell.glazedlists.matchers.Matcher Matcher Javadoc}.
  *
- * @author <a href="mailto:rob@starlight-systems.com">Rob Eden</a>
- * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
- * @author James Lemieux
  */
 public interface MatcherEditor<E> {
 

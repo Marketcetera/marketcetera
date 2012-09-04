@@ -5,7 +5,6 @@ import org.marketcetera.core.util.log.I18NMessage2P;
 import org.marketcetera.core.util.log.I18NMessageProvider;
 
 /**
- * @author tlerios@marketcetera.com
  * @since 1.0.0
  * @version $Id: TestMessages.java 82324 2012-04-09 20:56:08Z colin $
  */

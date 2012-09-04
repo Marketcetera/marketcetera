@@ -15,7 +15,6 @@ import org.marketcetera.core.trade.Instrument;
  *
  * @param <I> The type of instrument handled by this function.
  * 
- * @author anshul@marketcetera.com
  * @version $Id: InstrumentFunctionHandler.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */

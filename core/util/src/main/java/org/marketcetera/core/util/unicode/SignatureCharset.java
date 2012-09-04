@@ -12,7 +12,6 @@ import org.marketcetera.core.util.except.I18NException;
  * decoding and insertion upon charset; there is no attempt made to
  * identify matching signatures, as done by {@link Serialization}.
  *
- * @author tlerios@marketcetera.com
  * @since 0.6.0
  * @version $Id: SignatureCharset.java 16063 2012-01-31 18:21:55Z colin $
  */

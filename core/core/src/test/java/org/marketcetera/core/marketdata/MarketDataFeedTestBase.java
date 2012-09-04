@@ -15,7 +15,6 @@ import static org.junit.Assert.fail;
 /**
  * Base class for Market Data Feed tests.
  *
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataFeedTestBase.java 82329 2012-04-10 16:28:13Z colin $
  * @since 0.5.0
  */
@@ -68,7 +67,6 @@ public class MarketDataFeedTestBase
      * This {@link ISubscriber} implementation requests all publications and does
      * nothing with them.
      *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: MarketDataFeedTestBase.java 82329 2012-04-10 16:28:13Z colin $
      * @since 0.43-SNAPSHOT
      */
