@@ -1,5 +1,7 @@
 package org.marketcetera.dao.domain;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
@@ -14,6 +16,7 @@ import org.marketcetera.api.systemmodel.VersionedObject;
  * @since $Release$
  */
 @MappedSuperclass
+@Access(AccessType.PROPERTY)
 public abstract class PersistentVersionedObject
         extends PersistentSystemObject
         implements VersionedObject

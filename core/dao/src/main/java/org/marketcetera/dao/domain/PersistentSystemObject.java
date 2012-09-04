@@ -1,8 +1,6 @@
 package org.marketcetera.dao.domain;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 import org.marketcetera.api.systemmodel.SystemObject;
 
@@ -15,6 +13,7 @@ import org.marketcetera.api.systemmodel.SystemObject;
  * @since $Release$
  */
 @MappedSuperclass
+@Access(AccessType.PROPERTY)
 public abstract class PersistentSystemObject
         implements SystemObject
 {
