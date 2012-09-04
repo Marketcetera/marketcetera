@@ -95,7 +95,7 @@ public class RoleServiceImpl
     /**
      * Sets the groupManagerService value.
      *
-     * @param an <code>RoleManagerService</code> value
+     * @param inRoleManagerService an <code>RoleManagerService</code> value
      */
     public void setRoleManagerService(RoleManagerService inRoleManagerService)
     {
@@ -104,7 +104,7 @@ public class RoleServiceImpl
     /**
      * Sets the roleFactory value.
      *
-     * @param an <code>RoleFactory</code> value
+     * @param inRoleFactory an <code>RoleFactory</code> value
      */
     public void setRoleFactory(RoleFactory inRoleFactory)
     {

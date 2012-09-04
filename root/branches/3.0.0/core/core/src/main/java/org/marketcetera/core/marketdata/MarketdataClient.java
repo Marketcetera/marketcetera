@@ -18,14 +18,14 @@ public interface MarketdataClient<RequestType,CredentialsType extends MarketData
      *
      *
      * @param inData
-     * @return
+     * @return a <code>List&lt;String&gt;</code> value
      */
     public List<String> doMarketDataRequest(RequestType inData);
     /**
      * 
      *
      *
-     * @return
+     * @return a <code>boolean</code> value
      */
     public boolean isLoggedIn();
     /**
@@ -33,7 +33,7 @@ public interface MarketdataClient<RequestType,CredentialsType extends MarketData
      *
      *
      * @param inCredentials
-     * @return
+     * @return a <code>boolean</code> value
      */
     public boolean doLogin(CredentialsType inCredentials);
     /**
