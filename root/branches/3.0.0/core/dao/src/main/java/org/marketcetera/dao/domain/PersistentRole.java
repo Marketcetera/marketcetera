@@ -22,7 +22,8 @@ import org.marketcetera.api.security.User;
 @Entity
 @NamedQueries( { @NamedQuery(name="findRoleByName",query="select s from PersistentRole s where s.name = :name"),
                  @NamedQuery(name="findAllRoles",query="select s from PersistentRole s")})
-@Table(name="groups", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
+@Table(name="roles", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
+@Access(AccessType.FIELD)
 public class PersistentRole
         extends PersistentVersionedObject
         implements Role
@@ -31,7 +32,6 @@ public class PersistentRole
      * @see org.marketcetera.api.dao.Role#getName()
      */
     @Override
-    @Column(nullable=false,unique=true)
     public String getName()
     {
         return name;
@@ -49,7 +49,6 @@ public class PersistentRole
      * @see org.marketcetera.api.dao.Role#getUsers()
      */
     @Override
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     public Set<User> getUsers()
     {
         return users;
@@ -67,7 +66,6 @@ public class PersistentRole
      * @see org.marketcetera.api.dao.Role#getPermissions()
      */
     @Override
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class)
     public Set<Permission> getPermissions()
     {
         return permissions;
@@ -116,13 +114,16 @@ public class PersistentRole
     /**
      * permissions granted to this group
      */
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class)
     private Set<Permission> permissions = new HashSet<Permission>();
     /**
      * users in this group
      */
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
     private Set<User> users = new HashSet<User>();
     /**
      * name value
      */
+    @Column(nullable=false,unique=true)
     private volatile String name;
 }

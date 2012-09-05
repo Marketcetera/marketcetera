@@ -7,16 +7,9 @@ import java.util.Set;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.security.GrantedPermission;
 import org.marketcetera.api.security.User;
@@ -31,11 +24,12 @@ import org.marketcetera.api.security.User;
  */
 @ThreadSafe
 @NamedQueries({ @NamedQuery(name="findUserByUsername",query="select s from PersistentUser s where s.username = :username"),
-        @NamedQuery(name="findAllUsers",query="select s from PersistentUser s")})
-@NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.permission, permissions.version from permissions as permissions where permissions.id in (select groups_permissions.permissions_id from groups_permissions as groups_permissions where groups_permissions.groups_id in (select groups.id from groups as groups where groups.id in (select groups_id from groups_users as groups_users, users as users where users.id = groups_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
+                @NamedQuery(name="findAllUsers",query="select s from PersistentUser s")})
+@NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.permission, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
 @XmlRootElement
+@Access(AccessType.FIELD)
 public class PersistentUser
         extends PersistentVersionedObject
         implements User
@@ -43,11 +37,10 @@ public class PersistentUser
     /* (non-Javadoc)
      * @see org.marketcetera.api.systemmodel.NamedObject#getName()
      */
-    @Transient
     @Override
     public String getName()
     {
-        return username;
+        return getUsername();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.systemmodel.impl.User#getUsername()
@@ -62,7 +55,6 @@ public class PersistentUser
      *
      * @param inUsername a <code>String</code> value
      */
-    @Column(nullable=false,unique=true)
     public void setUsername(String inUsername)
     {
         username = inUsername;
@@ -106,7 +98,6 @@ public class PersistentUser
      *
      * @param inPassword a <code>String</code> value
      */
-    @Column(nullable=true)
     public void setPassword(String inPassword)
     {
         password = inPassword;
@@ -137,7 +128,6 @@ public class PersistentUser
      *
      * @param accountNonLocked a <code>boolean</code> value
      */
-    @Column(nullable=false)
     public void setAccountNonLocked(boolean accountNonLocked)
     {
         locked = !accountNonLocked;
@@ -155,7 +145,6 @@ public class PersistentUser
      *
      * @param credentialsNonExpired a <code>boolean</code> value
      */
-    @Column(nullable=false)
     public void setCredentialsNonExpired(boolean credentialsNonExpired)
     {
         credentialsExpired = !credentialsNonExpired;
@@ -173,7 +162,6 @@ public class PersistentUser
      *
      * @param inEnabled a <code>boolean</code> value
      */
-    @Column(nullable=false)
     public void setEnabled(boolean inEnabled)
     {
         enabled = inEnabled;
@@ -217,9 +205,7 @@ public class PersistentUser
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("User ").append(username).append("[").append(getId()).append("] ").append(" enabled=").append(enabled)
-                .append(", locked=").append(locked).append(", credentialsExpired=").append(credentialsExpired)
-                .append(", permissions=").append(permissions);
+        builder.append("User ").append(getUsername()).append(" ").append(getPermissions());
         return builder.toString();
     }
     /**
@@ -243,22 +229,27 @@ public class PersistentUser
     /**
      * username value
      */
+    @Column(nullable=false,unique=true)
     private volatile String username;
     /**
      * password value
      */
+    @Column(nullable=true)
     private volatile String password;
     /**
      * indicates if the account is enabled
      */
+    @Column(nullable=false)
     private volatile boolean enabled = true;
     /**
      * indicates if the account is locked
      */
+    @Column(nullable=false)
     private volatile boolean locked = false;
     /**
      * indicates if the credentials have expired
      */
+    @Column(nullable=false)
     private volatile boolean credentialsExpired = false;
     /**
      * permissions for this user
