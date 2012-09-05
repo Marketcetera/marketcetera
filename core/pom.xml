@@ -22,7 +22,6 @@
         <module>core</module>
         <module>dao</module>
         <module>quickfix</module>
-        <module>systemmodel</module>
         <module>util</module>
         <!--<module>webservice</module>-->
     </modules>

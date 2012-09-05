@@ -1,7 +1,6 @@
 package org.marketcetera.dao.domain;
 
-import org.marketcetera.core.systemmodel.UserFactory;
-import org.marketcetera.dao.domain.PersistentUser;
+import org.marketcetera.api.dao.UserFactory;
 
 /* $License$ */
 
@@ -15,7 +14,7 @@ public class PersistentUserFactory
         implements UserFactory
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.UserFactory#create(java.lang.String, java.lang.String)
+     * @see org.marketcetera.api.dao.UserFactory#create(java.lang.String, java.lang.String)
      */
     @Override
     public PersistentUser create(String inUsername,
@@ -25,7 +24,7 @@ public class PersistentUserFactory
                                   inPassword);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.UserFactory#create()
+     * @see org.marketcetera.api.dao.UserFactory#create()
      */
     @Override
     public PersistentUser create()

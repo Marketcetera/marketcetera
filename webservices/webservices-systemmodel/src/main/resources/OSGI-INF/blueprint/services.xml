@@ -26,23 +26,23 @@
     </jaxrs:server>
 
     <bean id="permissionManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.PermissionServiceImpl">
-        <property name="permissionManagerService" ref="permissionManagerService"/>
+        <property name="permissionDao" ref="permissionDao"/>
         <property name="permissionFactory" ref="permissionFactory"/>
     </bean>
     <bean id="roleManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.RoleServiceImpl">
-        <property name="roleManagerService" ref="roleManagerService"/>
+        <property name="roleDao" ref="roleDao"/>
         <property name="roleFactory" ref="roleFactory"/>
     </bean>
     <bean id="userManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.UserServiceImpl">
-        <property name="userManagerService" ref="userManagerService"/>
+        <property name="userDao" ref="userDao"/>
         <property name="userFactory" ref="userFactory"/>
     </bean>
 
-    <reference id="permissionManagerService" interface="org.marketcetera.api.security.PermissionManagerService"/>
-    <reference id="permissionFactory" interface="org.marketcetera.core.systemmodel.PermissionFactory"/>
-    <reference id="roleManagerService" interface="org.marketcetera.api.security.RoleManagerService"/>
-    <reference id="roleFactory" interface="org.marketcetera.core.systemmodel.RoleFactory"/>
-    <reference id="userManagerService" interface="org.marketcetera.api.security.UserManagerService"/>
-    <reference id="userFactory" interface="org.marketcetera.core.systemmodel.UserFactory"/>
+    <reference id="permissionDao" interface="org.marketcetera.api.dao.PermissionDao"/>
+    <reference id="permissionFactory" interface="org.marketcetera.api.dao.PermissionFactory"/>
+    <reference id="roleDao" interface="org.marketcetera.api.dao.RoleDao"/>
+    <reference id="roleFactory" interface="org.marketcetera.api.dao.RoleFactory"/>
+    <reference id="userDao" interface="org.marketcetera.api.dao.UserDao"/>
+    <reference id="userFactory" interface="org.marketcetera.api.dao.UserFactory"/>
 
 </blueprint>

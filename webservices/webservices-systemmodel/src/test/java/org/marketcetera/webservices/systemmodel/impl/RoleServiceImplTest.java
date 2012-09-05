@@ -8,11 +8,11 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.security.RoleManagerService;
+import org.marketcetera.api.dao.RoleDao;
+import org.marketcetera.api.dao.RoleFactory;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.systemmodel.MockRole;
-import org.marketcetera.core.systemmodel.RoleFactory;
 import org.marketcetera.webservices.WebServicesTestBase;
+import org.marketcetera.webservices.systemmodel.MockRole;
 import org.marketcetera.webservices.systemmodel.RoleService;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -44,10 +44,10 @@ public class RoleServiceImplTest
             throws Exception
     {
         serviceImplementation = new RoleServiceImpl();
-        roleManagerService = mock(RoleManagerService.class);
+        roleManagerService = mock(RoleDao.class);
         roleFactory = mock(RoleFactory.class);
         serviceImplementation.setRoleFactory(roleFactory);
-        serviceImplementation.setRoleManagerService(roleManagerService);
+        serviceImplementation.setRoleDao(roleManagerService);
         when(roleFactory.create()).thenReturn(new MockRole());
         when(roleFactory.create(anyString())).thenAnswer(new Answer<Role>() {
                                          @Override
@@ -86,14 +86,14 @@ public class RoleServiceImplTest
         Response response = service.addRole(newRole.getName());
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
-        verify(roleManagerService).addRole((Role)any());
+        verify(roleManagerService).add((Role)any());
         // add role throws an exception
-        doThrow(new RuntimeException("This exception is expected")).when(roleManagerService).addRole((Role)any());
+        doThrow(new RuntimeException("This exception is expected")).when(roleManagerService).add((Role)any());
         response = service.addRole(newRole.getName());
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
         verify(roleManagerService,
-               times(2)).addRole((Role)any());
+               times(2)).add((Role)any());
     }
     /**
      * Tests {@link RoleServiceImpl#getRole(long)}.
@@ -106,14 +106,14 @@ public class RoleServiceImplTest
     {
         // no result
         assertNull(service.getRole(-1));
-        verify(roleManagerService).getRoleById(anyLong());
+        verify(roleManagerService).getById(anyLong());
         // good result
         MockRole newRole = generateRole();
-        when(roleManagerService.getRoleById(newRole.getId())).thenReturn(newRole);
+        when(roleManagerService.getById(newRole.getId())).thenReturn(newRole);
         verifyRole(newRole,
                     service.getRole(newRole.getId()));
         verify(roleManagerService,
-               times(2)).getRoleById(anyLong());
+               times(2)).getById(anyLong());
     }
     /**
      * Tests {@link RoleServiceImpl#deleteRole(long)}.
@@ -128,14 +128,14 @@ public class RoleServiceImplTest
         Response response = service.deleteRole(1);
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
-        verify(roleManagerService).deleteRole((Role)any());
+        verify(roleManagerService).delete((Role)any());
         // add role throws an exception
-        doThrow(new RuntimeException("This exception is expected")).when(roleManagerService).deleteRole((Role)any());
+        doThrow(new RuntimeException("This exception is expected")).when(roleManagerService).delete((Role)any());
         response = service.deleteRole(2);
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
         verify(roleManagerService,
-               times(2)).deleteRole((Role)any());
+               times(2)).delete((Role)any());
     }
     /**
      * Tests {@link RoleServiceImpl#getRoles()}.
@@ -147,26 +147,26 @@ public class RoleServiceImplTest
             throws Exception
     {
         // no results
-        when(roleManagerService.getAllRoles()).thenReturn(new ArrayList<Role>());
+        when(roleManagerService.getAll()).thenReturn(new ArrayList<Role>());
         assertTrue(service.getRoles().isEmpty());
-        verify(roleManagerService).getAllRoles();
+        verify(roleManagerService).getAll();
         // single result
         Role role1 = generateRole();
-        when(roleManagerService.getAllRoles()).thenReturn(Arrays.asList(new Role[] { role1 }));
+        when(roleManagerService.getAll()).thenReturn(Arrays.asList(new Role[] { role1 }));
         List<Role> expectedResults = new ArrayList<Role>();
         expectedResults.add(role1);
         verifyRoles(expectedResults,
                      service.getRoles());
         verify(roleManagerService,
-               times(2)).getAllRoles();
+               times(2)).getAll();
         // multiple results
         Role role2 = generateRole();
-        when(roleManagerService.getAllRoles()).thenReturn(Arrays.asList(new Role[] { role1, role2 }));
+        when(roleManagerService.getAll()).thenReturn(Arrays.asList(new Role[] { role1, role2 }));
         expectedResults.add(role2);
         verifyRoles(expectedResults,
                           service.getRoles());
         verify(roleManagerService,
-               times(3)).getAllRoles();
+               times(3)).getAll();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.webservices.WebServicesTestBase#getServiceInterface()
@@ -191,7 +191,7 @@ public class RoleServiceImplTest
     /**
      * role manager service test value
      */
-    private RoleManagerService roleManagerService;
+    private RoleDao roleManagerService;
     /**
      * role factory test value
      */

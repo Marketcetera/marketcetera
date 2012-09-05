@@ -1,29 +1,27 @@
 package org.marketcetera.webservices.systemmodel.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.ws.rs.core.Response;
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.api.dao.UserDao;
+import org.marketcetera.api.dao.UserFactory;
+import org.marketcetera.api.security.User;
+import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.webservices.WebServicesTestBase;
+import org.marketcetera.webservices.systemmodel.MockUser;
+import org.marketcetera.webservices.systemmodel.UserService;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-
-import java.util.*;
-
-import javax.ws.rs.core.Response;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.marketcetera.api.security.User;
-import org.marketcetera.api.security.UserManagerService;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.systemmodel.MockUser;
-import org.marketcetera.core.systemmodel.UserFactory;
-import org.marketcetera.webservices.WebServicesTestBase;
-import org.marketcetera.webservices.systemmodel.UserService;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /* $License$ */
 
@@ -46,10 +44,10 @@ public class UserServiceImplTest
             throws Exception
     {
         serviceImplementation = new UserServiceImpl();
-        userManagerService = mock(UserManagerService.class);
+        userManagerService = mock(UserDao.class);
         userFactory = mock(UserFactory.class);
         serviceImplementation.setUserFactory(userFactory);
-        serviceImplementation.setUserManagerService(userManagerService);
+        serviceImplementation.setUserDao(userManagerService);
         when(userFactory.create()).thenReturn(new MockUser());
         when(userFactory.create(anyString(),
                                 anyString())).thenAnswer(new Answer<User>() {
@@ -67,7 +65,7 @@ public class UserServiceImplTest
         super.setup();
     }
     /**
-     * Tests {@link UserServiceImpl#addUser(String)}.
+     * Tests {@link UserServiceImpl#addUser(String, String)}
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -101,15 +99,15 @@ public class UserServiceImplTest
                                             newUser.getPassword());
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
-        verify(userManagerService).addUser((User)any());
+        verify(userManagerService).add((User) any());
         // add user throws an exception
-        doThrow(new RuntimeException("This exception is expected")).when(userManagerService).addUser((User)any());
+        doThrow(new RuntimeException("This exception is expected")).when(userManagerService).add((User) any());
         response = service.addUser(newUser.getName(),
                                    newUser.getPassword());
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
         verify(userManagerService,
-               times(2)).addUser((User)any());
+               times(2)).add((User) any());
     }
     /**
      * Tests {@link UserServiceImpl#getUser(long)}.
@@ -122,14 +120,14 @@ public class UserServiceImplTest
     {
         // no result
         assertNull(service.getUser(-1));
-        verify(userManagerService).getUserById(anyLong());
+        verify(userManagerService).getById(anyLong());
         // good result
         MockUser newUser = generateUser();
-        when(userManagerService.getUserById(newUser.getId())).thenReturn(newUser);
+        when(userManagerService.getById(newUser.getId())).thenReturn(newUser);
         verifyUser(newUser,
                     service.getUser(newUser.getId()));
         verify(userManagerService,
-               times(2)).getUserById(anyLong());
+               times(2)).getById(anyLong());
     }
     /**
      * Tests {@link UserServiceImpl#deleteUser(long)}. 
@@ -144,14 +142,14 @@ public class UserServiceImplTest
         Response response = service.deleteUser(1);
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
-        verify(userManagerService).deleteUser((User)any());
+        verify(userManagerService).delete((User) any());
         // add user throws an exception
-        doThrow(new RuntimeException("This exception is expected")).when(userManagerService).deleteUser((User)any());
+        doThrow(new RuntimeException("This exception is expected")).when(userManagerService).delete((User) any());
         response = service.deleteUser(2);
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
         verify(userManagerService,
-               times(2)).deleteUser((User)any());
+               times(2)).delete((User) any());
     }
     /**
      * Tests {@link UserServiceImpl#getUsers()}. 
@@ -163,26 +161,26 @@ public class UserServiceImplTest
             throws Exception
     {
         // no results
-        when(userManagerService.getAllUsers()).thenReturn(new ArrayList<User>());
+        when(userManagerService.getAll()).thenReturn(new ArrayList<User>());
         assertTrue(service.getUsers().isEmpty());
-        verify(userManagerService).getAllUsers();
+        verify(userManagerService).getAll();
         // single result
         User user1 = generateUser();
-        when(userManagerService.getAllUsers()).thenReturn(Arrays.asList(new User[] { user1 }));
+        when(userManagerService.getAll()).thenReturn(Arrays.asList(new User[] { user1 }));
         List<User> expectedResults = new ArrayList<User>();
         expectedResults.add(user1);
         verifyUsers(expectedResults,
                      service.getUsers());
         verify(userManagerService,
-               times(2)).getAllUsers();
+               times(2)).getAll();
         // multiple results
         User user2 = generateUser();
-        when(userManagerService.getAllUsers()).thenReturn(Arrays.asList(new User[] { user1, user2 }));
+        when(userManagerService.getAll()).thenReturn(Arrays.asList(new User[]{user1, user2}));
         expectedResults.add(user2);
         verifyUsers(expectedResults,
                           service.getUsers());
         verify(userManagerService,
-               times(3)).getAllUsers();
+               times(3)).getAll();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.webservices.WebServicesTestBase#getServiceInterface()
@@ -207,7 +205,7 @@ public class UserServiceImplTest
     /**
      * user manager service test value
      */
-    private UserManagerService userManagerService;
+    private UserDao userManagerService;
     /**
      * user factory test value
      */

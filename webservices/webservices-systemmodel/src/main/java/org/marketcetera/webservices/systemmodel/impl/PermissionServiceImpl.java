@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-
 import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.security.PermissionManagerService;
-import org.marketcetera.core.systemmodel.PermissionFactory;
+import org.marketcetera.api.dao.PermissionDao;
+import org.marketcetera.api.dao.PermissionFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webservices.systemmodel.PermissionService;
 import org.marketcetera.webservices.systemmodel.WebServicesPermission;
@@ -35,7 +34,7 @@ public class PermissionServiceImpl
         Response response;
         try {
             Permission permission = permissionFactory.create(inPermission);
-            permissionManagerService.addPermission(permission);
+            permissionDao.add(permission);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(PermissionServiceImpl.class,
@@ -53,7 +52,7 @@ public class PermissionServiceImpl
         SLF4JLoggerProxy.trace(PermissionServiceImpl.class,
                                "PermissionService getPermission invoked with id {}", //$NON-NLS-1$
                                inId);
-        Permission permission = permissionManagerService.getPermissionById(inId);
+        Permission permission = permissionDao.getById(inId);
         if(permission == null) {
             return null;
         }
@@ -65,10 +64,9 @@ public class PermissionServiceImpl
     @Override
     public List<WebServicesPermission> getPermissions()
     {
-        SLF4JLoggerProxy.trace(PermissionServiceImpl.class,
-                               "PermissionService getPermissions invoked"); //$NON-NLS-1$
+        SLF4JLoggerProxy.trace(PermissionServiceImpl.class, "PermissionService getPermissions invoked"); //$NON-NLS-1$
         List<WebServicesPermission> decoratedUsers = new ArrayList<WebServicesPermission>();
-        for(Permission permission : permissionManagerService.getAllPermissions()) {
+        for(Permission permission : permissionDao.getAll()) {
             decoratedUsers.add(new WebServicesPermission(permission));
         }
         return decoratedUsers;
@@ -84,22 +82,13 @@ public class PermissionServiceImpl
                                inId);
         Response response;
         try {
-            Permission permission = permissionManagerService.getPermissionById(inId);
-            permissionManagerService.deletePermission(permission);
+            Permission permission = permissionDao.getById(inId);
+            permissionDao.delete(permission);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             response = Response.notModified().build();
         }
         return response;
-    }
-    /**
-     * Sets the permissionManagerService value.
-     *
-     * @param inPermissionManagerService an <code>PermissionManagerService</code> value
-     */
-    public void setPermissionManagerService(PermissionManagerService inPermissionManagerService)
-    {
-        permissionManagerService = inPermissionManagerService;
     }
     /**
      * Sets the permissionFactory value.
@@ -110,12 +99,15 @@ public class PermissionServiceImpl
     {
         permissionFactory = inPermissionFactory;
     }
-    /**
-     * data access object
-     */
-    private PermissionManagerService permissionManagerService;
+
+    private PermissionDao permissionDao;
+
     /**
      * constructs permission objects
      */
     private PermissionFactory permissionFactory;
+
+    public void setPermissionDao(PermissionDao permissionDao) {
+        this.permissionDao = permissionDao;
+    }
 }

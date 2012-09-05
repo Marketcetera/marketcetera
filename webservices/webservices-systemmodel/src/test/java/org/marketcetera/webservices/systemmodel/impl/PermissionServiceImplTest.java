@@ -8,11 +8,11 @@ import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.security.PermissionManagerService;
+import org.marketcetera.api.dao.PermissionDao;
+import org.marketcetera.api.dao.PermissionFactory;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.systemmodel.PermissionFactory;
-import org.marketcetera.core.systemmodel.MockPermission;
 import org.marketcetera.webservices.WebServicesTestBase;
+import org.marketcetera.webservices.systemmodel.MockPermission;
 import org.marketcetera.webservices.systemmodel.PermissionService;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -44,10 +44,10 @@ public class PermissionServiceImplTest
             throws Exception
     {
         serviceImplementation = new PermissionServiceImpl();
-        permissionManagerService = mock(PermissionManagerService.class);
+        permissionDao = mock(PermissionDao.class);
         permissionFactory = mock(PermissionFactory.class);
         serviceImplementation.setPermissionFactory(permissionFactory);
-        serviceImplementation.setPermissionManagerService(permissionManagerService);
+        serviceImplementation.setPermissionDao(permissionDao);
         when(permissionFactory.create()).thenReturn(new MockPermission());
         when(permissionFactory.create(anyString())).thenAnswer(new Answer<Permission>() {
                                          @Override
@@ -86,14 +86,14 @@ public class PermissionServiceImplTest
         Response response = service.addPermission(newPermission.getPermission());
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
-        verify(permissionManagerService).addPermission((Permission) any());
+        verify(permissionDao).add((Permission) any());
         // add permission throws an exception
-        doThrow(new RuntimeException("This exception is expected")).when(permissionManagerService).addPermission((Permission) any());
+        doThrow(new RuntimeException("This exception is expected")).when(permissionDao).add((Permission) any());
         response = service.addPermission(newPermission.getPermission());
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
-        verify(permissionManagerService,
-               times(2)).addPermission((Permission) any());
+        verify(permissionDao,
+               times(2)).add((Permission) any());
     }
     /**
      * Tests {@link PermissionServiceImpl#getPermission(long)}.
@@ -106,14 +106,14 @@ public class PermissionServiceImplTest
     {
         // no result
         assertNull(service.getPermission(-1));
-        verify(permissionManagerService).getPermissionById(anyLong());
+        verify(permissionDao).getById(anyLong());
         // good result
         MockPermission newPermission = generatePermission();
-        when(permissionManagerService.getPermissionById(newPermission.getId())).thenReturn(newPermission);
+        when(permissionDao.getById(newPermission.getId())).thenReturn(newPermission);
         verifyPermission(newPermission,
                         service.getPermission(newPermission.getId()));
-        verify(permissionManagerService,
-               times(2)).getPermissionById(anyLong());
+        verify(permissionDao,
+               times(2)).getById(anyLong());
     }
     /**
      * Tests {@link PermissionServiceImpl#deletePermission(long)}.
@@ -128,14 +128,14 @@ public class PermissionServiceImplTest
         Response response = service.deletePermission(1);
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
-        verify(permissionManagerService).deletePermission((Permission) any());
+        verify(permissionDao).delete((Permission) any());
         // add permission throws an exception
-        doThrow(new RuntimeException("This exception is expected")).when(permissionManagerService).deletePermission((Permission) any());
+        doThrow(new RuntimeException("This exception is expected")).when(permissionDao).delete((Permission) any());
         response = service.deletePermission(2);
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
-        verify(permissionManagerService,
-               times(2)).deletePermission((Permission) any());
+        verify(permissionDao,
+               times(2)).delete((Permission) any());
     }
     /**
      * Tests {@link PermissionServiceImpl#getPermissions()}.
@@ -147,26 +147,26 @@ public class PermissionServiceImplTest
             throws Exception
     {
         // no results
-        when(permissionManagerService.getAllPermissions()).thenReturn(new ArrayList<Permission>());
+        when(permissionDao.getAll()).thenReturn(new ArrayList<Permission>());
         assertTrue(service.getPermissions().isEmpty());
-        verify(permissionManagerService).getAllPermissions();
+        verify(permissionDao).getAll();
         // single result
         Permission permission1 = generatePermission();
-        when(permissionManagerService.getAllPermissions()).thenReturn(Arrays.asList(new Permission[] {permission1}));
+        when(permissionDao.getAll()).thenReturn(Arrays.asList(new Permission[] {permission1}));
         List<Permission> expectedResults = new ArrayList<Permission>();
         expectedResults.add(permission1);
         verifyPermissions(expectedResults,
                           service.getPermissions());
-        verify(permissionManagerService,
-               times(2)).getAllPermissions();
+        verify(permissionDao,
+               times(2)).getAll();
         // multiple results
         Permission permission2 = generatePermission();
-        when(permissionManagerService.getAllPermissions()).thenReturn(Arrays.asList(new Permission[] {permission1, permission2}));
+        when(permissionDao.getAll()).thenReturn(Arrays.asList(new Permission[]{permission1, permission2}));
         expectedResults.add(permission2);
         verifyPermissions(expectedResults,
                           service.getPermissions());
-        verify(permissionManagerService,
-               times(3)).getAllPermissions();
+        verify(permissionDao,
+               times(3)).getAll();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.webservices.WebServicesTestBase#getServiceInterface()
@@ -191,7 +191,7 @@ public class PermissionServiceImplTest
     /**
      * test permission manager service value
      */
-    private PermissionManagerService permissionManagerService;
+    private PermissionDao permissionDao;
     /**
      * test permission factory value
      */
