@@ -13,7 +13,7 @@ import org.marketcetera.api.systemmodel.SystemObject;
  * @since $Release$
  */
 @MappedSuperclass
-@Access(AccessType.PROPERTY)
+@Access(AccessType.FIELD)
 public abstract class PersistentSystemObject
         implements SystemObject
 {
@@ -21,8 +21,6 @@ public abstract class PersistentSystemObject
      * @see org.marketcetera.api.systemmodel.SystemObject#getId()
      */
     @Override
-    @GeneratedValue
-    @Id
     public long getId()
     {
         return id;
@@ -35,5 +33,7 @@ public abstract class PersistentSystemObject
     /**
      * unique identifier for this object
      */
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private volatile long id;
 }

@@ -30,7 +30,7 @@ public class PermissionDaoImpl implements PermissionDao {
 
     @Override
     public Permission getByName(String inName) {
-        return (Permission) entityManager.createNamedQuery("findUserByName").setParameter("name", inName).getSingleResult();
+        return (Permission) entityManager.createNamedQuery("findPermissionByName").setParameter("name", inName).getSingleResult();
     }
 
     @Override

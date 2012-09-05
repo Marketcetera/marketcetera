@@ -3,6 +3,7 @@ package org.marketcetera.dao.domain;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.api.dao.Permission;
 
 /* $License$ */
@@ -19,6 +20,7 @@ import org.marketcetera.api.dao.Permission;
                  @NamedQuery(name="findAllPermissions",query="select s from PersistentPermission s")})
 @Table(name="permissions", uniqueConstraints = { @UniqueConstraint(columnNames= { "permission" } ) } )
 @XmlRootElement
+@Access(AccessType.FIELD)
 public class PersistentPermission
         extends PersistentVersionedObject
         implements Permission
@@ -27,7 +29,6 @@ public class PersistentPermission
      * @see org.springframework.security.core.GrantedPermission#getPermission()
      */
     @Override
-    @Column(nullable=false,unique=true)
     public String getPermission()
     {
         return permission;
@@ -39,7 +40,7 @@ public class PersistentPermission
     @Override
     public String getName()
     {
-        return permission;
+        return getPermission();
     }
     /**
      * Sets the permission value.
@@ -89,12 +90,13 @@ public class PersistentPermission
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("PersistentPermission ").append(permission).append("[").append(getId()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        builder.append("Permission ").append(getPermission()).append(" [").append(getId()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return builder.toString();
     }
     /**
      * permission value
      */
+    @Column(nullable=false,unique=true)
     private volatile String permission;
     private static final long serialVersionUID = 1L;
 }
