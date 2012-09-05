@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.security.RoleManagerService;
-import org.marketcetera.core.systemmodel.RoleFactory;
+import org.marketcetera.api.dao.RoleDao;
+import org.marketcetera.api.dao.RoleFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webservices.systemmodel.RoleService;
 import org.marketcetera.webservices.systemmodel.WebServicesRole;
@@ -34,7 +34,7 @@ public class RoleServiceImpl
         Response response;
         try {
             Role group = roleFactory.create(inName);
-            groupManagerService.addRole(group);
+            roleDao.add(group);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(RoleServiceImpl.class,
@@ -52,7 +52,7 @@ public class RoleServiceImpl
         SLF4JLoggerProxy.trace(RoleServiceImpl.class,
                                "RoleService getRole invoked with id {}", //$NON-NLS-1$
                                inId);
-        Role group = groupManagerService.getRoleById(inId);
+        Role group = roleDao.getById(inId);
         if(group == null) {
             return null;
         }
@@ -64,10 +64,9 @@ public class RoleServiceImpl
     @Override
     public List<WebServicesRole> getRoles()
     {
-        SLF4JLoggerProxy.trace(RoleServiceImpl.class,
-                               "RoleService getRoles invoked"); //$NON-NLS-1$
+        SLF4JLoggerProxy.trace(RoleServiceImpl.class, "RoleService getRoles invoked"); //$NON-NLS-1$
         List<WebServicesRole> decoratedRoles = new ArrayList<WebServicesRole>();
-        for(Role group : groupManagerService.getAllRoles()) {
+        for(Role group : roleDao.getAll()) {
             decoratedRoles.add(new WebServicesRole(group));
         }
         return decoratedRoles;
@@ -83,22 +82,13 @@ public class RoleServiceImpl
                                inId);
         Response response;
         try {
-            Role group = groupManagerService.getRoleById(inId);
-            groupManagerService.deleteRole(group);
+            Role role = roleDao.getById(inId);
+            roleDao.delete(role);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             response = Response.notModified().build();
         }
         return response;
-    }
-    /**
-     * Sets the groupManagerService value.
-     *
-     * @param inRoleManagerService an <code>RoleManagerService</code> value
-     */
-    public void setRoleManagerService(RoleManagerService inRoleManagerService)
-    {
-        groupManagerService = inRoleManagerService;
     }
     /**
      * Sets the roleFactory value.
@@ -112,9 +102,14 @@ public class RoleServiceImpl
     /**
      * data access object
      */
-    private RoleManagerService groupManagerService;
+    private RoleDao roleDao;
+
     /**
      * constructs group objects 
      */
     private RoleFactory roleFactory;
+
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
+    }
 }

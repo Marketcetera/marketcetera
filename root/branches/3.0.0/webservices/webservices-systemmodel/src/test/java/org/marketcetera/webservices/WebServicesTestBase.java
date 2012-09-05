@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.security.User;
-import org.marketcetera.core.systemmodel.SystemmodelTestBase;
+import org.marketcetera.webservices.systemmodel.SystemmodelTestBase;
 import org.marketcetera.webservices.systemmodel.WebServicesPermission;
 import org.marketcetera.webservices.systemmodel.WebServicesRole;
 import org.marketcetera.webservices.systemmodel.WebServicesUser;

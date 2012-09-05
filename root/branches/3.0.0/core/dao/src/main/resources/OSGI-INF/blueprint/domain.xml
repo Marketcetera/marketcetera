@@ -9,9 +9,9 @@
     <service ref="groupDaoBean" interface="org.marketcetera.api.dao.RoleDao"/>
     <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
 
-    <service ref="permissionFactoryBean" interface="org.marketcetera.core.systemmodel.PermissionFactory"/>
-    <service ref="groupFactoryBean" interface="org.marketcetera.core.systemmodel.RoleFactory"/>
-    <service ref="userFactoryBean" interface="org.marketcetera.core.systemmodel.UserFactory"/>
+    <service ref="permissionFactoryBean" interface="org.marketcetera.api.dao.PermissionFactory"/>
+    <service ref="groupFactoryBean" interface="org.marketcetera.api.dao.RoleFactory"/>
+    <service ref="userFactoryBean" interface="org.marketcetera.api.dao.UserFactory"/>
 
     <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera-core"/>

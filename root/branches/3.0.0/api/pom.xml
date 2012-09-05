@@ -17,6 +17,10 @@
 
     <name>Marketcetera API</name>
 
+    <dependencies>
+        <!-- THIS JAR SHOULD NEVER HAVE DEPENDENCIES OR SERVICES -->
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

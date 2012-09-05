@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-
+import org.marketcetera.api.dao.UserDao;
+import org.marketcetera.api.dao.UserFactory;
 import org.marketcetera.api.security.User;
-import org.marketcetera.api.security.UserManagerService;
-import org.marketcetera.core.systemmodel.UserFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webservices.systemmodel.UserService;
 import org.marketcetera.webservices.systemmodel.WebServicesUser;
@@ -37,7 +36,7 @@ public class UserServiceImpl
         try {
             User user = userFactory.create(inUsername,
                                            inPassword);
-            userManagerService.addUser(user);
+            userDao.add(user);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(UserServiceImpl.class,
@@ -52,10 +51,9 @@ public class UserServiceImpl
     @Override
     public WebServicesUser getUser(long inId)
     {
-        SLF4JLoggerProxy.trace(UserServiceImpl.class,
-                               "UserService getUser invoked with id {}", //$NON-NLS-1$
-                               inId);
-        User user = userManagerService.getUserById(inId);
+        SLF4JLoggerProxy.trace(UserServiceImpl.class, "UserService getUser invoked with id {}", //$NON-NLS-1$
+                inId);
+        User user = userDao.getById(inId);
         if(user == null) {
             return null;
         }
@@ -67,13 +65,12 @@ public class UserServiceImpl
     @Override
     public Response deleteUser(long inId)
     {
-        SLF4JLoggerProxy.debug(UserServiceImpl.class,
-                               "UserService deleteUser invoked with user {}", //$NON-NLS-1$
-                               inId);
+        SLF4JLoggerProxy.debug(UserServiceImpl.class, "UserService deleteUser invoked with user {}", //$NON-NLS-1$
+                inId);
         Response response;
         try {
-            User user = userManagerService.getUserById(inId);
-            userManagerService.deleteUser(user);
+            User user = userDao.getById(inId);
+            userDao.delete(user);
             response = Response.ok().build();
         } catch (RuntimeException e) {
             response = Response.notModified().build();
@@ -89,19 +86,10 @@ public class UserServiceImpl
         SLF4JLoggerProxy.trace(UserServiceImpl.class,
                                "UserService getUsers invoked"); //$NON-NLS-1$
         List<WebServicesUser> decoratedUsers = new ArrayList<WebServicesUser>();
-        for(User user : userManagerService.getAllUsers()) {
+        for(User user : userDao.getAll()) {
             decoratedUsers.add(new WebServicesUser(user));
         }
         return decoratedUsers;
-    }
-    /**
-     * Sets the userManagerService value.
-     *
-     * @param inUserManagerService a <code>UserManagerService</code> value
-     */
-    public void setUserManagerService(UserManagerService inUserManagerService)
-    {
-        userManagerService = inUserManagerService;
     }
     /**
      * Sets the userFactory value.
@@ -115,9 +103,14 @@ public class UserServiceImpl
     /**
      * data access object
      */
-    private UserManagerService userManagerService;
+    private UserDao userDao;
+
     /**
      * constructs user objects 
      */
     private UserFactory userFactory;
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 }

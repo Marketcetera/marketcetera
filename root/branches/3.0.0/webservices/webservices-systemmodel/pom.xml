@@ -18,11 +18,6 @@
     <name>Systemmodel Webservices</name>
 
     <dependencies>
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>systemmodel</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <build>

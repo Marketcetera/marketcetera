@@ -72,13 +72,6 @@
 	    <type>test-jar</type>
 	    <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>systemmodel</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-	    <type>test-jar</type>
-	    <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
