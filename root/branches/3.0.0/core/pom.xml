@@ -23,6 +23,5 @@
         <module>dao</module>
         <module>quickfix</module>
         <module>util</module>
-        <!--<module>webservice</module>-->
     </modules>
 </project>

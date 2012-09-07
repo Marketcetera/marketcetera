@@ -20,9 +20,15 @@ public class MockPermission
     {
         return permission;
     }
+
+    @Override
+    public String getMethod() {
+        return null;
+    }
+
     /* (non-Javadoc)
-     * @see org.marketcetera.api.systemmodel.NamedObject#getName()
-     */
+    * @see org.marketcetera.api.systemmodel.NamedObject#getName()
+    */
     @Override
     public String getName()
     {

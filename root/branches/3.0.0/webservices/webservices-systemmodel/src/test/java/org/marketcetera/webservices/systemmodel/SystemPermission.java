@@ -33,6 +33,12 @@ public enum SystemPermission
             {
                 return name();
             }
+
+            @Override
+            public String getMethod() {
+                return null;
+            }
+
             private static final long serialVersionUID = 1L;
         };
     }

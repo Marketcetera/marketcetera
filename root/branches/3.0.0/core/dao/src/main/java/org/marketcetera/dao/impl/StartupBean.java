@@ -1,10 +1,20 @@
 package org.marketcetera.dao.impl;
 
-import java.util.Date;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Collection;
+import java.util.LinkedList;
 
-import org.marketcetera.api.dao.PermissionDao;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.path.EntityPathBase;
 import org.marketcetera.dao.domain.PersistentPermission;
+import org.marketcetera.dao.domain.PersistentRole;
+import org.marketcetera.dao.domain.PersistentUser;
+
 
 /**
  * @version $Id$
@@ -12,16 +22,63 @@ import org.marketcetera.dao.domain.PersistentPermission;
  */
 
 public class StartupBean {
-    private PermissionDao permissionDao;
-    public void setPermissionDao(PermissionDao permissionDao) {
-        this.permissionDao = permissionDao;
+// ------------------------------ FIELDS ------------------------------
+
+    private EntityManager entityManager;
+
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+    @PersistenceContext
+    public void setEntityManager(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
+
+// -------------------------- OTHER METHODS --------------------------
+
     public void activate() {
-        PersistentPermission permission = new PersistentPermission();
-        permission.setPermission(new Date().toString());
-        SLF4JLoggerProxy.info(this,
-                              "Creating {}",
-                              permission);
-        permissionDao.save(permission);
+        Object deserialized;
+//        if (true) {
+//            try {
+//                JAXBContext context = JAXBContext.newInstance(PersistentPermission.class);
+//                Marshaller m = context.createMarshaller();
+//                m.marshal(new PersistentPermission(), System.out);
+//            } catch (JAXBException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
+//
+//            return;
+//        }
+        try {
+            InputStream inputStream = getClass().getResourceAsStream("/initialdata.xml");
+            JAXBContext context = JAXBContext.newInstance(PersistentPermission.class, PersistentRole.class, PersistentUser.class);
+            Unmarshaller m = context.createUnmarshaller();
+            deserialized = m.unmarshal(new InputStreamReader(inputStream));
+        } catch (Exception e) {
+            throw new RuntimeException("Exception loading initialdata.xml to database", e);
+        }
+
+        Collection<Object> c = null;
+        if (deserialized instanceof Collection) {
+            c = (Collection<Object>) deserialized;
+        } else {
+            c = new LinkedList<Object>();
+            c.add(deserialized);
+        }
+
+        // find if there are any of the first object in the database
+        Object first = c.iterator().next();
+        JPAQuery query = new JPAQuery(entityManager);
+        EntityPathBase<?> object = new EntityPathBase<Object>(first.getClass(), "object");
+        long count = query.from(object).count();
+
+        if (count == 0) {
+            for (Object o : (Collection) deserialized) {
+                doSave(o);
+            }
+        }
+    }
+
+    private void doSave(Object deserialized) {
+        entityManager.persist(deserialized);
     }
 }

@@ -20,4 +20,5 @@ import java.io.Serializable;
 public interface GrantedPermission extends Serializable {
 
     String getPermission();
+    String getMethod();
 }

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.dao.Permission;
@@ -24,6 +25,7 @@ import org.marketcetera.api.security.User;
                  @NamedQuery(name="findAllRoles",query="select s from PersistentRole s")})
 @Table(name="roles", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
 @Access(AccessType.FIELD)
+@XmlRootElement(name = "role")
 public class PersistentRole
         extends PersistentVersionedObject
         implements Role

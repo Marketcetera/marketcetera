@@ -29,6 +29,8 @@ public class WebServicesPermission
     public WebServicesPermission(Permission inPermission)
     {
         permission = inPermission.getPermission();
+        method = inPermission.getMethod();
+        name = inPermission.getName();
         id = inPermission.getId();
     }
     /**
@@ -75,4 +77,22 @@ public class WebServicesPermission
      * permission value
      */
     private String permission;
+    private String method;
+    private String name;
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
