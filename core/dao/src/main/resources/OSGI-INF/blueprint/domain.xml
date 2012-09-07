@@ -33,7 +33,8 @@
     <bean id="userFactoryBean" class="org.marketcetera.dao.domain.PersistentUserFactory"/>
 
     <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
-        <property name="permissionDao" ref="permissionDaoBean"/>
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
     </bean>
 
 </blueprint>

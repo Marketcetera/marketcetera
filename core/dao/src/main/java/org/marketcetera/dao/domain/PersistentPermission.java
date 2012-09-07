@@ -19,7 +19,7 @@ import org.marketcetera.api.dao.Permission;
 @NamedQueries( { @NamedQuery(name="findUserByName",query="select s from PersistentPermission s where s.permission = :name"),
                  @NamedQuery(name="findAllPermissions",query="select s from PersistentPermission s")})
 @Table(name="permissions", uniqueConstraints = { @UniqueConstraint(columnNames= { "permission" } ) } )
-@XmlRootElement
+@XmlRootElement(name = "permission")
 @Access(AccessType.FIELD)
 public class PersistentPermission
         extends PersistentVersionedObject
@@ -33,14 +33,20 @@ public class PersistentPermission
     {
         return permission;
     }
+
+    @Override
+    public String getMethod() {
+        return method;
+    }
+
     /* (non-Javadoc)
-     * @see org.marketcetera.api.systemmodel.NamedObject#getName()
-     */
+    * @see org.marketcetera.api.systemmodel.NamedObject#getName()
+    */
     @Transient
     @Override
     public String getName()
     {
-        return getPermission();
+        return name;
     }
     /**
      * Sets the permission value.
@@ -51,9 +57,18 @@ public class PersistentPermission
     {
         permission = inPermission;
     }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
+    * @see java.lang.Object#hashCode()
+    */
     @Override
     public int hashCode()
     {
@@ -98,5 +113,7 @@ public class PersistentPermission
      */
     @Column(nullable=false,unique=true)
     private volatile String permission;
+    private volatile String method;
+    private volatile String name;
     private static final long serialVersionUID = 1L;
 }

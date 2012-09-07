@@ -28,7 +28,7 @@ import org.marketcetera.api.security.User;
 @NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.permission, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
-@XmlRootElement
+@XmlRootElement(name = "user")
 @Access(AccessType.FIELD)
 public class PersistentUser
         extends PersistentVersionedObject
