@@ -2,12 +2,15 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.marketcetera.api.dao.Permission;
 
 /* $License$ */
 
@@ -23,13 +26,13 @@ public interface PermissionService
     /**
      * Adds an permission with the given permission.
      *
+     *
      * @param inPermission a <code>String</code> value
      * @return a <code>Response</code> value
      */
     @POST
-    @Path("{permission}")
-//    @Consumes({MediaType.APPLICATION_JSON})
-    public Response addPermission(@PathParam("permission")String inPermission);
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response addPermission(Permission inPermission);
     /**
      * Gets the permission with the given id.
      *
