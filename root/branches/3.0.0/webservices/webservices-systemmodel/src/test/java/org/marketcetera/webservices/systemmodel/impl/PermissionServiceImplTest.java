@@ -63,7 +63,7 @@ public class PermissionServiceImplTest
         super.setup();
     }
     /**
-     * Tests {@link PermissionServiceImpl#addPermission(String)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.PermissionService#addPermission(org.marketcetera.api.dao.Permission)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -83,13 +83,13 @@ public class PermissionServiceImplTest
             }
         };
         // successful add
-        Response response = service.addPermission(newPermission.getPermission());
+        Response response = service.addPermission(newPermission);
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
         verify(permissionDao).add((Permission) any());
         // add permission throws an exception
         doThrow(new RuntimeException("This exception is expected")).when(permissionDao).add((Permission) any());
-        response = service.addPermission(newPermission.getPermission());
+        response = service.addPermission(newPermission);
         assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
                      response.getStatus());
         verify(permissionDao,

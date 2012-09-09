@@ -26,14 +26,13 @@ public class PermissionServiceImpl
      * @see org.marketcetera.webservices.systemmodel.PermissionService#addPermission(java.lang.String)
      */
     @Override
-    public Response addPermission(String inPermission)
+    public Response addPermission(Permission permission)
     {
         SLF4JLoggerProxy.trace(PermissionServiceImpl.class,
                                "PermissionService addPermission invoked with permission {}", //$NON-NLS-1$
-                               inPermission);
+                               permission);
         Response response;
         try {
-            Permission permission = permissionFactory.create(inPermission);
             permissionDao.add(permission);
             response = Response.ok().build();
         } catch (RuntimeException e) {
