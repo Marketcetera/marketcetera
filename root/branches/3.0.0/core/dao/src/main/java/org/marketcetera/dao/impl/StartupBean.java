@@ -2,18 +2,19 @@ package org.marketcetera.dao.impl;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.LinkedList;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.path.EntityPathBase;
+
+import org.marketcetera.api.dao.*;
+import org.marketcetera.api.security.User;
+import org.marketcetera.api.systemmodel.SystemObject;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.domain.PersistentPermission;
 import org.marketcetera.dao.domain.PersistentRole;
 import org.marketcetera.dao.domain.PersistentUser;
+import org.marketcetera.dao.domain.SystemObjectList;
 
 
 /**
@@ -22,63 +23,88 @@ import org.marketcetera.dao.domain.PersistentUser;
  */
 
 public class StartupBean {
-// ------------------------------ FIELDS ------------------------------
 
-    private EntityManager entityManager;
-
-// --------------------- GETTER / SETTER METHODS ---------------------
-
-    @PersistenceContext
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    // --------------------- GETTER / SETTER METHODS ---------------------
+    /**
+     * Sets the permissionDao value.
+     *
+     * @param a <code>PermissionDao</code> value
+     */
+    public void setPermissionDao(PermissionDao inPermissionDao)
+    {
+        permissionDao = inPermissionDao;
     }
-
-// -------------------------- OTHER METHODS --------------------------
-
+    /**
+     * Sets the roleDao value.
+     *
+     * @param inRoleDao a <code>RoleDao</code> value
+     */
+    public void setRoleDao(RoleDao inRoleDao)
+    {
+        roleDao = inRoleDao;
+    }
+    /**
+     * Sets the userDao value.
+     *
+     * @param inUserDao a <code>UserDao</code> value
+     */
+    public void setUserDao(UserDao inUserDao)
+    {
+        userDao = inUserDao;
+    }
+    // -------------------------- OTHER METHODS --------------------------
     public void activate() {
-        Object deserialized;
-//        if (true) {
-//            try {
-//                JAXBContext context = JAXBContext.newInstance(PersistentPermission.class);
-//                Marshaller m = context.createMarshaller();
-//                m.marshal(new PersistentPermission(), System.out);
-//            } catch (JAXBException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
-//
-//            return;
-//        }
+        SystemObjectList initialObjectList;
         try {
             InputStream inputStream = getClass().getResourceAsStream("/initialdata.xml");
-            JAXBContext context = JAXBContext.newInstance(PersistentPermission.class, PersistentRole.class, PersistentUser.class);
+            JAXBContext context = JAXBContext.newInstance(PersistentPermission.class,PersistentRole.class,PersistentUser.class,SystemObjectList.class);
             Unmarshaller m = context.createUnmarshaller();
-            deserialized = m.unmarshal(new InputStreamReader(inputStream));
-        } catch (Exception e) {
-            throw new RuntimeException("Exception loading initialdata.xml to database", e);
+            Object rawDeserialized = m.unmarshal(new InputStreamReader(inputStream));
+            if(rawDeserialized instanceof SystemObjectList) {
+                initialObjectList = (SystemObjectList)rawDeserialized;
+            } else {
+                throw new IllegalArgumentException("Expected an element of type objectList instead of " + rawDeserialized.getClass().getCanonicalName());
+            }
+        } catch (JAXBException e) {
+            SLF4JLoggerProxy.error(this,
+                                   e);
+            throw new RuntimeException("Could not initialize data from initialdata.xml");
         }
-
-        Collection<Object> c = null;
-        if (deserialized instanceof Collection) {
-            c = (Collection<Object>) deserialized;
-        } else {
-            c = new LinkedList<Object>();
-            c.add(deserialized);
-        }
-
-        // find if there are any of the first object in the database
-        Object first = c.iterator().next();
-        JPAQuery query = new JPAQuery(entityManager);
-        EntityPathBase<?> object = new EntityPathBase<Object>(first.getClass(), "object");
-        long count = query.from(object).count();
-
-        if (count == 0) {
-            for (Object o : (Collection) deserialized) {
-                doSave(o);
+        for(SystemObject o : initialObjectList.getObjects()) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Examining initial data {}",
+                                   o);
+            try {
+                if(o instanceof Permission) {
+                    SLF4JLoggerProxy.info(this,
+                                          "Writing {}",
+                                          o);
+                    permissionDao.add((Permission)o);
+                } else if(o instanceof Role) {
+                    SLF4JLoggerProxy.info(this,
+                                          "Writing {}",
+                                          o);
+                    roleDao.add((Role) o);
+                } else if(o instanceof User) {
+                    SLF4JLoggerProxy.info(this,
+                                          "Writing {}",
+                                          o);
+                    userDao.add((User) o);
+                } else {
+                    SLF4JLoggerProxy.warn(this,
+                                          "Skipping unknown initial data object {}",
+                                          o);
+                }
+            } catch (RuntimeException e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Error writing {}, skipping",
+                                      o);
             }
         }
     }
-
-    private void doSave(Object deserialized) {
-        entityManager.persist(deserialized);
-    }
+    // ------------------------------ FIELDS ------------------------------
+    private PermissionDao permissionDao;
+    private RoleDao roleDao;
+    private UserDao userDao;
 }

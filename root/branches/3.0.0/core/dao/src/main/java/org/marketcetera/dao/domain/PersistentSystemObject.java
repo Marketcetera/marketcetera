@@ -1,6 +1,9 @@
 package org.marketcetera.dao.domain;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.marketcetera.api.systemmodel.SystemObject;
 
@@ -14,6 +17,7 @@ import org.marketcetera.api.systemmodel.SystemObject;
  */
 @MappedSuperclass
 @Access(AccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class PersistentSystemObject
         implements SystemObject
 {
@@ -21,6 +25,7 @@ public abstract class PersistentSystemObject
      * @see org.marketcetera.api.systemmodel.SystemObject#getId()
      */
     @Override
+    @XmlAttribute
     public long getId()
     {
         return id;

@@ -1,14 +1,12 @@
 package org.marketcetera.dao.domain;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.security.GrantedPermission;
@@ -22,13 +20,14 @@ import org.marketcetera.api.security.User;
  * @version $Id: PersistentUser.java 82353 2012-05-10 21:56:11Z colin $
  * @since $Release$
  */
-@ThreadSafe
+@NotThreadSafe
 @NamedQueries({ @NamedQuery(name="findUserByUsername",query="select s from PersistentUser s where s.username = :username"),
                 @NamedQuery(name="findAllUsers",query="select s from PersistentUser s")})
 @NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.permission, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
 @XmlRootElement(name = "user")
+@XmlAccessorType(XmlAccessType.NONE)
 @Access(AccessType.FIELD)
 public class PersistentUser
         extends PersistentVersionedObject
@@ -46,6 +45,7 @@ public class PersistentUser
      * @see org.marketcetera.core.systemmodel.impl.User#getUsername()
      */
     @Override
+    @XmlAttribute
     public String getUsername()
     {
         return username;
@@ -62,13 +62,12 @@ public class PersistentUser
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getPermissions()
      */
-    @Transient
     @Override
+    @XmlElementWrapper(name="permissions")
+    @XmlElement(name="permission",type=PersistentPermission.class)
     public Collection<? extends GrantedPermission> getPermissions()
     {
-        synchronized(permissions) {
-            return Collections.unmodifiableSet(permissions);
-        }
+        return permissions;
     }
     /**
      * Sets the permissions for this user.
@@ -77,18 +76,17 @@ public class PersistentUser
      */
     public void setPermissions(Collection<Permission> inPermissions)
     {
-        synchronized(permissions) {
-            permissions.clear();
-            if(inPermissions == null) {
-                return;
-            }
-            permissions.addAll(inPermissions);
+        permissions.clear();
+        if(inPermissions == null) {
+            return;
         }
+        permissions.addAll(inPermissions);
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getPassword()
      */
     @Override
+    @XmlAttribute
     public String getPassword()
     {
         return password;
@@ -106,19 +104,19 @@ public class PersistentUser
      * @see org.springframework.security.core.userdetails.UserDetails#isAccountNonExpired()
      */
     @Override
+    @XmlAttribute
     public boolean isAccountNonExpired()
     {
         return enabled;
     }
-
     public void setAccountNonExpired(boolean enabled) {
         this.enabled = enabled;
     }
-
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#isAccountNonLocked()
      */
     @Override
+    @XmlAttribute
     public boolean isAccountNonLocked()
     {
         return !locked;
@@ -136,6 +134,7 @@ public class PersistentUser
      * @see org.springframework.security.core.userdetails.UserDetails#isCredentialsNonExpired()
      */
     @Override
+    @XmlAttribute
     public boolean isCredentialsNonExpired()
     {
         return !credentialsExpired;
@@ -153,6 +152,7 @@ public class PersistentUser
      * @see org.springframework.security.core.userdetails.UserDetails#isEnabled()
      */
     @Override
+    @XmlAttribute
     public boolean isEnabled()
     {
         return enabled;
@@ -230,31 +230,30 @@ public class PersistentUser
      * username value
      */
     @Column(nullable=false,unique=true)
-    private volatile String username;
+    private String username;
     /**
      * password value
      */
     @Column(nullable=true)
-    private volatile String password;
+    private String password;
     /**
      * indicates if the account is enabled
      */
     @Column(nullable=false)
-    private volatile boolean enabled = true;
+    private boolean enabled = true;
     /**
      * indicates if the account is locked
      */
     @Column(nullable=false)
-    private volatile boolean locked = false;
+    private boolean locked = false;
     /**
      * indicates if the credentials have expired
      */
     @Column(nullable=false)
-    private volatile boolean credentialsExpired = false;
+    private boolean credentialsExpired = false;
     /**
      * permissions for this user
      */
-    @GuardedBy("permissions")
     private final Set<Permission> permissions = new HashSet<Permission>();
     private static final long serialVersionUID = 1L;
 }

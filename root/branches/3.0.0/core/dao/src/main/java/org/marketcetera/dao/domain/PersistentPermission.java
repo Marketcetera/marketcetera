@@ -1,11 +1,10 @@
 package org.marketcetera.dao.domain;
 
-import java.lang.reflect.Field;
-import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 import org.marketcetera.api.dao.Permission;
 
@@ -17,13 +16,13 @@ import org.marketcetera.api.dao.Permission;
  * @version $Id: PersistentPermission.java 82353 2012-05-10 21:56:11Z colin $
  * @since $Release$
  */
-@ThreadSafe
 @Entity
 @NamedQueries( { @NamedQuery(name="findUserByName",query="select s from PersistentPermission s where s.permission = :name"),
                  @NamedQuery(name="findAllPermissions",query="select s from PersistentPermission s")})
 @Table(name="permissions", uniqueConstraints = { @UniqueConstraint(columnNames= { "permission" } ) } )
 @XmlRootElement(name = "permission")
 @Access(AccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class PersistentPermission
         extends PersistentVersionedObject
         implements Permission
@@ -35,14 +34,15 @@ public class PersistentPermission
      * permission value
      */
     @Column(nullable=false,unique=true)
-    private volatile String permission;
-    private volatile String method;
-    private volatile String name;
-    private EnumSet<Permissions> permissions;
+    private String permission;
+    private String method;
+    private String name;
+    private final Set<Permissions> permissions = new HashSet<Permissions>();
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
     @Override
+    @XmlAttribute
     public String getMethod() {
         return method;
     }
@@ -54,8 +54,8 @@ public class PersistentPermission
     /* (non-Javadoc)
     * @see org.marketcetera.api.systemmodel.NamedObject#getName()
     */
-    @Transient
     @Override
+    @XmlAttribute
     public String getName()
     {
         return name;
@@ -69,6 +69,7 @@ public class PersistentPermission
      * @see org.springframework.security.core.GrantedPermission#getPermission()
      */
     @Override
+    @XmlAttribute
     public String getPermission()
     {
         return permission;
@@ -127,16 +128,17 @@ public class PersistentPermission
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("Permission ").append(getPermission()).append(" [").append(getId()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        builder.append("Permission ").append(getName()).append(" [").append(getId()).append("]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return builder.toString();
     }
-
-    public EnumSet<Permissions> getPermissions() {
+    @XmlElementWrapper(name="permissionsAttributes")
+    @XmlElement(name="permissionAttribute",type=PersistentPermission.Permissions.class)
+    public Set<Permissions> getPermissions() {
         return permissions;
     }
-
-    public void setPermissions(EnumSet<Permissions> permissions) {
-        this.permissions = permissions;
+    public void setPermissions(Set<Permissions> inPermissions) {
+        permissions.clear();
+        permissions.addAll(inPermissions);
     }
 
 // -------------------------- OTHER METHODS --------------------------
@@ -181,6 +183,7 @@ public class PersistentPermission
 
 // -------------------------- ENUMERATIONS --------------------------
 
+    @XmlRootElement(name = "permissionAttribute")
     public enum Permissions {
         Create,
         Read,
