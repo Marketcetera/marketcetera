@@ -12,11 +12,13 @@ public class PersistentRoleFactory implements RoleFactory {
 
     @Override
     public Role create(String inRolename) {
-        return null;
+        PersistentRole role = new PersistentRole();
+        role.setName(inRolename);
+        return role;
     }
 
     @Override
     public Role create() {
-        return null;
+        return new PersistentRole();
     }
 }

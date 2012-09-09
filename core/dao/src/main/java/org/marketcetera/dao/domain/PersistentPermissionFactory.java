@@ -12,11 +12,13 @@ public class PersistentPermissionFactory implements PermissionFactory {
 
     @Override
     public Permission create(String inPermissionName) {
-        return null;
+        PersistentPermission permission = new PersistentPermission();
+        permission.setName(inPermissionName);
+        return permission;
     }
 
     @Override
     public Permission create() {
-        return null;
+        return new PersistentPermission();
     }
 }

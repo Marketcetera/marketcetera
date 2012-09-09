@@ -3,12 +3,11 @@ package org.marketcetera.dao.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.annotation.concurrent.ThreadSafe;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
-import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -19,13 +18,13 @@ import org.marketcetera.api.security.User;
  * @version $Id: PersistentRole.java 82353 2012-05-10 21:56:11Z colin $
  * @since $Release$
  */
-@ThreadSafe
 @Entity
 @NamedQueries( { @NamedQuery(name="findRoleByName",query="select s from PersistentRole s where s.name = :name"),
                  @NamedQuery(name="findAllRoles",query="select s from PersistentRole s")})
 @Table(name="roles", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
 @Access(AccessType.FIELD)
 @XmlRootElement(name = "role")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PersistentRole
         extends PersistentVersionedObject
         implements Role
@@ -34,6 +33,7 @@ public class PersistentRole
      * @see org.marketcetera.api.dao.Role#getName()
      */
     @Override
+    @XmlAttribute
     public String getName()
     {
         return name;
@@ -51,6 +51,8 @@ public class PersistentRole
      * @see org.marketcetera.api.dao.Role#getUsers()
      */
     @Override
+    @XmlElementWrapper(name="users")
+    @XmlElement(name="user",type=PersistentUser.class)
     public Set<User> getUsers()
     {
         return users;
@@ -62,12 +64,20 @@ public class PersistentRole
      */
     public void setUsers(Set<User> inUsers)
     {
-        users = inUsers;
+        synchronized(users) {
+            users.clear();
+            if(inUsers == null) {
+                return;
+            }
+            users.addAll(inUsers);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Role#getPermissions()
      */
     @Override
+    @XmlElementWrapper(name="permissions")
+    @XmlElement(name="permission",type=PersistentPermission.class)
     public Set<Permission> getPermissions()
     {
         return permissions;
@@ -79,7 +89,22 @@ public class PersistentRole
      */
     public void setPermissions(Set<Permission> inPermissions)
     {
-        permissions = inPermissions;
+        permissions.clear();
+        if(inPermissions == null) {
+            return;
+        }
+        permissions.addAll(inPermissions);
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Role [name=").append(name).append(", users=").append(users).append(", permissions=")
+                .append(permissions).append("]");
+        return builder.toString();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -127,5 +152,5 @@ public class PersistentRole
      * name value
      */
     @Column(nullable=false,unique=true)
-    private volatile String name;
+    private String name;
 }

@@ -6,11 +6,11 @@
 
 
     <service ref="permissionDaoBean" interface="org.marketcetera.api.dao.PermissionDao"/>
-    <service ref="groupDaoBean" interface="org.marketcetera.api.dao.RoleDao"/>
+    <service ref="roleDaoBean" interface="org.marketcetera.api.dao.RoleDao"/>
     <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
 
     <service ref="permissionFactoryBean" interface="org.marketcetera.api.dao.PermissionFactory"/>
-    <service ref="groupFactoryBean" interface="org.marketcetera.api.dao.RoleFactory"/>
+    <service ref="roleFactoryBean" interface="org.marketcetera.api.dao.RoleFactory"/>
     <service ref="userFactoryBean" interface="org.marketcetera.api.dao.UserFactory"/>
 
     <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
@@ -18,7 +18,7 @@
         <tx:transaction method="*" value="Required"/>
     </bean>
 
-    <bean id="groupDaoBean" class="org.marketcetera.dao.impl.RoleDaoImpl">
+    <bean id="roleDaoBean" class="org.marketcetera.dao.impl.RoleDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera-core"/>
         <tx:transaction method="*" value="Required"/>
     </bean>
@@ -29,12 +29,13 @@
     </bean>
 
     <bean id="permissionFactoryBean" class="org.marketcetera.dao.domain.PersistentPermissionFactory"/>
-    <bean id="groupFactoryBean" class="org.marketcetera.dao.domain.PersistentRoleFactory"/>
+    <bean id="roleFactoryBean" class="org.marketcetera.dao.domain.PersistentRoleFactory"/>
     <bean id="userFactoryBean" class="org.marketcetera.dao.domain.PersistentUserFactory"/>
 
     <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
-        <jpa:context property="entityManager" unitname="marketcetera-core"/>
-        <tx:transaction method="*" value="Required"/>
+        <property name="permissionDao" ref="permissionDaoBean"/>
+        <property name="roleDao" ref="roleDaoBean"/>
+        <property name="userDao" ref="userDaoBean"/>
     </bean>
 
 </blueprint>

@@ -1,6 +1,9 @@
 package org.marketcetera.dao.domain;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.marketcetera.api.systemmodel.VersionedObject;
 
@@ -14,6 +17,7 @@ import org.marketcetera.api.systemmodel.VersionedObject;
  */
 @MappedSuperclass
 @Access(AccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class PersistentVersionedObject
         extends PersistentSystemObject
         implements VersionedObject
@@ -22,6 +26,7 @@ public abstract class PersistentVersionedObject
      * @see org.marketcetera.dao.VersionedObject#getVersion()
      */
     @Override
+    @XmlAttribute
     public final int getVersion()
     {
         return version;
@@ -34,7 +39,6 @@ public abstract class PersistentVersionedObject
     /**
      * object version value
      */
-//    @Column(name="version")
     @Version
     private int version;
 }

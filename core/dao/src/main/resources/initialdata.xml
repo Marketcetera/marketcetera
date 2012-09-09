@@ -1,5 +1,166 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<persistentPermission>
-    <id>0</id>
-    <version>0</version>
-</persistentPermission>
+<objectList>
+	<object xsi:type="persistentPermission" permission="very lax-13"
+		name="name-12" method="method-11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<permissionsAttributes>
+			<permissionAttribute>Create</permissionAttribute>
+			<permissionAttribute>Delete</permissionAttribute>
+			<permissionAttribute>Update</permissionAttribute>
+			<permissionAttribute>Read</permissionAttribute>
+		</permissionsAttributes>
+	</object>
+	<object xsi:type="persistentUser" username="someguy" password="password"
+		enabled="true" credentialsNonExpired="true" accountNonLocked="true"
+		accountNonExpired="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<permissions>
+			<permission permission="all permissions" name="All Permissions"
+				method="Easy">
+				<permissionsAttributes>
+					<permissionAttribute>Create</permissionAttribute>
+					<permissionAttribute>Delete</permissionAttribute>
+					<permissionAttribute>Update</permissionAttribute>
+					<permissionAttribute>Read</permissionAttribute>
+				</permissionsAttributes>
+			</permission>
+			<permission permission="read-only permissions" name="Read Only"
+				method="Hard">
+				<permissionsAttributes>
+					<permissionAttribute>Read</permissionAttribute>
+				</permissionsAttributes>
+			</permission>
+		</permissions>
+	</object>
+	<object xsi:type="persistentRole" name="name-23"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<permissions>
+			<permission permission="very lax-21" name="name-20"
+				method="method-19">
+				<permissionsAttributes>
+					<permissionAttribute>Create</permissionAttribute>
+					<permissionAttribute>Delete</permissionAttribute>
+					<permissionAttribute>Update</permissionAttribute>
+					<permissionAttribute>Read</permissionAttribute>
+				</permissionsAttributes>
+			</permission>
+			<permission permission="very lax-13" name="name-12"
+				method="method-11">
+				<permissionsAttributes>
+					<permissionAttribute>Create</permissionAttribute>
+					<permissionAttribute>Delete</permissionAttribute>
+					<permissionAttribute>Update</permissionAttribute>
+					<permissionAttribute>Read</permissionAttribute>
+				</permissionsAttributes>
+			</permission>
+			<permission permission="very lax-17" name="name-16"
+				method="method-15">
+				<permissionsAttributes>
+					<permissionAttribute>Create</permissionAttribute>
+					<permissionAttribute>Delete</permissionAttribute>
+					<permissionAttribute>Update</permissionAttribute>
+					<permissionAttribute>Read</permissionAttribute>
+				</permissionsAttributes>
+			</permission>
+		</permissions>
+		<users>
+			<user username="username-6" password="password-5" enabled="true"
+				credentialsNonExpired="true" accountNonLocked="true"
+				accountNonExpired="true">
+				<permissions>
+					<permission permission="very lax-21" name="name-20"
+						method="method-19">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+					<permission permission="very lax-13" name="name-12"
+						method="method-11">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+					<permission permission="very lax-17" name="name-16"
+						method="method-15">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+				</permissions>
+			</user>
+			<user username="username-3" password="password-2" enabled="true"
+				credentialsNonExpired="true" accountNonLocked="true"
+				accountNonExpired="true">
+				<permissions>
+					<permission permission="very lax-21" name="name-20"
+						method="method-19">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+					<permission permission="very lax-13" name="name-12"
+						method="method-11">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+					<permission permission="very lax-17" name="name-16"
+						method="method-15">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+				</permissions>
+			</user>
+			<user username="username-9" password="password-8" enabled="true"
+				credentialsNonExpired="true" accountNonLocked="true"
+				accountNonExpired="true">
+				<permissions>
+					<permission permission="very lax-21" name="name-20"
+						method="method-19">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+					<permission permission="very lax-13" name="name-12"
+						method="method-11">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+					<permission permission="very lax-17" name="name-16"
+						method="method-15">
+						<permissionsAttributes>
+							<permissionAttribute>Create</permissionAttribute>
+							<permissionAttribute>Delete</permissionAttribute>
+							<permissionAttribute>Update</permissionAttribute>
+							<permissionAttribute>Read</permissionAttribute>
+						</permissionsAttributes>
+					</permission>
+				</permissions>
+			</user>
+		</users>
+	</object>
+</objectList>
