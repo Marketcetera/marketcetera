@@ -16,9 +16,11 @@
 package org.marketcetera.api.security;
 
 import java.io.Serializable;
+import java.util.Set;
+
+import org.marketcetera.api.dao.PermissionAttribute;
 
 public interface GrantedPermission extends Serializable {
 
-    String getPermission();
-    String getMethod();
+    Set<PermissionAttribute> getMethod();
 }

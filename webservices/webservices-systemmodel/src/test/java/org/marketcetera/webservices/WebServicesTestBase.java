@@ -167,7 +167,7 @@ public abstract class WebServicesTestBase<InterfaceClazz,ImplementationClazz>
             throws Exception
     {
         assertEquals(inExpectedPermission.getName(),
-                     inActualPermission.getPermission());
+                     inActualPermission.getName());
         assertEquals(inExpectedPermission.getId(),
                      inActualPermission.getId());
     }

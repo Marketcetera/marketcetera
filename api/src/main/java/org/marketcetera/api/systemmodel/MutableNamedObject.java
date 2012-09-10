@@ -17,4 +17,10 @@ public interface MutableNamedObject
      * @param inName a <code>String</code> value
      */
     public void setName(String inName);
+    /**
+     * Set the description value.
+     *
+     * @param inDescription a <code>String</code> value
+     */
+    public void setDescription(String inDescription);
 }

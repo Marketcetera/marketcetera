@@ -1,9 +1,7 @@
 package org.marketcetera.api.dao;
 
-import java.util.Collection;
+import java.util.Set;
 
-import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.MutableNamedObject;
 
@@ -21,13 +19,13 @@ public interface MutableRole
     /**
      * Set the users value. 
      *
-     * @param inUsers a <code>Collection&lt;User&gt;</code> value
+     * @param inUsers a <code>Set&lt;User&gt;</code> value
      */
-    public void setUsers(Collection<User> inUsers);
+    public void setUsers(Set<User> inUsers);
     /**
      * Set the permissions value.
      *
-     * @param inPermissions a <code>Collection&lt;Permission&gt;</code> value
+     * @param inPermissions a <code>Set&lt;Permission&gt;</code> value
      */
-    public void setPermissions(Collection<Permission> inPermissions);
+    public void setPermissions(Set<Permission> inPermissions);
 }

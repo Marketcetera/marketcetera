@@ -5,7 +5,9 @@ import java.util.List;
 
 import javax.xml.bind.annotation.*;
 
-import org.marketcetera.api.systemmodel.SystemObject;
+import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.Role;
+import org.marketcetera.api.security.User;
 
 /* $License$ */
 
@@ -16,17 +18,55 @@ import org.marketcetera.api.systemmodel.SystemObject;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name="objectList")
+@XmlRootElement(name="objects")
 @XmlAccessorType(XmlAccessType.NONE)
+@XmlType(propOrder={ "permissions", "users", "roles", "assignations" })
 public class SystemObjectList
 {
-    public List<SystemObject> getObjects()
+    public List<Role> getRoles()
     {
-        return objects;
+        return roles;
     }
-    public void addObject(SystemObject inObject)
+    public List<Permission> getPermissions()
     {
-        objects.add(inObject);
+        return permissions;
+    }
+    public List<User> getUsers()
+    {
+        return users;
+    }
+    public void addObject(Role inRole)
+    {
+        addRole(inRole);
+    }
+    public void addObject(Permission inPermission)
+    {
+        addPermission(inPermission);
+    }
+    public void addObject(User inUser)
+    {
+        addUser(inUser);
+    }
+    public void addRole(Role inRole)
+    {
+        roles.add(inRole);
+    }
+    public void addPermission(Permission inPermission)
+    {
+        permissions.add(inPermission);
+    }
+    public void addUser(User inUser)
+    {
+        users.add(inUser);
+    }
+    /**
+     * Get the assignations value.
+     *
+     * @return a <code>List<AssignToRole></code> value
+     */
+    public List<AssignToRole> getAssignToRole()
+    {
+        return assignations;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -35,10 +75,20 @@ public class SystemObjectList
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append(objects);
+        builder.append("SystemObjectList [roles=").append(roles).append(", permissions=").append(permissions)
+                .append(", users=").append(users).append("]");
         return builder.toString();
     }
-    //    @XmlElementWrapper(name="objects")
-    @XmlElement(type=PersistentSystemObject.class,name="object")
-    private final List<SystemObject> objects = new ArrayList<SystemObject>();
+    @XmlElementWrapper(name="roles")
+    @XmlElement(name="role",type=PersistentRole.class)
+    private final List<Role> roles = new ArrayList<Role>();
+    @XmlElementWrapper(name="permissions")
+    @XmlElement(name="permission",type=PersistentPermission.class)
+    private final List<Permission> permissions = new ArrayList<Permission>();
+    @XmlElementWrapper(name="users")
+    @XmlElement(name="user",type=PersistentUser.class)
+    private final List<User> users = new ArrayList<User>();
+    @XmlElementWrapper(name="assignations")
+    @XmlElement(name="assignToRole")
+    private final List<AssignToRole> assignations = new ArrayList<AssignToRole>();
 }

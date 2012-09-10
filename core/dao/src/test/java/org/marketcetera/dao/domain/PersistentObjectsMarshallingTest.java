@@ -15,10 +15,10 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.PermissionAttribute;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.dao.domain.PersistentPermission.Permissions;
 
 /* $License$ */
 
@@ -93,10 +93,9 @@ public class PersistentObjectsMarshallingTest
     {
         PersistentPermission permission = new PersistentPermission();
         permission.setId(counter.incrementAndGet());
-        permission.setMethod("method-" + counter.incrementAndGet());
-        permission.setName("name-" + counter.incrementAndGet());
-        permission.setPermission("very lax-" + counter.incrementAndGet());
-        permission.setPermissions(EnumSet.of(Permissions.Create,Permissions.Update,Permissions.Read,Permissions.Delete));
+        permission.setName("very lax-" + counter.incrementAndGet());
+        permission.setDescription("description-" + counter.incrementAndGet());
+        permission.setMethod(EnumSet.of(PermissionAttribute.Create,PermissionAttribute.Update,PermissionAttribute.Read,PermissionAttribute.Delete));
         permission.setVersion(counter.intValue());
         return permission;
     }

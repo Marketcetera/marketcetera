@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.marketcetera.api.dao.MutableRole;
 import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.dao.RoleDao;
 import org.marketcetera.dao.domain.PersistentRole;
@@ -19,8 +20,9 @@ public class RoleDaoImpl implements RoleDao {
 
 
     @Override
-    public Role getByName(String inName) {
-        return (Role) entityManager.createNamedQuery("findRoleByName").getSingleResult();
+    public MutableRole getByName(String inName) {
+        return (MutableRole)entityManager.createNamedQuery("PersistentRole.findByName").setParameter("name",
+                                                                                                     inName).getSingleResult();
     }
 
     @Override
@@ -36,14 +38,15 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public Role getById(long inId) {
-        return entityManager.find(PersistentRole.class, inId);
+    public MutableRole getById(long inId) {
+        return (MutableRole)entityManager.find(PersistentRole.class,
+                                               inId);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<Role> getAll() {
-        return entityManager.createNamedQuery("findAllRoles").getResultList();
+    public List<MutableRole> getAll() {
+        return entityManager.createNamedQuery("PersistentRole.findAll").getResultList();
     }
 
     @Override

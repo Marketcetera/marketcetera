@@ -3,11 +3,12 @@ package org.marketcetera.dao.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 
+import org.marketcetera.api.dao.MutableRole;
 import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -15,19 +16,20 @@ import org.marketcetera.api.security.User;
 /**
  * Persistent implementation of {@link org.marketcetera.api.dao.Role}.
  *
- * @version $Id: PersistentRole.java 82353 2012-05-10 21:56:11Z colin $
+ * @version $Id$
  * @since $Release$
  */
+@NotThreadSafe
 @Entity
-@NamedQueries( { @NamedQuery(name="findRoleByName",query="select s from PersistentRole s where s.name = :name"),
-                 @NamedQuery(name="findAllRoles",query="select s from PersistentRole s")})
+@NamedQueries( { @NamedQuery(name="PersistentRole.findByName",query="select s from PersistentRole s where s.name = :name"),
+                 @NamedQuery(name="PersistentRole.findAll",query="select s from PersistentRole s")})
 @Table(name="roles", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
 @Access(AccessType.FIELD)
 @XmlRootElement(name = "role")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PersistentRole
         extends PersistentVersionedObject
-        implements Role
+        implements MutableRole
 {
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Role#getName()
@@ -37,6 +39,15 @@ public class PersistentRole
     public String getName()
     {
         return name;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.systemmodel.NamedObject#getDescription()
+     */
+    @Override
+    @XmlAttribute
+    public String getDescription()
+    {
+        return description;
     }
     /**
      * Sets the name value.
@@ -64,13 +75,7 @@ public class PersistentRole
      */
     public void setUsers(Set<User> inUsers)
     {
-        synchronized(users) {
-            users.clear();
-            if(inUsers == null) {
-                return;
-            }
-            users.addAll(inUsers);
-        }
+        users = inUsers;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Role#getPermissions()
@@ -89,11 +94,15 @@ public class PersistentRole
      */
     public void setPermissions(Set<Permission> inPermissions)
     {
-        permissions.clear();
-        if(inPermissions == null) {
-            return;
-        }
-        permissions.addAll(inPermissions);
+        permissions = inPermissions;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.systemmodel.MutableNamedObject#setDescription(java.lang.String)
+     */
+    @Override
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -139,7 +148,7 @@ public class PersistentRole
         return true;
     }
     /**
-     * permissions granted to this group
+     * permissions granted to this role
      */
     @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class)
     private Set<Permission> permissions = new HashSet<Permission>();
@@ -153,4 +162,6 @@ public class PersistentRole
      */
     @Column(nullable=false,unique=true)
     private String name;
+    @Column(nullable=true)
+    private String description;
 }

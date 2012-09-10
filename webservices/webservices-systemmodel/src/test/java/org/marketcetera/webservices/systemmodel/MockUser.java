@@ -84,6 +84,14 @@ public class MockUser
         return username;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.api.systemmodel.NamedObject#getDescription()
+     */
+    @Override
+    public String getDescription()
+    {
+        return description;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.core.systemmodel.MutableUser#setPermissions(java.util.Collection)
      */
     @Override
@@ -167,6 +175,10 @@ public class MockUser
      * username value
      */
     private String username;
+    /**
+     * description value
+     */
+    private String description;
     /**
      * account non-expired value
      */

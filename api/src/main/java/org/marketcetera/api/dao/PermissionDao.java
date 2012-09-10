@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Provides data access for {@link Permission} objects.
  *
- * @version $Id: PermissionDao.java 82353 2012-05-10 21:56:11Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface PermissionDao

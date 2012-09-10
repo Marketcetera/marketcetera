@@ -12,7 +12,7 @@ import org.marketcetera.api.systemmodel.SystemObject;
 /**
  * Base class for persistent system objects.
  *
- * @version $Id: PersistentSystemObject.java 82307 2012-03-02 03:13:45Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @MappedSuperclass

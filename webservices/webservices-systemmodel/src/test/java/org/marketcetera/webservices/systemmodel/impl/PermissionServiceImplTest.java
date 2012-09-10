@@ -55,7 +55,7 @@ public class PermissionServiceImplTest
                                                      throws Throwable
                                          {
                                              MockPermission permission = new MockPermission();
-                                             permission.setPermission((String)inInvocation.getArguments()[0]);
+                                             permission.setName((String)inInvocation.getArguments()[0]);
                                              permission.setId(System.nanoTime());
                                              return permission;
                                          }
@@ -72,7 +72,7 @@ public class PermissionServiceImplTest
             throws Exception
     {
         final MockPermission newPermission = generatePermission();
-        assertNotNull(newPermission.getPermission());
+        assertNotNull(newPermission.getName());
         // null permission name
         new ExpectedFailure<IllegalArgumentException>() {
             @Override

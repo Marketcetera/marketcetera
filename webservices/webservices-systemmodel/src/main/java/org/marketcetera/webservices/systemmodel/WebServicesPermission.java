@@ -1,9 +1,13 @@
 package org.marketcetera.webservices.systemmodel;
 
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.PermissionAttribute;
 
 /* $License$ */
 
@@ -28,28 +32,46 @@ public class WebServicesPermission
      */
     public WebServicesPermission(Permission inPermission)
     {
-        permission = inPermission.getPermission();
-        method = inPermission.getMethod();
         name = inPermission.getName();
+        description = inPermission.getDescription();
+        method = inPermission.getMethod();
         id = inPermission.getId();
     }
     /**
-     * Get the permission value.
+     * Get the name value.
      *
      * @return a <code>String</code> value
      */
-    public String getPermission()
+    public String getName()
     {
-        return permission;
+        return name;
     }
     /**
-     * Sets the permission value.
+     * Sets the name value.
      *
-     * @param inPermission <code>String</code> value
+     * @param inName <code>String</code> value
      */
-    public void setPermission(String inPermission)
+    public void setName(String inName)
     {
-        permission = inPermission;
+        name = inName;
+    }
+    /**
+     * Get the description value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+    /**
+     * Sets the description value.
+     *
+     * @param inDescription a <code>String</code> value
+     */
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
     }
     /**
      * Get the id value.
@@ -70,29 +92,31 @@ public class WebServicesPermission
         id = inId;
     }
     /**
+     * Get the method value.
+     *
+     * @return a <code>Set<PermissionAttribute></code> value
+     */
+    public Set<PermissionAttribute> getMethod()
+    {
+        return method;
+    }
+    /**
+     * Sets the method value.
+     *
+     * @param a <code>Set<PermissionAttribute></code> value
+     */
+    public void setMethod(Set<PermissionAttribute> inMethod)
+    {
+        method = inMethod;
+    }
+    /**
      * id value
      */
     private long id;
     /**
      * permission value
      */
-    private String permission;
-    private String method;
     private String name;
-
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String description;
+    private Set<PermissionAttribute> method;
 }
