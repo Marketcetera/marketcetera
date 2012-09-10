@@ -7,7 +7,7 @@ import org.marketcetera.api.dao.Role;
 /**
  * Creates <code>Role</code> objects.
  *
- * @version $Id: RoleFactory.java 82315 2012-03-17 01:58:54Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface RoleFactory

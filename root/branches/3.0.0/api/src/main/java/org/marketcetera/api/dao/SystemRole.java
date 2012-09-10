@@ -5,7 +5,7 @@ package org.marketcetera.api.dao;
 /**
  * Defines pre-defined system groups.
  *
- * @version $Id: SystemRole.java 82316 2012-03-21 21:13:27Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public enum SystemRole

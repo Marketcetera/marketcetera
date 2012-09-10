@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Provides data access for {@link Role} objects.
  *
- * @version $Id: RoleDao.java 82354 2012-05-11 17:46:11Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface RoleDao
@@ -16,9 +16,9 @@ public interface RoleDao
      * Gets the <code>Role</code> corresponding to the given name.
      *
      * @param inName a <code>String</code> value
-     * @return a <code>Role</code> value
+     * @return a <code>MutableRole</code> value
      */
-    public Role getByName(String inName);
+    public MutableRole getByName(String inName);
     /**
      * Adds the given <code>Role</code> to the database.
      *
@@ -35,15 +35,15 @@ public interface RoleDao
      * Gets the <code>Role</code> corresponding to the given id.
      *
      * @param inId a <code>long</code> value
-     * @return a <code>Role</code> value
+     * @return a <code>MutableRole</code> value
      */
-    public Role getById(long inId);
+    public MutableRole getById(long inId);
     /**
      * Gets all <code>Role</code> values.
      *
-     * @return a <code>List&lt;Role&gt;</code> value
+     * @return a <code>List&lt;MutableRole&gt;</code> value
      */
-    public List<Role> getAll();
+    public List<MutableRole> getAll();
     /**
      * Deletes the given <code>Role</code> from the database.
      *

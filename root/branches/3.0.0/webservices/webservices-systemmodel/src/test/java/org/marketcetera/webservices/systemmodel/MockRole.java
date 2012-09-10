@@ -2,7 +2,9 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
+import org.marketcetera.api.dao.MutableRole;
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.security.User;
 
@@ -25,6 +27,14 @@ public class MockRole
     public String getName()
     {
         return name;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.systemmodel.NamedObject#getDescription()
+     */
+    @Override
+    public String getDescription()
+    {
+        return description;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Group#getUsers()
@@ -51,10 +61,18 @@ public class MockRole
         name = inName;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.MutableRole#setUsers(java.util.Collection)
+     * @see org.marketcetera.api.systemmodel.MutableNamedObject#setDescription(java.lang.String)
      */
     @Override
-    public void setUsers(Collection<User> inUsers)
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableRole#setUsers(java.util.Set)
+     */
+    @Override
+    public void setUsers(Set<User> inUsers)
     {
         users.clear();
         if(inUsers == null) {
@@ -63,10 +81,10 @@ public class MockRole
         users.addAll(inUsers);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.MutableRole#setPermissions(java.util.Collection)
+     * @see org.marketcetera.api.dao.MutableRole#setPermissions(java.util.Set)
      */
     @Override
-    public void setPermissions(Collection<Permission> inPermissions)
+    public void setPermissions(Set<Permission> inPermissions)
     {
         permissions.clear();
         if(inPermissions == null) {
@@ -89,6 +107,10 @@ public class MockRole
      * name value
      */
     private String name;
+    /**
+     * description value
+     */
+    private String description;
     /**
      * users value
      */

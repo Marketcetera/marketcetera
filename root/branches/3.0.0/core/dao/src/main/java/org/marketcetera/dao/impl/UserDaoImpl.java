@@ -4,11 +4,10 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.User;
 import org.marketcetera.dao.domain.PersistentUser;
-//import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * @version $Id$
@@ -21,7 +20,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getByName(String inUsername) {
-        return (User) entityManager.createNamedQuery("findUserByUsername").getSingleResult();
+        return (User)entityManager.createNamedQuery("PersistentUser.findByName").setParameter("name",
+                                                                                              inUsername).getSingleResult();
     }
 
     @Override
@@ -49,18 +49,8 @@ public class UserDaoImpl implements UserDao {
     @SuppressWarnings("unchecked")
     @Override
     public List<User> getAll() {
-        return entityManager.createNamedQuery("findAllUsers").getResultList();
+        return entityManager.createNamedQuery("PersistentUser.findAll").getResultList();
     }
-
-//    @Override
-//    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-//        User user = getByName(username);
-//        if(user == null) {
-//            throw new UsernameNotFoundException(username);
-//        }
-//        return user;
-//    }
-
     @PersistenceContext
     public void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;

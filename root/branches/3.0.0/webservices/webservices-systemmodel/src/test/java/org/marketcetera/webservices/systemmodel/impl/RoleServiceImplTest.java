@@ -1,12 +1,23 @@
 package org.marketcetera.webservices.systemmodel.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.dao.MutableRole;
 import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.dao.RoleDao;
 import org.marketcetera.api.dao.RoleFactory;
@@ -16,12 +27,6 @@ import org.marketcetera.webservices.systemmodel.MockRole;
 import org.marketcetera.webservices.systemmodel.RoleService;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
 
 /* $License$ */
 
@@ -71,7 +76,7 @@ public class RoleServiceImplTest
     public void testAddRole()
             throws Exception
     {
-        final MockRole newRole = generateRole();
+        final MutableRole newRole = generateRole();
         assertNotNull(newRole.getName());
         // null name
         new ExpectedFailure<IllegalArgumentException>() {
@@ -108,7 +113,7 @@ public class RoleServiceImplTest
         assertNull(service.getRole(-1));
         verify(roleManagerService).getById(anyLong());
         // good result
-        MockRole newRole = generateRole();
+        MutableRole newRole = generateRole();
         when(roleManagerService.getById(newRole.getId())).thenReturn(newRole);
         verifyRole(newRole,
                     service.getRole(newRole.getId()));
@@ -147,12 +152,12 @@ public class RoleServiceImplTest
             throws Exception
     {
         // no results
-        when(roleManagerService.getAll()).thenReturn(new ArrayList<Role>());
+        when(roleManagerService.getAll()).thenReturn(new ArrayList<MutableRole>());
         assertTrue(service.getRoles().isEmpty());
         verify(roleManagerService).getAll();
         // single result
-        Role role1 = generateRole();
-        when(roleManagerService.getAll()).thenReturn(Arrays.asList(new Role[] { role1 }));
+        MutableRole role1 = (MutableRole)generateRole();
+        when(roleManagerService.getAll()).thenReturn(Arrays.asList(new MutableRole[] { role1 }));
         List<Role> expectedResults = new ArrayList<Role>();
         expectedResults.add(role1);
         verifyRoles(expectedResults,
@@ -160,8 +165,8 @@ public class RoleServiceImplTest
         verify(roleManagerService,
                times(2)).getAll();
         // multiple results
-        Role role2 = generateRole();
-        when(roleManagerService.getAll()).thenReturn(Arrays.asList(new Role[] { role1, role2 }));
+        MutableRole role2 = (MutableRole)generateRole();
+        when(roleManagerService.getAll()).thenReturn(Arrays.asList(new MutableRole[] { role1, role2 }));
         expectedResults.add(role2);
         verifyRoles(expectedResults,
                           service.getRoles());

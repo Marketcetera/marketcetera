@@ -30,7 +30,7 @@ public class PermissionDaoImpl implements PermissionDao {
 
     @Override
     public Permission getByName(String inName) {
-        return (Permission) entityManager.createNamedQuery("findPermissionByName").setParameter("name", inName).getSingleResult();
+        return (Permission) entityManager.createNamedQuery("PersistentPermission.findByName").setParameter("name", inName).getSingleResult();
     }
 
     @Override
@@ -41,7 +41,7 @@ public class PermissionDaoImpl implements PermissionDao {
     @SuppressWarnings("unchecked")
     @Override
     public List<Permission> getAll() {
-        return entityManager.createNamedQuery("findAllPermissions").getResultList();
+        return entityManager.createNamedQuery("PersistentPermission.findAll").getResultList();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.PermissionDao#delete(org.marketcetera.core.systemmodel.Permission)

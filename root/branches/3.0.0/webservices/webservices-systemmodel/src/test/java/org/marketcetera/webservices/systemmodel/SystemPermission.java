@@ -2,6 +2,9 @@ package org.marketcetera.webservices.systemmodel;
 
 /* $License$ */
 
+import java.util.Set;
+
+import org.marketcetera.api.dao.PermissionAttribute;
 import org.marketcetera.api.security.GrantedPermission;
 
 /**
@@ -29,16 +32,10 @@ public enum SystemPermission
     {
         return new GrantedPermission() {
             @Override
-            public String getPermission()
+            public Set<PermissionAttribute> getMethod()
             {
-                return name();
+                throw new UnsupportedOperationException(); // TODO
             }
-
-            @Override
-            public String getMethod() {
-                return null;
-            }
-
             private static final long serialVersionUID = 1L;
         };
     }

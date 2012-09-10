@@ -1,25 +1,23 @@
 package org.marketcetera.webservices.systemmodel;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.marketcetera.api.dao.PermissionDao;
-import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.RoleDao;
-import org.marketcetera.api.dao.UserDao;
+import org.marketcetera.api.dao.*;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.LoggerConfiguration;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
 
 /* $License$ */
 
@@ -123,7 +121,7 @@ public class SystemmodelTestBase
             throws Exception
     {
         roleDao = mock(RoleDao.class);
-        roleDataStore = new NamedTestDataStore<Role>();
+        roleDataStore = new NamedTestDataStore<MutableRole>();
         for(int i=0;i<=3;i++) {
             roleDataStore.add(generateRole());
         }
@@ -140,7 +138,7 @@ public class SystemmodelTestBase
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                Role role = (Role)inInvocation.getArguments()[0];
+                MutableRole role = (MutableRole)inInvocation.getArguments()[0];
                 roleDataStore.add(role);
                 return null;
             }
@@ -150,7 +148,7 @@ public class SystemmodelTestBase
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                Role role = (Role)inInvocation.getArguments()[0];
+                MutableRole role = (MutableRole)inInvocation.getArguments()[0];
                 roleDataStore.remove(role);
                 return null;
             }
@@ -171,7 +169,7 @@ public class SystemmodelTestBase
                 return roleDataStore.getById((Long)inInvocation.getArguments()[0]);
             }
         });
-        when(roleDao.getAll()).thenReturn(new ArrayList<Role>(roleDataStore.getAll()));
+        when(roleDao.getAll()).thenReturn(new ArrayList<MutableRole>(roleDataStore.getAll()));
     }
     /**
      * Initializes the user objects. 
@@ -240,16 +238,16 @@ public class SystemmodelTestBase
     protected MockPermission generatePermission()
     {
         MockPermission permission = new MockPermission();
-        permission.setPermission("permission-" + counter.incrementAndGet());
+        permission.setName("permission-" + counter.incrementAndGet());
         permission.setId(counter.incrementAndGet());
         return permission;
     }
     /**
      * Generates a unique <code>MockRole</code> value.
      *
-     * @return a <code>MockRole</code> value
+     * @return a <code>MutableRole</code> value
      */
-    protected MockRole generateRole()
+    protected MutableRole generateRole()
     {
         MockRole role = new MockRole();
         role.setName("role-" + counter.incrementAndGet());
@@ -289,7 +287,7 @@ public class SystemmodelTestBase
     /**
      * data store for role test values 
      */
-    protected NamedTestDataStore<Role> roleDataStore;
+    protected NamedTestDataStore<MutableRole> roleDataStore;
     /**
      * data store for permission test values
      */

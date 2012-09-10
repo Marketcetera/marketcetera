@@ -17,12 +17,12 @@ import org.marketcetera.api.security.User;
 /**
  * Persistent implementation of {@link User}.
  *
- * @version $Id: PersistentUser.java 82353 2012-05-10 21:56:11Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @NotThreadSafe
-@NamedQueries({ @NamedQuery(name="findUserByUsername",query="select s from PersistentUser s where s.username = :username"),
-                @NamedQuery(name="findAllUsers",query="select s from PersistentUser s")})
+@NamedQueries({ @NamedQuery(name="PersistentUser.findByName",query="select s from PersistentUser s where s.username = :name"),
+                @NamedQuery(name="PersistentUser.findAll",query="select s from PersistentUser s")})
 @NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.permission, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
@@ -58,6 +58,19 @@ public class PersistentUser
     public void setUsername(String inUsername)
     {
         username = inUsername;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.systemmodel.NamedObject#getDescription()
+     */
+    @Override
+    @XmlAttribute
+    public String getDescription()
+    {
+        return description;
+    }
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getPermissions()
@@ -231,6 +244,8 @@ public class PersistentUser
      */
     @Column(nullable=false,unique=true)
     private String username;
+    @Column(nullable=true)
+    private String description;
     /**
      * password value
      */

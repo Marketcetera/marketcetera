@@ -1,5 +1,9 @@
 package org.marketcetera.webservices.systemmodel;
 
+import java.util.Set;
+
+import org.marketcetera.api.dao.PermissionAttribute;
+
 /* $License$ */
 
 /**
@@ -13,38 +17,41 @@ public class MockPermission
         implements MutablePermission
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.api.security.GrantedPermission#getPermission()
+     * @see org.marketcetera.api.systemmodel.NamedObject#getDescription()
      */
     @Override
-    public String getPermission()
+    public String getDescription()
     {
-        return permission;
+        throw new UnsupportedOperationException(); // TODO
+        
     }
-
-    @Override
-    public String getMethod() {
-        return null;
-    }
-
     /* (non-Javadoc)
     * @see org.marketcetera.api.systemmodel.NamedObject#getName()
     */
     @Override
     public String getName()
     {
-        return getPermission();
+        return name;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.systemmodel.MutablePermission#setPermission(java.lang.String)
      */
     @Override
-    public void setPermission(String inPermission)
+    public void setName(String inPermission)
     {
-        permission = inPermission;
+        name = inPermission;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.GrantedPermission#getMethod()
+     */
+    @Override
+    public Set<PermissionAttribute> getMethod()
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * permission value
      */
-    private String permission;
+    private String name;
     private static final long serialVersionUID = 1L;
 }

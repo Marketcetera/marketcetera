@@ -12,7 +12,7 @@ import org.marketcetera.api.systemmodel.VersionedObject;
 /**
  * Represents a grouping of {@link org.marketcetera.api.security.User} and {@link Permission} objects.
  *
- * @version $Id: Role.java 82316 2012-03-21 21:13:27Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface Role

@@ -2,19 +2,19 @@ package org.marketcetera.dao.impl;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.NoResultException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.lang.StringUtils;
 import org.marketcetera.api.dao.*;
 import org.marketcetera.api.security.User;
-import org.marketcetera.api.systemmodel.SystemObject;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.dao.domain.PersistentPermission;
-import org.marketcetera.dao.domain.PersistentRole;
-import org.marketcetera.dao.domain.PersistentUser;
-import org.marketcetera.dao.domain.SystemObjectList;
+import org.marketcetera.dao.domain.*;
 
 
 /**
@@ -57,7 +57,7 @@ public class StartupBean {
         SystemObjectList initialObjectList;
         try {
             InputStream inputStream = getClass().getResourceAsStream("/initialdata.xml");
-            JAXBContext context = JAXBContext.newInstance(PersistentPermission.class,PersistentRole.class,PersistentUser.class,SystemObjectList.class);
+            JAXBContext context = JAXBContext.newInstance(PersistentPermission.class,PersistentRole.class,PersistentUser.class,SystemObjectList.class,NameReference.class);
             Unmarshaller m = context.createUnmarshaller();
             Object rawDeserialized = m.unmarshal(new InputStreamReader(inputStream));
             if(rawDeserialized instanceof SystemObjectList) {
@@ -70,38 +70,97 @@ public class StartupBean {
                                    e);
             throw new RuntimeException("Could not initialize data from initialdata.xml");
         }
-        for(SystemObject o : initialObjectList.getObjects()) {
-            SLF4JLoggerProxy.debug(this,
-                                   "Examining initial data {}",
-                                   o);
+        for(Permission permission : initialObjectList.getPermissions()) {
             try {
-                if(o instanceof Permission) {
-                    SLF4JLoggerProxy.info(this,
-                                          "Writing {}",
-                                          o);
-                    permissionDao.add((Permission)o);
-                } else if(o instanceof Role) {
-                    SLF4JLoggerProxy.info(this,
-                                          "Writing {}",
-                                          o);
-                    roleDao.add((Role) o);
-                } else if(o instanceof User) {
-                    SLF4JLoggerProxy.info(this,
-                                          "Writing {}",
-                                          o);
-                    userDao.add((User) o);
-                } else {
-                    SLF4JLoggerProxy.warn(this,
-                                          "Skipping unknown initial data object {}",
-                                          o);
-                }
+                permissionDao.add(permission);
             } catch (RuntimeException e) {
                 SLF4JLoggerProxy.warn(this,
                                       e,
                                       "Error writing {}, skipping",
-                                      o);
+                                      permission);
             }
         }
+        for(User user : initialObjectList.getUsers()) {
+            try {
+                userDao.add(user);
+            } catch (RuntimeException e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Error writing {}, skipping",
+                                      user);
+            }
+        }
+        for(Role role : initialObjectList.getRoles()) {
+            try {
+                roleDao.add(role);
+            } catch (RuntimeException e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Error writing {}, skipping",
+                                      role);
+            }
+        }
+        for(AssignToRole assignToRole : initialObjectList.getAssignToRole()) {
+            SLF4JLoggerProxy.info(this,
+                                  "Performing assignation {}",
+                                  assignToRole);
+            // the elements to assign to the role are supposed to already exist, so find them
+            String roleName = StringUtils.trimToNull(assignToRole.getRoleName());
+            if(roleName == null) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Cannot perform assignation {} because no role name was provided, skipping",
+                                      assignToRole);
+                continue;
+            }
+            MutableRole roleToModify;
+            try {
+                roleToModify = roleDao.getByName(roleName);
+            } catch (NoResultException e) {
+                SLF4JLoggerProxy.warn(this,
+                                      "Cannot perform assignation {} because no role by that name exists, skipping",
+                                      assignToRole);
+                continue;
+            }
+            // retrieve the permissions to add (note that this implementation consciously chooses to remove existing permissions/users in favor of the new list)
+            Set<Permission> permissionsToAdd = new HashSet<Permission>();
+            for(NameReference reference : assignToRole.getPermissionReferences()) {
+                String permissionReference = StringUtils.trimToNull(reference.getName());
+                if(permissionReference != null) {
+                    try {
+                        Permission permission = permissionDao.getByName(permissionReference);
+                        permissionsToAdd.add(permission);
+                    } catch (NoResultException e) {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Cannot assign permission {} to role {} because no permission by that name exists",
+                                              permissionReference,
+                                              assignToRole);
+                    }
+                }
+            }
+            // retrieve the users to add (note that this implementation consciously chooses to remove existing permissions/users in favor of the new list)
+            Set<User> usersToAdd = new HashSet<User>();
+            for(NameReference reference : assignToRole.getUserReferences()) {
+                String userReference = StringUtils.trimToNull(reference.getName());
+                if(userReference != null) {
+                    try {
+                        User user = userDao.getByName(userReference);
+                        usersToAdd.add(user);
+                    } catch (NoResultException e) {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Cannot assign user {} to role {} because no user by that name exists",
+                                              userReference,
+                                              assignToRole);
+                    }
+                }
+            }
+            // tie it all together
+            roleToModify.setPermissions(permissionsToAdd);
+            roleToModify.setUsers(usersToAdd);
+            roleDao.save(roleToModify);
+        }
+        SLF4JLoggerProxy.info(this,
+                              "Roles are now: {}",
+                              roleDao.getAll());
     }
     // ------------------------------ FIELDS ------------------------------
     private PermissionDao permissionDao;
