@@ -17,9 +17,9 @@ public interface UserDao {
      * Gets the <code>User</code> corresponding to the given username.
      *
      * @param inUsername a <code>String</code> value
-     * @return a <code>User</code> value
+     * @return a <code>MutableUser</code> value
      */
-    public User getByName(String inUsername);
+    public MutableUser getByName(String inUsername);
 
     /**
      * Adds the given <code>User</code> to the database.
@@ -44,13 +44,13 @@ public interface UserDao {
      * Gets the <code>User</code> corresponding to the given id.
      *
      * @param inId a <code>long</code> value
-     * @return a <code>User</code> value
+     * @return a <code>MutableUser</code> value
      */
-    public User getById(long inId);
+    public MutableUser getById(long inId);
     /**
      * Gets all <code>User</code> values.
      *
-     * @return a <code>List&lt;User&gt;</code> value
+     * @return a <code>List&lt;MutableUser&gt;</code> value
      */
-    public List<User> getAll();
+    public List<MutableUser> getAll();
 }

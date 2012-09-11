@@ -2,6 +2,7 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.Set;
 
+import org.marketcetera.api.dao.MutablePermission;
 import org.marketcetera.api.dao.PermissionAttribute;
 
 /* $License$ */
@@ -23,7 +24,6 @@ public class MockPermission
     public String getDescription()
     {
         throw new UnsupportedOperationException(); // TODO
-        
     }
     /* (non-Javadoc)
     * @see org.marketcetera.api.systemmodel.NamedObject#getName()
@@ -34,12 +34,20 @@ public class MockPermission
         return name;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.systemmodel.MutablePermission#setPermission(java.lang.String)
+     * @see org.marketcetera.api.dao.Permission#getPermission()
      */
     @Override
-    public void setName(String inPermission)
+    public String getPermission()
     {
-        name = inPermission;
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutablePermission#setPermission(java.lang.String)
+     */
+    @Override
+    public void setPermission(String inPermission)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.security.GrantedPermission#getMethod()
@@ -49,9 +57,16 @@ public class MockPermission
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutablePermission#setMethod(java.util.Set)
+     */
+    @Override
+    public void setMethod(Set<PermissionAttribute> inMethod)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
     /**
      * permission value
      */
     private String name;
-    private static final long serialVersionUID = 1L;
 }

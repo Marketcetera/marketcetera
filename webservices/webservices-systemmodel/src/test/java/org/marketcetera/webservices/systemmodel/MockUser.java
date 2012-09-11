@@ -1,11 +1,11 @@
 package org.marketcetera.webservices.systemmodel;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.marketcetera.api.security.GrantedPermission;
-import org.marketcetera.api.security.GrantedPermission;
+import org.marketcetera.api.dao.MutableUser;
+import org.marketcetera.api.dao.Permission;
 
 /* $License$ */
 
@@ -23,9 +23,9 @@ public class MockUser
      * @see org.marketcetera.api.security.User#getPermissions()
      */
     @Override
-    public Collection<? extends GrantedPermission> getPermissions()
+    public Set<Permission> getPermissions()
     {
-        return Collections.unmodifiableCollection(permissions);
+        return Collections.unmodifiableSet(permissions);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.security.User#getPassword()
@@ -95,7 +95,7 @@ public class MockUser
      * @see org.marketcetera.core.systemmodel.MutableUser#setPermissions(java.util.Collection)
      */
     @Override
-    public void setPermissions(Collection<? extends GrantedPermission> inPermissions)
+    public void setPermissions(Set<Permission> inPermissions)
     {
         permissions.clear();
         if(inPermissions != null) {
@@ -166,7 +166,7 @@ public class MockUser
     /**
      * permissions value
      */
-    private final Collection<GrantedPermission> permissions = new ArrayList<GrantedPermission>();
+    private final Set<Permission> permissions = new HashSet<Permission>();
     /**
      * password value
      */

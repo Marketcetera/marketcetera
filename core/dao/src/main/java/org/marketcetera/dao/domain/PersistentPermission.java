@@ -7,7 +7,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 
-import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.MutablePermission;
 import org.marketcetera.api.dao.PermissionAttribute;
 
 /* $License$ */
@@ -28,7 +28,7 @@ import org.marketcetera.api.dao.PermissionAttribute;
 @XmlAccessorType(XmlAccessType.NONE)
 public class PersistentPermission
         extends PersistentVersionedObject
-        implements Permission
+        implements MutablePermission
 {
     // --------------------- GETTER / SETTER METHODS ---------------------
     /**
@@ -39,7 +39,7 @@ public class PersistentPermission
     @XmlElementWrapper(name="method")
     @XmlElement(name="permissionAttribute",type=PermissionAttribute.class)
     public Set<PermissionAttribute> getMethod() {
-        return method;
+        return methodSet;
     }
     /**
      * Set the permission method value ascribing permission attributes to this permission.
@@ -47,7 +47,7 @@ public class PersistentPermission
      * @param inMethod a <code>Set&lt;PermissionAttribute&gt;</code> value
      */
     public void setMethod(Set<PermissionAttribute> inMethod) {
-        method = inMethod;
+        methodSet = inMethod;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.systemmodel.NamedObject#getName()
@@ -84,6 +84,23 @@ public class PersistentPermission
     public void setDescription(String inDescription)
     {
         description = inDescription;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.Permission#getPermission()
+     */
+    @Override
+    @XmlAttribute
+    public String getPermission()
+    {
+        return permission;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutablePermission#setPermission(java.lang.String)
+     */
+    @Override
+    public void setPermission(String inPermission)
+    {
+        permission = inPermission;
     }
     // ------------------------ CANONICAL METHODS ------------------------
     /* (non-Javadoc)
@@ -125,8 +142,21 @@ public class PersistentPermission
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("Permission ").append(getName()).append(" [").append(getId()).append("] ").append(method); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        builder.append("Permission ").append(getName()).append(" [").append(getId()).append("] ").append(getMethod()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return builder.toString();
+    }
+    // ------------------------------ OTHER METHODS -----------------------
+    @SuppressWarnings("unused")
+    @PrePersist
+    private void prePersist()
+    {
+        method = PermissionAttribute.getBitFlagValueFor(methodSet);
+    }
+    @SuppressWarnings("unused")
+    @PostPersist
+    private void postPersist()
+    {
+        methodSet = PermissionAttribute.getAttributesFor(method);
     }
     // ------------------------------ FIELDS ------------------------------
     /**
@@ -140,11 +170,18 @@ public class PersistentPermission
     @Column(nullable=true)
     private String description;
     /**
-     * stores set of permission attributes assigned to this permission
+     * the element for which this object contains permissions for
      */
-    @ElementCollection(fetch=FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
-    @CollectionTable(name="permission_methods")
-    private Set<PermissionAttribute> method = new HashSet<PermissionAttribute>();
-    private static final long serialVersionUID = 1L;
+    @Column(nullable=false)
+    private String permission;
+    /**
+     * stores bit flag value representing permission attributes assigned to this permission
+     */
+    @Column(nullable=false)
+    private int method;
+    /**
+     * mirrors the attributes established in method, exists in this object to allow JAXB to set the permissions
+     */
+    @Transient
+    private Set<PermissionAttribute> methodSet = new HashSet<PermissionAttribute>();
 }

@@ -56,9 +56,9 @@ public class PersistentObjectsMarshallingTest
         role1.setUsers(new HashSet<User>(Arrays.asList(user1,user2,user3)));
         role2.setUsers(new HashSet<User>(Arrays.asList(user1,user2,user3)));
         role3.setUsers(new HashSet<User>(Arrays.asList(user1,user2,user3)));
-        user1.setPermissions(Arrays.asList(new Permission[] { permission1, permission2, permission3 }));
-        user2.setPermissions(Arrays.asList(new Permission[] { permission1, permission2, permission3 }));
-        user3.setPermissions(Arrays.asList(new Permission[] { permission1, permission2, permission3 }));
+        user1.setPermissions(new HashSet<Permission>(Arrays.asList(new Permission[] { permission1, permission2, permission3 })));
+        user2.setPermissions(new HashSet<Permission>(Arrays.asList(new Permission[] { permission1, permission2, permission3 })));
+        user3.setPermissions(new HashSet<Permission>(Arrays.asList(new Permission[] { permission1, permission2, permission3 })));
         JAXBContext context = JAXBContext.newInstance(PersistentUser.class,PersistentRole.class,PersistentPermission.class,SystemObjectList.class);
         Marshaller marshaller = context.createMarshaller();
         StringWriter writer = new StringWriter();
@@ -79,10 +79,10 @@ public class PersistentObjectsMarshallingTest
     private PersistentUser generateUser()
     {
         PersistentUser user = new PersistentUser();
-        user.setAccountNonExpired(false);
-        user.setAccountNonLocked(false);
-        user.setCredentialsNonExpired(false);
-        user.setEnabled(false);
+        user.setIsAccountNonExpired(false);
+        user.setIsAccountNonLocked(false);
+        user.setIsCredentialsNonExpired(false);
+        user.setIsEnabled(false);
         user.setId(counter.incrementAndGet());
         user.setPassword("password-" + counter.incrementAndGet());
         user.setUsername("username-" + counter.incrementAndGet());

@@ -55,7 +55,7 @@ public class PermissionServiceImplTest
                                                      throws Throwable
                                          {
                                              MockPermission permission = new MockPermission();
-                                             permission.setName((String)inInvocation.getArguments()[0]);
+//                                             permission.setName((String)inInvocation.getArguments()[0]);
                                              permission.setId(System.nanoTime());
                                              return permission;
                                          }

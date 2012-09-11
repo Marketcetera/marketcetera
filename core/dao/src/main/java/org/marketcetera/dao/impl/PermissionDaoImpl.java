@@ -5,8 +5,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.marketcetera.api.dao.PermissionDao;
 import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.PermissionDao;
 import org.marketcetera.dao.domain.PersistentPermission;
 
 /**
@@ -37,7 +37,6 @@ public class PermissionDaoImpl implements PermissionDao {
     public Permission getById(long inId) {
         return entityManager.find(PersistentPermission.class, inId);
     }
-
     @SuppressWarnings("unchecked")
     @Override
     public List<Permission> getAll() {

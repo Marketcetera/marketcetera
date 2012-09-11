@@ -1,12 +1,23 @@
 package org.marketcetera.webservices.systemmodel.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.dao.MutableUser;
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.dao.UserFactory;
 import org.marketcetera.api.security.User;
@@ -16,12 +27,6 @@ import org.marketcetera.webservices.systemmodel.MockUser;
 import org.marketcetera.webservices.systemmodel.UserService;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
 
 /* $License$ */
 
@@ -161,12 +166,12 @@ public class UserServiceImplTest
             throws Exception
     {
         // no results
-        when(userManagerService.getAll()).thenReturn(new ArrayList<User>());
+        when(userManagerService.getAll()).thenReturn(new ArrayList<MutableUser>());
         assertTrue(service.getUsers().isEmpty());
         verify(userManagerService).getAll();
         // single result
-        User user1 = generateUser();
-        when(userManagerService.getAll()).thenReturn(Arrays.asList(new User[] { user1 }));
+        MutableUser user1 = generateUser();
+        when(userManagerService.getAll()).thenReturn(Arrays.asList(new MutableUser[] { user1 }));
         List<User> expectedResults = new ArrayList<User>();
         expectedResults.add(user1);
         verifyUsers(expectedResults,
@@ -174,8 +179,8 @@ public class UserServiceImplTest
         verify(userManagerService,
                times(2)).getAll();
         // multiple results
-        User user2 = generateUser();
-        when(userManagerService.getAll()).thenReturn(Arrays.asList(new User[]{user1, user2}));
+        MutableUser user2 = generateUser();
+        when(userManagerService.getAll()).thenReturn(Arrays.asList(new MutableUser[]{user1, user2}));
         expectedResults.add(user2);
         verifyUsers(expectedResults,
                           service.getUsers());
