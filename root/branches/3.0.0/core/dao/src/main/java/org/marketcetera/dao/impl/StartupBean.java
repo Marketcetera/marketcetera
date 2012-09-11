@@ -9,12 +9,21 @@ import javax.persistence.NoResultException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.api.dao.*;
+import org.marketcetera.api.dao.MutableRole;
+import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.PermissionDao;
+import org.marketcetera.api.dao.Role;
+import org.marketcetera.api.dao.RoleDao;
+import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.User;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.dao.domain.*;
+import org.marketcetera.dao.domain.AssignToRole;
+import org.marketcetera.dao.domain.NameReference;
+import org.marketcetera.dao.domain.PersistentPermission;
+import org.marketcetera.dao.domain.PersistentRole;
+import org.marketcetera.dao.domain.PersistentUser;
+import org.marketcetera.dao.domain.SystemObjectList;
 
 
 /**
@@ -70,14 +79,18 @@ public class StartupBean {
                                    e);
             throw new RuntimeException("Could not initialize data from initialdata.xml");
         }
+
+        if (permissionDao.getAll().size() == 0) {
+            loadDatabase(initialObjectList);
+        }
+    }
+
+    private void loadDatabase(SystemObjectList initialObjectList) {
         for(Permission permission : initialObjectList.getPermissions()) {
             try {
                 permissionDao.add(permission);
             } catch (RuntimeException e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      "Error writing {}, skipping",
-                                      permission);
+                SLF4JLoggerProxy.warn(this, e, "Error writing {}, skipping", permission);
             }
         }
         for(User user : initialObjectList.getUsers()) {
@@ -162,6 +175,7 @@ public class StartupBean {
                               "Roles are now: {}",
                               roleDao.getAll());
     }
+
     // ------------------------------ FIELDS ------------------------------
     private PermissionDao permissionDao;
     private RoleDao roleDao;
