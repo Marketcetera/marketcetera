@@ -38,7 +38,7 @@ public class PermissionServiceImpl
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(PermissionServiceImpl.class,
                                   e);
-            response = Response.notModified().build();
+            response = Response.serverError().build();
         }
         return response;
     }
@@ -85,7 +85,7 @@ public class PermissionServiceImpl
             permissionDao.delete(permission);
             response = Response.ok().build();
         } catch (RuntimeException e) {
-            response = Response.notModified().build();
+            response = Response.serverError().build();
         }
         return response;
     }
