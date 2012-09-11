@@ -495,7 +495,8 @@
         <module>datasource</module>
         <module>execution-container</module>
         <module>fork</module>
-        <module>itests</module>
+        <!-- Disabled until such time that these tests do anything important -->
+        <!--<module>itests</module>-->
         <module>modules</module>
         <module>security</module>
         <module>util-test</module>
