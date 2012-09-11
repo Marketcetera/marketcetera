@@ -174,6 +174,9 @@ public class StartupBean {
         SLF4JLoggerProxy.info(this,
                               "Roles are now: {}",
                               roleDao.getAll());
+        SLF4JLoggerProxy.info(this,
+                              "Users are now: {}",
+                              userDao.getAll());
     }
 
     // ------------------------------ FIELDS ------------------------------

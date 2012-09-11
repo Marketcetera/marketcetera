@@ -1,6 +1,5 @@
 package org.marketcetera.dao.domain;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -8,8 +7,8 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 
+import org.marketcetera.api.dao.MutableUser;
 import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.security.GrantedPermission;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -23,7 +22,7 @@ import org.marketcetera.api.security.User;
 @NotThreadSafe
 @NamedQueries({ @NamedQuery(name="PersistentUser.findByName",query="select s from PersistentUser s where s.username = :name"),
                 @NamedQuery(name="PersistentUser.findAll",query="select s from PersistentUser s")})
-@NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.permission, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
+@NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.name, permissions.description, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
 @XmlRootElement(name = "user")
@@ -31,7 +30,7 @@ import org.marketcetera.api.security.User;
 @Access(AccessType.FIELD)
 public class PersistentUser
         extends PersistentVersionedObject
-        implements User
+        implements MutableUser
 {
     /* (non-Javadoc)
      * @see org.marketcetera.api.systemmodel.NamedObject#getName()
@@ -78,22 +77,18 @@ public class PersistentUser
     @Override
     @XmlElementWrapper(name="permissions")
     @XmlElement(name="permission",type=PersistentPermission.class)
-    public Collection<? extends GrantedPermission> getPermissions()
+    public Set<Permission> getPermissions()
     {
         return permissions;
     }
     /**
      * Sets the permissions for this user.
      *
-     * @param inPermissions a <code>Collection&lt;Permission&gt;</code> value
+     * @param inPermissions a <code>Set&lt;Permission&gt;</code> value
      */
-    public void setPermissions(Collection<Permission> inPermissions)
+    public void setPermissions(Set<Permission> inPermissions)
     {
-        permissions.clear();
-        if(inPermissions == null) {
-            return;
-        }
-        permissions.addAll(inPermissions);
+        permissions = inPermissions;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getPassword()
@@ -122,8 +117,37 @@ public class PersistentUser
     {
         return enabled;
     }
-    public void setAccountNonExpired(boolean enabled) {
-        this.enabled = enabled;
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setIsAccountNonExpired(boolean)
+     */
+    @Override
+    public void setIsAccountNonExpired(boolean inIsNonExpired)
+    {
+        enabled = inIsNonExpired;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setIsAccountNonLocked(boolean)
+     */
+    @Override
+    public void setIsAccountNonLocked(boolean inIsNonLocked)
+    {
+        locked = !inIsNonLocked;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setIsCredentialsNonExpired(boolean)
+     */
+    @Override
+    public void setIsCredentialsNonExpired(boolean inIsNonExpired)
+    {
+        credentialsExpired = !inIsNonExpired;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setIsEnabled(boolean)
+     */
+    @Override
+    public void setIsEnabled(boolean inIsEnabled)
+    {
+        enabled = inIsEnabled;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#isAccountNonLocked()
@@ -134,15 +158,6 @@ public class PersistentUser
     {
         return !locked;
     }
-    /**
-     * Sets the locked value.
-     *
-     * @param accountNonLocked a <code>boolean</code> value
-     */
-    public void setAccountNonLocked(boolean accountNonLocked)
-    {
-        locked = !accountNonLocked;
-    }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#isCredentialsNonExpired()
      */
@@ -152,15 +167,6 @@ public class PersistentUser
     {
         return !credentialsExpired;
     }
-    /**
-     * Sets the credentialsExpired value.
-     *
-     * @param credentialsNonExpired a <code>boolean</code> value
-     */
-    public void setCredentialsNonExpired(boolean credentialsNonExpired)
-    {
-        credentialsExpired = !credentialsNonExpired;
-    }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#isEnabled()
      */
@@ -169,15 +175,6 @@ public class PersistentUser
     public boolean isEnabled()
     {
         return enabled;
-    }
-    /**
-     * Sets the enabled value.
-     *
-     * @param inEnabled a <code>boolean</code> value
-     */
-    public void setEnabled(boolean inEnabled)
-    {
-        enabled = inEnabled;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -218,7 +215,7 @@ public class PersistentUser
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("User ").append(getUsername()).append(" ").append(getPermissions());
+        builder.append("User ").append(getUsername()).append(" [").append(getId()).append("]");
         return builder.toString();
     }
     /**
@@ -269,6 +266,6 @@ public class PersistentUser
     /**
      * permissions for this user
      */
-    private final Set<Permission> permissions = new HashSet<Permission>();
+    private Set<Permission> permissions = new HashSet<Permission>();
     private static final long serialVersionUID = 1L;
 }

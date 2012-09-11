@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
@@ -180,7 +181,7 @@ public class SystemmodelTestBase
             throws Exception
     {
         userDao = mock(UserDao.class);
-        userDataStore = new NamedTestDataStore<User>();
+        userDataStore = new NamedTestDataStore<MutableUser>();
         for(int i=0;i<=3;i++) {
             userDataStore.add(generateUser());
         }
@@ -197,7 +198,7 @@ public class SystemmodelTestBase
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                User user = (User)inInvocation.getArguments()[0];
+                MutableUser user = (MutableUser)inInvocation.getArguments()[0];
                 userDataStore.add(user);
                 return null;
             }
@@ -207,7 +208,7 @@ public class SystemmodelTestBase
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                User user = (User)inInvocation.getArguments()[0];
+                MutableUser user = (MutableUser)inInvocation.getArguments()[0];
                 userDataStore.remove(user);
                 return null;
             }
@@ -228,7 +229,7 @@ public class SystemmodelTestBase
                 return userDataStore.getById((Long)inInvocation.getArguments()[0]);
             }
         });
-        when(userDao.getAll()).thenReturn(new ArrayList<User>(userDataStore.getAll()));
+        when(userDao.getAll()).thenReturn(new ArrayList<MutableUser>(userDataStore.getAll()));
     }
     /**
      * Generates a unique <code>MockPermission</code> value.
@@ -238,7 +239,7 @@ public class SystemmodelTestBase
     protected MockPermission generatePermission()
     {
         MockPermission permission = new MockPermission();
-        permission.setName("permission-" + counter.incrementAndGet());
+//        permission.setName("permission-" + counter.incrementAndGet());
         permission.setId(counter.incrementAndGet());
         return permission;
     }
@@ -265,7 +266,7 @@ public class SystemmodelTestBase
         user.setUsername("username-" + counter.incrementAndGet());
         user.setPassword("password-" + counter.incrementAndGet());
         user.setId(counter.incrementAndGet());
-        user.setPermissions(Arrays.asList(new Permission[]{generatePermission(), generatePermission(), generatePermission()}));
+        user.setPermissions(new HashSet<Permission>(Arrays.asList(new Permission[]{generatePermission(), generatePermission(), generatePermission()})));
         return user;
     }
     /**
@@ -283,7 +284,7 @@ public class SystemmodelTestBase
     /**
      * data store for user test values 
      */
-    protected NamedTestDataStore<User> userDataStore;
+    protected NamedTestDataStore<MutableUser> userDataStore;
     /**
      * data store for role test values 
      */

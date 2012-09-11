@@ -1,8 +1,7 @@
 package org.marketcetera.api.dao;
 
-import java.util.Collection;
+import java.util.Set;
 
-import org.marketcetera.api.security.GrantedPermission;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -19,9 +18,9 @@ public interface MutableUser
     /**
      * Set the permissions value.
      *
-     * @param inPermissions a <code>Collection&lt;? extends GrantedPermission&gt;</code> value
+     * @param inPermissions a <code>Set&lt;Permission&gt;</code> value
      */
-    public void setPermissions(Collection<? extends GrantedPermission> inPermissions);
+    public void setPermissions(Set<Permission> inPermissions);
     /**
      * Set the password value. 
      *

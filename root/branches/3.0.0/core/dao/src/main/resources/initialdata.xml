@@ -1,54 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <objects>
-	<users>
-		<user username="user1" password="password" enabled="true"
-			credentialsNonExpired="true" accountNonLocked="true"
-			accountNonExpired="true" />
-		<user username="user2" password="password" enabled="true"
-			credentialsNonExpired="true" accountNonLocked="true"
-			accountNonExpired="true" />
-		<user username="user3" password="password" enabled="true"
-			credentialsNonExpired="true" accountNonLocked="true"
-			accountNonExpired="true" />
-		<user username="admin" password="admin" enabled="true"
-			credentialsNonExpired="true" accountNonLocked="true"
-			accountNonExpired="true" />
-	</users>
-	<permissions>
-		<permission name="all" description="All rights">
-			<method>
-				<permissionAttribute>Create</permissionAttribute>
-				<permissionAttribute>Read</permissionAttribute>
-				<permissionAttribute>Update</permissionAttribute>
-				<permissionAttribute>Delete</permissionAttribute>
-			</method>
-		</permission>
-		<permission name="read only" description="Read rights only">
-			<method>
-				<permissionAttribute>Read</permissionAttribute>
-			</method>
-		</permission>
-		<permission name="edit" description="Edit rights">
-			<method>
-				<permissionAttribute>Read</permissionAttribute>
-				<permissionAttribute>Update</permissionAttribute>
-			</method>
-		</permission>
-	</permissions>
-	<roles>
-		<role name="admin" description="Administation Role" />
-		<role name="intern" description="Intern Role" />
-		<role name="bond user" description="Bond User Role" />
-	</roles>
-	<assignations>
-		<assignToRole roleName="admin">
-			<permissionsToRole>
-				<nameRef name="all" />
-			</permissionsToRole>
-			<usersToRole>
-				<nameRef name="admin" />
-			</usersToRole>
-		</assignToRole>
+    <users>
+        <user username="user1" password="password" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
+            accountNonExpired="true" />
+        <user username="user2" password="password" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
+            accountNonExpired="true" />
+        <user username="user3" password="password" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
+            accountNonExpired="true" />
+        <user username="admin" password="admin" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
+            accountNonExpired="true" />
+    </users>
+    <permissions>
+        <permission name="all" description="All rights to perform some action on some domain" permission="some domain:some action">
+            <method>
+                <permissionAttribute>Create</permissionAttribute>
+                <permissionAttribute>Read</permissionAttribute>
+                <permissionAttribute>Update</permissionAttribute>
+                <permissionAttribute>Delete</permissionAttribute>
+            </method>
+        </permission>
+        <permission name="read only" description="Read rights to perform some action on some other domain"
+            permission="some other domain:some action">
+            <method>
+                <permissionAttribute>Read</permissionAttribute>
+            </method>
+        </permission>
+        <permission name="edit" description="Edit rights to perform some other action on still another domain"
+            permission="still other domain:some other action">
+            <method>
+                <permissionAttribute>Read</permissionAttribute>
+                <permissionAttribute>Update</permissionAttribute>
+            </method>
+        </permission>
+    </permissions>
+    <roles>
+        <role name="admin" description="Administation Role" />
+        <role name="intern" description="Intern Role" />
+        <role name="bond user" description="Bond User Role" />
+    </roles>
+    <assignations>
+        <assignToRole roleName="admin">
+            <permissionsToRole>
+                <nameRef name="all" />
+            </permissionsToRole>
+            <usersToRole>
+                <nameRef name="admin" />
+            </usersToRole>
+        </assignToRole>
         <assignToRole roleName="intern">
             <permissionsToRole>
                 <nameRef name="edit" />
@@ -66,7 +64,7 @@
             </permissionsToRole>
             <usersToRole>
                 <nameRef name="user3" />
-                <nameRef name="bogusUser"/>
+                <nameRef name="bogusUser" />
             </usersToRole>
         </assignToRole>
         <assignToRole roleName="bogusRole">
@@ -77,5 +75,5 @@
                 <nameRef name="admin" />
             </usersToRole>
         </assignToRole>
-	</assignations>
+    </assignations>
 </objects>
