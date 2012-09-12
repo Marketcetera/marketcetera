@@ -41,7 +41,7 @@ public class UserServiceImpl
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(UserServiceImpl.class,
                                   e);
-            response = Response.notModified().build();
+            response = Response.serverError().build();
         }
         return response;
     }
@@ -73,7 +73,7 @@ public class UserServiceImpl
             userDao.delete(user);
             response = Response.ok().build();
         } catch (RuntimeException e) {
-            response = Response.notModified().build();
+            response = Response.serverError().build();
         }
         return response;
     }
