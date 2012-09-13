@@ -1,20 +1,10 @@
 package org.marketcetera.webservices.systemmodel.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.api.dao.MutableUser;
@@ -27,6 +17,12 @@ import org.marketcetera.webservices.systemmodel.MockUser;
 import org.marketcetera.webservices.systemmodel.UserService;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 /* $License$ */
 
@@ -109,7 +105,7 @@ public class UserServiceImplTest
         doThrow(new RuntimeException("This exception is expected")).when(userManagerService).add((User) any());
         response = service.addUser(newUser.getName(),
                                    newUser.getPassword());
-        assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                      response.getStatus());
         verify(userManagerService,
                times(2)).add((User) any());
@@ -151,7 +147,7 @@ public class UserServiceImplTest
         // add user throws an exception
         doThrow(new RuntimeException("This exception is expected")).when(userManagerService).delete((User) any());
         response = service.deleteUser(2);
-        assertEquals(Response.Status.NOT_MODIFIED.getStatusCode(),
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                      response.getStatus());
         verify(userManagerService,
                times(2)).delete((User) any());
