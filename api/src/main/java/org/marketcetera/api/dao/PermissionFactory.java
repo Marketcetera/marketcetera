@@ -13,16 +13,23 @@ import org.marketcetera.api.dao.Permission;
 public interface PermissionFactory
 {
     /**
-     * Creates an <code>Permission</code> with the given name.
+     * Creates a <code>Permission</code> with the given name.
      *
      * @param inPermissionName a <code>String</code> value
-     * @return an <code>Permission</code> value
+     * @return a <code>Permission</code> value
      */
     public Permission create(String inPermissionName);
     /**
-     * Creates an <code>Permission</code> object.
+     * Creates a <code>Permission</code> object.
      *
-     * @return an <code>Permission</code> value
+     * @return a <code>Permission</code> value
      */
     public Permission create();
+    /**
+     * Creates a <code>Perimssion</code> object from the given <code>Permission</code>.
+     *
+     * @param inPermission a <code>Permission</code> value
+     * @return a <code>Permission</code> value
+     */
+    public Permission create(Permission inPermission);
 }

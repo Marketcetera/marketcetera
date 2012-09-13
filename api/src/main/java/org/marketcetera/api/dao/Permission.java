@@ -23,10 +23,4 @@ public interface Permission
      * @return a <code>Set&lgt;PermissionAttribute&gt;</code> value
      */
     Set<PermissionAttribute> getMethod();
-    /**
-     * Get the permission subject.
-     *
-     * @return a <code>String</code> value
-     */
-    String getPermission();
 }

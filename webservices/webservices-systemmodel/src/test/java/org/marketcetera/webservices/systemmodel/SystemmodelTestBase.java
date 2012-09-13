@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -232,15 +233,17 @@ public class SystemmodelTestBase
         when(userDao.getAll()).thenReturn(new ArrayList<MutableUser>(userDataStore.getAll()));
     }
     /**
-     * Generates a unique <code>MockPermission</code> value.
+     * Generates a unique <code>WebServicesPermission</code> value.
      *
-     * @return a <code>MockPermission</code> value
+     * @return a <code>WebServicesPermission</code> value
      */
-    protected MockPermission generatePermission()
+    protected WebServicesPermission generatePermission()
     {
-        MockPermission permission = new MockPermission();
-//        permission.setName("permission-" + counter.incrementAndGet());
-        permission.setId(counter.incrementAndGet());
+        WebServicesPermission permission = new WebServicesPermission();
+        permission.setName("something:something else-" + counter.incrementAndGet());
+        permission.setDescription("description of " +permission.getName());
+        permission.setId(1);
+        permission.setMethod(EnumSet.of(PermissionAttribute.Create,PermissionAttribute.Delete));
         return permission;
     }
     /**

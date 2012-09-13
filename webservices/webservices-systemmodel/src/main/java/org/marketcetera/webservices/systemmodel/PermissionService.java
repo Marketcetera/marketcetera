@@ -2,37 +2,39 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.marketcetera.api.dao.Permission;
 
 /* $License$ */
 
 /**
  * Provides web-services access to the permission service.
  *
- * @version $Id: UserService.java 16217 2012-08-27 19:42:33Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @Path("permissions")
 public interface PermissionService
 {
     /**
-     * Adds an permission with the given permission.
+     * Adds the given permission.
      *
-     *
-     * @param inPermission a <code>String</code> value
-     * @return a <code>Response</code> value
+     * @param inPermission a <code>WebServicesPermission</code> value
+     * @return a <code>WebServicesPermission</code> value
      */
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response addPermission(Permission inPermission);
+    public WebServicesPermission addPermissionJSON(WebServicesPermission inPermission);
+    /**
+     * Adds the given permission.
+     *
+     * @param inPermission a <code>WebServicesPermission</code> value
+     * @return a <code>WebServicesPermission</code> value
+     */
+    @POST
+    @Consumes({MediaType.APPLICATION_XML})
+    public WebServicesPermission addPermissionXML(WebServicesPermission inPermission);
     /**
      * Gets the permission with the given id.
      *
@@ -41,16 +43,34 @@ public interface PermissionService
      */
     @GET
     @Path("{id}")
-//    @Produces({MediaType.APPLICATION_JSON})
-    public WebServicesPermission getPermission(@PathParam("id")long inId);
+    @Produces({MediaType.APPLICATION_JSON})
+    public WebServicesPermission getPermissionJSON(@PathParam("id")long inId);
+    /**
+     * Gets the permission with the given id.
+     *
+     * @param inId a <code>String</code> value
+     * @return a <code>WebServicesPermission</code> value
+     */
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_XML})
+    public WebServicesPermission getPermissionXML(@PathParam("id")long inId);
     /**
      * Gets all permissions.
      *
      * @return a <code>List&lt;WebServicesPermission&gt;</code> value
      */
     @GET
-//    @Produces({MediaType.APPLICATION_JSON})
-    public List<WebServicesPermission> getPermissions();
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<WebServicesPermission> getPermissionsJSON();
+    /**
+     * Gets all permissions.
+     *
+     * @return a <code>List&lt;WebServicesPermission&gt;</code> value
+     */
+    @GET
+    @Produces({MediaType.APPLICATION_XML})
+    public List<WebServicesPermission> getPermissionsXML();
     /**
      * Deletes the permission with the given id.
      *

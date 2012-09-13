@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 
 import org.marketcetera.api.dao.MutablePermission;
+import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionAttribute;
 
 /* $License$ */
@@ -30,6 +31,21 @@ public class PersistentPermission
         extends PersistentVersionedObject
         implements MutablePermission
 {
+    /**
+     * Create a new PersistentPermission instance.
+     */
+    public PersistentPermission() {}
+    /**
+     * Create a new PersistentPermission instance.
+     *
+     * @param inPermission
+     */
+    public PersistentPermission(Permission inPermission)
+    {
+        methodSet = inPermission.getMethod();
+        setName(inPermission.getName());
+        setDescription(inPermission.getDescription());
+    }
     // --------------------- GETTER / SETTER METHODS ---------------------
     /**
      * Get the permission method value describing the permission attributes assigned to this permission.
@@ -85,23 +101,6 @@ public class PersistentPermission
     {
         description = inDescription;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.dao.Permission#getPermission()
-     */
-    @Override
-    @XmlAttribute
-    public String getPermission()
-    {
-        return permission;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.dao.MutablePermission#setPermission(java.lang.String)
-     */
-    @Override
-    public void setPermission(String inPermission)
-    {
-        permission = inPermission;
-    }
     // ------------------------ CANONICAL METHODS ------------------------
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -145,6 +144,7 @@ public class PersistentPermission
         builder.append("Permission ").append(getName()).append(" [").append(getId()).append("] ").append(getMethod()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return builder.toString();
     }
+    // ------------------------------ CONSTRUCTORS ------------------------
     // ------------------------------ OTHER METHODS -----------------------
     @SuppressWarnings("unused")
     @PrePersist
@@ -169,11 +169,6 @@ public class PersistentPermission
      */
     @Column(nullable=true)
     private String description;
-    /**
-     * the element for which this object contains permissions for
-     */
-    @Column(nullable=false)
-    private String permission;
     /**
      * stores bit flag value representing permission attributes assigned to this permission
      */
