@@ -22,5 +22,7 @@ public class JacksonObjectMapper
     {
         super.configure(DeserializationConfig.Feature.UNWRAP_ROOT_VALUE,
                         true);
+//        super.configure(DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY,
+//                        false);
     }
 }

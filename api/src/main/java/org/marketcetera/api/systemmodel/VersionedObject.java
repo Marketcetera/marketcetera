@@ -9,6 +9,7 @@ package org.marketcetera.api.systemmodel;
  * @since $Release$
  */
 public interface VersionedObject
+        extends SystemObject
 {
     /**
      * Get the version value.
