@@ -6,8 +6,12 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.Validate;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.marketcetera.api.dao.MutablePermission;
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionAttribute;
+import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */
 
@@ -17,9 +21,12 @@ import org.marketcetera.api.dao.PermissionAttribute;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name = "permissions")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name="permission")
+@XmlAccessorType(XmlAccessType.NONE)
+@JsonRootName(value="permission")
 public class WebServicesPermission
+        extends WebServicesNamedObject
+        implements MutablePermission
 {
     /**
      * Create a new WebServicesPermission instance.
@@ -32,64 +39,18 @@ public class WebServicesPermission
      */
     public WebServicesPermission(Permission inPermission)
     {
-        name = inPermission.getName();
-        description = inPermission.getDescription();
-        method = inPermission.getMethod();
-        id = inPermission.getId();
+        copyAttributes(inPermission);
     }
     /**
-     * Get the name value.
+     * Create a new WebServicesPermission instance.
      *
-     * @return a <code>String</code> value
+     * @param inPermissionValue a <code>String</code> value
      */
-    public String getName()
+    public WebServicesPermission(String inPermissionValue)
     {
-        return name;
-    }
-    /**
-     * Sets the name value.
-     *
-     * @param inName <code>String</code> value
-     */
-    public void setName(String inName)
-    {
-        name = inName;
-    }
-    /**
-     * Get the description value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getDescription()
-    {
-        return description;
-    }
-    /**
-     * Sets the description value.
-     *
-     * @param inDescription a <code>String</code> value
-     */
-    public void setDescription(String inDescription)
-    {
-        description = inDescription;
-    }
-    /**
-     * Get the id value.
-     *
-     * @return a <code>long</code> value
-     */
-    public long getId()
-    {
-        return id;
-    }
-    /**
-     * Sets the id value.
-     *
-     * @param inId <code>long</code> value
-     */
-    public void setId(long inId)
-    {
-        id = inId;
+        WebServicesPermission proxyObject = JsonMarshallingProvider.getInstance().getService().unmarshal(inPermissionValue,
+                                                                                                         WebServicesPermission.class);
+        copyAttributes(proxyObject);
     }
     /**
      * Get the method value.
@@ -109,14 +70,30 @@ public class WebServicesPermission
     {
         method = inMethod;
     }
-    /**
-     * id value
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
-    private long id;
+    @Override
+    public String toString()
+    {
+        return JsonMarshallingProvider.getInstance().getService().marshal(this);
+    }
     /**
-     * permission value
+     * Copies the attributes from the given object to this one.
+     *
+     * @param inPermission a <code>Permission</code> value
+     * @throws IllegalArgumentException if the given object is <code>null</code>
      */
-    private String name;
-    private String description;
+    private final void copyAttributes(Permission inPermission)
+    {
+        Validate.notNull(inPermission);
+        setName(inPermission.getName());
+        setDescription(inPermission.getDescription());
+        setId(inPermission.getId());
+        method = inPermission.getMethod();
+    }
+    /**
+     * set of permissions assigned to this permission
+     */
     private Set<PermissionAttribute> method;
 }

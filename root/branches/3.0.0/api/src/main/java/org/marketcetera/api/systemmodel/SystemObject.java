@@ -5,7 +5,7 @@ package org.marketcetera.api.systemmodel;
 /**
  * Represents an object with a unique identifier.
  *
- * @version $Id: SystemObject.java 82316 2012-03-21 21:13:27Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface SystemObject

@@ -29,13 +29,14 @@ public class PermissionDaoImpl implements PermissionDao {
     }
 
     @Override
-    public Permission getByName(String inName) {
-        return (Permission) entityManager.createNamedQuery("PersistentPermission.findByName").setParameter("name", inName).getSingleResult();
+    public PersistentPermission getByName(String inName) {
+        return (PersistentPermission)entityManager.createNamedQuery("PersistentPermission.findByName").setParameter("name", inName).getSingleResult();
     }
 
     @Override
-    public Permission getById(long inId) {
-        return entityManager.find(PersistentPermission.class, inId);
+    public PersistentPermission getById(long inId) {
+        return entityManager.find(PersistentPermission.class,
+                                  inId); 
     }
     @SuppressWarnings("unchecked")
     @Override
@@ -48,7 +49,7 @@ public class PermissionDaoImpl implements PermissionDao {
     @Override
     public void delete(Permission inPermission)
     {
-        entityManager.remove(inPermission);
+        entityManager.remove(entityManager.merge(inPermission));
     }
     @PersistenceContext
     public void setEntityManager(EntityManager entityManager) {

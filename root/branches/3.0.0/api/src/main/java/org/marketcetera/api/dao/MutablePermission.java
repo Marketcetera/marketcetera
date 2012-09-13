@@ -14,12 +14,6 @@ public interface MutablePermission
         extends Permission
 {
     /**
-     * Sets the permission subject value.
-     *
-     * @param inPermission a <code>String</code> value
-     */
-    public void setPermission(String inPermission);
-    /**
      * Sets the method value.
      *
      * @param inMethod a <code>Set&lt;PermissionAttribute&gt;</code> value

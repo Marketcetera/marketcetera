@@ -12,7 +12,10 @@
             <cxf:logging/>
         </cxf:features>
     </cxf:bus>
-
+    <bean id="jacksonMapper" class="org.marketcetera.webservices.systemmodel.impl.JacksonObjectMapper"/>
+    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+        <argument ref="jacksonMapper"/>
+    </bean>
     <jaxrs:server id="cstsUserService" address="/userservice/v1">
         <jaxrs:serviceBeans>
             <ref component-id="permissionManagerWebServiceBean"/>
@@ -23,6 +26,9 @@
             <entry key="json" value="application/json" />
             <entry key="xml" value="application/xml" />
         </jaxrs:extensionMappings>
+        <jaxrs:providers>
+            <ref component-id="jsonProvider"/>
+        </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="permissionManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.PermissionServiceImpl">
