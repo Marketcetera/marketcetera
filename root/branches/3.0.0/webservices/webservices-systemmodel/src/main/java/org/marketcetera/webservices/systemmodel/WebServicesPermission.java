@@ -2,9 +2,7 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.Validate;
 import org.codehaus.jackson.map.annotate.JsonRootName;
@@ -90,10 +88,12 @@ public class WebServicesPermission
         setName(inPermission.getName());
         setDescription(inPermission.getDescription());
         setId(inPermission.getId());
-        method = inPermission.getMethod();
+        setMethod(inPermission.getMethod());
     }
     /**
      * set of permissions assigned to this permission
      */
+    @XmlElementWrapper(name="methods")
+    @XmlElement(name="method")
     private Set<PermissionAttribute> method;
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status.Family;
+import javax.ws.rs.core.Response.StatusType;
 
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionDao;
@@ -58,20 +60,43 @@ public class PermissionServiceImpl
      * @see org.marketcetera.webservices.systemmodel.PermissionService#deletePermission(long)
      */
     @Override
-    public Response deletePermission(long inId)
+    public Response deletePermission(final long inId)
     {
         SLF4JLoggerProxy.debug(PermissionServiceImpl.class,
                                "PermissionService deletePermission invoked with id {}", //$NON-NLS-1$
                                inId);
         Response response;
         try {
-            Permission permission = permissionDao.getById(inId);
-            permissionDao.delete(permission);
-            response = Response.ok().build();
+            // TODO - imperfect, should use a transaction for this whole call
+            if(permissionDao.isInUseByRole(inId)) {
+                StatusType responseStatus = new StatusType() {
+                    @Override
+                    public Family getFamily()
+                    {
+                        return Family.SERVER_ERROR;
+                    }
+                    @Override
+                    public String getReasonPhrase()
+                    {
+                        return "The permission with id " + inId + " is in use by a role and may not be deleted";
+                    }
+                    @Override
+                    public int getStatusCode()
+                    {
+                        return Response.Status.PRECONDITION_FAILED.getStatusCode();
+                    }
+                };
+                response = Response.serverError().status(responseStatus).build();
+            } else {
+                Permission permission = permissionDao.getById(inId);
+                permissionDao.delete(permission);
+                response = Response.ok().build();
+            }
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.error(this,
                                    e);
-            response = Response.serverError().build();
+            response = Response.serverError()
+                               .entity(e.getMessage()).build();
         }
         return response;
     }
@@ -102,6 +127,22 @@ public class PermissionServiceImpl
     {
         return doGetPermissions();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.PermissionService#updatePermissionJSON(org.marketcetera.webservices.systemmodel.WebServicesPermission)
+     */
+    @Override
+    public Response updatePermissionJSON(WebServicesPermission inPermission)
+    {
+        return updatePermission(inPermission);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.PermissionService#updatePermissionXML(org.marketcetera.webservices.systemmodel.WebServicesPermission)
+     */
+    @Override
+    public Response updatePermissionXML(WebServicesPermission inPermission)
+    {
+        return updatePermission(inPermission);
+    }
     /**
      * Sets the permissionFactory value.
      *
@@ -118,6 +159,26 @@ public class PermissionServiceImpl
      */
     public void setPermissionDao(PermissionDao permissionDao) {
         this.permissionDao = permissionDao;
+    }
+    /**
+     * Updates the given <code>Permission</code>.
+     *
+     * @param inPermission a <code>WebServicesPermission</code> value
+     * @return a <code>Response</code> value
+     */
+    private Response updatePermission(WebServicesPermission inPermission)
+    {
+        Response response;
+        try {
+            Permission persistablePermission = permissionFactory.create(inPermission);
+            permissionDao.save(persistablePermission);
+            response = Response.ok().build();
+        } catch (RuntimeException e) {
+            SLF4JLoggerProxy.error(this,
+                                   e);
+            response = Response.serverError().build();
+        }
+        return response;
     }
     /**
      * Executes the retrieval of the the <code>Permission</code> object associated with the given id.

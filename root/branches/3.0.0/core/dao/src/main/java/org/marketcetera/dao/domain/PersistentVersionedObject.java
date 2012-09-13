@@ -35,7 +35,20 @@ public abstract class PersistentVersionedObject
     public void setVersion(int version) {
         this.version = version;
     }
-
+    /**
+     * Create a new PersistentVersionedObject instance.
+     */
+    protected PersistentVersionedObject() {}
+    /**
+     * Create a new PersistentVersionedObject instance.
+     *
+     * @param inVersionedObject a <code>VersionedObject</code> value
+     */
+    protected PersistentVersionedObject(VersionedObject inVersionedObject)
+    {
+        super(inVersionedObject);
+        version = inVersionedObject.getVersion();
+    }
     /**
      * object version value
      */

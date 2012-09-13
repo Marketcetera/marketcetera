@@ -34,7 +34,11 @@ public abstract class PersistentSystemObject
     public void setId(long id) {
         this.id = id;
     }
-
+    protected PersistentSystemObject() {}
+    protected PersistentSystemObject(SystemObject inSystemObject)
+    {
+        id = inSystemObject.getId();
+    }
     /**
      * unique identifier for this object
      */

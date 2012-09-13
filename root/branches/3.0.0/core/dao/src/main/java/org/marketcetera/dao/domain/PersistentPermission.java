@@ -23,6 +23,7 @@ import org.marketcetera.api.dao.PermissionAttribute;
 @Entity
 @NamedQueries( { @NamedQuery(name="PersistentPermission.findByName",query="select s from PersistentPermission s where s.name = :name"),
                  @NamedQuery(name="PersistentPermission.findAll",query="select s from PersistentPermission s")})
+@NamedNativeQueries( { @NamedNativeQuery(name="PersistentPermission.isPermissionInUseByRole",query="select count(*) from roles_permissions where permissions_id=?") })
 @Table(name="permissions", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
 @XmlRootElement(name = "permission")
 @Access(AccessType.FIELD)
@@ -31,21 +32,6 @@ public class PersistentPermission
         extends PersistentVersionedObject
         implements MutablePermission
 {
-    /**
-     * Create a new PersistentPermission instance.
-     */
-    public PersistentPermission() {}
-    /**
-     * Create a new PersistentPermission instance.
-     *
-     * @param inPermission
-     */
-    public PersistentPermission(Permission inPermission)
-    {
-        methodSet = inPermission.getMethod();
-        setName(inPermission.getName());
-        setDescription(inPermission.getDescription());
-    }
     // --------------------- GETTER / SETTER METHODS ---------------------
     /**
      * Get the permission method value describing the permission attributes assigned to this permission.
@@ -145,16 +131,39 @@ public class PersistentPermission
         return builder.toString();
     }
     // ------------------------------ CONSTRUCTORS ------------------------
+    /**
+     * Create a new PersistentPermission instance.
+     */
+    public PersistentPermission() {}
+    /**
+     * Create a new PersistentPermission instance.
+     *
+     * @param inPermission
+     */
+    public PersistentPermission(Permission inPermission)
+    {
+        super(inPermission);
+        methodSet = inPermission.getMethod();
+        setName(inPermission.getName());
+        setDescription(inPermission.getDescription());
+    }
     // ------------------------------ OTHER METHODS -----------------------
+    /**
+     * Calculates the {@link #method} value from the {@link #methodSet} contents. 
+     */
     @SuppressWarnings("unused")
     @PrePersist
-    private void prePersist()
+    private void calculateMethod()
     {
         method = PermissionAttribute.getBitFlagValueFor(methodSet);
     }
+    /**
+     * Calculates the {@link #methodSet} contents from the {@link #method} value.
+     */
     @SuppressWarnings("unused")
     @PostPersist
-    private void postPersist()
+    @PostLoad
+    private void calculateMethodSet()
     {
         methodSet = PermissionAttribute.getAttributesFor(method);
     }
