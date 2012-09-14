@@ -1,14 +1,13 @@
 package org.marketcetera.dao.domain;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.api.dao.MutableUser;
-import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -22,7 +21,8 @@ import org.marketcetera.api.security.User;
 @NotThreadSafe
 @NamedQueries({ @NamedQuery(name="PersistentUser.findByName",query="select s from PersistentUser s where s.username = :name"),
                 @NamedQuery(name="PersistentUser.findAll",query="select s from PersistentUser s")})
-@NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.name, permissions.description, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
+@NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.name, permissions.description, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class),
+                       @NamedNativeQuery(name="PersistentUser.isUserInUseByRole",query="select count(*) from roles_users where users_id=?") })
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
 @XmlRootElement(name = "user")
@@ -70,25 +70,6 @@ public class PersistentUser
     public void setDescription(String inDescription)
     {
         description = inDescription;
-    }
-    /* (non-Javadoc)
-     * @see org.springframework.security.core.userdetails.UserDetails#getPermissions()
-     */
-    @Override
-    @XmlElementWrapper(name="permissions")
-    @XmlElement(name="permission",type=PersistentPermission.class)
-    public Set<Permission> getPermissions()
-    {
-        return permissions;
-    }
-    /**
-     * Sets the permissions for this user.
-     *
-     * @param inPermissions a <code>Set&lt;Permission&gt;</code> value
-     */
-    public void setPermissions(Set<Permission> inPermissions)
-    {
-        permissions = inPermissions;
     }
     /* (non-Javadoc)
      * @see org.springframework.security.core.userdetails.UserDetails#getPassword()
@@ -221,7 +202,7 @@ public class PersistentUser
     /**
      * Create a new PersistentUser instance.
      */
-    protected PersistentUser()
+    public PersistentUser()
     {
     }
     /**
@@ -230,11 +211,27 @@ public class PersistentUser
      * @param inName a <code>String</code> value
      * @param inPassword a <code>String</code> value
      */
-    protected PersistentUser(String inName,
-                             String inPassword)
+    public PersistentUser(String inName,
+                          String inPassword)
     {
         username = inName;
         password = inPassword;
+    }
+    /**
+     * Create a new PersistentUser instance.
+     *
+     * @param inUser a <code>User</code> value
+     */
+    public PersistentUser(User inUser)
+    {
+        super(inUser);
+        setDescription(inUser.getDescription());
+        setUsername(inUser.getName());
+        setPassword(inUser.getPassword());
+        setIsAccountNonExpired(inUser.isAccountNonExpired());
+        setIsAccountNonLocked(inUser.isAccountNonLocked());
+        setIsCredentialsNonExpired(inUser.isCredentialsNonExpired());
+        setIsEnabled(inUser.isEnabled());
     }
     /**
      * username value
@@ -263,9 +260,5 @@ public class PersistentUser
      */
     @Column(nullable=false)
     private boolean credentialsExpired = false;
-    /**
-     * permissions for this user
-     */
-    private Set<Permission> permissions = new HashSet<Permission>();
     private static final long serialVersionUID = 1L;
 }

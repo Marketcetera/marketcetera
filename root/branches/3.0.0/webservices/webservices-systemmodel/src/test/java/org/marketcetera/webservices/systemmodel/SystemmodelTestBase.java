@@ -8,9 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
@@ -64,7 +62,7 @@ public class SystemmodelTestBase
             throws Exception
     {
         permissionDao = mock(PermissionDao.class);
-        permissionDataStore = new NamedTestDataStore<Permission>();
+        permissionDataStore = new NamedTestDataStore<MutablePermission>();
         for(int i=0;i<=3;i++) {
             permissionDataStore.add(generatePermission());
         }
@@ -81,7 +79,7 @@ public class SystemmodelTestBase
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                Permission permission = (Permission)inInvocation.getArguments()[0];
+                MutablePermission permission = (MutablePermission)inInvocation.getArguments()[0];
                 permissionDataStore.add(permission);
                 return null;
             }
@@ -91,7 +89,7 @@ public class SystemmodelTestBase
             public Object answer(InvocationOnMock inInvocation)
                     throws Throwable
             {
-                Permission permission = (Permission)inInvocation.getArguments()[0];
+                MutablePermission permission = (MutablePermission)inInvocation.getArguments()[0];
                 permissionDataStore.remove(permission);
                 return null;
             }
@@ -112,7 +110,7 @@ public class SystemmodelTestBase
                 return permissionDataStore.getById((Long)inInvocation.getArguments()[0]);
             }
         });
-        when(permissionDao.getAll()).thenReturn(new ArrayList<Permission>(permissionDataStore.getAll()));
+        when(permissionDao.getAll()).thenReturn(new ArrayList<MutablePermission>(permissionDataStore.getAll()));
     }
     /**
      * Initializes the roles objects. 
@@ -247,29 +245,40 @@ public class SystemmodelTestBase
         return permission;
     }
     /**
-     * Generates a unique <code>MockRole</code> value.
+     * Generates a unique <code>WebServicesRole</code> value.
      *
-     * @return a <code>MutableRole</code> value
+     * @return a <code>WebServicesRole</code> value
      */
-    protected MutableRole generateRole()
+    protected WebServicesRole generateRole()
     {
-        MockRole role = new MockRole();
+        WebServicesRole role = new WebServicesRole();
         role.setName("role-" + counter.incrementAndGet());
+        role.setDescription("description-" + counter.incrementAndGet());
         role.setId(counter.incrementAndGet());
+        role.getUsers().add(generateUser());
+        role.getUsers().add(generateUser());
+        role.getUsers().add(generateUser());
+        role.getPermissions().add(generatePermission());
+        role.getPermissions().add(generatePermission());
+        role.getPermissions().add(generatePermission());
         return role;
     }
     /**
      * Generates a test <code>User</code> value.
      *
-     * @return a <code>MockUser</code> value
+     * @return a <code>WebServicesUser</code> value
      */
-    protected MockUser generateUser()
+    protected WebServicesUser generateUser()
     {
-        MockUser user = new MockUser();
+        WebServicesUser user = new WebServicesUser();
         user.setUsername("username-" + counter.incrementAndGet());
+        user.setDescription("description-" + counter.incrementAndGet());
         user.setPassword("password-" + counter.incrementAndGet());
         user.setId(counter.incrementAndGet());
-        user.setPermissions(new HashSet<Permission>(Arrays.asList(new Permission[]{generatePermission(), generatePermission(), generatePermission()})));
+        user.setIsAccountNonExpired(true);
+        user.setIsAccountNonLocked(true);
+        user.setIsCredentialsNonExpired(true);
+        user.setIsEnabled(true);
         return user;
     }
     /**
@@ -295,7 +304,7 @@ public class SystemmodelTestBase
     /**
      * data store for permission test values
      */
-    protected NamedTestDataStore<Permission> permissionDataStore;
+    protected NamedTestDataStore<MutablePermission> permissionDataStore;
     /**
      * counter used to guarantee unique test values
      */

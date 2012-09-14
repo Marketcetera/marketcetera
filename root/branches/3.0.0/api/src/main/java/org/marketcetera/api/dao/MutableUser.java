@@ -1,7 +1,5 @@
 package org.marketcetera.api.dao;
 
-import java.util.Set;
-
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -15,12 +13,6 @@ import org.marketcetera.api.security.User;
 public interface MutableUser
         extends User
 {
-    /**
-     * Set the permissions value.
-     *
-     * @param inPermissions a <code>Set&lt;Permission&gt;</code> value
-     */
-    public void setPermissions(Set<Permission> inPermissions);
     /**
      * Set the password value. 
      *

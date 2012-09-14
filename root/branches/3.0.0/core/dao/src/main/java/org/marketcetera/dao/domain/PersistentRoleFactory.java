@@ -21,4 +21,15 @@ public class PersistentRoleFactory implements RoleFactory {
     public Role create() {
         return new PersistentRole();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.RoleFactory#create(org.marketcetera.api.dao.Role)
+     */
+    @Override
+    public Role create(Role inRole)
+    {
+        if(inRole instanceof PersistentRole) {
+            return inRole;
+        }
+        return new PersistentRole(inRole);
+    }
 }

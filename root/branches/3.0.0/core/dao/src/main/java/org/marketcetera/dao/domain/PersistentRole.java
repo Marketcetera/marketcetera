@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.*;
 
 import org.marketcetera.api.dao.MutableRole;
 import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -31,6 +32,23 @@ public class PersistentRole
         extends PersistentVersionedObject
         implements MutableRole
 {
+    /**
+     * Create a new PersistentRole instance.
+     */
+    public PersistentRole() {}
+    /**
+     * Create a new PersistentRole instance.
+     *
+     * @param inRole a <code>Role</code> value
+     */
+    public PersistentRole(Role inRole)
+    {
+        super(inRole);
+        setDescription(inRole.getDescription());
+        setName(inRole.getName());
+        setPermissions(inRole.getPermissions());
+        setUsers(inRole.getUsers());
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Role#getName()
      */

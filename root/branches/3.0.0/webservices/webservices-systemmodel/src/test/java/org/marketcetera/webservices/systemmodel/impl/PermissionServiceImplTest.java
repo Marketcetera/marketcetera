@@ -204,12 +204,12 @@ public class PermissionServiceImplTest
             throws Exception
     {
         // no results
-        when(permissionDao.getAll()).thenReturn(new ArrayList<Permission>());
+        when(permissionDao.getAll()).thenReturn(new ArrayList<MutablePermission>());
         assertTrue(service.getPermissionsJSON().isEmpty());
         verify(permissionDao).getAll();
         // single result
-        Permission permission1 = generatePermission();
-        when(permissionDao.getAll()).thenReturn(Arrays.asList(new Permission[] {permission1}));
+        WebServicesPermission permission1 = generatePermission();
+        when(permissionDao.getAll()).thenReturn(Arrays.asList(new MutablePermission[] {permission1}));
         List<Permission> expectedResults = new ArrayList<Permission>();
         expectedResults.add(permission1);
         verifyPermissions(expectedResults,
@@ -217,8 +217,8 @@ public class PermissionServiceImplTest
         verify(permissionDao,
                times(2)).getAll();
         // multiple results
-        Permission permission2 = generatePermission();
-        when(permissionDao.getAll()).thenReturn(Arrays.asList(new Permission[]{permission1, permission2}));
+        WebServicesPermission permission2 = generatePermission();
+        when(permissionDao.getAll()).thenReturn(Arrays.asList(new MutablePermission[]{permission1, permission2}));
         expectedResults.add(permission2);
         verifyPermissions(expectedResults,
                           service.getPermissionsJSON());

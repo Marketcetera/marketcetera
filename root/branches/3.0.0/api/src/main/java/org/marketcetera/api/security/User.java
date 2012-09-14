@@ -1,9 +1,7 @@
 package org.marketcetera.api.security;
 
 import java.io.Serializable;
-import java.util.Set;
 
-import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.systemmodel.NamedObject;
 import org.marketcetera.api.systemmodel.SystemObject;
 import org.marketcetera.api.systemmodel.VersionedObject;
@@ -18,13 +16,6 @@ import org.marketcetera.api.systemmodel.VersionedObject;
  */
 public interface User extends VersionedObject, NamedObject, SystemObject, Serializable {
     //~ Methods ========================================================================================================
-
-    /**
-     * Returns the permissions granted to the user. Cannot return <code>null</code>.
-     *
-     * @return the permissions
-     */
-    Set<Permission> getPermissions();
 
     /**
      * Returns the password used to authenticate the user. Cannot return <code>null</code>.

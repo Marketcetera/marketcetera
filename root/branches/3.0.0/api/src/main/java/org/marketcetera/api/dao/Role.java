@@ -1,6 +1,6 @@
 package org.marketcetera.api.dao;
 
-import java.util.Collection;
+import java.util.Set;
 
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.NamedObject;
@@ -21,13 +21,13 @@ public interface Role
     /**
      * Gets the users in this group.
      *
-     * @return a <code>Collection&lt;User&gt;</code> value
+     * @return a <code>Set&lt;User&gt;</code> value
      */
-    public Collection<User> getUsers();
+    public Set<User> getUsers();
     /**
      * Gets the permissions assigned to this group.
      *
-     * @return a <code>Collection&lt;Permission&gt;</code> value
+     * @return a <code>Set&lt;Permission&gt;</code> value
      */
-    public Collection<Permission> getPermissions();
+    public Set<Permission> getPermissions();
 }

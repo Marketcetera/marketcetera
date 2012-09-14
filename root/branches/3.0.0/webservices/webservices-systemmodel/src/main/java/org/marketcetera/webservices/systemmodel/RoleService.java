@@ -2,11 +2,8 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.List;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /* $License$ */
@@ -21,35 +18,61 @@ import javax.ws.rs.core.Response;
 public interface RoleService
 {
     /**
-     * Adds a role with the given name.
+     * Adds the given <code>Role</code.
      *
-     * @param inRole a <code>String</code> value
-     * @return a <code>Response</code> value
+     * @param inRole a <code>WebServicesRole</code> value
+     * @return a <code>WebServicesRole</code> value
      */
     @POST
-    @Path("{role}")
-//    @Consumes({MediaType.APPLICATION_JSON})
-    public Response addRole(@PathParam("role")String inRole);
+    @Consumes({MediaType.APPLICATION_JSON})
+    public WebServicesRole addRoleJSON(WebServicesRole inRole);
     /**
-     * Gets the role with the given id.
+     * Adds the given <code>Role</code.
+     *
+     * @param inRole a <code>WebServicesRole</code> value
+     * @return a <code>WebServicesRole</code> value
+     */
+    @POST
+    @Consumes({MediaType.APPLICATION_XML})
+    public WebServicesRole addRoleXML(WebServicesRole inRole);
+    /**
+     * Gets the <code>Role</code> with the given id.
      *
      * @param inId a <code>String</code> value
      * @return a <code>WebServicesRole</code> value
      */
     @GET
     @Path("{id}")
-//    @Produces({MediaType.APPLICATION_JSON})
-    public WebServicesRole getRole(@PathParam("id")long inId);
+    @Produces({MediaType.APPLICATION_JSON})
+    public WebServicesRole getRoleJSON(@PathParam("id")long inId);
     /**
-     * Gets all roles.
+     * Gets the <code>Role</code> with the given id.
+     *
+     * @param inId a <code>String</code> value
+     * @return a <code>WebServicesRole</code> value
+     */
+    @GET
+    @Path("{id}")
+    @Produces({MediaType.APPLICATION_XML})
+    public WebServicesRole getRoleXML(@PathParam("id")long inId);
+    /**
+     * Gets all <code>Role</code> values.
      *
      * @return a <code>List&lt;WebServicesRole&gt;</code> value
      */
     @GET
-//    @Produces({MediaType.APPLICATION_JSON})
-    public List<WebServicesRole> getRoles();
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<WebServicesRole> getRolesJSON();
     /**
-     * Deletes the role with the given id.
+     * Gets all <code>Role</code> values.
+     *
+     * @return a <code>List&lt;WebServicesRole&gt;</code> value
+     */
+    @GET
+    @Produces({MediaType.APPLICATION_XML})
+    public List<WebServicesRole> getRolesXML();
+    /**
+     * Deletes the <code>Role</code> with the given id.
      *
      * @param inId a <code>long</code> value
      * @return a <code>Response</code> value
@@ -57,4 +80,22 @@ public interface RoleService
     @DELETE
     @Path("{id}")
     public Response deleteRole(@PathParam("id")long inId);
+    /**
+     * Updates the given <code>Role</code>.
+     *
+     * @param inRole a <code>WebServicesRole</code> value
+     * @return a <code>Response</code> value
+     */
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response updateRoleJSON(WebServicesRole inRole);
+    /**
+     * Updates the given <code>Role</code>.
+     *
+     * @param inRole a <code>WebServicesRole</code> value
+     * @return a <code>Response</code> value
+     */
+    @POST
+    @Consumes({MediaType.APPLICATION_XML})
+    public Response updateRoleXML(WebServicesRole inRole);
 }
