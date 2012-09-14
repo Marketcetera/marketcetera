@@ -22,7 +22,7 @@ public class CurrencyValidationHandler extends InstrumentValidationHandler<Curre
 	 * 
 	 */
 	public CurrencyValidationHandler(){
-        super(org.marketcetera.trade.Currency.class);
+        super(Currency.class);
     }
 	
 	/**
