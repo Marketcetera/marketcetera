@@ -85,9 +85,7 @@ public class WebServicesPermission
     private final void copyAttributes(Permission inPermission)
     {
         Validate.notNull(inPermission);
-        setName(inPermission.getName());
-        setDescription(inPermission.getDescription());
-        setId(inPermission.getId());
+        super.copyAttributes(inPermission);
         setMethod(inPermission.getMethod());
     }
     /**

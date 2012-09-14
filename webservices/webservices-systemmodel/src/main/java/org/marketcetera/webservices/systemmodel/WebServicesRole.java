@@ -1,28 +1,34 @@
 package org.marketcetera.webservices.systemmodel;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
+import org.apache.commons.lang.Validate;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.marketcetera.api.dao.MutableRole;
 import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.dao.Role;
+import org.marketcetera.api.security.User;
+import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */
 
 /**
- * Provides a web-services appropriate group implementation.
+ * Provides a web-services appropriate <code>Role</code> implementation.
  *
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name = "roles")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name="role")
+@XmlAccessorType(XmlAccessType.NONE)
+@JsonRootName(value="role")
 public class WebServicesRole
+        extends WebServicesNamedObject
+        implements MutableRole
 {
     /**
      * Create a new WebServicesRole instance.
@@ -35,50 +41,17 @@ public class WebServicesRole
      */
     public WebServicesRole(Role inRole)
     {
-        id = inRole.getId();
-        name = inRole.getName();
-        for(User user : inRole.getUsers()) {
-            users.add(new WebServicesUser(user));
-        }
-        for(Permission permission : inRole.getPermissions()) {
-            permissions.add(new WebServicesPermission(permission));
-        }
+        copyAttributes(inRole);
     }
     /**
-     * Get the id value.
+     * Create a new WebServicesRole instance.
      *
-     * @return a <code>long</code> value
+     * @param inStringRepresentation a <code>String</code> valu
      */
-    public long getId()
+    public WebServicesRole(String inStringRepresentation)
     {
-        return id;
-    }
-    /**
-     * Get the name value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getName()
-    {
-        return name;
-    }
-    /**
-     * Get the users value.
-     *
-     * @return a <code>List&lt;WebServicesUser&gt;</code> value
-     */
-    public List<WebServicesUser> getUsers()
-    {
-        return Collections.unmodifiableList(users);
-    }
-    /**
-     * Get the permissions value.
-     *
-     * @return a <code>List&lt;WebServicesPermission&gt;</code> value
-     */
-    public List<WebServicesPermission> getPermissions()
-    {
-        return Collections.unmodifiableList(permissions);
+        copyAttributes(JsonMarshallingProvider.getInstance().getService().unmarshal(inStringRepresentation,
+                                                                                    WebServicesRole.class));
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -86,25 +59,85 @@ public class WebServicesRole
     @Override
     public String toString()
     {
-        StringBuilder builder = new StringBuilder();
-        builder.append("WebServicesRole [id=").append(id).append(", name=").append(name).append(", users=")
-                .append(users).append(", permissions=").append(permissions).append("]");
-        return builder.toString();
+        return JsonMarshallingProvider.getInstance().getService().marshal(this);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableRole#setUsers(java.util.Set)
+     */
+    @Override
+    public void setUsers(Set<User> inUsers)
+    {
+        users = inUsers;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableRole#setPermissions(java.util.Set)
+     */
+    @Override
+    public void setPermissions(Set<Permission> inPermissions)
+    {
+        permissions = inPermissions;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.Role#getUsers()
+     */
+    @Override
+    @JsonProperty
+    @JsonDeserialize(contentAs=WebServicesUser.class)
+    public Set<User> getUsers()
+    {
+        return users;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.Role#getPermissions()
+     */
+    @Override
+    @JsonProperty
+    @JsonDeserialize(contentAs=WebServicesPermission.class)
+    public Set<Permission> getPermissions()
+    {
+        return permissions;
     }
     /**
-     * id value
+     * Copies the attributes from the given <code>Role</code> object to this object.
+     *
+     * @param inRole a <code>Role</code> value
      */
-    private long id;
-    /**
-     * name value
-     */
-    private String name;
+    private void copyAttributes(Role inRole)
+    {
+        Validate.notNull(inRole);
+        super.copyAttributes(inRole);
+        // perform deep copy on both collections
+        users = new HashSet<User>();
+        if(inRole.getUsers() != null) {
+            for(User user : inRole.getUsers()) {
+                if(user instanceof WebServicesUser) {
+                    users.add(user);
+                } else {
+                    users.add(new WebServicesUser(user));
+                }
+            }
+        }
+        permissions = new HashSet<Permission>();
+        if(inRole.getPermissions() != null) {
+            for(Permission permission : inRole.getPermissions()) {
+                if(permission instanceof WebServicesPermission) {
+                    permissions.add(permission);
+                } else {
+                    permissions.add(new WebServicesPermission(permission));
+                }
+            }
+        }
+    }
     /**
      * users value
      */
-    private final List<WebServicesUser> users = new ArrayList<WebServicesUser>();
+    @XmlElementWrapper(name="users")
+    @XmlElement(name="user",type=WebServicesUser.class)
+    private Set<User> users = new HashSet<User>();
     /**
      * permissions value
      */
-    private final List<WebServicesPermission> permissions = new ArrayList<WebServicesPermission>();
+    @XmlElementWrapper(name="permissions")
+    @XmlElement(name="permission",type=WebServicesPermission.class)
+    private Set<Permission> permissions = new HashSet<Permission>();
 }

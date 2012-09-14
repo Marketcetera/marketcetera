@@ -27,4 +27,11 @@ public interface UserFactory
      * @return a <code>User</code> value
      */
     public User create();
+    /**
+     * Creates a <code>User</code> object with the same attributes as the given <code>User</code>.
+     *
+     * @param inUser a <code>User</code> value
+     * @return a <code>User</code> value
+     */
+    public User create(User inUser);
 }

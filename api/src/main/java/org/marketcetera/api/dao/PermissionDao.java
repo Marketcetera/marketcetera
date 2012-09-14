@@ -15,45 +15,45 @@ public interface PermissionDao
     /**
      * Adds the given <code>Permission</code> to the database.
      *
-     * @param inData an <code>Permission</code> value
+     * @param inData a <code>Permission</code> value
      */
     public void add(Permission inData);
     /**
      * Saves the given <code>Permission</code> to the database.
      *
-     * @param inData an <code>Permission</code> value
+     * @param inData a <code>Permission</code> value
      */
     public void save(Permission inData);
     /**
      * Gets the <code>Permission</code> corresponding to the given name.
      *
      * @param inName a <code>String</code> value
-     * @return an <code>Permission</code> value
+     * @return a <code>MutablePermission</code> value
      */
-    public Permission getByName(String inName);
+    public MutablePermission getByName(String inName);
     /**
      * Gets the <code>Permission</code> corresponding to the given id.
      *
      * @param inId a <code>long</code> value
-     * @return an <code>Permission</code> value
+     * @return a <code>MutablePermission</code> value
      */
-    public Permission getById(long inId);
+    public MutablePermission getById(long inId);
     /**
      * Gets all <code>Permission</code> values.
      *
-     * @return a <code>List&lt;Permission&gt;</code> value
+     * @return a <code>List&lt;MutablePermission&gt;</code> value
      */
-    public List<Permission> getAll();
+    public List<MutablePermission> getAll();
     /**
      * Deletes the given <code>Permission</code> from the database.
      *
-     * @param inPermission an <code>Permission</code> value
+     * @param inPermission a <code>Permission</code> value
      */
     public void delete(Permission inPermission);
     /**
-     * Indicates if the permission with the given id is in use by any {@link Role}.
+     * Indicates if the <code>Permission</code> with the given id is in use by any {@link Role}.
      * 
-     * <p>If there is permission with the given id, this method returns <code>false</code>.
+     * <p>If there is no <code>Permission</code> with the given id, this method returns <code>false</code>.
      *
      * @param inId a <code>long</code> value
      * @return a <code>boolean</code> value

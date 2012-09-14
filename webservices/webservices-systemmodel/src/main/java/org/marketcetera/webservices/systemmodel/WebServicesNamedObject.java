@@ -53,6 +53,12 @@ public abstract class WebServicesNamedObject
     {
         description = inDescription;
     }
+    protected void copyAttributes(NamedObject inNamedObject)
+    {
+        super.copyAttributes(inNamedObject);
+        setName(inNamedObject.getName());
+        setDescription(inNamedObject.getDescription());
+    }
     /**
      * name of the named object
      */

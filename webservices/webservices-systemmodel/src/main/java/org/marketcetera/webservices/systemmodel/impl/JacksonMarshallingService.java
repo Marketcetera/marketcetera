@@ -32,7 +32,7 @@ public class JacksonMarshallingService
      */
     @Override
     public <Clazz> Clazz unmarshal(String inStringValue,
-                                       Class<Clazz> inType)
+                                   Class<Clazz> inType)
     {
         try {
             return mapper.readValue(inStringValue,

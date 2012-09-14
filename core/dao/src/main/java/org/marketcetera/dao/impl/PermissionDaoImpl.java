@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.marketcetera.api.dao.MutablePermission;
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionDao;
 import org.marketcetera.dao.domain.PersistentPermission;
@@ -50,7 +51,7 @@ public class PermissionDaoImpl implements PermissionDao {
     }
     @SuppressWarnings("unchecked")
     @Override
-    public List<Permission> getAll() {
+    public List<MutablePermission> getAll() {
         return entityManager.createNamedQuery("PersistentPermission.findAll").getResultList();
     }
     /* (non-Javadoc)

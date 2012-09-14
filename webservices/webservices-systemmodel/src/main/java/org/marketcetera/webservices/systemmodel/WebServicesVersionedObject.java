@@ -38,6 +38,16 @@ public abstract class WebServicesVersionedObject
         version = inVersion;
     }
     /**
+     * Sets this object's attributes to the matching attribute of the given object.
+     *
+     * @param inVersionedObject a <code>VersionedObject</code> value
+     */
+    protected void copyAttributes(VersionedObject inVersionedObject)
+    {
+        super.copyAttributes(inVersionedObject);
+        setVersion(inVersionedObject.getVersion());
+    }
+    /**
      * version value (not made available for web services)
      */
     @XmlTransient

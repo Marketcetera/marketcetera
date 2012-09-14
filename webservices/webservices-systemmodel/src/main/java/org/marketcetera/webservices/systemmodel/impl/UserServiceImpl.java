@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status.Family;
+import javax.ws.rs.core.Response.StatusType;
+
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.dao.UserFactory;
 import org.marketcetera.api.security.User;
@@ -23,68 +26,181 @@ public class UserServiceImpl
         implements UserService
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.webservices.security.UserService#addUser(java.lang.String, java.lang.String)
+     * @see org.marketcetera.webservices.systemmodel.UserService#addUser(java.lang.String)
      */
     @Override
-    public Response addUser(String inUsername,
-                            String inPassword)
+    public WebServicesUser addUserJSON(WebServicesUser inUser)
     {
-        SLF4JLoggerProxy.trace(UserServiceImpl.class,
-                               "UserService addUser invoked with user {} and password ********", //$NON-NLS-1$
-                               inUsername);
+        SLF4JLoggerProxy.debug(UserServiceImpl.class,
+                               "UserService addUserJSON invoked with user {}", //$NON-NLS-1$
+                               inUser);
+        return doAddUser(inUser);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.UserService#getUser(long)
+     */
+    @Override
+    public WebServicesUser getUserJSON(long inId)
+    {
+        SLF4JLoggerProxy.debug(UserServiceImpl.class,
+                               "UserService getUserJSON invoked with id {}", //$NON-NLS-1$
+                               inId);
+        return new WebServicesUser(doGetUser(inId));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.UserService#getUsers()
+     */
+    @Override
+    public List<WebServicesUser> getUsersJSON()
+    {
+        SLF4JLoggerProxy.debug(UserServiceImpl.class, "UserService getUsersJSON invoked"); //$NON-NLS-1$
+        return doGetUsers();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.UserService#deleteUser(long)
+     */
+    @Override
+    public Response deleteUser(final long inId)
+    {
+        SLF4JLoggerProxy.debug(UserServiceImpl.class,
+                               "UserService deleteUser invoked with id {}", //$NON-NLS-1$
+                               inId);
         Response response;
         try {
-            User user = userFactory.create(inUsername,
-                                           inPassword);
-            userDao.add(user);
-            response = Response.ok().build();
+            // TODO - imperfect, should use a transaction for this whole call
+            if(userDao.isInUseByRole(inId)) {
+                StatusType responseStatus = new StatusType() {
+                    @Override
+                    public Family getFamily()
+                    {
+                        return Family.SERVER_ERROR;
+                    }
+                    @Override
+                    public String getReasonPhrase()
+                    {
+                        return "The user with id " + inId + " is in use by a role and may not be deleted";
+                    }
+                    @Override
+                    public int getStatusCode()
+                    {
+                        return Response.Status.PRECONDITION_FAILED.getStatusCode();
+                    }
+                };
+                response = Response.serverError().status(responseStatus).build();
+            } else {
+                User user = userDao.getById(inId);
+                userDao.delete(user);
+                response = Response.ok().build();
+            }
         } catch (RuntimeException e) {
-            SLF4JLoggerProxy.warn(UserServiceImpl.class,
-                                  e);
-            response = Response.serverError().build();
+            SLF4JLoggerProxy.error(this,
+                                   e);
+            response = Response.serverError()
+                               .entity(e.getMessage()).build();
         }
         return response;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.security.shiro.UserService#getUser(java.lang.String)
+     * @see org.marketcetera.webservices.systemmodel.UserService#addUserXML(org.marketcetera.api.dao.User)
      */
     @Override
-    public WebServicesUser getUser(long inId)
+    public WebServicesUser addUserXML(WebServicesUser inUser)
     {
-        SLF4JLoggerProxy.trace(UserServiceImpl.class, "UserService getUser invoked with id {}", //$NON-NLS-1$
-                inId);
+        return doAddUser(inUser);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.UserService#getUserXML(long)
+     */
+    @Override
+    public WebServicesUser getUserXML(long inId)
+    {
+        SLF4JLoggerProxy.debug(UserServiceImpl.class,
+                               "UserService getUserXML invoked with id {}", //$NON-NLS-1$
+                               inId);
+        return doGetUser(inId);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.UserService#getUsersXML()
+     */
+    @Override
+    public List<WebServicesUser> getUsersXML()
+    {
+        return doGetUsers();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.UserService#updateUserJSON(org.marketcetera.webservices.systemmodel.WebServicesUser)
+     */
+    @Override
+    public Response updateUserJSON(WebServicesUser inUser)
+    {
+        return updateUser(inUser);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.UserService#updateUserXML(org.marketcetera.webservices.systemmodel.WebServicesUser)
+     */
+    @Override
+    public Response updateUserXML(WebServicesUser inUser)
+    {
+        return updateUser(inUser);
+    }
+    /**
+     * Sets the userFactory value.
+     *
+     * @param inUserFactory an <code>UserFactory</code> value
+     */
+    public void setUserFactory(UserFactory inUserFactory)
+    {
+        userFactory = inUserFactory;
+    }
+    /**
+     * Sets the user DAO value.
+     *
+     * @param userDao a <code>UserDao</code> value
+     */
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+    /**
+     * Updates the given <code>User</code>.
+     *
+     * @param inUser a <code>WebServicesUser</code> value
+     * @return a <code>Response</code> value
+     */
+    private Response updateUser(WebServicesUser inUser)
+    {
+        Response response;
+        try {
+            User persistableUser = userFactory.create(inUser);
+            userDao.save(persistableUser);
+            response = Response.ok().build();
+        } catch (RuntimeException e) {
+            SLF4JLoggerProxy.error(this,
+                                   e);
+            response = Response.serverError().build();
+        }
+        return response;
+    }
+    /**
+     * Executes the retrieval of the the <code>User</code> object associated with the given id.
+     *
+     * @param inId a <code>long</code> value
+     * @return a <code>WebServicesUser</code> value
+     */
+    private WebServicesUser doGetUser(long inId)
+    {
         User user = userDao.getById(inId);
         if(user == null) {
             return null;
         }
         return new WebServicesUser(user);
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.security.shiro.UserService#deleteUser(java.lang.String)
+    /**
+     * Executes the retrieval of all existing <code>User</code> objects.
+     *
+     * @return a <code>List&lt;WebServicesUser&gt;</code> value
      */
-    @Override
-    public Response deleteUser(long inId)
+    private List<WebServicesUser> doGetUsers()
     {
-        SLF4JLoggerProxy.debug(UserServiceImpl.class, "UserService deleteUser invoked with user {}", //$NON-NLS-1$
-                inId);
-        Response response;
-        try {
-            User user = userDao.getById(inId);
-            userDao.delete(user);
-            response = Response.ok().build();
-        } catch (RuntimeException e) {
-            response = Response.serverError().build();
-        }
-        return response;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.security.shiro.UserService#getUsers()
-     */
-    @Override
-    public List<WebServicesUser> getUsers()
-    {
-        SLF4JLoggerProxy.trace(UserServiceImpl.class,
-                               "UserService getUsers invoked"); //$NON-NLS-1$
         List<WebServicesUser> decoratedUsers = new ArrayList<WebServicesUser>();
         for(User user : userDao.getAll()) {
             decoratedUsers.add(new WebServicesUser(user));
@@ -92,25 +208,29 @@ public class UserServiceImpl
         return decoratedUsers;
     }
     /**
-     * Sets the userFactory value.
+     * Executes the addition of the given <code>User</code> object.
      *
-     * @param inUserFactory a <code>UserFactory</code> value
+     * @param inUser a <code>WebServicesUser</code> value
+     * @return a <code>WebServicesUser</code> value
      */
-    public void setUserFactory(UserFactory inUserFactory)
+    private WebServicesUser doAddUser(WebServicesUser inUser)
     {
-        userFactory = inUserFactory;
+        try {
+            User persistableUser = userFactory.create(inUser);
+            userDao.add(persistableUser);
+            return new WebServicesUser(persistableUser);
+        } catch (RuntimeException e) {
+            SLF4JLoggerProxy.warn(UserServiceImpl.class,
+                                  e);
+            throw e;
+        }
     }
     /**
-     * data access object
+     * allows datastore access for user objects
      */
     private UserDao userDao;
-
     /**
-     * constructs user objects 
+     * constructs user objects
      */
     private UserFactory userFactory;
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
 }

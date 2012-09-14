@@ -26,7 +26,6 @@ public class UserDaoImpl implements UserDao {
     public MutableUser getByName(String inUsername) {
         MutableUser user = (MutableUser)entityManager.createNamedQuery("PersistentUser.findByName").setParameter("name",
                                                                                                                  inUsername).getSingleResult();
-        user.setPermissions(getPermissionsByUserId(user.getId()));
         return user;
     }
 
@@ -52,16 +51,22 @@ public class UserDaoImpl implements UserDao {
         return (MutableUser)entityManager.find(PersistentUser.class,
                                                inId);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.UserDao#isInUseByRole(long)
+     */
+    @Override
+    public boolean isInUseByRole(long inId)
+    {
+        return ((Number)entityManager.createNamedQuery("PersistentUser.isUserInUseByRole").setParameter(1,
+                                                                                                        inId).getSingleResult()).intValue() != 0;
+    }
     @SuppressWarnings("unchecked")
     @Override
     public List<MutableUser> getAll() {
         List<MutableUser> users = entityManager.createNamedQuery("PersistentUser.findAll").getResultList();
-        for(MutableUser user : users) {
-            user.setPermissions(getPermissionsByUserId(user.getId()));
-        }
         return users;
     }
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked", "unused" })
     private Set<Permission> getPermissionsByUserId(long inUserId)
     {
         Set<Permission> permissions = new HashSet<Permission>();

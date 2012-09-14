@@ -9,6 +9,7 @@ package org.marketcetera.api.systemmodel;
  * @since $Release$
  */
 public interface NamedObject
+        extends VersionedObject
 {
     /**
      * Get the name value.

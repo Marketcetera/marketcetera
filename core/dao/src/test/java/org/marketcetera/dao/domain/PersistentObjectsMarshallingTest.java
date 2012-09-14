@@ -56,9 +56,6 @@ public class PersistentObjectsMarshallingTest
         role1.setUsers(new HashSet<User>(Arrays.asList(user1,user2,user3)));
         role2.setUsers(new HashSet<User>(Arrays.asList(user1,user2,user3)));
         role3.setUsers(new HashSet<User>(Arrays.asList(user1,user2,user3)));
-        user1.setPermissions(new HashSet<Permission>(Arrays.asList(new Permission[] { permission1, permission2, permission3 })));
-        user2.setPermissions(new HashSet<Permission>(Arrays.asList(new Permission[] { permission1, permission2, permission3 })));
-        user3.setPermissions(new HashSet<Permission>(Arrays.asList(new Permission[] { permission1, permission2, permission3 })));
         JAXBContext context = JAXBContext.newInstance(PersistentUser.class,PersistentRole.class,PersistentPermission.class,SystemObjectList.class);
         Marshaller marshaller = context.createMarshaller();
         StringWriter writer = new StringWriter();

@@ -2,8 +2,17 @@ package org.marketcetera.webservices.systemmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.Validate;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.marketcetera.api.dao.MutableUser;
 import org.marketcetera.api.security.User;
+import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */
 
@@ -13,68 +22,178 @@ import org.marketcetera.api.security.User;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name = "users")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name="user")
+@XmlAccessorType(XmlAccessType.NONE)
+@JsonRootName(value="user")
+@JsonIgnoreProperties(value={"accountNonExpired"})
 public class WebServicesUser
+        extends WebServicesNamedObject
+        implements MutableUser
 {
     /**
-     * Get the username value.
-     *
-     * @return a <code>String</code> value
+     * Create a new WebServicesUser instance.
      */
-    public String getUsername()
-    {
-        return username;
-    }
-    /**
-     * Sets the username value.
-     *
-     * @param inUsername <code>String</code> value
-     */
-    public void setUsername(String inUsername)
-    {
-        username = inUsername;
-    }
-    /**
-     * Get the id value.
-     *
-     * @return a <code>long</code> value
-     */
-    public long getId()
-    {
-        return id;
-    }
-    /**
-     * Sets the id value.
-     *
-     * @param inId <code>long</code> value
-     */
-    public void setId(long inId)
-    {
-        id = inId;
-    }
+    public WebServicesUser() {}
     /**
      * Create a new WebServicesUser instance.
      *
-     * @param inUser
+     * @param inUser a <code>User</code> value
      */
     public WebServicesUser(User inUser)
     {
-        username = inUser.getUsername();
-        id = inUser.getId();
+        copyAttributes(inUser);
     }
     /**
      * Create a new WebServicesUser instance.
+     *
+     * @param inUserValue a <code>String</code> value
      */
-    public WebServicesUser()
+    public WebServicesUser(String inUserValue)
     {
+        copyAttributes(JsonMarshallingProvider.getInstance().getService().unmarshal(inUserValue,
+                                                                                    WebServicesUser.class));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.User#getPassword()
+     */
+    @Override
+    public String getPassword()
+    {
+        return password;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.User#getUsername()
+     */
+    @Override
+    @JsonIgnore
+    public String getUsername()
+    {
+        return getName();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.User#isAccountNonExpired()
+     */
+    @Override
+    @JsonProperty(value="accountNonExpired")
+    public boolean isAccountNonExpired()
+    {
+        return !enabled;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.User#isAccountNonLocked()
+     */
+    @Override
+    @JsonProperty(value="accountNonLocked")
+    public boolean isAccountNonLocked()
+    {
+        return !locked;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.User#isCredentialsNonExpired()
+     */
+    @Override
+    @JsonProperty(value="credentialsNonExpired")
+    public boolean isCredentialsNonExpired()
+    {
+        return !credentialsExpired;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.security.User#isEnabled()
+     */
+    @Override
+    @JsonProperty(value="enabled")
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setPassword(java.lang.String)
+     */
+    @Override
+    public void setPassword(String inPassword)
+    {
+        password = inPassword;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setUsername(java.lang.String)
+     */
+    @Override
+    public void setUsername(String inUsername)
+    {
+        setName(inUsername);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setIsAccountNonExpired(boolean)
+     */
+    @Override
+    public void setIsAccountNonExpired(boolean inIsNonExpired)
+    {
+        enabled = ! inIsNonExpired;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setIsAccountNonLocked(boolean)
+     */
+    @Override
+    @JsonProperty(value="accountNonLocked")
+    public void setIsAccountNonLocked(boolean inIsNonLocked)
+    {
+        locked = ! inIsNonLocked;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setIsCredentialsNonExpired(boolean)
+     */
+    @Override
+    @JsonProperty(value="credentialsNonExpired")
+    public void setIsCredentialsNonExpired(boolean inIsNonExpired)
+    {
+        credentialsExpired = !inIsNonExpired;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutableUser#setIsEnabled(boolean)
+     */
+    @Override
+    @JsonProperty(value="enabled")
+    public void setIsEnabled(boolean inIsEnabled)
+    {
+        enabled = inIsEnabled;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return JsonMarshallingProvider.getInstance().getService().marshal(this);
+    }
+    private void copyAttributes(User inUser)
+    {
+        Validate.notNull(inUser);
+        super.copyAttributes(inUser);
+        setPassword(inUser.getPassword());
+        setIsAccountNonExpired(inUser.isAccountNonExpired());
+        setIsAccountNonLocked(inUser.isAccountNonLocked());
+        setIsCredentialsNonExpired(inUser.isCredentialsNonExpired());
+        setIsEnabled(inUser.isEnabled());
     }
     /**
-     * username value
+     * user password value
      */
-    private String username;
+    @XmlAttribute
+    private String password;
     /**
-     * id value
+     * indicates if the account is enabled
      */
-    private long id;
+    @XmlAttribute
+    private boolean enabled;
+    /**
+     * indicates if the account is locked
+     */
+    @XmlAttribute
+    private boolean locked;
+    /**
+     * indicates if the credentials have expired
+     */
+    @XmlAttribute
+    private boolean credentialsExpired;
+    private static final long serialVersionUID = 1L;
 }
