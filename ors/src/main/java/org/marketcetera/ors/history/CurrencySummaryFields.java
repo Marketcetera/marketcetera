@@ -13,7 +13,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * Extracts report summary fields for a currency instrument.
  *
  */
-@ClassVersion("$Id: FutureSummaryFields.java 16154 2012-07-14 16:34:05Z colin $")
 public class CurrencySummaryFields
         extends InstrumentSummaryFields<Currency>
 {
@@ -31,11 +30,11 @@ public class CurrencySummaryFields
 
     @Override
     public BigDecimal getStrikePrice(Instrument inInstrument) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public OptionType getOptionType(Instrument inInstrument) {
-        return null;
+    	throw new UnsupportedOperationException();
     }
 }
