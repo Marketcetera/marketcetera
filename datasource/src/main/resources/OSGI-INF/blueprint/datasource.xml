@@ -33,6 +33,8 @@
             <property name="url" value="${jdbc.url}"/>
             <property name="user" value="${jdbc.username}"/>
             <property name="password" value="${jdbc.password}"/>
+            <property name="minCon" value="1"/>
+            <property name="maxCon" value="${jdbc.maxActive}"/>
         </bean>
     </service>
 
