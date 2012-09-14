@@ -1,3 +1,4 @@
 org.marketcetera.client.instruments.EquityValidationHandler
 org.marketcetera.client.instruments.OptionValidationHandler
 org.marketcetera.client.instruments.FutureValidationHandler
+org.marketcetera.client.instruments.CurrencyValidationHandler

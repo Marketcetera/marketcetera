@@ -300,6 +300,44 @@ public class Currency extends Instrument implements Comparable<Currency>{
 		return this.hashCode;
 	}
 	
+    @Override
+	public boolean equals(Object obj) {    	
+		Currency other = (Currency) obj;
+		if(other == null)
+			return false;
+		if (leftCCY == null) {
+			if (other.leftCCY != null)
+				return false;
+		} else if (!leftCCY.equals(other.leftCCY))
+			return false;
+		if (rightCCY == null) {
+			if (other.rightCCY != null)
+				return false;
+		} else if (!rightCCY.equals(other.rightCCY))
+			return false;
+		if (nearTenor == null) {
+			if (other.nearTenor != null)
+				return false;
+		} else if (!nearTenor.equals(other.nearTenor))
+			return false;
+		if (fixSymbol == null) {
+			if (other.fixSymbol != null)
+				return false;
+		} else if (!fixSymbol.equals(other.fixSymbol))
+			return false;
+		return true;
+	}
+    
+	
+	@Override
+	public String toString() {
+		return "Currency [leftCCY=" + leftCCY + ", rightCCY=" + rightCCY
+				+ ", nearTenor=" + nearTenor + ", farTenor=" + farTenor
+				+ ", fixSymbol=" + fixSymbol + ", hashCode=" + hashCode
+				+ ", tradedCCY=" + tradedCCY + "]";
+	}
+
+
 	/**
 	 * utility method to invert the ccypair and return a new instrument
 	 *   eg for Currency Pair EUR/USD, returns USD/EUR
