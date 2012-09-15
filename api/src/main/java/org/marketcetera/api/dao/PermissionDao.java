@@ -51,15 +51,6 @@ public interface PermissionDao
      */
     public void delete(Permission inPermission);
     /**
-     * Indicates if the <code>Permission</code> with the given id is in use by any {@link Role}.
-     * 
-     * <p>If there is no <code>Permission</code> with the given id, this method returns <code>false</code>.
-     *
-     * @param inId a <code>long</code> value
-     * @return a <code>boolean</code> value
-     */
-    public boolean isInUseByRole(long inId);
-    /**
      * Gets the <code>Permission</code> objects assigned to the given user id.
      *
      * @param inUserId a <code>long</code> value
