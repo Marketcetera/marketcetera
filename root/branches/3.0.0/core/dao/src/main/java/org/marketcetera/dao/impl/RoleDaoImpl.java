@@ -51,7 +51,7 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public void delete(Role inData) {
-        entityManager.remove(inData);
+        entityManager.remove(entityManager.merge(inData));
 
     }
 
