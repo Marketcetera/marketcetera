@@ -15,7 +15,7 @@
     <persistence-unit name="marketcetera-core" transaction-type="JTA">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 
-        <jta-data-source>osgi:service/javax.sql.XADataSource/(transactional=true)</jta-data-source>
+        <jta-data-source>osgi:service/javax.sql.DataSource/(transactional=true)</jta-data-source>
         <!-- Required by openJPA to update sequence table outside of Global Tx Management -->
         <non-jta-data-source>osgi:service/javax.sql.DataSource/(transactional=false)</non-jta-data-source>
 

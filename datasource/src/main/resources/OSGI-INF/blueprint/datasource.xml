@@ -5,7 +5,7 @@
     <cm:property-placeholder persistent-id="org.marketcetera.datasource" update-strategy="none">
         <cm:default-properties>
 
-            <!-- JDBC Drivers -->
+            <!-- These are covered in the per-feature configuration -->
             <!--<cm:property name="jdbc.driverClassName" value="org.postgresql.Driver"/>-->
             <!--<cm:property name="jdbc.url" value="jdbc:postgresql:metc"/>-->
             <!--<cm:property name="jdbc.username" value="metc"/>-->
@@ -23,22 +23,33 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <service auto-export="interfaces">
+    <bean id="dataSource" class="org.enhydra.jdbc.standard.StandardXADataSource">
+        <property name="driverName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="minCon" value="${jdbc.initialSize}"/>
+        <property name="maxCon" value="${jdbc.maxActive}"/>
+    </bean>
+
+    <reference id="txManager" interface="javax.transaction.TransactionManager" availability="mandatory"/>
+
+    <service interface="javax.sql.DataSource" id="jta">
         <service-properties>
             <entry key="transactional" value="true"/>
         </service-properties>
 
-        <bean class="org.enhydra.jdbc.standard.StandardXADataSource">
-            <property name="driverName" value="${jdbc.driverClassName}"/>
-            <property name="url" value="${jdbc.url}"/>
+        <bean class="org.enhydra.jdbc.pool.StandardXAPoolDataSource">
+            <property name="dataSource" ref="dataSource"/>
+            <property name="transactionManager" ref="txManager"/>
             <property name="user" value="${jdbc.username}"/>
             <property name="password" value="${jdbc.password}"/>
-            <property name="minCon" value="1"/>
-            <property name="maxCon" value="${jdbc.maxActive}"/>
+            <property name="minSize" value="1"/>
+            <property name="maxSize" value="${jdbc.maxActive}"/>
         </bean>
     </service>
 
-    <service auto-export="interfaces">
+    <service interface="javax.sql.DataSource" id="nonJTA">
         <service-properties>
             <entry key="transactional" value="false"/>
         </service-properties>
@@ -57,7 +68,4 @@
             <property name="logAbandoned" value="${jdbc.logAbandoned}"/>
         </bean>
     </service>
-
-    <reference id="txManager" interface="javax.transaction.TransactionManager" availability="mandatory"/>
-
 </blueprint>
