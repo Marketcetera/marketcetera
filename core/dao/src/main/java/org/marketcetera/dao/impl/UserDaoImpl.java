@@ -42,7 +42,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void delete(User inData) {
-        entityManager.remove(inData);
+        entityManager.remove(entityManager.merge(inData));
 
     }
 
