@@ -77,7 +77,7 @@ public class UserServiceImplTest
                                "Marshalled value is {}",
                                marshalledValue);
         WebServicesUser newUser = JsonMarshallingProvider.getInstance().getService().unmarshal(marshalledValue,
-                                                                                                               WebServicesUser.class);
+                                                                                               WebServicesUser.class);
         SLF4JLoggerProxy.debug(this,
                                "Unmarshalled value is {}",
                                newUser);

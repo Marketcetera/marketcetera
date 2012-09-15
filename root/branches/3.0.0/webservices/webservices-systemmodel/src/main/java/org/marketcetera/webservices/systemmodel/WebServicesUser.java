@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.Validate;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
@@ -25,7 +24,7 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 @XmlRootElement(name="user")
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonRootName(value="user")
-@JsonIgnoreProperties(value={"accountNonExpired"})
+@JsonIgnoreProperties(value={ "accountNonExpired","name" })
 public class WebServicesUser
         extends WebServicesNamedObject
         implements MutableUser
@@ -65,7 +64,6 @@ public class WebServicesUser
      * @see org.marketcetera.api.security.User#getUsername()
      */
     @Override
-    @JsonIgnore
     public String getUsername()
     {
         return getName();
@@ -165,6 +163,11 @@ public class WebServicesUser
     {
         return JsonMarshallingProvider.getInstance().getService().marshal(this);
     }
+    /**
+     * Copies attributes from the given object to this object.
+     *
+     * @param inUser a <code>User</code> value
+     */
     private void copyAttributes(User inUser)
     {
         Validate.notNull(inUser);
