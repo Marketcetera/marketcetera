@@ -93,7 +93,7 @@
                 <artifactId>openjpa-maven-plugin</artifactId>
                 <version>1.2</version>
                 <configuration>
-                    <includes>org/marketcetera/dao/impl/**/*.class</includes>
+                    <includes>org/marketcetera/dao/domain/**/*.class</includes>
                     <addDefaultConstructor>true</addDefaultConstructor>
                     <enforcePropertyRestrictions>true</enforcePropertyRestrictions>
                 </configuration>
