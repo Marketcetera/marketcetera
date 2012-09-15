@@ -168,12 +168,12 @@ public class PersistentRole
     /**
      * permissions granted to this role
      */
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class)
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentPermission.class,cascade={ CascadeType.ALL })
     private Set<Permission> permissions = new HashSet<Permission>();
     /**
      * users in this group
      */
-    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class)
+    @ManyToMany(fetch=FetchType.EAGER,targetEntity=PersistentUser.class,cascade={ CascadeType.ALL })
     private Set<User> users = new HashSet<User>();
     /**
      * name value

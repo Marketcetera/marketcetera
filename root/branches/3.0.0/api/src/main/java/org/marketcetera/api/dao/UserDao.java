@@ -53,13 +53,4 @@ public interface UserDao {
      * @return a <code>List&lt;MutableUser&gt;</code> value
      */
     public List<MutableUser> getAll();
-    /**
-     * Indicates if the <code>User</code> with the given id is in use by any {@link Role}.
-     * 
-     * <p>If there is no <code>User</code> with the given id, this method returns <code>false</code>.
-     *
-     * @param inId a <code>long</code> value
-     * @return a <code>boolean</code> value
-     */
-    public boolean isInUseByRole(long inId);
 }

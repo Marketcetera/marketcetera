@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status.Family;
-import javax.ws.rs.core.Response.StatusType;
 
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.dao.UserFactory;
@@ -67,31 +65,9 @@ public class UserServiceImpl
                                inId);
         Response response;
         try {
-            // TODO - imperfect, should use a transaction for this whole call
-            if(userDao.isInUseByRole(inId)) {
-                StatusType responseStatus = new StatusType() {
-                    @Override
-                    public Family getFamily()
-                    {
-                        return Family.SERVER_ERROR;
-                    }
-                    @Override
-                    public String getReasonPhrase()
-                    {
-                        return "The user with id " + inId + " is in use by a role and may not be deleted";
-                    }
-                    @Override
-                    public int getStatusCode()
-                    {
-                        return Response.Status.PRECONDITION_FAILED.getStatusCode();
-                    }
-                };
-                response = Response.serverError().status(responseStatus).build();
-            } else {
-                User user = userDao.getById(inId);
-                userDao.delete(user);
-                response = Response.ok().build();
-            }
+            User user = userDao.getById(inId);
+            userDao.delete(user);
+            response = Response.ok().build();
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.error(this,
                                    e);

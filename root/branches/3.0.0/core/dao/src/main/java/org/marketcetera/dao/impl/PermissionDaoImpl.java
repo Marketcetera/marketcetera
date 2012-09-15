@@ -39,16 +39,6 @@ public class PermissionDaoImpl implements PermissionDao {
         return entityManager.find(PersistentPermission.class,
                                   inId); 
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.dao.PermissionDao#isInUseByRole(long)
-     */
-    @Override
-    public boolean isInUseByRole(long inId)
-    {
-        Number result = (Number)entityManager.createNamedQuery("PersistentPermission.isPermissionInUseByRole").setParameter(1,
-                                                                                                                            inId).getSingleResult();
-        return result.intValue() != 0;
-    }
     @SuppressWarnings("unchecked")
     @Override
     public List<MutablePermission> getAll() {

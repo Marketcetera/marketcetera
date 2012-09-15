@@ -1,5 +1,7 @@
 package org.marketcetera.dao.domain;
 
+import java.util.Set;
+
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -8,6 +10,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.api.dao.MutableUser;
+import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -21,7 +24,6 @@ import org.marketcetera.api.security.User;
 @NotThreadSafe
 @NamedQueries({ @NamedQuery(name="PersistentUser.findByName",query="select s from PersistentUser s where s.username = :name"),
                 @NamedQuery(name="PersistentUser.findAll",query="select s from PersistentUser s")})
-@NamedNativeQueries( { @NamedNativeQuery(name="PersistentUser.isUserInUseByRole",query="select count(*) from roles_users where users_id=?") })
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
 @XmlRootElement(name = "user")
@@ -259,5 +261,11 @@ public class PersistentUser
      */
     @Column(nullable=false)
     private boolean credentialsExpired = false;
+    /**
+     * slave mapping of the manyToMany with Roles, added here to allow cascading delete of user
+     */
+    @SuppressWarnings("unused")
+    @ManyToMany(mappedBy="users",targetEntity=PersistentRole.class)
+    private Set<Role> roles;
     private static final long serialVersionUID = 1L;
 }

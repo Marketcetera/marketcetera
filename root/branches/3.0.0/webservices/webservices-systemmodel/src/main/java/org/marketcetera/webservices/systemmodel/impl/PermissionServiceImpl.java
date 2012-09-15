@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status.Family;
-import javax.ws.rs.core.Response.StatusType;
 
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionDao;
@@ -67,31 +65,9 @@ public class PermissionServiceImpl
                                inId);
         Response response;
         try {
-            // TODO - imperfect, should use a transaction for this whole call
-            if(permissionDao.isInUseByRole(inId)) {
-                StatusType responseStatus = new StatusType() {
-                    @Override
-                    public Family getFamily()
-                    {
-                        return Family.SERVER_ERROR;
-                    }
-                    @Override
-                    public String getReasonPhrase()
-                    {
-                        return "The permission with id " + inId + " is in use by a role and may not be deleted";
-                    }
-                    @Override
-                    public int getStatusCode()
-                    {
-                        return Response.Status.PRECONDITION_FAILED.getStatusCode();
-                    }
-                };
-                response = Response.serverError().status(responseStatus).build();
-            } else {
-                Permission permission = permissionDao.getById(inId);
-                permissionDao.delete(permission);
-                response = Response.ok().build();
-            }
+            Permission permission = permissionDao.getById(inId);
+            permissionDao.delete(permission);
+            response = Response.ok().build();
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.error(this,
                                    e);

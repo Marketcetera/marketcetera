@@ -51,15 +51,6 @@ public class UserDaoImpl implements UserDao {
         return (MutableUser)entityManager.find(PersistentUser.class,
                                                inId);
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.dao.UserDao#isInUseByRole(long)
-     */
-    @Override
-    public boolean isInUseByRole(long inId)
-    {
-        return ((Number)entityManager.createNamedQuery("PersistentUser.isUserInUseByRole").setParameter(1,
-                                                                                                        inId).getSingleResult()).intValue() != 0;
-    }
     @SuppressWarnings("unchecked")
     @Override
     public List<MutableUser> getAll() {
