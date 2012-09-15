@@ -143,6 +143,18 @@ public class PermissionServiceImpl
     {
         return updatePermission(inPermission);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.webservices.systemmodel.PermissionService#getAllByUserId(long)
+     */
+    @Override
+    public List<WebServicesPermission> getAllByUserId(long inId)
+    {
+        List<WebServicesPermission> decoratedPermissions = new ArrayList<WebServicesPermission>();
+        for(Permission permission : permissionDao.getAllByUserId(inId)) {
+            decoratedPermissions.add(new WebServicesPermission(permission));
+        }
+        return decoratedPermissions;
+    }
     /**
      * Sets the permissionFactory value.
      *

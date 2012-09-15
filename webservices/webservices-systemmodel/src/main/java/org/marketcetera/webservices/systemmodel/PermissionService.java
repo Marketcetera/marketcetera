@@ -98,4 +98,14 @@ public interface PermissionService
     @PUT
     @Consumes({MediaType.APPLICATION_XML})
     public Response updatePermissionXML(WebServicesPermission inPermission);
+    /**
+     * Gets the permissions assigned to the <code>User</code> with the given id. 
+     *
+     * @param inId a <code>long</code> value
+     * @return a <code>List&lt;WebServicesPermission&gt;</code> value
+     */
+    @Path("user/{id}")
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
+    public List<WebServicesPermission> getAllByUserId(@PathParam("id")long inId);
 }

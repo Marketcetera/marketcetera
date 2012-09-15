@@ -21,8 +21,7 @@ import org.marketcetera.api.security.User;
 @NotThreadSafe
 @NamedQueries({ @NamedQuery(name="PersistentUser.findByName",query="select s from PersistentUser s where s.username = :name"),
                 @NamedQuery(name="PersistentUser.findAll",query="select s from PersistentUser s")})
-@NamedNativeQueries( { @NamedNativeQuery(name="findPermissionsByUserId",query="select distinct permissions.id, permissions.name, permissions.description, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class),
-                       @NamedNativeQuery(name="PersistentUser.isUserInUseByRole",query="select count(*) from roles_users where users_id=?") })
+@NamedNativeQueries( { @NamedNativeQuery(name="PersistentUser.isUserInUseByRole",query="select count(*) from roles_users where users_id=?") })
 @Entity
 @Table(name="users", uniqueConstraints = { @UniqueConstraint(columnNames= { "username" } ) } )
 @XmlRootElement(name = "user")

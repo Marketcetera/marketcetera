@@ -55,6 +55,21 @@ public class PermissionDaoImpl implements PermissionDao {
         return entityManager.createNamedQuery("PersistentPermission.findAll").getResultList();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.PermissionDao#getByUserId(long)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Permission> getAllByUserId(long inUserId)
+    {
+        List<Permission> permissions = entityManager.createNamedQuery("PersistentPermission.findAllByUserId").setParameter(1,
+                                                                                                                           inUserId).getResultList();
+        for(Permission permission : permissions) {
+            // TODO a bit of hackery here, got to find a better way to invoke this (problem is that postLoad is not invoked with query)
+            ((PersistentPermission)permission).calculateMethodSet();
+        }
+        return permissions;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.api.dao.PermissionDao#delete(org.marketcetera.core.systemmodel.Permission)
      */
     @Override

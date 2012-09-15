@@ -59,4 +59,11 @@ public interface PermissionDao
      * @return a <code>boolean</code> value
      */
     public boolean isInUseByRole(long inId);
+    /**
+     * Gets the <code>Permission</code> objects assigned to the given user id.
+     *
+     * @param inUserId a <code>long</code> value
+     * @return a <code>List&lt;Permission&gt;</code> value
+     */
+    public List<Permission> getAllByUserId(long inUserId);
 }
