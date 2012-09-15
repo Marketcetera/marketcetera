@@ -23,7 +23,8 @@ import org.marketcetera.api.dao.PermissionAttribute;
 @Entity
 @NamedQueries( { @NamedQuery(name="PersistentPermission.findByName",query="select s from PersistentPermission s where s.name = :name"),
                  @NamedQuery(name="PersistentPermission.findAll",query="select s from PersistentPermission s")})
-@NamedNativeQueries( { @NamedNativeQuery(name="PersistentPermission.isPermissionInUseByRole",query="select count(*) from roles_permissions where permissions_id=?") })
+@NamedNativeQueries( { @NamedNativeQuery(name="PersistentPermission.isPermissionInUseByRole",query="select count(*) from roles_permissions where permissions_id=?"),
+                       @NamedNativeQuery(name="PersistentPermission.findAllByUserId",query="select distinct permissions.id, permissions.name, permissions.description, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
 @Table(name="permissions", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
 @XmlRootElement(name = "permission")
 @Access(AccessType.FIELD)
@@ -151,19 +152,19 @@ public class PersistentPermission
     /**
      * Calculates the {@link #method} value from the {@link #methodSet} contents. 
      */
-    @SuppressWarnings("unused")
     @PrePersist
-    private void calculateMethod()
+    @PreUpdate
+    public void calculateMethod()
     {
         method = PermissionAttribute.getBitFlagValueFor(methodSet);
     }
     /**
      * Calculates the {@link #methodSet} contents from the {@link #method} value.
      */
-    @SuppressWarnings("unused")
     @PostPersist
     @PostLoad
-    private void calculateMethodSet()
+    @PostUpdate
+    public void calculateMethodSet()
     {
         methodSet = PermissionAttribute.getAttributesFor(method);
     }
