@@ -2,6 +2,7 @@ package org.marketcetera.api.dao;
 
 import java.util.List;
 
+import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.marketcetera.api.security.User;
 
 /* $License$ */
@@ -53,4 +54,11 @@ public interface UserDao {
      * @return a <code>List&lt;MutableUser&gt;</code> value
      */
     public List<MutableUser> getAll();
+    /**
+     * Gets all <code>User</code> values.
+     *
+     * @return a <code>List&lt;MutableUser&gt;</code> value
+     * @param sc
+     */
+    public List<MutableUser> getAll(SearchCondition<MutableUser> sc);
 }
