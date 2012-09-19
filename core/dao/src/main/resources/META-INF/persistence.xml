@@ -15,7 +15,8 @@
     <persistence-unit name="marketcetera-core" transaction-type="JTA">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
 
-        <jta-data-source>osgi:service/javax.sql.DataSource/(transactional=true)</jta-data-source>
+        <!-- BT 20120915 commened out until the jta particulars can be fixed -->
+        <!--<jta-data-source>osgi:service/javax.sql.DataSource/(transactional=true)</jta-data-source>-->
         <!-- Required by openJPA to update sequence table outside of Global Tx Management -->
         <non-jta-data-source>osgi:service/javax.sql.DataSource/(transactional=false)</non-jta-data-source>
 
@@ -34,7 +35,8 @@
             <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72" />
             <property name="openjpa.Multithreaded" value="true"/>
             <property name="openjpa.TransactionMode" value="managed"/>
-            <property name="openjpa.ConnectionFactoryMode" value="managed"/>
+            <!-- BT 20120915 commened out until the jta particulars can be fixed -->
+            <!--<property name="openjpa.ConnectionFactoryMode" value="managed"/>-->
             <property name="openjpa.LockManager" value="pessimistic(VersionCheckOnReadLock=true,VersionUpdateOnWriteLock=true)"/>
             <property name="openjpa.LockTimeout" value="30000"/>
             <property name="openjpa.jdbc.MappingDefaults" value="ForeignKeyDeleteAction=restrict, JoinForeignKeyDeleteAction=restrict"/>

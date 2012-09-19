@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-
+import org.apache.cxf.jaxrs.ext.search.SearchCondition;
+import org.apache.cxf.jaxrs.ext.search.SearchContext;
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.dao.UserFactory;
 import org.marketcetera.api.security.User;
@@ -49,10 +50,10 @@ public class UserServiceImpl
      * @see org.marketcetera.webservices.systemmodel.UserService#getUsers()
      */
     @Override
-    public List<WebServicesUser> getUsersJSON()
+    public List<WebServicesUser> getUsersJSON(SearchContext context)
     {
         SLF4JLoggerProxy.debug(UserServiceImpl.class, "UserService getUsersJSON invoked"); //$NON-NLS-1$
-        return doGetUsers();
+        return doGetUsers(context);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.webservices.systemmodel.UserService#deleteUser(long)
@@ -99,9 +100,9 @@ public class UserServiceImpl
      * @see org.marketcetera.webservices.systemmodel.UserService#getUsersXML()
      */
     @Override
-    public List<WebServicesUser> getUsersXML()
+    public List<WebServicesUser> getUsersXML(SearchContext context)
     {
-        return doGetUsers();
+        return doGetUsers(context);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.webservices.systemmodel.UserService#updateUserJSON(org.marketcetera.webservices.systemmodel.WebServicesUser)
@@ -174,11 +175,14 @@ public class UserServiceImpl
      * Executes the retrieval of all existing <code>User</code> objects.
      *
      * @return a <code>List&lt;WebServicesUser&gt;</code> value
+     * @param context
      */
-    private List<WebServicesUser> doGetUsers()
+    private List<WebServicesUser> doGetUsers(SearchContext context)
     {
+        SearchCondition sc = context.getCondition(WebServicesUser.class);
+
         List<WebServicesUser> decoratedUsers = new ArrayList<WebServicesUser>();
-        for(User user : userDao.getAll()) {
+        for(User user : userDao.getAll(sc)) {
             decoratedUsers.add(new WebServicesUser(user));
         }
         return decoratedUsers;

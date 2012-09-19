@@ -16,6 +16,8 @@
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
         <argument ref="jacksonMapper"/>
     </bean>
+    <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
+
     <jaxrs:server id="cstsUserService" address="/userservice/v1">
         <jaxrs:serviceBeans>
             <ref component-id="permissionManagerWebServiceBean"/>
@@ -28,6 +30,7 @@
         </jaxrs:extensionMappings>
         <jaxrs:providers>
             <ref component-id="jsonProvider"/>
+            <ref component-id="searchContextProvider"/>
         </jaxrs:providers>
     </jaxrs:server>
 

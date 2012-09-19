@@ -1,19 +1,10 @@
 package org.marketcetera.webservices.systemmodel.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +19,11 @@ import org.marketcetera.webservices.systemmodel.UserService;
 import org.marketcetera.webservices.systemmodel.WebServicesUser;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.*;
 
 /* $License$ */
 
@@ -183,7 +179,7 @@ public class UserServiceImplTest
                times(2)).delete((User) any());
     }
     /**
-     * Tests {@link UserServiceImpl#getUsersJSON()}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#getUsersJSON(org.apache.cxf.jaxrs.ext.search.SearchContext)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -193,7 +189,7 @@ public class UserServiceImplTest
     {
         // no results
         when(userDao.getAll()).thenReturn(new ArrayList<MutableUser>());
-        assertTrue(service.getUsersJSON().isEmpty());
+        assertTrue(service.getUsersJSON(null).isEmpty());
         verify(userDao).getAll();
         // single result
         WebServicesUser user1 = generateUser();
@@ -201,7 +197,7 @@ public class UserServiceImplTest
         List<User> expectedResults = new ArrayList<User>();
         expectedResults.add(user1);
         verifyUsers(expectedResults,
-                          service.getUsersJSON());
+                          service.getUsersJSON(null));
         verify(userDao,
                times(2)).getAll();
         // multiple results
@@ -209,7 +205,7 @@ public class UserServiceImplTest
         when(userDao.getAll()).thenReturn(Arrays.asList(new MutableUser[]{user1, user2}));
         expectedResults.add(user2);
         verifyUsers(expectedResults,
-                          service.getUsersJSON());
+                          service.getUsersJSON(null));
         verify(userDao,
                times(3)).getAll();
     }

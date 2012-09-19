@@ -44,7 +44,7 @@
             <property name="transactionManager" ref="txManager"/>
             <property name="user" value="${jdbc.username}"/>
             <property name="password" value="${jdbc.password}"/>
-            <property name="minSize" value="1"/>
+            <property name="minSize" value="0"/>
             <property name="maxSize" value="${jdbc.maxActive}"/>
         </bean>
     </service>

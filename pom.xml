@@ -46,7 +46,7 @@
         <mvn.spring.version>3.1.1.RELEASE</mvn.spring.version>
         <mvn.spring.security.version>3.1.0.RELEASE</mvn.spring.security.version>
         <mvn.hibernate.version>4.1.0.Final</mvn.hibernate.version>
-        <mvn.cxf.version>2.6.1</mvn.cxf.version>
+        <mvn.cxf.version>2.6.2</mvn.cxf.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.4</slf4j.version>
     </properties>
@@ -178,6 +178,11 @@
                 <artifactId>cxf-rt-transports-http</artifactId>
                 <version>${mvn.cxf.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-rs-extension-search</artifactId>
+                <version>${mvn.cxf.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.glazedlists</groupId>
