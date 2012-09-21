@@ -96,7 +96,8 @@ public class BasicReportHistoryServices
          Date inDate)
         throws PersistenceException
     {
-        return ExecutionReportSummary.getAllEquityPositionsAsOf(inUser,inDate);
+      //  return ExecutionReportSummary.getAllEquityPositionsAsOf(inUser,inDate);
+        return PersistentCache.getAllEquityPositionsAsOf(inUser,inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.history.ReportHistoryServices#getAllFuturePositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
@@ -106,8 +107,8 @@ public class BasicReportHistoryServices
                                                                          Date inDate)
             throws PersistenceException
     {
-        return ExecutionReportSummary.getAllFuturePositionsAsOf(inUser,
-                                                                inDate);
+      //  return ExecutionReportSummary.getAllFuturePositionsAsOf(inUser,inDate);
+        return PersistentCache.getAllFuturePositionsAsOf(inUser,  inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.history.ReportHistoryServices#getFuturePositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Future)

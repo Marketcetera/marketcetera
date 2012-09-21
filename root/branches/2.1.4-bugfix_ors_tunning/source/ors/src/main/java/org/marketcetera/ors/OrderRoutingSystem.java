@@ -17,6 +17,7 @@ import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.config.SpringConfig;
+import org.marketcetera.ors.history.PersistentCache;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.ors.info.SystemInfoImpl;
@@ -48,7 +49,10 @@ import quickfix.DefaultMessageFactory;
 import quickfix.Message;
 import quickfix.SessionNotFound;
 import quickfix.SocketInitiator;
-import quickfix.field.*;
+import quickfix.field.MsgType;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.TargetCompID;
 
 /**
  * The main application. See {@link SpringConfig} for configuration
@@ -217,6 +221,7 @@ public class OrderRoutingSystem
         mbeanServer.registerMBean
             (new ORSAdmin(getBrokers(),qSender,localIdFactory,userManager),
              new ObjectName(JMX_NAME));
+        PersistentCache.init();
     }
 
     // INSTANCE METHODS.
