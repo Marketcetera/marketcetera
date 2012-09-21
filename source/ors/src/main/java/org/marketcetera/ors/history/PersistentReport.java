@@ -12,8 +12,12 @@ import org.marketcetera.trade.*;
 import org.marketcetera.event.HasFIXMessage;
 
 import javax.persistence.*;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import quickfix.Message;
 import quickfix.InvalidMessage;
@@ -31,10 +35,19 @@ import quickfix.InvalidMessage;
 @ClassVersion("$Id$")
 @Entity
 @Table(name = "reports")
-
+@NamedQueries(
+		{
 @NamedQuery(name = "forOrderID",
     query = "select e from PersistentReport e " +
-            "where e.orderID = :orderID")
+            "where e.orderID = :orderID"),
+@NamedQuery(name = "forReports",query = "select e " +
+        			" from ExecutionReportSummary e "+
+        			" where e.securityType = :securityType " +
+                    " and e.orderStatus in ('2','3') ")
+
+	})
+
+
 class PersistentReport extends EntityBase {
     /**
      * Saves the supplied report to the database.
@@ -48,7 +61,61 @@ class PersistentReport extends EntityBase {
         PersistentReport report = new PersistentReport(inReport);
         report.saveRemote(null);
     }
+    
+    public static List<ExecutionReportSummary> fetchEquityReports()
+    	     throws PersistenceException 
+    	 {
+    	
+    	 List<ExecutionReportSummary> reports = executeRemote(new Transaction< List<ExecutionReportSummary>>() {
+    	         private static final long serialVersionUID=1L;
 
+    	         @Override
+    	         public  List<ExecutionReportSummary> execute
+    	             (EntityManager em,
+    	              PersistContext context)
+    	         {
+    	        	 List<ExecutionReportSummary> reports=new ArrayList<ExecutionReportSummary>();
+    	        	 Query query=em.createNamedQuery("forReports"); //$NON-NLS-1$
+    	        	 query.setParameter("securityType", SecurityType.CommonStock);  //$NON-NLS-1$
+    	        	 List<?> list=query.getResultList();
+    	            
+    	        	 for(Object s:list){
+    	                reports .add((ExecutionReportSummary) s);
+    	             }
+    	             
+    	             return reports;
+    	         }
+    	     },null);
+    	       
+    	       return reports;
+    	 }
+    public static List<ExecutionReportSummary> fetchFutureReports()
+   	     throws PersistenceException 
+   	 {
+   	
+    	List<ExecutionReportSummary> reports = executeRemote(new Transaction<List<ExecutionReportSummary>>() {
+   	         private static final long serialVersionUID=1L;
+
+   	         @Override
+   	         public List<ExecutionReportSummary> execute
+   	             (EntityManager em,
+   	              PersistContext context)
+   	         {
+   	        	 List<ExecutionReportSummary> reports=new ArrayList<ExecutionReportSummary>();
+   	        	 Query query=em.createNamedQuery("forReports"); //$NON-NLS-1$
+   	        	 query.setParameter("securityType", SecurityType.Future);  //$NON-NLS-1$
+   	        	 List<?> list=query.getResultList();
+   	            
+   	        	 for(Object s:list){
+   	                reports .add((ExecutionReportSummary) s);
+   	             }
+   	             
+   	             return reports;
+   	         }
+   	     },null);
+   	       
+   	       return reports;
+   	 }
     /**
      * Returns the principals associated with the report with given
      * order ID.
@@ -179,9 +246,9 @@ class PersistentReport extends EntityBase {
         PersistentReport mergedReport = (PersistentReport) merged;
         //Save the summary if the report is an execution report.
         if(mergedReport.getReportType() == ReportType.ExecutionReport) {
-            new ExecutionReportSummary(
-                    (ExecutionReport) mReportBase,
-                    mergedReport).localSave(em, context);
+        	ExecutionReportSummary execReportSummary=  new ExecutionReportSummary((ExecutionReport) mReportBase, mergedReport);
+        	PersistentCache.cache(execReportSummary);
+        	execReportSummary.localSave(em, context);
         }
     }
 
