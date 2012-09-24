@@ -2,6 +2,7 @@ package org.marketcetera.ors.history;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.marketcetera.client.jms.JmsManager;
@@ -33,7 +34,10 @@ public class BasicReportHistoryServices
     private LongIDFactory mReportIDFactory;
     private JmsManager mJmsManager;
     private ReportSavedListener mReportSavedListener;
-
+    
+    Map<PositionKey<Option>, BigDecimal> allOptionPositions= new HashMap<PositionKey<Option>, BigDecimal>();
+    HashMap<PositionKey<Future>, BigDecimal> allFuturePositions = new HashMap<PositionKey<Future>, BigDecimal>();
+    HashMap<PositionKey<Equity>, BigDecimal> allEquityPositions =  new HashMap<PositionKey<Equity>, BigDecimal>();
 
     // CONSTRUCTORS.
 
@@ -96,7 +100,6 @@ public class BasicReportHistoryServices
          Date inDate)
         throws PersistenceException
     {
-      //  return ExecutionReportSummary.getAllEquityPositionsAsOf(inUser,inDate);
         return PersistentCache.getAllEquityPositionsAsOf(inUser,inDate);
     }
     /* (non-Javadoc)
@@ -107,8 +110,8 @@ public class BasicReportHistoryServices
                                                                          Date inDate)
             throws PersistenceException
     {
-      //  return ExecutionReportSummary.getAllFuturePositionsAsOf(inUser,inDate);
-        return PersistentCache.getAllFuturePositionsAsOf(inUser,  inDate);
+        return PersistentCache.getAllFuturePositionsAsOf(inUser,
+                                                                inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.history.ReportHistoryServices#getFuturePositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Future)
@@ -138,7 +141,7 @@ public class BasicReportHistoryServices
         (final SimpleUser inUser,
          final Date inDate)
         throws PersistenceException {
-        return ExecutionReportSummary.getAllOptionPositionsAsOf(inUser, inDate);
+        return PersistentCache.getAllOptionPositionsAsOf(inUser, inDate);
     }
 
     @Override

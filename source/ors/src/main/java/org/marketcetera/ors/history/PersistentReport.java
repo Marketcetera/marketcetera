@@ -116,6 +116,34 @@ class PersistentReport extends EntityBase {
    	       
    	       return reports;
    	 }
+    
+    public static List<ExecutionReportSummary> fetchOptionReports()
+      	     throws PersistenceException 
+      	 {
+      	
+       	List<ExecutionReportSummary> reports = executeRemote(new Transaction<List<ExecutionReportSummary>>() {
+      	         private static final long serialVersionUID=1L;
+
+      	         @Override
+      	         public List<ExecutionReportSummary> execute
+      	             (EntityManager em,
+      	              PersistContext context)
+      	         {
+      	        	 List<ExecutionReportSummary> reports=new ArrayList<ExecutionReportSummary>();
+      	        	 Query query=em.createNamedQuery("forReports"); //$NON-NLS-1$
+      	        	 query.setParameter("securityType", SecurityType.Option);  //$NON-NLS-1$
+      	        	 List<?> list=query.getResultList();
+      	            
+      	        	 for(Object s:list){
+      	                reports .add((ExecutionReportSummary) s);
+      	             }
+      	             
+      	             return reports;
+      	         }
+      	     },null);
+      	       
+      	       return reports;
+      	 }
     /**
      * Returns the principals associated with the report with given
      * order ID.
