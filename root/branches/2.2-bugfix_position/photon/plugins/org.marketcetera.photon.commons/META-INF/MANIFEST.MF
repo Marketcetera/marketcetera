@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Commons
+Bundle-SymbolicName: org.marketcetera.photon.commons
+Bundle-Version: 2.2.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: org.marketcetera.photon.commons,
+ org.marketcetera.photon.commons.databinding,
+ org.marketcetera.photon.commons.emf,
+ org.marketcetera.photon.commons.osgi
+Require-Bundle: org.marketcetera.util,
+ org.eclipse.emf.ecore,
+ org.eclipse.core.databinding,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.osgi
+Import-Package: com.google.inject
+Eclipse-ExtensibleAPI: true

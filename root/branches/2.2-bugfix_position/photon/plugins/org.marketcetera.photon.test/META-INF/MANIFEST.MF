@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Photon Test Plug-in
+Bundle-SymbolicName: org.marketcetera.photon.test;singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.marketcetera.thirdparty,
+ org.eclipse.core.databinding,
+ org.eclipse.jface.databinding,
+ org.eclipse.swtbot.swt.finder,
+ org.eclipse.swtbot.junit4_x,
+ org.marketcetera.util,
+ org.marketcetera.util-test;visibility:=reexport,
+ org.eclipse.emf.ecore,
+ org.eclipse.core.expressions
+Export-Package: org.marketcetera.photon.test
+Import-Package: com.google.inject,
+ org.hamcrest,
+ org.junit,
+ org.junit.internal.runners,
+ org.junit.runner,
+ org.junit.runner.notification,
+ org.junit.runners,
+ org.junit.runners.model
+Bundle-ActivationPolicy: lazy

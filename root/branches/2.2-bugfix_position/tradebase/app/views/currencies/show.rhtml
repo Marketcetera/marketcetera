@@ -1,0 +1,16 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Currencies", :action_name => "View Currency", :top_level_controller => @controller.controller_name } %>
+<h1>View Currency</h1>
+
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <% for column in Currency.content_columns %>
+              <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
+              <div id="<%= column.name %>" class="data view_data"><%=df @currency.send(column.name) %></div>
+            </p>
+            <% end %>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>

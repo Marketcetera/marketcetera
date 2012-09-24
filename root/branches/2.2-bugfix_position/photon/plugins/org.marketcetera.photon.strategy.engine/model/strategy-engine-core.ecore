@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="core"
+    nsURI="http://www.marketcetera.org/photon/strategy/engine/core/1.0" nsPrefix="core">
+  <eClassifiers xsi:type="ecore:EClass" name="StrategyEngine">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="description" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="connectionState" lowerBound="1"
+        eType="#//ConnectionState" transient="true" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="connection" eType="#//StrategyEngineConnection"
+        transient="true" eOpposite="#//StrategyEngineConnection/engine"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deployedStrategies" upperBound="-1"
+        eType="#//DeployedStrategy" transient="true" eOpposite="#//DeployedStrategy/engine"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="readOnly" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="StrategyEngineConnection" abstract="true">
+    <eOperations name="deploy" eType="#//DeployedStrategy" eExceptions="#//Exception">
+      <eParameters name="strategy" lowerBound="1" eType="#//Strategy"/>
+    </eOperations>
+    <eOperations name="undeploy" eExceptions="#//Exception">
+      <eParameters name="strategy" lowerBound="1" eType="#//DeployedStrategy"/>
+    </eOperations>
+    <eOperations name="start" eExceptions="#//Exception">
+      <eParameters name="strategy" lowerBound="1" eType="#//DeployedStrategy"/>
+    </eOperations>
+    <eOperations name="stop" eExceptions="#//Exception">
+      <eParameters name="strategy" lowerBound="1" eType="#//DeployedStrategy"/>
+    </eOperations>
+    <eOperations name="update" eExceptions="#//Exception">
+      <eParameters name="strategy" lowerBound="1" eType="#//DeployedStrategy"/>
+      <eParameters name="newConfiguration" eType="#//Strategy"/>
+    </eOperations>
+    <eOperations name="refresh" eExceptions="#//Exception">
+      <eParameters name="strategy" lowerBound="1" eType="#//DeployedStrategy"/>
+    </eOperations>
+    <eOperations name="refresh" eExceptions="#//Exception"/>
+    <eOperations name="sendData" eExceptions="#//Exception">
+      <eParameters name="data" eType="#//Object"/>
+    </eOperations>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="engine" lowerBound="1"
+        eType="#//StrategyEngine" transient="true" eOpposite="#//StrategyEngine/connection"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ConnectionState">
+    <eLiterals name="Disconnected" literal="Disconnected"/>
+    <eLiterals name="Connected" value="1" literal="Connected"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Strategy">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="instanceName" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" iD="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="language" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="scriptPath" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="className" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="routeOrdersToServer" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" upperBound="-1"
+        eType="#//StringToStringMapEntry" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="StrategyState">
+    <eLiterals name="Stopped"/>
+    <eLiterals name="Running" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="ModuleURN" instanceClassName="org.marketcetera.module.ModuleURN"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DeployedStrategy" eSuperTypes="#//Strategy">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="engine" eType="#//StrategyEngine"
+        transient="true" eOpposite="#//StrategyEngine/deployedStrategies"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="state" lowerBound="1" eType="#//StrategyState"
+        defaultValueLiteral="Stopped"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="urn" eType="#//ModuleURN"
+        transient="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="StringToStringMapEntry" instanceClassName="java.util.Map$Entry">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="key" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EDataType" name="Exception" instanceClassName="java.lang.Exception"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="Object" instanceClassName="java.lang.Object"
+      serializable="false"/>
+</ecore:EPackage>

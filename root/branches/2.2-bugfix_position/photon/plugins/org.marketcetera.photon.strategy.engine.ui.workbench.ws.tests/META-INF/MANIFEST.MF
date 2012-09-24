@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Strategy Engine Resource Enhancements Tests
+Bundle-SymbolicName: org.marketcetera.photon.strategy.engine.ui.workbench.ws.tests
+Bundle-Version: 2.2.0
+Bundle-Vendor: Marketcetera, Inc.
+Fragment-Host: org.marketcetera.photon.strategy.engine.ui.workbench.ws
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.hamcrest,
+ org.junit,
+ org.junit.runner,
+ org.junit.runners
+Require-Bundle: org.marketcetera.photon.test,
+ org.eclipse.swtbot.swt.finder,
+ org.marketcetera.core.tests,
+ org.eclipse.ui.ide
+Export-Package: org.marketcetera.photon.strategy.engine.ui.workbench.ws.tests

@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundleName
+Bundle-SymbolicName: org.marketcetera.photon.marketdata.ui; singleton:=true
+Bundle-Version: 2.2.0
+Bundle-Vendor: %bundleVendor
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.marketcetera.photon.module,
+ org.eclipse.core.databinding,
+ org.eclipse.jface.databinding,
+ org.marketcetera.photon.marketdata,
+ org.marketcetera.photon.module.ui,
+ org.marketcetera.client,
+ org.eclipse.emf.common,
+ org.eclipse.emf.ecore,
+ org.marketcetera.photon.commons.ui,
+ org.eclipse.core.expressions,
+ org.eclipse.emf.databinding
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: org.marketcetera.photon.marketdata.ui
+Bundle-Activator: org.marketcetera.photon.internal.marketdata.ui.Activator
+Eclipse-ExtensibleAPI: true

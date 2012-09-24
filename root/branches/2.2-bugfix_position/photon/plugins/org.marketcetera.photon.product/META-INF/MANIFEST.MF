@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundleName
+Bundle-Vendor: %bundleVendor
+Bundle-SymbolicName: org.marketcetera.photon.product;singleton:=true
+Bundle-Version: 2.2.0
+Require-Bundle: org.eclipse.debug.core,
+ org.marketcetera.core,
+ org.marketcetera.photon,
+ org.marketcetera.photon.positions.ui,
+ org.marketcetera.photon.core,
+ org.marketcetera.photon.strategy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Localization: plugin
+Bundle-Activator: org.marketcetera.photon.internal.product.Activator
+Bundle-ActivationPolicy: lazy
+Eclipse-ExtensibleAPI: true
