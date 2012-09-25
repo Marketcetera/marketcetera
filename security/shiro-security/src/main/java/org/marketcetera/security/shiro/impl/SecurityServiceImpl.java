@@ -4,8 +4,9 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.mgt.*;
+import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.realm.Realm;
+import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.SecurityService;
 import org.marketcetera.api.security.Subject;
 
@@ -17,9 +18,10 @@ import org.marketcetera.api.security.Subject;
 public class SecurityServiceImpl implements SecurityService {
 
     private Map<org.apache.shiro.subject.Subject, Subject> map = new WeakHashMap<org.apache.shiro.subject.Subject, Subject>();
+    private UserDao userDao;
 
     public void init() {
-        Realm realm = new ShiroRealm();
+        Realm realm = new ShiroRealm(userDao);
 
         org.apache.shiro.mgt.SecurityManager securityManager = new DefaultSecurityManager(realm);
 
@@ -39,4 +41,7 @@ public class SecurityServiceImpl implements SecurityService {
         return subject;
     }
 
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 }
