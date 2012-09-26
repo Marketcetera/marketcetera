@@ -23,7 +23,8 @@ import org.marketcetera.api.dao.Role;
 @NotThreadSafe
 @Entity
 @NamedQueries( { @NamedQuery(name="PersistentPermission.findByName",query="select s from PersistentPermission s where s.name = :name"),
-                 @NamedQuery(name="PersistentPermission.findAll",query="select s from PersistentPermission s")})
+                 @NamedQuery(name="PersistentPermission.findAll",query="select s from PersistentPermission s"),
+                 @NamedQuery(name="PersistentPermission.findAllByUsername", query="select p from PersistentPermission p, IN(p.roles) r, IN(r.users) u where u.username = :name")})
 @NamedNativeQueries( { @NamedNativeQuery(name="PersistentPermission.findAllByUserId",query="select distinct permissions.id, permissions.name, permissions.description, permissions.version from permissions as permissions where permissions.id in (select roles_permissions.permissions_id from roles_permissions as roles_permissions where roles_permissions.persistentrole_id in (select roles.id from roles as roles where roles.id in (select persistentrole_id from roles_users as roles_users, users as users where users.id = roles_users.users_id and users.id=?)))",resultClass=PersistentPermission.class)})
 @Table(name="permissions", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
 @XmlRootElement(name = "permission")
@@ -36,7 +37,7 @@ public class PersistentPermission
     // --------------------- GETTER / SETTER METHODS ---------------------
     /**
      * Get the permission method value describing the permission attributes assigned to this permission.
-     * 
+     *
      * @return a <code>Set&lt;PermissionAttribute&gt;</code> value
      */
     @XmlElementWrapper(name="method")
@@ -150,7 +151,7 @@ public class PersistentPermission
     }
     // ------------------------------ OTHER METHODS -----------------------
     /**
-     * Calculates the {@link #method} value from the {@link #methodSet} contents. 
+     * Calculates the {@link #method} value from the {@link #methodSet} contents.
      */
     @PrePersist
     @PreUpdate

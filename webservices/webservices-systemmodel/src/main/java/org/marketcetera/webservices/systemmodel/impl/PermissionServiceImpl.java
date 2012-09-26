@@ -48,12 +48,12 @@ public class PermissionServiceImpl
     /* (non-Javadoc)
      * @see org.marketcetera.webservices.systemmodel.PermissionService#getPermissions()
      */
-    @Override
-    public List<WebServicesPermission> getPermissionsJSON()
-    {
-        SLF4JLoggerProxy.debug(PermissionServiceImpl.class, "PermissionService getPermissionsJSON invoked"); //$NON-NLS-1$
-        return doGetPermissions();
-    }
+//    @Override
+//    public List<WebServicesPermission> getPermissionsJSON()
+//    {
+//        SLF4JLoggerProxy.debug(PermissionServiceImpl.class, "PermissionService getPermissionsJSON invoked"); //$NON-NLS-1$
+//        return doGetPermissions();
+//    }
     /* (non-Javadoc)
      * @see org.marketcetera.webservices.systemmodel.PermissionService#deletePermission(long)
      */

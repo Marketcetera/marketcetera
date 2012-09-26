@@ -53,10 +53,22 @@ public class PermissionDaoImpl implements PermissionDao {
     {
         List<Permission> permissions = entityManager.createNamedQuery("PersistentPermission.findAllByUserId").setParameter(1,
                                                                                                                            inUserId).getResultList();
+        parsePermissions(permissions);
+        return permissions;
+    }
+
+    private void parsePermissions(List<Permission> permissions) {
         for(Permission permission : permissions) {
             // TODO a bit of hackery here, got to find a better way to invoke this (problem is that postLoad is not invoked with query)
             ((PersistentPermission)permission).calculateMethodSet();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Permission> getAllByUsername(String username) {
+        List<Permission> permissions = (List<Permission>) entityManager.createNamedQuery("PersistentPermission.findAllByUsername").setParameter("name", username).getResultList();
+        parsePermissions(permissions);
         return permissions;
     }
     /* (non-Javadoc)

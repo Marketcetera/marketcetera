@@ -23,6 +23,7 @@
             <ref component-id="permissionManagerWebServiceBean"/>
             <ref component-id="roleManagerWebServiceBean"/>
             <ref component-id="userManagerWebServiceBean"/>
+            <ref component-id="authenticationWebServiceBean"/>
         </jaxrs:serviceBeans>
         <jaxrs:extensionMappings>
             <entry key="json" value="application/json" />
@@ -46,7 +47,12 @@
         <property name="userDao" ref="userDao"/>
         <property name="userFactory" ref="userFactory"/>
     </bean>
+    <bean id="authenticationWebServiceBean" class="org.marketcetera.webservices.security.impl.AuthenticationServiceImpl">
+        <property name="securityService" ref="securityService"/>
+        <property name="permissionDao" ref="permissionDao"/>
+    </bean>
 
+    <reference id="securityService" interface="org.marketcetera.api.security.SecurityService"/>
     <reference id="permissionDao" interface="org.marketcetera.api.dao.PermissionDao"/>
     <reference id="permissionFactory" interface="org.marketcetera.api.dao.PermissionFactory"/>
     <reference id="roleDao" interface="org.marketcetera.api.dao.RoleDao"/>
