@@ -57,4 +57,6 @@ public interface PermissionDao
      * @return a <code>List&lt;Permission&gt;</code> value
      */
     public List<Permission> getAllByUserId(long inUserId);
+
+    List<Permission> getAllByUsername(String username);
 }
