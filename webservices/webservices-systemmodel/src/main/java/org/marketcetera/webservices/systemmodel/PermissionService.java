@@ -55,14 +55,14 @@ public interface PermissionService
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML})
     public WebServicesPermission getPermissionXML(@PathParam("id")long inId);
-//    /**
-//     * Gets all permissions.
-//     *
-//     * @return a <code>List&lt;WebServicesPermission&gt;</code> value
-//     */
-//    @GET
-//    @Produces({MediaType.APPLICATION_JSON})
-//    public List<WebServicesPermission> getPermissionsJSON();
+    /**
+     * Gets all permissions.
+     *
+     * @return a <code>List&lt;WebServicesPermission&gt;</code> value
+     */
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<WebServicesPermission> getPermissionsJSON();
     /**
      * Gets all permissions.
      *

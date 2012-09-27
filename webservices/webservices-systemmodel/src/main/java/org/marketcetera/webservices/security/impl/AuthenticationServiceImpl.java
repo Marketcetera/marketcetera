@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionDao;
 import org.marketcetera.api.security.SecurityService;
@@ -68,11 +70,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 decoratedPermissions.add(new WebServicesPermission(permission));
             }
 
-            response = Response.ok(decoratedPermissions).build();
+            response = Response.ok(new JaxbList<WebServicesPermission>(decoratedPermissions)).build();
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(AuthenticationServiceImpl.class, e);
             response = Response.status(Response.Status.UNAUTHORIZED).build();
         }
         return response;
+    }
+
+    @XmlRootElement(name="permissions")
+    protected static class JaxbList<T>{
+        protected List<T> list;
+
+        public JaxbList(){}
+
+        public JaxbList(List<T> list){
+            this.list=list;
+        }
+
+        @XmlElement(name="Item")
+        public List<T> getList(){
+            return list;
+        }
     }
 }
