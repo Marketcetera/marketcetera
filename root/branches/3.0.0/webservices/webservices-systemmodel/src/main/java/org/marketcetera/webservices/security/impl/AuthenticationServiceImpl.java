@@ -3,9 +3,9 @@ package org.marketcetera.webservices.security.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionDao;
 import org.marketcetera.api.security.SecurityService;
@@ -57,39 +57,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     * @see org.marketcetera.webservices.security.AuthenticationService#authenticate(java.lang.String, java.lang.String)
     */
     @Override
-    public Response authenticate(String username, String password) {
+    public JaxbList<WebServicesPermission> authenticate(String username, String password) {
         SLF4JLoggerProxy.trace(AuthenticationServiceImpl.class, "AuthenticationService authenticate invoked with {}/********", //$NON-NLS-1$
                 username);
-        Response response;
-        try {
-            UsernamePasswordToken token = new UsernamePasswordToken(username, password);
-            Subject subject = securityService.getSubject();
-            subject.login(token);
-            List<WebServicesPermission> decoratedPermissions = new ArrayList<WebServicesPermission>();
-            for (Permission permission : permissionDao.getAllByUsername(username)) {
-                decoratedPermissions.add(new WebServicesPermission(permission));
-            }
-
-            response = Response.ok(new JaxbList<WebServicesPermission>(decoratedPermissions)).build();
-        } catch (RuntimeException e) {
-            SLF4JLoggerProxy.warn(AuthenticationServiceImpl.class, e);
-            response = Response.status(Response.Status.UNAUTHORIZED).build();
+        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+        Subject subject = securityService.getSubject();
+        subject.login(token);
+        List<WebServicesPermission> decoratedPermissions = new ArrayList<WebServicesPermission>();
+        for (Permission permission : permissionDao.getAllByUsername(username)) {
+            decoratedPermissions.add(new WebServicesPermission(permission));
         }
-        return response;
+
+        return new JaxbList<WebServicesPermission>(decoratedPermissions);
     }
 
-    @XmlRootElement(name="permissions")
-    protected static class JaxbList<T>{
+    @XmlRootElement(name = "permissions")
+    @XmlSeeAlso(WebServicesPermission.class)
+    public static class JaxbList<T> {
         protected List<T> list;
 
-        public JaxbList(){}
-
-        public JaxbList(List<T> list){
-            this.list=list;
+        public JaxbList() {
         }
 
-        @XmlElement(name="Item")
-        public List<T> getList(){
+        public JaxbList(List<T> list) {
+            this.list = list;
+        }
+
+        @XmlElement(name = "permission")
+        public List<T> getList() {
             return list;
         }
     }
