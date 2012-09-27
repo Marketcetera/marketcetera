@@ -3,7 +3,8 @@ package org.marketcetera.webservices.security;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import org.marketcetera.webservices.security.impl.AuthenticationServiceImpl;
+import org.marketcetera.webservices.systemmodel.WebServicesPermission;
 
 /* $License$ */
 
@@ -24,7 +25,6 @@ public interface AuthenticationService
      */
     @POST
     @Path("authenticate")
-//    @Consumes({MediaType.APPLICATION_JSON})
-    public Response authenticate(@FormParam("username")String inUsername,
-                                 @FormParam("password")String inPassword);
+//    @Produces(MediaType.APPLICATION_JSON)
+    public AuthenticationServiceImpl.JaxbList<WebServicesPermission> authenticate(@FormParam("username") String inUsername, @FormParam("password") String inPassword);
 }
