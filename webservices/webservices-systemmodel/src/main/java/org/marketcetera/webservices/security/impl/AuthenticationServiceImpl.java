@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionDao;
@@ -68,22 +67,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             decoratedPermissions.add(new WebServicesPermission(permission));
         }
 
-        return new JaxbList<WebServicesPermission>(decoratedPermissions);
+        return new JaxbList<WebServicesPermission>(decoratedPermissions, username);
     }
 
-    @XmlRootElement(name = "permissions")
     @XmlSeeAlso(WebServicesPermission.class)
     public static class JaxbList<T> {
         protected List<T> list;
+        private String username;
 
-        public JaxbList() {
-        }
-
-        public JaxbList(List<T> list) {
+        public JaxbList(List<T> list, String username) {
             this.list = list;
+            this.username = username;
         }
 
-        @XmlElement(name = "permission")
+        @XmlElement(name = "success")
+        public boolean getSuccess() {
+            return true;
+        }
+
+        @XmlElement(name = "username")
+        public String getUsername() {
+            return username;
+        }
+
+        @XmlElement()
         public List<T> getList() {
             return list;
         }
