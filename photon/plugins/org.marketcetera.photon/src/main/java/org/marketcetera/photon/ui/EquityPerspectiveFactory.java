@@ -57,6 +57,7 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		layout.addPerspectiveShortcut(OptionPerspectiveFactory.ID);
         layout.addPerspectiveShortcut(FuturePerspectiveFactory.ID);
+        layout.addPerspectiveShortcut(CurrencyPerspectiveFactory.ID);
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
