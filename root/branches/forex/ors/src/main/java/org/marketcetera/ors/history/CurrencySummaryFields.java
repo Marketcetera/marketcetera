@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OptionType;
-import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
