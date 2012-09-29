@@ -30,11 +30,11 @@ public class CurrencySummaryFields
 
     @Override
     public BigDecimal getStrikePrice(Instrument inInstrument) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public OptionType getOptionType(Instrument inInstrument) {
-    	throw new UnsupportedOperationException();
+    	return null;
     }
 }

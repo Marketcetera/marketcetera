@@ -1,6 +1,7 @@
 package org.marketcetera.trade;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 import java.util.Set;
@@ -10,6 +11,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import org.marketcetera.util.misc.ClassVersion;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -69,6 +71,10 @@ public class Currency extends Instrument implements Comparable<Currency>{
 		TENORSET.addAll(Arrays.asList(TENORARRAY));
 	}
 				
+	public static Set<String> getTenorSet()
+	{
+		return Collections.unmodifiableSet(TENORSET);
+	}
 	protected static DateTimeFormatter fixDateFormat = DateTimeFormat.forPattern("yyyyMMdd");
 	
 	/**
