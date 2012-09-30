@@ -12,11 +12,28 @@
             <cxf:logging/>
         </cxf:features>
     </cxf:bus>
+    <!-- CD 20120929 Added to try to remove the need for XmlSeeAlso for JAXB in JaxbList but didn't seem to help -->
+    <!-- bean id="jaxb" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
+        <property name="singleJaxbContext" value="true"/>
+            <property name="extraClass">
+                <list>
+                    <value>org.marketcetera.webservices.systemmodel.WebServicesNamedObject</value>
+                    <value>org.marketcetera.webservices.systemmodel.WebServicesSystemObject</value>
+                    <value>org.marketcetera.webservices.systemmodel.WebServicesVersionedObject</value>
+                    <value>org.marketcetera.webservices.systemmodel.WebServicesPermission</value>
+                    <value>org.marketcetera.webservices.systemmodel.WebServicesRole</value>
+                    <value>org.marketcetera.webservices.systemmodel.WebServicesUser</value>
+                </list>
+           </property>
+    </bean-->
     <bean id="jacksonMapper" class="org.marketcetera.webservices.systemmodel.impl.JacksonObjectMapper"/>
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
         <argument ref="jacksonMapper"/>
     </bean>
     <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
+    <!-- set up the JSON marshalling provider service -->
+    <bean id="jacksonProvider" class="org.marketcetera.webservices.systemmodel.impl.JacksonMarshallingService"/>
+    <service ref="jacksonProvider" interface="org.marketcetera.webservices.systemmodel.JsonMarshallingService"/>
 
     <jaxrs:server id="cstsUserService" address="/userservice/v1">
         <jaxrs:serviceBeans>
