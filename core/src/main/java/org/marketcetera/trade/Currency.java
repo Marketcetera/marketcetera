@@ -3,18 +3,17 @@ package org.marketcetera.trade;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-
 import java.util.Set;
-
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import org.marketcetera.util.misc.ClassVersion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.marketcetera.util.misc.ClassVersion;
 
 
 /**
@@ -187,13 +186,22 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	 * 
 	 */
 	public Currency(String baseCCY, String plCCY, String nearTenor, String farTenor){
+		baseCCY = StringUtils.trimToNull(baseCCY);
+		if(baseCCY==null)
+			throw new IllegalArgumentException(Messages.MISSING_LEFT_CURRENCY.getText());
+		plCCY = StringUtils.trimToNull(plCCY);
+		if(plCCY==null)
+			throw new IllegalArgumentException(Messages.MISSING_RIGHT_CURRENCY.getText());
+		nearTenor = StringUtils.trimToNull(nearTenor);
+		if(nearTenor==null)
+			throw new IllegalArgumentException(Messages.MISSING_NEAR_TENOR.getText());
 		this.leftCCY = baseCCY;
 		this.rightCCY   = plCCY;
 		this.fixSymbol = leftCCY+"/"+rightCCY;
 		if(Currency.isValidTenor(nearTenor)){
 			this.nearTenor = nearTenor;
 		}else{
-			this.nearTenor = null; // proper validation here?  null should at least prevent trading on a bad date, eg REJECT
+			this.nearTenor = null;
 		}
 		if(Currency.isValidTenor(farTenor)){
 			this.farTenor = farTenor;
@@ -307,10 +315,14 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	}
 	
     @Override
-	public boolean equals(Object obj) {    	
+	public boolean equals(Object obj) {
+    	 if (this == obj)
+             return true;
+         if (obj == null)
+             return false;
+         if (getClass() != obj.getClass())
+             return false;
 		Currency other = (Currency) obj;
-		if(other == null)
-			return false;
 		if (leftCCY == null) {
 			if (other.leftCCY != null)
 				return false;

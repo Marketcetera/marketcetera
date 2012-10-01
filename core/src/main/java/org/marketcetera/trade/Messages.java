@@ -124,6 +124,12 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"null_symbol"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_SYMBOL=
         new I18NMessage1P(LOGGER,"invalid_symbol"); //$NON-NLS-1$
+    static final I18NMessage0P MISSING_LEFT_CURRENCY=
+            new I18NMessage0P(LOGGER,"missing_left_currency"); //$NON-NLS-1$
+    static final I18NMessage0P MISSING_RIGHT_CURRENCY=
+            new I18NMessage0P(LOGGER,"missing_right_currency"); //$NON-NLS-1$
+    static final I18NMessage0P MISSING_NEAR_TENOR=
+        new I18NMessage0P(LOGGER,"missing_near_tenor"); //$NON-NLS-1$
     static final I18NMessage0P NULL_MONTH=
         new I18NMessage0P(LOGGER,"null_month"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_MONTH=
