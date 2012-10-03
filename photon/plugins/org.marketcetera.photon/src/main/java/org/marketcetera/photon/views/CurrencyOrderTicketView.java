@@ -3,11 +3,20 @@ package org.marketcetera.photon.views;
 import java.io.InputStream;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.validation.MultiValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.marketcetera.client.OrderValidationException;
+import org.marketcetera.client.instruments.CurrencyValidationHandler;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.commons.ui.databinding.DataBindingUtils;
 import org.marketcetera.trade.Currency;
 
 /* $License$ */
@@ -47,44 +56,31 @@ public class CurrencyOrderTicketView
         final DataBindingContext dbc = getDataBindingContext();
         final CurrencyOrderTicketModel model = getModel();
         final ICurrencyOrderTicket ticket = getXSWTView();
-        /*
-         * Expiration year
-         */
-       /* final IObservableValue target = SWTObservables.observeText(ticket.getExpirationYearText(),
-                                                                   SWT.Modify);
-        Binding binding = dbc.bindValue(target,
-                                        model.getFutureExpirationYear());
-        setRequired(binding,
-                    Messages.FUTURE_ORDER_TICKET_VIEW_EXPIRATION_YEAR__LABEL.getText());
-        MultiValidator expirationYearValidator = new MultiValidator() {
+        final IObservableValue target = SWTObservables.observeText(ticket.getSymbolText(),SWT.Modify);
+        MultiValidator currencySymbolValidator = new MultiValidator() {
             @Override
             protected IStatus validate() {
-                String expirationYear = (String)target.getValue();
-                if (expirationYear == null ||
-                    expirationYear.isEmpty()) {
+                String symbol = (String)target.getValue();
+                if (symbol == null ||
+                    symbol.isEmpty()) {
                     return ValidationStatus.ok();
                 }
                 try {
-                    FutureValidationHandler.validateExpirationYear(expirationYear);
-                    return ValidationStatus.ok();
+                		CurrencyValidationHandler.validateCurrencySymbol(symbol);
+                		return ValidationStatus.ok();
                 } catch (OrderValidationException e) {
                     return ValidationStatus.error(e.getLocalizedMessage(),
                                                   e);
                 }
             }
         };
-        DataBindingUtils.initControlDecorationSupportFor(expirationYearValidator,
+        DataBindingUtils.initControlDecorationSupportFor(currencySymbolValidator,
                                                          SWT.BOTTOM | SWT.LEFT);
-        dbc.addValidationStatusProvider(expirationYearValidator);
-        enableForNewOrderOnly(ticket.getExpirationYearText());*/
-        /*
-         * expiration month
-         */
+        dbc.addValidationStatusProvider(currencySymbolValidator);
         bindRequiredCombo(nearTermComboViewer,
                           model.getNearTenor(),
                           Messages.CURRENCY_ORDER_TICKET_VIEW_NEAR_TENOR__LABEL.getText());
         bindCombo(farTermComboViewer, model.getFarTenor());
-        enableForNewOrderOnly(ticket.getNearTenorCombo());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketView#initViewers(org.marketcetera.photon.views.IOrderTicket)
@@ -133,13 +129,9 @@ public class CurrencyOrderTicketView
     protected void customizeWidgets(ICurrencyOrderTicket inTicket)
     {
         super.customizeWidgets(inTicket);
-        // the default size is wrong, set it manually
-        //updateSize(inTicket.getExpirationYearText(),20);
-        // selects the text in the widget upon focus to facilitate easy editing
-        //selectOnFocus(inTicket.getExpirationYearText());
         // enter in either of these fields will send the order (assuming there are no errors)
-        //addSendOrderListener(inTicket.getNearTenorCombo());
-        //addSendOrderListener(inTicket.getExpirationYearText());
+        addSendOrderListener(inTicket.getNearTenorCombo());
+        addSendOrderListener(inTicket.getFarTenorCombo());
     }
     public static final String ID = "org.marketcetera.photon.views.CurrencyOrderTicketView"; //$NON-NLS-1$
     /**

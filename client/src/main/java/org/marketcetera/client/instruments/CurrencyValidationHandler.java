@@ -4,6 +4,7 @@ import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
 
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -31,6 +32,27 @@ public class CurrencyValidationHandler extends InstrumentValidationHandler<Curre
 	@Override
 	public void validate(Instrument inInstrument) throws OrderValidationException {
 		
+	}
+	
+	public static void validateCurrencySymbol(String symbol) throws OrderValidationException
+	{
+		if(symbol == null || symbol.isEmpty()) 
+		{
+			return;
+        }
+		try {
+					String[] currencyPair = symbol.split("/");
+					if (currencyPair==null ||  currencyPair.length !=2 || currencyPair[0].length()!=3 || currencyPair[1].length()!=3 || currencyPair[0].equalsIgnoreCase(currencyPair[1])) 
+					{
+						throw new OrderValidationException(new I18NBoundMessage1P
+								(Messages.INVALID_CURRENCY_SYMBOL_FORMAT,symbol));
+					}
+		} catch (OrderValidationException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new OrderValidationException(new I18NBoundMessage1P
+					(Messages.INVALID_CURRENCY_SYMBOL_FORMAT,symbol));
+		}
 	}
 	
 }
