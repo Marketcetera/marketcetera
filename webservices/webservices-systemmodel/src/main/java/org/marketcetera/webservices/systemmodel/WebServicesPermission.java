@@ -74,7 +74,13 @@ public class WebServicesPermission
     @Override
     public String toString()
     {
-        return JsonMarshallingProvider.getInstance().getService().marshal(this);
+        if(JsonMarshallingProvider.getInstance() != null &&
+                JsonMarshallingProvider.getInstance().getService() != null) {
+            return JsonMarshallingProvider.getInstance().getService().marshal(this);
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("WebServicesPermission [method=").append(method).append("]");
+        return builder.toString();
     }
     /**
      * Copies the attributes from the given object to this one.

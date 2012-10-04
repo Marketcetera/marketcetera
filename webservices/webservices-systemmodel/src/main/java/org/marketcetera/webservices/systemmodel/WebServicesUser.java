@@ -161,7 +161,15 @@ public class WebServicesUser
     @Override
     public String toString()
     {
-        return JsonMarshallingProvider.getInstance().getService().marshal(this);
+        if(JsonMarshallingProvider.getInstance() != null &&
+                JsonMarshallingProvider.getInstance().getService() != null) {
+            return JsonMarshallingProvider.getInstance().getService().marshal(this);
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("WebServicesUser [password=").append(password).append(", enabled=").append(enabled)
+                .append(", locked=").append(locked).append(", credentialsExpired=").append(credentialsExpired)
+                .append("]");
+        return builder.toString();
     }
     /**
      * Copies attributes from the given object to this object.
