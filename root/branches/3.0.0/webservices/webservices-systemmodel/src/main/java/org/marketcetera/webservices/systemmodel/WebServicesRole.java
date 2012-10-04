@@ -59,7 +59,14 @@ public class WebServicesRole
     @Override
     public String toString()
     {
-        return JsonMarshallingProvider.getInstance().getService().marshal(this);
+        if(JsonMarshallingProvider.getInstance() != null &&
+                JsonMarshallingProvider.getInstance().getService() != null) {
+            return JsonMarshallingProvider.getInstance().getService().marshal(this);
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append("WebServicesRole [users=").append(users).append(", permissions=").append(permissions)
+                .append("]");
+        return builder.toString();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.MutableRole#setUsers(java.util.Set)
