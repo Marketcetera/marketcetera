@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: colin@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id: pom.xml 16062 2012-01-31 00:18:43Z colin $
+  - $License$
+  -->
+
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.marketcetera.modules</groupId>
+        <artifactId>modules-parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.marketcetera.modules</groupId>
+    <artifactId>strategy</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <name>Strategy Module</name>
+
+    <dependencies>
+        <!-- compile: local -->
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>core</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>bsf</groupId>
+            <artifactId>bsf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jruby</groupId>
+            <artifactId>jruby</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera.fork</groupId>
+            <artifactId>texttablefmt</artifactId>
+        </dependency>
+        <!-- runtime: other -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <!-- test: local -->
+        <dependency>
+            <groupId>org.marketcetera.modules</groupId>
+            <artifactId>cep-system</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera.modules</groupId>
+            <artifactId>marketdata-bogus</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>core</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>util-test</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- test: other -->
+        <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>cep-esper</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

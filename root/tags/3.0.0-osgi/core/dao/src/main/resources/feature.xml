@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.1.0" name="org.marketcetera.core.dao">
+    <repository>mvn:org.apache.karaf.features/enterprise/3.0.0-SNAPSHOT/xml/features</repository>
+    <feature description="Marketcetera Core DAO" version="3.0.0-SNAPSHOT" name="org.marketcetera.core.dao">
+        <feature>jpa</feature>
+        <bundle>mvn:org.marketcetera.core/dao/3.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.marketcetera.fork/commons-i18n/3.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.apache.openjpa/openjpa/2.2.0</bundle>
+        <bundle>wrap:mvn:com.google.code.findbugs/jsr305/2.0.0</bundle>
+        <bundle>wrap:mvn:aopalliance/aopalliance/1.0</bundle>
+        <bundle>mvn:commons-lang/commons-lang/2.6</bundle>
+        <bundle>mvn:commons-collections/commons-collections/3.2.1</bundle>
+        <bundle>mvn:commons-io/commons-io/2.1</bundle>
+        <bundle>mvn:org.springframework/spring-expression/3.1.1.RELEASE</bundle>
+        <bundle>mvn:org.springframework/spring-core/3.1.1.RELEASE</bundle>
+        <bundle>mvn:org.springframework/spring-asm/3.1.1.RELEASE</bundle>
+        <bundle>mvn:org.springframework/spring-aop/3.1.1.RELEASE</bundle>
+        <bundle>mvn:org.springframework/spring-beans/3.1.1.RELEASE</bundle>
+        <bundle>mvn:org.springframework/spring-context/3.1.1.RELEASE</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.serp/1.13.1_3</bundle>
+        <bundle>mvn:com.mysema.querydsl/querydsl-core/2.7.0</bundle>
+        <bundle>mvn:com.mysema.querydsl/querydsl-jpa/2.7.0</bundle>
+        <bundle>wrap:mvn:com.google.guava/guava/11.0.2$Export-Package=com.google.common.*;version=11.0.2</bundle>
+        <bundle>mvn:com.mysema.commons/mysema-commons-lang/0.2.2</bundle>
+        <bundle>wrap:mvn:javax.inject/javax.inject/1</bundle>
+    </feature>
+</features>

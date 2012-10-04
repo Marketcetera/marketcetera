@@ -1,0 +1,47 @@
+package org.marketcetera.executioncontainer;
+
+import org.marketcetera.core.container.AbstractSpringApplication;
+
+/* $License$ */
+
+/**
+ * Provides a base application for Marketcetera.
+ *
+ * @version $Id: ExecutionContainer.java 82351 2012-05-04 21:46:58Z colin $
+ * @since $Release$
+ */
+public class ExecutionContainer
+        extends AbstractSpringApplication
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.AbstractSpringApplication#getLoggerCategory()
+     */
+    @Override
+    protected Class<? extends AbstractSpringApplication> getLoggerCategory()
+    {
+        return ExecutionContainer.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.AbstractSpringApplication#getName()
+     */
+    @Override
+    protected String getName()
+    {
+        return "Execution Container";
+    }
+    /**
+     * Main routine.
+     *
+     * @param inArgs a <code>String[]</code> value
+     */
+    public static void main(String[] inArgs)
+    {
+        ExecutionContainer app = new ExecutionContainer();
+        app.start();
+        try {
+            app.waitForever();
+        } catch (InterruptedException e) {
+            app.stop();
+        }
+    }
+}

@@ -1,0 +1,28 @@
+package org.marketcetera.core.instruments;
+
+import org.marketcetera.core.trade.Instrument;
+
+/* $License$ */
+
+/**
+ * Interface for providers of underlying symbol for an instrument. The
+ * underlying symbol is a loosely defined piece of metadata that is used for
+ * things like grouping instruments together (e.g. equities with their
+ * derivative options). This interface is used to abstract the business logic
+ * for determining that value.
+ * 
+ * @version $Id: UnderlyingSymbolSupport.java 16063 2012-01-31 18:21:55Z colin $
+ * @since 2.0.0
+ */
+public interface UnderlyingSymbolSupport {
+
+    /**
+     * Returns the underlying symbol for the supplied instrument.
+     * 
+     * @param instrument
+     *            the instrument
+     * 
+     * @return the underlying symbol for the supplied instrument, never null
+     */
+    String getUnderlying(Instrument instrument);
+}

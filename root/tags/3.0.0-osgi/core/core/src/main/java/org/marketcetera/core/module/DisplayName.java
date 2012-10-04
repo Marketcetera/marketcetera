@@ -1,0 +1,48 @@
+package org.marketcetera.core.module;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.management.DescriptorKey;
+
+/* $License$ */
+/**
+ * Annotation that is used to supply user-friendly
+ * descriptions for the MXBeans, their attributes, methods
+ * and the parameters.
+ *
+ * The value of this annotation is available as the value of attribute
+ * <code>name</code> within the MBean's
+ * {@link javax.management.Descriptor}
+ *
+ * Do note that currently this annotation allows for non-localized names.
+ *
+ * Going forward, we need to add the attributes for
+ * <code>descriptionResourceBundleBaseName</code> and
+ * <code>descriptionResourceKey</code> fields in the descriptor,
+ * to allow for localizable descriptions. This has not been done
+ * currently as the client may not have the resource bundles
+ * available and that the current i18n classes do not allow for easy
+ * extraction of these values so that they can be embedded into these
+ * annotations.
+ *
+ * @version $Id: DisplayName.java 16063 2012-01-31 18:21:55Z colin $
+ * @since 1.0.0
+ */
+@Target({
+        ElementType.TYPE,
+        ElementType.METHOD,
+        ElementType.PARAMETER
+        })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DisplayName {
+    /**
+     * Provides the text describing the interface, method or the parameter.
+     *
+     * @return text describing the mbean element.
+     */
+    @DescriptorKey("name")  //$NON-NLS-1$
+    String value();
+}

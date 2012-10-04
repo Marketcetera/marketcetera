@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>public-parent</artifactId>
+        <groupId>org.marketcetera</groupId>
+        <version>1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.marketcetera</groupId>
+    <artifactId>itests</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+
+    <name>Integration Tests</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.marketcetera.security</groupId>
+            <artifactId>shiro-security</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.tooling.exam</groupId>
+            <artifactId>org.apache.karaf.tooling.exam.container</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.tooling.exam</groupId>
+            <artifactId>org.apache.karaf.tooling.exam.options</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit4</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>apache-karaf</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <type>tar.gz</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.tooling</groupId>
+            <artifactId>org.apache.karaf.tooling.testing</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>generate-depends-file</id>
+                        <goals>
+                            <goal>generate-depends-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <!--<debugForkedProcess>true</debugForkedProcess>-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

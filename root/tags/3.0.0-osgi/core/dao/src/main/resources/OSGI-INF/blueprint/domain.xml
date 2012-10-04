@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+           xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+
+    <service ref="permissionDaoBean" interface="org.marketcetera.api.dao.PermissionDao"/>
+    <service ref="roleDaoBean" interface="org.marketcetera.api.dao.RoleDao"/>
+    <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
+
+    <service ref="permissionFactoryBean" interface="org.marketcetera.api.dao.PermissionFactory"/>
+    <service ref="roleFactoryBean" interface="org.marketcetera.api.dao.RoleFactory"/>
+    <service ref="userFactoryBean" interface="org.marketcetera.api.dao.UserFactory"/>
+
+    <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="roleDaoBean" class="org.marketcetera.dao.impl.RoleDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="userDaoBean" class="org.marketcetera.dao.impl.UserDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="permissionFactoryBean" class="org.marketcetera.dao.domain.PersistentPermissionFactory"/>
+    <bean id="roleFactoryBean" class="org.marketcetera.dao.domain.PersistentRoleFactory"/>
+    <bean id="userFactoryBean" class="org.marketcetera.dao.domain.PersistentUserFactory"/>
+
+    <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
+        <property name="permissionDao" ref="permissionDaoBean"/>
+        <property name="roleDao" ref="roleDaoBean"/>
+        <property name="userDao" ref="userDaoBean"/>
+    </bean>
+
+</blueprint>

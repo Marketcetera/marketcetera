@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.marketcetera.modules</groupId>
+        <artifactId>marketdata</artifactId>
+        <version>1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.marketcetera.modules</groupId>
+    <artifactId>marketdata-csv</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <name>CSV Marketdata Module</name>
+
+    <dependencies>
+        <!-- compile: local -->
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>core</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera.fork</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+        </dependency>
+        <!-- test: local -->
+        <dependency>
+            <groupId>org.marketcetera.core</groupId>
+            <artifactId>core</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.marketcetera</groupId>
+            <artifactId>util-test</artifactId>
+            <version>3.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- runtime: other -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+
+        </dependency>
+    </dependencies>
+</project>
