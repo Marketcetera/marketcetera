@@ -64,9 +64,12 @@ public class CurrencyObservable
     @Override
     protected void updateParent()
     {
-        String symbol = mSymbol.getTypedValue();
-        String[] currencyPair = symbol.split("/");
-        
+        String symbol = mSymbol.getTypedValue();        
+        String[] currencyPair = null;
+        if(symbol!=null)        	
+        {
+        	currencyPair = symbol.split("/");
+        }        
         String nearTenor = mNearTenor.getTypedValue();
         String farTenor = mFarTenor.getTypedValue();
         Currency newValue = null;
