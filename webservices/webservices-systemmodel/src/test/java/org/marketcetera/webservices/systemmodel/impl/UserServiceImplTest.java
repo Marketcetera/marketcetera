@@ -79,7 +79,7 @@ public class UserServiceImplTest
                                newUser);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#addUserJSON(org.marketcetera.api.dao.User)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#addUser(org.marketcetera.api.dao.User)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -95,7 +95,7 @@ public class UserServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addUserJSON(null);
+                service.addUser(null);
             }
         };
         final long newId = counter.incrementAndGet();
@@ -112,7 +112,7 @@ public class UserServiceImplTest
         newUser.setId(counter.incrementAndGet());
         long existingId = newUser.getId();
         assertFalse(newId == existingId);
-        WebServicesUser response = service.addUserJSON(newUser);
+        WebServicesUser response = service.addUser(newUser);
 //        assertEquals(newId,
 //                     response.getId());
         verify(userDao).add((User)any());
@@ -123,14 +123,14 @@ public class UserServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addUserJSON(newUser);
+                service.addUser(newUser);
             }
         };
         verify(userDao,
                times(2)).add((User) any());
     }
     /**
-     * Tests {@link UserServiceImpl#getUserJSON(long)}.
+     * Tests {@link UserServiceImpl#getUser(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -144,7 +144,7 @@ public class UserServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.getUserJSON(-1);
+                service.getUser(-1);
             }
         };
         verify(userDao).getById(anyLong());
@@ -152,7 +152,7 @@ public class UserServiceImplTest
         WebServicesUser newUser = generateUser();
         when(userDao.getById(newUser.getId())).thenReturn(newUser);
         verifyUser(newUser,
-                        service.getUserJSON(newUser.getId()));
+                        service.getUser(newUser.getId()));
         verify(userDao,
                times(2)).getById(anyLong());
     }
@@ -179,7 +179,7 @@ public class UserServiceImplTest
                times(2)).delete((User) any());
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#getUsersJSON(org.apache.cxf.jaxrs.ext.search.SearchContext)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#getUsers(org.apache.cxf.jaxrs.ext.search.SearchContext)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -189,7 +189,7 @@ public class UserServiceImplTest
     {
         // no results
         when(userDao.getAll()).thenReturn(new ArrayList<MutableUser>());
-        assertTrue(service.getUsersJSON(null).isEmpty());
+        assertTrue(service.getUsers().isEmpty());
         verify(userDao).getAll();
         // single result
         WebServicesUser user1 = generateUser();
@@ -197,7 +197,7 @@ public class UserServiceImplTest
         List<User> expectedResults = new ArrayList<User>();
         expectedResults.add(user1);
         verifyUsers(expectedResults,
-                          service.getUsersJSON(null));
+                          service.getUsers());
         verify(userDao,
                times(2)).getAll();
         // multiple results
@@ -205,7 +205,7 @@ public class UserServiceImplTest
         when(userDao.getAll()).thenReturn(Arrays.asList(new MutableUser[]{user1, user2}));
         expectedResults.add(user2);
         verifyUsers(expectedResults,
-                          service.getUsersJSON(null));
+                          service.getUsers());
         verify(userDao,
                times(3)).getAll();
     }

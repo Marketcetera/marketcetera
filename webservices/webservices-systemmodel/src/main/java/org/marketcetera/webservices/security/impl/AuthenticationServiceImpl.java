@@ -3,8 +3,6 @@ package org.marketcetera.webservices.security.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import org.marketcetera.api.dao.Permission;
 import org.marketcetera.api.dao.PermissionDao;
 import org.marketcetera.api.security.SecurityService;
@@ -56,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     * @see org.marketcetera.webservices.security.AuthenticationService#authenticate(java.lang.String, java.lang.String)
     */
     @Override
-    public JaxbList<WebServicesPermission> authenticate(String username, String password) {
+    public List<WebServicesPermission> authenticate(String username, String password) {
         SLF4JLoggerProxy.trace(AuthenticationServiceImpl.class, "AuthenticationService authenticate invoked with {}/********", //$NON-NLS-1$
                 username);
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
@@ -67,32 +65,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             decoratedPermissions.add(new WebServicesPermission(permission));
         }
 
-        return new JaxbList<WebServicesPermission>(decoratedPermissions, username);
-    }
-
-    @XmlSeeAlso(WebServicesPermission.class)
-    public static class JaxbList<T> {
-        protected List<T> list;
-        private String username;
-
-        public JaxbList(List<T> list, String username) {
-            this.list = list;
-            this.username = username;
-        }
-
-        @XmlElement(name = "success")
-        public boolean getSuccess() {
-            return true;
-        }
-
-        @XmlElement(name = "username")
-        public String getUsername() {
-            return username;
-        }
-
-        @XmlElement()
-        public List<T> getList() {
-            return list;
-        }
+        return decoratedPermissions;
     }
 }
