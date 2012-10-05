@@ -25,7 +25,7 @@ public interface RoleService
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public WebServicesRole addRole(WebServicesRole inRole);
+    public WebServicesRole add(WebServicesRole inRole);
     /**
      * Gets the <code>Role</code> with the given id.
      *
@@ -35,7 +35,7 @@ public interface RoleService
     @GET
     @Path("{id}")
     @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public WebServicesRole getRole(@PathParam("id")long inId);
+    public WebServicesRole get(@PathParam("id")long inId);
     /**
      * Gets all <code>Role</code> values.
      *
@@ -43,7 +43,7 @@ public interface RoleService
      */
     @GET
     @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public List<WebServicesRole> getRoles();
+    public List<WebServicesRole> getAll();
     /**
      * Deletes the <code>Role</code> with the given id.
      *
@@ -52,7 +52,7 @@ public interface RoleService
      */
     @DELETE
     @Path("{id}")
-    public Response deleteRole(@PathParam("id")long inId);
+    public Response delete(@PathParam("id")long inId);
     /**
      * Updates the given <code>Role</code>.
      *
@@ -61,5 +61,5 @@ public interface RoleService
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public Response updateRole(WebServicesRole inRole);
+    public Response update(WebServicesRole inRole);
 }

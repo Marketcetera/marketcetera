@@ -25,7 +25,7 @@ public interface UserService
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public WebServicesUser addUser(WebServicesUser inUser);
+    public WebServicesUser add(WebServicesUser inUser);
     /**
      * Gets the user with the given id.
      *
@@ -35,7 +35,7 @@ public interface UserService
     @GET
     @Path("{id}")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public WebServicesUser getUser(@PathParam("id")long inId);
+    public WebServicesUser get(@PathParam("id")long inId);
     /**
      * Gets all users.
      *
@@ -43,7 +43,7 @@ public interface UserService
      */
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public List<WebServicesUser> getUsers();
+    public List<WebServicesUser> getAll();
     /**
      * Deletes the user with the given id.
      *
@@ -52,7 +52,7 @@ public interface UserService
      */
     @DELETE
     @Path("{id}")
-    public Response deleteUser(@PathParam("id")long inId);
+    public Response delete(@PathParam("id")long inId);
     /**
      * Updates the given user.
      *
@@ -61,5 +61,5 @@ public interface UserService
      */
     @PUT
     @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public Response updateUser(WebServicesUser inUser);
+    public Response update(WebServicesUser inUser);
 }

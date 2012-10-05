@@ -88,6 +88,24 @@ public class PersistentPermission
     {
         description = inDescription;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.Permission#getPermission()
+     */
+    @Override
+    @XmlAttribute
+    public String getPermission()
+    {
+        return permission;
+        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutablePermission#setPermission(java.lang.String)
+     */
+    @Override
+    public void setPermission(String inPermission)
+    {
+        permission = inPermission;
+    }
     // ------------------------ CANONICAL METHODS ------------------------
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -128,7 +146,9 @@ public class PersistentPermission
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("Permission ").append(getName()).append(" [").append(getId()).append("] ").append(getMethod()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        builder.append("PersistentPermission [name=").append(name).append(", description=").append(description)
+                .append(", method=").append(method).append(", permission=").append(permission).append(", methodSet=")
+                .append(methodSet).append(", roles=").append(roles).append("]");
         return builder.toString();
     }
     // ------------------------------ CONSTRUCTORS ------------------------
@@ -185,6 +205,11 @@ public class PersistentPermission
     @Column(nullable=false)
     private int method;
     /**
+     * stores the permission topic
+     */
+    @Column(nullable=false)
+    private String permission;
+    /**
      * mirrors the attributes established in method, exists in this object to allow JAXB to set the permissions
      */
     @Transient
@@ -192,7 +217,6 @@ public class PersistentPermission
     /**
      * slave mapping of the manyToMany with Roles, added here to allow cascading delete of permission
      */
-    @SuppressWarnings("unused")
     @ManyToMany(mappedBy="permissions",targetEntity=PersistentRole.class)
     private Set<Role> roles;
 }

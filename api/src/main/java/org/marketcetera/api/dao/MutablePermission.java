@@ -19,4 +19,10 @@ public interface MutablePermission
      * @param inMethod a <code>Set&lt;PermissionAttribute&gt;</code> value
      */
     public void setMethod(Set<PermissionAttribute> inMethod);
+    /**
+     * Sets the permission value.
+     *
+     * @param inPermission a <code>String</code> value
+     */
+    public void setPermission(String inPermission);
 }

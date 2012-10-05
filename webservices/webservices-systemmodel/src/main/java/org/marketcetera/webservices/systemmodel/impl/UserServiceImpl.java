@@ -27,7 +27,7 @@ public class UserServiceImpl
      * @see org.marketcetera.webservices.systemmodel.UserService#addUser(org.marketcetera.webservices.systemmodel.WebServicesUser)
      */
     @Override
-    public WebServicesUser addUser(WebServicesUser inUser)
+    public WebServicesUser add(WebServicesUser inUser)
     {
         try {
             User persistableUser = userFactory.create(inUser);
@@ -43,7 +43,7 @@ public class UserServiceImpl
      * @see org.marketcetera.webservices.systemmodel.UserService#getUser(long)
      */
     @Override
-    public WebServicesUser getUser(long inId)
+    public WebServicesUser get(long inId)
     {
         User user = userDao.getById(inId);
         if(user == null) {
@@ -55,7 +55,7 @@ public class UserServiceImpl
      * @see org.marketcetera.webservices.systemmodel.UserService#getUsers()
      */
     @Override
-    public List<WebServicesUser> getUsers()
+    public List<WebServicesUser> getAll()
     {
         List<WebServicesUser> decoratedUsers = new ArrayList<WebServicesUser>();
         for(User user : userDao.getAll()) {
@@ -67,7 +67,7 @@ public class UserServiceImpl
      * @see org.marketcetera.webservices.systemmodel.UserService#updateUser(org.marketcetera.webservices.systemmodel.WebServicesUser)
      */
     @Override
-    public Response updateUser(WebServicesUser inUser)
+    public Response update(WebServicesUser inUser)
     {
         Response response;
         try {
@@ -85,7 +85,7 @@ public class UserServiceImpl
      * @see org.marketcetera.webservices.systemmodel.UserService#deleteUser(long)
      */
     @Override
-    public Response deleteUser(long inId)
+    public Response delete(long inId)
     {
         Response response;
         try {
