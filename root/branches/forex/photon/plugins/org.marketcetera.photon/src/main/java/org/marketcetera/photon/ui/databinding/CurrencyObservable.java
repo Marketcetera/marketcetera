@@ -71,12 +71,12 @@ public class CurrencyObservable
         String farTenor = mFarTenor.getTypedValue();
         Currency newValue = null;
         if(currencyPair!=null && currencyPair.length==2 && StringUtils.isNotBlank(currencyPair[0]) 
-        		&& StringUtils.isNotBlank(currencyPair[1]) && StringUtils.isNotBlank(nearTenor))
+        		&& StringUtils.isNotBlank(currencyPair[1]) && nearTenor != null)
         {
             try {
                     newValue = new Currency(currencyPair[0],currencyPair[1],nearTenor,farTenor);
-
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         ITypedObservableValue<Instrument> instrument = getParent();
         setIfChanged(instrument,

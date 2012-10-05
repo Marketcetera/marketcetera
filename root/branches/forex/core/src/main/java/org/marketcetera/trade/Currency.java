@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -186,15 +187,10 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	 * 
 	 */
 	public Currency(String baseCCY, String plCCY, String nearTenor, String farTenor){
+		Validate.notNull(baseCCY,Messages.MISSING_LEFT_CURRENCY.getText());
+		Validate.notNull(plCCY,Messages.MISSING_RIGHT_CURRENCY.getText());
+		Validate.notNull(nearTenor,Messages.MISSING_NEAR_TENOR.getText());
 		baseCCY = StringUtils.trimToNull(baseCCY);
-		if(baseCCY==null)
-			throw new IllegalArgumentException(Messages.MISSING_LEFT_CURRENCY.getText());
-		plCCY = StringUtils.trimToNull(plCCY);
-		if(plCCY==null)
-			throw new IllegalArgumentException(Messages.MISSING_RIGHT_CURRENCY.getText());
-		nearTenor = StringUtils.trimToNull(nearTenor);
-		if(nearTenor==null)
-			throw new IllegalArgumentException(Messages.MISSING_NEAR_TENOR.getText());
 		this.leftCCY = baseCCY;
 		this.rightCCY   = plCCY;
 		this.fixSymbol = leftCCY+"/"+rightCCY;
@@ -316,34 +312,29 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	
     @Override
 	public boolean equals(Object obj) {
-    	 if (this == obj)
-             return true;
-         if (obj == null)
-             return false;
-         if (getClass() != obj.getClass())
-             return false;
-		Currency other = (Currency) obj;
-		if (leftCCY == null) {
-			if (other.leftCCY != null)
-				return false;
-		} else if (!leftCCY.equals(other.leftCCY))
-			return false;
-		if (rightCCY == null) {
-			if (other.rightCCY != null)
-				return false;
-		} else if (!rightCCY.equals(other.rightCCY))
-			return false;
-		if (nearTenor == null) {
-			if (other.nearTenor != null)
-				return false;
-		} else if (!nearTenor.equals(other.nearTenor))
-			return false;
-		if (fixSymbol == null) {
-			if (other.fixSymbol != null)
-				return false;
-		} else if (!fixSymbol.equals(other.fixSymbol))
-			return false;
-		return true;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Currency other = (Currency) obj;
+        if (nearTenor != other.nearTenor)
+            return false;
+        if (farTenor != other.farTenor)
+            return false;
+        if (leftCCY == null) {
+            if (other.leftCCY != null)
+                return false;
+        } else if (!leftCCY.equals(other.leftCCY))
+            return false;
+        if (rightCCY == null) {
+            if (other.rightCCY != null)
+                return false;
+        } else if (!rightCCY.equals(other.rightCCY))
+            return false;
+        return true;
+		
 	}
     
 	
