@@ -30,7 +30,6 @@
 
         <properties>
             <property name="openjpa.Log" value="slf4j" />
-            <!--<property name="openjpa.Log" value="DefaultLevel=WARN, Tool=INFO, SQL=TRACE, Schema=Trace"/>-->
             <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
             <property name="openjpa.ConnectionFactoryProperties" value="PrettyPrint=true, PrettyPrintLineLength=72" />
             <property name="openjpa.Multithreaded" value="true"/>

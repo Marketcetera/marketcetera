@@ -1,5 +1,7 @@
 package org.marketcetera.security.shiro.impl;
 
+import javax.persistence.NoResultException;
+
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -10,6 +12,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.marketcetera.api.dao.UserDao;
 import org.marketcetera.api.security.User;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /**
 * @version $Id$
@@ -51,13 +54,24 @@ class ShiroRealm extends AuthorizingRealm {
         org.apache.shiro.authc.UsernamePasswordToken upToken = (org.apache.shiro.authc.UsernamePasswordToken) token;
 
         SimpleAuthenticationInfo result;
-        User user = userDao.getByName((String) upToken.getPrincipal());
-        if (String.valueOf(upToken.getPassword()).equals(user.getPassword())) {
-            result = new SimpleAuthenticationInfo(upToken.getPrincipal(), upToken.getCredentials(), name);
-        } else {
-            result = null;
+        try {
+            User user = userDao.getByName((String) upToken.getPrincipal());
+            // TODO hash given password
+            if (String.valueOf(upToken.getPassword()).equals(user.getPassword())) {
+                result = new SimpleAuthenticationInfo(upToken.getPrincipal(), upToken.getCredentials(), name);
+            } else {
+                SLF4JLoggerProxy.warn(this,
+                                      "Authentication failed for {}, password does not match",
+                                      upToken.getPrincipal());
+                throw new AuthenticationException();
+            }
+            return result;
+        } catch (NoResultException e) {
+            SLF4JLoggerProxy.warn(this,
+                                  "Authentication failed for {}, username not known",
+                                  upToken.getPrincipal());
+            throw new AuthenticationException();
         }
-        return result;
     }
 
     @Override
