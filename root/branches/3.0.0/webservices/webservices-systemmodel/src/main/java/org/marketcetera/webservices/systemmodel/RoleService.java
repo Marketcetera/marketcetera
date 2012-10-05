@@ -24,17 +24,8 @@ public interface RoleService
      * @return a <code>WebServicesRole</code> value
      */
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    public WebServicesRole addRoleJSON(WebServicesRole inRole);
-    /**
-     * Adds the given <code>Role</code.
-     *
-     * @param inRole a <code>WebServicesRole</code> value
-     * @return a <code>WebServicesRole</code> value
-     */
-    @POST
-    @Consumes({MediaType.APPLICATION_XML})
-    public WebServicesRole addRoleXML(WebServicesRole inRole);
+    @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
+    public WebServicesRole addRole(WebServicesRole inRole);
     /**
      * Gets the <code>Role</code> with the given id.
      *
@@ -43,34 +34,16 @@ public interface RoleService
      */
     @GET
     @Path("{id}")
-    @Produces({MediaType.APPLICATION_JSON})
-    public WebServicesRole getRoleJSON(@PathParam("id")long inId);
-    /**
-     * Gets the <code>Role</code> with the given id.
-     *
-     * @param inId a <code>String</code> value
-     * @return a <code>WebServicesRole</code> value
-     */
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML})
-    public WebServicesRole getRoleXML(@PathParam("id")long inId);
+    @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
+    public WebServicesRole getRole(@PathParam("id")long inId);
     /**
      * Gets all <code>Role</code> values.
      *
      * @return a <code>List&lt;WebServicesRole&gt;</code> value
      */
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public List<WebServicesRole> getRolesJSON();
-    /**
-     * Gets all <code>Role</code> values.
-     *
-     * @return a <code>List&lt;WebServicesRole&gt;</code> value
-     */
-    @GET
-    @Produces({MediaType.APPLICATION_XML})
-    public List<WebServicesRole> getRolesXML();
+    @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
+    public List<WebServicesRole> getRoles();
     /**
      * Deletes the <code>Role</code> with the given id.
      *
@@ -87,15 +60,6 @@ public interface RoleService
      * @return a <code>Response</code> value
      */
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response updateRoleJSON(WebServicesRole inRole);
-    /**
-     * Updates the given <code>Role</code>.
-     *
-     * @param inRole a <code>WebServicesRole</code> value
-     * @return a <code>Response</code> value
-     */
-    @POST
-    @Consumes({MediaType.APPLICATION_XML})
-    public Response updateRoleXML(WebServicesRole inRole);
+    @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
+    public Response updateRole(WebServicesRole inRole);
 }
