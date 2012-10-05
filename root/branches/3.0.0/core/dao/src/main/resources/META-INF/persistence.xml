@@ -25,6 +25,7 @@
         <class>org.marketcetera.dao.domain.PersistentSystemObject</class>
         <class>org.marketcetera.dao.domain.PersistentUser</class>
         <class>org.marketcetera.dao.domain.PersistentVersionedObject</class>
+        <class>org.marketcetera.dao.domain.PersistentSystemInformation</class>
 
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

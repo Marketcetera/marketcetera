@@ -7,7 +7,7 @@ import org.marketcetera.core.util.log.*;
 /**
  * Provides messages for the DAO package.
  *
- * @version $Id: Messages.java 82316 2012-03-21 21:13:27Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface Messages

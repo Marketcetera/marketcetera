@@ -9,7 +9,7 @@ import org.marketcetera.api.dao.UserDao;
 /**
  * Provides access to database services.
  *
- * @version $Id: DataAccessService.java 82315 2012-03-17 01:58:54Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface DataAccessService

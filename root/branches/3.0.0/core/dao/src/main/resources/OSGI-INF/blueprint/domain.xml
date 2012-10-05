@@ -8,10 +8,12 @@
     <service ref="permissionDaoBean" interface="org.marketcetera.api.dao.PermissionDao"/>
     <service ref="roleDaoBean" interface="org.marketcetera.api.dao.RoleDao"/>
     <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
+    <service ref="systemInformationDaoBean" interface="org.marketcetera.api.dao.SystemInformationDao"/>
 
     <service ref="permissionFactoryBean" interface="org.marketcetera.api.dao.PermissionFactory"/>
     <service ref="roleFactoryBean" interface="org.marketcetera.api.dao.RoleFactory"/>
     <service ref="userFactoryBean" interface="org.marketcetera.api.dao.UserFactory"/>
+    <service ref="systemInformationFactoryBean" interface="org.marketcetera.api.dao.SystemInformationFactory"/>
 
     <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera-core"/>
@@ -28,9 +30,15 @@
         <tx:transaction method="*" value="Required"/>
     </bean>
 
+    <bean id="systemInformationDaoBean" class="org.marketcetera.dao.impl.SystemInformationDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
     <bean id="permissionFactoryBean" class="org.marketcetera.dao.domain.PersistentPermissionFactory"/>
     <bean id="roleFactoryBean" class="org.marketcetera.dao.domain.PersistentRoleFactory"/>
     <bean id="userFactoryBean" class="org.marketcetera.dao.domain.PersistentUserFactory"/>
+    <bean id="systemInformationFactoryBean" class="org.marketcetera.dao.domain.PersistentSystemInformationFactory"/>
 
     <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
         <property name="permissionDao" ref="permissionDaoBean"/>
