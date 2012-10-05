@@ -51,12 +51,10 @@ public interface PermissionDao
      */
     public void delete(Permission inPermission);
     /**
-     * Gets the <code>Permission</code> objects assigned to the given user id.
+     * Gets permissions for the user with the given username.
      *
-     * @param inUserId a <code>long</code> value
+     * @param inUsername a <code>String</code> value
      * @return a <code>List&lt;Permission&gt;</code> value
      */
-    public List<Permission> getAllByUserId(long inUserId);
-
-    List<Permission> getAllByUsername(String username);
+    public List<Permission> getAllByUsername(String inUsername);
 }

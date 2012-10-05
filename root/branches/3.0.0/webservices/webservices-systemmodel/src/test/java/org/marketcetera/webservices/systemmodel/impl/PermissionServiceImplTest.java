@@ -95,7 +95,7 @@ public class PermissionServiceImplTest
                                newPermission);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.PermissionService#addPermissionJSON(org.marketcetera.api.dao.Permission)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.PermissionService#addPermission(org.marketcetera.api.dao.Permission)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -111,7 +111,7 @@ public class PermissionServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addPermissionJSON(null);
+                service.addPermission(null);
             }
         };
         final long newId = counter.incrementAndGet();
@@ -128,7 +128,7 @@ public class PermissionServiceImplTest
         newPermission.setId(counter.incrementAndGet());
         long existingId = newPermission.getId();
         assertFalse(newId == existingId);
-        WebServicesPermission response = service.addPermissionJSON(newPermission);
+        WebServicesPermission response = service.addPermission(newPermission);
 //        assertEquals(newId,
 //                     response.getId());
         verify(permissionDao).add((Permission)any());
@@ -139,14 +139,14 @@ public class PermissionServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addPermissionJSON(newPermission);
+                service.addPermission(newPermission);
             }
         };
         verify(permissionDao,
                times(2)).add((Permission) any());
     }
     /**
-     * Tests {@link PermissionServiceImpl#getPermissionJSON(long)}.
+     * Tests {@link PermissionServiceImpl#getPermission(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -160,7 +160,7 @@ public class PermissionServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.getPermissionJSON(-1);
+                service.getPermission(-1);
             }
         };
         verify(permissionDao).getById(anyLong());
@@ -168,7 +168,7 @@ public class PermissionServiceImplTest
         WebServicesPermission newPermission = generatePermission();
         when(permissionDao.getById(newPermission.getId())).thenReturn(newPermission);
         verifyPermission(newPermission,
-                        service.getPermissionJSON(newPermission.getId()));
+                        service.getPermission(newPermission.getId()));
         verify(permissionDao,
                times(2)).getById(anyLong());
     }
@@ -195,7 +195,7 @@ public class PermissionServiceImplTest
                times(2)).delete((Permission) any());
     }
     /**
-     * Tests {@link PermissionServiceImpl#getPermissionsJSON()}.
+     * Tests {@link PermissionServiceImpl#getPermissions()}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -205,7 +205,7 @@ public class PermissionServiceImplTest
     {
         // no results
         when(permissionDao.getAll()).thenReturn(new ArrayList<MutablePermission>());
-        assertTrue(service.getPermissionsJSON().isEmpty());
+        assertTrue(service.getPermissions().isEmpty());
         verify(permissionDao).getAll();
         // single result
         WebServicesPermission permission1 = generatePermission();
@@ -213,7 +213,7 @@ public class PermissionServiceImplTest
         List<Permission> expectedResults = new ArrayList<Permission>();
         expectedResults.add(permission1);
         verifyPermissions(expectedResults,
-                          service.getPermissionsJSON());
+                          service.getPermissions());
         verify(permissionDao,
                times(2)).getAll();
         // multiple results
@@ -221,7 +221,7 @@ public class PermissionServiceImplTest
         when(permissionDao.getAll()).thenReturn(Arrays.asList(new MutablePermission[]{permission1, permission2}));
         expectedResults.add(permission2);
         verifyPermissions(expectedResults,
-                          service.getPermissionsJSON());
+                          service.getPermissions());
         verify(permissionDao,
                times(3)).getAll();
     }
