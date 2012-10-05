@@ -94,7 +94,7 @@ public class RoleServiceImplTest
                                newRole);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.RoleService#addRoleJSON(org.marketcetera.api.dao.Role)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.RoleService#addRole(org.marketcetera.api.dao.Role)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -110,7 +110,7 @@ public class RoleServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addRoleJSON(null);
+                service.addRole(null);
             }
         };
         final long newId = counter.incrementAndGet();
@@ -127,7 +127,7 @@ public class RoleServiceImplTest
         newRole.setId(counter.incrementAndGet());
         long existingId = newRole.getId();
         assertFalse(newId == existingId);
-        WebServicesRole response = service.addRoleJSON(newRole);
+        WebServicesRole response = service.addRole(newRole);
 //        assertEquals(newId,
 //                     response.getId());
         verify(roleDao).add((Role)any());
@@ -138,14 +138,14 @@ public class RoleServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addRoleJSON(newRole);
+                service.addRole(newRole);
             }
         };
         verify(roleDao,
                times(2)).add((Role) any());
     }
     /**
-     * Tests {@link RoleServiceImpl#getRoleJSON(long)}.
+     * Tests {@link RoleServiceImpl#getRole(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -160,7 +160,7 @@ public class RoleServiceImplTest
 //            protected void run()
 //                    throws Exception
 //            {
-//                service.getRoleJSON(-1);
+//                service.getRole(-1);
 //            }
 //        };
 //        verify(roleDao).getById(anyLong());
@@ -168,7 +168,7 @@ public class RoleServiceImplTest
         WebServicesRole newRole = generateRole();
         when(roleDao.getById(newRole.getId())).thenReturn(newRole);
         verifyRole(newRole,
-                        service.getRoleJSON(newRole.getId()));
+                        service.getRole(newRole.getId()));
       verify(roleDao).getById(anyLong());
 //        verify(roleDao,
 //               times(2)).getById(anyLong());
@@ -196,7 +196,7 @@ public class RoleServiceImplTest
                times(2)).delete((Role) any());
     }
     /**
-     * Tests {@link RoleServiceImpl#getRolesJSON()}.
+     * Tests {@link RoleServiceImpl#getRoles()}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -206,7 +206,7 @@ public class RoleServiceImplTest
     {
         // no results
         when(roleDao.getAll()).thenReturn(new ArrayList<MutableRole>());
-        assertTrue(service.getRolesJSON().isEmpty());
+        assertTrue(service.getRoles().isEmpty());
         verify(roleDao).getAll();
         // single result
         WebServicesRole role1 = generateRole();
@@ -214,7 +214,7 @@ public class RoleServiceImplTest
         List<Role> expectedResults = new ArrayList<Role>();
         expectedResults.add(role1);
         verifyRoles(expectedResults,
-                    service.getRolesJSON());
+                    service.getRoles());
         verify(roleDao,
                times(2)).getAll();
         // multiple results
@@ -222,7 +222,7 @@ public class RoleServiceImplTest
         when(roleDao.getAll()).thenReturn(Arrays.asList(new MutableRole[]{role1, role2}));
         expectedResults.add(role2);
         verifyRoles(expectedResults,
-                          service.getRolesJSON());
+                          service.getRoles());
         verify(roleDao,
                times(3)).getAll();
     }
