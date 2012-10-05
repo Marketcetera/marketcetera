@@ -39,6 +39,14 @@
                 <permissionAttribute>Delete</permissionAttribute>
             </method>
         </permission>
+        <permission name="bond set ui admin" description="Permission to perform UI administration tasks on bond sets" permission="ui:bondset">
+            <method>
+                <permissionAttribute>Create</permissionAttribute>
+                <permissionAttribute>Read</permissionAttribute>
+                <permissionAttribute>Update</permissionAttribute>
+                <permissionAttribute>Delete</permissionAttribute>
+            </method>
+        </permission>
     </permissions>
     <roles>
         <role name="admin" description="Administation Role" />
@@ -58,6 +66,7 @@
         <assignToRole roleName="bond user">
             <permissionsToRole>
                 <nameRef name="bond data ui admin" />
+                <nameRef name="bond set ui admin" />
             </permissionsToRole>
             <usersToRole>
                 <nameRef name="user" />
