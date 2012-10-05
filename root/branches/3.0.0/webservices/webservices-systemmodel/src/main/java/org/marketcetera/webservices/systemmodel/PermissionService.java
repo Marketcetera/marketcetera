@@ -25,7 +25,7 @@ public interface PermissionService
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public WebServicesPermission addPermission(WebServicesPermission inPermission);
+    public WebServicesPermission add(WebServicesPermission inPermission);
     /**
      * Gets the permission with the given id.
      *
@@ -35,7 +35,7 @@ public interface PermissionService
     @GET
     @Path("{id}")
     @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public WebServicesPermission getPermission(@PathParam("id")long inId);
+    public WebServicesPermission get(@PathParam("id")long inId);
     /**
      * Gets all permissions.
      *
@@ -43,7 +43,7 @@ public interface PermissionService
      */
     @GET
     @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public List<WebServicesPermission> getPermissions();
+    public List<WebServicesPermission> getAll();
     /**
      * Deletes the permission with the given id.
      *
@@ -52,7 +52,7 @@ public interface PermissionService
      */
     @DELETE
     @Path("{id}")
-    public Response deletePermission(@PathParam("id")long inId);
+    public Response delete(@PathParam("id")long inId);
     /**
      * Updates the given permission.
      *
@@ -61,5 +61,5 @@ public interface PermissionService
      */
     @PUT
     @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public Response updatePermission(WebServicesPermission inPermission);
+    public Response update(WebServicesPermission inPermission);
 }

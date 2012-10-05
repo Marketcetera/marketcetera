@@ -4,7 +4,6 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.*;
 
-import org.apache.commons.lang.Validate;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.marketcetera.api.dao.MutablePermission;
 import org.marketcetera.api.dao.Permission;
@@ -69,30 +68,48 @@ public class WebServicesPermission
         method = inMethod;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.Permission#getPermission()
+     */
+    @Override
+    public String getPermission()
+    {
+        return permission;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.MutablePermission#setPermission(java.lang.String)
+     */
+    @Override
+    public void setPermission(String inPermission)
+    {
+        permission = inPermission;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
         if(JsonMarshallingProvider.getInstance() != null &&
-                JsonMarshallingProvider.getInstance().getService() != null) {
+           JsonMarshallingProvider.getInstance().getService() != null) {
             return JsonMarshallingProvider.getInstance().getService().marshal(this);
         }
         StringBuilder builder = new StringBuilder();
-        builder.append("WebServicesPermission [method=").append(method).append("]");
+        builder.append("WebServicesPermission [method=").append(method).append(" permission=").append(permission).append("]");
         return builder.toString();
     }
     /**
      * Copies the attributes from the given object to this one.
      *
      * @param inPermission a <code>Permission</code> value
-     * @throws IllegalArgumentException if the given object is <code>null</code>
      */
     private final void copyAttributes(Permission inPermission)
     {
-        Validate.notNull(inPermission);
+        if(inPermission == null) {
+            return;
+        }
         super.copyAttributes(inPermission);
         setMethod(inPermission.getMethod());
+        setPermission(inPermission.getPermission());
     }
     /**
      * set of permissions assigned to this permission
@@ -100,4 +117,9 @@ public class WebServicesPermission
     @XmlElementWrapper(name="methods")
     @XmlElement(name="method")
     private Set<PermissionAttribute> method;
+    /**
+     * permission topic
+     */
+    @XmlAttribute
+    private String permission;
 }

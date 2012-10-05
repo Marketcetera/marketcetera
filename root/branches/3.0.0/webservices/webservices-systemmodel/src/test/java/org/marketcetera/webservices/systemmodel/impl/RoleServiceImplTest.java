@@ -94,7 +94,7 @@ public class RoleServiceImplTest
                                newRole);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.RoleService#addRole(org.marketcetera.api.dao.Role)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.RoleService#add(org.marketcetera.api.dao.Role)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -110,7 +110,7 @@ public class RoleServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addRole(null);
+                service.add(null);
             }
         };
         final long newId = counter.incrementAndGet();
@@ -127,7 +127,7 @@ public class RoleServiceImplTest
         newRole.setId(counter.incrementAndGet());
         long existingId = newRole.getId();
         assertFalse(newId == existingId);
-        WebServicesRole response = service.addRole(newRole);
+        WebServicesRole response = service.add(newRole);
 //        assertEquals(newId,
 //                     response.getId());
         verify(roleDao).add((Role)any());
@@ -138,14 +138,14 @@ public class RoleServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addRole(newRole);
+                service.add(newRole);
             }
         };
         verify(roleDao,
                times(2)).add((Role) any());
     }
     /**
-     * Tests {@link RoleServiceImpl#getRole(long)}.
+     * Tests {@link RoleServiceImpl#get(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -168,13 +168,13 @@ public class RoleServiceImplTest
         WebServicesRole newRole = generateRole();
         when(roleDao.getById(newRole.getId())).thenReturn(newRole);
         verifyRole(newRole,
-                        service.getRole(newRole.getId()));
+                        service.get(newRole.getId()));
       verify(roleDao).getById(anyLong());
 //        verify(roleDao,
 //               times(2)).getById(anyLong());
     }
     /**
-     * Tests {@link RoleServiceImpl#deleteRole(long)}.
+     * Tests {@link RoleServiceImpl#delete(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -183,20 +183,20 @@ public class RoleServiceImplTest
             throws Exception
     {
         // successful delete
-        Response response = service.deleteRole(1);
+        Response response = service.delete(1);
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
         verify(roleDao).delete((Role) any());
         // add role throws an exception
         doThrow(new RuntimeException("This exception is expected")).when(roleDao).delete((Role) any());
-        response = service.deleteRole(2);
+        response = service.delete(2);
         assertEquals(Response.serverError().build().getStatus(),
                      response.getStatus());
         verify(roleDao,
                times(2)).delete((Role) any());
     }
     /**
-     * Tests {@link RoleServiceImpl#getRoles()}.
+     * Tests {@link RoleServiceImpl#getAll()}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -206,7 +206,7 @@ public class RoleServiceImplTest
     {
         // no results
         when(roleDao.getAll()).thenReturn(new ArrayList<MutableRole>());
-        assertTrue(service.getRoles().isEmpty());
+        assertTrue(service.getAll().isEmpty());
         verify(roleDao).getAll();
         // single result
         WebServicesRole role1 = generateRole();
@@ -214,7 +214,7 @@ public class RoleServiceImplTest
         List<Role> expectedResults = new ArrayList<Role>();
         expectedResults.add(role1);
         verifyRoles(expectedResults,
-                    service.getRoles());
+                    service.getAll());
         verify(roleDao,
                times(2)).getAll();
         // multiple results
@@ -222,7 +222,7 @@ public class RoleServiceImplTest
         when(roleDao.getAll()).thenReturn(Arrays.asList(new MutableRole[]{role1, role2}));
         expectedResults.add(role2);
         verifyRoles(expectedResults,
-                          service.getRoles());
+                          service.getAll());
         verify(roleDao,
                times(3)).getAll();
     }

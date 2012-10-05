@@ -79,7 +79,7 @@ public class UserServiceImplTest
                                newUser);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#addUser(org.marketcetera.api.dao.User)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#add(org.marketcetera.api.dao.User)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -95,7 +95,7 @@ public class UserServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addUser(null);
+                service.add(null);
             }
         };
         final long newId = counter.incrementAndGet();
@@ -112,7 +112,7 @@ public class UserServiceImplTest
         newUser.setId(counter.incrementAndGet());
         long existingId = newUser.getId();
         assertFalse(newId == existingId);
-        WebServicesUser response = service.addUser(newUser);
+        WebServicesUser response = service.add(newUser);
 //        assertEquals(newId,
 //                     response.getId());
         verify(userDao).add((User)any());
@@ -123,14 +123,14 @@ public class UserServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addUser(newUser);
+                service.add(newUser);
             }
         };
         verify(userDao,
                times(2)).add((User) any());
     }
     /**
-     * Tests {@link UserServiceImpl#getUser(long)}.
+     * Tests {@link UserServiceImpl#get(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -144,7 +144,7 @@ public class UserServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.getUser(-1);
+                service.get(-1);
             }
         };
         verify(userDao).getById(anyLong());
@@ -152,12 +152,12 @@ public class UserServiceImplTest
         WebServicesUser newUser = generateUser();
         when(userDao.getById(newUser.getId())).thenReturn(newUser);
         verifyUser(newUser,
-                        service.getUser(newUser.getId()));
+                        service.get(newUser.getId()));
         verify(userDao,
                times(2)).getById(anyLong());
     }
     /**
-     * Tests {@link UserServiceImpl#deleteUser(long)}.
+     * Tests {@link UserServiceImpl#delete(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -166,13 +166,13 @@ public class UserServiceImplTest
             throws Exception
     {
         // successful delete
-        Response response = service.deleteUser(1);
+        Response response = service.delete(1);
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
         verify(userDao).delete((User) any());
         // add user throws an exception
         doThrow(new RuntimeException("This exception is expected")).when(userDao).delete((User) any());
-        response = service.deleteUser(2);
+        response = service.delete(2);
         assertEquals(Response.serverError().build().getStatus(),
                      response.getStatus());
         verify(userDao,
@@ -189,7 +189,7 @@ public class UserServiceImplTest
     {
         // no results
         when(userDao.getAll()).thenReturn(new ArrayList<MutableUser>());
-        assertTrue(service.getUsers().isEmpty());
+        assertTrue(service.getAll().isEmpty());
         verify(userDao).getAll();
         // single result
         WebServicesUser user1 = generateUser();
@@ -197,7 +197,7 @@ public class UserServiceImplTest
         List<User> expectedResults = new ArrayList<User>();
         expectedResults.add(user1);
         verifyUsers(expectedResults,
-                          service.getUsers());
+                          service.getAll());
         verify(userDao,
                times(2)).getAll();
         // multiple results
@@ -205,7 +205,7 @@ public class UserServiceImplTest
         when(userDao.getAll()).thenReturn(Arrays.asList(new MutableUser[]{user1, user2}));
         expectedResults.add(user2);
         verifyUsers(expectedResults,
-                          service.getUsers());
+                          service.getAll());
         verify(userDao,
                times(3)).getAll();
     }

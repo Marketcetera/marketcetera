@@ -95,7 +95,7 @@ public class PermissionServiceImplTest
                                newPermission);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.PermissionService#addPermission(org.marketcetera.api.dao.Permission)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.PermissionService#add(org.marketcetera.api.dao.Permission)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -111,7 +111,7 @@ public class PermissionServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addPermission(null);
+                service.add(null);
             }
         };
         final long newId = counter.incrementAndGet();
@@ -128,7 +128,7 @@ public class PermissionServiceImplTest
         newPermission.setId(counter.incrementAndGet());
         long existingId = newPermission.getId();
         assertFalse(newId == existingId);
-        WebServicesPermission response = service.addPermission(newPermission);
+        WebServicesPermission response = service.add(newPermission);
 //        assertEquals(newId,
 //                     response.getId());
         verify(permissionDao).add((Permission)any());
@@ -139,14 +139,14 @@ public class PermissionServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.addPermission(newPermission);
+                service.add(newPermission);
             }
         };
         verify(permissionDao,
                times(2)).add((Permission) any());
     }
     /**
-     * Tests {@link PermissionServiceImpl#getPermission(long)}.
+     * Tests {@link PermissionServiceImpl#get(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -160,7 +160,7 @@ public class PermissionServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.getPermission(-1);
+                service.get(-1);
             }
         };
         verify(permissionDao).getById(anyLong());
@@ -168,12 +168,12 @@ public class PermissionServiceImplTest
         WebServicesPermission newPermission = generatePermission();
         when(permissionDao.getById(newPermission.getId())).thenReturn(newPermission);
         verifyPermission(newPermission,
-                        service.getPermission(newPermission.getId()));
+                        service.get(newPermission.getId()));
         verify(permissionDao,
                times(2)).getById(anyLong());
     }
     /**
-     * Tests {@link PermissionServiceImpl#deletePermission(long)}.
+     * Tests {@link PermissionServiceImpl#delete(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -182,20 +182,20 @@ public class PermissionServiceImplTest
             throws Exception
     {
         // successful delete
-        Response response = service.deletePermission(1);
+        Response response = service.delete(1);
         assertEquals(Response.Status.OK.getStatusCode(),
                      response.getStatus());
         verify(permissionDao).delete((Permission) any());
         // add permission throws an exception
         doThrow(new RuntimeException("This exception is expected")).when(permissionDao).delete((Permission) any());
-        response = service.deletePermission(2);
+        response = service.delete(2);
         assertEquals(Response.serverError().build().getStatus(),
                      response.getStatus());
         verify(permissionDao,
                times(2)).delete((Permission) any());
     }
     /**
-     * Tests {@link PermissionServiceImpl#getPermissions()}.
+     * Tests {@link PermissionServiceImpl#getAll()}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -205,7 +205,7 @@ public class PermissionServiceImplTest
     {
         // no results
         when(permissionDao.getAll()).thenReturn(new ArrayList<MutablePermission>());
-        assertTrue(service.getPermissions().isEmpty());
+        assertTrue(service.getAll().isEmpty());
         verify(permissionDao).getAll();
         // single result
         WebServicesPermission permission1 = generatePermission();
@@ -213,7 +213,7 @@ public class PermissionServiceImplTest
         List<Permission> expectedResults = new ArrayList<Permission>();
         expectedResults.add(permission1);
         verifyPermissions(expectedResults,
-                          service.getPermissions());
+                          service.getAll());
         verify(permissionDao,
                times(2)).getAll();
         // multiple results
@@ -221,7 +221,7 @@ public class PermissionServiceImplTest
         when(permissionDao.getAll()).thenReturn(Arrays.asList(new MutablePermission[]{permission1, permission2}));
         expectedResults.add(permission2);
         verifyPermissions(expectedResults,
-                          service.getPermissions());
+                          service.getAll());
         verify(permissionDao,
                times(3)).getAll();
     }

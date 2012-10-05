@@ -27,7 +27,7 @@ public class RoleServiceImpl
      * @see org.marketcetera.webservices.systemmodel.RoleService#addRole(org.marketcetera.webservices.systemmodel.WebServicesRole)
      */
     @Override
-    public WebServicesRole addRole(WebServicesRole inRole)
+    public WebServicesRole add(WebServicesRole inRole)
     {
         try {
             Role persistableRole = roleFactory.create(inRole);
@@ -43,7 +43,7 @@ public class RoleServiceImpl
      * @see org.marketcetera.webservices.systemmodel.RoleService#getRole(long)
      */
     @Override
-    public WebServicesRole getRole(long inId)
+    public WebServicesRole get(long inId)
     {
         Role role = roleDao.getById(inId);
         if(role == null) {
@@ -55,7 +55,7 @@ public class RoleServiceImpl
      * @see org.marketcetera.webservices.systemmodel.RoleService#getRoles()
      */
     @Override
-    public List<WebServicesRole> getRoles()
+    public List<WebServicesRole> getAll()
     {
         List<WebServicesRole> decoratedRoles = new ArrayList<WebServicesRole>();
         for(Role role : roleDao.getAll()) {
@@ -67,7 +67,7 @@ public class RoleServiceImpl
      * @see org.marketcetera.webservices.systemmodel.RoleService#updateRole(org.marketcetera.webservices.systemmodel.WebServicesRole)
      */
     @Override
-    public Response updateRole(WebServicesRole inRole)
+    public Response update(WebServicesRole inRole)
     {
         Response response;
         try {
@@ -85,7 +85,7 @@ public class RoleServiceImpl
      * @see org.marketcetera.webservices.systemmodel.RoleService#deleteRole(long)
      */
     @Override
-    public Response deleteRole(long inId)
+    public Response delete(long inId)
     {
         SLF4JLoggerProxy.debug(RoleServiceImpl.class,
                                "RoleService deleteRole invoked with id {}", //$NON-NLS-1$

@@ -22,5 +22,11 @@ public interface Permission
      *
      * @return a <code>Set&lgt;PermissionAttribute&gt;</code> value
      */
-    Set<PermissionAttribute> getMethod();
+    public Set<PermissionAttribute> getMethod();
+    /**
+     * Indicates the domain for this permission, uniquely identifying a particular permission topic.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getPermission();
 }

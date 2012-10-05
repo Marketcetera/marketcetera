@@ -54,7 +54,10 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.marketcetera</groupId>

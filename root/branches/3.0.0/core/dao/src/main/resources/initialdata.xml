@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <objects>
     <users>
-        <user username="user1" password="password" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
-            accountNonExpired="true" />
-        <user username="user2" password="password" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
-            accountNonExpired="true" />
-        <user username="user3" password="password" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
+        <user username="user" password="password" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
             accountNonExpired="true" />
         <user username="admin" password="admin" enabled="true" credentialsNonExpired="true" accountNonLocked="true"
             accountNonExpired="true" />
     </users>
     <permissions>
-        <permission name="all" description="All rights to perform some action on some domain" permission="some domain:some action">
+        <permission name="user ui admin" description="Permission to perform UI administration tasks on users" permission="ui:user">
             <method>
                 <permissionAttribute>Create</permissionAttribute>
                 <permissionAttribute>Read</permissionAttribute>
@@ -19,60 +15,52 @@
                 <permissionAttribute>Delete</permissionAttribute>
             </method>
         </permission>
-        <permission name="read only" description="Read rights to perform some action on some other domain"
-            permission="some other domain:some action">
+        <permission name="permission ui admin" description="Permission to perform UI administration tasks on permissions" permission="ui:permission">
             <method>
-                <permissionAttribute>Read</permissionAttribute>
-            </method>
-        </permission>
-        <permission name="edit" description="Edit rights to perform some other action on still another domain"
-            permission="still other domain:some other action">
-            <method>
+                <permissionAttribute>Create</permissionAttribute>
                 <permissionAttribute>Read</permissionAttribute>
                 <permissionAttribute>Update</permissionAttribute>
+                <permissionAttribute>Delete</permissionAttribute>
+            </method>
+        </permission>
+        <permission name="role ui admin" description="Permission to perform UI administration tasks on roles" permission="ui:role">
+            <method>
+                <permissionAttribute>Create</permissionAttribute>
+                <permissionAttribute>Read</permissionAttribute>
+                <permissionAttribute>Update</permissionAttribute>
+                <permissionAttribute>Delete</permissionAttribute>
+            </method>
+        </permission>
+        <permission name="bond data ui admin" description="Permission to perform UI administration tasks on bond data" permission="ui:bonddata">
+            <method>
+                <permissionAttribute>Create</permissionAttribute>
+                <permissionAttribute>Read</permissionAttribute>
+                <permissionAttribute>Update</permissionAttribute>
+                <permissionAttribute>Delete</permissionAttribute>
             </method>
         </permission>
     </permissions>
     <roles>
         <role name="admin" description="Administation Role" />
-        <role name="intern" description="Intern Role" />
         <role name="bond user" description="Bond User Role" />
     </roles>
     <assignations>
         <assignToRole roleName="admin">
             <permissionsToRole>
-                <nameRef name="all" />
+                <nameRef name="user ui admin" />
+                <nameRef name="permission ui admin" />
+                <nameRef name="role ui admin" />
             </permissionsToRole>
             <usersToRole>
                 <nameRef name="admin" />
-            </usersToRole>
-        </assignToRole>
-        <assignToRole roleName="intern">
-            <permissionsToRole>
-                <nameRef name="edit" />
-                <nameRef name="bogusPermission" />
-            </permissionsToRole>
-            <usersToRole>
-                <nameRef name="user1" />
-                <nameRef name="user2" />
             </usersToRole>
         </assignToRole>
         <assignToRole roleName="bond user">
             <permissionsToRole>
-                <nameRef name="edit" />
-                <nameRef name="read only" />
+                <nameRef name="bond data ui admin" />
             </permissionsToRole>
             <usersToRole>
-                <nameRef name="user3" />
-                <nameRef name="bogusUser" />
-            </usersToRole>
-        </assignToRole>
-        <assignToRole roleName="bogusRole">
-            <permissionsToRole>
-                <nameRef name="all" />
-            </permissionsToRole>
-            <usersToRole>
-                <nameRef name="admin" />
+                <nameRef name="user" />
             </usersToRole>
         </assignToRole>
     </assignations>

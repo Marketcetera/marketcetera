@@ -27,7 +27,7 @@ public class PermissionServiceImpl
      * @see org.marketcetera.webservices.systemmodel.PermissionService#getPermission(long)
      */
     @Override
-    public WebServicesPermission getPermission(long inId)
+    public WebServicesPermission get(long inId)
     {
         Permission permission = permissionDao.getById(inId);
         if(permission == null) {
@@ -39,7 +39,7 @@ public class PermissionServiceImpl
      * @see org.marketcetera.webservices.systemmodel.PermissionService#updatePermission(org.marketcetera.webservices.systemmodel.WebServicesPermission)
      */
     @Override
-    public Response updatePermission(WebServicesPermission inPermission)
+    public Response update(WebServicesPermission inPermission)
     {
         Response response;
         try {
@@ -57,7 +57,7 @@ public class PermissionServiceImpl
      * @see org.marketcetera.webservices.systemmodel.PermissionService#addPermission(java.lang.String)
      */
     @Override
-    public WebServicesPermission addPermission(WebServicesPermission inPermission)
+    public WebServicesPermission add(WebServicesPermission inPermission)
     {
         try {
             Permission persistablePermission = permissionFactory.create(inPermission);
@@ -73,7 +73,7 @@ public class PermissionServiceImpl
      * @see org.marketcetera.webservices.systemmodel.PermissionService#getPermissions()
      */
     @Override
-    public List<WebServicesPermission> getPermissions()
+    public List<WebServicesPermission> getAll()
     {
         List<WebServicesPermission> decoratedUsers = new ArrayList<WebServicesPermission>();
         for(Permission permission : permissionDao.getAll()) {
@@ -85,7 +85,7 @@ public class PermissionServiceImpl
      * @see org.marketcetera.webservices.systemmodel.PermissionService#deletePermission(long)
      */
     @Override
-    public Response deletePermission(final long inId)
+    public Response delete(final long inId)
     {
         SLF4JLoggerProxy.debug(PermissionServiceImpl.class,
                                "PermissionService deletePermission invoked with id {}", //$NON-NLS-1$
