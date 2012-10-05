@@ -24,17 +24,8 @@ public interface PermissionService
      * @return a <code>WebServicesPermission</code> value
      */
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    public WebServicesPermission addPermissionJSON(WebServicesPermission inPermission);
-    /**
-     * Adds the given permission.
-     *
-     * @param inPermission a <code>WebServicesPermission</code> value
-     * @return a <code>WebServicesPermission</code> value
-     */
-    @POST
-    @Consumes({MediaType.APPLICATION_XML})
-    public WebServicesPermission addPermissionXML(WebServicesPermission inPermission);
+    @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
+    public WebServicesPermission addPermission(WebServicesPermission inPermission);
     /**
      * Gets the permission with the given id.
      *
@@ -43,34 +34,16 @@ public interface PermissionService
      */
     @GET
     @Path("{id}")
-    @Produces({MediaType.APPLICATION_JSON})
-    public WebServicesPermission getPermissionJSON(@PathParam("id")long inId);
-    /**
-     * Gets the permission with the given id.
-     *
-     * @param inId a <code>String</code> value
-     * @return a <code>WebServicesPermission</code> value
-     */
-    @GET
-    @Path("{id}")
-    @Produces({MediaType.APPLICATION_XML})
-    public WebServicesPermission getPermissionXML(@PathParam("id")long inId);
+    @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
+    public WebServicesPermission getPermission(@PathParam("id")long inId);
     /**
      * Gets all permissions.
      *
      * @return a <code>List&lt;WebServicesPermission&gt;</code> value
      */
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public List<WebServicesPermission> getPermissionsJSON();
-    /**
-     * Gets all permissions.
-     *
-     * @return a <code>List&lt;WebServicesPermission&gt;</code> value
-     */
-    @GET
-//    @Produces({MediaType.APPLICATION_XML})
-    public List<WebServicesPermission> getPermissionsXML();
+    @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
+    public List<WebServicesPermission> getPermissions();
     /**
      * Deletes the permission with the given id.
      *
@@ -87,25 +60,6 @@ public interface PermissionService
      * @return a <code>Response</code> value
      */
     @PUT
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response updatePermissionJSON(WebServicesPermission inPermission);
-    /**
-     * Updates the given permission.
-     *
-     * @param inPermission a <code>WebServicesPermission</code> value
-     * @return a <code>Response</code> value
-     */
-    @PUT
-    @Consumes({MediaType.APPLICATION_XML})
-    public Response updatePermissionXML(WebServicesPermission inPermission);
-    /**
-     * Gets the permissions assigned to the <code>User</code> with the given id. 
-     *
-     * @param inId a <code>long</code> value
-     * @return a <code>List&lt;WebServicesPermission&gt;</code> value
-     */
-    @Path("user/{id}")
-    @GET
-    @Produces({ MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML })
-    public List<WebServicesPermission> getAllByUserId(@PathParam("id")long inId);
+    @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
+    public Response updatePermission(WebServicesPermission inPermission);
 }
