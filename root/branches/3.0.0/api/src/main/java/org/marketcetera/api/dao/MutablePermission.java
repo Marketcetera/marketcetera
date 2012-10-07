@@ -4,6 +4,8 @@ package org.marketcetera.api.dao;
 
 import java.util.Set;
 
+import org.marketcetera.api.systemmodel.MutableNamedObject;
+
 /**
  * Provides a mutable view of an <code>Permission</code> object.
  *
@@ -11,7 +13,7 @@ import java.util.Set;
  * @since $Release$
  */
 public interface MutablePermission
-        extends Permission
+        extends Permission, MutableNamedObject
 {
     /**
      * Sets the method value.
