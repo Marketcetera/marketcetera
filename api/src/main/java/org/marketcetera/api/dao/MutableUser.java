@@ -1,6 +1,7 @@
 package org.marketcetera.api.dao;
 
 import org.marketcetera.api.security.User;
+import org.marketcetera.api.systemmodel.MutableNamedObject;
 
 /* $License$ */
 
@@ -11,7 +12,7 @@ import org.marketcetera.api.security.User;
  * @since $Release$
  */
 public interface MutableUser
-        extends User
+        extends User, MutableNamedObject
 {
     /**
      * Set the password value. 
