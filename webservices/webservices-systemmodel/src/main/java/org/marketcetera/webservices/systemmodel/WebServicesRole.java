@@ -5,7 +5,6 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.*;
 
-import org.apache.commons.lang.Validate;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonRootName;
@@ -111,7 +110,9 @@ public class WebServicesRole
      */
     private void copyAttributes(Role inRole)
     {
-        Validate.notNull(inRole);
+        if(inRole == null) {
+            return;
+        }
         super.copyAttributes(inRole);
         // perform deep copy on both collections
         users = new HashSet<User>();
