@@ -4,8 +4,6 @@ import java.util.Set;
 
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.NamedObject;
-import org.marketcetera.api.systemmodel.SystemObject;
-import org.marketcetera.api.systemmodel.VersionedObject;
 
 /* $License$ */
 
@@ -16,7 +14,7 @@ import org.marketcetera.api.systemmodel.VersionedObject;
  * @since $Release$
  */
 public interface Role
-        extends SystemObject, VersionedObject, NamedObject
+        extends NamedObject
 {
     /**
      * Gets the users in this group.

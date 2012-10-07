@@ -29,6 +29,17 @@ public interface Dao<Clazz extends SystemObject>
      */
     public List<Clazz> getAll();
     /**
+     * Gets the indicated number of <code>Clazz</code> values starting from the given point.
+     *
+     * @param inPageSize an <code>int</code> value
+     * @param inFirstResult an <code>int</code> value
+     * @param inString a <code>String</code> value
+     * @return a <code>List&lt;Clazz&gt;</code> value
+     */
+    public List<Clazz> getAll(int inPageSize,
+                              int inFirstResult,
+                              String inOrderBy);
+    /**
      * Saves the given <code>Clazz</code> to the database.
      *
      * @param inData a <code>Clazz</code> value

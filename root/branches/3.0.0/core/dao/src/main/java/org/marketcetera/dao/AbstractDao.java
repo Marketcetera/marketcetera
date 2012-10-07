@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.marketcetera.api.dao.Dao;
 import org.marketcetera.api.systemmodel.SystemObject;
@@ -11,7 +12,7 @@ import org.marketcetera.api.systemmodel.SystemObject;
 /* $License$ */
 
 /**
- *
+ * Provides common DAO services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -37,6 +38,20 @@ public abstract class AbstractDao<Clazz extends SystemObject>
     public List<Clazz> getAll()
     {
         return entityManager.createNamedQuery(getAllQueryName()).getResultList();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.dao.Dao#getAll(int, int, java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Clazz> getAll(int inMaxResults,
+                              int inFirstResult,
+                              String inOrderBy)
+    {
+        Query query = entityManager.createNamedQuery(getAllQueryName());
+        query.setFirstResult(inFirstResult);
+        query.setMaxResults(inMaxResults);
+        return query.getResultList();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Dao#save(java.lang.Object)
