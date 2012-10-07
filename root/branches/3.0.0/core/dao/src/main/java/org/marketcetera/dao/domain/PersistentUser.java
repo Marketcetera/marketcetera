@@ -159,6 +159,14 @@ public class PersistentUser
         return enabled;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.api.systemmodel.MutableNamedObject#setName(java.lang.String)
+     */
+    @Override
+    public void setName(String inName)
+    {
+        username = inName;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
     @Override
