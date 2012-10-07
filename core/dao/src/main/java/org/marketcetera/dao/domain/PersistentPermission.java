@@ -167,6 +167,7 @@ public class PersistentPermission
         methodSet = inPermission.getMethod();
         setName(inPermission.getName());
         setDescription(inPermission.getDescription());
+        setPermission(inPermission.getPermission());
     }
     // ------------------------------ OTHER METHODS -----------------------
     /**

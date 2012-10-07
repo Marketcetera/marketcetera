@@ -1,5 +1,6 @@
 package org.marketcetera.webservices.systemmodel;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.xml.bind.annotation.*;
@@ -116,7 +117,7 @@ public class WebServicesPermission
      */
     @XmlElementWrapper(name="methods")
     @XmlElement(name="method")
-    private Set<PermissionAttribute> method;
+    private Set<PermissionAttribute> method = new HashSet<PermissionAttribute>();
     /**
      * permission topic
      */
