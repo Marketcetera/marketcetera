@@ -69,4 +69,5 @@ public abstract class WebServicesNamedObject
      */
     @XmlAttribute
     private String description;
+    private static final long serialVersionUID = 1L;
 }

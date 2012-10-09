@@ -1,5 +1,7 @@
 package org.marketcetera.webservices.systemmodel;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -18,7 +20,7 @@ import org.marketcetera.api.systemmodel.SystemObject;
  */
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class WebServicesSystemObject
-        implements MutableSystemObject
+        implements MutableSystemObject, Serializable
 {
     /* (non-Javadoc)
      * @see org.marketcetera.api.systemmodel.SystemObject#getId()
@@ -50,4 +52,5 @@ public abstract class WebServicesSystemObject
      */
     @XmlAttribute
     private long id;
+    private static final long serialVersionUID = 1L;
 }
