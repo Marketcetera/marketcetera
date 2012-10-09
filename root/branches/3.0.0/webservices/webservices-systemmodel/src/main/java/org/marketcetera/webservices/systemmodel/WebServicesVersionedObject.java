@@ -52,4 +52,5 @@ public abstract class WebServicesVersionedObject
      */
     @XmlTransient
     private int version;
+    private static final long serialVersionUID = 1L;
 }
