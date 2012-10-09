@@ -1,5 +1,7 @@
 package org.marketcetera.api.systemmodel;
 
+import java.io.Serializable;
+
 /* $License$ */
 
 /**
@@ -9,6 +11,7 @@ package org.marketcetera.api.systemmodel;
  * @since $Release$
  */
 public interface SystemObject
+        extends Serializable
 {
     /**
      * Get the id value.
