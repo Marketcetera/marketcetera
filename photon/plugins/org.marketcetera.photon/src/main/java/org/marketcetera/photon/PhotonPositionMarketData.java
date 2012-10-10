@@ -19,6 +19,7 @@ import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDPackage;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -120,6 +121,11 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	@Override
 	public void addInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
 		Validate.noNullElements(new Object[] { instrument, listener });
+		//Skip marketdata request for currency since there is no provider.
+		if(instrument instanceof Currency)
+		{
+			return;
+		}
 		synchronized (mListeners) {
 			if (mDisposed.get()) return;
 			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(instrument);

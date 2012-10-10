@@ -12,6 +12,7 @@ import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
@@ -157,6 +158,11 @@ public class MarketData implements IMarketData {
     public IMarketDataReference<MDLatestTick> getLatestTick(
             final Instrument instrument) {
         Validate.notNull(instrument);
+        //Currency does not have MarketData Provider yet, skipping
+        if(instrument instanceof Currency)
+        {
+        	return null;
+        }
         if (canRequestFineGrainedMarketData(instrument)) {
             return new Reference<MDLatestTick, LatestTickKey>(
                     mLatestTickManager, new LatestTickKey(instrument));

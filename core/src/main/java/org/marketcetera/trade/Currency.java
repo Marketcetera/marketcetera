@@ -121,7 +121,14 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	 */
 	protected Currency()
     {
-        this("","","","");
+        //this("","","","");
+		leftCCY = null;
+		rightCCY = null;
+		nearTenor = null;
+		farTenor = null;
+		hashCode = -1;
+		fixSymbol = null;
+		
     }
 	
 
@@ -187,10 +194,13 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	 * 
 	 */
 	public Currency(String baseCCY, String plCCY, String nearTenor, String farTenor){
+		baseCCY = StringUtils.trimToNull(baseCCY);
+		plCCY = StringUtils.trimToNull(plCCY);
+		nearTenor = StringUtils.trimToNull(nearTenor);
+		farTenor = StringUtils.trimToNull(farTenor);
 		Validate.notNull(baseCCY,Messages.MISSING_LEFT_CURRENCY.getText());
 		Validate.notNull(plCCY,Messages.MISSING_RIGHT_CURRENCY.getText());
-		Validate.notNull(nearTenor,Messages.MISSING_NEAR_TENOR.getText());
-		baseCCY = StringUtils.trimToNull(baseCCY);
+		Validate.notNull(nearTenor,Messages.MISSING_NEAR_TENOR.getText());	
 		this.leftCCY = baseCCY;
 		this.rightCCY   = plCCY;
 		this.fixSymbol = leftCCY+"/"+rightCCY;
@@ -311,7 +321,7 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	}
 	
     @Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj) { 	
         if (this == obj)
             return true;
         if (obj == null)
@@ -319,9 +329,15 @@ public class Currency extends Instrument implements Comparable<Currency>{
         if (getClass() != obj.getClass())
             return false;
         Currency other = (Currency) obj;
-        if (nearTenor != other.nearTenor)
+        if (nearTenor == null) {
+            if (other.nearTenor != null)
+                return false;
+        } else if (!nearTenor.equals(other.nearTenor))
             return false;
-        if (farTenor != other.farTenor)
+        if (farTenor == null) {
+            if (other.farTenor != null)
+                return false;
+        } else if (!farTenor.equals(other.farTenor))
             return false;
         if (leftCCY == null) {
             if (other.leftCCY != null)
