@@ -80,11 +80,6 @@
                 <artifactId>spring-expression</artifactId>
                 <version>${mvn.spring.version}</version>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>org.springframework.security</groupId>-->
-                <!--<artifactId>spring-security-core</artifactId>-->
-                <!--<version>${mvn.spring.security.version}</version>-->
-            <!--</dependency>-->
             <!-- compile: other -->
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -498,7 +493,6 @@
         <module>api</module>
         <module>core</module>
         <module>datasource</module>
-        <module>execution-container</module>
         <module>fork</module>
         <!-- Disabled until such time that these tests do anything important -->
         <!--<module>itests</module>-->
