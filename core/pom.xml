@@ -18,7 +18,6 @@
     <description>Different core projects.</description>
 
     <modules>
-        <module>container</module>
         <module>core</module>
         <module>dao</module>
         <module>quickfix</module>
