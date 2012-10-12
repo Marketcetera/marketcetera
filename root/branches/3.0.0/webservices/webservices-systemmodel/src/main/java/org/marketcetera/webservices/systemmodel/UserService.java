@@ -27,15 +27,15 @@ public interface UserService
     @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     public WebServicesUser add(WebServicesUser inUser);
     /**
-     * Gets the user with the given id.
+     * Gets the user with the given username or id.
      *
-     * @param inId a <code>String</code> value
+     * @param inIdentifier a <code>String</code> value
      * @return a <code>WebServicesUser</code> value
      */
     @GET
-    @Path("{id}")
+    @Path("{identifier}")
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public WebServicesUser get(@PathParam("id")long inId);
+    public WebServicesUser get(@PathParam("identifier")String inIdentifier);
     /**
      * Gets all users.
      *

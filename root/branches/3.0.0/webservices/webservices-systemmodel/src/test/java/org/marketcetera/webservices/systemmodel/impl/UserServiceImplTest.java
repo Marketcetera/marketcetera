@@ -144,7 +144,7 @@ public class UserServiceImplTest
             protected void run()
                     throws Exception
             {
-                service.get(-1);
+                service.get("-1");
             }
         };
         verify(userDao).getById(anyLong());
@@ -152,7 +152,7 @@ public class UserServiceImplTest
         WebServicesUser newUser = generateUser();
         when(userDao.getById(newUser.getId())).thenReturn(newUser);
         verifyUser(newUser,
-                        service.get(newUser.getId()));
+                        service.get("newUser.getId()"));
         verify(userDao,
                times(2)).getById(anyLong());
     }
