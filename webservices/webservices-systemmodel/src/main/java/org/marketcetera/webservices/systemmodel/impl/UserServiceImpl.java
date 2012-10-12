@@ -40,12 +40,17 @@ public class UserServiceImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.webservices.systemmodel.UserService#getUser(long)
+     * @see org.marketcetera.webservices.systemmodel.UserService#get(java.lang.String)
      */
     @Override
-    public WebServicesUser get(long inId)
+    public WebServicesUser get(String inName)
     {
-        User user = userDao.getById(inId);
+        User user;
+        try {
+            user = userDao.getById(Long.parseLong(inName));
+        } catch (NumberFormatException e) {
+            user = userDao.getByName(inName);
+        }
         if(user == null) {
             return null;
         }
