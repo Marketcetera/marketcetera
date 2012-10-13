@@ -106,7 +106,18 @@ public class PersistentPermission
     {
         permission = inPermission;
     }
-    // ------------------------ CANONICAL METHODS ------------------------
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (getId() ^ (getId() >>> 32));
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
@@ -126,18 +137,14 @@ public class PersistentPermission
         if (getId() != other.getId()) {
             return false;
         }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
+            return false;
+        }
         return true;
-    }
-    /* (non-Javadoc)
-    * @see java.lang.Object#hashCode()
-    */
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (getId() ^ (getId() >>> 32));
-        return result;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -220,4 +227,5 @@ public class PersistentPermission
      */
     @ManyToMany(mappedBy="permissions",targetEntity=PersistentRole.class)
     private Set<Role> roles;
+    private static final long serialVersionUID = 1L;
 }

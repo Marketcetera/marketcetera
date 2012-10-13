@@ -140,8 +140,9 @@ public class PersistentRole
     public int hashCode()
     {
         final int prime = 31;
-        int result = 1;
+        int result = super.hashCode();
         result = prime * result + (int) (getId() ^ (getId() >>> 32));
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -153,7 +154,7 @@ public class PersistentRole
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
+        if (!super.equals(obj)) {
             return false;
         }
         if (!(obj instanceof PersistentRole)) {
@@ -161,6 +162,13 @@ public class PersistentRole
         }
         PersistentRole other = (PersistentRole) obj;
         if (getId() != other.getId()) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
             return false;
         }
         return true;
@@ -182,4 +190,5 @@ public class PersistentRole
     private String name;
     @Column(nullable=true)
     private String description;
+    private static final long serialVersionUID = 1L;
 }

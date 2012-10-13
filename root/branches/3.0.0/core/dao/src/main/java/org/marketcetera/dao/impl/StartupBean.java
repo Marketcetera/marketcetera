@@ -1,186 +1,121 @@
 package org.marketcetera.dao.impl;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.EnumSet;
 
-import javax.persistence.NoResultException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import org.apache.commons.lang.StringUtils;
-import org.marketcetera.api.dao.MutableRole;
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.PermissionDao;
-import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.dao.RoleDao;
-import org.marketcetera.api.dao.UserDao;
-import org.marketcetera.api.security.User;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.dao.domain.AssignToRole;
-import org.marketcetera.dao.domain.NameReference;
-import org.marketcetera.dao.domain.PersistentPermission;
-import org.marketcetera.dao.domain.PersistentRole;
-import org.marketcetera.dao.domain.PersistentUser;
-import org.marketcetera.dao.domain.SystemObjectList;
+import org.marketcetera.api.dao.*;
+import org.marketcetera.api.security.MutableAssignToRole;
+import org.marketcetera.api.security.MutableProvisioning;
+import org.marketcetera.api.security.ProvisioningManager;
+import org.marketcetera.dao.domain.SimpleAssignToRole;
+import org.marketcetera.dao.domain.SimpleProvisioning;
 
+/* $License$ */
 
 /**
+ * Provides necesary startup behaviors
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @date 7/14/12 3:38 AM
+ * @since $Release$
  */
-
-public class StartupBean {
-
-    // --------------------- GETTER / SETTER METHODS ---------------------
+public class StartupBean
+{
     /**
-     * Sets the permissionDao value.
+     * Sets the userFactory value.
      *
-     * @param a <code>PermissionDao</code> value
+     * @param inUserFactory a <code>UserFactory</code> value
      */
-    public void setPermissionDao(PermissionDao inPermissionDao)
+    public void setUserFactory(UserFactory inUserFactory)
     {
-        permissionDao = inPermissionDao;
+        userFactory = inUserFactory;
     }
     /**
-     * Sets the roleDao value.
+     * Sets the permissionFactory value.
      *
-     * @param inRoleDao a <code>RoleDao</code> value
+     * @param inPermissionFactory a <code>PermissionFactory</code> value
      */
-    public void setRoleDao(RoleDao inRoleDao)
+    public void setPermissionFactory(PermissionFactory inPermissionFactory)
     {
-        roleDao = inRoleDao;
+        permissionFactory = inPermissionFactory;
     }
     /**
-     * Sets the userDao value.
+     * Sets the roleFactory value.
      *
-     * @param inUserDao a <code>UserDao</code> value
+     * @param inRoleFactory a <code>RoleFactory</code> value
      */
-    public void setUserDao(UserDao inUserDao)
+    public void setRoleFactory(RoleFactory inRoleFactory)
     {
-        userDao = inUserDao;
+        roleFactory = inRoleFactory;
     }
-    // -------------------------- OTHER METHODS --------------------------
-    public void activate() {
-        SystemObjectList initialObjectList;
-        try {
-            InputStream inputStream = getClass().getResourceAsStream("/initialdata.xml");
-            JAXBContext context = JAXBContext.newInstance(PersistentPermission.class,PersistentRole.class,PersistentUser.class,SystemObjectList.class,NameReference.class);
-            Unmarshaller m = context.createUnmarshaller();
-            Object rawDeserialized = m.unmarshal(new InputStreamReader(inputStream));
-            if(rawDeserialized instanceof SystemObjectList) {
-                initialObjectList = (SystemObjectList)rawDeserialized;
-            } else {
-                throw new IllegalArgumentException("Expected an element of type objectList instead of " + rawDeserialized.getClass().getCanonicalName());
-            }
-        } catch (JAXBException e) {
-            SLF4JLoggerProxy.error(this,
-                                   e);
-            throw new RuntimeException("Could not initialize data from initialdata.xml");
-        }
-
-        if (permissionDao.getAll().size() == 0) {
-            loadDatabase(initialObjectList);
-        }
+    /**
+     * Sets the provisioningManager value.
+     *
+     * @param inProvisioningManager a <code>ProvisioningManager</code> value
+     */
+    public void setProvisioningManager(ProvisioningManager inProvisioningManager)
+    {
+        provisioningManager = inProvisioningManager;
     }
-
-    private void loadDatabase(SystemObjectList initialObjectList) {
-        for(Permission permission : initialObjectList.getPermissions()) {
-            try {
-                permissionDao.add(permission);
-            } catch (RuntimeException e) {
-                SLF4JLoggerProxy.warn(this, e, "Error writing {}, skipping", permission);
-            }
-        }
-        for(User user : initialObjectList.getUsers()) {
-            try {
-                userDao.add(user);
-            } catch (RuntimeException e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      "Error writing {}, skipping",
-                                      user);
-            }
-        }
-        for(Role role : initialObjectList.getRoles()) {
-            try {
-                roleDao.add(role);
-            } catch (RuntimeException e) {
-                SLF4JLoggerProxy.warn(this,
-                                      e,
-                                      "Error writing {}, skipping",
-                                      role);
-            }
-        }
-        for(AssignToRole assignToRole : initialObjectList.getAssignToRole()) {
-            SLF4JLoggerProxy.info(this,
-                                  "Performing assignation {}",
-                                  assignToRole);
-            // the elements to assign to the role are supposed to already exist, so find them
-            String roleName = StringUtils.trimToNull(assignToRole.getRoleName());
-            if(roleName == null) {
-                SLF4JLoggerProxy.warn(this,
-                                      "Cannot perform assignation {} because no role name was provided, skipping",
-                                      assignToRole);
-                continue;
-            }
-            MutableRole roleToModify;
-            try {
-                roleToModify = roleDao.getByName(roleName);
-            } catch (NoResultException e) {
-                SLF4JLoggerProxy.warn(this,
-                                      "Cannot perform assignation {} because no role by that name exists, skipping",
-                                      assignToRole);
-                continue;
-            }
-            // retrieve the permissions to add (note that this implementation consciously chooses to remove existing permissions/users in favor of the new list)
-            Set<Permission> permissionsToAdd = new HashSet<Permission>();
-            for(NameReference reference : assignToRole.getPermissionReferences()) {
-                String permissionReference = StringUtils.trimToNull(reference.getName());
-                if(permissionReference != null) {
-                    try {
-                        Permission permission = permissionDao.getByName(permissionReference);
-                        permissionsToAdd.add(permission);
-                    } catch (NoResultException e) {
-                        SLF4JLoggerProxy.warn(this,
-                                              "Cannot assign permission {} to role {} because no permission by that name exists",
-                                              permissionReference,
-                                              assignToRole);
-                    }
-                }
-            }
-            // retrieve the users to add (note that this implementation consciously chooses to remove existing permissions/users in favor of the new list)
-            Set<User> usersToAdd = new HashSet<User>();
-            for(NameReference reference : assignToRole.getUserReferences()) {
-                String userReference = StringUtils.trimToNull(reference.getName());
-                if(userReference != null) {
-                    try {
-                        User user = userDao.getByName(userReference);
-                        usersToAdd.add(user);
-                    } catch (NoResultException e) {
-                        SLF4JLoggerProxy.warn(this,
-                                              "Cannot assign user {} to role {} because no user by that name exists",
-                                              userReference,
-                                              assignToRole);
-                    }
-                }
-            }
-            // tie it all together
-            roleToModify.setPermissions(permissionsToAdd);
-            roleToModify.setUsers(usersToAdd);
-            roleDao.save(roleToModify);
-        }
-        SLF4JLoggerProxy.info(this,
-                              "Roles are now: {}",
-                              roleDao.getAll());
-        SLF4JLoggerProxy.info(this,
-                              "Users are now: {}",
-                              userDao.getAll());
+    /**
+     * Performs operations to initialize the system.
+     */
+    public void activate()
+    {
+        MutableProvisioning provisioning = new SimpleProvisioning();
+        MutableUser adminUser = (MutableUser)userFactory.create();
+        adminUser.setUsername("admin");
+        adminUser.setDescription("Administrative user");
+        adminUser.setIsAccountNonExpired(true);
+        adminUser.setIsAccountNonLocked(true);
+        adminUser.setIsCredentialsNonExpired(true);
+        adminUser.setIsEnabled(true);
+        adminUser.setPassword("admin");
+        provisioning.getUsers().add(adminUser);
+        MutablePermission userUiPermission = (MutablePermission)permissionFactory.create();
+        userUiPermission.setName("user ui admin");
+        userUiPermission.setDescription("Permission to perform UI administration tasks on users");
+        userUiPermission.setPermission("ui:user");
+        userUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
+        provisioning.getPermissions().add(userUiPermission);
+        MutablePermission permissionUiPermission = (MutablePermission)permissionFactory.create();
+        permissionUiPermission.setName("permission ui admin");
+        permissionUiPermission.setDescription("Permission to perform UI administration tasks on permissions");
+        permissionUiPermission.setPermission("ui:permission");
+        permissionUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
+        provisioning.getPermissions().add(permissionUiPermission);
+        MutablePermission roleUiPermission = (MutablePermission)permissionFactory.create();
+        roleUiPermission.setName("role ui admin");
+        roleUiPermission.setDescription("Permission to perform UI administration tasks on roles");
+        roleUiPermission.setPermission("ui:role");
+        roleUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
+        provisioning.getPermissions().add(roleUiPermission);
+        MutableRole adminRole = (MutableRole)roleFactory.create();
+        adminRole.setDescription("administration role");
+        adminRole.setName("admin");
+        provisioning.getRoles().add(adminRole);
+        MutableAssignToRole assignment = new SimpleAssignToRole();
+        assignment.setRole(adminRole.getName());
+        assignment.getPermissions().add(userUiPermission.getName());
+        assignment.getPermissions().add(permissionUiPermission.getName());
+        assignment.getPermissions().add(roleUiPermission.getName());
+        assignment.getUsers().add(adminUser.getName());
+        provisioning.getAssignments().add(assignment);
+        provisioningManager.provision(provisioning);
     }
-
-    // ------------------------------ FIELDS ------------------------------
-    private PermissionDao permissionDao;
-    private RoleDao roleDao;
-    private UserDao userDao;
+    /**
+     * creates user objects
+     */
+    private UserFactory userFactory;
+    /**
+     * creates permission objects
+     */
+    private PermissionFactory permissionFactory;
+    /**
+     * creates role objects
+     */
+    private RoleFactory roleFactory;
+    /**
+     * provides provisioning services
+     */
+    private ProvisioningManager provisioningManager;
 }

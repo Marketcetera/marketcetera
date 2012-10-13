@@ -9,7 +9,7 @@ package org.marketcetera.api.systemmodel;
  * @since $Release$
  */
 public interface MutableNamedObject
-        extends NamedObject
+        extends NamedObject, MutableVersionedObject
 {
     /**
      * Set the name value.

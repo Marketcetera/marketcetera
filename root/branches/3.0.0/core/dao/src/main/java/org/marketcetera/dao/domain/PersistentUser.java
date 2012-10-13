@@ -175,6 +175,7 @@ public class PersistentUser
         final int prime = 31;
         int result = 1;
         result = prime * result + (int) (getId() ^ (getId() >>> 32));
+        result = prime * result + ((username == null) ? 0 : username.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -194,6 +195,13 @@ public class PersistentUser
         }
         PersistentUser other = (PersistentUser) obj;
         if (getId() != other.getId()) {
+            return false;
+        }
+        if (username == null) {
+            if (other.username != null) {
+                return false;
+            }
+        } else if (!username.equals(other.username)) {
             return false;
         }
         return true;

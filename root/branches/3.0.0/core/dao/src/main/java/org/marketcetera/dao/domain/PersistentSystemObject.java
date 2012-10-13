@@ -34,6 +34,40 @@ public abstract class PersistentSystemObject
     public void setId(long id) {
         this.id = id;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (id ^ (id >>> 32));
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof PersistentSystemObject)) {
+            return false;
+        }
+        PersistentSystemObject other = (PersistentSystemObject) obj;
+        if (id != other.id) {
+            return false;
+        }
+        return true;
+    }
+
     protected PersistentSystemObject() {}
     protected PersistentSystemObject(SystemObject inSystemObject)
     {
@@ -45,4 +79,5 @@ public abstract class PersistentSystemObject
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private volatile long id;
+    private static final long serialVersionUID = 1L;
 }

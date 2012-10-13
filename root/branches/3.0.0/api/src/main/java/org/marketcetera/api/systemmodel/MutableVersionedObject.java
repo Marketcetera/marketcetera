@@ -10,7 +10,7 @@ package org.marketcetera.api.systemmodel;
  * @since $Release$
  */
 public interface MutableVersionedObject
-        extends VersionedObject
+        extends VersionedObject, MutableSystemObject
 {
     /**
      * Sets the version value.
