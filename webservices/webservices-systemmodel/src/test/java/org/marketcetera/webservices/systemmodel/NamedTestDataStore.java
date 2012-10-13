@@ -12,7 +12,7 @@ import org.marketcetera.api.systemmodel.SystemObject;
  *
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: NamedTestDataStore.java 16254 2012-09-04 23:19:20Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class NamedTestDataStore<DataClazz extends SystemObject & NamedObject>

@@ -24,7 +24,7 @@ import org.mockito.stubbing.Answer;
 /**
  * Provides common test services for systemmodel objects.
  *
- * @version $Id: SystemmodelTestBase.java 16254 2012-09-04 23:19:20Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class SystemmodelTestBase

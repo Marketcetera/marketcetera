@@ -7,7 +7,7 @@ import org.marketcetera.api.systemmodel.VersionedObject;
 /**
  * Provides a test <code>VersionedObject</code> implementation.
  *
- * @version $Id: MockVersionedObject.java 16253 2012-09-04 18:35:21Z topping $
+ * @version $Id$
  * @since $Release$
  */
 public abstract class MockVersionedObject
@@ -41,4 +41,5 @@ public abstract class MockVersionedObject
      * test version value
      */
     private int version;
+    private static final long serialVersionUID = 1L;
 }

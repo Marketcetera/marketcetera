@@ -123,4 +123,5 @@ public class WebServicesPermission
      */
     @XmlAttribute
     private String permission;
+    private static final long serialVersionUID = 1L;
 }

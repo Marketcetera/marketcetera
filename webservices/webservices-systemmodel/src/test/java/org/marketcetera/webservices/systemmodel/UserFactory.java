@@ -7,7 +7,7 @@ import org.marketcetera.api.security.User;
 /**
  * Creates <code>User</code> objects.
  *
- * @version $Id: UserFactory.java 82316 2012-03-21 21:13:27Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface UserFactory
