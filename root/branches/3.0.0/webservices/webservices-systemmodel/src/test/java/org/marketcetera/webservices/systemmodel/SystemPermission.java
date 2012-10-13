@@ -6,7 +6,7 @@ package org.marketcetera.webservices.systemmodel;
 /**
  * Describes permission levels in the system.
  *
- * @version $Id: SystemPermission.java 82320 2012-04-02 17:03:23Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public enum SystemPermission

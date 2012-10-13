@@ -11,7 +11,7 @@ import org.marketcetera.api.systemmodel.SystemObject;
 /**
  * Provides a test data store of a given object type.
  *
- * @version $Id: TestDataStore.java 16254 2012-09-04 23:19:20Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public class TestDataStore<DataClazz extends SystemObject>

@@ -148,4 +148,5 @@ public class WebServicesRole
     @XmlElementWrapper(name="permissions")
     @XmlElement(name="permission",type=WebServicesPermission.class)
     private Set<Permission> permissions = new HashSet<Permission>();
+    private static final long serialVersionUID = 1L;
 }
