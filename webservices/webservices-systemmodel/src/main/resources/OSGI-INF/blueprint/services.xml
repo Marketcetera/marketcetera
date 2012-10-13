@@ -12,20 +12,6 @@
             <cxf:logging/>
         </cxf:features>
     </cxf:bus>
-    <!-- CD 20120929 Added to try to remove the need for XmlSeeAlso for JAXB in JaxbList but didn't seem to help -->
-    <!-- bean id="jaxb" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
-        <property name="singleJaxbContext" value="true"/>
-            <property name="extraClass">
-                <list>
-                    <value>org.marketcetera.webservices.systemmodel.WebServicesNamedObject</value>
-                    <value>org.marketcetera.webservices.systemmodel.WebServicesSystemObject</value>
-                    <value>org.marketcetera.webservices.systemmodel.WebServicesVersionedObject</value>
-                    <value>org.marketcetera.webservices.systemmodel.WebServicesPermission</value>
-                    <value>org.marketcetera.webservices.systemmodel.WebServicesRole</value>
-                    <value>org.marketcetera.webservices.systemmodel.WebServicesUser</value>
-                </list>
-           </property>
-    </bean-->
     <bean id="jacksonMapper" class="org.marketcetera.webservices.systemmodel.impl.JacksonObjectMapper"/>
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
         <argument ref="jacksonMapper"/>
@@ -41,6 +27,7 @@
             <ref component-id="roleManagerWebServiceBean"/>
             <ref component-id="userManagerWebServiceBean"/>
             <ref component-id="authenticationWebServiceBean"/>
+            <ref component-id="provisioningWebServiceBean"/>
         </jaxrs:serviceBeans>
         <jaxrs:extensionMappings>
             <entry key="json" value="application/json" />
@@ -68,6 +55,9 @@
         <property name="securityService" ref="securityService"/>
         <property name="permissionDao" ref="permissionDao"/>
     </bean>
+    <bean id="provisioningWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.ProvisioningServiceImpl">
+        <property name="provisioningManager" ref="provisioningManager"/>
+    </bean>
 
     <reference id="securityService" interface="org.marketcetera.api.security.SecurityService"/>
     <reference id="permissionDao" interface="org.marketcetera.api.dao.PermissionDao"/>
@@ -76,5 +66,5 @@
     <reference id="roleFactory" interface="org.marketcetera.api.dao.RoleFactory"/>
     <reference id="userDao" interface="org.marketcetera.api.dao.UserDao"/>
     <reference id="userFactory" interface="org.marketcetera.api.dao.UserFactory"/>
-
+    <reference id="provisioningManager" interface="org.marketcetera.api.security.ProvisioningManager"/>
 </blueprint>

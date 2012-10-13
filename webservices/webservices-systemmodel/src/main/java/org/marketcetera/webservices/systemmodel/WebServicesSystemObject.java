@@ -38,6 +38,38 @@ public abstract class WebServicesSystemObject
     {
         id = inId;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (id ^ (id >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof WebServicesSystemObject)) {
+            return false;
+        }
+        WebServicesSystemObject other = (WebServicesSystemObject) obj;
+        if (id != other.id) {
+            return false;
+        }
+        return true;
+    }
     /**
      * Sets this object's attributes to the matching attribute of the given object.
      *

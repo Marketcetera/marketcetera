@@ -54,4 +54,5 @@ public abstract class PersistentVersionedObject
      */
     @Version
     private int version;
+    private static final long serialVersionUID = 1L;
 }

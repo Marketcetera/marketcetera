@@ -1,4 +1,4 @@
-package org.marketcetera.dao.domain;
+package org.marketcetera.webservices.systemmodel;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="nameRef")
 @XmlAccessorType(XmlAccessType.NONE)
-public class NameReference
+public class WebServicesNameReference
 {
     /**
      * Get the name value.
