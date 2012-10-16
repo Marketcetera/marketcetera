@@ -104,8 +104,23 @@ public abstract class AbstractDao<Clazz extends SystemObject>
     {
         return entityManager;
     }
+    /**
+     * Gets the name of the "get count" query. 
+     *
+     * @return a <code>String</code> value
+     */
     protected abstract String getCountQueryName();
+    /**
+     * Gets the name of the "get all" query. 
+     *
+     * @return a <code>String</code> value
+     */
     protected abstract String getAllQueryName();
+    /**
+     * Gets the type of the persistent object.
+     *
+     * @return a <code>Class&lt;? extends Clazz&gt;</code> value
+     */
     protected abstract Class<? extends Clazz> getDataType();
     /**
      * entity manager value

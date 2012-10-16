@@ -42,4 +42,14 @@
             jdbc.password=pw4metc
         </config>
     </feature>
+    <feature description="Sybase Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.sybaseDS">
+        <feature version="${pom.version}">org.marketcetera.datasource</feature>
+        <bundle>wrap:mvn:com.sybase/jdbc/4</bundle>
+        <config name="org.marketcetera.datasource">
+            jdbc.driverClassName=com.sybase.jdbc4.jdbc.SybDriver
+            jdbc.url=jdbc:sybase:Tds:localhost:4300?ServiceName=metc
+            jdbc.username=metc
+            jdbc.password=pw4metc
+        </config>
+    </feature>
 </features>

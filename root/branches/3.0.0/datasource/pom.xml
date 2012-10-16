@@ -86,7 +86,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Import-Package>org.postgresql;resolution:=optional,org.apache.derby.jdbc;resolution:=optional,com.mysql.jdbc;resolution:=optional,!oracle.jdbc.xa,!oracle.jdbc.xa.client,!org.enhydra.instantdb.jdbc,*</Import-Package>
+                        <Import-Package>com.sybase.jdbc4.jdbc;resolution:=optional,org.postgresql;resolution:=optional,org.apache.derby.jdbc;resolution:=optional,com.mysql.jdbc;resolution:=optional,!oracle.jdbc.xa,!oracle.jdbc.xa.client,!org.enhydra.instantdb.jdbc,*</Import-Package>
                         <Export-Package>org.apache.commons.dbcp,org.apache.commons.pool,org.apache.commons.pool.impl</Export-Package>
                         <Embed-Dependency>xapool,commons-dbcp,commons-pool</Embed-Dependency>
                     </instructions>
