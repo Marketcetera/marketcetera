@@ -1,0 +1,26 @@
+package org.marketcetera.core.module;
+
+import org.marketcetera.core.util.log.I18NBoundMessage;
+
+/* $License$ */
+/**
+ * Indicates errors are encountered registering or unregistering
+ * module factory or instance mxbeans with the mbean server.
+ *
+ * @version $Id: BeanRegistrationException.java 16063 2012-01-31 18:21:55Z colin $
+ * @since 1.0.0
+ */
+public class BeanRegistrationException extends MXBeanOperationException {
+    /**
+     * Creates an instance.
+     *
+     * @param inCause the underlying cause.
+     * @param inMessage the error message
+     */
+    BeanRegistrationException(Throwable inCause,
+                                     I18NBoundMessage inMessage) {
+        super(inCause, inMessage);
+    }
+
+    private static final long serialVersionUID = -4300262276734891698L;
+}

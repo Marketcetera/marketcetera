@@ -1,0 +1,38 @@
+package org.marketcetera.core.util.log;
+
+import java.io.Serializable;
+
+/**
+ * A bound message, representing the combination of an {@link
+ * I18NMessageNP} and its arbitrary number of parameters.
+ * 
+ * @since 0.5.0
+ * @version $Id: I18NBoundMessageNP.java 16063 2012-01-31 18:21:55Z colin $
+ */
+
+/* $License$ */
+
+public class I18NBoundMessageNP
+    extends I18NBoundMessageBase<I18NMessageNP>
+{
+
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
+    // CONSTRUCTORS.
+
+    /**
+     * Constructor mirroring superclass constructor.
+     *
+     * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Serializable...)
+     */
+
+    public I18NBoundMessageNP
+        (I18NMessageNP message,
+         Serializable... params)
+    {
+        super(message,params);
+    }
+}

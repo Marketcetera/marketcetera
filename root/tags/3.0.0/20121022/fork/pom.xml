@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.marketcetera</groupId>
+        <artifactId>public-parent</artifactId>
+        <version>1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.marketcetera.fork</groupId>
+    <artifactId>fork-parent</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <name>Forks of public projects for special needs</name>
+
+    <modules>
+        <module>commons-csv</module>
+        <module>commons-i18n</module>
+        <module>texttablefmt</module>
+        <module>csvtools</module>
+        <module>glazed-subset</module>
+    </modules>
+</project>
