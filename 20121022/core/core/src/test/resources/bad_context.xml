@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- 
+  - Main server configuration. 
+  - 
+  - Author: colin@marketcetera.com
+  - Since: $Release$ 
+  - Version: $Id: bad_context.xml 82306 2012-02-29 23:18:25Z colin $ 
+  - $License$ 
+-->
+
+<!-- - See 'README.html' for detailed documentation. -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	                       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  <bean class="this.class.does.not.exist"/>
+</beans>

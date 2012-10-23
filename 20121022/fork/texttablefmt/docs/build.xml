@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<project name="Text-Table-Formatter-Examples" basedir="." default="run">
+
+  <target name="run">
+    <delete>
+      <fileset dir="examples" includes="**/*.class"/>
+    </delete>
+    <javac includes="**/*.java"
+           debug="true"
+           deprecation="true"
+           source="1.5">
+      <src path="examples" />
+      <classpath>
+        <pathelement location="../lib/text-table-formatter-1.0.jar" />
+        <pathelement location="../lib/log4j-1.2.9.jar" />
+      </classpath>
+    </javac>
+    
+    <java classname="examples.Basic">
+      <classpath>
+        <pathelement path="." />
+        <pathelement location="../lib/text-table-formatter-1.0.jar" />
+        <pathelement location="../lib/log4j-1.2.9.jar" />
+      </classpath>
+    </java>
+  </target>
+  
+</project>

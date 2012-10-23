@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+           xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <service ref="provisioningManagerBean" interface="org.marketcetera.api.security.ProvisioningManager"/>
+
+    <service ref="permissionDaoBean" interface="org.marketcetera.api.dao.PermissionDao"/>
+    <service ref="roleDaoBean" interface="org.marketcetera.api.dao.RoleDao"/>
+    <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
+    <service ref="systemInformationDaoBean" interface="org.marketcetera.api.dao.SystemInformationDao"/>
+
+    <service ref="permissionFactoryBean" interface="org.marketcetera.api.dao.PermissionFactory"/>
+    <service ref="roleFactoryBean" interface="org.marketcetera.api.dao.RoleFactory"/>
+    <service ref="userFactoryBean" interface="org.marketcetera.api.dao.UserFactory"/>
+    <service ref="systemInformationFactoryBean" interface="org.marketcetera.api.dao.SystemInformationFactory"/>
+
+    <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="roleDaoBean" class="org.marketcetera.dao.impl.RoleDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="userDaoBean" class="org.marketcetera.dao.impl.UserDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="systemInformationDaoBean" class="org.marketcetera.dao.impl.SystemInformationDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="permissionFactoryBean" class="org.marketcetera.dao.domain.PersistentPermissionFactory"/>
+    <bean id="roleFactoryBean" class="org.marketcetera.dao.domain.PersistentRoleFactory"/>
+    <bean id="userFactoryBean" class="org.marketcetera.dao.domain.PersistentUserFactory"/>
+    <bean id="systemInformationFactoryBean" class="org.marketcetera.dao.domain.PersistentSystemInformationFactory"/>
+    
+    <bean id="provisioningManagerBean" class="org.marketcetera.dao.impl.ProvisioningManagerImpl">
+        <property name="permissionDao" ref="permissionDaoBean"/>
+        <property name="roleDao" ref="roleDaoBean"/>
+        <property name="userDao" ref="userDaoBean"/>
+    </bean>
+
+    <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
+        <property name="permissionFactory" ref="permissionFactoryBean"/>
+        <property name="roleFactory" ref="roleFactoryBean"/>
+        <property name="userFactory" ref="userFactoryBean"/>
+        <property name="provisioningManager" ref="provisioningManagerBean"/>
+    </bean>
+
+</blueprint>
