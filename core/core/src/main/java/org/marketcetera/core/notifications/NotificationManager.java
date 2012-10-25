@@ -1,6 +1,6 @@
 package org.marketcetera.core.notifications;
 
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
@@ -51,7 +51,7 @@ public class NotificationManager
      * @see org.marketcetera.core.notifications.INotificationManager#subscribe(org.marketcetera.core.publisher.ISubscriber)
      */
     @Override
-    public void subscribe(ISubscriber inSubscriber)
+    public void subscribe(Subscriber inSubscriber)
     {
         mPublisher.subscribe(inSubscriber);
     }
@@ -59,7 +59,7 @@ public class NotificationManager
      * @see org.marketcetera.core.notifications.INotificationManager#unsubscribe(org.marketcetera.core.publisher.ISubscriber)
      */
     @Override
-    public void unsubscribe(ISubscriber inSubscriber)
+    public void unsubscribe(Subscriber inSubscriber)
     {
         mPublisher.unsubscribe(inSubscriber);
     }
@@ -90,7 +90,7 @@ public class NotificationManager
      * @since 0.8.0
      */
         private static class NotificationLogger
-        implements ISubscriber
+        implements Subscriber
     {
         /**
          * the special category to use for notifications

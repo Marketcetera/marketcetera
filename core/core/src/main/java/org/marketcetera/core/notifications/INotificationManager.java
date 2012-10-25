@@ -1,7 +1,7 @@
 package org.marketcetera.core.notifications;
 
-import org.marketcetera.core.publisher.IPublisher;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Publisher;
+import org.marketcetera.core.publisher.Subscriber;
 
 /* $License$ */
 
@@ -12,7 +12,7 @@ import org.marketcetera.core.publisher.ISubscriber;
  * @since 0.8.0
  */
 public interface INotificationManager
-    extends IPublisher
+    extends Publisher
 {
     /**
      * Subscribes to all notifications.
@@ -21,7 +21,7 @@ public interface INotificationManager
      *
      * @param inSubscriber an <code>ISubscriber</code> value
      */
-    public void subscribe(ISubscriber inSubscriber);
+    public void subscribe(Subscriber inSubscriber);
     /**
      * Unsubscribes to all notifications.
      * 
@@ -29,7 +29,7 @@ public interface INotificationManager
      *
      * @param inSubscriber an <code>ISubscriber</code> value
      */
-    public void unsubscribe(ISubscriber inSubscriber);
+    public void unsubscribe(Subscriber inSubscriber);
     /**
      * Publishes an <code>INotification</code>.
      * 

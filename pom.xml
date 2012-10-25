@@ -496,6 +496,7 @@
         <module>fork</module>
         <!-- Disabled until such time that these tests do anything important -->
         <!--<module>itests</module>-->
+	<module>marketdata</module>
         <module>modules</module>
         <module>security</module>
         <module>util-test</module>

@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 /**
- * Test implementation of {@link ISubscriber}.
+ * Test implementation of {@link Subscriber}.
  *
  * @version $Id: MockSubscriber.java 16063 2012-01-31 18:21:55Z colin $
  * @since 0.43-SNAPSHOT
  */
 public class MockSubscriber
-    implements ISubscriber
+    implements Subscriber
 {
     private boolean mInteresting = false;
     private volatile Object mData = null;

@@ -1,6 +1,6 @@
 package org.marketcetera.core.marketdata;
 
-import org.marketcetera.core.publisher.IPublisher;
+import org.marketcetera.core.publisher.Publisher;
 
 /* $License$ */
 
@@ -11,7 +11,7 @@ import org.marketcetera.core.publisher.IPublisher;
  * @since 0.5.0
  */
 public interface MarketDataFeedToken
-        extends IPublisher
+        extends Publisher
 {
     /**
      * Describes the set of states for a token.

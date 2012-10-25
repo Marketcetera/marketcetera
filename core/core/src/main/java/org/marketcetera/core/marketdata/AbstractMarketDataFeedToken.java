@@ -2,7 +2,7 @@ package org.marketcetera.core.marketdata;
 
 import java.util.concurrent.ExecutionException;
 
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 
 /**
@@ -72,26 +72,26 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
      *
      * @param inSubscribers an <code>ISubscriber...</code> value
      */
-    public final void subscribeAll(ISubscriber... inSubscribers)
+    public final void subscribeAll(Subscriber... inSubscribers)
     {
         if(inSubscribers == null) {
             return;
         }
-        for(ISubscriber subscriber : inSubscribers) {
+        for(Subscriber subscriber : inSubscribers) {
             subscribe(subscriber);
         }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.publisher.IPublisher#subscribe(org.marketcetera.core.publisher.ISubscriber)
      */
-    public final void subscribe(ISubscriber inSubscriber)
+    public final void subscribe(Subscriber inSubscriber)
     {
         getPublisher().subscribe(inSubscriber);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.publisher.IPublisher#unsubscribe(org.marketcetera.core.publisher.ISubscriber)
      */
-    public final void unsubscribe(ISubscriber inSubscriber)
+    public final void unsubscribe(Subscriber inSubscriber)
     {
         getPublisher().unsubscribe(inSubscriber);
     }

@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.marketdata.*;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.options.OptionUtils;
 import org.marketcetera.core.trade.Equity;
@@ -300,7 +300,7 @@ public class BogusFeed
         {
             marketDataRequest = inRequest;
             feed = inFeed;
-            subscriber = new ISubscriber() {
+            subscriber = new Subscriber() {
                 @Override
                 public boolean isInteresting(Object inData)
                 {
@@ -545,7 +545,7 @@ public class BogusFeed
          * the bridge object which receives responses from the parent's nested exchanges
          * and forwards them to the submitter of the request
          */
-        private final ISubscriber subscriber;
+        private final Subscriber subscriber;
         /**
          * indicates whether this object has been executed yet or not
          */
