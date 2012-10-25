@@ -2,7 +2,7 @@ package org.marketcetera.core.marketdata;
 
 import java.util.List;
 
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.QuoteEvent;
@@ -36,7 +36,7 @@ public interface Exchange<T>
      * @return a <code>T</code> value representing the subscription
      */
     public T getStatistics(ExchangeRequest inExchangeRequest,
-                           ISubscriber inSubscriber);
+                           Subscriber inSubscriber);
     /**
      * Gets the top of the exchange book for the given <code>ExchangeRequest</code>.
      *
@@ -55,7 +55,7 @@ public interface Exchange<T>
      * @return a <code>T</code> value representing the subscription
      */
     public T getTopOfBook(ExchangeRequest inExchangeRequest,
-                          ISubscriber inSubscriber);
+                          Subscriber inSubscriber);
     /**
      * Gets the depth of the exchange book for the given <code>ExchangeRequest</code>.
      *
@@ -74,7 +74,7 @@ public interface Exchange<T>
      * @return a <code>T</code> value representing the subscription
      */
     public T getDepthOfBook(ExchangeRequest inExchangeRequest,
-                            ISubscriber inSubscriber);
+                            Subscriber inSubscriber);
     /**
      * Gets the latest trade for the given <code>ExchangeRequest</code>.
      *
@@ -94,7 +94,7 @@ public interface Exchange<T>
      * @return a <code>T</code> value representing the subscription
      */
     public T getLatestTick(ExchangeRequest inExchangeRequest,
-                           ISubscriber inSubscriber);
+                           Subscriber inSubscriber);
     /**
      * Gets the dividends for the given <code>ExchangeRequest</code>.
      *
@@ -114,7 +114,7 @@ public interface Exchange<T>
      * @return a <code>T</code> value representing the subscription
      */
     public T getDividends(ExchangeRequest inExchangeRequest,
-                          ISubscriber inSubscriber);
+                          Subscriber inSubscriber);
     /**
      * Cancels the subscription represented by the given token.
      * 

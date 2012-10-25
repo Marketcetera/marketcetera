@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 
 import static org.junit.Assert.assertEquals;
@@ -23,11 +23,11 @@ public class MarketDataFeedTokenSpecTest
     public void testGenerateTokenSpec()
         throws Exception
     {
-        ISubscriber[] emptySubscribers = new ISubscriber[0];
-        ISubscriber[] nonemptySubscribers = new ISubscriber[] { new MockSubscriber(), new DoNothingSubscriber() }; 
+        Subscriber[] emptySubscribers = new Subscriber[0];
+        Subscriber[] nonemptySubscribers = new Subscriber[] { new MockSubscriber(), new DoNothingSubscriber() }; 
         for(int b=0;b<=1;b++) {
             for (int c=0;c<=2;c++) {
-                ISubscriber[] listToUse = null;
+                Subscriber[] listToUse = null;
                 if(c == 1) {
                     listToUse = emptySubscribers;
                 }
@@ -41,7 +41,7 @@ public class MarketDataFeedTokenSpecTest
     }
     
     private void doValidateTokenSpec(final MarketDataRequest inRequest,
-                                     final ISubscriber[] inSubscribers)
+                                     final Subscriber[] inSubscribers)
         throws Exception
     {
         if(inRequest == null) {

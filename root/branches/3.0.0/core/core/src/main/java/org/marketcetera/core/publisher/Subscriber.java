@@ -3,14 +3,14 @@ package org.marketcetera.core.publisher;
 /**
  * Capable of responding to publish requests and receiving publications.
  *
- * <p>After subscribing to a {@link IPublisher}, when the {@link IPublisher} has
- * an update to offer, the {@link IPublisher} will ask if the update is interesting,
+ * <p>After subscribing to a {@link Publisher}, when the {@link Publisher} has
+ * an update to offer, the {@link Publisher} will ask if the update is interesting,
  * updating the <code>Subscriber</code> if appropriate.
  * 
  * @version $Id: ISubscriber.java 16063 2012-01-31 18:21:55Z colin $
- * @see IPublisher
+ * @see Publisher
  */
-public interface ISubscriber
+public interface Subscriber
 {
     /**
      * Determines if the <code>Subscriber</code> would be interested in receiving the given object as an update.
@@ -26,7 +26,7 @@ public interface ISubscriber
     /**
      * Receives an update from the <code>Publisher</code>.
      * 
-     * <p>This method will be called only if the <code>Subscriber</code> returns true from {@link ISubscriber#isInteresting(Object)}.
+     * <p>This method will be called only if the <code>Subscriber</code> returns true from {@link Subscriber#isInteresting(Object)}.
      * 
      * @param inData an <code>Object</code> value containing the implementation-dependent update
      */

@@ -7,7 +7,7 @@ import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.event.AggregateEvent;
 import org.marketcetera.core.event.Event;
@@ -176,7 +176,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         }
         // these subscribers are all the ones that are interested in the results
         //  of the query we're about to execute - this list may be empty or null
-        ISubscriber[] subscribers = inTokenSpec.getSubscribers();
+        Subscriber[] subscribers = inTokenSpec.getSubscribers();
         // the token is used to track the request and its responses
         // generate a new token for this request
         T token;
@@ -1058,14 +1058,14 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     /**
      * Wraps the {@link IFeedComponentListener} for this feed.
      *
-     * <p>The wrapper translates {@link ISubscriber} methods to
+     * <p>The wrapper translates {@link Subscriber} methods to
      * the {@link IFeedComponentListener} objects.
      * 
      * @version $Id: AbstractMarketDataFeed.java 16063 2012-01-31 18:21:55Z colin $
      * @since 0.5.0
      */
         private static class FeedComponentListenerWrapper
-        implements ISubscriber
+        implements Subscriber
     {
         /**
          * the feed component listener to which to transmit feed status updates

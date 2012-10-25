@@ -23,7 +23,7 @@ import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.event.util.PriceAndSizeComparator;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.trade.DeliveryType;
 import org.marketcetera.core.trade.Equity;
@@ -347,7 +347,7 @@ public class SimulatedExchange
      */
     @Override
     public Token getDividends(ExchangeRequest inExchangeRequest,
-                              ISubscriber inSubscriber)
+                              Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
@@ -358,7 +358,7 @@ public class SimulatedExchange
      */
     @Override
     public Token getStatistics(ExchangeRequest inExchangeRequest,
-                               ISubscriber inSubscriber)
+                               Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
@@ -369,7 +369,7 @@ public class SimulatedExchange
      */
     @Override
     public Token getDepthOfBook(ExchangeRequest inExchangeRequest,
-                                ISubscriber inSubscriber)
+                                Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
@@ -380,7 +380,7 @@ public class SimulatedExchange
      */
     @Override
     public Token getLatestTick(ExchangeRequest inExchangeRequest,
-                               ISubscriber inSubscriber)
+                               Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
@@ -391,7 +391,7 @@ public class SimulatedExchange
      */
     @Override
     public Token getTopOfBook(ExchangeRequest inExchangeRequest,
-                              ISubscriber inSubscriber)
+                              Subscriber inSubscriber)
     {
         return doAsynchronousRequest(inExchangeRequest,
                                      inSubscriber,
@@ -526,7 +526,7 @@ public class SimulatedExchange
      * @return a <code>Token</code> value
      */
     private Token doAsynchronousRequest(ExchangeRequest inExchangeRequest,
-                                        ISubscriber inSubscriber,
+                                        Subscriber inSubscriber,
                                         Type inRequestType)
     {
         long startingTime = System.currentTimeMillis();
@@ -633,7 +633,7 @@ public class SimulatedExchange
      * @param inSubscriber an <code>ISubscriber</code> value
      */
     private void validateAsynchronousRequest(ExchangeRequest inRequest,
-                                             ISubscriber inSubscriber)
+                                             Subscriber inSubscriber)
     {
         // no status check for the exchange because subscription requests may be submitted any time
         if(inSubscriber == null) {
@@ -1685,7 +1685,7 @@ public class SimulatedExchange
      */
     @ThreadSafe
         private static class FilteringSubscriber
-            implements ISubscriber
+            implements Subscriber
     {
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -1709,7 +1709,7 @@ public class SimulatedExchange
          * @param inExchangeRequest an <code>ExchangeRequest</code> value containing the request
          * @return a <code>Token</code> value representing the subscription
          */
-        private static Token subscribe(ISubscriber inOriginalSubscriber,
+        private static Token subscribe(Subscriber inOriginalSubscriber,
                                        Type inType,
                                        Collection<Instrument> inInstruments,
                                        SimulatedExchange inExchange,
@@ -1740,7 +1740,7 @@ public class SimulatedExchange
          * @param inInstruments a <code>Collection&lt;Instrument&gt;</code> value
          * @param inExchange a <code>SimulatedExchange</code> value containing the owning exchange
          */
-        private FilteringSubscriber(ISubscriber inSubscriber,
+        private FilteringSubscriber(Subscriber inSubscriber,
                                     Type inType,
                                     Collection<Instrument> inInstruments,
                                     SimulatedExchange inExchange)
@@ -2019,7 +2019,7 @@ public class SimulatedExchange
         /**
          * the original (external to this class) subscriber
          */
-        private final ISubscriber originalSubscriber;
+        private final Subscriber originalSubscriber;
         /**
          * the type of request
          */
@@ -2160,9 +2160,9 @@ public class SimulatedExchange
      * 
      * <p>This object is used to identify a market data request.  When
      * executing a subscription request, as in to
-     * {@link Exchange#getDepthOfBook(ExchangeRequest, ISubscriber)}
+     * {@link Exchange#getDepthOfBook(ExchangeRequest, Subscriber)}
      * for instance, a <code>Token</code> value will be returned.  Updates will be published to the
-     * given {@link ISubscriber} until the exchange is stopped or the request is canceled via
+     * given {@link Subscriber} until the exchange is stopped or the request is canceled via
      * {@link Token#cancel()}.
      *
      * @version $Id: SimulatedExchange.java 16063 2012-01-31 18:21:55Z colin $

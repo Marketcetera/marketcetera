@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.MockEventTranslator;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 
 import static org.junit.Assert.fail;
@@ -51,12 +51,12 @@ public class MarketDataFeedTestBase
         }
         inSubscriber.reset();
     }
-    protected void resetSubscribers(ISubscriber... inSubscribers)
+    protected void resetSubscribers(Subscriber... inSubscribers)
     {
         if(inSubscribers == null) {
             return;
         }
-        for(ISubscriber subscriber : inSubscribers) {
+        for(Subscriber subscriber : inSubscribers) {
             if(subscriber != null) {
                 MockSubscriber s = (MockSubscriber)subscriber;
                 resetSubscriber(s);
@@ -64,13 +64,13 @@ public class MarketDataFeedTestBase
         }
     }
     /**
-     * This {@link ISubscriber} implementation requests all publications and does
+     * This {@link Subscriber} implementation requests all publications and does
      * nothing with them.
      *
      * @version $Id: MarketDataFeedTestBase.java 82329 2012-04-10 16:28:13Z colin $
      * @since 0.43-SNAPSHOT
      */
-    public static class DoNothingSubscriber implements ISubscriber {
+    public static class DoNothingSubscriber implements Subscriber {
         public Object mData;
         /* (non-Javadoc)
          * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)

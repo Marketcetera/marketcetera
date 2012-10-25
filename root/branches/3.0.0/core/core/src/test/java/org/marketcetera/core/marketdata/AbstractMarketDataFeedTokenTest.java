@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.marketdata.MarketDataFeedToken.Status;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 
 import static org.junit.Assert.*;
@@ -32,7 +32,7 @@ public class AbstractMarketDataFeedTokenTest
         mCredentials = new MockMarketDataFeedCredentials();
         dataRequest = MarketDataFeedTestSuite.generateDataRequest();
         mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(dataRequest, 
-                                                               new ISubscriber[0]);
+                                                               new Subscriber[0]);
         mFeed = new MockMarketDataFeed();
         mFeed.start();
         mFeed.login(mCredentials);
@@ -64,7 +64,7 @@ public class AbstractMarketDataFeedTokenTest
         
         // construct one where all is well with the world
         mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataFeedTestSuite.generateDataRequest(), 
-                                                               new ISubscriber[0]);
+                                                               new Subscriber[0]);
         MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(mTokenSpec,
                                                                          mFeed);
         assertEquals(Status.NOT_STARTED,
@@ -128,22 +128,22 @@ public class AbstractMarketDataFeedTokenTest
                           new MockSubscriber[] { s1, s2, s3 },
                           mCredentials);
         // repeat a few tests with the list subscribe
-        mToken.subscribeAll((ISubscriber[])null);
+        mToken.subscribeAll((Subscriber[])null);
         // nobody is subscribed
         mToken.publishAndWait(s1);
         verifySubscribers(new MockSubscriber[] { },
                           new MockSubscriber[] { s1, s2, s3 },
                           s1);
-        List<ISubscriber> subscribers = new ArrayList<ISubscriber>(); 
+        List<Subscriber> subscribers = new ArrayList<Subscriber>(); 
         // still, nobody is subscribed
-        mToken.subscribeAll(subscribers.toArray(new ISubscriber[subscribers.size()]));
+        mToken.subscribeAll(subscribers.toArray(new Subscriber[subscribers.size()]));
         mToken.publishAndWait(s2);
         verifySubscribers(new MockSubscriber[] { },
                           new MockSubscriber[] { s1, s2, s3 },
                           s2);
         // add a subscriber
         subscribers.add(s1);
-        mToken.subscribeAll(subscribers.toArray(new ISubscriber[subscribers.size()]));
+        mToken.subscribeAll(subscribers.toArray(new Subscriber[subscribers.size()]));
         mToken.publishAndWait(s3);
         verifySubscribers(new MockSubscriber[] { s1 },
                           new MockSubscriber[] { s2, s3 },
@@ -152,7 +152,7 @@ public class AbstractMarketDataFeedTokenTest
         subscribers.add(s2);
         assertEquals(2,
                      subscribers.size());
-        mToken.subscribeAll(subscribers.toArray(new ISubscriber[subscribers.size()]));
+        mToken.subscribeAll(subscribers.toArray(new Subscriber[subscribers.size()]));
         // publish again, make sure each subscriber is notified only once
         mToken.publishAndWait(mToken);
         verifySubscribers(new MockSubscriber[] { s1, s2 },
@@ -160,7 +160,7 @@ public class AbstractMarketDataFeedTokenTest
                           mToken);
         // make sure that subscriber list can handle a mix of types
         DoNothingSubscriber x1 = new DoNothingSubscriber();
-        ISubscriber[] mixedSubscribers = new ISubscriber[] { s1, x1 };
+        Subscriber[] mixedSubscribers = new Subscriber[] { s1, x1 };
         mToken.subscribeAll(mixedSubscribers);
         mToken.publishAndWait(mFeed);
         verifySubscribers(new MockSubscriber[] { s1, s2 },

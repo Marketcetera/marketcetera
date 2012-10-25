@@ -1,13 +1,13 @@
 package org.marketcetera.core.publisher;
 
 /**
- * Capable of supplying updates to a group of {@link ISubscriber} objects.
+ * Capable of supplying updates to a group of {@link Subscriber} objects.
  * 
  * <p>Implementers are guaranteed to be notified in subscription order. 
  *
  * @version $Id: IPublisher.java 16063 2012-01-31 18:21:55Z colin $
  */
-public interface IPublisher
+public interface Publisher
 {
     /**
      * Subscribe to updates from the <code>Publisher</code>.
@@ -20,7 +20,7 @@ public interface IPublisher
      * 
      * @param inSubscriber a <code>Subscriber</code> value
      */
-    public void subscribe(ISubscriber inSubscriber);
+    public void subscribe(Subscriber inSubscriber);
     
     /**
      * Unsubscribe to updates from the <code>Publisher</code>.
@@ -30,5 +30,5 @@ public interface IPublisher
      * 
      * @param inSubscriber a <code>Subscriber</code> value
      */
-    public void unsubscribe(ISubscriber inSubscriber);
+    public void unsubscribe(Subscriber inSubscriber);
 }

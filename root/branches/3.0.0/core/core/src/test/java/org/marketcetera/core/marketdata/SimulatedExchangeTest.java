@@ -29,7 +29,7 @@ import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.SimulatedExchange.Token;
 import org.marketcetera.core.marketdata.SimulatedExchange.TopOfBook;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.FutureExpirationMonth;
@@ -1909,7 +1909,7 @@ public class SimulatedExchangeTest
      */
     @ThreadSafe
     private static class TopOfBookSubscriber
-        implements ISubscriber
+        implements Subscriber
     {
         /* (non-Javadoc)
          * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
@@ -1970,7 +1970,7 @@ public class SimulatedExchangeTest
     * @since 1.5.0
     */
    private static class AllEventsSubscriber
-       implements ISubscriber
+       implements Subscriber
    {
        /**
         * the events received
