@@ -1,7 +1,11 @@
 package org.marketcetera.marketdata;
 
 import java.util.Collection;
+import java.util.Set;
 
+import org.marketcetera.api.systemmodel.Publisher;
+import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.marketdata.events.Event;
 
 /* $License$ */
@@ -14,8 +18,17 @@ import org.marketcetera.marketdata.events.Event;
  * @since $Release$
  */
 public interface MarketDataProvider
+        extends Publisher
 {
     public Collection<Event> requestMarketData(MarketDataRequest inRequest,
-                                               MarketDataToken inToken);
-    public Collection<Event> requestMarketData(MarketDataRequest inRequest);
+                                               Subscriber inSubscriber)
+            throws InterruptedException;
+    public Collection<Event> requestMarketData(MarketDataRequest inRequest)
+            throws InterruptedException;
+    public String getProviderName();
+    public Set<Capability> getCapabilities();
+    public Set<SecurityType> getHandledTypes();
+    public FeedStatus getFeedStatus()
+            throws InterruptedException;
+    public FeedType getFeedType();
 }

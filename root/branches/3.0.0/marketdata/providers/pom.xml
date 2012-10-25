@@ -3,23 +3,22 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.marketcetera</groupId>
-    <artifactId>public-parent</artifactId>
+    <groupId>org.marketcetera.marketdata</groupId>
+    <artifactId>marketdata-parent</artifactId>
     <version>1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.marketcetera.marketdata</groupId>
-  <artifactId>marketdata-parent</artifactId>
+  <artifactId>marketdata-providers</artifactId>
   <version>1-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
-  <name>Marketdata Parent</name>
+  <name>Marketdata Providers</name>
 
   <modules>
-    <module>events</module>
-    <module>manager</module>
-    <module>providers</module>
+    <module>bogus</module>
+    <module>common</module>
   </modules>
 
 </project>
