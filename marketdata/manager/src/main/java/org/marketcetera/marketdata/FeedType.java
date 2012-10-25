@@ -1,7 +1,5 @@
 package org.marketcetera.marketdata;
 
-import org.marketcetera.api.systemmodel.SystemObject;
-
 /* $License$ */
 
 /**
@@ -11,7 +9,10 @@ import org.marketcetera.api.systemmodel.SystemObject;
  * @version $Id$
  * @since $Release$
  */
-public interface MarketDataToken
-        extends SystemObject
+public enum FeedType
 {
+    LIVE,
+    DELAYED,
+    SIMULATED,
+    UNKNOWN
 }

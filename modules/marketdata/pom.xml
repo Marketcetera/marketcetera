@@ -18,7 +18,7 @@
     <name>Marketdata Modules</name>
 
     <modules>
-        <module>bogus</module>
+        <!--module>bogus</module-->
         <module>csv</module>
         <module>marketcetera</module>
         <module>yahoo</module>

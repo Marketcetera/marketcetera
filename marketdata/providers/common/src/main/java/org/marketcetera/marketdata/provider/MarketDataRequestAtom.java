@@ -1,8 +1,7 @@
-package org.marketcetera.marketdata;
-
-import java.util.Set;
+package org.marketcetera.marketdata.provider;
 
 import org.marketcetera.api.systemmodel.Instrument;
+import org.marketcetera.marketdata.Content;
 
 /* $License$ */
 
@@ -16,8 +15,6 @@ import org.marketcetera.api.systemmodel.Instrument;
 public interface MarketDataRequestAtom
 {
     public Instrument getInstrument();
+    public Instrument getUnderlyingInstrument();
     public Content getContent();
-    public Set<Capability> getRequiredCapabilities();
-    public String getProvider();
-    public String getExchange();
 }
