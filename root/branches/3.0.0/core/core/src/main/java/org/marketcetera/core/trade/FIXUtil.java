@@ -3,6 +3,7 @@ package org.marketcetera.core.trade;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.marketcetera.api.systemmodel.SecurityType;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import quickfix.FieldNotFound;
 import quickfix.Message;

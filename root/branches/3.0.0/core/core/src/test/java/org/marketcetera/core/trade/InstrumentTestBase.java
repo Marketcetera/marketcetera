@@ -5,6 +5,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.SecurityType;
 import org.marketcetera.util.test.EqualityAssert;
 import org.marketcetera.util.test.SerializableAssert;
 

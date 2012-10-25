@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.SecurityType;
 import org.marketcetera.core.ExpectedFailure;
 
 import static org.hamcrest.Matchers.is;

@@ -2,6 +2,7 @@ package org.marketcetera.marketdata;
 
 import java.util.Collection;
 
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.marketdata.events.Event;
 
 /* $License$ */
@@ -16,4 +17,7 @@ import org.marketcetera.marketdata.events.Event;
 public interface MarketDataManager
 {
     public Collection<Event> requestMarketData(MarketDataRequest inRequest);
+    public MarketDataSubscriptionResponse requestMarketData(MarketDataRequest inRequest,
+                                                            Subscriber inSubscriber);
+    public void cancelMarketDataRequest(MarketDataToken inSubscriptionToken);
 }

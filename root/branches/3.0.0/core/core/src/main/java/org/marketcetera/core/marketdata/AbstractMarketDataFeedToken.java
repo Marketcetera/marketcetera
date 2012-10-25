@@ -2,7 +2,7 @@ package org.marketcetera.core.marketdata;
 
 import java.util.concurrent.ExecutionException;
 
-import org.marketcetera.core.publisher.Subscriber;
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 
 /**

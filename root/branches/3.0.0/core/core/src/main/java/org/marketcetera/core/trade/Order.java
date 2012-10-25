@@ -2,6 +2,8 @@ package org.marketcetera.core.trade;
 
 import java.io.Serializable;
 
+import org.marketcetera.api.systemmodel.SecurityType;
+
 /* $License$ */
 /**
  * Common interface for Orders that can either be sent to any

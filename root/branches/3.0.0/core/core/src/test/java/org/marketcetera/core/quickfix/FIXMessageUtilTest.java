@@ -101,7 +101,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(msgFactory.getBeginString()))) {
             assertFalse(aMessage.isSetField(SecurityType.FIELD));
         } else {
-            assertEquals(org.marketcetera.core.trade.SecurityType.CommonStock.getFIXValue(),
+            assertEquals(org.marketcetera.api.systemmodel.SecurityType.CommonStock.getFIXValue(),
                 aMessage.getString(SecurityType.FIELD));
         }
 

@@ -1,4 +1,4 @@
-package org.marketcetera.core.publisher;
+package org.marketcetera.api.systemmodel;
 
 /**
  * Capable of responding to publish requests and receiving publications.
@@ -7,7 +7,7 @@ package org.marketcetera.core.publisher;
  * an update to offer, the {@link Publisher} will ask if the update is interesting,
  * updating the <code>Subscriber</code> if appropriate.
  * 
- * @version $Id: ISubscriber.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @see Publisher
  */
 public interface Subscriber

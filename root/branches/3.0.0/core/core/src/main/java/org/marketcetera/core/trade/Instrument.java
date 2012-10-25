@@ -3,6 +3,8 @@ package org.marketcetera.core.trade;
 import java.io.Serializable;
 import javax.annotation.concurrent.Immutable;
 
+import org.marketcetera.api.systemmodel.SecurityType;
+
 /* $License$ */
 /**
  * A financial instrument.

@@ -1,6 +1,6 @@
 package org.marketcetera.core.marketdata;
 
-import org.marketcetera.core.publisher.Publisher;
+import org.marketcetera.api.systemmodel.Publisher;
 
 /* $License$ */
 

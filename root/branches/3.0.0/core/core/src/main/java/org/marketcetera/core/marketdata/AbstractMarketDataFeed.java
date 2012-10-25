@@ -3,11 +3,11 @@ package org.marketcetera.core.marketdata;
 import java.util.*;
 import java.util.concurrent.*;
 
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.event.AggregateEvent;
 import org.marketcetera.core.event.Event;

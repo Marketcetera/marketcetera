@@ -134,7 +134,7 @@ public class InstrumentFromMessageTest {
                                     assertThat(instrument, anyOf(nullValue(), not(instanceOf(Option.class))));
                                 } else {
                                     Option option = (Option) instrument;
-                                    assertEquals(org.marketcetera.core.trade.SecurityType.Option, option.getSecurityType());
+                                    assertEquals(org.marketcetera.api.systemmodel.SecurityType.Option, option.getSecurityType());
                                     assertEquals(expectedSymbol, option.getSymbol());
                                     assertEquals(expectedStrike, option.getStrikePrice());
                                     if (expiry.getTag() == MaturityMonthYear.FIELD) {
@@ -196,7 +196,7 @@ public class InstrumentFromMessageTest {
                                              not(instanceOf(Future.class))));
                         } else {
                             Future future = (Future)instrument;
-                            assertEquals(org.marketcetera.core.trade.SecurityType.Future,
+                            assertEquals(org.marketcetera.api.systemmodel.SecurityType.Future,
                                          future.getSecurityType());
                             assertEquals(expectedSymbol,
                                          future.getSymbol());

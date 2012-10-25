@@ -98,7 +98,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
                                           Message inMessage) {
         if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) &&
                 inInstrument.getSecurityType() != null &&
-                org.marketcetera.core.trade.SecurityType.Unknown != inInstrument.getSecurityType()) {
+                org.marketcetera.api.systemmodel.SecurityType.Unknown != inInstrument.getSecurityType()) {
             inMessage.setField(new SecurityType(inInstrument.getSecurityType().getFIXValue()));
         }
     }

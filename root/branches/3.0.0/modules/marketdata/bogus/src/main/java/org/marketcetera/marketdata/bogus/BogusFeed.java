@@ -9,9 +9,9 @@ import static org.marketcetera.marketdata.bogus.Messages.UNSUPPORTED_OPTION_SPEC
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.marketdata.*;
-import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.options.OptionUtils;
 import org.marketcetera.core.trade.Equity;

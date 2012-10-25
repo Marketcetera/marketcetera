@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import org.marketcetera.api.systemmodel.SecurityType;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.DividendEvent;
@@ -27,7 +28,6 @@ import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.SecurityType;
 
 /* $License$ */
 

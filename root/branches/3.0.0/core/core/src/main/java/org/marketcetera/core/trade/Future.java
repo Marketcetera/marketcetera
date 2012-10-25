@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.marketcetera.api.systemmodel.SecurityType;
 
 import quickfix.field.MaturityMonthYear;
 

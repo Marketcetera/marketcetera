@@ -15,6 +15,8 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.DividendEventBuilder;
@@ -23,7 +25,6 @@ import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.event.util.PriceAndSizeComparator;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.trade.DeliveryType;
 import org.marketcetera.core.trade.Equity;

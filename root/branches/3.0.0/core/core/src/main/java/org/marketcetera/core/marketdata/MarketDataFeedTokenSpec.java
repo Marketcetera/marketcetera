@@ -2,7 +2,7 @@ package org.marketcetera.core.marketdata;
 
 import java.util.Arrays;
 
-import org.marketcetera.core.publisher.Subscriber;
+import org.marketcetera.api.systemmodel.Subscriber;
 
 /**
  * Stateless portion of the market data feed token.
