@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.BeforeClass;
+import org.marketcetera.api.systemmodel.SecurityType;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.FIXDataDictionary;

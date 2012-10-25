@@ -83,7 +83,7 @@ public class OrderSingleTest extends TypesTestBase {
         org.marketcetera.core.trade.OrderID orderID = new org.marketcetera.core.trade.OrderID("testOrderID");
         BigDecimal qty = new BigDecimal("23434.56989");
         BigDecimal price = new BigDecimal("98923.2345");
-        org.marketcetera.core.trade.SecurityType securityType = org.marketcetera.core.trade.SecurityType.CommonStock;
+        org.marketcetera.api.systemmodel.SecurityType securityType = org.marketcetera.api.systemmodel.SecurityType.CommonStock;
         Instrument instrument = new Equity("IBM");
         String account = "walloween";
         msg = factory.newLimitOrder(orderID.getValue(),

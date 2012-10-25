@@ -13,13 +13,14 @@ import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.metrics.ThreadedMetric;
 import org.marketcetera.core.module.*;
-import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import static org.marketcetera.core.marketdata.Messages.BEAN_ATTRIBUTE_CHANGED;

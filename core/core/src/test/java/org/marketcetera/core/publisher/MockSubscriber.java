@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
+import org.marketcetera.api.systemmodel.Subscriber;
+
 /**
  * Test implementation of {@link Subscriber}.
  *

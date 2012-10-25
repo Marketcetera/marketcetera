@@ -154,7 +154,7 @@ public class OrderCancelTest extends TypesTestBase {
         String destOrderID = "bord1";
         String origOrderID = "testOrderID";
         BigDecimal qty = new BigDecimal("23434.56989");
-        org.marketcetera.core.trade.SecurityType securityType = org.marketcetera.core.trade.SecurityType.CommonStock;
+        org.marketcetera.api.systemmodel.SecurityType securityType = org.marketcetera.api.systemmodel.SecurityType.CommonStock;
         Instrument instrument = new Equity("IBM");
         String account = "nonplus";
         String text = "some text";

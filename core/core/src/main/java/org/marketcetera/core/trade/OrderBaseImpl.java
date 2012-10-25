@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+import org.marketcetera.api.systemmodel.SecurityType;
+
 /* $License$ */
 /**
  * Base class for orders. This class is public for the sake of

@@ -1,6 +1,6 @@
 package org.marketcetera.core.notifications;
 
-import org.marketcetera.core.publisher.Subscriber;
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 

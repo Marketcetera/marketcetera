@@ -111,7 +111,7 @@ public class FIXConverterTest
                  ("IBM"));
             msg.setField
                 (new quickfix.field.SecurityType
-                 (org.marketcetera.core.trade.SecurityType.CommonStock.getFIXValue()));
+                 (org.marketcetera.api.systemmodel.SecurityType.CommonStock.getFIXValue()));
         }
         if (side) {
             o.setSide(org.marketcetera.core.trade.Side.Buy);

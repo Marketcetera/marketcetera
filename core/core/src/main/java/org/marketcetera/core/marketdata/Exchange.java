@@ -2,7 +2,7 @@ package org.marketcetera.core.marketdata;
 
 import java.util.List;
 
-import org.marketcetera.core.publisher.Subscriber;
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.QuoteEvent;

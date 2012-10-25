@@ -2,6 +2,9 @@ package org.marketcetera.core.publisher;
 
 import java.util.concurrent.ExecutionException;
 
+import org.marketcetera.api.systemmodel.Publisher;
+import org.marketcetera.api.systemmodel.Subscriber;
+
 /**
  * Test implementation of {@link Publisher}.
  *

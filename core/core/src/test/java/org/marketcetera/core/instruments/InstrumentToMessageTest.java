@@ -474,7 +474,7 @@ public class InstrumentToMessageTest {
         InstrumentToMessage.setSecurityType(new MyInstrument(null), mCurrentVersion.toString(), msg);
         assertEquals(false, msg.isSetField(SecurityType.FIELD));
         InstrumentToMessage.setSecurityType(new MyInstrument(
-                org.marketcetera.core.trade.SecurityType.Unknown), mCurrentVersion.toString(), msg);
+                org.marketcetera.api.systemmodel.SecurityType.Unknown), mCurrentVersion.toString(), msg);
         assertEquals(false, msg.isSetField(SecurityType.FIELD));
 
         //set security type to null or unknown value on a message that has it set.
@@ -482,7 +482,7 @@ public class InstrumentToMessageTest {
         InstrumentToMessage.setSecurityType(new MyInstrument(null), mCurrentVersion.toString(), msg);
         assertEquals(SecurityType.BANK_NOTES, msg.getString(SecurityType.FIELD));
         InstrumentToMessage.setSecurityType(new MyInstrument(
-                org.marketcetera.core.trade.SecurityType.Unknown), mCurrentVersion.toString(), msg);
+                org.marketcetera.api.systemmodel.SecurityType.Unknown), mCurrentVersion.toString(), msg);
         assertEquals(SecurityType.BANK_NOTES, msg.getString(SecurityType.FIELD));
 
         msg = mCurrentVersion.getMessageFactory().newBasicOrder();
@@ -492,7 +492,7 @@ public class InstrumentToMessageTest {
         InstrumentToMessage.setSecurityType(new MyInstrument(null), dict, msgType, msg);
         assertEquals(false, msg.isSetField(SecurityType.FIELD));
         InstrumentToMessage.setSecurityType(new MyInstrument(
-                org.marketcetera.core.trade.SecurityType.Unknown), dict, msgType, msg);
+                org.marketcetera.api.systemmodel.SecurityType.Unknown), dict, msgType, msg);
         assertEquals(false, msg.isSetField(SecurityType.FIELD));
 
         //set security type to null or unknown value on a message that has it set.
@@ -500,7 +500,7 @@ public class InstrumentToMessageTest {
         InstrumentToMessage.setSecurityType(new MyInstrument(null), dict, msgType, msg);
         assertEquals(SecurityType.BANK_NOTES, msg.getString(SecurityType.FIELD));
         InstrumentToMessage.setSecurityType(new MyInstrument(
-                org.marketcetera.core.trade.SecurityType.Unknown), dict, msgType, msg);
+                org.marketcetera.api.systemmodel.SecurityType.Unknown), dict, msgType, msg);
         assertEquals(SecurityType.BANK_NOTES, msg.getString(SecurityType.FIELD));
     }
 
@@ -528,7 +528,7 @@ public class InstrumentToMessageTest {
      * Test instrument class to specify invalid security type values.
      */
     private static class MyInstrument extends Instrument {
-        public MyInstrument(org.marketcetera.core.trade.SecurityType inSecurityType) {
+        public MyInstrument(org.marketcetera.api.systemmodel.SecurityType inSecurityType) {
             mSecurityType = inSecurityType;
         }
 
@@ -538,11 +538,11 @@ public class InstrumentToMessageTest {
         }
 
         @Override
-        public org.marketcetera.core.trade.SecurityType getSecurityType() {
+        public org.marketcetera.api.systemmodel.SecurityType getSecurityType() {
             return mSecurityType;
         }
 
-        private final org.marketcetera.core.trade.SecurityType mSecurityType;
+        private final org.marketcetera.api.systemmodel.SecurityType mSecurityType;
         private static final long serialVersionUID = 1L;
     }
 

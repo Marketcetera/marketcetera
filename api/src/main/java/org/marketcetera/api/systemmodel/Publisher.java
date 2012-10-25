@@ -1,11 +1,11 @@
-package org.marketcetera.core.publisher;
+package org.marketcetera.api.systemmodel;
 
 /**
  * Capable of supplying updates to a group of {@link Subscriber} objects.
  * 
  * <p>Implementers are guaranteed to be notified in subscription order. 
  *
- * @version $Id: IPublisher.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public interface Publisher
 {

@@ -1,4 +1,4 @@
-package org.marketcetera.core.trade;
+package org.marketcetera.api.systemmodel;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Indicates the type of Security.
  *
- * @version $Id: SecurityType.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public enum SecurityType {
@@ -20,19 +20,19 @@ public enum SecurityType {
     /**
      * Common Stock.
      */
-    CommonStock(quickfix.field.SecurityType.COMMON_STOCK),
+    CommonStock("CS"),
     /**
      * Options
      */
-    Option(quickfix.field.SecurityType.OPTION),
+    Option("OPT"),
     /**
      * Future
      */
-    Future(quickfix.field.SecurityType.FUTURE),
+    Future("FUT"),
     /**
-     * 
+     * Convertible bond
      */
-    ConvertibleBond(quickfix.field.SecurityType.CONVERTIBLE_BOND);
+    ConvertibleBond("CB");
     /**
      * The FIX text value for this instance.
      *
