@@ -3,8 +3,10 @@ package org.marketcetera.core.trade;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
@@ -13,7 +15,7 @@ import quickfix.field.*;
 /**
  * Utility class for FIX.
  *
- * @version $Id: FIXUtil.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 class FIXUtil {

@@ -11,7 +11,7 @@ import quickfix.Message;
  * characters into XML.
  * 
  * @since 1.0.0
- * @version $Id: FIXMessageAdapter.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
+
 import org.apache.commons.lang.SystemUtils;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.DepthOfBookEvent;
@@ -16,7 +18,6 @@ import org.marketcetera.core.event.beans.HasEventBean;
 import org.marketcetera.core.event.util.EventServices;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.marketdata.OrderBook;
-import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
 

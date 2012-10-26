@@ -1,25 +1,24 @@
 package org.marketcetera.core.position.impl;
 
-import java.math.BigDecimal;
-
-import ca.odell.glazedlists.BasicEventList;
-import org.junit.Before;
-import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.position.MarketDataSupport;
-import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
-import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
-import org.marketcetera.core.position.MockTrade;
-import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.core.position.Trade;
-import org.marketcetera.core.trade.ConvertibleBond;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
+import java.math.BigDecimal;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
+import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.position.*;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
+import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
+import org.marketcetera.core.trade.ConvertibleBondImpl;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.OptionImpl;
+
+import ca.odell.glazedlists.BasicEventList;
 
 /* $License$ */
 
@@ -31,10 +30,10 @@ import static org.junit.Assert.assertThat;
  */
 public class PositionRowUpdaterTest {
 
-    private static final Instrument EQUITY = new Equity("METC");
-    private static final Instrument OPTION = new Option("METC", "20091010",
+    private static final Instrument EQUITY = new EquityImpl("METC");
+    private static final Instrument OPTION = new OptionImpl("METC", "20091010",
             BigDecimal.TEN, OptionType.Put);
-    private static final Instrument CONVERTIBLE_BOND = new ConvertibleBond("METC");
+    private static final Instrument CONVERTIBLE_BOND = new ConvertibleBondImpl("METC");
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
     private InstrumentMarketDataListener mListener;

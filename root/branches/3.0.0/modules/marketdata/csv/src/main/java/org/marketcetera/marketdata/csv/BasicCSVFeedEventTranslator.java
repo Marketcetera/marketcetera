@@ -9,6 +9,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang.StringUtils;
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.DividendEventBuilder;
@@ -17,9 +20,7 @@ import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.options.OptionUtils;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
 import org.marketcetera.core.util.log.I18NBoundMessage3P;
@@ -521,7 +522,7 @@ public class BasicCSVFeedEventTranslator
         if(symbol == null) {
             return null;
         }
-        return new Equity(symbol);
+        return new EquityImpl(symbol);
     }
     /**
      * Guesses the dividend frequency from the given data line. 
@@ -654,7 +655,7 @@ public class BasicCSVFeedEventTranslator
             throws CoreException
     {
         // this is suboptimal as underlyings can be other types of instruments
-        return new Equity(inOption.getSymbol());
+        return new EquityImpl(inOption.getSymbol());
     }
     /**
      * Guesses the contract multiplier of the given data line.
@@ -788,7 +789,7 @@ public class BasicCSVFeedEventTranslator
                                                                SUPPORTED_CFI_CODES.toString()));
             }
             if(cfiCodeChunk.equals("E")) { //$NON-NLS-1$
-                return new Equity(symbolChunk);
+                return new EquityImpl(symbolChunk);
             } else if(cfiCodeChunk.equals("O")) { //$NON-NLS-1$
                 // this must be an option, assume it's in OSI format
                 try {
@@ -811,7 +812,7 @@ public class BasicCSVFeedEventTranslator
         } catch (IllegalArgumentException e) {
             // s'ok, this just must be an equity - note, this is a limiting assumption, when we activate additional classes, this will need to be expanded
         }
-        return new Equity(symbol);
+        return new EquityImpl(symbol);
     }
     /**
      * Guesses the quote type from the data line.

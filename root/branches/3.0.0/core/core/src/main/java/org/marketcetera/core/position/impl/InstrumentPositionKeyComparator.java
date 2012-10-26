@@ -1,10 +1,10 @@
 package org.marketcetera.core.position.impl;
 
+import java.util.Comparator;
+
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.InstrumentFunctionHandler;
 import org.marketcetera.core.instruments.StaticInstrumentFunctionSelector;
-import org.marketcetera.core.trade.Instrument;
-
-import java.util.Comparator;
 
 /* $License$ */
 /**

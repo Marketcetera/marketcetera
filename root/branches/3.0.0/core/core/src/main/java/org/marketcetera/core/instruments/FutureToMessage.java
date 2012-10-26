@@ -1,8 +1,9 @@
 package org.marketcetera.core.instruments;
 
+import org.marketcetera.api.systemmodel.instruments.Future;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.FutureImpl;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -20,14 +21,14 @@ import quickfix.field.Symbol;
  * @since 2.1.0
  */
 public class FutureToMessage
-        extends InstrumentToMessage<Future>
+        extends InstrumentToMessage<FutureImpl>
 {
     /**
      * Create a new FutureToMessage instance.
      */
     public FutureToMessage()
     {
-        super(Future.class);
+        super(FutureImpl.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.InstrumentToMessage#isSupported(quickfix.DataDictionary, java.lang.String)

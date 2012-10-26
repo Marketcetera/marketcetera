@@ -9,7 +9,7 @@ import quickfix.Message;
  * class is public for the sake of JAXB and is not intended for
  * general use.
  *
- * @version $Id: OrderCancelRejectImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @XmlRootElement

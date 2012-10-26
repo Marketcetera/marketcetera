@@ -5,8 +5,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
+import org.marketcetera.core.trade.OptionImpl;
 
 /* $License$ */
 
@@ -100,7 +101,7 @@ public class OptionUtils
 	 *
 	 * @param inOsiChar a <code>char</code> value
 	 * @return an <code>OptionType</code> value corresponding with the given
-	 *  <code>character</code> or {@link org.marketcetera.core.trade.OptionType#Unknown}
+	 *  <code>character</code> or {@link org.marketcetera.api.systemmodel.instruments.OptionType#Unknown}
 	 */
 	public static OptionType getOptionTypeForOSICharacter(char inOsiChar)
 	{
@@ -146,13 +147,13 @@ public class OptionUtils
             BigDecimal strike = new BigDecimal(String.format("%s.%s", //$NON-NLS-1$
                                                              strikeWhole,
                                                              strikeDecimal));
-            Option osiOption = new Option(symbol,
-                                          String.format("%s%s%s", //$NON-NLS-1$
-                                                        expiryYear,
-                                                        expiryMonth,
-                                                        expiryDay),
-                                          strike,
-                                          type);
+            Option osiOption = new OptionImpl(symbol,
+                                              String.format("%s%s%s", //$NON-NLS-1$
+                                                            expiryYear,
+                                                            expiryMonth,
+                                                            expiryDay),
+                                              strike,
+                                              type);
             return osiOption;
         }
         throw new IllegalArgumentException();

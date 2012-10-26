@@ -10,7 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.Future;
+import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 
 import quickfix.field.MaturityMonthYear;
 
@@ -19,13 +21,14 @@ import quickfix.field.MaturityMonthYear;
 /**
  * Identifies a future contract.
  *
- * @version $Id: Future.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Future
-        extends Instrument
+public class FutureImpl
+        extends AbstractInstrumentImpl
+        implements Future
 {
     /**
      * Parses the given <code>String</code> to create a <code>Future</code> instrument.
@@ -34,7 +37,7 @@ public class Future
      * @return a <code>Future</code> value
      * @throws IllegalArgumentException if the given <code>String</code> cannot be parsed
      */
-    public static Future fromString(String inFullSymbol)
+    public static FutureImpl fromString(String inFullSymbol)
     {
         inFullSymbol = StringUtils.trimToNull(inFullSymbol);
         Validate.notNull(inFullSymbol,
@@ -47,8 +50,8 @@ public class Future
         String symbol = inFullSymbol.substring(0,
                                                dashIndex);
         String expiry = inFullSymbol.substring(dashIndex+1);
-        return new Future(symbol,
-                          expiry);
+        return new FutureImpl(symbol,
+                              expiry);
     }
     /**
      * Create a new Future instance.
@@ -59,13 +62,11 @@ public class Future
      *  in the 21st century)
      * @throws IllegalArgumentException if any of the parameters are invalid
      */
-    public Future(String inSymbol,
-                  FutureExpirationMonth inExpirationMonth,
-                  int inExpirationYear)
+    public FutureImpl(String inSymbol,
+                      FutureExpirationMonth inExpirationMonth,
+                      int inExpirationYear)
     {
-        symbol = StringUtils.trimToNull(inSymbol);
-        Validate.notNull(symbol,
-                         Messages.NULL_SYMBOL.getText());
+        super(inSymbol);
         Validate.notNull(inExpirationMonth,
                          Messages.NULL_MONTH.getText());
         Validate.isTrue(inExpirationYear > 0,
@@ -85,12 +86,10 @@ public class Future
      *  in the 21st century)
      * @throws IllegalArgumentException if any of the parameters are invalid
      */
-    public Future(String inSymbol,
-                  String inExpiry)
+    public FutureImpl(String inSymbol,
+                      String inExpiry)
     {
-        symbol = StringUtils.trimToNull(inSymbol); 
-        Validate.notNull(symbol,
-                         Messages.NULL_SYMBOL.getText());
+        super(inSymbol);
         inExpiry = StringUtils.trimToNull(inExpiry);
         Validate.notNull(inExpiry,
                          Messages.NULL_EXPIRY.getText());
@@ -110,14 +109,6 @@ public class Future
         expirationYear = year;
         expirationMonth = FutureExpirationMonth.getByMonthOfYear(month);
         expirationDay = day;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.Instrument#getSymbol()
-     */
-    @Override
-    public String getSymbol()
-    {
-        return symbol;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSecurityType()
@@ -210,7 +201,7 @@ public class Future
         result = prime * result + ((expirationMonth == null) ? 0 : expirationMonth.hashCode());
         result = prime * result + expirationYear;
         result = prime * result + expirationDay;
-        result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+        result = prime * result + ((getSymbol() == null) ? 0 : getSymbol().hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -225,17 +216,17 @@ public class Future
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Future other = (Future) obj;
+        FutureImpl other = (FutureImpl) obj;
         if (expirationMonth != other.expirationMonth)
             return false;
         if (expirationYear != other.expirationYear)
             return false;
         if (expirationDay != other.expirationDay)
             return false;
-        if (symbol == null) {
-            if (other.symbol != null)
+        if (getSymbol() == null) {
+            if (other.getSymbol() != null)
                 return false;
-        } else if (!symbol.equals(other.symbol))
+        } else if (!getSymbol().equals(other.getSymbol()))
             return false;
         return true;
     }
@@ -247,14 +238,14 @@ public class Future
     {
         if(expirationDay != -1) {
             return String.format("Future %s [%s %s(%s) %s]", //$NON-NLS-1$
-                                 symbol,
+                                 getSymbol(),
                                  expirationDay,
                                  expirationMonth,
                                  expirationMonth.getCode(),
                                  expirationYear);
         } else {
             return String.format("Future %s [%s(%s) %s]", //$NON-NLS-1$
-                                 symbol,
+                                 getSymbol(),
                                  expirationMonth,
                                  expirationMonth.getCode(),
                                  expirationYear);
@@ -265,9 +256,10 @@ public class Future
      * 
      * Parameterless constructor for use only by JAXB.
      */
-    protected Future()
+    @SuppressWarnings("unused")
+    private FutureImpl()
     {
-        symbol = null;
+        super();
         expirationMonth = null;
         expirationYear = -1;
         expirationDay = -1;
@@ -291,10 +283,6 @@ public class Future
         }
         return true;
     }
-    /**
-     * the full symbol
-     */
-    private final String symbol;
     /**
      * the expiration month
      */

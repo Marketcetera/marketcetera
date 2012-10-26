@@ -1,24 +1,21 @@
 package org.marketcetera.core.event.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.BidEvent;
-import org.marketcetera.core.event.Event;
-import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.event.QuoteAction;
-import org.marketcetera.core.event.TopOfBookEvent;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-
-import static org.junit.Assert.assertEquals;
+import org.marketcetera.core.event.*;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.OptionImpl;
 
 /* $License$ */
 
@@ -267,12 +264,12 @@ public class TopOfBookEventTest
     /**
      * test instrument
      */
-    private final Equity equity = new Equity("METC");
+    private final Equity equity = new EquityImpl("METC");
     /**
      * test option
      */
-    private final Option option = new Option("MSFT",
-                                             "20100319",
-                                             BigDecimal.ONE,
-                                             OptionType.Call);
+    private final Option option = new OptionImpl("MSFT",
+                                                 "20100319",
+                                                 BigDecimal.ONE,
+                                                 OptionType.Call);
 }

@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.Pair;
 
-import static org.marketcetera.core.trade.OptionType.*;
+import static org.marketcetera.api.systemmodel.instruments.OptionType.*;
 
 /* $License$ */
 /**
- * Tests {@link org.marketcetera.core.trade.OptionType}
+ * Tests {@link org.marketcetera.api.systemmodel.instruments.OptionType}
  *
  * @version $Id: OptionTypeTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0

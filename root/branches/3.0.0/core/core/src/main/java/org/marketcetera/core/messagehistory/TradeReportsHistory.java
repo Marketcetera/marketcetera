@@ -1,31 +1,17 @@
 package org.marketcetera.core.messagehistory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.FunctionList;
-import ca.odell.glazedlists.GroupingList;
-import ca.odell.glazedlists.impl.ReadOnlyList;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.OrderID;
-import org.marketcetera.core.trade.OrderStatus;
-import org.marketcetera.core.trade.Originator;
-import org.marketcetera.core.trade.ReportBase;
-import org.marketcetera.core.trade.ReportID;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+
 import quickfix.Message;
+import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.impl.ReadOnlyList;
 
 /* $License$ */
 /**

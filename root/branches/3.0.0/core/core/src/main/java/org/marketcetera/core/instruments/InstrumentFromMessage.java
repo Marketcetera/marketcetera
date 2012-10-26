@@ -1,8 +1,9 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.core.trade.Instrument;
-import quickfix.Message;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+
 import quickfix.FieldNotFound;
+import quickfix.Message;
 import quickfix.field.Symbol;
 
 /* $License$ */

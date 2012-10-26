@@ -2,7 +2,7 @@ package org.marketcetera.core.trade;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 
 import quickfix.Message;
 
@@ -11,7 +11,7 @@ import quickfix.Message;
  * Message that wraps a FIX Message. This class is public for the sake
  * of JAXB and is not intended for general use.
  *
- * @version $Id: FIXOrderImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @XmlRootElement

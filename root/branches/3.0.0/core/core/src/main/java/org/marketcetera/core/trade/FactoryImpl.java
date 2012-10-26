@@ -14,6 +14,7 @@ import org.marketcetera.core.quickfix.FIXMessageUtil;
 import org.marketcetera.core.quickfix.SystemFIXMessageFactory;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
+
 import quickfix.Field;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -24,7 +25,7 @@ import quickfix.field.BeginString;
 /**
  * Factory for creating various messages.
  *
- * @version $Id: FactoryImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 class FactoryImpl extends Factory {

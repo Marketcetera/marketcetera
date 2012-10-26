@@ -1,40 +1,30 @@
 package org.marketcetera.core.position.impl;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.event.ListEvent;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
-import org.marketcetera.core.messagehistory.ReportHolder;
-import org.marketcetera.core.position.Grouping;
-import org.marketcetera.core.position.ImmutablePositionSupport;
-import org.marketcetera.core.position.MarketDataSupport;
-import org.marketcetera.core.position.PositionEngine;
-import org.marketcetera.core.position.PositionEngineFactory;
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.ExecutionType;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.OrderStatus;
-import org.marketcetera.core.trade.Originator;
-import org.marketcetera.core.trade.ReportBase;
-import org.marketcetera.core.trade.Side;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.marketcetera.core.position.impl.BigDecimalMatchers.comparesEqualTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.util.Map;
+
+import org.junit.Ignore;
+import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
+import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
+import org.marketcetera.core.messagehistory.ReportHolder;
+import org.marketcetera.core.position.*;
+import org.marketcetera.core.trade.*;
+
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.event.ListEvent;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -168,7 +158,7 @@ public class PositionEngineImplTest {
         }
         protected void addEquityTrade(String symbol, String account, String traderId, Side side,
                 String quantity, String price) {
-            addTrade(new Equity(symbol), account, traderId, side, quantity, price);
+            addTrade(new EquityImpl(symbol), account, traderId, side, quantity, price);
         }
         /**
          * Adds a trade with the given attributes.
@@ -193,7 +183,7 @@ public class PositionEngineImplTest {
                                       ExecutionType inExecutionType,
                                       Originator inOriginator)
         {
-            addTrade(new Equity(inSymbol),
+            addTrade(new EquityImpl(inSymbol),
                      inAccount,
                      Long.valueOf(inTraderId),
                      inSide,
@@ -239,7 +229,7 @@ public class PositionEngineImplTest {
 
         protected void assertEquityPosition(PositionRow position, String symbol, String account,
                 String traderId, String amount) {
-            assertPosition(position, new Equity(symbol), symbol, account, traderId, amount);
+            assertPosition(position, new EquityImpl(symbol), symbol, account, traderId, amount);
         }
 
         protected void assertPosition(PositionRow position, Instrument instrument, String underlying, String account,
@@ -689,12 +679,12 @@ public class PositionEngineImplTest {
         new PositionEngineTestTemplate() {
 
             private UnderlyingSymbolSupport mUnderlyingSymbolSupport;
-            private final Equity equity = new Equity("METC");
-            private final Option option1 = new Option("MTC", "20090910", BigDecimal.ONE,
+            private final EquityImpl equity = new EquityImpl("METC");
+            private final Option option1 = new OptionImpl("MTC", "20090910", BigDecimal.ONE,
                     OptionType.Call);
-            private final Option option2 = new Option("MEC", "20090910", BigDecimal.ONE,
+            private final Option option2 = new OptionImpl("MEC", "20090910", BigDecimal.ONE,
                     OptionType.Call);
-            private final Option option3 = new Option("PXR", "20090910", BigDecimal.ONE,
+            private final Option option3 = new OptionImpl("PXR", "20090910", BigDecimal.ONE,
                     OptionType.Call);
             
             protected UnderlyingSymbolSupport createUnderlyingSymbolSupport() {
@@ -704,7 +694,7 @@ public class PositionEngineImplTest {
                 when(mUnderlyingSymbolSupport.getUnderlying(option2)).thenReturn("METC");
                 when(mUnderlyingSymbolSupport.getUnderlying(option3)).thenReturn("YHOO");
                 return mUnderlyingSymbolSupport;
-            };
+            }
             
             @Override
             protected void initReports() {
@@ -732,12 +722,12 @@ public class PositionEngineImplTest {
         new PositionEngineTestTemplate() {
 
             private UnderlyingSymbolSupport mUnderlyingSymbolSupport;
-            private final Equity metcEquity = new Equity("METC");
-            private final Equity ibmEquity = new Equity("IBM");
-            private final Equity yhooEquity = new Equity("YHOO");
-            private final Option metcOption = new Option("MTC", "20090910",
+            private final EquityImpl metcEquity = new EquityImpl("METC");
+            private final EquityImpl ibmEquity = new EquityImpl("IBM");
+            private final EquityImpl yhooEquity = new EquityImpl("YHOO");
+            private final Option metcOption = new OptionImpl("MTC", "20090910",
                     BigDecimal.ONE, OptionType.Call);
-            private final Option yhooOption = new Option("PXR", "20090910",
+            private final Option yhooOption = new OptionImpl("PXR", "20090910",
                     BigDecimal.ONE, OptionType.Call);
 
             protected UnderlyingSymbolSupport createUnderlyingSymbolSupport() {
@@ -753,7 +743,7 @@ public class PositionEngineImplTest {
                 when(mUnderlyingSymbolSupport.getUnderlying(yhooOption))
                         .thenReturn("YHOO");
                 return mUnderlyingSymbolSupport;
-            };
+            }
 
             @Override
             protected EventList<PositionRow> getPositionData(

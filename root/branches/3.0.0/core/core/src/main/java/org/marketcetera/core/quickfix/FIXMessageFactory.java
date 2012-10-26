@@ -5,10 +5,10 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.InstrumentToMessage;
-import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.core.trade.Equity;
 
 import quickfix.*;
 import quickfix.field.*;

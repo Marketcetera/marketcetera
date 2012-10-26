@@ -6,14 +6,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.position.MarketDataSupport;
-import org.marketcetera.core.position.PositionMetrics;
-import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.core.position.Trade;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.core.position.*;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase;
-import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 
 import ca.odell.glazedlists.EventList;

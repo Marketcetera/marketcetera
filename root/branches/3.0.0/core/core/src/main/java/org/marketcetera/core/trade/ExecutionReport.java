@@ -3,6 +3,8 @@ package org.marketcetera.core.trade;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+
 /* $License$ */
 /**
  * Represents an execution report of an order. Instances of this
@@ -16,7 +18,7 @@ import java.util.Date;
  * is returned to indicate that the value is set but is not currently
  * expressible through the current API.
  *
- * @version $Id: ExecutionReport.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public interface ExecutionReport extends TradeMessage, ReportBase {

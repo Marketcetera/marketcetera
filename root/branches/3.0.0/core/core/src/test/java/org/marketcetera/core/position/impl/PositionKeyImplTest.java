@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.PositionKeyTestBase;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.EquityImpl;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNull;
@@ -73,24 +73,24 @@ public class PositionKeyImplTest extends PositionKeyTestBase {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new PositionKeyImpl<Equity>(null, "abc", "abc");
+                new PositionKeyImpl<EquityImpl>(null, "abc", "abc");
             }
         };
     }
 
     @Test
     public void testWhitespaceAccountIsNull() throws Exception {
-        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "", "abc")
+        assertNull(new PositionKeyImpl<EquityImpl>(new EquityImpl("abc"), "", "abc")
                 .getAccount());
-        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "     ",
+        assertNull(new PositionKeyImpl<EquityImpl>(new EquityImpl("abc"), "     ",
                 "abc").getAccount());
     }
 
     @Test
     public void testWhitespaceTraderIdIsNull() throws Exception {
-        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "abc", "")
+        assertNull(new PositionKeyImpl<EquityImpl>(new EquityImpl("abc"), "abc", "")
                 .getTraderId());
-        assertNull(new PositionKeyImpl<Equity>(new Equity("abc"), "abc",
+        assertNull(new PositionKeyImpl<EquityImpl>(new EquityImpl("abc"), "abc",
                 "  \n   ").getTraderId());
     }
 

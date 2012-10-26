@@ -1,26 +1,27 @@
 package org.marketcetera.core.event.util;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.event.QuoteEvent;
-import org.marketcetera.core.event.impl.QuoteEventBuilder;
-import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.TEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.core.event.util.BookPriceComparator.askComparator;
 import static org.marketcetera.core.event.util.BookPriceComparator.bidComparator;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
+import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.event.QuoteEvent;
+import org.marketcetera.core.event.impl.QuoteEventBuilder;
+import org.marketcetera.core.marketdata.DateUtils;
+import org.marketcetera.core.options.ExpirationType;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.OptionImpl;
 
 /* $License$ */
 
@@ -52,11 +53,11 @@ public class PriceComparatorsTest
     public void testComparators()
         throws Exception
     {
-        Option option = new Option("METC",
+        Option option = new OptionImpl("METC",
                                    "201001",
                                    BigDecimal.TEN,
                                    OptionType.Put);
-        Equity equity = new Equity("METC");
+        EquityImpl equity = new EquityImpl("METC");
         doBookPriceComparatorTest(QuoteEventBuilder.equityAskEvent(),
                                   equity);
         doBookPriceComparatorTest(QuoteEventBuilder.equityBidEvent(),
@@ -316,7 +317,7 @@ public class PriceComparatorsTest
         if(doOption) {
              return inBuilder.withExpirationType(ExpirationType.AMERICAN)
                              .withMultiplier(BigDecimal.ZERO)
-                             .withUnderlyingInstrument(new Equity("METC"));
+                             .withUnderlyingInstrument(new EquityImpl("METC"));
         }
         return inBuilder;
     }

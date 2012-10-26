@@ -1,19 +1,16 @@
 package org.marketcetera.core.position.impl;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.marketcetera.core.position.impl.OrderingComparison.comparesEqualTo;
+
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Random;
 
-import org.marketcetera.core.position.MockTrade;
-import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.core.position.PositionMetrics;
-import org.marketcetera.core.position.Trade;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.core.position.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.marketcetera.core.position.impl.OrderingComparison.comparesEqualTo;
 
 /* $License$ */
 
@@ -76,9 +73,12 @@ public abstract class PositionMetricsCalculatorTestTemplate implements Runnable 
                 "100"));
     }
 
-    private Trade<?> createTrade(boolean buy, BigDecimal quantity,
-            BigDecimal price) {
-        return new MockTrade<Equity>(PositionKeyFactory.createEquityKey("ABC",
+    @SuppressWarnings("unchecked")
+    private Trade<?> createTrade(boolean buy,
+                                 BigDecimal quantity,
+                                 BigDecimal price)
+    {
+        return new MockTrade<Equity>((PositionKey<Equity>)PositionKeyFactory.createEquityKey("ABC",
                 "asdf", "Yoram"), buy ? quantity : quantity.negate(), price);
     }
 

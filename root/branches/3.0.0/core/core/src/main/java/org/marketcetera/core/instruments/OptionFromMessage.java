@@ -2,17 +2,13 @@ package org.marketcetera.core.instruments;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
+import org.marketcetera.core.trade.OptionImpl;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.CFICode;
-import quickfix.field.MaturityDate;
-import quickfix.field.MaturityDay;
-import quickfix.field.MaturityMonthYear;
-import quickfix.field.SecurityType;
-import quickfix.field.StrikePrice;
+import quickfix.field.*;
 
 /* $License$ */
 /**
@@ -35,7 +31,7 @@ public class OptionFromMessage extends InstrumentFromMessage {
         if(symbol == null || type == null || strike == null || expiry == null) {
             return null;
         }
-        return new Option(symbol, expiry, strike, type);
+        return new OptionImpl(symbol, expiry, strike, type);
     }
 
     @Override

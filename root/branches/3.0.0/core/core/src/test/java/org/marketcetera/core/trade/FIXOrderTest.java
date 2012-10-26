@@ -54,11 +54,11 @@ public class FIXOrderTest extends TypesTestBase {
         //SecurityType field.
         for(FIXVersion version: FIXVersionTestSuite.ALL_FIX_VERSIONS) {
             Message msg = version.getMessageFactory().newBasicOrder();
-            org.marketcetera.api.systemmodel.SecurityType expectedValue;
+            org.marketcetera.api.systemmodel.instruments.SecurityType expectedValue;
             if(FIXVersion.FIX40 != version) {
                 msg.setField(new quickfix.field.SecurityType(
                         quickfix.field.SecurityType.OPTION));
-                expectedValue = org.marketcetera.api.systemmodel.SecurityType.Option;
+                expectedValue = org.marketcetera.api.systemmodel.instruments.SecurityType.Option;
             } else {
                 expectedValue = null;
             }
@@ -115,7 +115,7 @@ public class FIXOrderTest extends TypesTestBase {
         //Test map of fields
         String account = "myacc";
         BigDecimal qty = new BigDecimal("234.34");
-        Equity symbol = new Equity("IBM");
+        EquityImpl symbol = new EquityImpl("IBM");
         BigDecimal price = new BigDecimal("3498.343");
         msg = FIXVersion.FIX44.getMessageFactory().newLimitOrder("blah",
                 quickfix.field.Side.BUY, qty, symbol, price,
@@ -124,7 +124,7 @@ public class FIXOrderTest extends TypesTestBase {
         msg.removeField(ClOrdID.FIELD);
         assertFalse(msg.isSetField(ClOrdID.FIELD));
         order = sFactory.createOrder(msg, id);
-        assertOrderValues(order, id, org.marketcetera.api.systemmodel.SecurityType.CommonStock);
+        assertOrderValues(order, id, org.marketcetera.api.systemmodel.instruments.SecurityType.CommonStock);
         //Verify an orderID is assigned.
         String clOrdID = getClOrdID(order);
         assertNotNull(clOrdID);

@@ -4,6 +4,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
+
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.api.systemmodel.instruments.Future;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.TradeEvent;
@@ -12,12 +17,8 @@ import org.marketcetera.core.event.beans.MarketDataBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.DeliveryType;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.FutureType;
 import org.marketcetera.core.trade.FutureUnderlyingAssetType;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.StandardType;
 
 /* $License$ */
@@ -41,7 +42,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
      *
      * <p>The type of <code>TradeEvent</code> returned will match the type of the given <code>Instrument</code>,
-     * i.e., an Equity-type <code>TradeEvent</code> for an {@link org.marketcetera.core.trade.Equity}, an Option-type <code>TradeEvent</code> for an
+     * i.e., an Equity-type <code>TradeEvent</code> for an {@link org.marketcetera.core.trade.EquityImpl}, an Option-type <code>TradeEvent</code> for an
      * {@link org.marketcetera.core.trade.Option}, etc.
      * 
      * @param inInstrument an <code>Instrument</code> value indicating the type of {@link TradeEvent} to create
@@ -65,7 +66,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Equity <code>TradeEvent</code> object.
      *
      * @return a <code>TradeEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Equity}
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link EquityImpl}
      */
     public static TradeEventBuilder<TradeEvent> equityTradeEvent()
     {
@@ -107,7 +108,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Future <code>TradeEvent</code> object.
      *
      * @return a <code>TradeEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Future}
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link FutureImpl}
      */
     public static TradeEventBuilder<TradeEvent> futureTradeEvent()
     {

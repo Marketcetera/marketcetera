@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
+
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.QuoteAction;
 import org.marketcetera.core.event.QuoteEvent;
@@ -11,7 +13,6 @@ import org.marketcetera.core.event.beans.EventBean;
 import org.marketcetera.core.event.beans.HasEventBean;
 import org.marketcetera.core.event.beans.QuoteBean;
 import org.marketcetera.core.event.util.EventServices;
-import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 

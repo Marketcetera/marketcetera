@@ -1,28 +1,26 @@
 package org.marketcetera.core.trade;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.AllocAccount;
-import quickfix.field.AllocQty;
-import quickfix.field.BeginString;
-import quickfix.field.ExpireTime;
-import quickfix.field.Product;
-import quickfix.field.SettlType;
-import quickfix.field.SolicitedFlag;
+import quickfix.field.*;
 import quickfix.field.converter.BooleanConverter;
 import quickfix.field.converter.UtcTimestampConverter;
 import quickfix.fix44.NewOrderSingle;
-
-import static org.junit.Assert.*;
 
 /* $License$ */
 /**
@@ -83,8 +81,8 @@ public class OrderSingleTest extends TypesTestBase {
         org.marketcetera.core.trade.OrderID orderID = new org.marketcetera.core.trade.OrderID("testOrderID");
         BigDecimal qty = new BigDecimal("23434.56989");
         BigDecimal price = new BigDecimal("98923.2345");
-        org.marketcetera.api.systemmodel.SecurityType securityType = org.marketcetera.api.systemmodel.SecurityType.CommonStock;
-        Instrument instrument = new Equity("IBM");
+        org.marketcetera.api.systemmodel.instruments.SecurityType securityType = org.marketcetera.api.systemmodel.instruments.SecurityType.CommonStock;
+        Instrument instrument = new EquityImpl("IBM");
         String account = "walloween";
         msg = factory.newLimitOrder(orderID.getValue(),
                 org.marketcetera.core.trade.Side.Buy.getFIXValue(), qty, instrument, price,

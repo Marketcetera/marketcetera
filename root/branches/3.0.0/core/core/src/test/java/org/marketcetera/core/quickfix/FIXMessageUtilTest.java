@@ -8,17 +8,12 @@ import java.util.*;
 
 import junit.framework.Test;
 
+import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.*;
-import org.marketcetera.core.Messages;
-import org.marketcetera.core.quickfix.*;
-import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.EquityImpl;
 
 import quickfix.*;
 import quickfix.field.*;
-import quickfix.field.OrderID;
-import quickfix.field.SecurityType;
-import quickfix.field.Side;
-import quickfix.field.TimeInForce;
 /* $License$ */
 /**
  * @version $Id: FIXMessageUtilTest.java 16063 2012-01-31 18:21:55Z colin $
@@ -53,7 +48,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         String priceString = "123.45"; //$NON-NLS-1$
         char timeInForce = TimeInForce.DAY;
         Message aMessage = msgFactory.newLimitOrder(orderID, side, new BigDecimal(quantity),
-                                                 new Equity(symbol), new BigDecimal(priceString), timeInForce, null);
+                                                 new EquityImpl(symbol), new BigDecimal(priceString), timeInForce, null);
 
         assertEquals(MsgType.ORDER_SINGLE, aMessage.getHeader().getString(MsgType.FIELD));
         assertEquals(OrdType.LIMIT, aMessage.getChar(OrdType.FIELD));
@@ -75,7 +70,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         BigDecimal price = new BigDecimal("123.45"); //$NON-NLS-1$
         Message aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID", //$NON-NLS-1$
                 OrdStatus.NEW, side, quantity, price,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), //$NON-NLS-1$
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new EquityImpl("IBM"), //$NON-NLS-1$
                 "accountName","random text"); //$NON-NLS-1$
 
         assertEquals(MsgType.EXECUTION_REPORT, aMessage.getHeader().getString(MsgType.FIELD));
@@ -95,13 +90,13 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID", //$NON-NLS-1$
                 OrdStatus.NEW, side, quantity, null,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, new Equity("IBM"), "accountName", "text"); //$NON-NLS-1$
+                BigDecimal.ZERO, new EquityImpl("IBM"), "accountName", "text"); //$NON-NLS-1$
         assertFalse(aMessage.isSetField(Price.FIELD));
         assertEquals(symbol, aMessage.getString(Symbol.FIELD));
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(msgFactory.getBeginString()))) {
             assertFalse(aMessage.isSetField(SecurityType.FIELD));
         } else {
-            assertEquals(org.marketcetera.api.systemmodel.SecurityType.CommonStock.getFIXValue(),
+            assertEquals(org.marketcetera.api.systemmodel.instruments.SecurityType.CommonStock.getFIXValue(),
                 aMessage.getString(SecurityType.FIELD));
         }
 
@@ -109,7 +104,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         try {
             aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID", //$NON-NLS-1$
                     OrdStatus.NEW, side, quantity, null,
-                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), null, null);
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new EquityImpl("IBM"), null, null);
             aMessage.getString(Account.FIELD);
 
         } catch (FieldNotFound ex) {
@@ -277,7 +272,8 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public void testMDR_oneSymbol()
         throws Exception
     {
-        List<Equity> list = Arrays.asList(new Equity("TOLI"));
+        List<Equity> list = new ArrayList<Equity>();
+        list.add(new EquityImpl("TOLI"));
         verifyMDR(msgFactory.newMarketDataRequest("toliID",
                                                   list),
                   list,
@@ -292,10 +288,11 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public void testMDR_ManySymbols()
         throws Exception
     {
-        List<Equity> list = Arrays.asList(new Equity("TOLI"),
-                                          new Equity("GRAHAM"),
-                                          new Equity("LENA"),
-                                          new Equity("COLIN"));
+        List<Equity> list = new ArrayList<Equity>();
+        list.add(new EquityImpl("TOLI"));
+        list.add(new EquityImpl("GRAHAM"));
+        list.add(new EquityImpl("LENA"));
+        list.add(new EquityImpl("COLIN"));
         verifyMDR(msgFactory.newMarketDataRequest("toliID",
                                                   list),
                   list,
@@ -398,7 +395,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 
         Message execReport = msgFactory.newExecutionReport("orderID", "clOrderID", "1234", OrdStatus.CANCELED, Side.BUY,  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 new BigDecimal(2385), new BigDecimal("23.45"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, //$NON-NLS-1$
-                new Equity("GAP"), "account", "text"); //$NON-NLS-1$ //$NON-NLS-2$
+                new EquityImpl("GAP"), "account", "text"); //$NON-NLS-1$ //$NON-NLS-2$
         execReport.setString(Text.FIELD, "dummyMessage"); //$NON-NLS-1$
 
         FIXMessageUtil.fillFieldsFromExistingMessage(execReport, buy, false);
@@ -588,7 +585,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 		Message aMessage = msgFactory.newExecutionReport("ordid", "clordid", //$NON-NLS-1$ //$NON-NLS-2$
 				"execid", OrdStatus.PENDING_REPLACE, Side.BUY, BigDecimal.TEN, //$NON-NLS-1$
 				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
-				BigDecimal.TEN, new Equity("ABC"), null, null); //$NON-NLS-1$
+				BigDecimal.TEN, new EquityImpl("ABC"), null, null); //$NON-NLS-1$
 		assertTrue(FIXMessageUtil.isCancellable(aMessage));
 		assertFalse(FIXMessageUtil.isCancellable(FIXMessageUtilTest.createMarketNOS("ABC", new BigDecimal(10), Side.BUY, msgFactory))); //$NON-NLS-1$
 
@@ -680,7 +677,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         message = msgFactory.newExecutionReport("ord1", "clord1", "execID",
                 OrdStatus.NEW, Side.SELL, new BigDecimal("234.43"),
                 new BigDecimal("98.34"), BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"),
+                BigDecimal.ZERO, BigDecimal.ZERO, new EquityImpl("IBM"),
                 "accountName", "text");
         message.setString(5001,"customValue");
         str = FIXMessageUtil.toPrettyString(message,fixDD);

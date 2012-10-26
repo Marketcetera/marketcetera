@@ -3,7 +3,7 @@ package org.marketcetera.core.position;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 
 import ca.odell.glazedlists.EventList;
 

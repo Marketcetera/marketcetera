@@ -3,13 +3,10 @@ package org.marketcetera.core.event.beans;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import org.marketcetera.core.event.DividendFrequency;
-import org.marketcetera.core.event.DividendStatus;
-import org.marketcetera.core.event.DividendType;
-import org.marketcetera.core.event.EventType;
-import org.marketcetera.core.event.Messages;
+
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.util.EventServices;
-import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 
@@ -39,7 +36,7 @@ public final class DividendBean
     /**
      * Get the equity value.
      *
-     * @return a <code>Equity</code> value
+     * @return an <code>Equity</code> value
      */
     public Equity getEquity()
     {

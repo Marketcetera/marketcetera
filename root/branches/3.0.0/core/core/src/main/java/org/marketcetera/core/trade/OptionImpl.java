@@ -5,11 +5,12 @@ import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.options.OptionUtils;
 
 /* $License$ */
@@ -26,15 +27,15 @@ import org.marketcetera.core.options.OptionUtils;
  * See {@link org.marketcetera.core.options.OptionUtils#normalizeEquityOptionExpiry(String)} for details
  * on how the expiry value is augmented. 
  * 
- * @version $Id: Option.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Option extends Instrument {
-
-	private final String mSymbol;
-
+public class OptionImpl
+        extends AbstractInstrumentImpl
+        implements Option
+{
     private final OptionType mType;
 
     private final String mExpiry;
@@ -57,15 +58,15 @@ public class Option extends Instrument {
      * @throws IllegalArgumentException
      *             if any argument is null, or if symbol or expiry is whitespace
      */
-    public Option(String symbol, String expiry, BigDecimal strikePrice,
+    public OptionImpl(String symbol, String expiry, BigDecimal strikePrice,
             OptionType type) {
+        super(symbol);
         symbol = StringUtils.trimToNull(symbol);
         expiry = StringUtils.trimToNull(expiry);
         Validate.notNull(symbol);
         Validate.notNull(type);
         Validate.notNull(expiry);
         Validate.notNull(strikePrice);
-        mSymbol = symbol;
         mType = type;
         mExpiry = expiry;
         String tmpAugmentedExpiry = null;
@@ -87,25 +88,12 @@ public class Option extends Instrument {
     /**
      * Parameterless constructor for use only by JAXB.
      */
-    protected Option() {
-        mSymbol = null;
+    protected OptionImpl() {
         mType = null;
         mExpiry = null;
         mAugmentedExpiry = null;
         mStrikePrice = null;
     }
-
-    /**
-     * Returns the option root symbol.
-     * 
-     * @return the option root symbol, never null
-     */
-    @Override
-    public String getSymbol() {
-        return mSymbol;
-    }
-    
-
     /**
      * Always returns {@link SecurityType#Option}.
      *
@@ -165,7 +153,7 @@ public class Option extends Instrument {
                 ? mExpiry.hashCode()
                 : mAugmentedExpiry.hashCode());
         result = prime * result + mStrikePrice.hashCode();
-        result = prime * result + mSymbol.hashCode();
+        result = prime * result + getSymbol().hashCode();
         result = prime * result + mType.hashCode();
         return result;
     }
@@ -178,31 +166,34 @@ public class Option extends Instrument {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Option)) {
+        if (!(obj instanceof OptionImpl)) {
             return false;
         }
-        Option other = (Option) obj;
+        OptionImpl other = (OptionImpl) obj;
         String expiry = mAugmentedExpiry == null
                 ? mExpiry
                 : mAugmentedExpiry;
         String otherExpiry = other.mAugmentedExpiry == null
                 ? other.mExpiry
                 : other.mAugmentedExpiry;
-        return mSymbol.equals(other.mSymbol) && mType.equals(other.mType)
+        return getSymbol().equals(other.getSymbol()) && mType.equals(other.mType)
                 && mStrikePrice.equals(other.mStrikePrice)
                 && expiry.equals(otherExpiry);
     }
 
+/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
-    public String toString() {
-        ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("symbol", mSymbol) //$NON-NLS-1$
-                .append("type", mType) //$NON-NLS-1$
-                .append("expiry", mExpiry) //$NON-NLS-1$
-                .append("strikePrice", mStrikePrice); //$NON-NLS-1$
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Option[symbol=").append(getSymbol()).append(",type=").append(mType).append(",expiry=").append(mExpiry)
+                .append(",strikePrice=").append(mStrikePrice);
         if(mAugmentedExpiry != null) {
-            builder.append("augmentedExpiry", mAugmentedExpiry);  //$NON-NLS-1$
+            builder.append(",augmentedExpiry=").append(mAugmentedExpiry);  //$NON-NLS-1$
         }
+        builder.append("]");
         return builder.toString();
     }
     private static final long serialVersionUID = 1L;

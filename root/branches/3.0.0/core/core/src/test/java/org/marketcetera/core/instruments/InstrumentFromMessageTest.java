@@ -1,37 +1,33 @@
 package org.marketcetera.core.instruments;
 
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
 import java.math.BigDecimal;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.ConvertibleBond;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.FutureExpirationMonth;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.ConvertibleBondImpl;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.FutureImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import quickfix.DecimalField;
-import quickfix.Field;
-import quickfix.IntField;
-import quickfix.Message;
-import quickfix.StringField;
-import quickfix.field.CFICode;
-import quickfix.field.MaturityDate;
-import quickfix.field.MaturityDay;
-import quickfix.field.MaturityMonthYear;
-import quickfix.field.PutOrCall;
-import quickfix.field.SecurityType;
-import quickfix.field.StrikePrice;
-import quickfix.field.Symbol;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import quickfix.*;
+import quickfix.field.*;
 
 /* $License$ */
 /**
@@ -80,10 +76,10 @@ public class InstrumentFromMessageTest {
         assertNull(InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
         // no security type, symbol set
         msg.setField(new Symbol("PQR"));
-        assertEquals(new Equity("PQR"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+        assertEquals(new EquityImpl("PQR"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
         //security type set, symbol set
         msg.setField(new SecurityType(SecurityType.COMMON_STOCK));
-        assertEquals(new Equity("PQR"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+        assertEquals(new EquityImpl("PQR"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
     /**
      * Tests creating <code>ConvertibleBond</code> instruments from <code>Message</code> objects.
@@ -101,7 +97,7 @@ public class InstrumentFromMessageTest {
         // security type set, symbol set
         msg.setField(new Symbol("PQR"));
         msg.setField(new SecurityType(SecurityType.CONVERTIBLE_BOND));
-        assertEquals(new ConvertibleBond("PQR"),
+        assertEquals(new ConvertibleBondImpl("PQR"),
                      InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
     @SuppressWarnings("unchecked")
@@ -134,7 +130,7 @@ public class InstrumentFromMessageTest {
                                     assertThat(instrument, anyOf(nullValue(), not(instanceOf(Option.class))));
                                 } else {
                                     Option option = (Option) instrument;
-                                    assertEquals(org.marketcetera.api.systemmodel.SecurityType.Option, option.getSecurityType());
+                                    assertEquals(org.marketcetera.api.systemmodel.instruments.SecurityType.Option, option.getSecurityType());
                                     assertEquals(expectedSymbol, option.getSymbol());
                                     assertEquals(expectedStrike, option.getStrikePrice());
                                     if (expiry.getTag() == MaturityMonthYear.FIELD) {
@@ -193,10 +189,10 @@ public class InstrumentFromMessageTest {
                         if(isNotFuture) {
                             assertThat(instrument,
                                        anyOf(nullValue(),
-                                             not(instanceOf(Future.class))));
+                                             not(instanceOf(FutureImpl.class))));
                         } else {
-                            Future future = (Future)instrument;
-                            assertEquals(org.marketcetera.api.systemmodel.SecurityType.Future,
+                            FutureImpl future = (FutureImpl)instrument;
+                            assertEquals(org.marketcetera.api.systemmodel.instruments.SecurityType.Future,
                                          future.getSecurityType());
                             assertEquals(expectedSymbol,
                                          future.getSymbol());

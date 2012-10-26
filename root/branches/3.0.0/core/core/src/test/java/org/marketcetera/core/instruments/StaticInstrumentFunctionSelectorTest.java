@@ -1,24 +1,21 @@
 package org.marketcetera.core.instruments;
 
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import java.math.BigDecimal;
 import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.core.trade.ConvertibleBond;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.FutureExpirationMonth;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import org.marketcetera.core.trade.*;
 
 /* $License$ */
 /**
@@ -47,16 +44,16 @@ public class StaticInstrumentFunctionSelectorTest {
                 selector.forInstrument(null);
             }
         };
-        assertThat(selector.forInstrument(new Equity("blue")),
+        assertThat(selector.forInstrument(new EquityImpl("blue")),
                 instanceOf(EquityToMessage.class));
         assertThat(selector.forInstrument(
-                new Option("blue", "20091010", BigDecimal.TEN, OptionType.Call)),
+                new OptionImpl("blue", "20091010", BigDecimal.TEN, OptionType.Call)),
                 instanceOf(OptionToMessage.class));
-        assertThat(selector.forInstrument(new Future("blue",
+        assertThat(selector.forInstrument(new FutureImpl("blue",
                                                      FutureExpirationMonth.APRIL,
                                                      2012)),
                    instanceOf(FutureToMessage.class));
-        assertThat(selector.forInstrument(new ConvertibleBond("yellow")),
+        assertThat(selector.forInstrument(new ConvertibleBondImpl("yellow")),
                    instanceOf(ConvertibleBondToMessage.class));
         new ExpectedFailure<IllegalArgumentException>(
                 Messages.NO_HANDLER_FOR_INSTRUMENT.getText(
@@ -89,17 +86,17 @@ public class StaticInstrumentFunctionSelectorTest {
         assertEquals("Should load 4 handlers",
                      4,
                      selector.getHandlers().size());
-        assertThat(handlers.get(Equity.class), instanceOf(EquityToMessage.class));
-        assertThat(handlers.get(Option.class), instanceOf(OptionToMessage.class));
-        assertThat(handlers.get(Future.class), instanceOf(FutureToMessage.class));
-        assertThat(handlers.get(ConvertibleBond.class),
+        assertThat(handlers.get(EquityImpl.class), instanceOf(EquityToMessage.class));
+        assertThat(handlers.get(OptionImpl.class), instanceOf(OptionToMessage.class));
+        assertThat(handlers.get(FutureImpl.class), instanceOf(FutureToMessage.class));
+        assertThat(handlers.get(ConvertibleBondImpl.class),
                    instanceOf(ConvertibleBondToMessage.class));
     }
 
     /**
      * An unknown instrument class for testing.
      */
-    private static class UnknownInstrument extends Instrument {
+    private static class UnknownInstrument extends AbstractInstrumentImpl implements Instrument {
 
         @Override
         public String getSymbol() {

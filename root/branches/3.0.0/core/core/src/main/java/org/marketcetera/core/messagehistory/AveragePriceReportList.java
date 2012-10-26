@@ -4,30 +4,21 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.instruments.InstrumentFromMessage;
+import org.marketcetera.core.instruments.InstrumentToMessage;
+import org.marketcetera.core.quickfix.FIXMessageFactory;
+import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.*;
+import quickfix.field.Side;
 import ca.odell.glazedlists.AbstractEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
-import org.marketcetera.core.instruments.InstrumentFromMessage;
-import org.marketcetera.core.instruments.InstrumentToMessage;
-import org.marketcetera.core.quickfix.FIXMessageFactory;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.MessageCreationException;
-import org.marketcetera.core.trade.OrderStatus;
-import org.marketcetera.core.trade.Originator;
-import org.marketcetera.core.trade.ReportBase;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.AvgPx;
-import quickfix.field.CumQty;
-import quickfix.field.LeavesQty;
-import quickfix.field.MsgType;
-import quickfix.field.OrderQty;
-import quickfix.field.Side;
 
 /* $License$ */
 

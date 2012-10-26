@@ -1,13 +1,13 @@
 package org.marketcetera.api.symbolresolver.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.mock;
-import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,7 +16,7 @@ import org.junit.rules.ExpectedException;
 import org.marketcetera.api.symbolresolver.Messages;
 import org.marketcetera.api.symbolresolver.NoInstrumentForSymbol;
 import org.marketcetera.api.symbolresolver.SymbolResolver;
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.mockito.Mock;
 
 /* $License$ */

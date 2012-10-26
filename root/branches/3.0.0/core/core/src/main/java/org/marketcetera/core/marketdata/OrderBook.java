@@ -1,26 +1,13 @@
 package org.marketcetera.core.marketdata;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.BidEvent;
-import org.marketcetera.core.event.DepthOfBookEvent;
-import org.marketcetera.core.event.QuoteEvent;
-import org.marketcetera.core.event.TopOfBookEvent;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.DepthOfBookEventBuilder;
 import org.marketcetera.core.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.core.event.util.BookPriceComparator;
-import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */

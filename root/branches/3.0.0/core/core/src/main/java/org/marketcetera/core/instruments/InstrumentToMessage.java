@@ -1,9 +1,10 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.quickfix.FIXVersion;
-import quickfix.Message;
+
 import quickfix.DataDictionary;
+import quickfix.Message;
 import quickfix.field.SecurityType;
 import quickfix.field.Symbol;
 
@@ -98,7 +99,7 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
                                           Message inMessage) {
         if((!FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) &&
                 inInstrument.getSecurityType() != null &&
-                org.marketcetera.api.systemmodel.SecurityType.Unknown != inInstrument.getSecurityType()) {
+                org.marketcetera.api.systemmodel.instruments.SecurityType.Unknown != inInstrument.getSecurityType()) {
             inMessage.setField(new SecurityType(inInstrument.getSecurityType().getFIXValue()));
         }
     }

@@ -1,7 +1,10 @@
 package org.marketcetera.core.position.impl;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -9,8 +12,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 

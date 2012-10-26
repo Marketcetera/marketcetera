@@ -1,17 +1,19 @@
 package org.marketcetera.core.trade;
 
-import java.util.List;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import org.junit.Test;
-import org.marketcetera.api.systemmodel.SecurityType;
-import org.marketcetera.util.test.EqualityAssert;
-import org.marketcetera.util.test.SerializableAssert;
-
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
+import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.test.SerializableAssert;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 /* $License$ */
 

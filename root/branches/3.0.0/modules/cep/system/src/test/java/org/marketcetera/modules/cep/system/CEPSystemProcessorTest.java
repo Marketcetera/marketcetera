@@ -14,7 +14,7 @@ import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.trade.Factory;
 
 /**
@@ -84,9 +84,9 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                                EventTestBase.generateEquityBidEvent(1, new Date(2), new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), DateUtils.dateToString(new Date())),
-                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), DateUtils.dateToString(new Date())),
-                                EventTestBase.generateEquityAskEvent(5, new Date(6), new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), DateUtils.dateToString(new Date()))
+                                EventTestBase.generateEquityBidEvent(1, new Date(2), new EquityImpl("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), DateUtils.dateToString(new Date())),
+                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), DateUtils.dateToString(new Date())),
+                                EventTestBase.generateEquityAskEvent(5, new Date(6), new EquityImpl("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), DateUtils.dateToString(new Date()))
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(TEST_URN, new String[]{"select * from bob", "select * from fred"})
@@ -107,9 +107,9 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                                EventTestBase.generateEquityBidEvent(1, new Date(2), new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), DateUtils.dateToString(new Date())),
-                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), DateUtils.dateToString(new Date())),
-                                EventTestBase.generateEquityAskEvent(5, new Date(6), new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), DateUtils.dateToString(new Date()))
+                                EventTestBase.generateEquityBidEvent(1, new Date(2), new EquityImpl("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100"), DateUtils.dateToString(new Date())),
+                                EventTestBase.generateEquityTradeEvent(3, new Date(4), new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"), DateUtils.dateToString(new Date())),
+                                EventTestBase.generateEquityAskEvent(5, new Date(6), new EquityImpl("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"), DateUtils.dateToString(new Date()))
                         }),
                         // System -> Sink: only get 1 bid event
                         new DataRequest(TEST_URN, "select * from bob")

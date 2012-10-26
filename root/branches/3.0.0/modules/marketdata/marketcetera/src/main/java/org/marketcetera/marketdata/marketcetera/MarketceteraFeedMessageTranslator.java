@@ -8,13 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 
 import quickfix.Message;
 import quickfix.field.SubscriptionRequestType;
@@ -80,7 +81,7 @@ public class MarketceteraFeedMessageTranslator
     {
         List<Equity> symbolList = new ArrayList<Equity>();
         for(String symbol : inRequest.getSymbols()) {
-            symbolList.add(new Equity(symbol));
+            symbolList.add(new EquityImpl(symbol));
         }
         long id = counter.incrementAndGet();
         // generate the message using the current FIXMessageFactory

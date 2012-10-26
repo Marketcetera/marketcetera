@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nonnull;
 
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 
 /* $License$ */
 

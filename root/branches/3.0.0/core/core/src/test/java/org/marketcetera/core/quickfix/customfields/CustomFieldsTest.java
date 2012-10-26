@@ -1,15 +1,16 @@
 package org.marketcetera.core.quickfix.customfields;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
+
+import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
+
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.SubscriptionRequestType;
@@ -30,7 +31,9 @@ public class CustomFieldsTest extends TestCase {
 
     public void testHistoricalMarketDataRequest() throws Exception {
         FIXMessageFactory msgFactory = FIXVersion.FIX44.getMessageFactory();
-        Message request = msgFactory.newMarketDataRequest("123", Arrays.asList(new Equity("IFLI"))); //$NON-NLS-1$ //$NON-NLS-2$
+        List<Equity> list = new ArrayList<Equity>();
+        list.add(new EquityImpl("IFLI"));
+        Message request = msgFactory.newMarketDataRequest("123", list);
         request.setField(new SubscriptionRequestType(CustomFIXFieldConstants.SUBSCRIPTION_REQUEST_TYPE_HISTORICAL));
         request.setField(new DateFrom(new GregorianCalendar(2001, 4, 1).getTime()));
         request.setField(new DateTo(new Date()));

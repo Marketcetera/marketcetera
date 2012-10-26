@@ -1,19 +1,21 @@
 package org.marketcetera.core.trade;
 
-import java.util.List;
-
-import com.google.common.collect.ImmutableList;
-import org.junit.Test;
-import org.marketcetera.api.systemmodel.SecurityType;
-import org.marketcetera.core.ExpectedFailure;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
+import org.marketcetera.core.ExpectedFailure;
+
+import com.google.common.collect.ImmutableList;
 
 /* $License$ */
 
 /**
- * Tests {@link org.marketcetera.core.trade.Equity}.
+ * Tests {@link org.marketcetera.core.trade.EquityImpl}.
  * 
  * @version $Id: EquityTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
@@ -22,18 +24,18 @@ public class EquityTest extends InstrumentTestBase<Equity> {
 
     @Override
     protected Equity createFixture() {
-        return new Equity("METC");
+        return new EquityImpl("METC");
     }
 
     @Override
     protected Equity createEqualFixture() {
-        return new Equity("METC");
+        return new EquityImpl("METC");
     }
 
     @Override
     protected List<Equity> createDifferentFixtures() {
-        return ImmutableList.<Equity> of(new Equity("ABC"), new Equity("IBM"),
-                new Equity("MSFT"));
+        return ImmutableList.<Equity> of(new EquityImpl("ABC"), new EquityImpl("IBM"),
+                new EquityImpl("MSFT"));
     }
     
 
@@ -47,7 +49,7 @@ public class EquityTest extends InstrumentTestBase<Equity> {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new Equity(null);
+                new EquityImpl(null);
             }
         };
     }
@@ -57,13 +59,13 @@ public class EquityTest extends InstrumentTestBase<Equity> {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new Equity("");
+                new EquityImpl("");
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new Equity("   \n");
+                new EquityImpl("   \n");
             }
         };
     }

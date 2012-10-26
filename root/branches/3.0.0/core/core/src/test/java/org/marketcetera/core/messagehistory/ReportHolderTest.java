@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.junit.Test;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.BrokerID;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.trade.ExecutionReport;
 import org.marketcetera.core.trade.Factory;
 import org.marketcetera.core.trade.MessageCreationException;
@@ -49,7 +49,7 @@ public class ReportHolderTest {
                 .newExecutionReport("asdf", "asdf", "asdf", OrdStatus.CANCELED,
                         Side.BUY, BigDecimal.TEN, BigDecimal.ONE,
                         BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                        BigDecimal.ONE, new Equity("123"), "asdf", "text");
+                        BigDecimal.ONE, new EquityImpl("123"), "asdf", "text");
         return message;
     }
 

@@ -11,12 +11,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 
 import org.marketcetera.api.systemmodel.Subscriber;
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.api.systemmodel.instruments.Future;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.DividendEventBuilder;
@@ -27,12 +27,13 @@ import org.marketcetera.core.event.util.PriceAndSizeComparator;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.trade.DeliveryType;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.StandardType;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
 /* $License$ */
 

@@ -9,7 +9,7 @@ import quickfix.Message;
  * the sake of JAXB and is not intended for general use.
  *
  * @since 2.0.0
- * @version $Id: FIXResponseImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * (formerly named: OpenClose prior to FIX 4.3)
  *
- * @version $Id: PositionEffect.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public enum PositionEffect {

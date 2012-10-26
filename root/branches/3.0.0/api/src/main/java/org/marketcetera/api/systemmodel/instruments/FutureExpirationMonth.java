@@ -1,16 +1,14 @@
-package org.marketcetera.core.trade;
+package org.marketcetera.api.systemmodel.instruments;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang.Validate;
 
 /* $License$ */
 
 /**
  * Indicates the expiration month of a futures contract.
  *
- * @version $Id: FutureExpirationMonth.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public enum FutureExpirationMonth
@@ -96,7 +94,7 @@ public enum FutureExpirationMonth
     public static FutureExpirationMonth getFutureExpirationMonth(String inCode)
     {
         FutureExpirationMonth month = monthsByCode.get(inCode.toUpperCase());
-        Validate.notNull(month);
+//        Validate.notNull(month);
         return month;
     }
     /**
@@ -127,9 +125,9 @@ public enum FutureExpirationMonth
     public static FutureExpirationMonth getByMonthOfYear(String inMonthOfYear)
     {
         int month = Integer.valueOf(inMonthOfYear);
-        Validate.isTrue(month >= 1 &&
-                        month <= 12,
-                        Messages.INVALID_MONTH.getText(inMonthOfYear));
+//        Validate.isTrue(month >= 1 &&
+//                        month <= 12,
+//                        Messages.INVALID_MONTH.getText(inMonthOfYear));
         return monthsByMonthOfYear.get(inMonthOfYear);
     }
     /**

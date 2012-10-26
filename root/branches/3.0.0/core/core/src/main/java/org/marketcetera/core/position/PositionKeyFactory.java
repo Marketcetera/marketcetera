@@ -3,13 +3,13 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
+
+import org.marketcetera.api.systemmodel.instruments.*;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
-import org.marketcetera.core.trade.ConvertibleBond;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.ConvertibleBondImpl;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.OptionImpl;
 
 /* $License$ */
 
@@ -34,9 +34,9 @@ public class PositionKeyFactory {
      * @throws IllegalArgumentException
      *             if symbol is null or whitespace
      */
-    public static PositionKey<Equity> createEquityKey(String symbol,
+    public static PositionKey<? extends Equity> createEquityKey(String symbol,
             @Nullable String account, @Nullable String traderId) {
-        return createKey(new Equity(symbol), account, traderId);
+        return createKey(new EquityImpl(symbol), account, traderId);
     }
     /**
      * Creates a convertible bond key.
@@ -49,11 +49,11 @@ public class PositionKeyFactory {
      * @return a PositionKey&lt;ConvertibleBond&gt;</code> value
      * @throws IllegalArgumentException if one of the given parameters are invalid
      */
-    public static PositionKey<ConvertibleBond> createConvertibleBondKey(String inSymbol,
-                                                                        @Nullable String inAccount,
-                                                                        @Nullable String inTraderID)
+    public static PositionKey<? extends ConvertibleBond> createConvertibleBondKey(String inSymbol,
+                                                                                  @Nullable String inAccount,
+                                                                                  @Nullable String inTraderID)
     {
-        return createKey(new ConvertibleBond(inSymbol),
+        return createKey(new ConvertibleBondImpl(inSymbol),
                          inAccount,
                          inTraderID);
     }
@@ -67,13 +67,13 @@ public class PositionKeyFactory {
      * @param inTraderId a <code>String</code> value
      * @throws IllegalArgumentException if one of the given parameters are invalid
      */
-    public static PositionKey<Future> createFutureKey(String inSymbol,
-                                                      @Nullable String inExpiry,
-                                                      @Nullable String inAccount,
-                                                      @Nullable String inTraderId)
+    public static PositionKey<? extends Future> createFutureKey(String inSymbol,
+                                                                @Nullable String inExpiry,
+                                                                @Nullable String inAccount,
+                                                                @Nullable String inTraderId)
     {
-        return createKey(new Future(inSymbol,
-                                    inExpiry),
+        return createKey(new FutureImpl(inSymbol,
+                                        inExpiry),
                          inAccount,
                          inTraderId);
     }
@@ -92,10 +92,10 @@ public class PositionKeyFactory {
      * @throws IllegalArgumentException
      *             if any argument is null, or if symbol or expiry is whitespace
      */
-    public static PositionKey<Option> createOptionKey(String symbol,
+    public static PositionKey<? extends Option> createOptionKey(String symbol,
             String expiry, BigDecimal strikePrice, OptionType type,
             @Nullable String account, @Nullable String traderId) {
-        return createKey(new Option(symbol, expiry, strikePrice, type),
+        return createKey(new OptionImpl(symbol, expiry, strikePrice, type),
                 account, traderId);
     }
 

@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlValue;
  * A uniqueID for every report received by the system. The report IDs
  * increase monotonically with every received report
  *
- * @version $Id: ReportID.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -2,7 +2,7 @@ package org.marketcetera.api.symbolresolver;
 
 import java.util.List;
 
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 
 /* $License$ */
 
