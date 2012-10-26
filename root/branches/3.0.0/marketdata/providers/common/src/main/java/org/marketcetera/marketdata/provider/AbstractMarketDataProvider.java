@@ -30,6 +30,7 @@ import org.springframework.context.Lifecycle;
  * @version $Id$
  * @since $Release$
  * TODO need to handle restart case such that existing subscriptions are honored (resubmit and replace internal handles)
+ * TODO implement JMX interface
  */
 @ThreadSafe
 public abstract class AbstractMarketDataProvider
@@ -200,7 +201,7 @@ public abstract class AbstractMarketDataProvider
         // TODO push this into a separate thread to allow events to queue here
         Subscriber subscriber = handleMap.get(inInternalHandle);
         if(subscriber != null &&
-                subscriber.isInteresting(inEvents)) {
+           subscriber.isInteresting(inEvents)) {
             subscriber.publishTo(inEvents);
         }
     }

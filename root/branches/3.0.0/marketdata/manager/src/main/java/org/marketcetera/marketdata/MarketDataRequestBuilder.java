@@ -36,4 +36,5 @@ public interface MarketDataRequestBuilder
     public MarketDataRequestBuilder withRequiredCapabilities(Set<Capability> inCapabilities);
     public MarketDataRequestBuilder withRequiredCapabilities(Capability...inCapabilities);
     public MarketDataRequestBuilder withRequiredCapabilities(String...inCapabilities);
+    public MarketDataRequest create();
 }
