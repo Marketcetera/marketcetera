@@ -1,6 +1,6 @@
 package org.marketcetera.core.event;
 
-import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.core.trade.Option;
 
 /* $License$ */
 

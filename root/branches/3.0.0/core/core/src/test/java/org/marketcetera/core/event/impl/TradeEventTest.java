@@ -8,14 +8,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.*;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.EquityImpl;
-import org.marketcetera.core.trade.FutureImpl;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
+import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -27,7 +28,6 @@ import org.marketcetera.util.test.EqualityAssert;
  * @since 2.0.0
  */
 public class TradeEventTest
-        implements Messages
 {
     /**
      * Run before each test.
@@ -82,7 +82,7 @@ public class TradeEventTest
             throws Exception
     {
         // create equity builders and supply an option instrument
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_EQUITY_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_EQUITY_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -92,7 +92,7 @@ public class TradeEventTest
         };
         verify(setDefaults(TradeEventBuilder.equityTradeEvent()).withInstrument(equity));
         // now check option builders with an equity instrument
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_OPTION_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_OPTION_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -102,7 +102,7 @@ public class TradeEventTest
         };
         verify(setDefaults(TradeEventBuilder.optionTradeEvent()).withInstrument(option));
         // now check future builders with an equity instrument
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_FUTURE_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception

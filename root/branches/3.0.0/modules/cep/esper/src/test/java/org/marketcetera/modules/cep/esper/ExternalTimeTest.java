@@ -17,9 +17,9 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.trade.Factory;
 import org.marketcetera.core.trade.Suggestion;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.util.test.LogTestAssist;
 
 /**

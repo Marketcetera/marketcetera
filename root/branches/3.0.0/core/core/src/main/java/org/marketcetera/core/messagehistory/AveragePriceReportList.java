@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.quickfix.FIXMessageFactory;

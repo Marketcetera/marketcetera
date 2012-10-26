@@ -14,10 +14,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import junit.framework.Test;
 
-import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
@@ -26,6 +22,9 @@ import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
+import org.marketcetera.core.trade.impl.OptionImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

@@ -8,9 +8,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
 
 /* $License$ */
 /**

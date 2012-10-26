@@ -1,4 +1,4 @@
-package org.marketcetera.core.trade;
+package org.marketcetera.core.trade.impl;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -6,8 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.api.systemmodel.instruments.ConvertibleBond;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
+import org.marketcetera.core.trade.ConvertibleBond;
+import org.marketcetera.core.trade.SecurityType;
 
 /* $License$ */
 

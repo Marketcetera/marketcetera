@@ -13,17 +13,17 @@ import java.math.BigDecimal;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.ConvertibleBondImpl;
-import org.marketcetera.core.trade.EquityImpl;
-import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.FutureExpirationMonth;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import quickfix.*;
@@ -130,7 +130,7 @@ public class InstrumentFromMessageTest {
                                     assertThat(instrument, anyOf(nullValue(), not(instanceOf(Option.class))));
                                 } else {
                                     Option option = (Option) instrument;
-                                    assertEquals(org.marketcetera.api.systemmodel.instruments.SecurityType.Option, option.getSecurityType());
+                                    assertEquals(org.marketcetera.core.trade.SecurityType.Option, option.getSecurityType());
                                     assertEquals(expectedSymbol, option.getSymbol());
                                     assertEquals(expectedStrike, option.getStrikePrice());
                                     if (expiry.getTag() == MaturityMonthYear.FIELD) {
@@ -192,7 +192,7 @@ public class InstrumentFromMessageTest {
                                              not(instanceOf(FutureImpl.class))));
                         } else {
                             FutureImpl future = (FutureImpl)instrument;
-                            assertEquals(org.marketcetera.api.systemmodel.instruments.SecurityType.Future,
+                            assertEquals(org.marketcetera.core.trade.SecurityType.Future,
                                          future.getSecurityType());
                             assertEquals(expectedSymbol,
                                          future.getSymbol());

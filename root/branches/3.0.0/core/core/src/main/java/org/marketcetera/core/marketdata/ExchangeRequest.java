@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.event.HasUnderlyingInstrument;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
 
 /**
  * Encapsulates elements of a marker data request to an {@link Exchange}.

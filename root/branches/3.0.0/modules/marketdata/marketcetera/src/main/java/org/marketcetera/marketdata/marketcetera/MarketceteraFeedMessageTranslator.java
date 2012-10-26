@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 

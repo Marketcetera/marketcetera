@@ -7,11 +7,11 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.Trade;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import ca.odell.glazedlists.BasicEventList;

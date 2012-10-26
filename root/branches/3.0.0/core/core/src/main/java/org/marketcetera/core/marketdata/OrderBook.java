@@ -3,11 +3,11 @@ package org.marketcetera.core.marketdata;
 import java.util.*;
 
 import org.apache.commons.lang.SystemUtils;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.DepthOfBookEventBuilder;
 import org.marketcetera.core.event.impl.TopOfBookEventBuilder;
 import org.marketcetera.core.event.util.BookPriceComparator;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */

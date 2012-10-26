@@ -9,17 +9,17 @@ import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.ConvertibleBondImpl;
-import org.marketcetera.core.trade.EquityImpl;
-import org.marketcetera.core.trade.FutureImpl;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.FutureExpirationMonth;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
+import org.marketcetera.core.trade.impl.OptionImpl;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;

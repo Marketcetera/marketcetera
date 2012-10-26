@@ -11,13 +11,12 @@ import java.util.Map;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.messagehistory.ReportHolder;
 import org.marketcetera.core.position.*;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.OptionImpl;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;

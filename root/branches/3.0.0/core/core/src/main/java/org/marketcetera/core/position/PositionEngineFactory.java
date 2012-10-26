@@ -3,7 +3,6 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.messagehistory.ReportHolder;
 import org.marketcetera.core.position.impl.Messages;

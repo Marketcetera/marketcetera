@@ -7,10 +7,10 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionMetrics;
 import org.marketcetera.core.position.PositionRow;
+import org.marketcetera.core.trade.Instrument;
 
 import ca.odell.glazedlists.EventList;
 

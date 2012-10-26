@@ -7,8 +7,8 @@ import java.math.BigDecimal;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.position.MockTrade;
+import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 

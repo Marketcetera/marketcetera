@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.marketcetera.api.systemmodel.Publisher;
 import org.marketcetera.api.systemmodel.Subscriber;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
+import org.marketcetera.core.trade.SecurityType;
 import org.marketcetera.marketdata.events.Event;
 
 /* $License$ */

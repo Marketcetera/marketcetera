@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import quickfix.FieldNotFound;
 import quickfix.Group;

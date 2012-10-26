@@ -8,10 +8,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Option;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 import com.google.common.collect.ImmutableList;

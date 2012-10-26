@@ -1,11 +1,11 @@
-package org.marketcetera.core.trade;
+package org.marketcetera.core.trade.impl;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.SecurityType;
 
 /* $License$ */
 

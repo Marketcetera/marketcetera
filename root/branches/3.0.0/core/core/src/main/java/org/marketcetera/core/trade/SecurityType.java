@@ -1,4 +1,4 @@
-package org.marketcetera.api.systemmodel.instruments;
+package org.marketcetera.core.trade;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;

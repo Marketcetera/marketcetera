@@ -6,10 +6,10 @@ import java.util.List;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.DepthOfBookEvent;
+import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 

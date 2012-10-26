@@ -1,11 +1,11 @@
 package org.marketcetera.core.event;
 
-import org.marketcetera.api.systemmodel.instruments.Future;
+import org.marketcetera.core.trade.Future;
 
 /* $License$ */
 
 /**
- * Has a {@link org.marketcetera.core.trade.FutureImpl} attribute.
+ * Has a {@link org.marketcetera.core.trade.impl.FutureImpl} attribute.
  *
  * @version $Id: HasFuture.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0

@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -81,7 +81,7 @@ public class OrderSingleTest extends TypesTestBase {
         org.marketcetera.core.trade.OrderID orderID = new org.marketcetera.core.trade.OrderID("testOrderID");
         BigDecimal qty = new BigDecimal("23434.56989");
         BigDecimal price = new BigDecimal("98923.2345");
-        org.marketcetera.api.systemmodel.instruments.SecurityType securityType = org.marketcetera.api.systemmodel.instruments.SecurityType.CommonStock;
+        org.marketcetera.core.trade.SecurityType securityType = org.marketcetera.core.trade.SecurityType.CommonStock;
         Instrument instrument = new EquityImpl("IBM");
         String account = "walloween";
         msg = factory.newLimitOrder(orderID.getValue(),

@@ -20,8 +20,8 @@ import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.trade.Factory;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.modules.cep.system.CEPTestBase;
 

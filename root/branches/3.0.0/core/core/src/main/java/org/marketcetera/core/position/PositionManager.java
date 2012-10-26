@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.ReportBase;
 
 /* $License$ */

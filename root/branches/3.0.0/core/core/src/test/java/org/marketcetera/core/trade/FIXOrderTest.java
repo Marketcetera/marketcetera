@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.core.trade.impl.EquityImpl;
+
 import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.ClOrdID;
@@ -54,11 +56,11 @@ public class FIXOrderTest extends TypesTestBase {
         //SecurityType field.
         for(FIXVersion version: FIXVersionTestSuite.ALL_FIX_VERSIONS) {
             Message msg = version.getMessageFactory().newBasicOrder();
-            org.marketcetera.api.systemmodel.instruments.SecurityType expectedValue;
+            org.marketcetera.core.trade.SecurityType expectedValue;
             if(FIXVersion.FIX40 != version) {
                 msg.setField(new quickfix.field.SecurityType(
                         quickfix.field.SecurityType.OPTION));
-                expectedValue = org.marketcetera.api.systemmodel.instruments.SecurityType.Option;
+                expectedValue = org.marketcetera.core.trade.SecurityType.Option;
             } else {
                 expectedValue = null;
             }
@@ -124,7 +126,7 @@ public class FIXOrderTest extends TypesTestBase {
         msg.removeField(ClOrdID.FIELD);
         assertFalse(msg.isSetField(ClOrdID.FIELD));
         order = sFactory.createOrder(msg, id);
-        assertOrderValues(order, id, org.marketcetera.api.systemmodel.instruments.SecurityType.CommonStock);
+        assertOrderValues(order, id, org.marketcetera.core.trade.SecurityType.CommonStock);
         //Verify an orderID is assigned.
         String clOrdID = getClOrdID(order);
         assertNotNull(clOrdID);

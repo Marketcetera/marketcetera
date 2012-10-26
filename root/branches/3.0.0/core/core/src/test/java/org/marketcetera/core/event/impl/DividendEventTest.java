@@ -13,7 +13,7 @@ import org.marketcetera.core.event.DividendType;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 import static org.junit.Assert.*;

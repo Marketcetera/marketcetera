@@ -3,7 +3,6 @@ package org.marketcetera.core.position.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.trade.*;
 
 /* $License$ */

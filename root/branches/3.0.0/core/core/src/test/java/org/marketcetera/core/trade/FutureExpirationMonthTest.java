@@ -1,7 +1,6 @@
 package org.marketcetera.core.trade;
 
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
 import org.marketcetera.core.ExpectedFailure;
 
 import static org.junit.Assert.assertEquals;
@@ -9,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 /* $License$ */
 
 /**
- * Tests {@link org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth}.
+ * Tests {@link org.marketcetera.core.trade.FutureExpirationMonth}.
  *
  * @version $Id: FutureExpirationMonthTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
@@ -17,8 +16,8 @@ import static org.junit.Assert.assertEquals;
 public class FutureExpirationMonthTest
 {
     /**
-     * Tests {@link org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth#getFutureExpirationMonth(char)} and
-     * {@link org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth#getFutureExpirationMonth(String)}.
+     * Tests {@link org.marketcetera.core.trade.FutureExpirationMonth#getFutureExpirationMonth(char)} and
+     * {@link org.marketcetera.core.trade.FutureExpirationMonth#getFutureExpirationMonth(String)}.
      *
      * @throws Exception if an unexpected error occurs
      */

@@ -6,13 +6,9 @@ import java.io.ObjectOutputStream;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.core.trade.DeliveryType;
-import org.marketcetera.core.trade.FutureImpl;
-import org.marketcetera.core.trade.FutureType;
-import org.marketcetera.core.trade.FutureUnderlyingAssetType;
-import org.marketcetera.core.trade.StandardType;
+import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.FutureImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -5,19 +5,13 @@ import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
-import org.marketcetera.api.systemmodel.instruments.Future;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.event.beans.QuoteBean;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.DeliveryType;
-import org.marketcetera.core.trade.FutureType;
-import org.marketcetera.core.trade.FutureUnderlyingAssetType;
-import org.marketcetera.core.trade.StandardType;
+import org.marketcetera.core.trade.*;
 
 /* $License$ */
 

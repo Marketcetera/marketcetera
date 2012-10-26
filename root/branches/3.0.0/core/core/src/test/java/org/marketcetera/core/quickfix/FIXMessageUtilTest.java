@@ -8,9 +8,9 @@ import java.util.*;
 
 import junit.framework.Test;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.*;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.*;
 import quickfix.field.*;
@@ -96,7 +96,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(msgFactory.getBeginString()))) {
             assertFalse(aMessage.isSetField(SecurityType.FIELD));
         } else {
-            assertEquals(org.marketcetera.api.systemmodel.instruments.SecurityType.CommonStock.getFIXValue(),
+            assertEquals(org.marketcetera.core.trade.SecurityType.CommonStock.getFIXValue(),
                 aMessage.getString(SecurityType.FIELD));
         }
 

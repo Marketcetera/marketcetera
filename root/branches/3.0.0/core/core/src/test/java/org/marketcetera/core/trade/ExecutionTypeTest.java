@@ -8,7 +8,6 @@ import org.marketcetera.core.Pair;
 import quickfix.field.ExecType;
 
 import static org.marketcetera.core.trade.ExecutionType.*;
-import static org.marketcetera.core.trade.ExecutionType.OrderStatus;
 
 /* $License$ */
 /**

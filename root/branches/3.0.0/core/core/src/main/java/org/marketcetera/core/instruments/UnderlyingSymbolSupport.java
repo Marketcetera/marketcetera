@@ -1,6 +1,6 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 

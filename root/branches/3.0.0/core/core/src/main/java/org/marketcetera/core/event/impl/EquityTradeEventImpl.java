@@ -2,9 +2,9 @@ package org.marketcetera.core.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.event.EquityEvent;
 import org.marketcetera.core.event.beans.MarketDataBean;
+import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 

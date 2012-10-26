@@ -2,10 +2,10 @@ package org.marketcetera.core.instruments;
 
 import java.util.regex.Pattern;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.impl.OptionImpl;
 
 import quickfix.DataDictionary;
 import quickfix.Message;

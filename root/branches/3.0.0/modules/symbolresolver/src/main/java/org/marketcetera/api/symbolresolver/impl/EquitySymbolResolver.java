@@ -3,13 +3,13 @@ package org.marketcetera.api.symbolresolver.impl;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.api.symbolresolver.SymbolResolver;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 /* $License$ */
 
 /**
- * Attempts to resolve symbols as {@link org.marketcetera.core.trade.EquityImpl} instruments.
+ * Attempts to resolve symbols as {@link org.marketcetera.core.trade.impl.EquityImpl} instruments.
  *
  * @version $Id: EquitySymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$

@@ -15,7 +15,7 @@ import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import static java.math.BigDecimal.TEN;
 import static org.junit.Assert.*;

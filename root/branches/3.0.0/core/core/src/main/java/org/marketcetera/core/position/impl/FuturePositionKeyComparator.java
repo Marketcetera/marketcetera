@@ -1,12 +1,12 @@
 package org.marketcetera.core.position.impl;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
 
 /* $License$ */
 
 /**
- * A comparator for {@link org.marketcetera.core.trade.FutureImpl} instruments.
+ * A comparator for {@link org.marketcetera.core.trade.impl.FutureImpl} instruments.
  *
  * @version $Id: FuturePositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0

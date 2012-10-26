@@ -1,7 +1,9 @@
-package org.marketcetera.api.systemmodel.instruments;
+package org.marketcetera.core.trade;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang.Validate;
 
 /* $License$ */
 
@@ -94,7 +96,7 @@ public enum FutureExpirationMonth
     public static FutureExpirationMonth getFutureExpirationMonth(String inCode)
     {
         FutureExpirationMonth month = monthsByCode.get(inCode.toUpperCase());
-//        Validate.notNull(month);
+        Validate.notNull(month);
         return month;
     }
     /**
@@ -125,9 +127,9 @@ public enum FutureExpirationMonth
     public static FutureExpirationMonth getByMonthOfYear(String inMonthOfYear)
     {
         int month = Integer.valueOf(inMonthOfYear);
-//        Validate.isTrue(month >= 1 &&
-//                        month <= 12,
-//                        Messages.INVALID_MONTH.getText(inMonthOfYear));
+        Validate.isTrue(month >= 1 &&
+                        month <= 12,
+                        Messages.INVALID_MONTH.getText(inMonthOfYear));
         return monthsByMonthOfYear.get(inMonthOfYear);
     }
     /**

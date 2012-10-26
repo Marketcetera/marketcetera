@@ -23,7 +23,7 @@ import org.marketcetera.core.event.QuoteEvent;
 import org.marketcetera.core.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.core.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.core.marketdata.AssetClass.*;

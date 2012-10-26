@@ -5,10 +5,6 @@ import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
-import org.marketcetera.api.systemmodel.instruments.Future;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.Messages;
@@ -16,10 +12,8 @@ import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.MarketstatBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.DeliveryType;
-import org.marketcetera.core.trade.FutureType;
-import org.marketcetera.core.trade.FutureUnderlyingAssetType;
-import org.marketcetera.core.trade.StandardType;
+import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 /* $License$ */
 
@@ -42,7 +36,7 @@ public abstract class MarketstatEventBuilder
      * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object.
      *
      * <p>The type of marketstat event returned will match the type of the given <code>Instrument</code>,
-     * i.e., an Equity-type marketstat event for an {@link org.marketcetera.core.trade.EquityImpl}, an Option-type marketstat event for an
+     * i.e., an Equity-type marketstat event for an {@link org.marketcetera.core.trade.impl.EquityImpl}, an Option-type marketstat event for an
      * {@link org.marketcetera.core.trade.Option}, etc.
      * 
      * @param inInstrument an <code>Instrument</code> value indicating the type of {@link MarketstatEvent} to create

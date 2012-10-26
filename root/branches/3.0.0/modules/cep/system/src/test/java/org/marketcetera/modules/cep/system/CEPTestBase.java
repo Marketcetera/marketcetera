@@ -20,6 +20,7 @@ import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageUtilTest;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.Message;
 import quickfix.field.Symbol;

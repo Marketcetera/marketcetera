@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.Pair;
 
-import static org.marketcetera.api.systemmodel.instruments.SecurityType.*;
+import static org.marketcetera.core.trade.SecurityType.*;
 
 /* $License$ */
 /**
- * Tests {@link org.marketcetera.api.systemmodel.instruments.SecurityType}
+ * Tests {@link org.marketcetera.core.trade.SecurityType}
  *
  * @version $Id: SecurityTypeTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 1.0.0
