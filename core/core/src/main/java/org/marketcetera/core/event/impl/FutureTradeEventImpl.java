@@ -2,15 +2,11 @@ package org.marketcetera.core.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Future;
 import org.marketcetera.core.event.FutureEvent;
 import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.MarketDataBean;
-import org.marketcetera.core.trade.DeliveryType;
-import org.marketcetera.core.trade.FutureType;
-import org.marketcetera.core.trade.FutureUnderlyingAssetType;
-import org.marketcetera.core.trade.StandardType;
+import org.marketcetera.core.trade.*;
 
 /* $License$ */
 

@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.symbology.IEquityOptionSymbol;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 public class MarketceteraOptionSymbol
     extends EquityImpl 

@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Random;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.position.*;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */

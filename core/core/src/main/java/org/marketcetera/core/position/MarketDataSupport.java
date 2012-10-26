@@ -3,8 +3,8 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 import java.util.EventObject;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
 
 /* $License$ */
 

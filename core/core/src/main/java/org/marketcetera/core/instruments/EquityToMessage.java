@@ -1,7 +1,7 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.DataDictionary;
 import quickfix.Message;

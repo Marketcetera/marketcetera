@@ -2,9 +2,9 @@ package org.marketcetera.core.instruments;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.impl.OptionImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

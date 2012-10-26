@@ -2,7 +2,6 @@ package org.marketcetera.core.trade;
 
 import java.io.Serializable;
 
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
 
 /* $License$ */
 /**

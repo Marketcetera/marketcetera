@@ -2,8 +2,8 @@ package org.marketcetera.core.event.impl;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.options.ExpirationType;
+import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 

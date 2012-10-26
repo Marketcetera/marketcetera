@@ -10,14 +10,14 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.api.systemmodel.Subscriber;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.marketdata.*;
 import org.marketcetera.core.options.OptionUtils;
-import org.marketcetera.core.trade.EquityImpl;
-import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 

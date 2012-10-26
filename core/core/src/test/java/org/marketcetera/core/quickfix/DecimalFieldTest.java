@@ -5,7 +5,8 @@ import java.math.BigDecimal;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
+
 import quickfix.Message;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;

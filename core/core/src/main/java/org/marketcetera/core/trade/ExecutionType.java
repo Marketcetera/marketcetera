@@ -10,7 +10,7 @@ import quickfix.field.ExecType;
 /**
  * Specific execution report status.
  *
- * @version $Id$
+ * @version $Id: ExecutionType.java 16326 2012-10-26 20:44:46Z colin $
  * @since 1.0.0
  */
 public enum ExecutionType {
@@ -44,7 +44,7 @@ public enum ExecutionType {
      *
      * @return FIX char value for this instance.
      */
-    char getFIXValue() {
+    public char getFIXValue() {
         return mFIXValue;
     }
 
@@ -55,7 +55,7 @@ public enum ExecutionType {
      *
      * @return the ExecutionType instance.
      */
-    static ExecutionType getInstanceForFIXValue(char inValue) {
+    public static ExecutionType getInstanceForFIXValue(char inValue) {
         ExecutionType type = mFIXValueMap.get(inValue);
         return type == null
                 ? Unknown

@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import com.google.common.collect.ImmutableList;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.trade.OptionType;
 
 import static org.marketcetera.core.position.PositionKeyFactory.*;
 

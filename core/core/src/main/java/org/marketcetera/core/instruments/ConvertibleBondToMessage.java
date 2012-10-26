@@ -3,9 +3,9 @@ package org.marketcetera.core.instruments;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.ConvertibleBondImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
 
 import quickfix.DataDictionary;
 import quickfix.Message;

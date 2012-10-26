@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 
 import javax.annotation.Nullable;
 
-import org.marketcetera.api.systemmodel.instruments.*;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
-import org.marketcetera.core.trade.ConvertibleBondImpl;
-import org.marketcetera.core.trade.EquityImpl;
-import org.marketcetera.core.trade.FutureImpl;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
+import org.marketcetera.core.trade.impl.OptionImpl;
 
 /* $License$ */
 

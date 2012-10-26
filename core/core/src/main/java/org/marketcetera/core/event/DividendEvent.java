@@ -2,7 +2,7 @@ package org.marketcetera.core.event;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 

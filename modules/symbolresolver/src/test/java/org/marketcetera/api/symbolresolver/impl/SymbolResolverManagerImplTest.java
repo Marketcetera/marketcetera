@@ -16,7 +16,7 @@ import org.junit.rules.ExpectedException;
 import org.marketcetera.api.symbolresolver.Messages;
 import org.marketcetera.api.symbolresolver.NoInstrumentForSymbol;
 import org.marketcetera.api.symbolresolver.SymbolResolver;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.trade.Instrument;
 import org.mockito.Mock;
 
 /* $License$ */

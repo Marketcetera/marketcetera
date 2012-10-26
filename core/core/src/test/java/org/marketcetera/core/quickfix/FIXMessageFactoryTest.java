@@ -8,7 +8,8 @@ import java.util.HashSet;
 import junit.framework.Test;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;

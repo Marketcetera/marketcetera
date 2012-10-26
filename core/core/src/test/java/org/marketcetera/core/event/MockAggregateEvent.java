@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.event.beans.EventBean;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 /* $License$ */
 

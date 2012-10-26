@@ -1,8 +1,8 @@
 package org.marketcetera.core.position.impl;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.marketcetera.api.systemmodel.instruments.Option;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.impl.OptionImpl;
 
 /* $License$ */
 /**

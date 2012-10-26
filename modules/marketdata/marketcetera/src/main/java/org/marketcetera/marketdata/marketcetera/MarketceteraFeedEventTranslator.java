@@ -14,7 +14,7 @@ import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.Content;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 
 import quickfix.FieldNotFound;

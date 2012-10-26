@@ -1,7 +1,7 @@
 package org.marketcetera.core.position.impl;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.marketcetera.core.trade.ConvertibleBondImpl;
+import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
 
 /* $License$ */
 

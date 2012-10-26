@@ -5,11 +5,11 @@ import java.util.*;
 import junit.framework.Test;
 import junit.framework.TestCase;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.DataDictionary;
 import quickfix.Message;

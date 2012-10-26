@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.util.EventServices;
+import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 

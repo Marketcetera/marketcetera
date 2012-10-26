@@ -5,9 +5,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 
-import org.marketcetera.api.systemmodel.instruments.Option;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.impl.OptionImpl;
 
 /* $License$ */
 
@@ -101,7 +101,7 @@ public class OptionUtils
 	 *
 	 * @param inOsiChar a <code>char</code> value
 	 * @return an <code>OptionType</code> value corresponding with the given
-	 *  <code>character</code> or {@link org.marketcetera.api.systemmodel.instruments.OptionType#Unknown}
+	 *  <code>character</code> or {@link org.marketcetera.core.trade.OptionType#Unknown}
 	 */
 	public static OptionType getOptionTypeForOSICharacter(char inOsiChar)
 	{

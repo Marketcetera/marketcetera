@@ -1,13 +1,12 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.systemmodel.instruments.HasCFICode;
 
 /* $License$ */
 
 /**
  * Indicates the commodity underlying asset type of a <code>Future</code>.
  *
- * @version $Id$
+ * @version $Id: CommodityUnderlyingAssetType.java 16326 2012-10-26 20:44:46Z colin $
  * @since 2.1.0
  */
 public enum CommodityUnderlyingAssetType

@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.Message;
 import quickfix.field.*;

@@ -10,7 +10,7 @@ import org.marketcetera.core.event.DividendStatus;
 import org.marketcetera.core.event.DividendType;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 import static org.junit.Assert.*;
@@ -39,7 +39,7 @@ public class DividendBeanTest
         doCopyTest(new DividendBean());
     }
     /**
-     * Tests {@link DividendBean#getEquity()} and {@link DividendBean#setEquity(org.marketcetera.core.trade.EquityImpl)}.
+     * Tests {@link DividendBean#getEquity()} and {@link DividendBean#setEquity(org.marketcetera.core.trade.impl.EquityImpl)}.
      *
      * @throws Exception if an unexpected error occurs
      */

@@ -11,11 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.BeforeClass;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import quickfix.FieldNotFound;

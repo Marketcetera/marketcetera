@@ -1,7 +1,7 @@
 package org.marketcetera.core.messagehistory;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.MemoizedHashCombinator;
+import org.marketcetera.core.trade.Instrument;
 
 
 /**

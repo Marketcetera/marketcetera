@@ -1,11 +1,11 @@
 package org.marketcetera.core.event;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 
 /**
- * Has an {@link org.marketcetera.core.trade.EquityImpl} attribute.
+ * Has an {@link org.marketcetera.core.trade.impl.EquityImpl} attribute.
  *
  * @version $Id: HasEquity.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0

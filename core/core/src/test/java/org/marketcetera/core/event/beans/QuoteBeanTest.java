@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
@@ -18,8 +16,10 @@ import org.marketcetera.core.event.QuoteAction;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.EquityImpl;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */

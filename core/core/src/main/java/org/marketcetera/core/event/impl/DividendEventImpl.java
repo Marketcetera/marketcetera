@@ -5,12 +5,12 @@ import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.beans.DividendBean;
 import org.marketcetera.core.event.beans.EventBean;
 import org.marketcetera.core.event.beans.HasEventBean;
 import org.marketcetera.core.event.util.EventServices;
+import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 

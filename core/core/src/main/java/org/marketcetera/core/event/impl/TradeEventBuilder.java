@@ -5,10 +5,6 @@ import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Equity;
-import org.marketcetera.api.systemmodel.instruments.Future;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.TradeEvent;
@@ -16,10 +12,9 @@ import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.MarketDataBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.DeliveryType;
-import org.marketcetera.core.trade.FutureType;
-import org.marketcetera.core.trade.FutureUnderlyingAssetType;
-import org.marketcetera.core.trade.StandardType;
+import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
 
 /* $License$ */
 
@@ -42,7 +37,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
      *
      * <p>The type of <code>TradeEvent</code> returned will match the type of the given <code>Instrument</code>,
-     * i.e., an Equity-type <code>TradeEvent</code> for an {@link org.marketcetera.core.trade.EquityImpl}, an Option-type <code>TradeEvent</code> for an
+     * i.e., an Equity-type <code>TradeEvent</code> for an {@link org.marketcetera.core.trade.impl.EquityImpl}, an Option-type <code>TradeEvent</code> for an
      * {@link org.marketcetera.core.trade.Option}, etc.
      * 
      * @param inInstrument an <code>Instrument</code> value indicating the type of {@link TradeEvent} to create

@@ -7,8 +7,6 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.util.test.EqualityAssert;
 import org.marketcetera.util.test.SerializableAssert;
 

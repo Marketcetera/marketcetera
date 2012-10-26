@@ -1,6 +1,5 @@
 package org.marketcetera.core.trade;
 
-import org.marketcetera.api.systemmodel.instruments.HasCFICode;
 
 /* $License$ */
 

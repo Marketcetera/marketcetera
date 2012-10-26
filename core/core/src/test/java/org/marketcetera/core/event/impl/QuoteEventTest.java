@@ -8,14 +8,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.*;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.*;
+import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.EquityImpl;
-import org.marketcetera.core.trade.FutureImpl;
-import org.marketcetera.core.trade.OptionImpl;
+import org.marketcetera.core.trade.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
+import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -28,7 +29,6 @@ import org.marketcetera.util.test.EqualityAssert;
  * @since 2.0.0
  */
 public class QuoteEventTest
-        implements Messages
 {
     /**
      * Run before each test.
@@ -105,7 +105,7 @@ public class QuoteEventTest
             throws Exception
     {
         // create equity builders and supply an option instrument
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_EQUITY_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_EQUITY_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -114,7 +114,7 @@ public class QuoteEventTest
             }
         };
         assertNotNull(setDefaults(QuoteEventBuilder.equityAskEvent()).withInstrument(equity).create());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_EQUITY_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_EQUITY_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -124,7 +124,7 @@ public class QuoteEventTest
         };
         assertNotNull(setDefaults(QuoteEventBuilder.equityBidEvent()).withInstrument(equity).create());
         // now check option builders with an equity instrument
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_OPTION_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_OPTION_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -133,7 +133,7 @@ public class QuoteEventTest
             }
         };
         assertNotNull(setDefaults(QuoteEventBuilder.optionAskEvent()).withInstrument(option).create());
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_OPTION_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_OPTION_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -752,7 +752,7 @@ public class QuoteEventTest
         final QuoteEventBuilder<?> builder = setDefaults(getBuilder());
         // check messageId
         builder.withMessageId(-1);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_INVALID_MESSAGEID.getText(builder.getQuote().getMessageId())) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_INVALID_MESSAGEID.getText(builder.getQuote().getMessageId())) {
             @Override
             protected void run()
                     throws Exception
@@ -787,7 +787,7 @@ public class QuoteEventTest
         setDefaults(builder).withAction(null); // this is ok - a default is supplied
         verify(builder);
         setDefaults(builder).withExchange(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXCHANGE.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_NULL_EXCHANGE.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -796,7 +796,7 @@ public class QuoteEventTest
             }
         };
         setDefaults(builder).withExchange("");
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXCHANGE.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_NULL_EXCHANGE.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -807,7 +807,7 @@ public class QuoteEventTest
         setDefaults(builder).withExchange("exchange");
         verify(builder);
         setDefaults(builder).withQuoteDate(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXCHANGE_TIMESTAMP.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_NULL_EXCHANGE_TIMESTAMP.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -816,7 +816,7 @@ public class QuoteEventTest
             }
         };
         setDefaults(builder).withQuoteDate("");
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXCHANGE_TIMESTAMP.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_NULL_EXCHANGE_TIMESTAMP.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -831,7 +831,7 @@ public class QuoteEventTest
         verify(builder);
         // instrument
         setDefaults(builder).withInstrument(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_EQUITY_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_EQUITY_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -840,7 +840,7 @@ public class QuoteEventTest
             }
         };
         setDefaults(builder).withInstrument(option);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_EQUITY_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_EQUITY_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -851,7 +851,7 @@ public class QuoteEventTest
         final QuoteEventBuilder<?> optionBuilder = QuoteEventBuilder.optionAskEvent();
         instrument = option;
         setDefaults(optionBuilder).withInstrument(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_OPTION_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_OPTION_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -860,7 +860,7 @@ public class QuoteEventTest
             }
         };
         setDefaults(optionBuilder).withInstrument(equity);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_OPTION_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_OPTION_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -871,7 +871,7 @@ public class QuoteEventTest
         final QuoteEventBuilder<?> futureAskBuilder = QuoteEventBuilder.futureAskEvent();
         instrument = future;
         setDefaults(futureAskBuilder).withInstrument(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_FUTURE_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -880,7 +880,7 @@ public class QuoteEventTest
             }
         };
         setDefaults(futureAskBuilder).withInstrument(equity);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_FUTURE_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -890,7 +890,7 @@ public class QuoteEventTest
         };
         final QuoteEventBuilder<?> futureBidBuilder = QuoteEventBuilder.futureBidEvent();
         setDefaults(futureBidBuilder).withInstrument(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_FUTURE_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -899,7 +899,7 @@ public class QuoteEventTest
             }
         };
         setDefaults(futureBidBuilder).withInstrument(equity);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(Messages.VALIDATION_FUTURE_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception

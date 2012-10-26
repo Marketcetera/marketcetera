@@ -3,7 +3,7 @@ package org.marketcetera.core.position;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 

@@ -2,7 +2,6 @@ package org.marketcetera.core.trade;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
 
 import quickfix.Message;
 

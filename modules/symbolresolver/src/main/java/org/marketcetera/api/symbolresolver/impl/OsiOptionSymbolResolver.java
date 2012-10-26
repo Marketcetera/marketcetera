@@ -3,8 +3,8 @@ package org.marketcetera.api.symbolresolver.impl;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.api.symbolresolver.SymbolResolver;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.options.OptionUtils;
+import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 

@@ -1,4 +1,4 @@
-package org.marketcetera.core.trade;
+package org.marketcetera.core.trade.impl;
 
 import java.math.BigDecimal;
 
@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.systemmodel.instruments.Option;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.options.OptionUtils;
+import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.SecurityType;
 
 /* $License$ */
 

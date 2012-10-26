@@ -13,10 +13,10 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.*;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -165,7 +165,7 @@ public class OrderReplaceTest extends TypesTestBase {
         String destOrderID = "brokerd1";
         BigDecimal qty = new BigDecimal("23434.56989");
         BigDecimal price = new BigDecimal("98923.2345");
-        org.marketcetera.api.systemmodel.instruments.SecurityType securityType = org.marketcetera.api.systemmodel.instruments.SecurityType.CommonStock;
+        org.marketcetera.core.trade.SecurityType securityType = org.marketcetera.core.trade.SecurityType.CommonStock;
         Instrument instrument = new EquityImpl("IBM");
         String account = "nonplus";
         String text = "prominus";

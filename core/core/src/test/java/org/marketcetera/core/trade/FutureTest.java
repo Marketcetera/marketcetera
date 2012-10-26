@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.trade.impl.FutureImpl;
+
 import quickfix.field.MaturityMonthYear;
 
 import static org.hamcrest.Matchers.is;
@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 /* $License$ */
 
 /**
- * Tests {@link org.marketcetera.core.trade.FutureImpl}.
+ * Tests {@link org.marketcetera.core.trade.impl.FutureImpl}.
  * 
  * @version $Id: FutureTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0

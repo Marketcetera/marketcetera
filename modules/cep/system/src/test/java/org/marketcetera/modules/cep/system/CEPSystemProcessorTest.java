@@ -14,8 +14,8 @@ import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.trade.Factory;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 /**
  * @version $Id: CEPSystemProcessorTest.java 16063 2012-01-31 18:21:55Z colin $

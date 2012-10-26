@@ -5,12 +5,13 @@ import java.math.BigDecimal;
 import org.junit.Test;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.BrokerID;
-import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.trade.ExecutionReport;
 import org.marketcetera.core.trade.Factory;
 import org.marketcetera.core.trade.MessageCreationException;
 import org.marketcetera.core.trade.OrderID;
 import org.marketcetera.core.trade.Originator;
+import org.marketcetera.core.trade.impl.EquityImpl;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.OrdStatus;

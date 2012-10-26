@@ -15,7 +15,7 @@ import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.Content;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 /* $License$ */
 

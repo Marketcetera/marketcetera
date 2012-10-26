@@ -1,8 +1,8 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.api.systemmodel.instruments.Future;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.impl.FutureImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

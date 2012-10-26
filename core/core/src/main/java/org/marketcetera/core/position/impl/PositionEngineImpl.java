@@ -5,9 +5,9 @@ import java.util.*;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.*;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.fork.glazed.GroupingList;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcher;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcherFactory;

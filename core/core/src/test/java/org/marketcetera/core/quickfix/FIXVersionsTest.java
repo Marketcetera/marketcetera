@@ -6,7 +6,8 @@ import java.util.Date;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
+
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.Account;

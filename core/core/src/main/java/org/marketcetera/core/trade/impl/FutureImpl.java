@@ -1,4 +1,4 @@
-package org.marketcetera.core.trade;
+package org.marketcetera.core.trade.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,9 +10,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.systemmodel.instruments.Future;
-import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
-import org.marketcetera.api.systemmodel.instruments.SecurityType;
+import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.FutureExpirationMonth;
+import org.marketcetera.core.trade.Messages;
+import org.marketcetera.core.trade.SecurityType;
 
 import quickfix.field.MaturityMonthYear;
 

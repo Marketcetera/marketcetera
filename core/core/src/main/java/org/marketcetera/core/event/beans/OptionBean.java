@@ -5,12 +5,12 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
-import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.OptionEvent;
 import org.marketcetera.core.event.util.EventServices;
 import org.marketcetera.core.options.ExpirationType;
+import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
 
 /* $License$ */
 

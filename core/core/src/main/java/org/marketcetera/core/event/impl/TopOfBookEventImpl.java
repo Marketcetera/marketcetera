@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.QuoteEvent;
@@ -16,6 +15,7 @@ import org.marketcetera.core.event.beans.EventBean;
 import org.marketcetera.core.event.beans.HasEventBean;
 import org.marketcetera.core.event.util.EventServices;
 import org.marketcetera.core.marketdata.DateUtils;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
 
 /* $License$ */

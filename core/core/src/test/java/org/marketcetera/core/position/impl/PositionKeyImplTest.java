@@ -5,12 +5,12 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.PositionKeyTestBase;
-import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.impl.EquityImpl;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNull;

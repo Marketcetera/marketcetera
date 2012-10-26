@@ -3,7 +3,6 @@ package org.marketcetera.core.messagehistory;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.trade.*;
