@@ -3,20 +3,8 @@ package org.marketcetera.core.position.impl;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.marketcetera.core.trade.BrokerID;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.ExecutionType;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.OrderCapacity;
-import org.marketcetera.core.trade.OrderID;
-import org.marketcetera.core.trade.OrderStatus;
-import org.marketcetera.core.trade.OrderType;
-import org.marketcetera.core.trade.Originator;
-import org.marketcetera.core.trade.PositionEffect;
-import org.marketcetera.core.trade.ReportID;
-import org.marketcetera.core.trade.Side;
-import org.marketcetera.core.trade.TimeInForce;
-import org.marketcetera.core.trade.UserID;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.trade.*;
 
 /* $License$ */
 

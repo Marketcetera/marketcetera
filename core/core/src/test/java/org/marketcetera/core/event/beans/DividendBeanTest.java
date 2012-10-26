@@ -10,7 +10,7 @@ import org.marketcetera.core.event.DividendStatus;
 import org.marketcetera.core.event.DividendType;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 import static org.junit.Assert.*;
@@ -39,7 +39,7 @@ public class DividendBeanTest
         doCopyTest(new DividendBean());
     }
     /**
-     * Tests {@link DividendBean#getEquity()} and {@link DividendBean#setEquity(org.marketcetera.core.trade.Equity)}.
+     * Tests {@link DividendBean#getEquity()} and {@link DividendBean#setEquity(org.marketcetera.core.trade.EquityImpl)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -52,7 +52,7 @@ public class DividendBeanTest
         assertNull(bean.getInstrumentAsString());
         bean.setEquity(null);
         assertNull(bean.getEquity());
-        Equity metc = new Equity("METC");
+        EquityImpl metc = new EquityImpl("METC");
         bean.setEquity(metc);
         assertEquals(metc,
                      bean.getEquity());
@@ -250,7 +250,7 @@ public class DividendBeanTest
                 inBean.validate();
             }
         };
-        inBean.setEquity(new Equity("METC"));
+        inBean.setEquity(new EquityImpl("METC"));
         // null amount
         assertNull(inBean.getAmount());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_AMOUNT.getText()) {
@@ -432,7 +432,7 @@ public class DividendBeanTest
         // test equity
         // set bean3 to non-null
         assertNull(bean1.getEquity());
-        bean3.setEquity(new Equity("METC"));
+        bean3.setEquity(new EquityImpl("METC"));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -540,7 +540,7 @@ public class DividendBeanTest
         long useThisTimestamp = System.currentTimeMillis();
         long oneDay = 1000l * 60l * 60l * 24l;
         String declareDate = DateUtils.dateToString(new Date(useThisTimestamp));
-        Equity equity = new Equity("GOOG");
+        EquityImpl equity = new EquityImpl("GOOG");
         String executionDate = DateUtils.dateToString(new Date(useThisTimestamp + (oneDay * 1)));
         DividendFrequency frequency = DividendFrequency.ANNUALLY;
         String paymentDate = DateUtils.dateToString(new Date(useThisTimestamp + (oneDay * 2)));
@@ -606,7 +606,7 @@ public class DividendBeanTest
                                    BigDecimal inExpectedAmount,
                                    String inExpectedCurrency,
                                    String inExpectedDeclareDate,
-                                   Equity inExpectedEquity,
+                                   EquityImpl inExpectedEquity,
                                    String inExpectedExecutionDate,
                                    DividendFrequency inExpectedFrequency,
                                    String inExpectedPaymentDate,

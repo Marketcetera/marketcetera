@@ -6,7 +6,7 @@ import java.util.Date;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.Account;
@@ -49,7 +49,7 @@ public class FIXVersionsTest extends TestCase {
     private Message createNOSHelper(FIXVersion version, String inSymbol, int qty, char inSide) throws Exception
     {
         long suffix = System.currentTimeMillis();
-        Message newSingle = version.getMessageFactory().newMarketOrder("123"+suffix, inSide, new BigDecimal(qty), new Equity(inSymbol), //$NON-NLS-1$
+        Message newSingle = version.getMessageFactory().newMarketOrder("123"+suffix, inSide, new BigDecimal(qty), new EquityImpl(inSymbol), //$NON-NLS-1$
                 TimeInForce.DAY, "testAccount"); //$NON-NLS-1$
         newSingle.setField(new TimeInForce(TimeInForce.DAY));
         newSingle.setField(new Account("testAccount")); //$NON-NLS-1$

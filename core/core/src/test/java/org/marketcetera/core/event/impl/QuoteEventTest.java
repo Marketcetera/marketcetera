@@ -1,30 +1,22 @@
 package org.marketcetera.core.event.impl;
 
+import static org.junit.Assert.*;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.*;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.event.EventType;
-import org.marketcetera.core.event.FutureEvent;
-import org.marketcetera.core.event.Messages;
-import org.marketcetera.core.event.OptionEvent;
-import org.marketcetera.core.event.QuoteAction;
-import org.marketcetera.core.event.QuoteEvent;
+import org.marketcetera.core.event.*;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.FutureExpirationMonth;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
-
-import static org.junit.Assert.*;
 
 /* $License$ */
 
@@ -1059,7 +1051,7 @@ public class QuoteEventTest
                 return QuoteEventBuilder.bidEvent(instrument);
             }
         } else {
-            if(instrument instanceof Equity) {
+            if(instrument instanceof EquityImpl) {
                 if(useAsk) {
                     return QuoteEventBuilder.equityAskEvent();
                 } else {
@@ -1071,7 +1063,7 @@ public class QuoteEventTest
                 } else {
                     return QuoteEventBuilder.optionBidEvent();
                 }
-            } else if(instrument instanceof Future) {
+            } else if(instrument instanceof FutureImpl) {
                 if(useAsk) {
                     return QuoteEventBuilder.futureAskEvent();
                 } else {
@@ -1149,7 +1141,7 @@ public class QuoteEventTest
      */
     private QuoteEvent generateQuote(QuoteAction inAction)
     {
-        if(instrument instanceof Equity) {
+        if(instrument instanceof EquityImpl) {
             if(useAsk) {
                 return EventTestBase.generateEquityAskEvent(equity,
                                                             inAction);
@@ -1165,7 +1157,7 @@ public class QuoteEventTest
                 return EventTestBase.generateOptionBidEvent(option,
                                                             inAction);
             }
-        } else if(instrument instanceof Future) {
+        } else if(instrument instanceof FutureImpl) {
             if(useAsk) {
                 return EventTestBase.generateFutureAskEvent(future,
                                                             inAction);
@@ -1188,18 +1180,18 @@ public class QuoteEventTest
     /**
      * test instrument
      */
-    private final Equity equity = new Equity("METC");
+    private final Equity equity = new EquityImpl("METC");
     /**
      * test option
      */
-    private final Option option = new Option("MSFT",
+    private final Option option = new OptionImpl("MSFT",
                                              "20100319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
     /**
      * test future
      */
-    private final Future future = new Future("GOOG",
+    private final Future future = new FutureImpl("GOOG",
                                              FutureExpirationMonth.DECEMBER,
                                              2015);
     /**

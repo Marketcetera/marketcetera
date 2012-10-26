@@ -6,7 +6,7 @@ package org.marketcetera.core.trade;
  * are usually used to cancel or replace an existing order. This type is
  * not meant to be used directly. Use one of its subtypes. 
  *
- * @version $Id: RelatedOrder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public interface RelatedOrder extends OrderBase {

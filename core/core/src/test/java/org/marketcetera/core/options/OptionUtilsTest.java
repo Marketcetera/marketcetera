@@ -1,17 +1,22 @@
 package org.marketcetera.core.options;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.marketcetera.api.systemmodel.instruments.OptionType.Call;
+import static org.marketcetera.api.systemmodel.instruments.OptionType.Put;
+import static org.marketcetera.api.systemmodel.instruments.OptionType.Unknown;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.marketcetera.core.trade.OptionType.*;
+import org.marketcetera.core.trade.OptionImpl;
 
 /* $License$ */
 
@@ -498,7 +503,7 @@ public class OptionUtilsTest
             throws Exception
     {
         assertEquals(inExpectedSymbol, OptionUtils
-                .getOsiSymbolFromOption(new Option(inRootSymbol, inExpiry,
+                .getOsiSymbolFromOption(new OptionImpl(inRootSymbol, inExpiry,
                         inStrike, inOptionType)));
     }
 
@@ -523,7 +528,7 @@ public class OptionUtilsTest
             protected void run()
                     throws Exception
             {
-                OptionUtils.getOsiSymbolFromOption(new Option(inRootSymbol,
+                OptionUtils.getOsiSymbolFromOption(new OptionImpl(inRootSymbol,
                         inExpiry, inStrike, inOptionType));
             }
         };

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * Identifies data needed for an order suggestion.
  *
- * @version $Id: Suggestion.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public interface Suggestion extends Serializable {

@@ -2,7 +2,7 @@ package org.marketcetera.core.event;
 
 import java.math.BigDecimal;
 
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.api.systemmodel.instruments.Equity;
 
 /* $License$ */
 
@@ -52,7 +52,7 @@ public interface DividendEvent
     /**
      * Gets the Equity of the dividend.
      * 
-     * @return a <code>Equity</code> value
+     * @return an <code>Equity</code> value
      */
     public Equity getEquity();
     /**

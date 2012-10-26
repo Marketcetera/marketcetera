@@ -1,18 +1,22 @@
 package org.marketcetera.core.marketdata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.marketcetera.core.marketdata.Messages.INSTRUMENT_OR_UNDERLYING_INSTRUMENT_REQUIRED;
+import static org.marketcetera.core.marketdata.Messages.OPTION_REQUIRES_UNDERLYING_INSTRUMENT;
+
 import java.util.Date;
 
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.core.marketdata.Messages.INSTRUMENT_OR_UNDERLYING_INSTRUMENT_REQUIRED;
-import static org.marketcetera.core.marketdata.Messages.OPTION_REQUIRES_UNDERLYING_INSTRUMENT;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.OptionImpl;
 
 /* $License$ */
 
@@ -123,11 +127,11 @@ public class ExchangeRequestTest
     /**
      * test equity
      */
-    private final Equity equity = new Equity("METC");
+    private final Equity equity = new EquityImpl("METC");
     /**
      * test option
      */
-    private final Option option = new Option(equity.getSymbol(),
+    private final Option option = new OptionImpl(equity.getSymbol(),
                                              DateUtils.dateToString(new Date(), DateUtils.DAYS),
                                              EventTestBase.generateDecimalValue(),
                                              OptionType.Call);

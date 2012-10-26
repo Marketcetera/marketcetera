@@ -3,10 +3,10 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 
 /* $License$ */
 
@@ -24,13 +24,13 @@ public class MockTrade<T extends Instrument> implements Trade<T> {
     protected final long mSequence;
     protected static final AtomicLong mSequenceGenerator = new AtomicLong();
 
-    public static MockTrade<Equity> createEquityTrade(String symbol,
+    public static MockTrade<? extends Equity> createEquityTrade(String symbol,
             String account, String traderId, String quantity, String price) {
         return createTrade(PositionKeyFactory.createEquityKey(symbol, account,
                 traderId), quantity, price);
     }
 
-    public static MockTrade<Option> createOptionTrade(String symbol,
+    public static MockTrade<? extends Option> createOptionTrade(String symbol,
             String expiry, String strikePrice, OptionType type, String account,
             String traderId, String quantity, String price) {
         return createTrade(PositionKeyFactory.createOptionKey(symbol, expiry,

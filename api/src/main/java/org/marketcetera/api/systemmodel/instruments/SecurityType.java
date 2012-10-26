@@ -1,4 +1,4 @@
-package org.marketcetera.api.systemmodel;
+package org.marketcetera.api.systemmodel.instruments;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,19 +20,19 @@ public enum SecurityType {
     /**
      * Common Stock.
      */
-    CommonStock("CS"),
+    CommonStock(quickfix.field.SecurityType.COMMON_STOCK),
     /**
      * Options
      */
-    Option("OPT"),
+    Option(quickfix.field.SecurityType.OPTION),
     /**
      * Future
      */
-    Future("FUT"),
+    Future(quickfix.field.SecurityType.FUTURE),
     /**
      * Convertible bond
      */
-    ConvertibleBond("CB");
+    ConvertibleBond(quickfix.field.SecurityType.CONVERTIBLE_BOND);
     /**
      * The FIX text value for this instance.
      *

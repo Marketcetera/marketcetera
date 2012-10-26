@@ -1,29 +1,30 @@
 package org.marketcetera.core.instruments;
 
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.ConvertibleBond;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.FutureExpirationMonth;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.ConvertibleBondImpl;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.OptionImpl;
+
 import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.SecurityType;
 import quickfix.field.Side;
-
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 /* $License$ */
 /**
@@ -62,23 +63,23 @@ public class DynamicInstrumentFunctionSelectorTest {
         };
 
         //equity
-        Instrument instrument = new Equity("YBM");
+        Instrument instrument = new EquityImpl("YBM");
         Message msg = createExecReport(instrument);
         assertThat(selector.forValue(msg), instanceOf(EquityFromMessage.class));
 
         //option
-        instrument = new Option("YBM", "20101010", BigDecimal.TEN, OptionType.Call);
+        instrument = new OptionImpl("YBM", "20101010", BigDecimal.TEN, OptionType.Call);
         msg = createExecReport(instrument);
         assertThat(selector.forValue(msg), instanceOf(OptionFromMessage.class));
         // future
-        instrument = new Future("YBM",
+        instrument = new FutureImpl("YBM",
                                 FutureExpirationMonth.APRIL,
                                 2012);
         msg = createExecReport(instrument);
         assertThat(selector.forValue(msg),
                    instanceOf(FutureFromMessage.class));
         // convertible bond
-        instrument = new ConvertibleBond("YBM");
+        instrument = new ConvertibleBondImpl("YBM");
         msg = createExecReport(instrument);
         assertThat(selector.forValue(msg),
                    instanceOf(ConvertibleBondFromMessage.class));

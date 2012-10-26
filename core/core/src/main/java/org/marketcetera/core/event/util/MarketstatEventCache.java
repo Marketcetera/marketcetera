@@ -2,10 +2,11 @@ package org.marketcetera.core.event.util;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
+
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.OptionMarketstatEvent;
 import org.marketcetera.core.event.impl.MarketstatEventBuilder;
-import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 

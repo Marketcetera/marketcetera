@@ -1,11 +1,12 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Equity;
-import quickfix.Message;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.trade.EquityImpl;
+
 import quickfix.FieldNotFound;
-import quickfix.field.SecurityType;
+import quickfix.Message;
 import quickfix.field.CFICode;
+import quickfix.field.SecurityType;
 
 /* $License$ */
 /**
@@ -21,7 +22,7 @@ public class EquityFromMessage extends InstrumentFromMessage {
     @Override
     public Instrument extract(Message inMessage) {
         String symbol = getSymbol(inMessage);
-        return symbol == null ? null : new Equity(symbol);
+        return symbol == null ? null : new EquityImpl(symbol);
     }
 
     @Override

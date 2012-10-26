@@ -10,14 +10,14 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.api.systemmodel.Subscriber;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.marketdata.*;
 import org.marketcetera.core.event.Event;
+import org.marketcetera.core.marketdata.*;
 import org.marketcetera.core.options.OptionUtils;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.FutureImpl;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
@@ -329,7 +329,7 @@ public class BogusFeed
          */
         private Instrument getUnderlyingInstrument(String inSymbol)
         {
-            return new Equity(inSymbol); // this is slightly restrictive in the long run, but certainly acceptable for now
+            return new EquityImpl(inSymbol); // this is slightly restrictive in the long run, but certainly acceptable for now
         }
         /**
          * Executes the market data request associated with this object.
@@ -349,11 +349,11 @@ public class BogusFeed
                 if(!symbols.isEmpty()) {
                     if(marketDataRequest.getAssetClass() == AssetClass.EQUITY) {
                         for(String symbol : symbols) {
-                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(new Equity(symbol)).create());
+                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(new EquityImpl(symbol)).create());
                         }
                     } else if(marketDataRequest.getAssetClass() == AssetClass.FUTURE) {
                         for(String symbol : symbols) {
-                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(Future.fromString(symbol)).create());
+                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(FutureImpl.fromString(symbol)).create());
                         }
                     } else if(marketDataRequest.getAssetClass() == AssetClass.OPTION) {
                         for(String symbol : symbols) {

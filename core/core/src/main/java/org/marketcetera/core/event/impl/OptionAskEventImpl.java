@@ -3,13 +3,14 @@ package org.marketcetera.core.event.impl;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
+
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.OptionEvent;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.event.beans.QuoteBean;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
 
 /* $License$ */
 

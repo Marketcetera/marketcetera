@@ -1,9 +1,12 @@
 package org.marketcetera.core.event.util;
 
+import static org.junit.Assert.*;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.*;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.event.MarketstatEvent;
@@ -11,13 +14,9 @@ import org.marketcetera.core.event.OptionMarketstatEvent;
 import org.marketcetera.core.event.impl.MarketstatEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.FutureExpirationMonth;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-
-import static org.junit.Assert.*;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.OptionImpl;
 
 /* $License$ */
 
@@ -445,18 +444,18 @@ public class MarketstatEventCacheTest
     /**
      * test equity
      */
-    private final Equity equity = new Equity("METC");
+    private final Equity equity = new EquityImpl("METC");
     /**
      * test option
      */
-    private final Option option = new Option(equity.getSymbol(),
+    private final Option option = new OptionImpl(equity.getSymbol(),
                                              DateUtils.dateToString(new Date()),
                                              EventTestBase.generateDecimalValue(),
                                              OptionType.Call);
     /**
      * test future
      */
-    private final Future future = new Future("IB",
+    private final Future future = new FutureImpl("IB",
                                              FutureExpirationMonth.FEBRUARY,
                                              2012);
 }

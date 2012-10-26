@@ -15,7 +15,7 @@ import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.Content;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 
 /* $License$ */
 
@@ -49,7 +49,7 @@ public class MockCSVFeedEventTranslator
             if(q.getRequest().getContent().contains(Content.LATEST_TICK)) {
                 TradeEventBuilder<? extends TradeEvent> builder = TradeEventBuilder.equityTradeEvent();
                 builder.withExchange(exchange)
-                       .withInstrument(new Equity(symbol))
+                       .withInstrument(new EquityImpl(symbol))
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)
@@ -58,9 +58,9 @@ public class MockCSVFeedEventTranslator
             }
         } else if(type.equals("BID")) {
             if(q.getRequest().getContent().contains(Content.TOP_OF_BOOK)) {
-                QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(new Equity(symbol));
+                QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(new EquityImpl(symbol));
                 builder.withExchange(exchange)
-                       .withInstrument(new Equity(symbol))
+                       .withInstrument(new EquityImpl(symbol))
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)
@@ -69,9 +69,9 @@ public class MockCSVFeedEventTranslator
             }
         } else if(type.equals("ASK")) {
             if(q.getRequest().getContent().contains(Content.TOP_OF_BOOK)) {
-                QuoteEventBuilder<AskEvent> builder = QuoteEventBuilder.askEvent(new Equity(symbol));
+                QuoteEventBuilder<AskEvent> builder = QuoteEventBuilder.askEvent(new EquityImpl(symbol));
                 builder.withExchange(exchange)
-                       .withInstrument(new Equity(symbol))
+                       .withInstrument(new EquityImpl(symbol))
                        .withTimestamp(new Date(timeMillis))
                        .withPrice(price)
                        .withSize(size)

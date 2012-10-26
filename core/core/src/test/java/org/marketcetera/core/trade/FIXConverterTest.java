@@ -105,13 +105,13 @@ public class FIXConverterTest
                  ("1"));
         }
         if (instrument) {
-            o.setInstrument(new Equity("IBM"));
+            o.setInstrument(new EquityImpl("IBM"));
             msg.setField
                 (new quickfix.field.Symbol
                  ("IBM"));
             msg.setField
                 (new quickfix.field.SecurityType
-                 (org.marketcetera.api.systemmodel.SecurityType.CommonStock.getFIXValue()));
+                 (org.marketcetera.api.systemmodel.instruments.SecurityType.CommonStock.getFIXValue()));
         }
         if (side) {
             o.setSide(org.marketcetera.core.trade.Side.Buy);

@@ -1,28 +1,29 @@
 package org.marketcetera.core.trade;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.BeforeClass;
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.HasFIXMessage;
-import org.marketcetera.core.quickfix.FIXDataDictionary;
-import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.core.quickfix.FIXMessageFactory;
-import org.marketcetera.core.quickfix.FIXMessageUtil;
-import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.core.quickfix.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.HandlInst;
 import quickfix.field.MsgType;
 import quickfix.field.TransactTime;
-
-import static org.junit.Assert.*;
 
 /* $License$ */
 /**
@@ -327,7 +328,7 @@ public class TypesTestBase {
         inOrder.setQuantity(null);
         assertEquals(null, inOrder.getQuantity());
 
-        Equity instrument = new Equity("IBM");
+        EquityImpl instrument = new EquityImpl("IBM");
         inOrder.setInstrument(instrument);
         assertEquals(instrument, inOrder.getInstrument());
         assertEquals(SecurityType.CommonStock, inOrder.getSecurityType());

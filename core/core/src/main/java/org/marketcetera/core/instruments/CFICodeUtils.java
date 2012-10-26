@@ -1,9 +1,9 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.api.systemmodel.instruments.Future;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 
 /* $License$ */
 /**

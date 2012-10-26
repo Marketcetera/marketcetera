@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.marketcetera.api.systemmodel.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 
 /* $License$ */
 

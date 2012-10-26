@@ -11,8 +11,8 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.api.systemmodel.Instrument;
 import org.marketcetera.api.systemmodel.Subscriber;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedStatus;

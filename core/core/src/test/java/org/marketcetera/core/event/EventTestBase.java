@@ -8,26 +8,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import org.marketcetera.api.systemmodel.SecurityType;
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.BidEvent;
-import org.marketcetera.core.event.DividendEvent;
-import org.marketcetera.core.event.DividendFrequency;
-import org.marketcetera.core.event.DividendStatus;
-import org.marketcetera.core.event.DividendType;
-import org.marketcetera.core.event.MarketstatEvent;
-import org.marketcetera.core.event.QuoteAction;
-import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.api.systemmodel.instruments.*;
 import org.marketcetera.core.event.impl.DividendEventBuilder;
 import org.marketcetera.core.event.impl.MarketstatEventBuilder;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.AbstractInstrumentImpl;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.FutureImpl;
 
 /* $License$ */
 
@@ -611,7 +601,7 @@ public class EventTestBase
      * @param inPrice a <code>BigDecimal</code> value
      * @return a <code>TradeEvent</code> value
      */
-    public static TradeEvent generateFutureTradeEvent(Future inInstrument,
+    public static TradeEvent generateFutureTradeEvent(FutureImpl inInstrument,
                                                       BigDecimal inPrice)
     {
         return TradeEventBuilder.futureTradeEvent().withInstrument(inInstrument)
@@ -814,7 +804,7 @@ public class EventTestBase
      */
     public static DividendEvent generateDividendEvent()
     {
-        return generateDividendEvent(new Equity("METC"));
+        return generateDividendEvent(new EquityImpl("METC"));
     }
     /**
      * Generates a <code>DividendEvent</code> with the given and preset values.
@@ -882,7 +872,8 @@ public class EventTestBase
      * @since 2.0.0
      */
     private static class UnsupportedInstrument
-            extends Instrument
+            extends AbstractInstrumentImpl
+            implements Instrument
     {
         /* (non-Javadoc)
          * @see org.marketcetera.trade.Instrument#getSecurityType()

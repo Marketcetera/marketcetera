@@ -5,13 +5,13 @@ import java.util.*;
 
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -430,7 +430,7 @@ public enum YahooFeedEventTranslator
     private Instrument getInstrumentFrom(String inSymbol)
     {
         // TODO account for other instrument types
-        return new Equity(inSymbol);
+        return new EquityImpl(inSymbol);
     }
     /**
      * MRU cache of events 

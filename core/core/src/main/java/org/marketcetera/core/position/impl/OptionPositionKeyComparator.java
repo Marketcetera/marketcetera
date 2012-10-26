@@ -1,7 +1,8 @@
 package org.marketcetera.core.position.impl;
 
-import org.marketcetera.core.trade.Option;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.core.trade.OptionImpl;
 
 /* $License$ */
 /**
@@ -10,12 +11,12 @@ import org.apache.commons.lang.builder.CompareToBuilder;
  * @version $Id: OptionPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-public class OptionPositionKeyComparator extends InstrumentPositionKeyComparator<Option> {
+public class OptionPositionKeyComparator extends InstrumentPositionKeyComparator<OptionImpl> {
     /**
      * Creates an instance.
      */
     public OptionPositionKeyComparator() {
-        super(Option.class);
+        super(OptionImpl.class);
     }
 
     /**
@@ -29,7 +30,7 @@ public class OptionPositionKeyComparator extends InstrumentPositionKeyComparator
     }
 
     @Override
-    public int compare(Option o1, Option o2) {
+    public int compare(OptionImpl o1, OptionImpl o2) {
         return new CompareToBuilder()
                 .append(o1.getSymbol(), o2.getSymbol()).append(
                         o1.getExpiry(), o2.getExpiry()).append(

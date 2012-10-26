@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.event.beans.EventBean;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.EquityImpl;
 
 /* $License$ */
 
@@ -40,7 +40,7 @@ public class MockAggregateEvent
     public MockAggregateEvent(List<QuoteEvent> inCompositeEvents)
     {
         this(new Date(),
-             new Equity("METC"));
+             new EquityImpl("METC"));
         compositeEvents.addAll(inCompositeEvents);
     }
     /* (non-Javadoc)

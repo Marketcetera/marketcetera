@@ -1,14 +1,14 @@
 package org.marketcetera.core.position.impl;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.math.BigDecimal;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.position.MockTrade;
-import org.marketcetera.core.trade.Equity;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /* $License$ */
 
@@ -21,8 +21,8 @@ import static org.mockito.Mockito.when;
 public class MultiplierCalculatorTest {
 
     private PositionMetricsCalculator mMockCalculator;
-    private MockTrade<Equity> mTrade1;
-    private MockTrade<Equity> mTrade2;
+    private MockTrade<? extends Equity> mTrade1;
+    private MockTrade<? extends Equity> mTrade2;
 
     @Before
     public void before() {

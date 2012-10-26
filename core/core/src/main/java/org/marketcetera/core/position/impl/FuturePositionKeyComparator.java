@@ -1,25 +1,25 @@
 package org.marketcetera.core.position.impl;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.FutureImpl;
 
 /* $License$ */
 
 /**
- * A comparator for {@link org.marketcetera.core.trade.Future} instruments.
+ * A comparator for {@link org.marketcetera.core.trade.FutureImpl} instruments.
  *
  * @version $Id: FuturePositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */
 public class FuturePositionKeyComparator
-        extends InstrumentPositionKeyComparator<Future>
+        extends InstrumentPositionKeyComparator<FutureImpl>
 {
     /**
      * Creates an instance.
      */
     public FuturePositionKeyComparator()
     {
-        super(Future.class);
+        super(FutureImpl.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.position.impl.InstrumentPositionKeyComparator#getRank()
@@ -33,8 +33,8 @@ public class FuturePositionKeyComparator
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     @Override
-    public int compare(Future inO1,
-                       Future inO2)
+    public int compare(FutureImpl inO1,
+                       FutureImpl inO2)
     {
         return new CompareToBuilder().append(inO1.getSymbol(),
                                              inO2.getSymbol())

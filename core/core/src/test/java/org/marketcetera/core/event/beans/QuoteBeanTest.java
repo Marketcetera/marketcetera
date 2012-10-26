@@ -1,9 +1,15 @@
 package org.marketcetera.core.event.beans;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
@@ -12,13 +18,9 @@ import org.marketcetera.core.event.QuoteAction;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
-
-import static org.junit.Assert.*;
 
 /* $License$ */
 
@@ -53,7 +55,7 @@ public class QuoteBeanTest
     public void getQuoteBeanFromEvent()
             throws Exception
     {
-        Instrument equity = new Equity("METC");
+        Instrument equity = new EquityImpl("METC");
         Date timestamp = new Date();
         BigDecimal size = BigDecimal.ONE;
         QuoteAction action = QuoteAction.CHANGE;
@@ -371,7 +373,7 @@ public class QuoteBeanTest
                             action,
                             ask.getEventType());
         // last, show that it doesn't have to be either an ask or an equity
-        Instrument option = new Option("MSFT",
+        Instrument option = new OptionImpl("MSFT",
                                        "20100319",
                                        BigDecimal.ONE,
                                        OptionType.Call);

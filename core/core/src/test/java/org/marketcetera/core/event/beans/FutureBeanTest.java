@@ -6,10 +6,10 @@ import java.io.ObjectOutputStream;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.trade.DeliveryType;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.FutureExpirationMonth;
+import org.marketcetera.core.trade.FutureImpl;
 import org.marketcetera.core.trade.FutureType;
 import org.marketcetera.core.trade.FutureUnderlyingAssetType;
 import org.marketcetera.core.trade.StandardType;
@@ -91,7 +91,7 @@ public class FutureBeanTest
                          null,
                          null,
                          1);
-        Future future = new Future("METC",
+        FutureImpl future = new FutureImpl("METC",
                                    FutureExpirationMonth.DECEMBER,
                                    2011);
         inBean.setInstrument(future);
@@ -139,7 +139,7 @@ public class FutureBeanTest
      * @throws Exception if an unexpected error occurs
      */
     private void verifyFutureBean(FutureBean inActualBean,
-                                  Future inExpectedInstrument,
+                                  FutureImpl inExpectedInstrument,
                                   DeliveryType inExpectedDeliveryType,
                                   String inExpectedProviderSymbol,
                                   StandardType inExpectedStandardType,

@@ -3,27 +3,22 @@ package org.marketcetera.core.trade;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.quickfix.FIXMessageUtil;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
+
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.ClOrdID;
-import quickfix.field.MsgType;
-import quickfix.field.OrdType;
-import quickfix.field.OrderQty;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.Price;
-import quickfix.field.Text;
+import quickfix.field.*;
 
 /**
  * FIX conversion utilities.
  * 
  * @since 1.0.0
- * @version $Id: FIXConverter.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

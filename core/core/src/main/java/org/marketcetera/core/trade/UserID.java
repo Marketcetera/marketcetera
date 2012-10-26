@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlValue;
  * Instances of this class uniquely identify a user (trader).
  * 
  * @since 1.5.0
- * @version $Id: UserID.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UserID implements Serializable {

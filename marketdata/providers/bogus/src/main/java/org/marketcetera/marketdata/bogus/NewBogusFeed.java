@@ -4,8 +4,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.marketcetera.api.systemmodel.SecurityType;
 import org.marketcetera.api.systemmodel.Subscriber;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.marketdata.ExchangeRequest;
 import org.marketcetera.core.marketdata.SimulatedExchange;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;

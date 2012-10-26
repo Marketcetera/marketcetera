@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * ReplaceOrder Implementation. This class is public for the sake of JAXB
  * and is not intended for general use.
  *
- * @version $Id: OrderReplaceImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @XmlRootElement

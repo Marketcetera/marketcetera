@@ -2,19 +2,14 @@ package org.marketcetera.core.instruments;
 
 import java.util.regex.Pattern;
 
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.OptionImpl;
+
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.CFICode;
-import quickfix.field.MaturityDate;
-import quickfix.field.MaturityDay;
-import quickfix.field.MaturityMonthYear;
-import quickfix.field.PutOrCall;
-import quickfix.field.SecurityType;
-import quickfix.field.StrikePrice;
-import quickfix.field.Symbol;
+import quickfix.field.*;
 
 /* $License$ */
 /**
@@ -23,12 +18,12 @@ import quickfix.field.Symbol;
  * @version $Id: OptionToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-public class OptionToMessage extends InstrumentToMessage<Option> {
+public class OptionToMessage extends InstrumentToMessage<OptionImpl> {
     /**
      * Creates an instance that handles options.
      */
     public OptionToMessage() {
-        super(Option.class);
+        super(OptionImpl.class);
     }
 
     @Override

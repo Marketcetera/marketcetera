@@ -1,10 +1,11 @@
 package org.marketcetera.core.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
+
+import org.marketcetera.api.systemmodel.instruments.Equity;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.EquityEvent;
 import org.marketcetera.core.event.beans.QuoteBean;
-import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 

@@ -4,7 +4,8 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.FutureExpirationMonth;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 import org.marketcetera.core.ExpectedFailure;
 import quickfix.field.MaturityMonthYear;
 
@@ -14,30 +15,30 @@ import static org.junit.Assert.*;
 /* $License$ */
 
 /**
- * Tests {@link org.marketcetera.core.trade.Future}.
+ * Tests {@link org.marketcetera.core.trade.FutureImpl}.
  * 
  * @version $Id: FutureTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.1.0
  */
 public class FutureTest
-        extends InstrumentTestBase<Future>
+        extends InstrumentTestBase<FutureImpl>
 {
     @Override
-    protected Future createFixture() {
-        return new Future("ABC", FutureExpirationMonth.JULY, 18);
+    protected FutureImpl createFixture() {
+        return new FutureImpl("ABC", FutureExpirationMonth.JULY, 18);
     }
 
     @Override
-    protected Future createEqualFixture() {
-        return new Future("ABC", FutureExpirationMonth.JULY, 18);
+    protected FutureImpl createEqualFixture() {
+        return new FutureImpl("ABC", FutureExpirationMonth.JULY, 18);
     }
 
     @Override
-    protected List<Future> createDifferentFixtures() {
+    protected List<FutureImpl> createDifferentFixtures() {
         return ImmutableList.of(
-        new Future("ABC", FutureExpirationMonth.JULY, 19),
-        new Future("ABC", FutureExpirationMonth.JUNE, 18),
-        new Future("METC", FutureExpirationMonth.JULY, 18));
+        new FutureImpl("ABC", FutureExpirationMonth.JULY, 19),
+        new FutureImpl("ABC", FutureExpirationMonth.JUNE, 18),
+        new FutureImpl("METC", FutureExpirationMonth.JULY, 18));
     }
 
     @Override
@@ -50,13 +51,13 @@ public class FutureTest
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
             @Override
             protected void run() throws Exception {
-                new Future(null, FutureExpirationMonth.JULY, 18);
+                new FutureImpl(null, FutureExpirationMonth.JULY, 18);
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
             @Override
             protected void run() throws Exception {
-                new Future(null, "201010");
+                new FutureImpl(null, "201010");
             }
         };
     }
@@ -72,19 +73,19 @@ public class FutureTest
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
             @Override
             protected void run() throws Exception {
-                new Future("",FutureExpirationMonth.JULY, 18);
+                new FutureImpl("",FutureExpirationMonth.JULY, 18);
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
             @Override
             protected void run() throws Exception {
-                new Future("   ",FutureExpirationMonth.JULY, 18);
+                new FutureImpl("   ",FutureExpirationMonth.JULY, 18);
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
             @Override
             protected void run() throws Exception {
-                new Future("   ", "201012");
+                new FutureImpl("   ", "201012");
             }
         };
     }
@@ -100,7 +101,7 @@ public class FutureTest
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_MONTH.getText()) {
             @Override
             protected void run() throws Exception {
-                new Future("ABC", null, 18);
+                new FutureImpl("ABC", null, 18);
             }
         };
     }
@@ -116,7 +117,7 @@ public class FutureTest
         new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_YEAR.getText(-1)) {
             @Override
             protected void run() throws Exception {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            FutureExpirationMonth.JULY,
                            -1);
             }
@@ -124,7 +125,7 @@ public class FutureTest
         new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_YEAR.getText(0)) {
             @Override
             protected void run() throws Exception {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            FutureExpirationMonth.JULY,
                            0);
             }
@@ -144,7 +145,7 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            "201000");
             }
         };
@@ -153,7 +154,7 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            "201013");
             }
         };
@@ -172,7 +173,7 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            "20100100");
             }
         };
@@ -181,7 +182,7 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            "20101232");
             }
         };
@@ -191,34 +192,34 @@ public class FutureTest
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_EXPIRY.getText()) {
             @Override
             protected void run() throws Exception {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            null);
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_EXPIRY.getText()) {
             @Override
             protected void run() throws Exception {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            "    ");
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_EXPIRY.getText("YYYYMM")) {
             @Override
             protected void run() throws Exception {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            "YYYYMM");
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_EXPIRY.getText("000000")) {
             @Override
             protected void run() throws Exception {
-                new Future("ABC",
+                new FutureImpl("ABC",
                            "000000");
             }
         };
     }
     /**
-     * Tests the ability to parse expiries in {@link Future#Future(String, String)}.
+     * Tests the ability to parse expiries in {@link FutureImpl#Future(String, String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -226,33 +227,33 @@ public class FutureTest
     public void testExpiryParsing()
             throws Exception
     {
-        verifyFuture(new Future("ABC",
+        verifyFuture(new FutureImpl("ABC",
                                 "000101"),
                      "ABC",
                      FutureExpirationMonth.JANUARY,
                      2001,
                      -1);
-        verifyFuture(new Future("ABC",
+        verifyFuture(new FutureImpl("ABC",
                                 "010012"),
                      "ABC",
                      FutureExpirationMonth.DECEMBER,
                      100,
                      -1);
-        verifyFuture(new Future("ABC",
+        verifyFuture(new FutureImpl("ABC",
                                 "009912"),
                      "ABC",
                      FutureExpirationMonth.DECEMBER,
                      2099,
                      -1);
         for(FutureExpirationMonth month : FutureExpirationMonth.values()) {
-            verifyFuture(new Future("ABC",
+            verifyFuture(new FutureImpl("ABC",
                                     "2010" + month.getMonthOfYear()),
                          "ABC",
                          month,
                          2010,
                          -1);
         }
-        verifyFuture(new Future("ABC",
+        verifyFuture(new FutureImpl("ABC",
                                 "20100107"),
                      "ABC",
                      FutureExpirationMonth.JANUARY,
@@ -273,7 +274,7 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                Future.fromString(null);
+                FutureImpl.fromString(null);
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
@@ -281,7 +282,7 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                Future.fromString("");
+                FutureImpl.fromString("");
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.NULL_SYMBOL.getText()) {
@@ -289,7 +290,7 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                Future.fromString("    ");
+                FutureImpl.fromString("    ");
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_SYMBOL.getText("x")) {
@@ -297,7 +298,7 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                Future.fromString("x");
+                FutureImpl.fromString("x");
             }
         };
         new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_EXPIRY.getText("201113")) {
@@ -305,15 +306,15 @@ public class FutureTest
             protected void run()
                     throws Exception
             {
-                Future.fromString("x-201113");
+                FutureImpl.fromString("x-201113");
             }
         };
-        verifyFuture(Future.fromString("SYMBOL-WITH-MULTIPLE_PARTS-IN-IT-201010"),
+        verifyFuture(FutureImpl.fromString("SYMBOL-WITH-MULTIPLE_PARTS-IN-IT-201010"),
                      "SYMBOL-WITH-MULTIPLE_PARTS-IN-IT",
                      FutureExpirationMonth.OCTOBER,
                      2010,
                      -1);
-        verifyFuture(Future.fromString("SYMBOL-20150829"),
+        verifyFuture(FutureImpl.fromString("SYMBOL-20150829"),
                      "SYMBOL",
                      FutureExpirationMonth.AUGUST,
                      2015,
@@ -325,13 +326,13 @@ public class FutureTest
                 createFixture().toString(),
                 is("Future ABC [JULY(N) 2018]"));
         assertThat(
-                new Future("ABC", FutureExpirationMonth.JULY, 18).toString(),
+                new FutureImpl("ABC", FutureExpirationMonth.JULY, 18).toString(),
                 is("Future ABC [JULY(N) 2018]"));
         assertThat(
-                new Future("ABC",
+                new FutureImpl("ABC",
                            "201010").toString(),
                 is("Future ABC [OCTOBER(V) 2010]"));
-        assertThat(new Future("ABC",
+        assertThat(new FutureImpl("ABC",
                               "20101014").toString(),
                    is("Future ABC [14 OCTOBER(V) 2010]"));
     }
@@ -345,7 +346,7 @@ public class FutureTest
      * @param inExpectedDay an <code>int</code> value
      * @throws Exception if an unexpected error occurs
      */
-    private void verifyFuture(Future inActualInstrument,
+    private void verifyFuture(FutureImpl inActualInstrument,
                               String inExpectedSymbol,
                               FutureExpirationMonth inExpectedMonth,
                               int inExpectedYear,

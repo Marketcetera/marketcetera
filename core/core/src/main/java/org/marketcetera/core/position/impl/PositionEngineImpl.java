@@ -1,38 +1,24 @@
 package org.marketcetera.core.position.impl;
 
 import java.beans.PropertyChangeEvent;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
 
-import ca.odell.glazedlists.impl.beans.BeanConnector;
-import ca.odell.glazedlists.matchers.Matcher;
-import ca.odell.glazedlists.matchers.Matchers;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.CompareToBuilder;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
-import org.marketcetera.core.position.Grouping;
-import org.marketcetera.core.position.IncomingPositionSupport;
-import org.marketcetera.core.position.MarketDataSupport;
-import org.marketcetera.core.position.PositionEngine;
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.core.position.Trade;
+import org.marketcetera.core.position.*;
 import org.marketcetera.fork.glazed.GroupingList;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcher;
 import org.marketcetera.fork.glazed.GroupingList.GroupMatcherFactory;
-import org.marketcetera.core.trade.Instrument;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FunctionList;
-import ca.odell.glazedlists.ObservableElementList;
-import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.*;
 import ca.odell.glazedlists.FunctionList.AdvancedFunction;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+import ca.odell.glazedlists.impl.beans.BeanConnector;
+import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.matchers.Matchers;
 import ca.odell.glazedlists.util.concurrent.Lock;
 
 import com.google.common.collect.Maps;
@@ -100,7 +86,7 @@ public final class PositionEngineImpl implements PositionEngine {
         public TradeGroupMatcher createGroupMatcher(final Trade<?> element) {
             return new TradeGroupMatcher(element);
         }
-    };
+    }
 
     /**
      * Supports grouping of positions by a number of grouping criteria.

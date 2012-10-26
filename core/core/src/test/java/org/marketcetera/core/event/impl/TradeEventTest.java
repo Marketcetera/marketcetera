@@ -1,29 +1,22 @@
 package org.marketcetera.core.event.impl;
 
+import static org.junit.Assert.*;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.*;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.event.EventType;
-import org.marketcetera.core.event.FutureEvent;
-import org.marketcetera.core.event.Messages;
-import org.marketcetera.core.event.OptionEvent;
-import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.core.event.*;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.FutureExpirationMonth;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.FutureImpl;
+import org.marketcetera.core.trade.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
-
-import static org.junit.Assert.*;
 
 /* $License$ */
 
@@ -653,11 +646,11 @@ public class TradeEventTest
         if(useInstrument) {
             return TradeEventBuilder.tradeEvent(instrument);
         } else {
-            if(instrument instanceof Equity) {
+            if(instrument instanceof EquityImpl) {
                 return TradeEventBuilder.equityTradeEvent();
             } else if(instrument instanceof Option) {
                 return TradeEventBuilder.optionTradeEvent();
-            } else if(instrument instanceof Future) {
+            } else if(instrument instanceof FutureImpl) {
                 return TradeEventBuilder.futureTradeEvent();
             }
         }
@@ -670,18 +663,18 @@ public class TradeEventTest
     /**
      * test instrument with {@link TradeEventBuilder#tradeEvent(org.marketcetera.core.trade.Instrument)}.
      */
-    private final Equity equity = new Equity("METC");
+    private final Equity equity = new EquityImpl("METC");
     /**
      * test option
      */
-    private final Option option = new Option("MSFT",
+    private final Option option = new OptionImpl("MSFT",
                                              "20100319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
     /**
      * test instrument with {@link TradeEventBuilder#tradeEvent(org.marketcetera.core.trade.Instrument)}.
      */
-    private final Future future = new Future("METC",
+    private final Future future = new FutureImpl("METC",
                                              FutureExpirationMonth.MARCH,
                                              15);
     /**

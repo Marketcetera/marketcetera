@@ -8,7 +8,7 @@ import java.util.HashSet;
 import junit.framework.Test;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
@@ -30,7 +30,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         String clOrderID = "1"; //$NON-NLS-1$
         char side = Side.BUY;
         BigDecimal quantity = BigDecimal.TEN;
-        Equity equity = new Equity("MRKT"); //$NON-NLS-1$
+        EquityImpl equity = new EquityImpl("MRKT"); //$NON-NLS-1$
         BigDecimal price = BigDecimal.ONE;
         char timeInForce = TimeInForce.GOOD_TILL_CROSSING;
         String account = "ASDF"; //$NON-NLS-1$
@@ -56,7 +56,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         String clOrderID = "1"; //$NON-NLS-1$
         char side = Side.BUY;
         BigDecimal quantity = BigDecimal.TEN;
-        Equity equity = new Equity("MRKT"); //$NON-NLS-1$
+        EquityImpl equity = new EquityImpl("MRKT"); //$NON-NLS-1$
         char timeInForce = TimeInForce.GOOD_TILL_CROSSING;
         String account = "ASDF"; //$NON-NLS-1$
 

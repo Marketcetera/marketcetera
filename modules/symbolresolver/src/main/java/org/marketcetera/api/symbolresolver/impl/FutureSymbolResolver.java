@@ -3,13 +3,13 @@ package org.marketcetera.api.symbolresolver.impl;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.api.symbolresolver.SymbolResolver;
-import org.marketcetera.core.trade.Future;
-import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.core.trade.FutureImpl;
 
 /* $License$ */
 
 /**
- * Attempts to resolve symbols to {@link org.marketcetera.core.trade.Future} instruments.
+ * Attempts to resolve symbols to {@link org.marketcetera.core.trade.FutureImpl} instruments.
  *
  * @version $Id: FutureSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
@@ -35,7 +35,7 @@ public class FutureSymbolResolver
                               Object inContext)
     {
         try {
-            return Future.fromString(inSymbol);
+            return FutureImpl.fromString(inSymbol);
         } catch (IllegalArgumentException e) {
             // nope, not a future
         }

@@ -1,18 +1,21 @@
 package org.marketcetera.core.event.beans;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.OptionType;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.trade.EquityImpl;
+import org.marketcetera.core.trade.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
-
-import static org.junit.Assert.*;
 
 /* $License$ */
 
@@ -373,8 +376,8 @@ public class MarketstatBeanTest
         MarketstatBean bean = constructBean();
         assertNull(bean.getInstrument());
         assertNull(bean.getInstrumentAsString());
-        Equity equity = new Equity("METC");
-        Option option = new Option("METC",
+        EquityImpl equity = new EquityImpl("METC");
+        Option option = new OptionImpl("METC",
                                    "201001",
                                    BigDecimal.TEN,
                                    OptionType.Put);
@@ -499,7 +502,7 @@ public class MarketstatBeanTest
         // test instrument
         // set bean3 to non-null
         assertNull(bean1.getInstrument());
-        bean3.setInstrument(new Equity("METC"));
+        bean3.setInstrument(new EquityImpl("METC"));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -593,7 +596,7 @@ public class MarketstatBeanTest
                 inBean.validate();
             }
         };
-        inBean.setInstrument(new Equity("METC"));
+        inBean.setInstrument(new EquityImpl("METC"));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.beans.AbstractEventBeanTestBase#constructBean()
@@ -650,7 +653,7 @@ public class MarketstatBeanTest
         String closeExchange = "close exchange";
         BigDecimal high = close.add(BigDecimal.ONE);
         String highExchange = "high exchange";
-        Instrument instrument = new Equity("METC");
+        Instrument instrument = new EquityImpl("METC");
         BigDecimal low = high.add(BigDecimal.ONE);
         BigDecimal open = low.add(BigDecimal.ONE);
         String openExchange = "open exchange";

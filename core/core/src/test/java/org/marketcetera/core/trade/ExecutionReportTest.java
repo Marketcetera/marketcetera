@@ -1,18 +1,22 @@
 package org.marketcetera.core.trade;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.ExpectedFailure;
+
 import quickfix.Message;
 import quickfix.field.*;
 import quickfix.field.converter.DecimalConverter;
 import quickfix.field.converter.UtcTimestampConverter;
-
-import static org.junit.Assert.*;
 
 /* $License$ */
 /**
@@ -90,7 +94,7 @@ public class ExecutionReportTest extends TypesTestBase {
         BigDecimal lastPrice = new BigDecimal("9.234");
         BigDecimal cumQty = new BigDecimal("984.34");
         BigDecimal avgPrice = new BigDecimal("34.234");
-        Instrument instrument = new Equity("METC");
+        Instrument instrument = new EquityImpl("METC");
         String account= "yes";
         String text= "some text";
         UserID actorID = new UserID(2);

@@ -8,14 +8,16 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Option;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 
 /* $License$ */
 /**
  * Base class for orders. This class is public for the sake of
  * JAXB and is not intended for general use.
  *
- * @version $Id: OrderBaseImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 /*
@@ -29,9 +31,9 @@ import org.marketcetera.api.systemmodel.SecurityType;
     ({OrderCancelImpl.class,
       OrderReplaceImpl.class,
       OrderSingleImpl.class,
-      Equity.class,
+      EquityImpl.class,
       Option.class,
-      Future.class})
+      FutureImpl.class})
 //todo: figure out a way to dynamic add instrument types to the XmlSeeAlso list
 public class OrderBaseImpl implements OrderBase {
     @Override

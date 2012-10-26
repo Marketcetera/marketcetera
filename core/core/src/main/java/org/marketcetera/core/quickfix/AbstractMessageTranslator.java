@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -46,7 +46,7 @@ public abstract class AbstractMessageTranslator<T>
      * @return an <code>Equity</code> value containing the symbol
      * @throws CoreException if the symbol could not be extracted
      */
-    public static Equity getSymbol(Group inGroup)
+    public static EquityImpl getSymbol(Group inGroup)
         throws CoreException
     {
         String securityType;
@@ -55,7 +55,7 @@ public abstract class AbstractMessageTranslator<T>
         } catch (FieldNotFound e) {
             securityType = SecurityType.COMMON_STOCK;
         }
-        Equity symbol;
+        EquityImpl symbol;
         try {
             if(SecurityType.OPTION.equals(securityType) && 
                inGroup.isSetField(NoUnderlyings.FIELD)) {
@@ -63,9 +63,9 @@ public abstract class AbstractMessageTranslator<T>
                                                                     NoUnderlyings.FIELD);
                 inGroup.getGroup(1, 
                                  underlyingGroup);
-                symbol = new Equity(underlyingGroup.getString(UnderlyingSymbol.FIELD));
+                symbol = new EquityImpl(underlyingGroup.getString(UnderlyingSymbol.FIELD));
             } else {
-                symbol = new Equity(inGroup.getString(Symbol.FIELD));
+                symbol = new EquityImpl(inGroup.getString(Symbol.FIELD));
             }
         } catch (FieldNotFound e) {
             throw new CoreException(e, 

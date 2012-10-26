@@ -10,7 +10,7 @@ import quickfix.field.ExecType;
 /**
  * Specific execution report status.
  *
- * @version $Id: ExecutionType.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public enum ExecutionType {

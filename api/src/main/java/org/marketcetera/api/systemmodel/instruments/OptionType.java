@@ -1,4 +1,4 @@
-package org.marketcetera.core.trade;
+package org.marketcetera.api.systemmodel.instruments;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * An enumeration used to identify if an option is a Put or a Call option.
  *
- * @version $Id: OptionType.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public enum OptionType

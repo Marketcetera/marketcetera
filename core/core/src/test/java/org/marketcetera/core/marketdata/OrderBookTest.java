@@ -15,7 +15,7 @@ import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.EquityImpl;
 
 import static java.math.BigDecimal.TEN;
 import static org.junit.Assert.*;
@@ -33,7 +33,7 @@ public class OrderBookTest
     /**
      * test symbol
      */
-    private final Equity symbol = new Equity("GOOG");
+    private final EquityImpl symbol = new EquityImpl("GOOG");
     /**
      * test order book (reset each test)
      */
@@ -83,8 +83,8 @@ public class OrderBookTest
     public void equalsAndHashCode()
         throws Exception
     {
-        Equity otherSymbol = new Equity("YHOO");
-        Equity duplicateSymbol = new Equity("GOOG");
+        EquityImpl otherSymbol = new EquityImpl("YHOO");
+        EquityImpl duplicateSymbol = new EquityImpl("GOOG");
         assertEquals(symbol,
                      duplicateSymbol);
         assertFalse(symbol.equals(otherSymbol));
@@ -380,7 +380,7 @@ public class OrderBookTest
                 book.process(null);
             }
         };
-        final AskEvent badAsk = EventTestBase.generateEquityAskEvent(new Equity("METC"),
+        final AskEvent badAsk = EventTestBase.generateEquityAskEvent(new EquityImpl("METC"),
                                                                      exchange);
         assertFalse(badAsk.getInstrument().equals(symbol));
         new ExpectedFailure<IllegalArgumentException>() {
@@ -544,7 +544,7 @@ public class OrderBookTest
      * @param inActualBook
      * @throws Exception
      */
-    private void verifyBook(Equity inExpectedInstrument,
+    private void verifyBook(EquityImpl inExpectedInstrument,
                             QuantityTupleList<BidEvent> inExpectedBids,
                             QuantityTupleList<AskEvent> inExpectedAsks,
                             int inExpectedMaxDepth,

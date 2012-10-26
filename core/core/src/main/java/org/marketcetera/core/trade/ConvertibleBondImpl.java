@@ -4,24 +4,24 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.ConvertibleBond;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 
 /* $License$ */
 
 /**
  * Represents a Convertible Bond instrument.
  *
- * @version $Id: ConvertibleBond.java 82347 2012-05-03 19:30:54Z colin $
+ * @version $Id$
  * @since $Release$
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ConvertibleBond
-        extends Instrument
+public class ConvertibleBondImpl
+        extends AbstractInstrumentImpl
+        implements ConvertibleBond
 {
     /**
      * Create a new ConvertibleBond instance.
@@ -29,19 +29,9 @@ public class ConvertibleBond
      * @param inSymbol a <code>String</code> value
      * @throws IllegalArgumentException if the given symbol is <code>null</code> or empty
      */
-    public ConvertibleBond(String inSymbol)
+    public ConvertibleBondImpl(String inSymbol)
     {
-        inSymbol = StringUtils.trimToNull(inSymbol);
-        Validate.notNull(inSymbol);
-        symbol = inSymbol;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.trade.Instrument#getSymbol()
-     */
-    @Override
-    public String getSymbol()
-    {
-        return symbol;
+        super(inSymbol);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSecurityType()
@@ -59,7 +49,7 @@ public class ConvertibleBond
     {
         return new ToStringBuilder(this,
                                    ToStringStyle.SHORT_PREFIX_STYLE).append("symbol",  //$NON-NLS-1$
-                                                                            symbol).toString();
+                                                                            getSymbol()).toString();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -69,7 +59,7 @@ public class ConvertibleBond
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+        result = prime * result + ((getSymbol() == null) ? 0 : getSymbol().hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -84,22 +74,18 @@ public class ConvertibleBond
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof ConvertibleBond)) {
+        if (!(obj instanceof ConvertibleBondImpl)) {
             return false;
         }
-        ConvertibleBond other = (ConvertibleBond) obj;
-        if (symbol == null) {
-            if (other.symbol != null) {
+        ConvertibleBondImpl other = (ConvertibleBondImpl) obj;
+        if (getSymbol() == null) {
+            if (other.getSymbol() != null) {
                 return false;
             }
-        } else if (!symbol.equals(other.symbol)) {
+        } else if (!getSymbol().equals(other.getSymbol())) {
             return false;
         }
         return true;
     }
-    /**
-     * symbol value
-     */
-    private final String symbol;
     private static final long serialVersionUID = 1L;
 }

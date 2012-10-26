@@ -3,7 +3,7 @@ package org.marketcetera.marketdata;
 import java.util.Map;
 import java.util.Set;
 
-import org.marketcetera.api.systemmodel.Instrument;
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 
 /* $License$ */
 

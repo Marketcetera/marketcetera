@@ -13,7 +13,7 @@ package org.marketcetera.core.trade;
  * is returned to indicate that the value is set but is not currently
  * expressible through the current API.
  *
- * @version $Id: OrderCancelReject.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public interface OrderCancelReject extends TradeMessage, ReportBase {

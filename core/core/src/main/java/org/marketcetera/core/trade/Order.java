@@ -2,7 +2,7 @@ package org.marketcetera.core.trade;
 
 import java.io.Serializable;
 
-import org.marketcetera.api.systemmodel.SecurityType;
+import org.marketcetera.api.systemmodel.instruments.SecurityType;
 
 /* $License$ */
 /**
@@ -12,7 +12,7 @@ import org.marketcetera.api.systemmodel.SecurityType;
  *
  * This message type is not meant to be used directly.
  *  
- * @version $Id: Order.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public interface Order extends Serializable {

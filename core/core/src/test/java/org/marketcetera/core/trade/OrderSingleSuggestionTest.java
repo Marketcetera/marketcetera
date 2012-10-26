@@ -61,7 +61,7 @@ public class OrderSingleSuggestionTest extends TypesTestBase {
         order.setPrice(new BigDecimal("983.32"));
         order.setQuantity(new BigDecimal("3.365"));
         order.setSide(Side.Sell);
-        order.setInstrument(new Equity("IBM"));
+        order.setInstrument(new EquityImpl("IBM"));
         order.setTimeInForce(TimeInForce.AtTheClose);
         OrderSingle clone = order.clone();
         inSuggest.setOrder(order);

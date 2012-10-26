@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.marketcetera.api.systemmodel.instruments.Instrument;
 import org.marketcetera.core.quickfix.FIXMessageUtil;
+
 import quickfix.Message;
 
 /* $License$ */
@@ -12,7 +15,7 @@ import quickfix.Message;
  * Execution Report implementation that wraps a FIX Message. This class
  * is public for the sake of JAXB and is not intended for general use.
  *
- * @version $Id: ExecutionReportImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 @XmlRootElement

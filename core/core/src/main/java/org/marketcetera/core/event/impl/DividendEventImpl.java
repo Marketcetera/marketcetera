@@ -4,16 +4,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
-import org.marketcetera.core.event.DividendEvent;
-import org.marketcetera.core.event.DividendFrequency;
-import org.marketcetera.core.event.DividendStatus;
-import org.marketcetera.core.event.DividendType;
-import org.marketcetera.core.event.EventType;
+
+import org.marketcetera.api.systemmodel.instruments.Equity;
+import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.beans.DividendBean;
 import org.marketcetera.core.event.beans.EventBean;
 import org.marketcetera.core.event.beans.HasEventBean;
 import org.marketcetera.core.event.util.EventServices;
-import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 

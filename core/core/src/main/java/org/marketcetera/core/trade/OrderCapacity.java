@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Designates the capacity of the firm placing the order.
  *
- * @version $Id: OrderCapacity.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.0.0
  */
 public enum OrderCapacity {
