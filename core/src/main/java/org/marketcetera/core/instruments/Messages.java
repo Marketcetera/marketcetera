@@ -38,6 +38,8 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "option_not_supported_for_fix_version");   //$NON-NLS-1$
     static final I18NMessage1P FUTURES_NOT_SUPPORTED_FOR_FIX_VERSION =
             new I18NMessage1P(LOGGER, "futures_not_supported_for_fix_version");   //$NON-NLS-1$
+    static final I18NMessage1P FOREX_NOT_SUPPORTED_FOR_FIX_VERSION =
+            new I18NMessage1P(LOGGER, "forex_not_supported_for_fix_version");   //$NON-NLS-1$
 
 
 }
