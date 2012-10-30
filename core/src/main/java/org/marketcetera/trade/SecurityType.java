@@ -10,11 +10,8 @@ import java.util.Collections;
 /**
  * Indicates the type of Security.
  *
- * @author anshul@marketcetera.com
- * @version $Id$
- * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id: SecurityType.java") //$NON-NLS-1$
 public enum SecurityType {
     /**
      * Sentinel value for Security Types that the system is not currently
@@ -32,8 +29,11 @@ public enum SecurityType {
     /**
      * Future
      */
-    Future(quickfix.field.SecurityType.FUTURE);
-
+    Future(quickfix.field.SecurityType.FUTURE),
+    /**
+     * Currency, spot/outright/swap
+     */
+    Currency(quickfix.field.SecurityType.FOREIGN_EXCHANGE_CONTRACT);    
     /**
      * The FIX text value for this instance.
      *

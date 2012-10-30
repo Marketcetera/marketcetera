@@ -36,7 +36,29 @@ public class PositionKeyFactory {
     public static PositionKey<Equity> createEquityKey(String symbol,
             @Nullable String account, @Nullable String traderId) {
         return createKey(new Equity(symbol), account, traderId);
+    }    
+    /**
+     * Creates an currency position key. Note that account and traderId are
+     * converted to null if they only contain whitespace.
+     * 
+     * @param baseCCY
+     *            baseCCY, cannot be null or whitespace
+     * @param plCCY
+     *            plCCY, cannot be null or whitespace
+     * @param nearTenor
+     *            nearTenor, cannot be null or whitespace
+     * @param account
+     *            account
+     * @param traderId
+     *            trader id
+     * @throws IllegalArgumentException
+     *             if symbol is null or whitespace
+     */
+    public static PositionKey<Currency> createCurrencyKey(String baseCCY, String plCCY, String nearTenor,
+            @Nullable String account, @Nullable String traderId) {
+        return createKey(new Currency(baseCCY,plCCY,nearTenor), account, traderId);
     }
+    
     /**
      * Creates a future position key. Note that account and traderId are
      * converted to null if they only contain whitespace.
@@ -56,6 +78,28 @@ public class PositionKeyFactory {
                                     inExpiry),
                          inAccount,
                          inTraderId);
+    }
+    /**
+     * Creates a currency position key. Note that account and traderId are
+     * converted to null if they only contain whitespace.
+     * 
+     * @param baseCCY a <code>String</code> value
+     * @param plCCY a <code>String</code> value
+     * @param nearTenor a <code>String</code> value
+     * @param farTenor a <code>String</code> value
+     * @param inAccount a <code>String</code> value
+     * @param inTraderId a <code>String</code> value
+     * @throws IllegalArgumentException if one of the given parameters are invalid
+     */
+    public static PositionKey<Currency> createCurrencyKey(String baseCCY,
+                                                      String plCCY,
+                                                      String nearTenor,
+                                                      @Nullable String farTenor,
+                                                      @Nullable String inAccount,
+                                                      @Nullable String inTraderId)
+    {
+        return createKey(new Currency(baseCCY, plCCY, nearTenor, farTenor),inAccount,
+                inTraderId);
     }
     /**
      * Creates an option position key. Note that account and traderId are

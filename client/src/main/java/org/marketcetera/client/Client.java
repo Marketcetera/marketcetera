@@ -10,7 +10,16 @@ import java.util.Properties;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -39,6 +48,8 @@ import org.marketcetera.util.misc.ClassVersion;
  *      <li>{@link #getOptionPositionAsOf(java.util.Date, Option)}  fetch option position} </li>
  *      <li>{@link #getOptionPositionsAsOf(java.util.Date, String[])}  fetch option positions} </li>
  *      <li>{@link #getAllOptionPositionsAsOf(java.util.Date)}  fetch all open option positions} </li>
+ *      <li>{@link #getCurrencyPositionAsOf(Date, Currency)}  fetch currency position} </li>
+ *      <li>{@link #getAllCurrencyPositionsAsOf(java.util.Date)}  fetch all open currency positions} </li>
  * </ul>
  *
  * @author anshul@marketcetera.com
@@ -230,6 +241,35 @@ public interface Client {
      */
     public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf(
             Date inDate, String... inRootSymbols)
+            throws ConnectionException;    
+
+    /**
+     * Returns the position of the supplied currency based on reports,
+     * generated and received on or before the supplied date in UTC.
+     *
+     * @param inDate the date in UTC. Cannot be null.
+     * @param inCurrency The currency. Cannot be null.
+     *
+     * @return the current position of the currency.
+     *
+     * @throws ConnectionException if there were connection errors fetching
+     * data from the server.
+     */
+    public BigDecimal getCurrencyPositionAsOf(Date inDate, Currency inCurrency)
+            throws ConnectionException;
+
+    /**
+     * Returns all open currency positions based on reports,
+     * generated and received on or before the supplied date in UTC.
+     *
+     * @param inDate the date in UTC. Cannot be null.
+     *
+     * @return the open currency positions. Includes non-zero positions only.
+     *
+     * @throws ConnectionException if there were connection errors fetching
+     * data from the server.
+     */
+    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
             throws ConnectionException;
     
     /**
