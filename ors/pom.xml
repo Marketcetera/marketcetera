@@ -18,11 +18,11 @@
   <parent>
       <groupId>org.marketcetera</groupId>
       <artifactId>public-parent</artifactId>
-      <version>2.2.1-SNAPSHOT</version>
+      <version>2.2.1</version>
   </parent>
   <artifactId>ors</artifactId>
   <packaging>jar</packaging>
-  <version>2.2.1-SNAPSHOT</version>
+  <version>2.2.1</version>
 
   <name>ORS</name>
 
@@ -32,12 +32,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>client</artifactId>
-      <version>2.2.1-SNAPSHOT</version>
+      <version>2.2.1</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>util</artifactId>
-      <version>2.2.1-SNAPSHOT</version>
+      <version>2.2.1</version>
     </dependency>
     <dependency>
       <groupId>commons-collections</groupId>
@@ -86,12 +86,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
-      <version>2.2.1-SNAPSHOT</version>
+      <version>2.2.1</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>util-test</artifactId>
-      <version>2.2.1-SNAPSHOT</version>
+      <version>2.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
