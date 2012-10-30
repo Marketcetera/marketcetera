@@ -18,10 +18,10 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>modules</artifactId>
-    <version>2.2.1-SNAPSHOT</version>
+    <version>2.2.1</version>
   </parent>
   <artifactId>misc</artifactId>
-  <version>2.2.1-SNAPSHOT</version>
+  <version>2.2.1</version>
   <packaging>jar</packaging>
 
   <name>Miscellaneous Modules</name>
@@ -32,7 +32,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
-      <version>2.2.1-SNAPSHOT</version>
+      <version>2.2.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -54,12 +54,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
-      <version>2.2.1-SNAPSHOT</version>
+      <version>2.2.1</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>util-test</artifactId>
-      <version>2.2.1-SNAPSHOT</version>
+      <version>2.2.1</version>
     </dependency>
   </dependencies>
 
