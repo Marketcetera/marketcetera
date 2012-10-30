@@ -1,5 +1,6 @@
 package org.marketcetera.core.instruments;
 
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -125,6 +126,25 @@ class CFICodeUtils {
      * @param inInstrument
      * @return
      */
+    static String getCFICode(Currency inInstrument)
+    {
+        StringBuffer code = new StringBuffer();			//ToDo set appropriate code for Currency
+        code.append("M"); // indicates Other //$NON-NLS-1$
+        code.append("X"); // financial or commodity //$NON-NLS-1$
+        code.append("X"); // underlying asset type //$NON-NLS-1$
+        code.append("X"); // delivery //$NON-NLS-1$
+        code.append("X"); // standard/non-standard //$NON-NLS-1$
+        code.append("X"); // not used //$NON-NLS-1$
+        return code.toString();
+    }
+    
+    /**
+     * 
+     *
+     *
+     * @param inInstrument
+     * @return
+     */
     static String getCFICode(Instrument inInstrument)
     {
         if(inInstrument instanceof Option) {
@@ -132,6 +152,9 @@ class CFICodeUtils {
         }
         if(inInstrument instanceof Future) {
             return getCFICode((Future)inInstrument);
+        }
+        if(inInstrument instanceof Currency) {
+            return getCFICode((Currency)inInstrument);
         }
         throw new UnsupportedOperationException();
     }

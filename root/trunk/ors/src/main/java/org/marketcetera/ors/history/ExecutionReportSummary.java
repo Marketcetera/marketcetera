@@ -3,7 +3,9 @@ package org.marketcetera.ors.history;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import org.marketcetera.trade.Currency;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 
 import org.marketcetera.core.position.PositionKey;
@@ -198,6 +200,54 @@ class ExecutionReportSummary extends EntityBase {
         return position == null? BigDecimal.ZERO: position;
 
     }
+    
+    /**
+     * Gets the current aggregate position for the currency based on
+     * execution reports received on or before the supplied time, and which
+     * are visible to the given user.
+     *
+     * <p>
+     * Buy trades result in positive positions. All other kinds of trades
+     * result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the time. execution reports with sending time values less
+     * than or equal to this time are included in this calculation.
+     * @param inCurrency the currency for which this position needs to be computed
+     *
+     * @return the aggregate position for the currency.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position.
+     */
+    static BigDecimal getCurrencyPositionAsOf
+        (final SimpleUser inUser,
+         final Date inDate,
+         final Currency inCurrency)
+        throws PersistenceException
+    {
+        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public BigDecimal execute(EntityManager em, PersistContext context) {
+                Query query = em.createNamedQuery(	
+                        "crPositionForSymbol");  //$NON-NLS-1$									//ToDo Add Currency SQL
+
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+                query.setParameter("symbol", inCurrency.getSymbol());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
+                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+                        TemporalType.TIMESTAMP);
+                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
+            }
+        }, null);
+        return position == null? BigDecimal.ZERO: position;
+
+    }
+    
     /**
      * Returns the aggregate position of each (equity,account,actor)
      * tuple based on all reports received for each tuple on or before
@@ -259,7 +309,74 @@ class ExecutionReportSummary extends EntityBase {
             }
         }, null);
 
+    }    
+    /**
+     * Returns the aggregate position of each (currency,account,actor)
+     * tuple based on all reports received for each tuple on or before
+     * the supplied date, and which are visible to the given user.
+     *
+     * <p> Buy trades result in positive positions. All other kinds of
+     * trades result in negative positions.
+     *
+     * @param inUser the user making the query. Cannot be null.
+     * @param inDate the date to compare with all the reports. Only
+     * the reports that were received on or prior to this date will be
+     * used in this calculation.  Cannot be null.
+     *
+     * @return the position map.
+     *
+     * @throws PersistenceException if there were errors retrieving the
+     * position map.
+     */
+    static Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
+        (final SimpleUser inUser,
+         final Date inDate)
+        throws PersistenceException
+    {
+        return executeRemote(new Transaction<Map<PositionKey<Currency>, BigDecimal>>() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Map<PositionKey<Currency>, BigDecimal> execute(EntityManager em,
+                                                    PersistContext context) {
+                Query query = em.createNamedQuery(
+                        "crAllPositions");  //$NON-NLS-1$						//ToDo add currency SQL
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
+                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+                        TemporalType.TIMESTAMP);
+                HashMap<PositionKey<Currency>, BigDecimal> map =
+                        new HashMap<PositionKey<Currency>, BigDecimal>();
+                List<?> list = query.getResultList();
+                Object[] columns;
+                for(Object o: list) {
+                    columns = (Object[]) o;
+                    //6 columns
+                    if(columns.length > 1) {         	
+                        //first one is the baseCCY
+                        //second one is the plCCY
+                        //third one is the nearTenor
+                        //fourth one is the account
+                        //fifth one is the traderId
+                    	//sizth one is the position
+                        map.put(PositionKeyFactory.createCurrencyKey
+                                ((String)columns[0],
+                                 (String)columns[1],
+                                 (String)columns[2],
+                                 (String)columns[3],
+                                 (String)columns[4]),
+                                 (BigDecimal)columns[5]);
+                    }
+                }
+                return map;
+            }
+        }, null);
+
     }
+    
+    
     /**
      * Gets the current aggregate position for the future based on
      * execution reports received on or before the supplied time, and which

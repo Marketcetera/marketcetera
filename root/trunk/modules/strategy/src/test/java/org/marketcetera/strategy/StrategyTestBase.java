@@ -47,6 +47,7 @@ import org.marketcetera.module.*;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyModule.ClientFactory;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.I18NMessage;
 
 import quickfix.Message;
@@ -1015,6 +1016,18 @@ public class StrategyTestBase
          * if non-null, will be thrown during {@link #getReportsSince(Date)}.
          */
         private volatile ConnectionException getReportsSinceThrows;
+		@Override
+		public BigDecimal getCurrencyPositionAsOf(Date inDate,
+				Currency inCurrency) throws ConnectionException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(
+				Date inDate) throws ConnectionException {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
     /**
      * Compares the sending times of two <code>ReportBase</code> values.

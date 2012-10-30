@@ -42,6 +42,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		layout.addPerspectiveShortcut(EquityPerspectiveFactory.ID);
         layout.addPerspectiveShortcut(FuturePerspectiveFactory.ID);
+        layout.addPerspectiveShortcut(CurrencyPerspectiveFactory.ID);
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		layout.addShowViewShortcut(StockOrderTicketView.ID);
 		layout.addShowViewShortcut(OptionOrderTicketView.ID);

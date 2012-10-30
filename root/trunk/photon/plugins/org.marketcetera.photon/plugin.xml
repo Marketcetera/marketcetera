@@ -22,6 +22,12 @@
             id="org.marketcetera.photon.FuturePerspective"
             name="Future">
       </perspective>
+      <perspective
+            class="org.marketcetera.photon.ui.CurrencyPerspectiveFactory"
+            icon="icons/silk/calendar.png"
+            id="org.marketcetera.photon.CurrencyPerspective"
+            name="Currency">
+      </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -47,6 +53,14 @@
             icon="icons/silk/calendar.png"
             id="org.marketcetera.photon.views.FutureOrderTicketView"
             name="Future Order Ticket"
+            allowMultiple="true"
+            />
+      <view
+            category="org.marketcetera.photon.category"
+            class="org.marketcetera.photon.views.CurrencyOrderTicketView"
+            icon="icons/silk/calendar.png"
+            id="org.marketcetera.photon.views.CurrencyOrderTicketView"
+            name="Currency Order Ticket"
             allowMultiple="true"
             />
       <view
@@ -113,6 +127,10 @@
       <perspectiveExtension targetID="org.marketcetera.photon.FuturePerspective">
          <perspectiveShortcut
                id="org.marketcetera.photon.FuturePerspective"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="org.marketcetera.photon.CurrencyPerspective">
+         <perspectiveShortcut
+               id="org.marketcetera.photon.CurrencyPerspective"/>
       </perspectiveExtension>
       <perspectiveExtension targetID="org.marketcetera.photon.StrategyPerspective">
          <perspectiveShortcut
