@@ -26,7 +26,7 @@
   <name>Photon Maven Components</name>
 
   <properties>
-    <mvn.photon.target>photon-target-${project.version}</mvn.photon.target>
+    <mvn.photon.target>photon-target</mvn.photon.target>
   </properties>
 
   <modules>
