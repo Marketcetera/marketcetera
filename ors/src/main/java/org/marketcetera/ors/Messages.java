@@ -151,6 +151,10 @@ public interface Messages
         new I18NMessage2P(LOGGER,"rp_add_to_map_failed"); //$NON-NLS-1$
     static final I18NMessage1P RP_GET_FROM_DB_FAILED=
         new I18NMessage1P(LOGGER,"rp_get_from_db_failed"); //$NON-NLS-1$
+    static final I18NMessage2P RP_COULD_NOT_DETERMINE_PRINCIPALS = new I18NMessage2P(LOGGER,
+                                                                                     "rp_could_not_determine_principals"); //$NON-NLS-1$
+    static final I18NMessage1P RP_NO_ORDER_INFO = new I18NMessage1P(LOGGER,
+                                                                    "rp_no_order_info"); //$NON-NLS-1$
 
     static final I18NMessage2P OIM_ADDED_ENTRY=
         new I18NMessage2P(LOGGER,"oim_added_entry"); //$NON-NLS-1$

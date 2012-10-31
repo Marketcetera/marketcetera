@@ -80,16 +80,19 @@ class YahooClientImpl
             while(isRunning.get()) {
                 synchronized(requests) {
                     for(YahooRequest request : requests) {
-                        feedServices.doDataReceived(request.getHandle(),
-                                                    submit(request));
+                        try {
+                            feedServices.doDataReceived(request.getHandle(),
+                                                        submit(request));
+                        } catch (IOException e) {
+                            SLF4JLoggerProxy.debug(YahooClientImpl.class,
+                                                   e,
+                                                   "Retrying...");
+                        }
                     }
                 }
                 Thread.sleep(feedServices.getRefreshInterval());
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
     /* (non-Javadoc)
@@ -197,6 +200,17 @@ class YahooClientImpl
      * sentinel value used to separate query tokens
      */
     static final String QUERY_SEPARATOR = "&&/&&"; //$NON-NLS-1$
+
+    /**
+     * sentinel value used to separate query tokens
+     */
+    static final String FIELD_DELIMITER = ","; //$NON-NLS-1$
+
+    /**
+     * sentinel value used to separate query tokens
+     */
+    static final String DELIMITER_SYMBOL = ",?"; //$NON-NLS-1$
+    
     /**
      * Yahoo feed services value
      */

@@ -27,6 +27,10 @@ public interface Messages
                                                                    "unexpected_data"); //$NON-NLS-1$
     static final I18NMessage1P UNEXPECTED_FIELD_CODE = new I18NMessage1P(LOGGER,
                                                                          "unexpected_field_code"); //$NON-NLS-1$
+
+    static final I18NMessage0P UNEXPECTED_VALUE_CODE = new I18NMessage0P(LOGGER,
+            "unexpected_value_code"); //$NON-NLS-1$
+    
     static final I18NMessage0P MISSING_URL = new I18NMessage0P(LOGGER,
                                                                "missing_url"); //$NON-NLS-1$
     static final I18NMessage1P NO_COMPARATOR = new I18NMessage1P(LOGGER,

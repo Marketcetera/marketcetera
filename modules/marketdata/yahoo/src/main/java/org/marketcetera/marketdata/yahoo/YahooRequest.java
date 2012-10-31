@@ -34,6 +34,7 @@ import com.google.common.collect.Multimap;
 @ClassVersion("$Id$")
 class YahooRequest
 {
+	private static final YahooField DELIMITER_FIELD = YahooField.SYMBOL;
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -118,7 +119,8 @@ class YahooRequest
         }
         // add fixed fields (used for every request)
         for(YahooField field : commonFields) {
-            query.append(field.getCode()).append(","); //$NON-NLS-1$
+        	//add s (symbol) for each field as delimiter field, used to ease the issue with , as part of response value for a field.
+            query.append(DELIMITER_FIELD.getCode()).append(field.getCode()).append(","); //$NON-NLS-1$
         }
         return query.toString();
     }
@@ -153,6 +155,8 @@ class YahooRequest
         }
         StringBuilder builder = new StringBuilder();
         for(YahooField field : fields.get(inContent)) {
+        	//add s (symbol) for each field as delimiter field, used to ease the issue with , as part of response value for a field.
+        	builder.append(DELIMITER_FIELD.getCode());
             builder.append(field.getCode()).append(","); //$NON-NLS-1$
         }
         return builder.toString();

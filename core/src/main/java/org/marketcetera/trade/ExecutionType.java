@@ -48,7 +48,7 @@ public enum ExecutionType {
      *
      * @return FIX char value for this instance.
      */
-    char getFIXValue() {
+    public char getFIXValue() {
         return mFIXValue;
     }
 
@@ -59,7 +59,7 @@ public enum ExecutionType {
      *
      * @return the ExecutionType instance.
      */
-    static ExecutionType getInstanceForFIXValue(char inValue) {
+    public static ExecutionType getInstanceForFIXValue(char inValue) {
         ExecutionType type = mFIXValueMap.get(inValue);
         return type == null
                 ? Unknown
