@@ -51,7 +51,7 @@
               <property name="javaee.version" value="${mvn.javaee.version}"/>
               <property name="javase.version" value="${mvn.javase.version}"/>
               <property name="m2.repo" value="${user.home}/.m2/repository"/>
-              <property name="photon.target" value="${mvn.photon.target}"/>
+              <property name="photon.target" value="../rcptarget/${mvn.photon.target}"/>
               <property name="plugins.dir" value="${basedir}/../../plugins"/>
               <property name="platform.javadoc.link" value="../platform/"/>
             </ant>
