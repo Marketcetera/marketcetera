@@ -2,10 +2,10 @@ package org.marketcetera.dao.impl;
 
 import java.util.EnumSet;
 
-import org.marketcetera.api.dao.*;
 import org.marketcetera.api.security.MutableAssignToRole;
 import org.marketcetera.api.security.MutableProvisioning;
 import org.marketcetera.api.security.ProvisioningManager;
+import org.marketcetera.api.systemmodel.*;
 import org.marketcetera.dao.domain.SimpleAssignToRole;
 import org.marketcetera.dao.domain.SimpleProvisioning;
 

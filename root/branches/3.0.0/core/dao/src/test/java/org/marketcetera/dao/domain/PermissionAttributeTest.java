@@ -2,16 +2,16 @@ package org.marketcetera.dao.domain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.marketcetera.api.dao.PermissionAttribute.Create;
-import static org.marketcetera.api.dao.PermissionAttribute.Delete;
-import static org.marketcetera.api.dao.PermissionAttribute.Read;
-import static org.marketcetera.api.dao.PermissionAttribute.Update;
+import static org.marketcetera.api.systemmodel.PermissionAttribute.Create;
+import static org.marketcetera.api.systemmodel.PermissionAttribute.Delete;
+import static org.marketcetera.api.systemmodel.PermissionAttribute.Read;
+import static org.marketcetera.api.systemmodel.PermissionAttribute.Update;
 
 import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.dao.PermissionAttribute;
+import org.marketcetera.api.systemmodel.PermissionAttribute;
 
 /* $License$ */
 

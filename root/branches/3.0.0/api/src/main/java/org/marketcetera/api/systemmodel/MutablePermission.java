@@ -1,10 +1,9 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.api.systemmodel;
 
 /* $License$ */
 
 import java.util.Set;
 
-import org.marketcetera.api.systemmodel.MutableNamedObject;
 
 /**
  * Provides a mutable view of an <code>Permission</code> object.

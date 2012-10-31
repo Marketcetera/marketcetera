@@ -6,12 +6,17 @@ import java.util.Set;
 import javax.persistence.NoResultException;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.api.dao.*;
 import org.marketcetera.api.security.AssignToRole;
 import org.marketcetera.api.security.Provisioning;
 import org.marketcetera.api.security.ProvisioningManager;
 import org.marketcetera.api.security.User;
+import org.marketcetera.api.systemmodel.MutableRole;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.api.systemmodel.Role;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.dao.PermissionDao;
+import org.marketcetera.dao.RoleDao;
+import org.marketcetera.dao.UserDao;
 
 /* $License$ */
 

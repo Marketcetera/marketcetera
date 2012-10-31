@@ -18,12 +18,12 @@ import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.dao.MutablePermission;
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.PermissionDao;
-import org.marketcetera.api.dao.PermissionFactory;
+import org.marketcetera.api.systemmodel.MutablePermission;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.api.systemmodel.PermissionFactory;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.PermissionService;
 import org.marketcetera.webservices.systemmodel.WebServicesPermission;
@@ -95,7 +95,7 @@ public class PermissionServiceImplTest
                                newPermission);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.PermissionService#add(org.marketcetera.api.dao.Permission)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.PermissionService#add(org.marketcetera.api.systemmodel.Permission)}.
      *
      * @throws Exception if an unexpected error occurs
      */

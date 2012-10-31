@@ -1,7 +1,7 @@
 package org.marketcetera.dao.domain;
 
-import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.dao.RoleFactory;
+import org.marketcetera.api.systemmodel.Role;
+import org.marketcetera.api.systemmodel.RoleFactory;
 
 /**
  * @version $Id$

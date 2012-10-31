@@ -1,7 +1,7 @@
 package org.marketcetera.dao.domain;
 
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.PermissionFactory;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.api.systemmodel.PermissionFactory;
 
 /**
  * @version $Id$

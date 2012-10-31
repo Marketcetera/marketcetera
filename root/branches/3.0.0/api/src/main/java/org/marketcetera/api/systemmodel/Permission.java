@@ -1,10 +1,7 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.api.systemmodel;
 
 import java.util.Set;
 
-import org.marketcetera.api.systemmodel.NamedObject;
-import org.marketcetera.api.systemmodel.SystemObject;
-import org.marketcetera.api.systemmodel.VersionedObject;
 
 /* $License$ */
 

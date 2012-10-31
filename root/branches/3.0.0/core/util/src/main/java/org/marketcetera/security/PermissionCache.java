@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.PermissionAttribute;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.api.systemmodel.PermissionAttribute;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;

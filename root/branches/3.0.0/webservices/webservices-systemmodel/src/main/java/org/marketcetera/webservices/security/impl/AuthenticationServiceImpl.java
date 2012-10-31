@@ -3,12 +3,12 @@ package org.marketcetera.webservices.security.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.PermissionDao;
 import org.marketcetera.api.security.SecurityService;
 import org.marketcetera.api.security.Subject;
 import org.marketcetera.api.security.UsernamePasswordToken;
+import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.webservices.security.AuthenticationService;
 import org.marketcetera.webservices.systemmodel.WebServicesPermission;
 

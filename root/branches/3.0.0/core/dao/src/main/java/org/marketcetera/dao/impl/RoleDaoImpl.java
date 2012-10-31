@@ -5,9 +5,9 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.marketcetera.api.dao.MutableRole;
-import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.dao.RoleDao;
+import org.marketcetera.api.systemmodel.MutableRole;
+import org.marketcetera.api.systemmodel.Role;
+import org.marketcetera.dao.RoleDao;
 import org.marketcetera.dao.domain.PersistentRole;
 
 /**

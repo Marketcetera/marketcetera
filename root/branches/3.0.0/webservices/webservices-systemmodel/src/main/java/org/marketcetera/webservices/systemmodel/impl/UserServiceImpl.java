@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.api.dao.UserDao;
-import org.marketcetera.api.dao.UserFactory;
 import org.marketcetera.api.security.User;
+import org.marketcetera.api.systemmodel.UserFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.dao.UserDao;
 import org.marketcetera.webservices.systemmodel.UserService;
 import org.marketcetera.webservices.systemmodel.WebServicesUser;
 

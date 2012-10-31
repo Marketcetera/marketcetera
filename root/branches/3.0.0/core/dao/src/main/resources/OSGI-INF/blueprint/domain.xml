@@ -6,15 +6,15 @@
 
     <service ref="provisioningManagerBean" interface="org.marketcetera.api.security.ProvisioningManager"/>
 
-    <service ref="permissionDaoBean" interface="org.marketcetera.api.dao.PermissionDao"/>
-    <service ref="roleDaoBean" interface="org.marketcetera.api.dao.RoleDao"/>
-    <service ref="userDaoBean" interface="org.marketcetera.api.dao.UserDao"/>
-    <service ref="systemInformationDaoBean" interface="org.marketcetera.api.dao.SystemInformationDao"/>
+    <service ref="permissionDaoBean" interface="org.marketcetera.dao.PermissionDao"/>
+    <service ref="roleDaoBean" interface="org.marketcetera.dao.RoleDao"/>
+    <service ref="userDaoBean" interface="org.marketcetera.dao.UserDao"/>
+    <service ref="systemInformationDaoBean" interface="org.marketcetera.dao.SystemInformationDao"/>
 
-    <service ref="permissionFactoryBean" interface="org.marketcetera.api.dao.PermissionFactory"/>
-    <service ref="roleFactoryBean" interface="org.marketcetera.api.dao.RoleFactory"/>
-    <service ref="userFactoryBean" interface="org.marketcetera.api.dao.UserFactory"/>
-    <service ref="systemInformationFactoryBean" interface="org.marketcetera.api.dao.SystemInformationFactory"/>
+    <service ref="permissionFactoryBean" interface="org.marketcetera.api.systemmodel.PermissionFactory"/>
+    <service ref="roleFactoryBean" interface="org.marketcetera.api.systemmodel.RoleFactory"/>
+    <service ref="userFactoryBean" interface="org.marketcetera.api.systemmodel.UserFactory"/>
+    <service ref="systemInformationFactoryBean" interface="org.marketcetera.api.systemmodel.SystemInformationFactory"/>
 
     <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
         <jpa:context property="entityManager" unitname="marketcetera-core"/>

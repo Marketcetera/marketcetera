@@ -5,9 +5,9 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.marketcetera.api.dao.MutablePermission;
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.PermissionDao;
+import org.marketcetera.api.systemmodel.MutablePermission;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.dao.domain.PersistentPermission;
 
 /**

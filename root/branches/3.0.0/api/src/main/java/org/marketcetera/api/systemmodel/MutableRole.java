@@ -1,9 +1,8 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.api.systemmodel;
 
 import java.util.Set;
 
 import org.marketcetera.api.security.User;
-import org.marketcetera.api.systemmodel.MutableNamedObject;
 
 /* $License$ */
 

@@ -1,8 +1,8 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.api.systemmodel;
 
 /* $License$ */
 
-import org.marketcetera.api.dao.Role;
+import org.marketcetera.api.systemmodel.Role;
 
 /**
  * Creates <code>Role</code> objects.

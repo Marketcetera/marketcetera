@@ -1,6 +1,9 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.dao;
 
 import java.util.List;
+
+import org.marketcetera.api.systemmodel.MutableRole;
+import org.marketcetera.api.systemmodel.Role;
 
 /* $License$ */
 

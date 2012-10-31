@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.marketcetera.api.dao.Dao;
 import org.marketcetera.api.systemmodel.SystemObject;
 
 /* $License$ */

@@ -1,11 +1,11 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.api.systemmodel;
 
 /* $License$ */
 
-import org.marketcetera.api.dao.Permission;
+import org.marketcetera.api.systemmodel.Permission;
 
 /**
- * Constructs {@link org.marketcetera.api.dao.Permission} objects.
+ * Constructs {@link org.marketcetera.api.systemmodel.Permission} objects.
  *
  * @version $Id$
  * @since $Release$
