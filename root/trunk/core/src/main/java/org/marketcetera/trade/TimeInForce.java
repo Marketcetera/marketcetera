@@ -53,7 +53,7 @@ public enum TimeInForce {
      *
      * @return the FIX char value for this instance.
      */
-    char getFIXValue() {
+    public char getFIXValue() {
         return mFIXValue;
     }
     /**
@@ -63,7 +63,7 @@ public enum TimeInForce {
      *
      * @return the TimeInForce instance.
      */
-    static TimeInForce getInstanceForFIXValue(char inValue) {
+    public static TimeInForce getInstanceForFIXValue(char inValue) {
         TimeInForce tif = mFIXValueMap.get(inValue);
         return tif == null
                 ? Unknown

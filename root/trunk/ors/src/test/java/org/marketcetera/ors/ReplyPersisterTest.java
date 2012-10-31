@@ -3,10 +3,12 @@ package org.marketcetera.ors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
@@ -17,14 +19,13 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.mockito.ArgumentMatcher;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.MsgType;
 import quickfix.field.OrigClOrdID;
-
-/* $License$ */
 
 /**
  * Tests {@link ReplyPersister}.
@@ -57,8 +58,18 @@ public class ReplyPersisterTest
         super.setup();
         reportHistoryServices = mock(ReportHistoryServices.class);
         orderInfoCache = mock(OrderInfoCache.class);
+        when(orderInfoCache.get((OrderID)any())).thenAnswer(new Answer<OrderInfo>() {
+            @Override
+            public OrderInfo answer(InvocationOnMock inInvocation)
+                    throws Throwable
+            {
+                OrderID orderID = (OrderID)inInvocation.getArguments()[0];
+                return orderCache.get(orderID);
+            }
+        });
         replyPersister = new ReplyPersister(reportHistoryServices,
                                             orderInfoCache);
+        orderCache.clear();
     }
     /**
      * Tests {@link ReplyPersister#getPrincipals(Message, boolean)}.
@@ -109,10 +120,10 @@ public class ReplyPersisterTest
         OrderID origOrderID = inOrigOrderID == null ? null : new OrderID(inOrigOrderID);
         OrderID orderIDToCache = null;
         if(inOrderID != null) {
-            orderIDToCache = new OrderID(inOrderID);
+            orderIDToCache = orderID;
         } else {
             if(inOrigOrderID != null) {
-                orderIDToCache = new OrderID(inOrigOrderID);
+                orderIDToCache = origOrderID;
             }
         }
         if(orderIDToCache != null) {
@@ -125,12 +136,24 @@ public class ReplyPersisterTest
             when(orderInfo.getOrigOrderID()).thenReturn(origOrderID);
             when(orderInfo.isViewerIDSet()).thenReturn(true);
             // set up the order info cache to return an order info object we want
-            when(orderInfoCache.get(argThat(new OrderIDMatcher(orderIDToCache)))).thenReturn(orderInfo);
+            orderCache.put(orderIDToCache,
+                           orderInfo);
         }
         actualPrincipals = replyPersister.getPrincipals(executionReport,
                                                         true);
         validatePrincipals(expectedPrincipals,
                            actualPrincipals);
+        // finally, test retrieval from ReportHistoryServices (not cache), but only if there was at least one of the orderIDs on the order
+        if(orderIDToCache != null) {
+            // nuke the RHS to guarantee that we're getting the next test values from the cache, not the RHS
+            orderCache.clear();
+            expectedPrincipals = generatePrincipals();
+            when(reportHistoryServices.getPrincipals(orderIDToCache)).thenReturn(expectedPrincipals);
+            actualPrincipals = replyPersister.getPrincipals(executionReport,
+                                                            true);
+            validatePrincipals(expectedPrincipals,
+                               actualPrincipals);
+        }
     }
     /**
      * Generates a <code>Principals</code> value guaranteed to be unique.
@@ -162,6 +185,7 @@ public class ReplyPersisterTest
                      inActualValue.getActorID());
         assertEquals(inExpectedValue.getViewerID(),
                      inActualValue.getViewerID());
+        assertEquals(inExpectedValue,inActualValue);
     }
     /**
      * Generates an <code>ExecutionReport</code> with the given <code>ClOrdID</code> and <code>ClOrigOrdID</code> values.
@@ -183,38 +207,6 @@ public class ReplyPersisterTest
         return message;
     }
     /**
-     * Provides an <code>ArgumentMatcher</code> that matches a given <code>OrderID</code>.
-     *
-     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id$
-     * @since $Release$
-     */
-    private static class OrderIDMatcher
-            extends ArgumentMatcher<OrderID>
-    {
-        /**
-         * Create a new OrderIDMatcher instance.
-         *
-         * @param inOrderID an <code>OrderID</code> value
-         */
-        private OrderIDMatcher(OrderID inOrderID)
-        {
-            orderID = inOrderID;
-        }
-        /* (non-Javadoc)
-         * @see org.mockito.ArgumentMatcher#matches(java.lang.Object)
-         */
-        @Override
-        public boolean matches(Object inArgument)
-        {
-            return orderID.equals(inArgument);
-        }
-        /**
-         * orderID value to match
-         */
-        private final OrderID orderID;
-    }
-    /**
      * generates unique identifiers
      */
     private AtomicLong counter = new AtomicLong(0);
@@ -230,4 +222,8 @@ public class ReplyPersisterTest
      * test order info cache value
      */
     private OrderInfoCache orderInfoCache;
+    /**
+     * order cache
+     */
+    private final Map<OrderID,OrderInfo> orderCache = new HashMap<OrderID,OrderInfo>();
 }

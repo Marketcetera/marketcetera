@@ -1,7 +1,7 @@
 package org.marketcetera.trade;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -79,14 +79,14 @@ public class OrderBaseImpl implements OrderBase {
     public Map<String, String> getCustomFields() {
         return mCustomFields == null
                 ? null
-                : new HashMap<String,String>(mCustomFields);
+                : new TreeMap<String,String>(mCustomFields);
     }
 
     @Override
     public void setCustomFields(Map<String, String> inCustomFields) {
         mCustomFields = inCustomFields == null
                 ? null
-                : new HashMap<String,String>(inCustomFields);
+                : new TreeMap<String,String>(inCustomFields);
     }
 
     @Override
