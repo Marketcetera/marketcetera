@@ -3,8 +3,8 @@ package org.marketcetera.api.security;
 import java.util.List;
 import java.util.Set;
 
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.Role;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.api.systemmodel.Role;
 
 /* $License$ */
 

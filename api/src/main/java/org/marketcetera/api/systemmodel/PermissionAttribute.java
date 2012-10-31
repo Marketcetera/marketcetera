@@ -1,4 +1,4 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.api.systemmodel;
 
 import java.util.HashSet;
 import java.util.Set;

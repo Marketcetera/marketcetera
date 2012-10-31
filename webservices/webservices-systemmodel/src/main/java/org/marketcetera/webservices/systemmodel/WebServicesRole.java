@@ -8,10 +8,10 @@ import javax.xml.bind.annotation.*;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.marketcetera.api.dao.MutableRole;
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.security.User;
+import org.marketcetera.api.systemmodel.MutableRole;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.api.systemmodel.Role;
 import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */

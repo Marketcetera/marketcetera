@@ -60,11 +60,11 @@
     </bean>
 
     <reference id="securityService" interface="org.marketcetera.api.security.SecurityService"/>
-    <reference id="permissionDao" interface="org.marketcetera.api.dao.PermissionDao"/>
-    <reference id="permissionFactory" interface="org.marketcetera.api.dao.PermissionFactory"/>
-    <reference id="roleDao" interface="org.marketcetera.api.dao.RoleDao"/>
-    <reference id="roleFactory" interface="org.marketcetera.api.dao.RoleFactory"/>
-    <reference id="userDao" interface="org.marketcetera.api.dao.UserDao"/>
-    <reference id="userFactory" interface="org.marketcetera.api.dao.UserFactory"/>
+    <reference id="permissionDao" interface="org.marketcetera.dao.PermissionDao"/>
+    <reference id="permissionFactory" interface="org.marketcetera.api.systemmodel.PermissionFactory"/>
+    <reference id="roleDao" interface="org.marketcetera.dao.RoleDao"/>
+    <reference id="roleFactory" interface="org.marketcetera.api.systemmodel.RoleFactory"/>
+    <reference id="userDao" interface="org.marketcetera.dao.UserDao"/>
+    <reference id="userFactory" interface="org.marketcetera.api.systemmodel.UserFactory"/>
     <reference id="provisioningManager" interface="org.marketcetera.api.security.ProvisioningManager"/>
 </blueprint>

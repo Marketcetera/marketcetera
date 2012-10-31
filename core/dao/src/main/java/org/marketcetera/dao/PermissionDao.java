@@ -1,6 +1,9 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.dao;
 
 import java.util.List;
+
+import org.marketcetera.api.systemmodel.MutablePermission;
+import org.marketcetera.api.systemmodel.Permission;
 
 /* $License$ */
 

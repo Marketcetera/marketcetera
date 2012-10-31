@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.dao.RoleDao;
-import org.marketcetera.api.dao.RoleFactory;
+import org.marketcetera.api.systemmodel.Role;
+import org.marketcetera.api.systemmodel.RoleFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.dao.RoleDao;
 import org.marketcetera.webservices.systemmodel.RoleService;
 import org.marketcetera.webservices.systemmodel.WebServicesRole;
 

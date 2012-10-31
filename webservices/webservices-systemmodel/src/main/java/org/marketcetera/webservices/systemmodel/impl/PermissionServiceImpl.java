@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.PermissionDao;
-import org.marketcetera.api.dao.PermissionFactory;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.api.systemmodel.PermissionFactory;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.webservices.systemmodel.PermissionService;
 import org.marketcetera.webservices.systemmodel.WebServicesPermission;
 

@@ -2,7 +2,7 @@ package org.marketcetera.webservices.systemmodel;
 
 /* $License$ */
 
-import org.marketcetera.api.dao.Role;
+import org.marketcetera.api.systemmodel.Role;
 
 /**
  * Creates <code>Role</code> objects.

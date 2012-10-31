@@ -9,9 +9,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.marketcetera.api.dao.MutableUser;
-import org.marketcetera.api.dao.Role;
 import org.marketcetera.api.security.User;
+import org.marketcetera.api.systemmodel.MutableUser;
+import org.marketcetera.api.systemmodel.Role;
 
 /* $License$ */
 

@@ -6,9 +6,9 @@ import java.util.Set;
 import javax.xml.bind.annotation.*;
 
 import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.marketcetera.api.dao.MutablePermission;
-import org.marketcetera.api.dao.Permission;
-import org.marketcetera.api.dao.PermissionAttribute;
+import org.marketcetera.api.systemmodel.MutablePermission;
+import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.api.systemmodel.PermissionAttribute;
 import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */

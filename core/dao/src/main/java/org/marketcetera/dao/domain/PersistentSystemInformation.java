@@ -3,8 +3,8 @@ package org.marketcetera.dao.domain;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 
-import org.marketcetera.api.dao.MutableSystemInformation;
-import org.marketcetera.api.dao.SystemInformation;
+import org.marketcetera.api.systemmodel.MutableSystemInformation;
+import org.marketcetera.api.systemmodel.SystemInformation;
 
 /* $License$ */
 

@@ -1,6 +1,5 @@
-package org.marketcetera.api.dao;
+package org.marketcetera.api.systemmodel;
 
-import org.marketcetera.api.systemmodel.VersionedObject;
 
 /* $License$ */
 

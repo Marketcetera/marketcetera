@@ -7,5 +7,5 @@
 
     <service id="securityService" interface="org.marketcetera.api.security.SecurityService" ref="shiroSecurityService"/>
 
-    <reference id="userDao" interface="org.marketcetera.api.dao.UserDao"/>
+    <reference id="userDao" interface="org.marketcetera.dao.UserDao"/>
 </blueprint>

@@ -1,7 +1,7 @@
 package org.marketcetera.dao.domain;
 
-import org.marketcetera.api.dao.SystemInformation;
-import org.marketcetera.api.dao.SystemInformationFactory;
+import org.marketcetera.api.systemmodel.SystemInformation;
+import org.marketcetera.api.systemmodel.SystemInformationFactory;
 
 /* $License$ */
 

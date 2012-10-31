@@ -3,8 +3,8 @@ package org.marketcetera.dao.impl;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.marketcetera.api.dao.SystemInformation;
-import org.marketcetera.api.dao.SystemInformationDao;
+import org.marketcetera.api.systemmodel.SystemInformation;
+import org.marketcetera.dao.SystemInformationDao;
 
 /* $License$ */
 

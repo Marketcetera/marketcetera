@@ -17,12 +17,12 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.dao.MutableRole;
-import org.marketcetera.api.dao.Role;
-import org.marketcetera.api.dao.RoleDao;
-import org.marketcetera.api.dao.RoleFactory;
+import org.marketcetera.api.systemmodel.MutableRole;
+import org.marketcetera.api.systemmodel.Role;
+import org.marketcetera.api.systemmodel.RoleFactory;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.dao.RoleDao;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.RoleService;
 import org.marketcetera.webservices.systemmodel.WebServicesRole;
@@ -94,7 +94,7 @@ public class RoleServiceImplTest
                                newRole);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.RoleService#add(org.marketcetera.api.dao.Role)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.RoleService#add(org.marketcetera.api.systemmodel.Role)}.
      *
      * @throws Exception if an unexpected error occurs
      */

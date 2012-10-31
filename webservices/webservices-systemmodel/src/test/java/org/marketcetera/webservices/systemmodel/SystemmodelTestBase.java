@@ -13,9 +13,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.marketcetera.api.dao.*;
 import org.marketcetera.api.security.User;
+import org.marketcetera.api.systemmodel.*;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.dao.PermissionDao;
+import org.marketcetera.dao.RoleDao;
+import org.marketcetera.dao.UserDao;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 

@@ -1,6 +1,5 @@
 package org.marketcetera.dao;
 
-import org.marketcetera.api.dao.NamedDao;
 import org.marketcetera.api.systemmodel.NamedObject;
 
 /* $License$ */
