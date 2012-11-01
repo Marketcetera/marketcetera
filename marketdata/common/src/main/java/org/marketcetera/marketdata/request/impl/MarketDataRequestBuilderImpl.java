@@ -7,7 +7,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 import org.marketcetera.marketdata.request.MarketDataRequestBuilder;
@@ -221,45 +220,6 @@ public class MarketDataRequestBuilderImpl
         return this;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withRequiredCapabilities(java.util.Set)
-     */
-    @Override
-    public MarketDataRequestBuilder withRequiredCapabilities(Set<Capability> inCapabilities)
-    {
-        requiredCapabilities.clear();
-        if(inCapabilities != null) {
-            requiredCapabilities.addAll(inCapabilities);
-        }
-        return this;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withRequiredCapabilities(org.marketcetera.marketdata.Capability[])
-     */
-    @Override
-    public MarketDataRequestBuilder withRequiredCapabilities(Capability... inCapabilities)
-    {
-        requiredCapabilities.clear();
-        if(inCapabilities != null) {
-            requiredCapabilities.addAll(Arrays.asList(inCapabilities));
-        }
-        return this;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withRequiredCapabilities(java.lang.String[])
-     */
-    @Override
-    public MarketDataRequestBuilder withRequiredCapabilities(String... inCapabilities)
-    {
-        requiredCapabilities.clear();
-        if(inCapabilities != null) {
-            for(String capabilityString : inCapabilities) {
-                capabilityString = StringUtils.trimToNull(capabilityString);
-                requiredCapabilities.add(Capability.valueOf(capabilityString));
-            }
-        }
-        return this;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataRequestBuilder#create()
      */
     @Override
@@ -269,7 +229,6 @@ public class MarketDataRequestBuilderImpl
         request.getInstruments().addAll(instruments);
         request.getUnderlyingInstruments().addAll(underlyingInstruments);
         request.getContent().addAll(content);
-        request.getRequiredCapabilities().addAll(requiredCapabilities);
         request.getParameters().putAll(parameters);
         request.setProvider(provider);
         request.setExchange(exchange);
@@ -287,10 +246,6 @@ public class MarketDataRequestBuilderImpl
      * content value
      */
     private final Set<Content> content = new LinkedHashSet<Content>();
-    /**
-     * required capabilities value
-     */
-    private final Set<Capability> requiredCapabilities = new LinkedHashSet<Capability>();
     /**
      * parameters value
      */

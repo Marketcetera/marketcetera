@@ -2,6 +2,7 @@ package org.marketcetera.core.trade.impl;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -17,7 +18,7 @@ import org.marketcetera.core.trade.Messages;
  * @version $Id$
  * @since $Release$
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractInstrumentImpl
         implements Instrument
 {
@@ -50,6 +51,8 @@ public abstract class AbstractInstrumentImpl
     }
     /**
      * Create a new AbstractInstrumentImpl instance.
+     * 
+     * <b>Used for JAXB, should not be used otherwise.
      */
     protected AbstractInstrumentImpl()
     {
@@ -58,6 +61,7 @@ public abstract class AbstractInstrumentImpl
     /**
      * symbol value
      */
+    @XmlAttribute
     private final String symbol;
     private static final long serialVersionUID = 1L;
 }

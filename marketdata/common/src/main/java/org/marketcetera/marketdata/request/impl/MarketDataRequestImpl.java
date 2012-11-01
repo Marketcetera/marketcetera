@@ -6,11 +6,15 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.marketdata.Capability;
+import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
+import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 
@@ -26,6 +30,8 @@ import org.marketcetera.marketdata.request.MarketDataRequest;
  * @since $Release$
  */
 @NotThreadSafe
+@XmlRootElement(name="marketDataRequest")
+@XmlAccessorType(XmlAccessType.NONE)
 class MarketDataRequestImpl
         implements MarketDataRequest
 {
@@ -78,14 +84,6 @@ class MarketDataRequestImpl
         return parameters;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequest#getRequiredCapabilities()
-     */
-    @Override
-    public Set<Capability> getRequiredCapabilities()
-    {
-        return requiredCapabilities;
-    }
-    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -121,29 +119,37 @@ class MarketDataRequestImpl
     /**
      * instruments value
      */
+    @XmlElementWrapper(name="instruments",required=false)
+    @XmlElement(name="instrument")
+    @XmlElementRefs({ @XmlElementRef(type=ConvertibleBondImpl.class), @XmlElementRef(type=EquityImpl.class), @XmlElementRef(type=OptionImpl.class), @XmlElementRef(type=FutureImpl.class)} )
     private final Set<Instrument> instruments = new LinkedHashSet<Instrument>();
     /**
      * underlying instruments value
      */
+    @XmlElementWrapper(name="underlyingInstruments",required=false)
+    @XmlElement(name="underlyingInstrument")
+    @XmlElementRefs({ @XmlElementRef(type=ConvertibleBondImpl.class), @XmlElementRef(type=EquityImpl.class), @XmlElementRef(type=OptionImpl.class), @XmlElementRef(type=FutureImpl.class)} )
     private final Set<Instrument> underlyingInstruments = new LinkedHashSet<Instrument>();
     /**
      * content value
      */
+    @XmlElementWrapper(name="content")
+    @XmlElement(name="content")
     private final Set<Content> content = new LinkedHashSet<Content>();
-    /**
-     * required capabilities value
-     */
-    private final Set<Capability> requiredCapabilities = new LinkedHashSet<Capability>();
     /**
      * parameters value
      */
+    @XmlElementWrapper(name="parameters",required=false)
+    @XmlElement(name="parameterEntry")
     private final Map<String,String> parameters = new LinkedHashMap<String,String>();
     /**
      * provider value
      */
+    @XmlAttribute(required=false)
     private String provider;
     /**
      * exchange value
      */
+    @XmlAttribute(required=false)
     private String exchange;
 }
