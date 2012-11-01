@@ -71,10 +71,11 @@ public class StaticInstrumentFunctionSelectorTest {
         StaticInstrumentFunctionSelector<InstrumentToMessage> selector = InstrumentToMessage.SELECTOR;
         Map<Class<?>, InstrumentToMessage> handlers = selector.getHandlers();
 
-        assertEquals("Should load 3 handlers", 3, selector.getHandlers().size());
+        assertEquals("Should load 4 handlers", 4, selector.getHandlers().size());
         assertThat(handlers.get(Equity.class), instanceOf(EquityToMessage.class));
         assertThat(handlers.get(Option.class), instanceOf(OptionToMessage.class));
         assertThat(handlers.get(Future.class), instanceOf(FutureToMessage.class));
+        assertThat(handlers.get(Currency.class), instanceOf(CurrencyToMessage.class));
     }
 
     /**
