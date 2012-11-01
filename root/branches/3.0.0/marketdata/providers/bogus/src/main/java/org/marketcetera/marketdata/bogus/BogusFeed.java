@@ -99,19 +99,17 @@ public class BogusFeed
         Request.cancel(inInternalHandle);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#doMarketDataRequest(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.provider.MarketDataRequestAtom, java.util.concurrent.atomic.AtomicBoolean, java.util.Collection)
+     * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#doMarketDataRequest(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.provider.MarketDataRequestAtom, java.util.concurrent.atomic.AtomicBoolean)
      */
     @Override
     protected String doMarketDataRequest(MarketDataRequest inCompleteRequest,
                                          MarketDataRequestAtom inRequestAtom,
-                                         AtomicBoolean inUpdateSemaphore,
-                                         Collection<Event> inOutSnapshot)
+                                         AtomicBoolean inUpdateSemaphore)
             throws InterruptedException
     {
         String handle = Request.execute(inCompleteRequest,
                                         inRequestAtom,
                                         this);
-        // TODO return snapshot?
         return handle;
     }
     /**
@@ -202,7 +200,7 @@ public class BogusFeed
                                            "BogusFeed publishing {}", //$NON-NLS-1$
                                            inData);
                     feed.dataReceived(getIDAsString(),
-                                      inData);
+                                      (Event)inData);
                 }
             };
             synchronized(requests) {

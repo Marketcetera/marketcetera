@@ -801,7 +801,7 @@ public class SimulatedExchange
                 updateInfo(event);
                 // find the book that goes with the event
                 PrivateInstrumentInfo book = getPrivateInstrumentInfo(event.getInstrument());
-                SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                        "{} executing scripted event {}", //$NON-NLS-1$
                                        this,
                                        event);
@@ -831,7 +831,7 @@ public class SimulatedExchange
      */
     private void publishEvents(List<? extends Event> inEventsToPublish)
     {
-        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                "{} publishing events: {}", //$NON-NLS-1$
                                this,
                                inEventsToPublish);
@@ -844,7 +844,7 @@ public class SimulatedExchange
      */
     private void executeTick()
     {
-        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                "{} beginning tick {} at {}", //$NON-NLS-1$
                                this,
                                iterationCounter.incrementAndGet(),
@@ -860,7 +860,7 @@ public class SimulatedExchange
             } finally {
                 // indicate that we're ready for the next tick
                 readyForTick.set(true);
-                SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                        "{} completed tick {} after {} ms", //$NON-NLS-1$
                                        this,
                                        iterationCounter.get(),
@@ -1008,7 +1008,7 @@ public class SimulatedExchange
      */
     private static List<MarketDataEvent> settleBook(PrivateInstrumentInfo inBook)
     {
-        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                "Settling book for {}: OrderBook starts at\n{}", //$NON-NLS-1$
                                inBook,
                                inBook.getBook());
@@ -1021,7 +1021,7 @@ public class SimulatedExchange
             long tradeTime = System.currentTimeMillis();
             // iterate over the bid list
             for(BidEvent bid : bids) {
-                SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                        "Settler looking for matches for {}", //$NON-NLS-1$
                                        bid);
                 // search for the first ask that matches the bid
@@ -1031,19 +1031,19 @@ public class SimulatedExchange
                 List<AskEvent> asks = new ArrayList<AskEvent>(inBook.getBook().getAskBook());
                 // iterate over the list of asks looking for a match
                 for(AskEvent ask : asks) {
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                    SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                            "Bid has {} left to fill", //$NON-NLS-1$
                                            bidSize);
                     // check to see if the bid is fully filled before continuing
                     if(bidSize.compareTo(BigDecimal.ZERO) != 1) {
                         // bid is fully filled
-                        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                                "{} fully filled", //$NON-NLS-1$
                                                bid);
                         break; // out of the ask iteration loop
                     }
                     // bid is not fully filled
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                    SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                            "Examining {}", //$NON-NLS-1$
                                            ask);
                     BigDecimal askPrice = ask.getPrice();
@@ -1056,7 +1056,7 @@ public class SimulatedExchange
                         BigDecimal tradePrice = bidPrice.min(askPrice);
                         // the size is the lower of what the buyer wants and what the seller is willing to sell
                         BigDecimal tradeSize = askSize;
-                        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                                "Trade is {} at {}", //$NON-NLS-1$
                                                tradeSize.toPlainString(),
                                                tradePrice.toPlainString());
@@ -1094,7 +1094,7 @@ public class SimulatedExchange
                         }
                         // adjust the remainder we need to fill
                         bidSize = bidSize.subtract(tradeSize);
-                        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                                "OrderBookSettler is creating the following events:\n{}\n{}\n{}", //$NON-NLS-1$
                                                trade,
                                                bidCorrection,
@@ -1109,7 +1109,7 @@ public class SimulatedExchange
                         eventsToReturn.add(askCorrection);
                     } else {
                         // all the rest of the asks are higher than the highest bid, so no point in looking any more
-                        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                                "Best Bid is less than Best Ask, quitting"); //$NON-NLS-1$
                         bids.clear();
                         asks.clear();
@@ -1121,7 +1121,7 @@ public class SimulatedExchange
             bids.clear();
             return eventsToReturn;
         } finally {
-            SLF4JLoggerProxy.debug(SimulatedExchange.class,
+            SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                    "Book settling complete for {}, OrderBook is now\n{}", //$NON-NLS-1$
                                    inBook,
                                    inBook.getBook());
@@ -1384,7 +1384,7 @@ public class SimulatedExchange
                 }
             }
             publishEvents(newEvents);
-            SLF4JLoggerProxy.debug(SimulatedExchange.class,
+            SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                    "{} processed {} and produced for publication: {}", //$NON-NLS-1$
                                    this,
                                    inEvent,
@@ -1769,10 +1769,6 @@ public class SimulatedExchange
             // verify the object has a relevant instrument (if it has has one)
             if(inData instanceof HasInstrument) {
                 if(!instruments.contains(((HasInstrument)inData).getInstrument())) {
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
-                                           "{} not interested in {}", //$NON-NLS-1$
-                                           this,
-                                           inData);
                     return false;
                 }
             }
@@ -1798,10 +1794,6 @@ public class SimulatedExchange
         @Override
         public synchronized void publishTo(Object inData)
         {
-            SLF4JLoggerProxy.debug(SimulatedExchange.class,
-                                   "Subscriber {} received {} to examine", //$NON-NLS-1$
-                                   this,
-                                   inData);
             if(type == Type.TOP_OF_BOOK) {
                 SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                        "{} has subscribed to top-of-book - further analysis required", //$NON-NLS-1$
@@ -1810,7 +1802,7 @@ public class SimulatedExchange
                 // top-of-book is a special case.  first, if we get this far, then the
                 //  class of inData *should* be QuoteEvent, but let's not bank on that
                 if(inData instanceof QuoteEvent) {
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                    SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                            "{} is a quote, continuing", //$NON-NLS-1$
                                            this);
                     QuoteEvent quoteEvent = (QuoteEvent)inData;
@@ -1824,17 +1816,17 @@ public class SimulatedExchange
                         topOfBookRequestBuilder.withUnderlyingInstrument(((OptionEvent)quoteEvent).getUnderlyingInstrument());
                     }
                     newTopOfBook = makeTopOfBook(exchange.getTopOfBook(topOfBookRequestBuilder.create()));
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                    SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                            "New top-of-book is {}", //$NON-NLS-1$
                                            newTopOfBook);
                     TopOfBook lastKnownTopOfBook = lastKnownTopsOfBook.get(quoteEvent.getInstrument());
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                    SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                            "Last-known top-of-book is {}", //$NON-NLS-1$
                                            lastKnownTopOfBook);
                     // we are guaranteed that this object is non-null, but its components may be null
                     // check to see if the quote event caused a change in the top-of-book state
                     if(newTopOfBook.compareTo(lastKnownTopOfBook) != 0) {
-                        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                                "New top-of-book is different from last-known top-of-book"); //$NON-NLS-1$
                         // *something* has changed in the top-of-book, but we don't know what yet
                         // by design, top-of-book updates are sent as ADDs except if the quote is to be removed
@@ -1852,7 +1844,7 @@ public class SimulatedExchange
                         publishCurrentSideIfNecessary(newTopOfBook.getAsk(),
                                                       (lastKnownTopOfBook == null ? null : lastKnownTopOfBook.getAsk()));
                     } else {
-                        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                                "New top-of-book is *not* different from last-known top-of-book, nothing to do"); //$NON-NLS-1$
                     }
                     lastKnownTopsOfBook.put(quoteEvent.getInstrument(),
@@ -1885,7 +1877,7 @@ public class SimulatedExchange
                 }
                 return;
             }
-            SLF4JLoggerProxy.debug(SimulatedExchange.class,
+            SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                    "{} has subscribed to something other than top-of-book or dividend - publish {}", //$NON-NLS-1$
                                    this,
                                    inData);
@@ -1915,27 +1907,27 @@ public class SimulatedExchange
         private <E extends QuoteEvent> void publishCurrentSideIfNecessary(E inCurrentTop,
                                                                           E inLastTop)
         {
-            SLF4JLoggerProxy.debug(SimulatedExchange.class,
+            SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                    "Considering current {} and last {} to see if current needs to be published", //$NON-NLS-1$
                                    inCurrentTop,
                                    inLastTop);
             if(inCurrentTop == null) {
                 // there is no current top quote, was there one before?
                 if(inLastTop != null) {
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                    SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                            "Last ({}) needs to be removed, publish as a delete", //$NON-NLS-1$
                                            inLastTop);
                     // yes, there used to be a top quote, but it should go away now
                     originalSubscriber.publishTo(QuoteEventBuilder.delete(inLastTop));
                 } else {
                     // there didn't used to be a top quote, so don't do anything
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                    SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                            "Both current and last are null - nothing to do"); //$NON-NLS-1$
                 }
             } else {
                 // there is a current top quote, compare it to the one that used to be here
                 if(inLastTop == null) {
-                    SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                    SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                            "Last is null, publish {}", //$NON-NLS-1$
                                            inCurrentTop);
                     // there didn't used to be a top quote, just add the new one
@@ -1945,12 +1937,12 @@ public class SimulatedExchange
                     // btw, we know that current quote and last known quote are both non-null
                     if(PriceAndSizeComparator.instance.compare(inLastTop,
                                                                inCurrentTop) != 0) {
-                        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                                "Non-null current is different from non-null last: publish"); //$NON-NLS-1$
                         originalSubscriber.publishTo(QuoteEventBuilder.add(inCurrentTop));
                     } else {
                         // the current and previous tops are identical, so don't do anything
-                        SLF4JLoggerProxy.debug(SimulatedExchange.class,
+                        SLF4JLoggerProxy.trace(SimulatedExchange.class,
                                                "Current and last are non-null but identical: do not publish"); //$NON-NLS-1$
                     }
                 }
