@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 
 /* $License$ */
@@ -24,5 +23,4 @@ public interface MarketDataRequest
     public String getProvider();
     public String getExchange();
     public Map<String,String> getParameters();
-    public Set<Capability> getRequiredCapabilities();
 }

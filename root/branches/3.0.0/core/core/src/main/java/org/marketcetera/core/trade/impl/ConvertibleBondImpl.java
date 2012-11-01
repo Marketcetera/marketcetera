@@ -14,24 +14,24 @@ import org.marketcetera.core.trade.SecurityType;
 /**
  * Represents a Convertible Bond instrument.
  *
- * @version $Id$
+ * @version $Id: ConvertibleBondImpl.java 16327 2012-10-26 21:14:08Z colin $
  * @since $Release$
  */
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class ConvertibleBondImpl
         extends AbstractInstrumentImpl
         implements ConvertibleBond
 {
     /**
-     * Create a new ConvertibleBond instance.
+     * Create a new Convertible Bond instance.
      *
-     * @param inSymbol a <code>String</code> value
+     * @param inBondIdentifier a <code>String</code> value
      * @throws IllegalArgumentException if the given symbol is <code>null</code> or empty
      */
-    public ConvertibleBondImpl(String inSymbol)
+    public ConvertibleBondImpl(String inBondIdentifier)
     {
-        super(inSymbol);
+        super(inBondIdentifier);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSecurityType()
@@ -87,5 +87,10 @@ public class ConvertibleBondImpl
         }
         return true;
     }
+    /**
+     * Create a new ConvertibleBondImpl instance.
+     */
+    @SuppressWarnings("unused")
+    private ConvertibleBondImpl() {}
     private static final long serialVersionUID = 1L;
 }

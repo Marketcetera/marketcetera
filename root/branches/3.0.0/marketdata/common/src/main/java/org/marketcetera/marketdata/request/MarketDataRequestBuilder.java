@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 
 /* $License$ */
@@ -35,8 +34,5 @@ public interface MarketDataRequestBuilder
     public MarketDataRequestBuilder withParameters(String inParameterList);
     public MarketDataRequestBuilder withParameters(Map<String,String> inParametersList);
     public MarketDataRequestBuilder withParameters(Properties inParametersList);
-    public MarketDataRequestBuilder withRequiredCapabilities(Set<Capability> inCapabilities);
-    public MarketDataRequestBuilder withRequiredCapabilities(Capability...inCapabilities);
-    public MarketDataRequestBuilder withRequiredCapabilities(String...inCapabilities);
     public MarketDataRequest create();
 }
