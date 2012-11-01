@@ -54,8 +54,6 @@ public class BogusFeedTest
                 System.out.println("Received " + inData);
             }
         };
-        System.out.println("Received " + feed.requestMarketData(request,
-                                                                subscriber));
         Thread.sleep(5000);
         feed.stop();
     }

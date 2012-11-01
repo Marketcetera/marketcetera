@@ -3,6 +3,9 @@
            xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.1.0"
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
-    <service ref="provisioningManagerBean" interface="org.marketcetera.marketdata.MarketDataProvider"/>
-    <bean id="bogusFeedBean" class="org.marketcetera.marketdata.bogus.BogusFeed"/>
+    <service ref="bogusFeedBean" interface="org.marketcetera.marketdata.provider.MarketDataProvider"/>
+    <bean id="bogusFeedBean" class="org.marketcetera.marketdata.bogus.BogusFeed" init-method="start">
+        <property name="providerRegistry" ref="marketDataProviderRegistry"/>
+    </bean>
+    <reference id="marketDataProviderRegistry" interface="org.marketcetera.marketdata.manager.MarketDataProviderRegistry"/>
 </blueprint>

@@ -1,7 +1,12 @@
 package org.marketcetera.marketdata.provider;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -11,14 +16,19 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.api.systemmodel.Subscriber;
-import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.events.Event;
+import org.marketcetera.marketdata.manager.MarketDataProviderNotAvailable;
+import org.marketcetera.marketdata.manager.MarketDataProviderRegistry;
+import org.marketcetera.marketdata.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.request.MarketDataRequest;
+import org.marketcetera.marketdata.request.MarketDataRequestToken;
 import org.springframework.context.Lifecycle;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 /* $License$ */
 
@@ -45,6 +55,8 @@ public abstract class AbstractMarketDataProvider
             stop();
         }
         keepAlive.set(true);
+        notifier = new EventNotifier();
+        notifier.start();
         doStart();
         // the next bit of code is executed only if the delegated start function succeeds - exceptions are intentionally not caught
         running.set(true);
@@ -65,8 +77,8 @@ public abstract class AbstractMarketDataProvider
         }
         try {
             keepAlive.set(false);
-            // TODO interrupt any threads we have
             doStop();
+            notifier.stop();
         } finally {
             running.set(false);
             try {
@@ -85,27 +97,24 @@ public abstract class AbstractMarketDataProvider
         return running.get();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataProvider#requestMarketData(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.MarketDataToken)
+     * @see org.marketcetera.marketdata.provider.MarketDataProvider#requestMarketData(org.marketcetera.marketdata.request.MarketDataRequestToken, org.marketcetera.api.systemmodel.Subscriber)
      */
     @Override
-    public Collection<Event> requestMarketData(MarketDataRequest inRequest,
-                                               Subscriber inSubscriber)
+    public void requestMarketData(MarketDataRequestToken inRequestToken)
             throws InterruptedException
     {
         if(!isRunning()) {
-            throw new IllegalStateException(getProviderName() + " is not running"); // TODO
+            throw new MarketDataProviderNotAvailable();
         }
-        Set<MarketDataRequestAtom> atoms = explodeRequest(inRequest);
-        Collection<Event> snapshotEvents = new ArrayList<Event>();
+        Set<MarketDataRequestAtom> atoms = explodeRequest(inRequestToken.getRequest());
         Set<String> internalHandles = new HashSet<String>();
         AtomicBoolean updateSemaphore = new AtomicBoolean(false);
         // TODO examine request atoms and make sure they can all be processed by the given provider (check capabilities and handled security types)
         try {
             for(MarketDataRequestAtom atom : atoms) {
-                internalHandles.add(doMarketDataRequest(inRequest,
+                internalHandles.add(doMarketDataRequest(inRequestToken.getRequest(),
                                                         atom,
-                                                        updateSemaphore,
-                                                        snapshotEvents));
+                                                        updateSemaphore));
             }
         } catch (Exception e) {
             for(String internalHandle : internalHandles) {
@@ -116,26 +125,28 @@ public abstract class AbstractMarketDataProvider
             if(e instanceof InterruptedException) {
                 throw (InterruptedException)e;
             }
-            // TODO throw RequestFailed exception
+            throw new MarketDataRequestFailed(); // TODO add reason
         }
-        if(inSubscriber != null) {
-            for(String internalHandle : internalHandles) {
-                handleMap.put(internalHandle,
-                              inSubscriber);
-            }
+        for(String internalHandle : internalHandles) {
+            handleMap.put(internalHandle,
+                          inRequestToken);
+            
         }
+        // TODO locking
+        internalHandlesByToken.putAll(inRequestToken,
+                                      internalHandles);
         updateSemaphore.set(true);
-        return snapshotEvents;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataProvider#requestMarketData(org.marketcetera.marketdata.MarketDataRequest)
+     * @see org.marketcetera.marketdata.provider.MarketDataProvider#cancelMarketDataRequest(org.marketcetera.marketdata.request.MarketDataRequestToken)
      */
     @Override
-    public Collection<Event> requestMarketData(MarketDataRequest inRequest)
-            throws InterruptedException
+    public void cancelMarketDataRequest(MarketDataRequestToken inRequestToken)
     {
-        return requestMarketData(inRequest,
-                                 null);
+        // TODO locking
+        for(String internalHandle : internalHandlesByToken.removeAll(inRequestToken)) {
+            doCancel(internalHandle);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataProvider#getFeedStatus()
@@ -152,39 +163,53 @@ public abstract class AbstractMarketDataProvider
             getFeedStatusLock.unlock();
         }
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.systemmodel.Publisher#subscribe(org.marketcetera.api.systemmodel.Subscriber)
+    /**
+     * Get the providerRegistry value.
+     *
+     * @return a <code>MarketDataProviderRegistry</code> value
      */
-    @Override
-    public void subscribe(Subscriber inSubscriber)
+    public MarketDataProviderRegistry getProviderRegistry()
     {
-        statusPublisher.subscribe(inSubscriber);
+        return providerRegistry;
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.api.systemmodel.Publisher#unsubscribe(org.marketcetera.api.systemmodel.Subscriber)
+    /**
+     * Sets the providerRegistry value.
+     *
+     * @param inProviderRegistry a <code>MarketDataProviderRegistry</code> value
      */
-    @Override
-    public void unsubscribe(Subscriber inSubscriber)
+    public void setProviderRegistry(MarketDataProviderRegistry inProviderRegistry)
     {
-        statusPublisher.unsubscribe(inSubscriber);
+        providerRegistry = inProviderRegistry;
     }
     /**
      * 
      *
      *
      * @param inInternalHandles
-     * @param inEvents
+     * @param inEventData
      */
     protected void dataReceived(Set<String> inInternalHandles,
-                                Object inEvents)
+                                Event inEventData)
     {
-        // TODO push this into a separate thread to allow events to queue here
         for(String handle : inInternalHandles) {
-            Subscriber subscriber = handleMap.get(handle);
-            if(subscriber != null &&
-               subscriber.isInteresting(inEvents)) {
-                subscriber.publishTo(inEvents);
-            }
+            dataReceived(handle,
+                         inEventData);
+        }
+    }
+    protected void dataReceived(Set<String> inInternalHandles,
+                                List<Event> inEvents)
+    {
+        for(String handle : inInternalHandles) {
+            dataReceived(handle,
+                         inEvents);
+        }
+    }
+    protected void dataReceived(String inInternalHandle,
+                                List<Event> inEvents)
+    {
+        for(Event event : inEvents) {
+            dataReceived(inInternalHandle,
+                         event);
         }
     }
     /**
@@ -192,17 +217,94 @@ public abstract class AbstractMarketDataProvider
      *
      *
      * @param inInternalHandle
-     * @param inEvents
+     * @param inEvent
      */
     protected void dataReceived(String inInternalHandle,
-                                Object inEvents)
+                                Event inEvent)
     {
-        // TODO push this into a separate thread to allow events to queue here
-        Subscriber subscriber = handleMap.get(inInternalHandle);
-        if(subscriber != null &&
-           subscriber.isInteresting(inEvents)) {
-            subscriber.publishTo(inEvents);
+        notifications.add(new EventNotification(inEvent,
+                                                inInternalHandle));
+    }
+    private class EventNotifier
+            implements Runnable, Lifecycle
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run()
+        {
+            try {
+                while(keepAlive.get()) {
+                    running.set(true);
+                    EventNotification notification = notifications.take();
+                    MarketDataRequestToken token = handleMap.get(notification.handle);
+                    try {
+                        token.getSubscriber().publishTo(notification.event);
+                    } catch (Exception e) {
+                        // TODO log message
+                    }
+                }
+            } catch (InterruptedException e) {
+                
+            } finally {
+                running.set(false);
+            }
         }
+        /* (non-Javadoc)
+         * @see org.springframework.context.Lifecycle#start()
+         */
+        @Override
+        public synchronized void start()
+        {
+            if(running.get()) {
+                return;
+            }
+            keepAlive.set(true);
+            thread = new Thread(this,
+                                "Market data notifier thread for " + getProviderName());
+            thread.start();
+        }
+        /* (non-Javadoc)
+         * @see org.springframework.context.Lifecycle#stop()
+         */
+        @Override
+        public synchronized void stop()
+        {
+            if(!running.get()) {
+                return;
+            }
+            keepAlive.set(false);
+            if(thread != null) {
+                thread.interrupt();
+                try {
+                    thread.join();
+                } catch (InterruptedException ignored) {}
+                thread = null;
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.springframework.context.Lifecycle#isRunning()
+         */
+        @Override
+        public boolean isRunning()
+        {
+            return running.get();
+        }
+        private final AtomicBoolean keepAlive = new AtomicBoolean(false);
+        private final AtomicBoolean running = new AtomicBoolean(false);
+        private volatile Thread thread;
+    }
+    private static class EventNotification
+    {
+        private EventNotification(Event inEvent,
+                                  String inHandle)
+        {
+            event = inEvent;
+            handle = inHandle;
+        }
+        private final Event event;
+        private final String handle;
     }
     /**
      * 
@@ -229,7 +331,10 @@ public abstract class AbstractMarketDataProvider
         //  to avoid something odd happening with the publisher that causes the status lock to be held
         //  for an unknown amount of time
         if(shouldNotify) {
-            statusPublisher.publish(inNewStatus);
+            if(providerRegistry != null) {
+                providerRegistry.setStatus(this,
+                                           inNewStatus);
+            }
         }
     }
     /**
@@ -258,14 +363,12 @@ public abstract class AbstractMarketDataProvider
      * @param inCompleteRequest
      * @param inRequestAtom
      * @param inUpdateSemaphore
-     * @param outSnapshot
      * @return
      * @throws InterruptedException
      */
     protected abstract String doMarketDataRequest(MarketDataRequest inCompleteRequest,
                                                   MarketDataRequestAtom inRequestAtom,
-                                                  AtomicBoolean inUpdateSemaphore,
-                                                  Collection<Event> outSnapshot)
+                                                  AtomicBoolean inUpdateSemaphore)
             throws InterruptedException;
     /**
      * 
@@ -413,6 +516,9 @@ public abstract class AbstractMarketDataProvider
     private volatile FeedStatus status = FeedStatus.UNKNOWN;
     private final AtomicBoolean running = new AtomicBoolean(false);
     private final AtomicBoolean keepAlive = new AtomicBoolean(false);
-    private final PublisherEngine statusPublisher = new PublisherEngine();
-    private final Map<String,Subscriber> handleMap = new ConcurrentHashMap<String,Subscriber>();
+    private final Map<String,MarketDataRequestToken> handleMap = new ConcurrentHashMap<String,MarketDataRequestToken>();
+    private final Multimap<MarketDataRequestToken,String> internalHandlesByToken = HashMultimap.create();
+    private volatile MarketDataProviderRegistry providerRegistry;
+    private final BlockingDeque<EventNotification> notifications = new LinkedBlockingDeque<EventNotification>();
+    private volatile EventNotifier notifier;
 }

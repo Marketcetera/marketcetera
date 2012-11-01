@@ -14,7 +14,7 @@ import org.marketcetera.marketdata.Content;
  *
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRequestBuilder.java 16328 2012-10-26 23:01:48Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface MarketDataRequestBuilder

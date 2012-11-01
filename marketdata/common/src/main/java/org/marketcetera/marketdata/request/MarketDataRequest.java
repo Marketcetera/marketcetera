@@ -13,7 +13,7 @@ import org.marketcetera.marketdata.Content;
  *
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRequest.java 16323 2012-10-25 17:35:43Z colin $
+ * @version $Id$
  * @since $Release$
  */
 public interface MarketDataRequest
