@@ -17,8 +17,7 @@
   <name>Marketdata Parent</name>
 
   <modules>
-    <module>events</module>
-    <module>manager</module>
+    <module>common</module>
     <module>providers</module>
   </modules>
 

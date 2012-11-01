@@ -6,9 +6,9 @@ import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.marketdata.impl.MarketDataRequestBuilderImpl;
+import org.marketcetera.marketdata.request.MarketDataRequest;
+import org.marketcetera.marketdata.request.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.request.impl.MarketDataRequestBuilderImpl;
 
 /* $License$ */
 

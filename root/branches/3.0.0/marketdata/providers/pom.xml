@@ -14,11 +14,10 @@
 
   <packaging>pom</packaging>
 
-  <name>Marketdata Providers</name>
+  <name>Marketcetera Marketdata Providers</name>
 
   <modules>
     <module>bogus</module>
-    <module>common</module>
   </modules>
 
 </project>
