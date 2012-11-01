@@ -13,10 +13,10 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedType;
-import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.events.Event;
 import org.marketcetera.marketdata.provider.AbstractMarketDataProvider;
 import org.marketcetera.marketdata.provider.MarketDataRequestAtom;
+import org.marketcetera.marketdata.request.MarketDataRequest;
 
 /* $License$ */
 
