@@ -120,6 +120,18 @@
       <artifactId>log4j</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- runtime dependencies -->
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
+      <version>1.0_6</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

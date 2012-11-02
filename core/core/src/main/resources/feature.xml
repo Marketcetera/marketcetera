@@ -2,10 +2,11 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.1.0" name="org.marketcetera.core.core">
     <repository>mvn:org.apache.karaf.features/spring/3.0.0-SNAPSHOT/xml/features</repository>
     <feature name="org.marketcetera.core.core" version="3.0.0-SNAPSHOT" description="Marketcetera Core">
-        <feature version="3.1.2.RELEASE">spring</feature>
+        <feature version="${mvn.spring.version}">spring</feature>
         <!-- marketcetera bundles -->
         <bundle>mvn:org.marketcetera/api/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.core/core/3.0.0-SNAPSHOT</bundle>
+        <bundle>mvn:org.marketcetera.core/util/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.fork/glazed-subset/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.fork/texttablefmt/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.fork/csvtools/3.0.0-SNAPSHOT</bundle>

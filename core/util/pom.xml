@@ -22,7 +22,7 @@
         </license>
     </licenses>
 
-    <name>Core Utilities</name>
+    <name>Marketcetera Core Utilities</name>
     <description>I18N and logging functionality</description>
 
     <dependencies>

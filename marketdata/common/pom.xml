@@ -30,6 +30,21 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
     </dependency>
+    <!-- compile other -->
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>jsr311-api</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <!-- runtime other -->
+    <dependency>
+      <groupId>org.apache.cxf.karaf</groupId>
+      <artifactId>apache-cxf</artifactId>
+      <version>2.6.2</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
