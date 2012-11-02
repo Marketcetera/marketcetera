@@ -1,3 +1,4 @@
+org.marketcetera.photon.views.CurrencyFromMemento
 org.marketcetera.photon.views.EquityFromMemento
 org.marketcetera.photon.views.OptionFromMemento
 org.marketcetera.photon.views.FutureFromMemento
