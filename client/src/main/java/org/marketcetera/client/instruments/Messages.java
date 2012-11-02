@@ -37,8 +37,12 @@ public interface Messages {
     static final I18NMessage1P INVALID_OPTION_EXPIRY_DAY =
             new I18NMessage1P(LOGGER, "invalid_option_expiry_day");   //$NON-NLS-1$
     static final I18NMessage1P INVALID_FUTURE_EXPIRATION_YEAR_FORMAT = new I18NMessage1P(LOGGER,
-                                                                                         "invalid_future_expiration_year_format");   //$NON-NLS-1$
+           "invalid_future_expiration_year_format");   //$NON-NLS-1$
     static final I18NMessage1P INVALID_CURRENCY_SYMBOL_FORMAT = new I18NMessage1P(LOGGER,
-            																			"invalid_currency_symbol_format");   //$NON-NLS-1$
+           "invalid_currency_symbol_format");   //$NON-NLS-1$
+    static final I18NMessage1P INVALID_CURRENCY_TENOR_FORMAT = new I18NMessage1P(LOGGER,
+			"invalid_currency_tenor_format");   //$NON-NLS-1$
+    static final I18NMessage1P INVALID_CURRENCY_TENOR_VALUE = new I18NMessage1P(LOGGER,
+			"invalid_currency_tenor_value");   //$NON-NLS-1$
 
 }

@@ -1,6 +1,8 @@
 package org.marketcetera.photon.views;
 
-import org.eclipse.swt.widgets.Combo;
+
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Text;
 
 
 /* $License$ */
@@ -15,13 +17,28 @@ public interface ICurrencyOrderTicket
     /**
      * Gets the near Tenor widget.
      *
-     * @return a <code>Combo</code> value
+     * @return a <code>Text</code> value
      */
-    Combo getNearTenorCombo();    
+	Text getNearTenorText();   
     /**
      * Gets the far Tenor widget.
      *
-     * @return a <code>Combo</code> value
+     * @return a <code>Text</code> value
      */
-    Combo getFarTenorCombo();
+	Text getFarTenorText();
+	
+    /**
+     * Gets the Near Tenor button widget.
+     *
+     * @return a <code>Button</code> value
+     */
+	Button getSelectNearTenorButton();
+	
+    /**
+     * Gets the Far Tenor button widget.
+     *
+     * @return a <code>Button</code> value
+     */
+	Button getSelectFarTenorButton();
+    
 }
