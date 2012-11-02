@@ -1,5 +1,7 @@
 package org.marketcetera.dao;
 
+import javax.persistence.NoResultException;
+
 import org.marketcetera.api.systemmodel.NamedObject;
 
 /* $License$ */
@@ -19,6 +21,7 @@ public interface NamedDao<Clazz extends NamedObject>
      *
      * @param inName a <code>String</code> value
      * @return a <code>User</code> value
+     * @throws NoResultException if no object matches the given name
      */
     public Clazz getByName(String inName);
 }
