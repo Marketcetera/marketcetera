@@ -1,9 +1,7 @@
 package org.marketcetera.trade;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -58,7 +56,7 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	 */
 	
 	// when metc upgrades to newest guava, replace with ImmutableSet.of(...)
-	protected static Set<String> TENORSET = new HashSet<String>();
+	/*protected static Set<String> TENORSET = new HashSet<String>();
 	static{
 		String[] TENORARRAY = 
 		   {"TOD","ON","TN","SP","SN",
@@ -69,12 +67,12 @@ public class Currency extends Instrument implements Comparable<Currency>{
 			"1IMM","2IMM","3IMM","4IMM"};
 		
 		TENORSET.addAll(Arrays.asList(TENORARRAY));
-	}
+	}*/
 				
-	public static Set<String> getTenorSet()
+	/*public static Set<String> getTenorSet()
 	{
 		return Collections.unmodifiableSet(TENORSET);
-	}
+	}*/
 	protected static DateTimeFormatter fixDateFormat = DateTimeFormat.forPattern("yyyyMMdd");
 	
 	/**
@@ -200,7 +198,6 @@ public class Currency extends Instrument implements Comparable<Currency>{
 		farTenor = StringUtils.trimToNull(farTenor);
 		Validate.notNull(baseCCY,Messages.MISSING_LEFT_CURRENCY.getText());
 		Validate.notNull(plCCY,Messages.MISSING_RIGHT_CURRENCY.getText());
-		Validate.notNull(nearTenor,Messages.MISSING_NEAR_TENOR.getText());	
 		this.leftCCY = baseCCY;
 		this.rightCCY   = plCCY;
 		this.fixSymbol = leftCCY+"/"+rightCCY;
@@ -383,12 +380,24 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	 * @return
 	 */
 	protected static boolean isValidTenor(String tenor){
-		if(tenor!=null){
+		/*if(tenor!=null){
 			if(TENORSET.contains(tenor)||tenor.matches("\\d{8}")){
 				return true;
 			}
 		}
-		return false;
+		return false;*/
+		
+		boolean flag = false;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		sdf.setLenient(false);
+		Date date;
+		try {
+			date  = sdf.parse(tenor);	
+			flag = true;
+		} catch (Exception ignore) {
+		
+		}
+		return flag;
 	}
 
 
