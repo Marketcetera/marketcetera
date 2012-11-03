@@ -27,8 +27,14 @@ public class CurrencyValidationHandler extends InstrumentValidationHandler<Curre
 	public void validate(Instrument inInstrument) throws OrderValidationException {
 		Currency currency = (Currency) inInstrument;
 		validateCurrencySymbol(currency.getSymbol());
-		validateTenor(currency.getNearTenor());
-		validateTenor(currency.getFarTenor());		
+		if(currency.getNearTenor() !=null && !currency.getNearTenor().isEmpty())
+		{
+			validateTenor(currency.getNearTenor());
+		}
+		if(currency.getFarTenor() !=null && !currency.getFarTenor().isEmpty())
+		{
+			validateTenor(currency.getFarTenor());
+		}		
 	}
 	
 	public static void validateCurrencySymbol(String symbol) throws OrderValidationException
