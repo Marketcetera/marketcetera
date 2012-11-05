@@ -2,6 +2,7 @@ package org.marketcetera.photon.views;
 
 import java.io.InputStream;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -156,13 +157,12 @@ public class CurrencyOrderTicketView extends
         //Near Tenor
         final IObservableValue nearTenorTarget = SWTObservables.observeText(ticket
                 .getNearTenorText(), SWT.Modify);
-        Binding nearTenorBinding = dbc.bindValue(nearTenorTarget, model.getNearTenor());
-        setRequired(nearTenorBinding, Messages.CURRENCY_ORDER_TICKET_VIEW_NEAR_TENOR__LABEL
-                .getText());
+        dbc.bindValue(nearTenorTarget, model.getNearTenor());
         MultiValidator nearTenorValidator = new MultiValidator() {
             @Override
             protected IStatus validate() {
                 String tenor = (String) nearTenorTarget.getValue();
+                tenor = StringUtils.trimToNull(tenor);
                 if (tenor == null || tenor.isEmpty()) {
                     return ValidationStatus.ok();
                 }
@@ -188,6 +188,7 @@ public class CurrencyOrderTicketView extends
             @Override
             protected IStatus validate() {
                 String tenor = (String) farTenorTarget.getValue();
+                tenor = StringUtils.trimToNull(tenor);
                 if (tenor == null || tenor.isEmpty()) {
                     return ValidationStatus.ok();
                 }

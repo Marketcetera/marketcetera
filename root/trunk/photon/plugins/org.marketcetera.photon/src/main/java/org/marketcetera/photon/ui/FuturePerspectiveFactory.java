@@ -31,9 +31,11 @@ public class FuturePerspectiveFactory
 
         inLayout.addPerspectiveShortcut(EquityPerspectiveFactory.ID);
         inLayout.addPerspectiveShortcut(OptionPerspectiveFactory.ID);
+        inLayout.addPerspectiveShortcut(CurrencyPerspectiveFactory.ID);
         inLayout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
         inLayout.addShowViewShortcut(StockOrderTicketView.ID);
         inLayout.addShowViewShortcut(OptionOrderTicketView.ID);
+        inLayout.addShowViewShortcut(CurrencyOrderTicketView.ID);
         inLayout.addShowViewShortcut(FutureOrderTicketView.ID);
         
         bottomFolder = inLayout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,

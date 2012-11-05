@@ -60,6 +60,7 @@ import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.Strategy;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.NewOrReplaceOrder;
@@ -476,6 +477,9 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         }
         if(i instanceof Future) {
             return getFutureOrderTicketController();
+        }
+        if(i instanceof Currency) {
+            return getCurrencyOrderTicketController();
         }
         return getStockOrderTicketController();
     }
