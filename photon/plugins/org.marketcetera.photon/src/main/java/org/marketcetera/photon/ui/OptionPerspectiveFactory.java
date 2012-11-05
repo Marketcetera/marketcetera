@@ -47,6 +47,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(StockOrderTicketView.ID);
 		layout.addShowViewShortcut(OptionOrderTicketView.ID);
         layout.addShowViewShortcut(FutureOrderTicketView.ID);
+        layout.addShowViewShortcut(CurrencyOrderTicketView.ID);
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
 				0.7f, editorArea);
