@@ -27,7 +27,7 @@
     </dependency>
     <dependency>
       <groupId>org.marketcetera.marketdata</groupId>
-      <artifactId>marketdata-common</artifactId>
+      <artifactId>marketdata-core</artifactId>
       <version>3.0.0-SNAPSHOT</version>
     </dependency>
     <!-- test: local -->
