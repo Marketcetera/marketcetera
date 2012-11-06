@@ -8,7 +8,7 @@
     <version>1-SNAPSHOT</version>
   </parent>
   <groupId>org.marketcetera.marketdata</groupId>
-  <artifactId>marketdata-common</artifactId>
+  <artifactId>marketdata-core</artifactId>
   <version>3.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <licenses>
@@ -17,7 +17,7 @@
       <url>http://www.fsf.org/licensing/licenses/gpl.txt</url>
     </license>
   </licenses>
-  <name>Marketcetera Marketdata Common</name>
+  <name>Marketcetera Marketdata Core</name>
   <dependencies>
     <!-- compile local -->
     <dependency>
