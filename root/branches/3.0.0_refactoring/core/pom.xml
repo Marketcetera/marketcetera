@@ -22,5 +22,6 @@
         <module>dao</module>
         <module>quickfix</module>
         <module>util</module>
+	<module>webservices-systemmodel</module>
     </modules>
 </project>
