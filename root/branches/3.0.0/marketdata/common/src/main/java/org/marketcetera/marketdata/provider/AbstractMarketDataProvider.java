@@ -24,6 +24,7 @@ import org.marketcetera.marketdata.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.manager.MarketDataProviderRegistry;
 import org.marketcetera.marketdata.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.request.MarketDataRequest;
+import org.marketcetera.marketdata.request.MarketDataRequestAtom;
 import org.marketcetera.marketdata.request.MarketDataRequestToken;
 import org.springframework.context.Lifecycle;
 
