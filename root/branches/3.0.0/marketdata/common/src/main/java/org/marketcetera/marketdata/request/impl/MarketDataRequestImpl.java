@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -120,14 +121,12 @@ class MarketDataRequestImpl
      * instruments value
      */
     @XmlElementWrapper(name="instruments",required=false)
-    @XmlElement(name="instrument")
     @XmlElementRefs({ @XmlElementRef(type=ConvertibleBondImpl.class), @XmlElementRef(type=EquityImpl.class), @XmlElementRef(type=OptionImpl.class), @XmlElementRef(type=FutureImpl.class)} )
     private final Set<Instrument> instruments = new LinkedHashSet<Instrument>();
     /**
      * underlying instruments value
      */
     @XmlElementWrapper(name="underlyingInstruments",required=false)
-    @XmlElement(name="underlyingInstrument")
     @XmlElementRefs({ @XmlElementRef(type=ConvertibleBondImpl.class), @XmlElementRef(type=EquityImpl.class), @XmlElementRef(type=OptionImpl.class), @XmlElementRef(type=FutureImpl.class)} )
     private final Set<Instrument> underlyingInstruments = new LinkedHashSet<Instrument>();
     /**
@@ -139,8 +138,8 @@ class MarketDataRequestImpl
     /**
      * parameters value
      */
-    @XmlElementWrapper(name="parameters",required=false)
     @XmlElement(name="parameterEntry")
+    @XmlJavaTypeAdapter(MapAdapter.class) 
     private final Map<String,String> parameters = new LinkedHashMap<String,String>();
     /**
      * provider value

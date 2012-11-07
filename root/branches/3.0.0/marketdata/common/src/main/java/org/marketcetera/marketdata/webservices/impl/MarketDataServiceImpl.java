@@ -1,5 +1,8 @@
 package org.marketcetera.marketdata.webservices.impl;
 
+import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 import org.marketcetera.marketdata.request.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.request.impl.MarketDataRequestBuilderImpl;
@@ -31,6 +34,10 @@ public class MarketDataServiceImpl
     public MarketDataRequest test()
     {
         MarketDataRequestBuilder builder = new MarketDataRequestBuilderImpl();
+        builder.withUnderlyingInstruments(new EquityImpl("METC"),new FutureImpl("IB","201212"))
+               .withContent(Content.LATEST_TICK)
+               .withProvider("bogus")
+               .withExchange("NASDAQ");
         return builder.create();
     }
 }

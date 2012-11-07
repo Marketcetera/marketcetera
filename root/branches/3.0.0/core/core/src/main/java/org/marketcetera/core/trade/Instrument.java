@@ -2,6 +2,11 @@ package org.marketcetera.core.trade;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.sun.xml.bind.AnyTypeAdapter;
+
 /* $License$ */
 
 /**
@@ -11,6 +16,8 @@ import java.io.Serializable;
  * @version $Id$
  * @since $Release$
  */
+@XmlRootElement
+@XmlJavaTypeAdapter(AnyTypeAdapter.class)
 public interface Instrument
         extends Serializable
 {
