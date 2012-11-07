@@ -24,7 +24,7 @@
       </perspective>
       <perspective
             class="org.marketcetera.photon.ui.CurrencyPerspectiveFactory"
-            icon="icons/silk/calendar.png"
+            icon="icons/silk/coins.png"
             id="org.marketcetera.photon.CurrencyPerspective"
             name="Currency">
       </perspective>
@@ -58,7 +58,7 @@
       <view
             category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.CurrencyOrderTicketView"
-            icon="icons/silk/calendar.png"
+            icon="icons/silk/coins.png"
             id="org.marketcetera.photon.views.CurrencyOrderTicketView"
             name="Currency Order Ticket"
             allowMultiple="true"
