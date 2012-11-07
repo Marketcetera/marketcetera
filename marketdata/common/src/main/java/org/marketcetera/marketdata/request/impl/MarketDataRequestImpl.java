@@ -132,23 +132,23 @@ class MarketDataRequestImpl
     /**
      * content value
      */
-    @XmlElementWrapper(name="content")
+    @XmlElementWrapper(name="content",required=true)
     @XmlElement(name="content")
     private final Set<Content> content = new LinkedHashSet<Content>();
     /**
      * parameters value
      */
-    @XmlElement(name="parameterEntry")
+    @XmlElement(name="parameters",required=false)
     @XmlJavaTypeAdapter(MapAdapter.class) 
     private final Map<String,String> parameters = new LinkedHashMap<String,String>();
     /**
      * provider value
      */
-    @XmlAttribute(required=false)
+    @XmlElement(required=false)
     private String provider;
     /**
      * exchange value
      */
-    @XmlAttribute(required=false)
+    @XmlElement(required=false)
     private String exchange;
 }
