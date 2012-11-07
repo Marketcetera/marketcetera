@@ -1,4 +1,6 @@
-package org.marketcetera.marketdata.provider;
+package org.marketcetera.marketdata.request;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.marketdata.Content;
@@ -12,6 +14,7 @@ import org.marketcetera.marketdata.Content;
  * @version $Id$
  * @since $Release$
  */
+@XmlRootElement
 public interface MarketDataRequestAtom
 {
     public Instrument getInstrument();

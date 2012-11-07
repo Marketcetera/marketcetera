@@ -15,8 +15,8 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedType;
 import org.marketcetera.marketdata.events.Event;
 import org.marketcetera.marketdata.provider.AbstractMarketDataProvider;
-import org.marketcetera.marketdata.provider.MarketDataRequestAtom;
 import org.marketcetera.marketdata.request.MarketDataRequest;
+import org.marketcetera.marketdata.request.MarketDataRequestAtom;
 
 /* $License$ */
 
