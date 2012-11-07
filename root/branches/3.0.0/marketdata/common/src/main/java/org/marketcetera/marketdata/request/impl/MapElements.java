@@ -1,31 +1,82 @@
 package org.marketcetera.marketdata.request.impl;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /* $License$ */
 
 /**
- * 
- * 
+ * Adapts a <code>Map&lt;String,String&gt;</code> to and from XML.
+ *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@XmlAccessorType(XmlAccessType.NONE)
 public class MapElements
 {
-    @SuppressWarnings("unused")
-    private MapElements()
+    /**
+     * Create a new MapElements instance.
+     *
+     * @param inKey a <code>String</code> value
+     * @param inValue a <code>String</code> value
+     */
+    public MapElements(String inKey,
+                       String inValue)
     {
-    } // Required by JAXB
-
-    public MapElements(String key,
-                       String value)
-    {
-        this.key = key;
-        this.value = value;
+        key = inKey;
+        value = inValue;
     }
-    @XmlElement
-    public String key;
-    @XmlElement
-    public String value;
+    /**
+     * Get the key value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getKey()
+    {
+        return key;
+    }
+    /**
+     * Sets the key value.
+     *
+     * @param inKey a <code>String</code> value
+     */
+    public void setKey(String inKey)
+    {
+        key = inKey;
+    }
+    /**
+     * Get the value value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getValue()
+    {
+        return value;
+    }
+    /**
+     * Sets the value value.
+     *
+     * @param inValue a <code>String</code> value
+     */
+    public void setValue(String inValue)
+    {
+        value = inValue;
+    }
+    /**
+     * Create a new MapElements instance.
+     */
+    @SuppressWarnings("unused")
+    private MapElements() {}
+    /**
+     * element key
+     */
+    @XmlAttribute
+    private String key;
+    /**
+     * element value
+     */
+    @XmlAttribute
+    private String value;
 }

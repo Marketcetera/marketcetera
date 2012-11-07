@@ -19,7 +19,4 @@ public interface MarketDataService
     @POST
     @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
     public void request(MarketDataRequest inRequest);
-    @GET
-    @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public MarketDataRequest test();
 }
