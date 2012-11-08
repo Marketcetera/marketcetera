@@ -15,7 +15,7 @@
     <packaging>pom</packaging>
 
     <name>Core Parent</name>
-    <description>Different core projects.</description>
+    <description>Core project parent</description>
 
     <modules>
         <module>core</module>

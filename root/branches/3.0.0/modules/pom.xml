@@ -20,6 +20,5 @@
         <module>cep</module>
         <module>misc</module>
         <module>marketdata</module>
-        <module>symbolresolver</module>
     </modules>
 </project>
