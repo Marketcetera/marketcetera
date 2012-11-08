@@ -397,24 +397,15 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	 * @return
 	 */
 	protected static boolean isValidTenor(String tenor){
-		/*if(tenor!=null){
-			if(TENORSET.contains(tenor)||tenor.matches("\\d{8}")){
-				return true;
-			}
-		}
-		return false;*/
-		
-		boolean flag = false;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		sdf.setLenient(false);
-		Date date;
 		try {
-			date  = sdf.parse(tenor);	
-			flag = true;
+			sdf.parse(tenor);	
+			return true;
 		} catch (Exception ignore) {
 		
 		}
-		return flag;
+		return false;
 	}
 
 

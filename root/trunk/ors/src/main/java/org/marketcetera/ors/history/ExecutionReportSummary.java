@@ -47,6 +47,13 @@ import org.marketcetera.util.misc.ClassVersion;
                 @ColumnResult(name = "actor"),
                 @ColumnResult(name = "position")
                     }),
+    @SqlResultSetMapping(name = "crAllPositions",
+           columns = {
+                @ColumnResult(name = "symbol"),
+                @ColumnResult(name = "account"),
+                @ColumnResult(name = "actor"),
+                @ColumnResult(name = "position")
+                   }),
    @SqlResultSetMapping(name = "futAllPositions",
                         columns = {
            @ColumnResult(name = "symbol"),
