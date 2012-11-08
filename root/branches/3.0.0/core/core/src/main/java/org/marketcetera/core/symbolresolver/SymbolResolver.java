@@ -1,4 +1,4 @@
-package org.marketcetera.api.symbolresolver;
+package org.marketcetera.core.symbolresolver;
 
 import org.marketcetera.core.trade.Instrument;
 

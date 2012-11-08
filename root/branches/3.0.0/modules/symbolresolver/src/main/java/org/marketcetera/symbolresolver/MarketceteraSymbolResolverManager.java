@@ -1,17 +1,16 @@
-package org.marketcetera.api.symbolresolver.impl;
+package org.marketcetera.symbolresolver;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.marketcetera.api.symbolresolver.Messages;
-import org.marketcetera.api.symbolresolver.NoInstrumentForSymbol;
-import org.marketcetera.api.symbolresolver.SymbolResolver;
-import org.marketcetera.api.symbolresolver.SymbolResolverManager;
+import org.marketcetera.core.symbolresolver.Messages;
+import org.marketcetera.core.symbolresolver.NoInstrumentForSymbol;
+import org.marketcetera.core.symbolresolver.SymbolResolver;
+import org.marketcetera.core.symbolresolver.SymbolResolverManager;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
@@ -25,29 +24,17 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  * @since $Release$
  */
 @ThreadSafe
-public class SymbolResolverManagerImpl
+public class MarketceteraSymbolResolverManager
         implements SymbolResolverManager
 {
-    /* (non-Javadoc)
-     * @see org.marketcetera.symbolresolver.SymbolResolverManager#getSymbolResolvers()
+    /**
+     * Sets the resolvers value.
+     *
+     * @param inResolvers a <code>List&lt;SymbolResolver&gt;</code> value
      */
-    @Override
-    public List<SymbolResolver> getSymbolResolvers()
+    public void setResolvers(List<SymbolResolver> inResolvers)
     {
-        synchronized(resolvers) {
-            return Collections.unmodifiableList(resolvers);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.symbolresolver.SymbolResolverManager#setSymbolResolvers(java.util.List)
-     */
-    @Override
-    public void setSymbolResolvers(List<SymbolResolver> inResolvers)
-    {
-        synchronized(resolvers) {
-            resolvers.clear();
-            resolvers.addAll(inResolvers);
-        }
+        resolvers = inResolvers;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.symbolresolver.SymbolResolverManager#resolve(java.lang.String)
@@ -81,7 +68,7 @@ public class SymbolResolverManagerImpl
             throw new NoInstrumentForSymbol(new I18NBoundMessage1P(Messages.UNABLE_TO_RESOLVE_SYMBOL,
                                                                    inSymbol));
         }
-        SLF4JLoggerProxy.debug(SymbolResolverManagerImpl.class,
+        SLF4JLoggerProxy.debug(MarketceteraSymbolResolverManager.class,
                                "{} resolved to {}",
                                inSymbol,
                                instrument);
@@ -90,5 +77,5 @@ public class SymbolResolverManagerImpl
     /**
      * resolves to apply
      */
-    private final List<SymbolResolver> resolvers = new ArrayList<SymbolResolver>();
+    private List<SymbolResolver> resolvers = new ArrayList<SymbolResolver>();
 }

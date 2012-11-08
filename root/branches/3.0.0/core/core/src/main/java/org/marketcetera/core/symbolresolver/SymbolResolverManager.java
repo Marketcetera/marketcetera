@@ -1,6 +1,4 @@
-package org.marketcetera.api.symbolresolver;
-
-import java.util.List;
+package org.marketcetera.core.symbolresolver;
 
 import org.marketcetera.core.trade.Instrument;
 
@@ -14,22 +12,6 @@ import org.marketcetera.core.trade.Instrument;
  */
 public interface SymbolResolverManager
 {
-    /**
-     * Gets the symbol resolvers to use to resolve symbols in the order they are to be applied.
-     * 
-     * <p>Changes made to the returned list are not reflected in the underlying list.
-     *
-     * @return a <code>List&lt;SymbolResolver&gt;</code>
-     */
-    public List<SymbolResolver> getSymbolResolvers();
-    /**
-     * Sets the symbol resolvers to use to resolve symbols in the order they are to be applied.
-     * 
-     * <p>Changes made to the passed list are not reflected in the underlying list.
-     *
-     * @param inResolvers a <code>List&lt;SymbolResolver&gt;</code> value
-     */
-    public void setSymbolResolvers(List<SymbolResolver> inResolvers);
     /**
      * Resolves the given symbol to an <code>Instrument</code>.
      *

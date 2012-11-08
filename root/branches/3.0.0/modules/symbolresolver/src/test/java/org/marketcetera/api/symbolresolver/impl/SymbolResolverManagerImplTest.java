@@ -13,10 +13,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.marketcetera.api.symbolresolver.Messages;
-import org.marketcetera.api.symbolresolver.NoInstrumentForSymbol;
-import org.marketcetera.api.symbolresolver.SymbolResolver;
+import org.marketcetera.core.symbolresolver.Messages;
+import org.marketcetera.core.symbolresolver.NoInstrumentForSymbol;
+import org.marketcetera.core.symbolresolver.SymbolResolver;
 import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.symbolresolver.MarketceteraSymbolResolverManager;
 import org.mockito.Mock;
 
 /* $License$ */
@@ -31,7 +32,7 @@ public class SymbolResolverManagerImplTest {
 	
 	@Mock SymbolResolver mockSymbolResolver1 = mock(SymbolResolver.class);
 	@Mock SymbolResolver mockSymbolResolver2 = mock(SymbolResolver.class);
-	private SymbolResolverManagerImpl symbolResolverManager = new SymbolResolverManagerImpl();
+	private MarketceteraSymbolResolverManager symbolResolverManager = new MarketceteraSymbolResolverManager();
 	private static final String DEFAULT_SYMBOL="TEST"; 
 	private Instrument mockInstrument = mock(Instrument.class);
 
@@ -43,7 +44,7 @@ public class SymbolResolverManagerImplTest {
 		List<SymbolResolver> symbolResolverList = new ArrayList<SymbolResolver>();
 		symbolResolverList.add(mockSymbolResolver1);
 		symbolResolverList.add(mockSymbolResolver2);
-		symbolResolverManager.setSymbolResolvers(symbolResolverList);
+		symbolResolverManager.setResolvers(symbolResolverList);
 	}
 	
 	@Test

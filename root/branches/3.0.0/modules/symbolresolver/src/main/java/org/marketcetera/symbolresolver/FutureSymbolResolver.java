@@ -1,21 +1,21 @@
-package org.marketcetera.api.symbolresolver.impl;
+package org.marketcetera.symbolresolver;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.api.symbolresolver.SymbolResolver;
+import org.marketcetera.core.symbolresolver.SymbolResolver;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
+import org.marketcetera.core.trade.impl.FutureImpl;
 
 /* $License$ */
 
 /**
- * Attempts to convert symbols to {@link org.marketcetera.core.trade.impl.ConvertibleBondImpl} instruments.
+ * Attempts to resolve symbols to {@link org.marketcetera.core.trade.impl.FutureImpl} instruments.
  *
- * @version $Id: ConvertibleBondSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
+ * @version $Id: FutureSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */
 @Immutable
-public class ConvertibleBondSymbolResolver
+public class FutureSymbolResolver
         implements SymbolResolver
 {
     /* (non-Javadoc)
@@ -34,6 +34,11 @@ public class ConvertibleBondSymbolResolver
     public Instrument resolve(String inSymbol,
                               Object inContext)
     {
-        return new ConvertibleBondImpl(inSymbol);
+        try {
+            return FutureImpl.fromString(inSymbol);
+        } catch (IllegalArgumentException e) {
+            // nope, not a future
+        }
+        return null;
     }
 }

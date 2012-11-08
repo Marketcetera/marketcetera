@@ -31,7 +31,7 @@
         </license>
     </licenses>
 
-    <name>Symbol Resolver Module</name>
+    <name>Marketcetera Symbol Resolver</name>
 
     <dependencies>
         <dependency>

@@ -1,21 +1,21 @@
-package org.marketcetera.api.symbolresolver.impl;
+package org.marketcetera.symbolresolver;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.api.symbolresolver.SymbolResolver;
+import org.marketcetera.core.options.OptionUtils;
+import org.marketcetera.core.symbolresolver.SymbolResolver;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 /* $License$ */
 
 /**
- * Attempts to resolve symbols as {@link org.marketcetera.core.trade.impl.EquityImpl} instruments.
+ * Attempts to resolve symbols to {@link org.marketcetera.core.trade.Option} instruments.
  *
- * @version $Id: EquitySymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
+ * @version $Id: OsiOptionSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */
 @Immutable
-public class EquitySymbolResolver
+public class OsiOptionSymbolResolver
         implements SymbolResolver
 {
     /* (non-Javadoc)
@@ -34,6 +34,11 @@ public class EquitySymbolResolver
     public Instrument resolve(String inSymbol,
                               Object inContext)
     {
-        return new EquityImpl(inSymbol);
+        try {
+            return OptionUtils.getOsiOptionFromString(inSymbol);
+        } catch (IllegalArgumentException e) {
+            // no option, no soup
+        }
+        return null;
     }
 }
