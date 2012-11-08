@@ -504,6 +504,7 @@
 	<module>marketdata</module>
         <module>modules</module>
         <module>security</module>
+	<module>symbolresolver</module>
         <module>util-test</module>
 	<module>webservices</module>
     </modules>

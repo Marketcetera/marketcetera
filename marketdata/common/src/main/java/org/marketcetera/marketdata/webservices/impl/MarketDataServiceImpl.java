@@ -9,6 +9,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.systemmodel.Subscriber;
+import org.marketcetera.core.symbolresolver.SymbolResolverManager;
 import org.marketcetera.marketdata.events.Event;
 import org.marketcetera.marketdata.manager.MarketDataManager;
 import org.marketcetera.marketdata.request.MarketDataRequest;
@@ -28,6 +29,15 @@ import org.marketcetera.marketdata.webservices.MarketDataService;
 public class MarketDataServiceImpl
         implements MarketDataService
 {
+    /**
+     * Sets the symbolResolver value.
+     *
+     * @param inSymbolResolver a <code>SymbolResolverManager</code> value
+     */
+    public void setSymbolResolver(SymbolResolverManager inSymbolResolver)
+    {
+        symbolResolver = inSymbolResolver;
+    }
     /**
      * Sets the marketDataManager value.
      *
@@ -125,6 +135,10 @@ public class MarketDataServiceImpl
      * manages market data requests
      */
     private MarketDataManager marketDataManager;
+    /**
+     * resolvers symbols to instruments
+     */
+    private SymbolResolverManager symbolResolver;
     /**
      * generates unique request ids
      */
