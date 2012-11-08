@@ -23,6 +23,7 @@ import org.marketcetera.core.position.PositionEngine.PositionData;
 import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.photon.core.InstrumentPrettyPrinter;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
@@ -321,6 +322,8 @@ public abstract class PositionsViewPage extends Page implements IColumnProvider 
                 return Messages.POSITIONS_TABLE_OPTION__LABEL.getText();
             } else if (instrument instanceof Future) {
                 return Messages.POSITIONS_TABLE_FUTURE__LABEL.getText();
+            } else if (instrument instanceof Currency) {
+                return Messages.POSITIONS_TABLE_CURRENCY__LABEL.getText();
             } else {
                 return null;
             }

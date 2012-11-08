@@ -150,7 +150,8 @@ public class MarketData implements IMarketData {
      */
     private boolean canRequestFineGrainedMarketData(Instrument instrument) {
         return (instrument instanceof Equity ||
-                instrument instanceof Future)
+                instrument instanceof Future ||
+                instrument instanceof Currency)
                 || mUseFineGrainedMarketDataForOptions;
     }
 
@@ -158,11 +159,6 @@ public class MarketData implements IMarketData {
     public IMarketDataReference<MDLatestTick> getLatestTick(
             final Instrument instrument) {
         Validate.notNull(instrument);
-        //Currency does not have MarketData Provider yet, skipping
-        if(instrument instanceof Currency)
-        {
-        	return null;
-        }
         if (canRequestFineGrainedMarketData(instrument)) {
             return new Reference<MDLatestTick, LatestTickKey>(
                     mLatestTickManager, new LatestTickKey(instrument));

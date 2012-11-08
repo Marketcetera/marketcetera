@@ -202,7 +202,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
         } else if(inInstrument instanceof Currency) {
-            future.setInstrument((Currency)inInstrument);
+            currency.setInstrument((Currency)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);

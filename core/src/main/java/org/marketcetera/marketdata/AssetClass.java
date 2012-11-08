@@ -23,7 +23,11 @@ public enum AssetClass
     /**
      * futures
      */
-    FUTURE;
+    FUTURE,
+    /**
+     * currency
+     */
+    CURRENCY;
     /**
      * Indicates if the asset class is an appropriate match for a request
      * by underlying symbols.

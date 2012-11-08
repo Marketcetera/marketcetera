@@ -129,7 +129,24 @@ public class Currency extends Instrument implements Comparable<Currency>{
 		
     }
 	
-
+	public Currency(String symbol)
+	{
+		String[] currencies = symbol.split("/");
+		fixSymbol = symbol;
+		nearTenor=null;
+		farTenor=null;		
+		if(currencies.length ==2)
+		{
+			leftCCY = currencies[0];
+			rightCCY = currencies[1];
+			hashCode = symbol.hashCode();
+		} else {
+			leftCCY=null;
+			rightCCY=null;
+			hashCode=-1;
+		}		
+	}
+	
 	/**
 	 * outright trade constructor for generic delivery date
 	 * 

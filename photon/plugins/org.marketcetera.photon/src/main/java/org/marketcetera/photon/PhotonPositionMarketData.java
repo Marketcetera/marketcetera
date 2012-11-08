@@ -121,11 +121,6 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	@Override
 	public void addInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
 		Validate.noNullElements(new Object[] { instrument, listener });
-		//Skip marketdata request for currency since there is no provider.
-		if(instrument instanceof Currency)
-		{
-			return;
-		}
 		synchronized (mListeners) {
 			if (mDisposed.get()) return;
 			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(instrument);

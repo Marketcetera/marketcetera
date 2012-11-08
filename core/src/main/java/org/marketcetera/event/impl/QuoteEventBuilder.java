@@ -36,7 +36,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NotThreadSafe
 @ClassVersion("$Id$")
 public abstract class QuoteEventBuilder<E extends QuoteEvent>
-        implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>, FutureEventBuilder<QuoteEventBuilder<E>>
+        implements EventBuilder<E>, OptionEventBuilder<QuoteEventBuilder<E>>, FutureEventBuilder<QuoteEventBuilder<E>>,CurrencyEventBuilder<QuoteEventBuilder<E>>
 {
     /**
      * Creates a <code>QuoteEvent</code> of the same type as the given event
@@ -77,6 +77,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             } else {
                 return new FutureBidEventImpl(quote,
                                               future);
+            }
+        }
+        if(inEvent instanceof CurrencyEvent) {
+            CurrencyBean currency = CurrencyBean.getCurrencyBeanFromEvent((CurrencyEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return new CurrencyAskEventImpl(quote,
+                                              currency);
+            } else {
+                return new CurrencyBidEventImpl(quote,
+                							  currency);
             }
         }
         // from an asset class that is neither equity nor option
@@ -126,6 +136,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             } else {
                 return (E)new FutureBidEventImpl(quote,
                                                  future);
+            }
+        }
+        if(inEvent instanceof CurrencyEvent) {
+            CurrencyBean currency = CurrencyBean.getCurrencyBeanFromEvent((CurrencyEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new CurrencyAskEventImpl(quote,
+                                                 currency);
+            } else {
+                return (E)new CurrencyBidEventImpl(quote,
+                                                 currency);
             }
         }
         // from an asset class that is neither equity nor option
@@ -182,6 +202,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  future);
             }
         }
+        if(inEvent instanceof CurrencyEvent) {
+            CurrencyBean currency = CurrencyBean.getCurrencyBeanFromEvent((CurrencyEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new CurrencyAskEventImpl(quote,
+                                                 currency);
+            } else {
+                return (E)new CurrencyBidEventImpl(quote,
+                                                 currency);
+            }
+        }
         // from an asset class that is neither equity nor option
         throw new UnsupportedOperationException();
     }
@@ -225,6 +255,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             } else {
                 return (E)new FutureBidEventImpl(quote,
                                                  future);
+            }
+        }
+        if(inEvent instanceof CurrencyEvent) {
+        	CurrencyBean currency = CurrencyBean.getCurrencyBeanFromEvent((CurrencyEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new CurrencyAskEventImpl(quote,
+                								currency);
+            } else {
+                return (E)new CurrencyBidEventImpl(quote,
+                								currency);
             }
         }
         // from an asset class that is neither equity nor option
