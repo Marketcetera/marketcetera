@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.1.0" name="org.marketcetera.symbolresolver.marketcetera-symbolresolver">
+    <repository>mvn:org.apache.karaf.features/spring/3.0.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.marketcetera.core/dao/3.0.0-SNAPSHOT/xml/features</repository>
+    <feature name="org.marketcetera.security.shiro-security" version="3.0.0-SNAPSHOT" description="Marketcetera Shiro Security">
+        <feature version="3.0.0-SNAPSHOT">org.marketcetera.core.dao</feature>
+        <!-- marketcetera bundles -->
+        <bundle>mvn:org.marketcetera.security/shiro-security/3.0.0-SNAPSHOT</bundle>
+        <!-- external bundles -->
+        <bundle>mvn:org.apache.shiro/shiro-core/1.2.1</bundle>
+    </feature>
+</features>

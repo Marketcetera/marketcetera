@@ -12,7 +12,6 @@ import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.marketdata.events.Event;
 import org.marketcetera.marketdata.manager.MarketDataManager;
 import org.marketcetera.marketdata.request.MarketDataRequest;
-import org.marketcetera.marketdata.request.MarketDataRequestAtom;
 import org.marketcetera.marketdata.webservices.MarketDataService;
 
 /* $License$ */
@@ -106,10 +105,11 @@ public class MarketDataServiceImpl
         return Response.ok().build();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.webservices.MarketDataService#getSnapshot(org.marketcetera.marketdata.request.MarketDataRequestAtom)
+     * @see org.marketcetera.marketdata.webservices.MarketDataService#getSnapshot(java.lang.String, java.lang.String)
      */
     @Override
-    public Event getSnapshot(MarketDataRequestAtom inRequest)
+    public Event getSnapshot(String inSymbol,
+                             String inContent)
     {
         throw new UnsupportedOperationException(); // TODO
     }

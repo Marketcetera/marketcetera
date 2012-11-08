@@ -8,12 +8,11 @@ import javax.ws.rs.core.Response;
 
 import org.marketcetera.marketdata.events.Event;
 import org.marketcetera.marketdata.request.MarketDataRequest;
-import org.marketcetera.marketdata.request.MarketDataRequestAtom;
 
 /* $License$ */
 
 /**
- *
+ * Provides access to market data via web services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -22,20 +21,29 @@ import org.marketcetera.marketdata.request.MarketDataRequestAtom;
 public interface MarketDataService
 {
     /**
+     * Request market data.
      * 
+     * <p>The returned value can be used to retrieve queued events
+     * via {@link #getEvents(long)}.
      *
-     *
-     * @param inRequest
+     * @param inRequest a <code>MarketDataRequest</code> value
      * @return a <code>long</code> value
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
     public long request(MarketDataRequest inRequest);
     /**
+     * Retrieve the events queued from a market data request.
      * 
+     * <p>Events must first be requested via {@link #request(MarketDataRequest)}.
+     * The returned value is then passed to this method to retrieve
+     * the events. If the event queue is not cleared within a certain
+     * interval, the queue is cleared and the request is canceled.
+     * 
+     * <p>If the given request id does not match an active request, an
+     * exception will be thrown. TODO
      *
-     *
-     * @param inRequestId
+     * @param inRequestId a <code>log</code> value
      * @return a <code>Collection&lt;Event&gt;</code> value
      */
     @GET
@@ -43,23 +51,31 @@ public interface MarketDataService
     @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
     public Collection<Event> getEvents(long inRequestId);
     /**
+     * Cancels an active market data request.
      * 
+     * <p>If the given request id does not match an active request,
+     * nothing happens.
      *
-     *
-     * @param inRequestId
+     * @param inRequestId a <code>long</code> value
      */
     @DELETE
     @Path("{id}")
     public Response cancel(@PathParam("id")long inRequestId);
     /**
+     * Gets the most recent snapshot matching the given symbol and content.
+     *
+     * <p>The returned market data will reflect the result of the most recent
+     * subscription request for that symbol. If no requests have been made,
+     * no market data will be returned: this method will not initiate a new
+     * market data request.
      * 
-     *
-     *
-     * @param inRequest
-     * @return
+     * @param inSymbol a <code>String</code> value
+     * @param inContent a <code>String</code> value
+     * @return an <code>Event</code> object representing the most recent snapshot
      */
     @GET
-    @Path("snapshot")
+    @Path("snapshot/{symbol}/{content}")
     @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public Event getSnapshot(MarketDataRequestAtom inRequest);
+    public Event getSnapshot(@PathParam("symbol")String inSymbol,
+                             @PathParam("content")String inContent);
 }
