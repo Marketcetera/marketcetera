@@ -93,6 +93,29 @@ import org.marketcetera.util.misc.ClassVersion;
             "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, account, actor having position <> 0",
             resultSetMapping = "eqAllPositions"),
+    @NamedNativeQuery(name = "crPositionForSymbol",query = "select " +
+            "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "where e.symbol = :symbol " +
+            "and (e.securityType is null " +
+            "or e.securityType = :securityType) " +
+            "and e.sendingTime <= :sendingTime " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
+            resultSetMapping = "positionForSymbol"),
+    @NamedNativeQuery(name = "crAllPositions",query = "select " +
+            "e.symbol as symbol, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+            "from execreports e " +
+            "join reports r on (e.report_id=r.id) " +
+            "where e.sendingTime <= :sendingTime " +
+            "and (e.securityType is null " +
+            "or e.securityType = :securityType) " +
+            "and (:allViewers or e.viewer_id = :viewerID) " +
+            "and e.id = " +
+            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
+            "group by symbol, account, actor having position <> 0",
+             resultSetMapping = "crAllPositions"),    
     @NamedNativeQuery(name = "futPositionForSymbol",query = "select " +
             "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
             "from execreports e " +

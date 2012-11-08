@@ -89,6 +89,7 @@ public class RetrieveTradingHistoryJob extends Job {
                     positions.putAll(ClientManager.getInstance()
                             .getAllOptionPositionsAsOf(lastOccurrence));
                     positions.putAll(ClientManager.getInstance().getAllFuturePositionsAsOf(lastOccurrence));
+                    positions.putAll(ClientManager.getInstance().getAllCurrencyPositionsAsOf(lastOccurrence));
                     EventList<ReportHolder> messages = tradeReportsHistory.getAllMessagesList();
                     ImmutablePositionSupport positionSupport = new ImmutablePositionSupport(positions);
                     PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(PhotonPlugin.getDefault().getMarketDataManager().getMarketData());

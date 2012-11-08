@@ -3,6 +3,7 @@ package org.marketcetera.marketdata.bogus;
 import static org.marketcetera.marketdata.AssetClass.EQUITY;
 import static org.marketcetera.marketdata.AssetClass.FUTURE;
 import static org.marketcetera.marketdata.AssetClass.OPTION;
+import static org.marketcetera.marketdata.AssetClass.CURRENCY;
 import static org.marketcetera.marketdata.Capability.*;
 import static org.marketcetera.marketdata.bogus.Messages.UNSUPPORTED_OPTION_SPECIFICATION;
 
@@ -16,6 +17,7 @@ import org.marketcetera.marketdata.*;
 import org.marketcetera.options.OptionUtils;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -234,7 +236,7 @@ public class BogusFeed
     /**
      * supported asset classes
      */
-    private static final Set<AssetClass> assetClasses = EnumSet.of(EQUITY,OPTION,FUTURE);
+    private static final Set<AssetClass> assetClasses = EnumSet.of(EQUITY,OPTION,FUTURE,CURRENCY);
     /**
      * indicates if the feed has been logged in to
      */
@@ -359,6 +361,10 @@ public class BogusFeed
                     } else if(marketDataRequest.getAssetClass() == AssetClass.FUTURE) {
                         for(String symbol : symbols) {
                             exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(Future.fromString(symbol)).create());
+                        }
+                    } else if(marketDataRequest.getAssetClass() == AssetClass.CURRENCY) {
+                        for(String symbol : symbols) {
+                            exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(new Currency(symbol)).create());
                         }
                     } else if(marketDataRequest.getAssetClass() == AssetClass.OPTION) {
                         for(String symbol : symbols) {
