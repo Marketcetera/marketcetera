@@ -92,23 +92,6 @@ public class CurrencyTest
         };
     }
     /**
-     * Tests null near tenor values. 
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Test
-    public void testNullNearTenor()
-            throws Exception
-    {
-        new ExpectedFailure<IllegalArgumentException>(Messages.MISSING_NEAR_TENOR.getText()) {
-            @Override
-            protected void run() throws Exception {
-                new Currency("USD", "INR", null, "2W");
-            }
-        };
-    }
-
-    /**
      * Verifies that the given actual <code>Currency</code> contains the given expected attributes.
      *
      * @param inActualInstrument a <code>Currency</code> value
