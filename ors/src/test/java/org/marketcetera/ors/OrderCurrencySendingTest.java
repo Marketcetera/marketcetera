@@ -55,11 +55,10 @@ public class OrderCurrencySendingTest
     @Parameterized.Parameters
     public static Collection<Object[]> data()
     {
-    	LocalDate expiry = new LocalDate (2012,9,30);
         return Arrays.asList(
-                new Object[]{new Currency("USD","INR",expiry)},
-                new Object[]{new Currency("USD","JPY",expiry)},
-                new Object[]{new Currency("GBP","INR",expiry)}
+                new Object[]{new Currency("USD","INR","","")},
+                new Object[]{new Currency("USD","JPY","","")},
+                new Object[]{new Currency("GBP","INR","20121130","")}
         );
     }
 
