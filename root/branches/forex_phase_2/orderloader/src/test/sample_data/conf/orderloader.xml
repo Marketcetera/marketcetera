@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  - OrderLoader base configuration file.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - DO NOT CHANGE THIS FILE. Place your settings in
+  - 'orderloader_user.properties'.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:util="http://www.springframework.org/schema/util"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+  http://www.springframework.org/schema/util
+  http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+  <util:list id="propertiesFiles">
+    <value>file:src/test/sample_data/conf/orderloader_default.properties</value>
+    <value>file:src/test/sample_data/conf/orderloader_user.properties</value>
+  </util:list>
+  <bean class=
+    "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+   <property name="locations" ref="propertiesFiles"/>
+  </bean>
+  <bean id="clientURL" class="java.lang.String">
+    <constructor-arg value="${metc.client.url}"/>
+  </bean>
+  <bean id="clientWSHost" class="java.lang.String">
+    <constructor-arg value="${metc.client.ws.host}"/>
+  </bean>
+  <bean id="clientIDPrefix" class="java.lang.String">
+    <constructor-arg value="${metc.client.idprefix}"/>
+  </bean>
+  <bean id="clientWSPort" class="java.lang.Integer">
+    <constructor-arg value="${metc.client.ws.port}"/>
+  </bean>
+</beans>

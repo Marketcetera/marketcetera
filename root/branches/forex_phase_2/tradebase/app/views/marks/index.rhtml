@@ -1,0 +1,60 @@
+<%= render :partial => 'shared/breadcrumbs', 
+           :locals=> { :top_level => "P &amp; L", :top_level_controller => 'pnl', :action_name=>''} %>
+<h1>Mark Reports</h1>
+<%= if(!@report.nil?)
+       error_messages_for_report :report
+    end %>
+<p>Please choose from the following reports:</p>
+    <div id="by_symbol">
+        <% form_tag({:controller => 'marks', :action => 'by_symbol'}, :method => :get) do %>
+            <fieldset>
+                <h2>Marks By Symbol</h2>
+                <p>List all marks for a particular symbol for a range of dates.</p>
+                <div class="form_left">
+                    <%= render :partial => '/shared/security_type',
+                               :locals => {:equity_onclick_fn => '', :forex_onclick_fn => '', :equity_on => true, :forex_on => false} %>
+                  <label for="m_symbol_root">Symbol</label>
+                  <% if(!@report.nil? && !@report.errors[:symbol].nil?) %>
+                      <div class="fieldWithErrors">
+                  <% end -%>
+                  <%= text_field_with_auto_complete :m_symbol, :root  %>
+                  <% if(!@report.nil? && !@report.errors[:symbol].nil?)%>
+                      </div>
+                  <% end -%>
+                </div>
+                <div class="form_right">
+                  <%= render :partial => 'shared/from_to_date_fields',
+                             :locals => { :suffix => "smb", :errors => (@report.nil?) ? nil : @report.errors,
+                                      :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => false}   %>
+                  <input type="hidden" name="suffix" value="smb"/>
+                </div>                  
+            </fieldset>
+            <div>
+                <%= submit_tag 'Search by Symbol', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <% end -%>
+    </div>
+    <div id="on_date">        
+        <% form_tag({:controller => 'marks', :action => 'on_date'}, :method => :get) do %>
+            <fieldset>
+                <h2>Marks On Date</h2>
+                <p>List marks for all symbols on a particular date.</p>
+                
+                <div class="form_left">
+                    <label for="on_date">On Date</label>
+<% if(!@report.nil? && !@report.errors[:on_date].nil?) %>
+    <div class="fieldWithErrors">
+<% end -%>
+                    <div class="date">
+                        <%= date_select 'date', 'on', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+                    </div>
+<% if(!@report.nil? && !@report.errors[:on_date].nil?)%></div><% end -%>
+                </div>
+            </fieldset>
+            <div>
+                <%= submit_tag 'Search on Date', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <% end -%>
+    </div>           

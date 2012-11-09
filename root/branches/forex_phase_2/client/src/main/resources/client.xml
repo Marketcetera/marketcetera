@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Client configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - The connection factory for incoming connections. Note that ActiveMQ
+    - pooled factories only support outgoing connections, hence a simple
+    - factory is used for incoming ones.
+    -
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/spring/ActiveMQConnectionFactory.html' for a complete list
+    - of options.
+    -->
+
+  <bean
+   id="metc_connection_factory_in"
+   class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property
+     name="brokerURL"
+     ref="brokerURL"/>
+    <property
+     name="userName"
+     ref="runtimeUsername"/>
+    <property
+     name="password"
+     ref="runtimePassword"/>
+  </bean>
+
+  <!--
+    - The connection factory for outgoing connections.
+    -
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/pool/PooledConnectionFactory.html' for a complete list
+    - of options.
+    -->
+
+  <bean
+   id="metc_connection_factory_out"
+   class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property
+     name="connectionFactory"
+     ref="metc_connection_factory_in"/>
+  </bean>
+
+  <!--
+    - The client configuration bean.
+    -->
+
+  <bean
+   class="org.marketcetera.client.config.SpringConfig">
+    <!-- The connection factory for incoming JMS connections. -->
+    <property
+     name="incomingConnectionFactory"
+     ref="metc_connection_factory_in"/>
+    <!-- The connection factory for outgoing JMS connections. -->
+    <property
+     name="outgoingConnectionFactory"
+     ref="metc_connection_factory_out"/>
+  </bean>
+</beans>

@@ -1,0 +1,685 @@
+--- 
+posting_00057: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 230.0
+  pair_id: 1
+  id: 57
+  journal_id: 15
+posting_00015: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 13
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 15
+  journal_id: 4
+posting_00036: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 36
+  journal_id: 9
+posting_00016: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 16
+  journal_id: 4
+posting_00037: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 1023.0
+  pair_id: 1
+  id: 37
+  journal_id: 10
+posting_00058: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: -230.0
+  pair_id: 1
+  id: 58
+  journal_id: 15
+posting_00017: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 4562.0
+  pair_id: 1
+  id: 17
+  journal_id: 5
+posting_00060: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 60
+  journal_id: 15
+posting_00038: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: -1023.0
+  pair_id: 1
+  id: 38
+  journal_id: 10
+posting_00059: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 59
+  journal_id: 15
+posting_00040: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 40
+  journal_id: 10
+posting_00018: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: -4562.0
+  pair_id: 1
+  id: 18
+  journal_id: 5
+posting_00039: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 39
+  journal_id: 10
+posting_00061: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: -230.0
+  pair_id: 1
+  id: 61
+  journal_id: 16
+posting_00020: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 20
+  journal_id: 5
+posting_00019: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 19
+  journal_id: 5
+posting_00041: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 1033.0
+  pair_id: 1
+  id: 41
+  journal_id: 11
+posting_00062: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 230.0
+  pair_id: 1
+  id: 62
+  journal_id: 16
+posting_00021: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 8
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: -4562.0
+  pair_id: 1
+  id: 21
+  journal_id: 6
+posting_00042: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: -1033.0
+  pair_id: 1
+  id: 42
+  journal_id: 11
+posting_00063: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 63
+  journal_id: 16
+posting_00001: 
+  created_on: 2007-04-13 13:37:17 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:17 -07:00
+  quantity: 770.0
+  pair_id: 1
+  id: 1
+  journal_id: 1
+posting_00022: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 4562.0
+  pair_id: 1
+  id: 22
+  journal_id: 6
+posting_00043: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 43
+  journal_id: 11
+posting_00064: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 64
+  journal_id: 16
+posting_00002: 
+  created_on: 2007-04-13 13:37:17 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:17 -07:00
+  quantity: -770.0
+  pair_id: 1
+  id: 2
+  journal_id: 1
+posting_00023: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 13
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 23
+  journal_id: 6
+posting_00044: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 44
+  journal_id: 11
+posting_00065: 
+  created_on: 2007-04-17 17:59:55 -07:00
+  sub_account_id: 8
+  currency_id: 154
+  updated_on: 2007-04-17 18:02:56 -07:00
+  quantity: 1701.0
+  pair_id: 1
+  id: 65
+  journal_id: 17
+posting_00024: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 24
+  journal_id: 6
+posting_00045: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 40818.0
+  pair_id: 1
+  id: 45
+  journal_id: 12
+posting_00066: 
+  created_on: 2007-04-17 17:59:55 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-17 18:02:56 -07:00
+  quantity: -1701.0
+  pair_id: 1
+  id: 66
+  journal_id: 17
+posting_00003: 
+  created_on: 2007-04-13 13:37:17 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 3
+  journal_id: 1
+posting_00046: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: -40818.0
+  pair_id: 1
+  id: 46
+  journal_id: 12
+posting_00067: 
+  created_on: 2007-04-17 17:59:55 -07:00
+  sub_account_id: 13
+  currency_id: 154
+  updated_on: 2007-04-17 18:02:56 -07:00
+  quantity: 3.0
+  pair_id: 2
+  id: 67
+  journal_id: 17
+posting_00004: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 4
+  journal_id: 1
+posting_00025: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 8
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 17859.5
+  pair_id: 1
+  id: 25
+  journal_id: 7
+posting_00068: 
+  created_on: 2007-04-17 17:59:55 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-17 18:02:56 -07:00
+  quantity: -3.0
+  pair_id: 2
+  id: 68
+  journal_id: 17
+posting_00005: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-17 18:11:32 -07:00
+  quantity: 852.0
+  pair_id: 1
+  id: 5
+  journal_id: 2
+posting_00026: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: -17859.5
+  pair_id: 1
+  id: 26
+  journal_id: 7
+posting_00047: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 47
+  journal_id: 12
+posting_00006: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-17 18:11:32 -07:00
+  quantity: -852.0
+  pair_id: 1
+  id: 6
+  journal_id: 2
+posting_00027: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 13
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 27
+  journal_id: 7
+posting_00070: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  sub_account_id: 16
+  currency_id: 154
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: 44500.0
+  pair_id: 1
+  id: 70
+  journal_id: 18
+posting_00048: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 48
+  journal_id: 12
+posting_00069: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  sub_account_id: 15
+  currency_id: 154
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: -44500.0
+  pair_id: 1
+  id: 69
+  journal_id: 18
+posting_00007: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-17 18:11:32 -07:00
+  quantity: 5.0
+  pair_id: 2
+  id: 7
+  journal_id: 2
+posting_00050: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 1033.0
+  pair_id: 1
+  id: 50
+  journal_id: 13
+posting_00028: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 28
+  journal_id: 7
+posting_00071: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  sub_account_id: 20
+  currency_id: 154
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: 14.88
+  pair_id: 2
+  id: 71
+  journal_id: 18
+posting_00049: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: -1033.0
+  pair_id: 1
+  id: 49
+  journal_id: 13
+posting_00030: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 1023.0
+  pair_id: 1
+  id: 30
+  journal_id: 8
+posting_00008: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-17 18:11:32 -07:00
+  quantity: -5.0
+  pair_id: 2
+  id: 8
+  journal_id: 2
+posting_00029: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: -1023.0
+  pair_id: 1
+  id: 29
+  journal_id: 8
+posting_00051: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 51
+  journal_id: 13
+posting_00072: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  sub_account_id: 16
+  currency_id: 154
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: -14.88
+  pair_id: 2
+  id: 72
+  journal_id: 18
+posting_00010: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 770.0
+  pair_id: 1
+  id: 10
+  journal_id: 3
+posting_00009: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: -770.0
+  pair_id: 1
+  id: 9
+  journal_id: 3
+posting_00031: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 31
+  journal_id: 8
+posting_00052: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 52
+  journal_id: 13
+posting_00073: 
+  created_on: 2007-04-19 14:35:42 -07:00
+  sub_account_id: 15
+  currency_id: 154
+  updated_on: 2007-04-19 14:35:42 -07:00
+  quantity: 4000.0
+  pair_id: 1
+  id: 73
+  journal_id: 19
+posting_00011: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 11
+  journal_id: 3
+posting_00032: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 32
+  journal_id: 8
+posting_00053: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 8
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: -40818.0
+  pair_id: 1
+  id: 53
+  journal_id: 14
+posting_00074: 
+  created_on: 2007-04-19 14:35:42 -07:00
+  sub_account_id: 16
+  currency_id: 154
+  updated_on: 2007-04-19 14:35:42 -07:00
+  quantity: -4000.0
+  pair_id: 1
+  id: 74
+  journal_id: 19
+posting_00054: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 40818.0
+  pair_id: 1
+  id: 54
+  journal_id: 14
+posting_00012: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 12
+  journal_id: 3
+posting_00033: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 1
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: -17859.5
+  pair_id: 1
+  id: 33
+  journal_id: 9
+posting_00075: 
+  created_on: 2007-04-19 14:35:42 -07:00
+  sub_account_id: 20
+  currency_id: 154
+  updated_on: 2007-04-19 14:35:42 -07:00
+  quantity: 10.0
+  pair_id: 2
+  id: 75
+  journal_id: 19
+posting_00076: 
+  created_on: 2007-04-19 14:35:42 -07:00
+  sub_account_id: 16
+  currency_id: 154
+  updated_on: 2007-04-19 14:35:42 -07:00
+  quantity: -10.0
+  pair_id: 2
+  id: 76
+  journal_id: 19
+posting_00034: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 2
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 17859.5
+  pair_id: 1
+  id: 34
+  journal_id: 9
+posting_00013: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 8
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: -852.0
+  pair_id: 1
+  id: 13
+  journal_id: 4
+posting_00055: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 13
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 55
+  journal_id: 14
+posting_00014: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: 852.0
+  pair_id: 1
+  id: 14
+  journal_id: 4
+posting_00035: 
+  created_on: 2007-04-13 13:37:19 -07:00
+  sub_account_id: 6
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:19 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 35
+  journal_id: 9
+posting_00056: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 0.0
+  pair_id: 2
+  id: 56
+  journal_id: 14

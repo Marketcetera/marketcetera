@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.0
+Created-By: 10.0-b22 (Sun Microsystems Inc.)
+Bundle-Name: RSS/Atom news feed view
+Bundle-SymbolicName: biz.junginger.rss.eclipse.RssPlugin;singleton=true
+Bundle-Version: 1.5.0
+Bundle-ClassPath: rssview.jar
+Bundle-Activator: biz.junginger.newsfeed.eclipse.FeedPlugin
+Bundle-Vendor: www.junginger.biz
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,org.eclipse.core.runtime;bundle-version
+ ="3.2.0"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+

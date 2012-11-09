@@ -1,0 +1,19 @@
+<%= error_messages_for 'account' %>
+
+<!--[form:account]-->
+<fieldset>
+    <div class="form_left">
+        <label for="account_nickname">Nickname</label>
+        <%= text_field 'account', 'nickname'  %>
+
+        <label for="account_description">Description</label>
+        <%= text_field 'account', 'description'  %>
+        
+        <label for="account_institution_identifier">Institution identifier</label>
+        <%= text_field 'account', 'institution_identifier'  %>
+    </div>
+    <div class="clear"></div>
+</fieldset>
+
+<!--[eoform:account]-->
+
