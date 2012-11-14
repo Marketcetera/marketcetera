@@ -6,7 +6,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.marketdata.events.Event;
+import org.marketcetera.core.event.Event;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 
 /* $License$ */

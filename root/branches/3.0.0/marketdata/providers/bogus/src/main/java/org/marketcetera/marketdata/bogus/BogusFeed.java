@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.api.systemmodel.Subscriber;
+import org.marketcetera.core.event.Event;
 import org.marketcetera.core.marketdata.ExchangeRequest;
 import org.marketcetera.core.marketdata.ExchangeRequestBuilder;
 import org.marketcetera.core.marketdata.SimulatedExchange;
@@ -13,7 +14,6 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedType;
-import org.marketcetera.marketdata.events.Event;
 import org.marketcetera.marketdata.provider.AbstractMarketDataProvider;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 import org.marketcetera.marketdata.request.MarketDataRequestAtom;

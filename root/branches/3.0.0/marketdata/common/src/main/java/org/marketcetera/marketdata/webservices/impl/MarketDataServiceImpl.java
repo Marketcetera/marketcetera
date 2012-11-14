@@ -9,8 +9,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.systemmodel.Subscriber;
+import org.marketcetera.core.event.Event;
 import org.marketcetera.core.symbolresolver.SymbolResolverManager;
-import org.marketcetera.marketdata.events.Event;
 import org.marketcetera.marketdata.manager.MarketDataManager;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 import org.marketcetera.marketdata.webservices.MarketDataService;
@@ -29,6 +29,24 @@ import org.marketcetera.marketdata.webservices.MarketDataService;
 public class MarketDataServiceImpl
         implements MarketDataService
 {
+    /**
+     * Sets the maxQueueSize value.
+     *
+     * @param inMaxQueueSize an <code>int</code> value
+     */
+    public void setMaxQueueSize(int inMaxQueueSize)
+    {
+        maxQueueSize = inMaxQueueSize;
+    }
+    /**
+     * Sets the maxQueueInterval value.
+     *
+     * @param inMaxQueueInterval an <code>int</code> value
+     */
+    public void setMaxQueueInterval(int inMaxQueueInterval)
+    {
+        maxQueueInterval = inMaxQueueInterval;
+    }
     /**
      * Sets the symbolResolver value.
      *
@@ -143,4 +161,12 @@ public class MarketDataServiceImpl
      * generates unique request ids
      */
     private final AtomicLong requestIdCounter = new AtomicLong(0);
+    /**
+     * determines the maximum allowed size of event queues
+     */
+    private int maxQueueSize = 0;
+    /**
+     * determines the maximum allowed interval (in seconds) at which event queues must be checked at least
+     */
+    private int maxQueueInterval = 0;
 }

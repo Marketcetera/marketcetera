@@ -16,10 +16,10 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.core.event.Event;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.marketdata.events.Event;
 import org.marketcetera.marketdata.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.manager.MarketDataProviderRegistry;
 import org.marketcetera.marketdata.manager.MarketDataRequestFailed;
