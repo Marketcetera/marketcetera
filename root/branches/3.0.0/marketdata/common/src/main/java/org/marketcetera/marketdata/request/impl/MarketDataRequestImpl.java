@@ -11,11 +11,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 
@@ -37,20 +32,20 @@ class MarketDataRequestImpl
         implements MarketDataRequest
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequest#getInstruments()
+     * @see org.marketcetera.marketdata.request.MarketDataRequest#getSymbols()
      */
     @Override
-    public Set<Instrument> getInstruments()
+    public Set<String> getSymbols()
     {
-        return instruments;
+        return symbols;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequest#getUnderlyingInstruments()
+     * @see org.marketcetera.marketdata.request.MarketDataRequest#getUnderlyingSymbols()
      */
     @Override
-    public Set<Instrument> getUnderlyingInstruments()
+    public Set<String> getUnderlyingSymbols()
     {
-        return underlyingInstruments;
+        return underlyingSymbols;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataRequest#getContent()
@@ -90,8 +85,8 @@ class MarketDataRequestImpl
     @Override
     public String toString()
     {
-        return ToStringBuilder.reflectionToString(this,
-                                                  ToStringStyle.SHORT_PREFIX_STYLE);
+        return new ToStringBuilder(this,
+                                   ToStringStyle.SHORT_PREFIX_STYLE).append(symbols).append(underlyingSymbols).append(provider).append(exchange).append(content).append(parameters).toString();
     }
     /**
      * Sets the provider value.
@@ -120,15 +115,13 @@ class MarketDataRequestImpl
     /**
      * instruments value
      */
-    @XmlElementWrapper(name="instruments",required=false)
-    @XmlElementRefs({ @XmlElementRef(type=ConvertibleBondImpl.class), @XmlElementRef(type=EquityImpl.class), @XmlElementRef(type=OptionImpl.class), @XmlElementRef(type=FutureImpl.class)} )
-    private final Set<Instrument> instruments = new LinkedHashSet<Instrument>();
+    @XmlElementWrapper(name="symbols",required=false)
+    private final Set<String> symbols = new LinkedHashSet<String>();
     /**
      * underlying instruments value
      */
-    @XmlElementWrapper(name="underlyingInstruments",required=false)
-    @XmlElementRefs({ @XmlElementRef(type=ConvertibleBondImpl.class), @XmlElementRef(type=EquityImpl.class), @XmlElementRef(type=OptionImpl.class), @XmlElementRef(type=FutureImpl.class)} )
-    private final Set<Instrument> underlyingInstruments = new LinkedHashSet<Instrument>();
+    @XmlElementWrapper(name="underlyingSymbols",required=false)
+    private final Set<String> underlyingSymbols = new LinkedHashSet<String>();
     /**
      * content value
      */

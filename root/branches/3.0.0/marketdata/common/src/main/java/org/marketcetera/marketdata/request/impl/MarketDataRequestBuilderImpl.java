@@ -6,7 +6,6 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.Util;
-import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 import org.marketcetera.marketdata.request.MarketDataRequestBuilder;
@@ -27,36 +26,16 @@ public class MarketDataRequestBuilderImpl
         implements MarketDataRequestBuilder
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withInstruments(org.marketcetera.core.trade.Instrument[])
-     */
-    @Override
-    public MarketDataRequestBuilder withInstruments(Instrument... inInstruments)
-    {
-        instruments.clear();
-        if(inInstruments != null) {
-            instruments.addAll(Arrays.asList(inInstruments));
-        }
-        return this;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withInstruments(java.util.Set)
-     */
-    @Override
-    public MarketDataRequestBuilder withInstruments(Set<Instrument> inInstruments)
-    {
-        instruments.clear();
-        if(inInstruments != null) {
-            instruments.addAll(inInstruments);
-        }
-        return this;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withSymbols(java.lang.String[])
      */
     @Override
     public MarketDataRequestBuilder withSymbols(String... inSymbols)
     {
-        throw new UnsupportedOperationException(); // TODO
+        symbols.clear();
+        if(inSymbols != null) {
+            symbols.addAll(Arrays.asList(inSymbols));
+        }
+        return this;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withSymbols(java.util.Set)
@@ -64,29 +43,9 @@ public class MarketDataRequestBuilderImpl
     @Override
     public MarketDataRequestBuilder withSymbols(Set<String> inSymbols)
     {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withUnderlyingInstruments(org.marketcetera.core.trade.Instrument[])
-     */
-    @Override
-    public MarketDataRequestBuilder withUnderlyingInstruments(Instrument... inInstruments)
-    {
-        underlyingInstruments.clear();
-        if(inInstruments != null) {
-            underlyingInstruments.addAll(Arrays.asList(inInstruments));
-        }
-        return this;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withUnderlyingInstruments(java.util.Set)
-     */
-    @Override
-    public MarketDataRequestBuilder withUnderlyingInstruments(Set<Instrument> inInstruments)
-    {
-        underlyingInstruments.clear();
-        if(inInstruments != null) {
-            underlyingInstruments.addAll(inInstruments);
+        symbols.clear();
+        if(inSymbols != null) {
+            symbols.addAll(inSymbols);
         }
         return this;
     }
@@ -96,7 +55,11 @@ public class MarketDataRequestBuilderImpl
     @Override
     public MarketDataRequestBuilder withUnderlyingSymbols(String... inSymbols)
     {
-        throw new UnsupportedOperationException(); // TODO
+        underlyingSymbols.clear();
+        if(inSymbols != null) {
+            underlyingSymbols.addAll(Arrays.asList(inSymbols));
+        }
+        return this;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withUnderlyingSymbols(java.util.Set)
@@ -104,7 +67,11 @@ public class MarketDataRequestBuilderImpl
     @Override
     public MarketDataRequestBuilder withUnderlyingSymbols(Set<String> inSymbols)
     {
-        throw new UnsupportedOperationException(); // TODO
+        underlyingSymbols.clear();
+        if(inSymbols != null) {
+            underlyingSymbols.addAll(inSymbols);
+        }
+        return this;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataRequestBuilder#withContent(org.marketcetera.marketdata.Content[])
@@ -226,8 +193,8 @@ public class MarketDataRequestBuilderImpl
     public MarketDataRequest create()
     {
         MarketDataRequestImpl request = new MarketDataRequestImpl();
-        request.getInstruments().addAll(instruments);
-        request.getUnderlyingInstruments().addAll(underlyingInstruments);
+        request.getSymbols().addAll(symbols);
+        request.getUnderlyingSymbols().addAll(underlyingSymbols);
         request.getContent().addAll(content);
         request.getParameters().putAll(parameters);
         request.setProvider(provider);
@@ -237,11 +204,11 @@ public class MarketDataRequestBuilderImpl
     /**
      * instruments value
      */
-    private final Set<Instrument> instruments = new LinkedHashSet<Instrument>();
+    private final Set<String> symbols = new LinkedHashSet<String>();
     /**
      * underlying instruments value
      */
-    private final Set<Instrument> underlyingInstruments = new LinkedHashSet<Instrument>();
+    private final Set<String> underlyingSymbols = new LinkedHashSet<String>();
     /**
      * content value
      */

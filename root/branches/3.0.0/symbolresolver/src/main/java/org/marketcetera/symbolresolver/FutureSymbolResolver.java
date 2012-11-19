@@ -2,7 +2,7 @@ package org.marketcetera.symbolresolver;
 
 import javax.annotation.concurrent.Immutable;
 
-import org.marketcetera.core.symbolresolver.SymbolResolver;
+import org.marketcetera.core.symbolresolver.SymbolResolverElement;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.impl.FutureImpl;
 
@@ -16,7 +16,7 @@ import org.marketcetera.core.trade.impl.FutureImpl;
  */
 @Immutable
 public class FutureSymbolResolver
-        implements SymbolResolver
+        implements SymbolResolverElement
 {
     /* (non-Javadoc)
      * @see org.marketcetera.symbolresolver.SymbolResolver#resolve(java.lang.String)

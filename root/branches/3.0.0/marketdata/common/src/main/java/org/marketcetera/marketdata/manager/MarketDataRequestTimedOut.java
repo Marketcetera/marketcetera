@@ -2,59 +2,53 @@ package org.marketcetera.marketdata.manager;
 
 import org.marketcetera.core.util.log.I18NBoundMessage;
 
-
 /* $License$ */
 
 /**
- *
+ * Indicates that a market data request could not be executed in a reasonable amount of time.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 public class MarketDataRequestTimedOut
-        extends MarketDataException
+        extends MarketDataRequestFailed
 {
     /**
      * Create a new MarketDataRequestTimedOut instance.
-     *
      */
     public MarketDataRequestTimedOut()
     {
-        throw new UnsupportedOperationException();
     }
-
     /**
      * Create a new MarketDataRequestTimedOut instance.
      *
-     * @param inMessage
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public MarketDataRequestTimedOut(I18NBoundMessage inMessage)
     {
-        throw new UnsupportedOperationException();
+        super(inMessage);
     }
-
     /**
      * Create a new MarketDataRequestTimedOut instance.
      *
-     * @param inNested
-     * @param inMessage
+     * @param inNested a <code>Throwable</code> value
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public MarketDataRequestTimedOut(Throwable inNested,
-            I18NBoundMessage inMessage)
+                                     I18NBoundMessage inMessage)
     {
-        throw new UnsupportedOperationException();
+        super(inNested,
+              inMessage);
     }
-
     /**
      * Create a new MarketDataRequestTimedOut instance.
      *
-     * @param inNested
+     * @param inNested a <code>Throwable</code> value
      */
     public MarketDataRequestTimedOut(Throwable inNested)
     {
-        throw new UnsupportedOperationException();
+        super(inNested);
     }
-
     private static final long serialVersionUID = 1L;
 }

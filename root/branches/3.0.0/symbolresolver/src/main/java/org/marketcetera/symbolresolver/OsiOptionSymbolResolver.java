@@ -3,7 +3,7 @@ package org.marketcetera.symbolresolver;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.core.options.OptionUtils;
-import org.marketcetera.core.symbolresolver.SymbolResolver;
+import org.marketcetera.core.symbolresolver.SymbolResolverElement;
 import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
@@ -16,7 +16,7 @@ import org.marketcetera.core.trade.Instrument;
  */
 @Immutable
 public class OsiOptionSymbolResolver
-        implements SymbolResolver
+        implements SymbolResolverElement
 {
     /* (non-Javadoc)
      * @see org.marketcetera.symbolresolver.SymbolResolver#resolve(java.lang.String)

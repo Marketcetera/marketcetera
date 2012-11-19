@@ -22,13 +22,25 @@ public enum Content
      */
     MARKET_STAT,
     /**
-     * depth-of-book, aggregated per price level
+     * generic depth-of-book, aggregated per price level
      */
     AGGREGATED_DEPTH,
     /**
-     * depth-of-book, unaggregated
+     * generic depth-of-book, unaggregated
      */
     UNAGGREGATED_DEPTH,
+    /**
+     * specialized NASDAQ unaggregated depth
+     */
+    TOTAL_VIEW,
+    /**
+     * specialized NYSE unaggregated depth
+     */
+    OPEN_BOOK,
+    /**
+     * specialized NASDAQ aggregation depth
+     */
+    LEVEL_2,
     /**
      * latest trade
      */
@@ -49,5 +61,5 @@ public enum Content
     /**
      * content types that represent a depth-of-book view
      */
-    private static final Set<Content> depth = EnumSet.of(AGGREGATED_DEPTH, UNAGGREGATED_DEPTH);
+    private static final Set<Content> depth = EnumSet.of(AGGREGATED_DEPTH,UNAGGREGATED_DEPTH,TOTAL_VIEW,OPEN_BOOK,LEVEL_2);
 }
