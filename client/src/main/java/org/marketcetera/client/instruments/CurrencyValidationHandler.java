@@ -63,17 +63,11 @@ public class CurrencyValidationHandler extends InstrumentValidationHandler<Curre
 	{
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		sdf.setLenient(false);
-		Date date;
 		try {
-			date  = sdf.parse(tenor);	
+			sdf.parse(tenor);	
 		} catch (Exception e) {
 			throw new OrderValidationException(new I18NBoundMessage1P
 					(Messages.INVALID_CURRENCY_TENOR_FORMAT,tenor));
-		}
-		if(date.before(new Date()))
-		{
-			throw new OrderValidationException(new I18NBoundMessage1P
-					(Messages.INVALID_CURRENCY_TENOR_VALUE,tenor));
 		}
 	}	
 }
