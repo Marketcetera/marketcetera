@@ -151,11 +151,6 @@ public class BogusFeed
                          resolvedInstrument);
         Subscriber eventSubscriber = new Subscriber() {
             @Override
-            public boolean isInteresting(Object inData)
-            {
-                return true;
-            }
-            @Override
             public void publishTo(Object inData)
             {
                 if(inData instanceof HasInstrument) {

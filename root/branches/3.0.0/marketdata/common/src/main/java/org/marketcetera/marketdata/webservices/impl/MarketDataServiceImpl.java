@@ -78,11 +78,6 @@ public class MarketDataServiceImpl
                        eventQueue);
             Subscriber subscriber = new Subscriber() {
                     @Override
-                    public boolean isInteresting(Object inData)
-                    {
-                        return true;
-                    }
-                    @Override
                     public void publishTo(Object inData)
                     {
                         if(inData instanceof Event) {

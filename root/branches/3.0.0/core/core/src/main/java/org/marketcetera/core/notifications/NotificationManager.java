@@ -97,21 +97,13 @@ public class NotificationManager
          */
         private static final String CATEGORY = "notifications.log"; //$NON-NLS-1$
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
-         */
-        @Override
-        public boolean isInteresting(Object inData)
-        {
-            return inData instanceof INotification;
-        }
-        /* (non-Javadoc)
          * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
          */
         @Override
         public void publishTo(Object inData)
         {
             SLF4JLoggerProxy.info(CATEGORY,
-                                  inData.toString());
+                                  String.valueOf(inData));
         }
     }
 }
