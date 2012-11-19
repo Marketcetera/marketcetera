@@ -1,19 +1,20 @@
 package org.marketcetera.marketdata.bogus;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.marketdata.ExchangeRequest;
 import org.marketcetera.core.marketdata.ExchangeRequestBuilder;
 import org.marketcetera.core.marketdata.SimulatedExchange;
-import org.marketcetera.core.trade.SecurityType;
+import org.marketcetera.core.marketdata.SimulatedExchange.Token;
+import org.marketcetera.core.symbolresolver.SymbolResolver;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedType;
+import org.marketcetera.marketdata.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.provider.AbstractMarketDataProvider;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 import org.marketcetera.marketdata.request.MarketDataRequestAtom;
@@ -21,7 +22,7 @@ import org.marketcetera.marketdata.request.MarketDataRequestAtom;
 /* $License$ */
 
 /**
- *
+ * Provides simulated market data.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -30,6 +31,15 @@ import org.marketcetera.marketdata.request.MarketDataRequestAtom;
 public class BogusFeed
         extends AbstractMarketDataProvider
 {
+    /**
+     * Sets the symbolResolver value.
+     *
+     * @param inSymbolResolver a <code>SymbolResolver</code> value
+     */
+    public void setSymbolResolver(SymbolResolver inSymbolResolver)
+    {
+        symbolResolver = inSymbolResolver;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataProvider#getFeedType()
      */
@@ -55,12 +65,17 @@ public class BogusFeed
         return capabilities;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataProvider#getHandledTypes()
+     * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#addSymbolMapping(java.lang.String, org.marketcetera.core.trade.Instrument)
      */
     @Override
-    public Set<SecurityType> getHandledTypes()
+    protected void addSymbolMapping(String inSymbol,
+                                    Instrument inInstrument)
     {
-        return handledTypes;
+        if(!resolvedSymbols.contains(inSymbol)) {
+            resolvedSymbols.add(inSymbol);
+            super.addSymbolMapping(inSymbol,
+                                   inInstrument);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#doStart()
@@ -68,6 +83,7 @@ public class BogusFeed
     @Override
     protected void doStart()
     {
+        // TODO add more than one exchange to produce a LEVEL_2 
         SimulatedExchange exchange = new SimulatedExchange(getProviderName(),
                                                            "BGS");
         SLF4JLoggerProxy.debug(BogusFeed.class,
@@ -91,35 +107,112 @@ public class BogusFeed
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#doCancel(java.lang.String)
+     * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#doCancel(org.marketcetera.marketdata.request.MarketDataRequestAtom)
      */
     @Override
-    protected void doCancel(String inInternalHandle)
+    protected void doCancel(MarketDataRequestAtom inAtom)
     {
-        Request.cancel(inInternalHandle);
+        Token token = tokensBySymbol.remove(inAtom);
+        if(token != null) {
+            Collection<SimulatedExchange> exchanges = getExchangesForCode(inAtom.getExchange());
+            for(SimulatedExchange exchange : exchanges) {
+                exchange.cancel(token);
+            }
+        }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#doMarketDataRequest(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.provider.MarketDataRequestAtom, java.util.concurrent.atomic.AtomicBoolean)
+     * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#doMarketDataRequest(org.marketcetera.marketdata.MarketDataRequest, org.marketcetera.marketdata.provider.MarketDataRequestAtom)
      */
     @Override
-    protected String doMarketDataRequest(MarketDataRequest inCompleteRequest,
-                                         MarketDataRequestAtom inRequestAtom,
-                                         AtomicBoolean inUpdateSemaphore)
-            throws InterruptedException
+    protected void doMarketDataRequest(MarketDataRequest inCompleteRequest,
+                                       MarketDataRequestAtom inRequestAtom)
     {
-        String handle = Request.execute(inCompleteRequest,
-                                        inRequestAtom,
-                                        this);
-        return handle;
+        Collection<SimulatedExchange> exchanges = getExchangesForCode(inRequestAtom.getExchange());
+        for(SimulatedExchange exchange : exchanges) {
+            execute(exchange,
+                    inRequestAtom);
+        }
+    }
+    /**
+     * 
+     *
+     *
+     * @param inExchange
+     * @param inAtom
+     */
+    private void execute(SimulatedExchange inExchange,
+                         final MarketDataRequestAtom inAtom)
+    {
+        Instrument resolvedInstrument = symbolResolver.resolve(inAtom.getSymbol());
+        if(resolvedInstrument == null) {
+            throw new MarketDataRequestFailed(); // TODO message
+        }
+        addSymbolMapping(inAtom.getSymbol(),
+                         resolvedInstrument);
+        Subscriber eventSubscriber = new Subscriber() {
+            @Override
+            public boolean isInteresting(Object inData)
+            {
+                return true;
+            }
+            @Override
+            public void publishTo(Object inData)
+            {
+                if(inData instanceof HasInstrument) {
+                    Instrument eventInstrument = ((HasInstrument)inData).getInstrument();
+                    addSymbolMapping(inAtom.getSymbol(),
+                                     eventInstrument);
+                    publishEvents(inAtom.getContent(),
+                                  eventInstrument,
+                                  (Event)inData);
+                }
+            }
+        };
+        ExchangeRequest request;
+        if(inAtom.isUnderlyingSymbol()) {
+            request = ExchangeRequestBuilder.newRequest().withUnderlyingInstrument(resolvedInstrument).create(); 
+        } else {
+            request = ExchangeRequestBuilder.newRequest().withInstrument(resolvedInstrument).create(); 
+        }
+        Token subscriptionToken = null;
+        switch(inAtom.getContent()) {
+            case DIVIDEND:
+                subscriptionToken = inExchange.getDividends(request,
+                                                            eventSubscriber);
+                break;
+            case LATEST_TICK:
+                subscriptionToken = inExchange.getLatestTick(request,
+                                                             eventSubscriber);
+                break;
+            case MARKET_STAT:
+                subscriptionToken = inExchange.getStatistics(request,
+                                                             eventSubscriber);
+                break;
+            case TOP_OF_BOOK:
+                subscriptionToken = inExchange.getTopOfBook(request,
+                                                            eventSubscriber);
+                break;
+            case OPEN_BOOK:
+            case TOTAL_VIEW:
+            case UNAGGREGATED_DEPTH:
+                subscriptionToken = inExchange.getDepthOfBook(request,
+                                                              eventSubscriber);
+                break;
+            case LEVEL_2:
+            case AGGREGATED_DEPTH:
+            default:
+                throw new MarketDataRequestFailed();
+        }
+        tokensBySymbol.put(inAtom,
+                           subscriptionToken);
     }
     /**
      * Gets the list of exchanges associated with the given exchange code.
      *
-     * @param inExchange a <code>String</code> value containing an exchange code or null to return
-     *  all exchanges
-     * @return a <code>List&lt;SimulatedExchange&gt;</code> value
+     * @param inExchange a <code>String</code> value containing an exchange code or <code>null</code> to return all exchanges
+     * @return a <code>Collection&lt;SimulatedExchange&gt;</code> value
      */
-    private List<SimulatedExchange> getExchangesForCode(String inExchange)
+    private Collection<SimulatedExchange> getExchangesForCode(String inExchange)
     {
         if(inExchange == null ||
            inExchange.isEmpty()) {
@@ -129,277 +222,30 @@ public class BogusFeed
         if(exchanges.containsKey(inExchange)) {
             return Arrays.asList(new SimulatedExchange[] { exchanges.get(inExchange) });
         }
-        return new ArrayList<SimulatedExchange>();
-    }
-    /**
-     * Corresponds to a single market data request submitted to {@link BogusFeed}.
-     *
-     * @version $Id$
-     * @since 1.5.0
-     */
-    private static class Request
-    {
-        /**
-         * Executes the given <code>MarketDataRequest</code> and returns
-         * a handle corresponding to the request.
-         *
-         * @param inRequest a <code>MarketDataRequest</code> value
-         * @param inRequestAtom a <code>MarketDataRequestAtom</code> value
-         * @param inParentFeed a <code>BogusFeed</code> value
-         * @return a <code>String</code> value
-         */
-        private static String execute(MarketDataRequest inRequest,
-                                      MarketDataRequestAtom inRequestAtom,
-                                      BogusFeed inParentFeed)
-        {
-            Request request = new Request(inRequest,
-                                          inRequestAtom,
-                                          inParentFeed);
-            request.execute();
-            return request.getIDAsString();
-        }
-        /**
-         * Cancels the market data request associated with the given handle.
-         *
-         * @param inHandle a <code>String</code> value
-         */
-        private static void cancel(String inHandle)
-        {
-            Request request;
-            synchronized(requests) {
-                request = requests.remove(inHandle);
-            }
-            if(request != null) {
-                request.cancel();
-            }
-        }
-        /**
-         * Create a new Request instance.
-         *
-         * @param inRequest a <code>MarketDataRequest</code> value
-         * @param inRequestAtom a <code>MarketDataRequestAtom</code> value
-         * @param inFeed a <code>BogusFeed</code> value
-         */
-        private Request(MarketDataRequest inRequest,
-                        MarketDataRequestAtom inRequestAtom,
-                        BogusFeed inFeed)
-        {
-            marketDataRequest = inRequest;
-            marketDataRequestAtom = inRequestAtom;
-            feed = inFeed;
-            subscriber = new Subscriber() {
-                @Override
-                public boolean isInteresting(Object inData)
-                {
-                    return true;
-                }
-                @Override
-                public void publishTo(Object inData)
-                {
-                    SLF4JLoggerProxy.debug(BogusFeed.class,
-                                           "BogusFeed publishing {}", //$NON-NLS-1$
-                                           inData);
-                    feed.dataReceived(getIDAsString(),
-                                      (Event)inData);
-                }
-            };
-            synchronized(requests) {
-                requests.put(getIDAsString(),
-                             this);
-            }
-        }
-        /**
-         * Executes the market data request associated with this object.
-         * 
-         * @throws IllegalStateException if this method has already been executed for this object
-         */
-        private synchronized void execute()
-        {
-            if(executed) {
-                throw new IllegalStateException();
-            }
-            try {
-                List<ExchangeRequest> exchangeRequests = new ArrayList<ExchangeRequest>();
-                if(marketDataRequestAtom.getInstrument() != null) {
-                    exchangeRequests.add(ExchangeRequestBuilder.newRequest().withInstrument(marketDataRequestAtom.getInstrument()).create());
-                } else {
-                    // marketDataRequestAtom has no instrument - should then have underlyingInstrument instead
-                    exchangeRequests.add(ExchangeRequestBuilder.newRequest().withUnderlyingInstrument(marketDataRequestAtom.getUnderlyingInstrument()).create());
-                }
-                for(ExchangeRequest exchangeRequest : exchangeRequests) {
-                    // all symbols for which we want data are collected in the symbols list
-                    // each type of subscription is managed differently
-                    for(Content content : marketDataRequest.getContent()) {
-                        switch(content) {
-                            case TOP_OF_BOOK :
-                                // TOP_OF_BOOK from the specified exchange only
-                                doTopOfBook(exchangeRequest,
-                                            marketDataRequest.getExchange());
-                                break;
-                            case LATEST_TICK :
-                                // LATEST_TICK is the most recent trade
-                                doLatestTick(exchangeRequest,
-                                             marketDataRequest.getExchange());
-                                break;
-                            case MARKET_STAT :
-                                doStatistics(exchangeRequest,
-                                             marketDataRequest.getExchange());
-                                break;
-                            case DIVIDEND :
-                                doDividends(exchangeRequest,
-                                            marketDataRequest.getExchange());
-                                break;
-                            case UNAGGREGATED_DEPTH :
-                                doDepthOfBook(exchangeRequest,
-                                              marketDataRequest.getExchange());
-                                break;
-                            default:
-                                throw new UnsupportedOperationException();
-                        }
-                    }
-                }
-            } finally {
-                executed = true;
-            }
-        }
-        /**
-         * Executes a statistics request for the given request using the
-         * given exchange code.
-         *
-         * @param inExchangeRequest an <code>ExchangeRequest</code> value
-         * @param inExchangeToUse a <code>String</code> value
-         */
-        private void doStatistics(ExchangeRequest inExchangeRequest,
-                                  String inExchangeToUse)
-        {
-            for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getStatistics(inExchangeRequest,
-                                                          subscriber));
-            }
-        }
-        /**
-         * Executes a dividend request for the given request using the
-         * given exchange code.
-         *
-         * @param inExchangeRequest an <code>ExchangeRequest</code> value
-         * @param inExchangeToUse a <code>String</code> value
-         */
-        private void doDividends(ExchangeRequest inExchangeRequest,
-                                 String inExchangeToUse)
-        {
-            for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getDividends(inExchangeRequest,
-                                                         subscriber));
-                // dividends are the same across all feeds, so the first answer is sufficient
-                break;
-            }
-        }
-        /**
-         * Executes a depth-of-book request for the given request using the
-         * given exchange code.
-         *
-         * @param inRequest an <code>ExchangeRequest</code> value
-         * @param inExchangeToUse a <code>String</code> value
-         */
-        private void doDepthOfBook(ExchangeRequest inRequest,
-                                   String inExchangeToUse)
-        {
-            for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getDepthOfBook(inRequest,
-                                                           subscriber));
-            }
-        }
-        /**
-         * Executes a top-of-book request for the given request using the
-         * given exchange code.
-         *
-         * @param inRequest an <code>ExchangeRequest</code> value
-         * @param inExchangeToUse a <code>String</code> value
-         */
-        private void doTopOfBook(ExchangeRequest inRequest,
-                                 String inExchangeToUse)
-        {
-            for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getTopOfBook(inRequest,
-                                                         subscriber));
-            }
-        }
-        /**
-         * Executes a latest-tick request for the given request using the given
-         * exchange code.
-         *
-         * @param inRequest an <code>ExchangeRequest</code> value
-         * @param inExchangeToUse a <code>String</code> value
-         */
-        private void doLatestTick(ExchangeRequest inRequest,
-                                  String inExchangeToUse)
-        {
-            for(SimulatedExchange exchange : feed.getExchangesForCode(inExchangeToUse)) {
-                exchangeTokens.add(exchange.getLatestTick(inRequest,
-                                                          subscriber));
-            }
-        }
-        /**
-         * Cancels all subscriptions associated with this request.
-         */
-        private void cancel()
-        {
-            for(SimulatedExchange.Token token : exchangeTokens) {
-                token.cancel();
-            }
-        }
-        /**
-         * Returns the request ID as a <code>String</code>. 
-         *
-         * @return a <code>String</code> value
-         */
-        private String getIDAsString()
-        {
-            return Long.toHexString(id);
-        }
-        /**
-         * the collection of subscription tokens associated with this request
-         */
-        private final List<SimulatedExchange.Token> exchangeTokens = new ArrayList<SimulatedExchange.Token>();
-        /**
-         * the market data request associated with this object
-         */
-        private final MarketDataRequest marketDataRequest;
-        /**
-         * the actual market data being requested
-         */
-        private final MarketDataRequestAtom marketDataRequestAtom;
-        /**
-         * the unique identifier of this request
-         */
-        private final long id = counter.incrementAndGet();
-        /**
-         * the parent object for this request
-         */
-        private final BogusFeed feed;
-        /**
-         * the bridge object which receives responses from the parent's nested exchanges
-         * and forwards them to the submitter of the request
-         */
-        private final Subscriber subscriber;
-        /**
-         * indicates whether this object has been executed yet or not
-         */
-        private boolean executed = false;
-        /**
-         * all requests by their ID (represented as string)
-         */
-        private static final Map<String,Request> requests = new HashMap<String,Request>();
-        /**
-         * counter used to generate unique ids
-         */
-        private static final AtomicLong counter = new AtomicLong(0);
+        return Collections.emptyList();
     }
     /**
      * exchanges that make up the group for which the bogus feed can report data
      */
     private final Map<String,SimulatedExchange> exchanges = new HashMap<String,SimulatedExchange>();
-    private static final Set<SecurityType> handledTypes = EnumSet.of(SecurityType.CommonStock,SecurityType.Future,SecurityType.Option);
+    /**
+     * 
+     */
+    private final Map<MarketDataRequestAtom,Token> tokensBySymbol = new HashMap<MarketDataRequestAtom,Token>();
+    /**
+     * 
+     */
+    private volatile SymbolResolver symbolResolver;
+    /**
+     * 
+     */
+    private static final Set<String> resolvedSymbols = new HashSet<String>();
+    /**
+     * 
+     */
     private static final Set<Capability> capabilities = EnumSet.of(Capability.TOP_OF_BOOK,Capability.OPEN_BOOK,Capability.TOTAL_VIEW,Capability.LATEST_TICK,Capability.MARKET_STAT,Capability.DIVIDEND,Capability.UNAGGREGATED_DEPTH);
+    /**
+     * 
+     */
     private static final String provider = "bogus";
 }

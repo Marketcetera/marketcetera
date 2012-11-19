@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -42,7 +43,6 @@ public class MarketDataManagerImpl
     @Override
     public void setStatus(MarketDataProvider inProvider,
                           FeedStatus inStatus)
-            throws InterruptedException
     {
         SLF4JLoggerProxy.info(this,
                               "Market data provider {} reports status {}", // TODO
@@ -58,6 +58,8 @@ public class MarketDataManagerImpl
             } else {
                 activeProvidersByName.remove(inProvider.getProviderName());
             }
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
         } finally {
             statusUpdateLock.unlock();
         }
@@ -69,8 +71,48 @@ public class MarketDataManagerImpl
     public void requestMarketData(MarketDataRequest inRequest,
                                   Subscriber inSubscriber)
     {
-        doMarketDataRequest(inRequest,
-                            inSubscriber);
+        // route the request to available providers or to a particular provider
+        Lock requestLock = requestLockObject.writeLock();
+        try {
+            requestLock.lockInterruptibly();
+            MarketDataRequestToken token = new Token(inSubscriber,
+                                                     inRequest);
+            if(inRequest.getProvider() != null) {
+                // a specific provider was requested - use that provider only
+                MarketDataProvider provider = activeProvidersByName.get(inRequest.getProvider());
+                if(provider == null) {
+                    throw new MarketDataProviderNotAvailable();
+                }
+                provider.requestMarketData(token);
+                providersByToken.put(token,
+                                     provider);
+            } else {
+                for(MarketDataProvider provider : activeProvidersByName.values()) {
+                    try {
+                        provider.requestMarketData(token);
+                        providersByToken.put(token,
+                                             provider);
+                    } catch (MarketDataException e) {
+                        SLF4JLoggerProxy.warn(this,
+                                              e,
+                                              "Unable to request market data {} from {}", // TODO
+                                              inRequest,
+                                              provider.getProviderName());
+                        // continue to try from the next provider
+                    }
+                }
+                // TODO throw no providers available if the request could not be submitted
+            }
+            tokensBySubscriber.put(inSubscriber,
+                                   token);
+        } catch (InterruptedException e) {
+            SLF4JLoggerProxy.warn(this,
+                                  "Market data request {} interrupted", // TODO
+                                  inRequest);
+            throw new MarketDataRequestTimedOut(e);
+        } finally {
+            requestLock.unlock();
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.manager.MarketDataManager#cancelMarketDataRequest(org.marketcetera.api.systemmodel.Subscriber)
@@ -91,51 +133,7 @@ public class MarketDataManagerImpl
             cancelLock.unlock();
         }
     }
-    private void doMarketDataRequest(MarketDataRequest inRequest,
-                                     Subscriber inSubscriber)
-    {
-        // route the request to available providers or to a particular provider
-        Lock requestLock = requestLockObject.writeLock();
-        try {
-            requestLock.lockInterruptibly();
-            MarketDataRequestToken token = new Token(inSubscriber,
-                                                     inRequest);
-            if(inRequest.getProvider() != null) {
-                // a specific provider was requested - use that provider only
-                MarketDataProvider provider = activeProvidersByName.get(inRequest.getProvider());
-                if(provider == null) {
-                    throw new MarketDataProviderNotAvailable(); // TODO message
-                }
-                provider.requestMarketData(token);
-                providersByToken.put(token,
-                                     provider);
-            } else {
-                for(MarketDataProvider provider : activeProvidersByName.values()) {
-                    try {
-                        provider.requestMarketData(token);
-                        providersByToken.put(token,
-                                             provider);
-                    } catch (MarketDataException e) {
-                        SLF4JLoggerProxy.warn(this,
-                                              e,
-                                              "Unable to request market data {} from {}", // TODO
-                                              inRequest,
-                                              provider.getProviderName());
-                        // continue to try from the next provider
-                    }
-                }
-            }
-            tokensBySubscriber.put(inSubscriber,
-                                   token);
-        } catch (InterruptedException e) {
-            SLF4JLoggerProxy.warn(this,
-                                  "Market data request {} interrupted", // TODO
-                                  inRequest);
-            throw new MarketDataRequestTimedOut(e);
-        } finally {
-            requestLock.unlock();
-        }
-    }
+    @Immutable
     private class Token
             implements MarketDataRequestToken
     {

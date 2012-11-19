@@ -3,7 +3,7 @@ package org.marketcetera.marketdata;
 /* $License$ */
 
 /**
- *
+ * Indicates the status of a market data provider feed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: FeedStatus.java 16325 2012-10-25 23:13:12Z colin $

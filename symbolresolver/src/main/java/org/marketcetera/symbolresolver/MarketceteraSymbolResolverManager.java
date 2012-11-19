@@ -9,8 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.symbolresolver.Messages;
 import org.marketcetera.core.symbolresolver.NoInstrumentForSymbol;
+import org.marketcetera.core.symbolresolver.SymbolResolverElement;
 import org.marketcetera.core.symbolresolver.SymbolResolver;
-import org.marketcetera.core.symbolresolver.SymbolResolverManager;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
@@ -25,14 +25,14 @@ import org.marketcetera.core.util.log.SLF4JLoggerProxy;
  */
 @ThreadSafe
 public class MarketceteraSymbolResolverManager
-        implements SymbolResolverManager
+        implements SymbolResolver
 {
     /**
      * Sets the resolvers value.
      *
      * @param inResolvers a <code>List&lt;SymbolResolver&gt;</code> value
      */
-    public void setResolvers(List<SymbolResolver> inResolvers)
+    public void setResolvers(List<SymbolResolverElement> inResolvers)
     {
         resolvers = inResolvers;
     }
@@ -56,7 +56,7 @@ public class MarketceteraSymbolResolverManager
         Validate.notNull(inSymbol);
         Instrument instrument = null;
         synchronized(resolvers) {
-            for(SymbolResolver resolver : resolvers) {
+            for(SymbolResolverElement resolver : resolvers) {
                 instrument = resolver.resolve(inSymbol,
                                               inContext);
                 if(instrument != null) {
@@ -77,5 +77,5 @@ public class MarketceteraSymbolResolverManager
     /**
      * resolves to apply
      */
-    private List<SymbolResolver> resolvers = new ArrayList<SymbolResolver>();
+    private List<SymbolResolverElement> resolvers = new ArrayList<SymbolResolverElement>();
 }

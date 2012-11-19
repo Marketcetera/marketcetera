@@ -5,7 +5,7 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /* $License$ */
 
 /**
- *
+ * Indicates that a market data request could not be executed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -14,51 +14,41 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 public class MarketDataRequestFailed
         extends MarketDataException
 {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
     /**
      * Create a new MarketDataRequestFailed instance.
-     *
      */
     public MarketDataRequestFailed()
     {
-        throw new UnsupportedOperationException();
     }
-
     /**
      * Create a new MarketDataRequestFailed instance.
      *
-     * @param inNested
+     * @param inNested a <code>Throwable</code> value
      */
     public MarketDataRequestFailed(Throwable inNested)
     {
-        throw new UnsupportedOperationException();
+        super(inNested);
     }
-
     /**
      * Create a new MarketDataRequestFailed instance.
      *
-     * @param inMessage
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public MarketDataRequestFailed(I18NBoundMessage inMessage)
     {
-        throw new UnsupportedOperationException();
+        super(inMessage);
     }
-
     /**
      * Create a new MarketDataRequestFailed instance.
      *
-     * @param inNested
-     * @param inMessage
+     * @param inNested a <code>Throwable</code> value
+     * @param inMessage an <code>I18NBoundMessage</code> value
      */
     public MarketDataRequestFailed(Throwable inNested,
-            I18NBoundMessage inMessage)
+                                   I18NBoundMessage inMessage)
     {
-        throw new UnsupportedOperationException();
+        super(inNested,
+              inMessage);
     }
-
+    private static final long serialVersionUID = 1L;
 }

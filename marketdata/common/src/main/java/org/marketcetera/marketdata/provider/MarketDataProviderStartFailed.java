@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.manager;
+package org.marketcetera.marketdata.provider;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
@@ -6,47 +6,45 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /* $License$ */
 
 /**
- * Indicates an error related to market data operation.
+ * Indicates that a market data provider could not be started.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class MarketDataException
+public class MarketDataProviderStartFailed
         extends CoreException
 {
     /**
-     * Create a new MarketDataException instance.
+     * Create a new MarketDataProviderStartFailed instance.
      */
-    public MarketDataException()
-    {
-    }
+    public MarketDataProviderStartFailed() {}
     /**
-     * Create a new MarketDataException instance.
+     * Create a new MarketDataProviderStartFailed instance.
      *
      * @param inNested a <code>Throwable</code> value
      */
-    public MarketDataException(Throwable inNested)
+    public MarketDataProviderStartFailed(Throwable inNested)
     {
         super(inNested);
     }
     /**
-     * Create a new MarketDataException instance.
+     * Create a new MarketDataProviderStartFailed instance.
      *
      * @param inMessage an <code>I18NBoundMessage</code> value
      */
-    public MarketDataException(I18NBoundMessage inMessage)
+    public MarketDataProviderStartFailed(I18NBoundMessage inMessage)
     {
         super(inMessage);
     }
     /**
-     * Create a new MarketDataException instance.
+     * Create a new MarketDataProviderStartFailed instance.
      *
      * @param inNested a <code>Throwable</code> value
      * @param inMessage an <code>I18NBoundMessage</code> value
      */
-    public MarketDataException(Throwable inNested,
-                               I18NBoundMessage inMessage)
+    public MarketDataProviderStartFailed(Throwable inNested,
+                                         I18NBoundMessage inMessage)
     {
         super(inNested,
               inMessage);

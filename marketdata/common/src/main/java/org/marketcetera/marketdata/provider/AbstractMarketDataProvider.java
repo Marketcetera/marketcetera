@@ -1,11 +1,7 @@
 package org.marketcetera.marketdata.provider;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
@@ -16,10 +12,20 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.util.log.I18NBoundMessage2P;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.Messages;
+import org.marketcetera.marketdata.cache.MarketdataCache;
+import org.marketcetera.marketdata.manager.MarketDataException;
 import org.marketcetera.marketdata.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.manager.MarketDataProviderRegistry;
 import org.marketcetera.marketdata.manager.MarketDataRequestFailed;
@@ -34,18 +40,41 @@ import com.google.common.collect.Multimap;
 /* $License$ */
 
 /**
- *
+ * Provides common behavior for market data providers.
+ * 
+ * <p>To create a market data provider, extend this class.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
- * TODO need to handle restart case such that existing subscriptions are honored (resubmit and replace internal handles)
- * TODO implement JMX interface
  */
 @ThreadSafe
 public abstract class AbstractMarketDataProvider
-        implements MarketDataProvider, Lifecycle
+        implements MarketDataProvider, MarketdataCache
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.cache.MarketdataCache#getSnapshot(org.marketcetera.core.trade.Instrument, org.marketcetera.marketdata.Content)
+     */
+    @Override
+    public Event getSnapshot(Instrument inInstrument,
+                             Content inContent)
+    {
+        Lock snapshotLock = marketdataLock.readLock();
+        try {
+            snapshotLock.lockInterruptibly();
+            MarketdataCacheElement cachedData = cachedMarketdata.get(inInstrument);
+            if(cachedData != null) {
+                return cachedData.getSnapshot(inContent);
+            }
+            return null;
+        } catch (InterruptedException e) {
+            Messages.UNABLE_TO_ACQUIRE_LOCK.error(this);
+            stop();
+            throw new MarketDataRequestFailed(e);
+        } finally {
+            snapshotLock.unlock();
+        }
+    }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#start()
      */
@@ -55,16 +84,15 @@ public abstract class AbstractMarketDataProvider
         if(isRunning()) {
             stop();
         }
-        keepAlive.set(true);
-        notifier = new EventNotifier();
-        notifier.start();
-        doStart();
-        // the next bit of code is executed only if the delegated start function succeeds - exceptions are intentionally not caught
-        running.set(true);
         try {
+            doStart();
+            notifier = new EventNotifier();
+            notifier.start();
+            running.set(true);
             setFeedStatus(FeedStatus.AVAILABLE);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e); // TODO change to FailedToStartException
+        } catch (Exception e) {
+            setFeedStatus(FeedStatus.ERROR);
+            throw new MarketDataProviderStartFailed(e);
         }
     }
     /* (non-Javadoc)
@@ -77,16 +105,19 @@ public abstract class AbstractMarketDataProvider
             return;
         }
         try {
-            keepAlive.set(false);
             doStop();
-            notifier.stop();
+            setFeedStatus(FeedStatus.OFFLINE);
+        } catch (Exception e) {
+            setFeedStatus(FeedStatus.ERROR);
         } finally {
+            notifier.stop();
+            instrumentsBySymbol.clear();
+            cachedMarketdata.clear();
+            notifications.clear();
+            requestsByInstrument.clear();
+            requestsByAtom.clear();
+            requestsBySymbol.clear();
             running.set(false);
-            try {
-                if(getFeedStatus() != FeedStatus.ERROR) {
-                    setFeedStatus(FeedStatus.OFFLINE);
-                }
-            } catch (InterruptedException ignored) {}
         }
     }
     /* (non-Javadoc)
@@ -102,41 +133,54 @@ public abstract class AbstractMarketDataProvider
      */
     @Override
     public void requestMarketData(MarketDataRequestToken inRequestToken)
-            throws InterruptedException
     {
         if(!isRunning()) {
             throw new MarketDataProviderNotAvailable();
         }
         Set<MarketDataRequestAtom> atoms = explodeRequest(inRequestToken.getRequest());
-        Set<String> internalHandles = new HashSet<String>();
-        AtomicBoolean updateSemaphore = new AtomicBoolean(false);
-        // TODO examine request atoms and make sure they can all be processed by the given provider (check capabilities and handled security types)
+        SLF4JLoggerProxy.debug(this,
+                               "Received market data request {}, exploded to {}", //$NON-NLS-1$
+                               inRequestToken,
+                               atoms);
+        Lock marketdataRequestLock = marketdataLock.writeLock();
         try {
+            marketdataRequestLock.lockInterruptibly();
+        } catch (InterruptedException e) {
+            Messages.UNABLE_TO_ACQUIRE_LOCK.error(this);
+            stop();
+            throw new MarketDataRequestFailed(e);
+        }
+        try {
+            // TODO launch this in a separate thread with a timeout timer
             for(MarketDataRequestAtom atom : atoms) {
-                internalHandles.add(doMarketDataRequest(inRequestToken.getRequest(),
-                                                        atom,
-                                                        updateSemaphore));
+                Capability requiredCapability = necessaryCapabilities.get(atom.getContent());
+                if(requiredCapability == null) {
+                    throw new UnsupportedOperationException(Messages.UNKNOWN_MARKETDATA_CONTENT.getText(atom.getContent()));
+                }
+                Set<Capability> capabilities = getCapabilities();
+                if(!capabilities.contains(requiredCapability)) {
+                    throw new MarketDataRequestFailed(new I18NBoundMessage2P(Messages.UNSUPPORTED_MARKETDATA_CONTENT,
+                                                                             atom.getContent(),
+                                                                             capabilities.toString()));
+                }
+                requestsByAtom.put(atom,
+                                   inRequestToken);
+                requestsBySymbol.put(atom.getSymbol(),
+                                     inRequestToken);
+                doMarketDataRequest(inRequestToken.getRequest(),
+                                    atom);
             }
         } catch (Exception e) {
-            for(String internalHandle : internalHandles) {
-                try {
-                    doCancel(internalHandle);
-                } catch (Exception ignored) {}
+            cancelMarketDataRequest(inRequestToken);
+            Messages.MARKETDATA_REQUEST_FAILED.warn(this,
+                                                    e);
+            if(e instanceof MarketDataException) {
+                throw (MarketDataException)e;
             }
-            if(e instanceof InterruptedException) {
-                throw (InterruptedException)e;
-            }
-            throw new MarketDataRequestFailed(); // TODO add reason
+            throw new MarketDataRequestFailed(e);
+        } finally {
+            marketdataRequestLock.unlock();
         }
-        for(String internalHandle : internalHandles) {
-            handleMap.put(internalHandle,
-                          inRequestToken);
-            
-        }
-        // TODO locking
-        internalHandlesByToken.putAll(inRequestToken,
-                                      internalHandles);
-        updateSemaphore.set(true);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.provider.MarketDataProvider#cancelMarketDataRequest(org.marketcetera.marketdata.request.MarketDataRequestToken)
@@ -144,9 +188,41 @@ public abstract class AbstractMarketDataProvider
     @Override
     public void cancelMarketDataRequest(MarketDataRequestToken inRequestToken)
     {
-        // TODO locking
-        for(String internalHandle : internalHandlesByToken.removeAll(inRequestToken)) {
-            doCancel(internalHandle);
+        // TODO re-exploding the request might cause problems if the request itself changed, better to associate the token ID
+        //  with a set of atoms
+        Lock cancelLock = marketdataLock.writeLock();
+        try {
+            cancelLock.lockInterruptibly();
+            Set<MarketDataRequestAtom> atoms = explodeRequest(inRequestToken.getRequest());
+            for(MarketDataRequestAtom atom : atoms) {
+                Collection<MarketDataRequestToken> symbolRequests = requestsByAtom.get(atom);
+                if(symbolRequests != null) {
+                    symbolRequests.remove(inRequestToken);
+                    if(symbolRequests.isEmpty()) {
+                        doCancel(atom);
+                    }
+                }
+                Collection<MarketDataRequestToken> requests = requestsBySymbol.get(atom.getSymbol());
+                if(requests != null) {
+                    requests.remove(inRequestToken);
+                }
+                Instrument mappedInstrument = instrumentsBySymbol.get(atom.getSymbol());
+                if(mappedInstrument != null) {
+                    Collection<MarketDataRequestToken> instrumentRequests = requestsByInstrument.get(mappedInstrument);
+                    if(instrumentRequests != null) {
+                        instrumentRequests.remove(inRequestToken);
+                        if(instrumentRequests.isEmpty()) {
+                            // no more requests for this instrument, which means this instrument will no longer be updated - clear the cache for it
+                            cachedMarketdata.remove(mappedInstrument);
+                        }
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            Messages.UNABLE_TO_ACQUIRE_LOCK.error(this);
+            stop();
+        } finally {
+            cancelLock.unlock();
         }
     }
     /* (non-Javadoc)
@@ -154,24 +230,8 @@ public abstract class AbstractMarketDataProvider
      */
     @Override
     public FeedStatus getFeedStatus()
-            throws InterruptedException
     {
-        Lock getFeedStatusLock = statusLock.readLock();
-        try {
-            getFeedStatusLock.lockInterruptibly();
-            return status;
-        } finally {
-            getFeedStatusLock.unlock();
-        }
-    }
-    /**
-     * Get the providerRegistry value.
-     *
-     * @return a <code>MarketDataProviderRegistry</code> value
-     */
-    public MarketDataProviderRegistry getProviderRegistry()
-    {
-        return providerRegistry;
+        return status;
     }
     /**
      * Sets the providerRegistry value.
@@ -183,49 +243,265 @@ public abstract class AbstractMarketDataProvider
         providerRegistry = inProviderRegistry;
     }
     /**
-     * 
+     * Indicates that the given events have been received by the provider and should be sent to interested subscribers.
      *
-     *
-     * @param inInternalHandles
-     * @param inEventData
+     * @param inContent a <code>Content</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inEvents an <code>Event[]</code> value
      */
-    protected void dataReceived(Set<String> inInternalHandles,
-                                Event inEventData)
+    protected void publishEvents(Content inContent,
+                                 Instrument inInstrument,
+                                 Event...inEvents)
     {
-        for(String handle : inInternalHandles) {
-            dataReceived(handle,
-                         inEventData);
-        }
+        // TODO validation: make sure each event has the proper content and instrument (don't do this every time, just if the provider requests validation)
+        // TODO validation: make sure each instrument has a mapping
+        notifications.add(new EventNotification(inContent,
+                                                inInstrument,
+                                                inEvents));
     }
-    protected void dataReceived(Set<String> inInternalHandles,
-                                List<Event> inEvents)
+    /**
+     * Creates a link between the given symbol and the given instrument.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @param inInstrument an <code>Instrument</code> value
+     */
+    protected void addSymbolMapping(String inSymbol,
+                                    Instrument inInstrument)
     {
-        for(String handle : inInternalHandles) {
-            dataReceived(handle,
-                         inEvents);
-        }
-    }
-    protected void dataReceived(String inInternalHandle,
-                                List<Event> inEvents)
-    {
-        for(Event event : inEvents) {
-            dataReceived(inInternalHandle,
-                         event);
+        Lock symbolMappingLock = marketdataLock.writeLock();
+        try {
+            symbolMappingLock.lockInterruptibly();
+            instrumentsBySymbol.put(inSymbol,
+                                    inInstrument);
+            Collection<MarketDataRequestToken> tokens = requestsBySymbol.get(inSymbol);
+            for(MarketDataRequestToken token : tokens) {
+                requestsByInstrument.put(inInstrument,
+                                         token);
+            }
+        } catch (InterruptedException e) {
+            Messages.UNABLE_TO_ACQUIRE_LOCK.error(this);
+            stop();
+        } finally {
+            symbolMappingLock.unlock();
         }
     }
     /**
-     * 
+     * Sets the feed status value.
      *
-     *
-     * @param inInternalHandle
-     * @param inEvent
+     * @param inNewStatus a <code>FeedStatus</code> value
      */
-    protected void dataReceived(String inInternalHandle,
-                                Event inEvent)
+    protected void setFeedStatus(FeedStatus inNewStatus)
     {
-        notifications.add(new EventNotification(inEvent,
-                                                inInternalHandle));
+        if(inNewStatus != status) {
+            status = inNewStatus;
+            if(providerRegistry != null) {
+                providerRegistry.setStatus(this,
+                                           inNewStatus);
+            }
+        }
     }
+    /**
+     * Indicates if the provider requests additional validation on the data it produces.
+     *
+     * <p>Subclasses <em>may</em> override this method to increase validation on its generated
+     * event stream. Validation has a minor negative impact on latency. Subclasses should return
+     * <code>true</code> during the development phase but should likely return <code>false</code>
+     * for production. The default returned value is <code>false</code>.
+     *
+     * @return a <code>boolean</code> value
+     */
+    protected boolean doValidation()
+    {
+        return false;
+    }
+    /**
+     * Starts the market data provider.
+     */
+    protected abstract void doStart();
+    /**
+     * Stops the market data provider.
+     */
+    protected abstract void doStop();
+    /**
+     * Cancels the market data request represented by the given request atom.
+     *
+     * @param inAtom a <code>MarketDataRequestAtom</code> value
+     */
+    protected abstract void doCancel(MarketDataRequestAtom inAtom);
+    /**
+     * Indicates to the market data provider that it should request market data for the given
+     * <code>MarketDataRequestAtom</code>.
+     *
+     * <p>Note that the overall <code>MarketDataRequest</code> is provided, and can be used
+     * for reference, but the provider should respond to the given <code>MarketDataRequestAtom</code>.
+     *
+     * @param inCompleteRequest a <code>MarketDataRequest</code> value
+     * @param inRequestAtom a <code>MarketDataRequestAtom</code> value
+     * @throws InterruptedException if the request cannot be executed
+     */
+    protected abstract void doMarketDataRequest(MarketDataRequest inCompleteRequest,
+                                                MarketDataRequestAtom inRequestAtom)
+            throws InterruptedException;
+    /**
+     * Gets the distinct market data request atoms from the given request.
+     *
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @return a <code>Set&lt;MarketDataRequestAtomg&gt;</code> value
+     */
+    private Set<MarketDataRequestAtom> explodeRequest(MarketDataRequest inRequest)
+    {
+        Set<MarketDataRequestAtom> atoms = new HashSet<MarketDataRequestAtom>();
+        if(inRequest.getSymbols().isEmpty()) {
+            for(String underlyingSymbol : inRequest.getUnderlyingSymbols()) {
+                for(Content content : inRequest.getContent()) {
+                    atoms.add(new MarketDataRequestAtomImpl(underlyingSymbol,
+                                                            inRequest.getExchange(),
+                                                            content,
+                                                            true));
+                }
+            }
+        } else {
+            for(String symbol : inRequest.getSymbols()) {
+                for(Content content : inRequest.getContent()) {
+                    atoms.add(new MarketDataRequestAtomImpl(symbol,
+                                                            inRequest.getExchange(),
+                                                            content,
+                                                            false));
+                }
+            }
+        }
+        return atoms;
+    }
+    /**
+     * Represents a single market data request item.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @Immutable
+    private static class MarketDataRequestAtomImpl
+            implements MarketDataRequestAtom
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.request.MarketDataRequestAtom#getSymbol()
+         */
+        @Override
+        public String getSymbol()
+        {
+            return symbol;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.request.MarketDataRequestAtom#getExchange()
+         */
+        @Override
+        public String getExchange()
+        {
+            return exchange;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.request.MarketDataRequestAtom#isUnderlyingSymbol()
+         */
+        @Override
+        public boolean isUnderlyingSymbol()
+        {
+            return isUnderlyingSymbol;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.marketdata.provider.MarketDataRequestAtom#getContent()
+         */
+        @Override
+        public Content getContent()
+        {
+            return content;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append(content).append(" : ").append(symbol); //$NON-NLS-1$
+            if(exchange != null) {
+                builder.append(" : ").append(exchange); //$NON-NLS-1$
+            }
+            if(isUnderlyingSymbol) {
+                builder.append(" (underlying)"); //$NON-NLS-1$
+            }
+            return builder.toString();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            return new HashCodeBuilder().append(content).append(symbol).append(exchange).append(isUnderlyingSymbol).toHashCode();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof MarketDataRequestAtomImpl)) {
+                return false;
+            }
+            MarketDataRequestAtomImpl other = (MarketDataRequestAtomImpl) obj;
+            return new EqualsBuilder().append(symbol,other.symbol)
+                                      .append(exchange,other.exchange)
+                                      .append(content,other.content)
+                                      .append(isUnderlyingSymbol,other.isUnderlyingSymbol).isEquals();
+        }
+        /**
+         * Create a new MarketDataRequestAtomImpl instance.
+         *
+         * @param inSymbol a <code>String</code> value
+         * @param inExchange a <code>String</code> value or <code>null</code>
+         * @param inContent a <code>Content</code> value
+         * @param inIsUnderlyingSymbol a <code>boolean</code> value
+         */
+        private MarketDataRequestAtomImpl(String inSymbol,
+                                          String inExchange,
+                                          Content inContent,
+                                          boolean inIsUnderlyingSymbol)
+        {
+            symbol = inSymbol;
+            exchange = inExchange;
+            content = inContent;
+            isUnderlyingSymbol = inIsUnderlyingSymbol;
+        }
+        /**
+         * symbol value, may be a symbol, an underlying symbol, or a symbol fragment
+         */
+        private final String symbol;
+        /**
+         * exchange value or <code>null</code>
+         */
+        private final String exchange;
+        /**
+         * indicates if the symbol is supposed to be a symbol or an underlying symbol
+         */
+        private final boolean isUnderlyingSymbol;
+        /**
+         * content value of the request
+         */
+        private final Content content;
+    }
+    /**
+     * Processes events returned by the provider and publishes them to interested subscribers.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
     private class EventNotifier
             implements Runnable, Lifecycle
     {
@@ -236,19 +512,58 @@ public abstract class AbstractMarketDataProvider
         public void run()
         {
             try {
+                Collection<MarketDataRequestToken> requests = new ArrayList<MarketDataRequestToken>();
                 while(keepAlive.get()) {
                     running.set(true);
                     EventNotification notification = notifications.take();
-                    MarketDataRequestToken token = handleMap.get(notification.handle);
-                    try {
-                        token.getSubscriber().publishTo(notification.event);
-                    } catch (Exception e) {
-                        // TODO log message
+                    Event[] events = notification.events;
+                    if(events != null) {
+                        // sort out where to apply these events. the key to the cached market data is the instrument
+                        Instrument eventInstrument = notification.instrument;
+                        // there is at least one event to process. let the market data cache process each event
+                        MarketdataCacheElement marketdataCache = cachedMarketdata.get(eventInstrument);
+                        if(marketdataCache == null) {
+                            marketdataCache = new MarketdataCacheElement(eventInstrument);
+                            cachedMarketdata.put(eventInstrument,
+                                                 marketdataCache);
+                        }
+                        // we now have the market data cache object to use - give it the incoming events
+                        Collection<Event> outgoingEvents = marketdataCache.update(notification.content,
+                                                                                  events);
+                        // find subscribers to this instrument
+                        requests.clear();
+                        Lock requestLock = marketdataLock.readLock();
+                        try {
+                            requestLock.lockInterruptibly();
+                            // defensive copy to avoid chance of CME if a cancel is called while the processing is ongoing
+                            requests.addAll(requestsByInstrument.get(eventInstrument));
+                        } finally {
+                            requestLock.unlock();
+                        }
+                        for(MarketDataRequestToken request : requests) {
+                            // for each subscriber, determine if the request contents justifies the update
+                            if(request.getRequest().getContent().contains(notification.content)) {
+                                // enclose the "publishTo" in a try/catch because we're ceding control to unknown code and
+                                //  we don't want a misbehaving subscriber to break the market data mechanism
+                                try {
+                                    for(Event outgoingEvent : outgoingEvents) {
+                                        request.getSubscriber().publishTo(outgoingEvent);
+                                    }
+                                } catch (Exception e) {
+                                    Messages.EVENT_NOTIFICATION_FAILED.warn(AbstractMarketDataProvider.this,
+                                                                            e,
+                                                                            outgoingEvents,
+                                                                            request.getSubscriber());
+                                }
+                            }
+                        }
                     }
                 }
             } catch (InterruptedException e) {
-                
             } finally {
+                SLF4JLoggerProxy.debug(AbstractMarketDataProvider.this,
+                                       "Event notifier for {} shutting down", //$NON-NLS-1$
+                                       getProviderName());
                 running.set(false);
             }
         }
@@ -263,7 +578,7 @@ public abstract class AbstractMarketDataProvider
             }
             keepAlive.set(true);
             thread = new Thread(this,
-                                "Market data notifier thread for " + getProviderName());
+                                "Market data notifier thread for " + getProviderName()); //$NON-NLS-1$
             thread.start();
         }
         /* (non-Javadoc)
@@ -292,234 +607,133 @@ public abstract class AbstractMarketDataProvider
         {
             return running.get();
         }
+        /**
+         * keeps the event notifier running
+         */
         private final AtomicBoolean keepAlive = new AtomicBoolean(false);
+        /**
+         * indicates if the event notifier is running
+         */
         private final AtomicBoolean running = new AtomicBoolean(false);
+        /**
+         * notifier thread
+         */
         private volatile Thread thread;
     }
-    private static class EventNotification
-    {
-        private EventNotification(Event inEvent,
-                                  String inHandle)
-        {
-            event = inEvent;
-            handle = inHandle;
-        }
-        private final Event event;
-        private final String handle;
-    }
     /**
-     * 
-     *
-     *
-     * @param inNewStatus
-     * @throws InterruptedException 
-     */
-    protected void setFeedStatus(FeedStatus inNewStatus)
-            throws InterruptedException
-    {
-        Lock setFeedStatusLock = statusLock.writeLock();
-        boolean shouldNotify = false;
-        try {
-            setFeedStatusLock.lockInterruptibly();
-            if(inNewStatus != status) {
-                shouldNotify = true;
-                status = inNewStatus;
-            }
-        } finally {
-            setFeedStatusLock.unlock();
-        }
-        // this statement is intentionally outside the lock and does not use the member variable
-        //  to avoid something odd happening with the publisher that causes the status lock to be held
-        //  for an unknown amount of time
-        if(shouldNotify) {
-            if(providerRegistry != null) {
-                providerRegistry.setStatus(this,
-                                           inNewStatus);
-            }
-        }
-    }
-    /**
-     * 
-     *
-     *
-     */
-    protected abstract void doStart();
-    /**
-     * 
-     *
-     *
-     */
-    protected abstract void doStop();
-    /**
-     * 
-     *
-     *
-     * @param inInternalHandle
-     */
-    protected abstract void doCancel(String inInternalHandle);
-    /**
-     * 
-     *
-     *
-     * @param inCompleteRequest
-     * @param inRequestAtom
-     * @param inUpdateSemaphore
-     * @return
-     * @throws InterruptedException
-     */
-    protected abstract String doMarketDataRequest(MarketDataRequest inCompleteRequest,
-                                                  MarketDataRequestAtom inRequestAtom,
-                                                  AtomicBoolean inUpdateSemaphore)
-            throws InterruptedException;
-    /**
-     * 
-     *
-     *
-     * @param inRequest
-     * @return
-     */
-    private Set<MarketDataRequestAtom> explodeRequest(MarketDataRequest inRequest)
-    {
-        Set<MarketDataRequestAtom> atoms = new HashSet<MarketDataRequestAtom>();
-        if(inRequest.getInstruments().isEmpty()) {
-            for(Instrument underlyingInstrument : inRequest.getUnderlyingInstruments()) {
-                for(Content content : inRequest.getContent()) {
-                    atoms.add(new MarketDataRequestAtomImpl(null,
-                                                            underlyingInstrument,
-                                                            content));
-                }
-            }
-        } else {
-            for(Instrument instrument : inRequest.getInstruments()) {
-                for(Content content : inRequest.getContent()) {
-                    atoms.add(new MarketDataRequestAtomImpl(instrument,
-                                                            null,
-                                                            content));
-                }
-            }
-        }
-        return atoms;
-    }
-    /**
-     *
+     * Represents an event notification to be published.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
      * @since $Release$
      */
-    @Immutable
-    private static class MarketDataRequestAtomImpl
-            implements MarketDataRequestAtom
+    private static class EventNotification
     {
-        /* (non-Javadoc)
-         * @see org.marketcetera.marketdata.provider.MarketDataRequestAtom#getInstrument()
-         */
-        @Override
-        public Instrument getInstrument()
-        {
-            return instrument;
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.marketdata.provider.MarketDataRequestAtom#getContent()
-         */
-        @Override
-        public Content getContent()
-        {
-            return content;
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.marketdata.provider.MarketDataRequestAtom#getUnderlyingInstrument()
-         */
-        @Override
-        public Instrument getUnderlyingInstrument()
-        {
-            return underlyingInstrument;
-        }
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
          */
         @Override
         public String toString()
         {
-            StringBuilder builder = new StringBuilder();
-            builder.append(content).append(" : ").append(instrument == null ? underlyingInstrument : instrument);
-            return builder.toString();
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
-         */
-        @Override
-        public int hashCode()
-        {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((content == null) ? 0 : content.hashCode());
-            result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
-            result = prime * result + ((underlyingInstrument == null) ? 0 : underlyingInstrument.hashCode());
-            return result;
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (!(obj instanceof MarketDataRequestAtomImpl)) {
-                return false;
-            }
-            MarketDataRequestAtomImpl other = (MarketDataRequestAtomImpl) obj;
-            if (content != other.content) {
-                return false;
-            }
-            if (instrument == null) {
-                if (other.instrument != null) {
-                    return false;
-                }
-            } else if (!instrument.equals(other.instrument)) {
-                return false;
-            }
-            if (underlyingInstrument == null) {
-                if (other.underlyingInstrument != null) {
-                    return false;
-                }
-            } else if (!underlyingInstrument.equals(other.underlyingInstrument)) {
-                return false;
-            }
-            return true;
+            return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append(instrument).append(" ").append(content).append(" [") //$NON-NLS-1$ //$NON-NLS-2$
+                                                                             .append(Arrays.toString(events)).append(" ]").toString(); //$NON-NLS-1$
         }
         /**
-         * Create a new MarketDataRequestAtomImpl instance.
+         * Create a new EventNotification instance.
          *
-         * @param inInstrument
-         * @param inUnderlyingInstrument
-         * @param inContent
+         * @param inContent a <code>Content</code> value
+         * @param inInstrument an <code>Instrument</code> value
+         * @param inEvents an <code>Event[]</code> value
          */
-        private MarketDataRequestAtomImpl(Instrument inInstrument,
-                                          Instrument inUnderlyingInstrument,
-                                          Content inContent)
+        private EventNotification(Content inContent,
+                                  Instrument inInstrument,
+                                  Event... inEvents)
         {
-            instrument = inInstrument;
-            underlyingInstrument = inUnderlyingInstrument;
+            events = inEvents;
             content = inContent;
+            instrument = inInstrument;
         }
-        private final Instrument underlyingInstrument;
-        private final Instrument instrument;
+        /**
+         * content value
+         */
         private final Content content;
+        /**
+         * instrument value
+         */
+        private final Instrument instrument;
+        /**
+         * events to notify
+         */
+        private final Event[] events;
     }
-    private final ReadWriteLock statusLock = new ReentrantReadWriteLock();
-    @GuardedBy("statusLock")
+    /**
+     * feed status value
+     */
     private volatile FeedStatus status = FeedStatus.UNKNOWN;
+    /**
+     * indicates if the provider is running
+     */
     private final AtomicBoolean running = new AtomicBoolean(false);
-    private final AtomicBoolean keepAlive = new AtomicBoolean(false);
-    private final Map<String,MarketDataRequestToken> handleMap = new ConcurrentHashMap<String,MarketDataRequestToken>();
-    private final Multimap<MarketDataRequestToken,String> internalHandlesByToken = HashMultimap.create();
+    /**
+     * provider registry value with which to register/unregister or <code>null</code>
+     */
     private volatile MarketDataProviderRegistry providerRegistry;
+    /**
+     * notification collection that contains events to publish
+     */
     private final BlockingDeque<EventNotification> notifications = new LinkedBlockingDeque<EventNotification>();
+    /**
+     * processes events to be published and publishes them
+     */
     private volatile EventNotifier notifier;
+    /**
+     * used to protect the market data collections
+     */
+    private final ReadWriteLock marketdataLock = new ReentrantReadWriteLock();
+    /**
+     * maps symbols or symbol fragments to the instrument value from the viewpoint of the market data provider
+     */
+    @GuardedBy("marketdataLock")
+    private final Map<String,Instrument> instrumentsBySymbol = new HashMap<String,Instrument>();
+    /**
+     * tracks market data requests by the instrument in which they are interested
+     */
+    @GuardedBy("marketdataLock")
+    private final Multimap<Instrument,MarketDataRequestToken> requestsByInstrument = HashMultimap.create();
+    /**
+     * tracks market data requests by the market data request atom created
+     */
+    @GuardedBy("marketdataLock")
+    private final Multimap<MarketDataRequestAtom,MarketDataRequestToken> requestsByAtom = HashMultimap.create();
+    /**
+     * tracks market data requests by the symbol the request contained
+     */
+    @GuardedBy("marketdataLock")
+    private final Multimap<String,MarketDataRequestToken> requestsBySymbol = HashMultimap.create();
+    /**
+     * tracks cached market data by the instrument
+     */
+    @GuardedBy("marketdataLock")
+    private final Map<Instrument,MarketdataCacheElement> cachedMarketdata = new HashMap<Instrument,MarketdataCacheElement>();
+    /**
+     * maps the capabilities needed to honor a request of a particular content type
+     */
+    private static final Map<Content,Capability> necessaryCapabilities;
+    /**
+     * provides one-time initialization of static components
+     */
+    static
+    {
+        Map<Content,Capability> capabilities = new HashMap<Content,Capability>();
+        capabilities.put(Content.AGGREGATED_DEPTH,Capability.AGGREGATED_DEPTH);
+        capabilities.put(Content.DIVIDEND,Capability.DIVIDEND);
+        capabilities.put(Content.LATEST_TICK,Capability.LATEST_TICK);
+        capabilities.put(Content.LEVEL_2,Capability.LEVEL_2);
+        capabilities.put(Content.MARKET_STAT,Capability.MARKET_STAT);
+        capabilities.put(Content.OPEN_BOOK,Capability.OPEN_BOOK);
+        capabilities.put(Content.TOP_OF_BOOK,Capability.TOP_OF_BOOK);
+        capabilities.put(Content.TOTAL_VIEW,Capability.TOTAL_VIEW);
+        capabilities.put(Content.UNAGGREGATED_DEPTH,Capability.UNAGGREGATED_DEPTH);
+        necessaryCapabilities = Collections.unmodifiableMap(capabilities);
+    }
 }
