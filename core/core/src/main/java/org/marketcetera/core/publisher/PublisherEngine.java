@@ -205,10 +205,8 @@ public final class PublisherEngine
     {
         for (Subscriber subscriber: inSubscribers) {
             try {
-                if (subscriber.isInteresting(inData)) {
-                    subscriber.publishTo(inData);
-                }
-            } catch (Throwable t) {
+                subscriber.publishTo(inData);
+            } catch (Exception t) {
                 SLF4JLoggerProxy.debug(PublisherEngine.class, t,
                         "Subscriber {} threw an exception during publication, skipping", //$NON-NLS-1$
                         subscriber);

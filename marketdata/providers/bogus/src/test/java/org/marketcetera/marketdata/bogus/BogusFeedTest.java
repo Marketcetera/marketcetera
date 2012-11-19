@@ -58,11 +58,6 @@ public class BogusFeedTest
         final MarketDataRequest request = builder.create();
         final Subscriber subscriber = new Subscriber() {
             @Override
-            public boolean isInteresting(Object inData)
-            {
-                return true;
-            }
-            @Override
             public void publishTo(Object inData)
             {
                 System.out.println("Received " + inData);

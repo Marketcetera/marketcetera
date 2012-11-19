@@ -1751,49 +1751,57 @@ public class SimulatedExchange
             lastKnownDividends = Multimaps.synchronizedMultimap(dividends);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
-         */
-        @Override
-        public boolean isInteresting(Object inData)
-        {
-            // escape hatch for non-events
-            if(!(inData instanceof Event)) {
-                return true;
-            }
-            // verify the exchange matches
-            if(inData instanceof MarketDataEvent) {
-                if(!((MarketDataEvent)inData).getExchange().equals(exchange.getCode())) {
-                    return false;
-                }
-            }
-            // verify the object has a relevant instrument (if it has has one)
-            if(inData instanceof HasInstrument) {
-                if(!instruments.contains(((HasInstrument)inData).getInstrument())) {
-                    return false;
-                }
-            }
-            // verify the object's type is relevant
-            switch(type) {
-                case TOP_OF_BOOK :
-                    return inData instanceof QuoteEvent;
-                case LATEST_TICK :
-                    return inData instanceof TradeEvent;
-                case DEPTH_OF_BOOK :
-                    return inData instanceof QuoteEvent;
-                case STATISTICS :
-                    return inData instanceof MarketstatEvent;
-                case DIVIDENDS :
-                    return inData instanceof DividendEvent;
-                default :
-                    throw new UnsupportedOperationException();
-            }
-        }
-        /* (non-Javadoc)
          * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
          */
         @Override
         public synchronized void publishTo(Object inData)
         {
+            // escape hatch for non-events
+            if(!(inData instanceof Event)) {
+                return;
+            }
+            // verify the exchange matches
+            if(inData instanceof MarketDataEvent) {
+                if(!((MarketDataEvent)inData).getExchange().equals(exchange.getCode())) {
+                    return;
+                }
+            }
+            // verify the object has a relevant instrument (if it has has one)
+            if(inData instanceof HasInstrument) {
+                if(!instruments.contains(((HasInstrument)inData).getInstrument())) {
+                    return;
+                }
+            }
+            // verify the object's type is relevant
+            switch(type) {
+                case TOP_OF_BOOK :
+                    if(!(inData instanceof QuoteEvent)) {
+                        return;
+                    }
+                    break;
+                case LATEST_TICK :
+                    if(!(inData instanceof TradeEvent)) {
+                        return;
+                    }
+                    break;
+                case DEPTH_OF_BOOK :
+                    if(!(inData instanceof QuoteEvent)) {
+                        return;
+                    }
+                    break;
+                case STATISTICS :
+                    if(!(inData instanceof MarketstatEvent)) {
+                        return;
+                    }
+                    break;
+                case DIVIDENDS :
+                    if(!(inData instanceof DividendEvent)) {
+                        return;
+                    }
+                    break;
+                default :
+                    throw new UnsupportedOperationException();
+            }
             if(type == Type.TOP_OF_BOOK) {
                 SLF4JLoggerProxy.debug(SimulatedExchange.class,
                                        "{} has subscribed to top-of-book - further analysis required", //$NON-NLS-1$

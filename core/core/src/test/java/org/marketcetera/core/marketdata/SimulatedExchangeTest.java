@@ -1905,19 +1905,14 @@ public class SimulatedExchangeTest
         implements Subscriber
     {
         /* (non-Javadoc)
-         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
-         */
-        @Override
-        public boolean isInteresting(Object inData)
-        {
-            return inData instanceof QuoteEvent;
-        }
-        /* (non-Javadoc)
          * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
          */
         @Override
         public synchronized void publishTo(Object inData)
         {
+            if(!(inData instanceof QuoteEvent)) {
+                return;
+            }
             QuoteEvent quote = (QuoteEvent)inData;
             BidEvent lastBid = lastBids.get(quote.getInstrument());
             AskEvent lastAsk = lastAsks.get(quote.getInstrument());
@@ -1969,14 +1964,6 @@ public class SimulatedExchangeTest
         * the events received
         */
        private final List<Event> events = new ArrayList<Event>();
-       /* (non-Javadoc)
-        * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
-        */
-       @Override
-       public boolean isInteresting(Object inData)
-       {
-           return true;
-       }
        /* (non-Javadoc)
         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
         */

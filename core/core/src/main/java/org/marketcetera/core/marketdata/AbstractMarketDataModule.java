@@ -133,11 +133,6 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         try {
             Subscriber subscriber = new Subscriber() {
                 @Override
-                public boolean isInteresting(Object inData)
-                {
-                    return inData instanceof Event;
-                }
-                @Override
                 public void publishTo(final Object inEvent)
                 {
                     if(inEvent instanceof Event) {
