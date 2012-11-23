@@ -78,7 +78,10 @@ public class CurrencyToMessage extends InstrumentToMessage<Currency>{
 		if (MsgType.ORDER_CANCEL_REQUEST.equals(msgType)) {
 			message.removeField(FutSettDate.FIELD);
 		} else {
-			message.setString(FutSettDate.FIELD,currencyInstrument.getNearTenor());
+			if(currencyInstrument.getNearTenor() !=null)
+			{
+				message.setString(FutSettDate.FIELD,currencyInstrument.getNearTenor());
+			}
 		}
 		if (currencyInstrument.isSwap()) {
 			message.setString(FutSettDate2.FIELD,currencyInstrument.getFarTenor());
