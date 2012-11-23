@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - CS FX UAT broker configuration: QuickFIX/J session descriptor.
+  -
+  -->
+
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - See
+    - http://www.quickfixj.org/quickfixj/usermanual/usage/configuration.html
+    - for a complete list of standard options.
+    -->
+
+  <bean
+   id="csfxuat_qdescriptor"
+   class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+    <property
+     name="dictionary">
+      <map>
+        <entry
+         key="BeginString"
+         value="${csfxuat.broker.qf.begin.string}"/>
+        <!--
+          - An acceptable value for this option is
+          - 'csfxuat.DefaultDataDictionary', which will choose the standard
+          - QuickFIX/J dictionary for the FIX version deduced from the
+          - 'BeginString' option.
+          -->
+        <entry
+         key="DataDictionary"
+         value="${csfxuat.broker.qf.data.dictionary}"/>
+        <entry
+         key="SenderCompID"
+         value="${csfxuat.broker.qf.sender.comp.id}"/>
+        <entry
+         key="TargetCompID"
+         value="${csfxuat.broker.qf.target.comp.id}"/>
+        <entry
+         key="FileStorePath"
+         value="${csfxuat.broker.qf.store}"/>
+        <entry
+         key="SocketConnectHost"
+         value="${csfxuat.broker.qf.host}"/>
+        <entry
+         key="SocketConnectPort"
+         value="${csfxuat.broker.qf.port}"/>
+      </map>
+    </property>
+  </bean>
+</beans>

@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Primary broker configuration: pre-sending message modifiers.
+  - CS FX UAT broker configuration: message modifiers.
   -
-  - Author: tlerios@marketcetera.com
-  - Since: 1.5.1
-  - Version: $Id$
-  - $License$
   -->
 
 <!--
@@ -21,7 +17,7 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean
-   id="metc_ps_modifiers"
+   id="csfxuat_modifiers"
    class="org.marketcetera.ors.filters.MessageModifierManager">
     <!-- The message modifiers. -->
     <property
@@ -33,19 +29,22 @@
           <property
            name="headerFields">
             <map>
+              <!--
+                - Set the 'MessageEncoding' (tag 347) of all
+                - messages to 'UTF-8'.
+                -->
+               <entry key="347(*)" value="UTF-8"/>    
+               <entry key="18(*)" value="1"/>
+               <entry key="21(*)" value="2"/>
+               <entry key="57(*)" value="execsvcs"/>        
+                        
             </map>
           </property>
           <!-- Modifications to the body fields. -->
           <property
            name="msgFields">
             <map>
-              <!--
-                - Set the 'Text' (tag 58) of all application messages
-                - to 'Test Text'.
-                -->
-              <entry
-               key="58(app)"
-               value="Test Text"/>
+                <entry key="100(D)" value ="FOR"/>            
             </map>
           </property>
           <!-- Modifications to the trailer fields. -->
@@ -55,10 +54,6 @@
             </map>
           </property>
         </bean>
-        
-         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
-            <constructor-arg value="15(F)"></constructor-arg>
-         </bean>
       </list>
     </property>
   </bean>

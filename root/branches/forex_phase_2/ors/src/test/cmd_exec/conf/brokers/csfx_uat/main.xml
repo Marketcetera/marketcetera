@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Main primary broker configuration.
+  - Main CS FX UAT broker configuration.
   -
-  - Author: tlerios@marketcetera.com
-  - Since: 1.0.0
-  - Version: $Id$
-  - $License$
   -->
 
 <!--
@@ -32,47 +28,44 @@
    resource="resp_modifiers.xml"/>
 
   <bean
-   id="metc_broker"
+   id="csfxuat_broker"
    class="org.marketcetera.ors.brokers.SpringBroker">
     <!-- The broker name (an arbitrary string). -->
     <property
      name="name"
-     value="${metc.broker.name}"/>
+     value="${csfxuat.broker.name}"/>
     <!-- The broker ID (an arbitrary string, but a short one is best). -->
     <property
      name="id"
-     value="${metc.broker.id}"/>
+     value="${csfxuat.broker.id}"/>
     <!-- Indicates if the broker requires a FIX Logout message on disconnect -->
     <property
      name="fixLogoutRequired"
-     value="${metc.broker.fixlogoutrequired}"/>
+     value="${csfxuat.broker.fixlogoutrequired}"/>
     <!-- The QuickFIX/J session descriptor. -->
     <property
      name="descriptor"
-     ref="metc_qdescriptor"/>
+     ref="csfxuat_qdescriptor"/>
     <!-- The message modifiers. -->
-    <!--
     <property
      name="modifiers"
-     ref="metc_modifiers"/>
-    -->
-    <!-- The routing filter. -->
-    <!--
-<property
-name="routes"
-     ref="metc_routes"/>
-    -->
-    <!-- The pre-sending message modifiers. -->
+     ref="csfxuat_modifiers"/>
+     <!-- The routing filter. -->
 
-    <property
+    <!-- 
+    <property name="routes" ref="csfxuat_routes"/>
+     -->
+
+    <!-- The pre-sending message modifiers. -->
+    <property 
      name="preSendModifiers"
-     ref="metc_ps_modifiers"/>
+     ref="csfxuat_ps_modifiers"/>
 
     <!-- The response message modifiers. -->
-    <!--
+
     <property
      name="responseModifiers"
-     ref="metc_resp_modifiers"/>
-    -->
+     ref="csfxuat_resp_modifiers"/>
+
   </bean>
 </beans>

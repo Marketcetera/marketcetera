@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Primary broker configuration: pre-sending message modifiers.
+  - CS FX UAT broker configuration: pre-sending message modifiers.
   -
-  - Author: tlerios@marketcetera.com
-  - Since: 1.5.1
-  - Version: $Id$
-  - $License$
   -->
 
 <!--
@@ -21,7 +17,7 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <bean
-   id="metc_ps_modifiers"
+   id="csfxuat_ps_modifiers"
    class="org.marketcetera.ors.filters.MessageModifierManager">
     <!-- The message modifiers. -->
     <property
@@ -55,10 +51,6 @@
             </map>
           </property>
         </bean>
-        
-         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
-            <constructor-arg value="15(F)"></constructor-arg>
-         </bean>
       </list>
     </property>
   </bean>
