@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.marketcetera.marketdata.AssetClass.EQUITY;
 import static org.marketcetera.marketdata.AssetClass.FUTURE;
 import static org.marketcetera.marketdata.AssetClass.OPTION;
+import static org.marketcetera.marketdata.AssetClass.CURRENCY;
 import static org.marketcetera.marketdata.Content.*;
 import static org.marketcetera.marketdata.MarketDataRequestBuilder.SYMBOL_DELIMITER;
 
@@ -783,7 +784,7 @@ public class MarketDataRequestTest
             throws Exception
     {
         final MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest();
-        Set<String> symbols = new LinkedHashSet<String>(Arrays.asList(new String[] { "METC", "GOOG" } ));
+        Set<String> symbols = new LinkedHashSet<String>(Arrays.asList(new String[] { "METC", "GOOG", "USD/INR" } ));
         // set defaults
         builder.withContent(defaultContent).withSymbols(symbols);
         // null asset class (enum) (sets to default)
@@ -841,6 +842,14 @@ public class MarketDataRequestTest
                       new HashMap<String,String>(),
                       symbols,
                       null);
+        verifyRequest(builder.withAssetClass(CURRENCY).create(),
+        			  null,
+        			  null,
+        			  defaultContent,
+        			  CURRENCY,
+        			  new HashMap<String,String>(),
+        			  symbols,
+        			  null);
         // non-null exchange (invalid String)
         new ExpectedFailure<IllegalArgumentException>(new I18NBoundMessage1P(INVALID_ASSET_CLASS,
                                                                              String.valueOf("not-an-asset-class")).getText()) {
@@ -868,6 +877,14 @@ public class MarketDataRequestTest
                       new HashMap<String,String>(),
                       symbols,
                       null);
+        verifyRequest(builder.withAssetClass(CURRENCY.toString().toLowerCase()).create(),
+        			  null,
+        			  null,
+        			  defaultContent,
+        			  CURRENCY,
+        			  new HashMap<String,String>(),
+                	  symbols,
+                	  null);
         // non-null asset class (upper-case String)
         verifyRequest(builder.withAssetClass(EQUITY.toString().toUpperCase()).create(),
                       null,
@@ -894,6 +911,14 @@ public class MarketDataRequestTest
                       new HashMap<String,String>(),
                       symbols,
                       null);
+        verifyRequest(builder.withAssetClass("CuRREncy").create(),
+        			 null,
+        			 null,
+        			 defaultContent,
+        			 CURRENCY,
+        			 new HashMap<String,String>(),
+        			 symbols,
+        			 null);
     }
     /**
      * Tests {@link MarketDataRequestBuilder#withContent(String)}, {@link MarketDataRequestBuilder#withContent(String...)}, 

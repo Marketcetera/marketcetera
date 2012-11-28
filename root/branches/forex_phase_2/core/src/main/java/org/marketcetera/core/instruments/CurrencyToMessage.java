@@ -72,7 +72,7 @@ public class CurrencyToMessage extends InstrumentToMessage<Currency>{
 		}
 
 		Currency currencyInstrument = (Currency) instrument;
-		if (dictionary.isMsgField(msgType, quickfix.field.Currency.FIELD)) {
+		if (dictionary.isMsgField(msgType, quickfix.field.Currency.FIELD) && currencyInstrument.getTradedCCY()!=null) {
 			message.setString(quickfix.field.Currency.FIELD,currencyInstrument.getTradedCCY());
 		}
 		if (MsgType.ORDER_CANCEL_REQUEST.equals(msgType)) {
