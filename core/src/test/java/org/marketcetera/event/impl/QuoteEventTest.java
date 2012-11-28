@@ -992,7 +992,7 @@ public class QuoteEventTest
                 optionBuilder.create();
             }
         };
-        final QuoteEventBuilder<?> currencyAskBuilder = QuoteEventBuilder.futureAskEvent();
+        final QuoteEventBuilder<?> currencyAskBuilder = QuoteEventBuilder.currencyAskEvent();
         instrument = currency;
         setDefaults(currencyAskBuilder).withInstrument(null);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
@@ -1003,7 +1003,7 @@ public class QuoteEventTest
                 currencyAskBuilder.create();
             }
         };
-        setDefaults(currencyAskBuilder).withInstrument(currency);
+        setDefaults(currencyAskBuilder).withInstrument(equity);
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
             @Override
             protected void run()
@@ -1012,9 +1012,9 @@ public class QuoteEventTest
                 currencyAskBuilder.create();
             }
         };
-        final QuoteEventBuilder<?> currencyBidBuilder = QuoteEventBuilder.futureBidEvent();
+        final QuoteEventBuilder<?> currencyBidBuilder = QuoteEventBuilder.currencyBidEvent();
         setDefaults(currencyBidBuilder).withInstrument(null);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
@@ -1023,7 +1023,7 @@ public class QuoteEventTest
             }
         };
         setDefaults(currencyBidBuilder).withInstrument(equity);
-        new ExpectedFailure<IllegalArgumentException>(VALIDATION_FUTURE_REQUIRED.getText()) {
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
             @Override
             protected void run()
                     throws Exception
