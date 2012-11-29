@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.request.impl;
+package org.marketcetera.core.xml;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

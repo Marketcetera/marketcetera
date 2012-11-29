@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.request.impl;
+package org.marketcetera.core.xml;
 
 import java.util.HashMap;
 import java.util.Map;

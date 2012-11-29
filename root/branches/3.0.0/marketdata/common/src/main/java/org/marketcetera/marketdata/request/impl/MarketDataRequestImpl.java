@@ -9,9 +9,12 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.marketcetera.core.xml.MapAdapter;
 import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.Messages;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 
 /* $License$ */
@@ -107,6 +110,18 @@ class MarketDataRequestImpl
         exchange = inExchange;
     }
     /**
+     * Validates the request object.
+     * 
+     * @throws IllegalArgumentException if validation fails
+     */
+    void validate()
+    {
+        Validate.isTrue(!(symbols.isEmpty() && underlyingSymbols.isEmpty()),
+                        Messages.NO_SYMBOLS_OR_UNDERLYING_SYMBOLS.getText());
+        Validate.notEmpty(content,
+                          Messages.NO_CONTENT.getText());
+    }
+    /**
      * Create a new MarketDataRequestImpl instance.
      */
     MarketDataRequestImpl()
@@ -116,23 +131,25 @@ class MarketDataRequestImpl
      * instruments value
      */
     @XmlElementWrapper(name="symbols",required=false)
+    @XmlElement(name="symbol")
     private final Set<String> symbols = new LinkedHashSet<String>();
     /**
      * underlying instruments value
      */
     @XmlElementWrapper(name="underlyingSymbols",required=false)
+    @XmlElement(name="underlyingSymbol")
     private final Set<String> underlyingSymbols = new LinkedHashSet<String>();
     /**
      * content value
      */
-    @XmlElementWrapper(name="content",required=true)
+    @XmlElementWrapper(name="contentTypes",required=true)
     @XmlElement(name="content")
     private final Set<Content> content = new LinkedHashSet<Content>();
     /**
      * parameters value
      */
     @XmlElement(name="parameters",required=false)
-    @XmlJavaTypeAdapter(MapAdapter.class) 
+    @XmlJavaTypeAdapter(MapAdapter.class)
     private final Map<String,String> parameters = new LinkedHashMap<String,String>();
     /**
      * provider value

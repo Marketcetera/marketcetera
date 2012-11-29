@@ -199,6 +199,7 @@ public class MarketDataRequestBuilderImpl
         request.getParameters().putAll(parameters);
         request.setProvider(provider);
         request.setExchange(exchange);
+        request.validate();
         return request;
     }
     /**
