@@ -13,7 +13,7 @@ import org.marketcetera.marketdata.request.MarketDataRequestAtom;
 /* $License$ */
 
 /**
- *
+ * Provides a test market data provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -173,9 +173,7 @@ public class MockMarketDataProvider
         return feedType;
     }
     /**
-     * 
-     *
-     *
+     * Resets the test-related mutable state.
      */
     public void reset()
     {

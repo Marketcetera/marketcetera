@@ -29,4 +29,6 @@ public interface Messages
     static final I18NMessage0P MARKETDATA_REQUEST_FAILED = new I18NMessage0P(LOGGER,"marketdata_request_failed"); //$NON-NLS-1$
     static final I18NMessage2P EVENT_NOTIFICATION_FAILED = new I18NMessage2P(LOGGER,"event_notification_failed"); //$NON-NLS-1$
     static final I18NMessage0P UNABLE_TO_ACQUIRE_LOCK = new I18NMessage0P(LOGGER,"unable_to_acquire_lock"); //$NON-NLS-1$
+    static final I18NMessage0P NO_SYMBOLS_OR_UNDERLYING_SYMBOLS = new I18NMessage0P(LOGGER,"no_symbols_or_underlying_symbols"); //$NON-NLS-1$
+    static final I18NMessage0P NO_CONTENT = new I18NMessage0P(LOGGER,"no_content"); //$NON-NLS-1$
 }

@@ -151,7 +151,6 @@ public abstract class AbstractMarketDataProvider
             throw new MarketDataRequestFailed(e);
         }
         try {
-            // TODO launch this in a separate thread with a timeout timer
             for(MarketDataRequestAtom atom : atoms) {
                 Capability requiredCapability = necessaryCapabilities.get(atom.getContent());
                 if(requiredCapability == null) {
@@ -171,7 +170,9 @@ public abstract class AbstractMarketDataProvider
                                     atom);
             }
         } catch (Exception e) {
-            cancelMarketDataRequest(inRequestToken);
+            try {
+                cancelMarketDataRequest(inRequestToken);
+            } catch (Exception ignored) {}
             Messages.MARKETDATA_REQUEST_FAILED.warn(this,
                                                     e);
             if(e instanceof MarketDataException) {

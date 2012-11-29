@@ -2,19 +2,36 @@ package org.marketcetera.marketdata.provider;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.Messages;
+import org.marketcetera.marketdata.manager.MarketDataProviderNotAvailable;
+import org.marketcetera.marketdata.manager.MarketDataRequestFailed;
+import org.marketcetera.marketdata.request.MarketDataRequest;
+import org.marketcetera.marketdata.request.MarketDataRequestAtom;
+import org.marketcetera.marketdata.request.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.request.MarketDataRequestToken;
+import org.marketcetera.marketdata.request.impl.MarketDataRequestBuilderImpl;
 
 /* $License$ */
 
 /**
- *
+ * Tests {@link AbstractMarketDataProvider}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -23,7 +40,7 @@ import org.marketcetera.marketdata.FeedStatus;
 public class AbstractMarketDataProviderTest
 {
     /**
-     * 
+     * Run once before all tests.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -34,7 +51,7 @@ public class AbstractMarketDataProviderTest
         LoggerConfiguration.logSetup();
     }
     /**
-     * 
+     * Run before each test.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -93,6 +110,120 @@ public class AbstractMarketDataProviderTest
         assertFalse(provider.isRunning());
         assertEquals(FeedStatus.ERROR,
                      provider.getFeedStatus());
+    }
+    /**
+     * Tests {@link AbstractMarketDataProvider#requestMarketData(org.marketcetera.marketdata.request.MarketDataRequestToken)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testRequestMarketData()
+            throws Exception
+    {
+        provider.stop();
+        assertFalse(provider.isRunning());
+        new ExpectedFailure<MarketDataProviderNotAvailable>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                provider.requestMarketData(generateRequestToken());
+            }
+        };
+        provider.start();
+        assertTrue(provider.getRequestedAtoms().isEmpty());
+        final MarketDataRequest request = generateRequest(new String[] { "METC" },
+                                                          EnumSet.of(Content.TOP_OF_BOOK));
+        provider.requestMarketData(generateRequestToken(request));
+        assertEquals(1,
+                     provider.getRequestedAtoms().size());
+        MarketDataRequestAtom requestedAtom = provider.getRequestedAtoms().get(0);
+        assertEquals(Content.TOP_OF_BOOK,
+                     requestedAtom.getContent());
+        assertEquals("METC",
+                     requestedAtom.getSymbol());
+        // make a request for an unsupported capability
+        provider.reset();
+        provider.setCapabilities(EnumSet.of(Capability.LATEST_TICK));
+        new ExpectedFailure<MarketDataRequestFailed>(Messages.UNSUPPORTED_MARKETDATA_CONTENT,
+                                                     Content.TOP_OF_BOOK,
+                                                     provider.getCapabilities().toString()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                provider.requestMarketData(generateRequestToken(request));
+            }
+        };
+        assertTrue(provider.getRequestedAtoms().isEmpty());
+        // make a request for multiple atoms with difference content
+        final MarketDataRequest multiContentRequest = generateRequest(new String[] { "METC" },
+                                                                      EnumSet.of(Content.LATEST_TICK,Content.TOP_OF_BOOK));
+        assertTrue(provider.getCapabilities().contains(Capability.LATEST_TICK));
+        assertFalse(provider.getCapabilities().contains(Capability.TOP_OF_BOOK));
+        assertTrue(provider.getRequestedAtoms().isEmpty());
+        assertTrue(provider.getCanceledAtoms().isEmpty());
+        new ExpectedFailure<MarketDataRequestFailed>(Messages.UNSUPPORTED_MARKETDATA_CONTENT,
+                                                     Content.TOP_OF_BOOK,
+                                                     provider.getCapabilities().toString()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                provider.requestMarketData(generateRequestToken(multiContentRequest));
+            }
+        };
+        assertEquals(1,
+                     provider.getRequestedAtoms().size());
+        assertEquals(1,
+                     provider.getCanceledAtoms().size());
+        assertSame(provider.getRequestedAtoms().get(0),
+                   provider.getCanceledAtoms().get(0));
+    }
+    private MarketDataRequest generateRequest(String[] inSymbols,
+                                              Set<Content> inContent)
+    {
+        MarketDataRequestBuilder requestBuilder = new MarketDataRequestBuilderImpl();
+        return requestBuilder.withSymbols(inSymbols)
+                             .withContent(inContent).create();
+    }
+    private MarketDataRequest generateRequest()
+    {
+        return generateRequest(new String[] { "AAPL","GOOG","METC" },
+                               EnumSet.of(Content.TOP_OF_BOOK,Content.LATEST_TICK));
+    }
+    private MarketDataRequestToken generateRequestToken()
+    {
+        return generateRequestToken(new Subscriber() {
+            @Override
+            public void publishTo(Object inData)
+            {
+            }
+        });
+    }
+    private MarketDataRequestToken generateRequestToken(MarketDataRequest inRequest)
+    {
+        return generateRequestToken(inRequest,
+                                    new Subscriber() {
+            @Override
+            public void publishTo(Object inData)
+            {
+            }
+        });
+    }
+    private MarketDataRequestToken generateRequestToken(Subscriber inSubscriber)
+    {
+        return generateRequestToken(generateRequest(),
+                                    inSubscriber);
+    }
+    private MarketDataRequestToken generateRequestToken(MarketDataRequest inRequest,
+                                                        Subscriber inSubscriber)
+    {
+        MarketDataRequestToken token = mock(MarketDataRequestToken.class);
+        when(token.getId()).thenReturn(System.nanoTime());
+        when(token.getRequest()).thenReturn(inRequest);
+        when(token.getSubscriber()).thenReturn(inSubscriber);
+        return token;
     }
     /**
      * test market data provider
