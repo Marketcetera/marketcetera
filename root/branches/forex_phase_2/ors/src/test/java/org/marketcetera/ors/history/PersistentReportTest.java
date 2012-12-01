@@ -37,7 +37,8 @@ public class PersistentReportTest extends ReportsTestBase {
     public static Collection<Object[]> data() {
         return Arrays.asList(
                 new Object[]{new Equity("sym")},
-                new Object[]{new Option("sym", "20101010", BigDecimal.TEN, OptionType.Put)}
+                new Object[]{new Option("sym", "20101010", BigDecimal.TEN, OptionType.Put)},
+                new Object[]{new Currency("USD", "CAD", "", "")}
         );
     }
     /**

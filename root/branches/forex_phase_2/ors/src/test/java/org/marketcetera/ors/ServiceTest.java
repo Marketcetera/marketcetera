@@ -28,6 +28,7 @@ public class ServiceTest
     private static final Future TEST_FUTURE = new Future("BRN",
                                                          FutureExpirationMonth.JANUARY,
                                                          2010);
+    private static final Currency TEST_CURRENCY = new Currency("USD","GBP","","");
     private static final Option TEST_OPTION =new Option
         ("IBM", "20101010", BigDecimal.TEN, OptionType.Call);
 
@@ -57,9 +58,15 @@ public class ServiceTest
 
         assertEquals(BigDecimal.ZERO,
                      c.getFuturePositionAsOf(new Date(),
-                                             TEST_FUTURE));
+                                             TEST_FUTURE));   
 
         assertTrue(c.getAllFuturePositionsAsOf(new Date()).isEmpty());
+        
+        assertEquals(BigDecimal.ZERO,
+                c.getCurrencyPositionAsOf(new Date(),
+                                        TEST_CURRENCY));
+        
+        assertTrue(c.getAllCurrencyPositionsAsOf(new Date()).isEmpty());
 
         String id=Factory.getInstance().createOrderSingle().
             getOrderID().getValue();

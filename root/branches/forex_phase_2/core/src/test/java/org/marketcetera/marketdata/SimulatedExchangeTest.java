@@ -24,6 +24,7 @@ import org.marketcetera.marketdata.SimulatedExchange.TopOfBook;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.options.ExpirationType;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.test.CollectionAssert;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -73,8 +74,16 @@ public class SimulatedExchangeTest
     private final Future brn201212 = new Future("BRN",
                                                 FutureExpirationMonth.DECEMBER,
                                                 2012);
+    private final Currency testCCY = new Currency("USD","INR","","");
+    
+    private final Currency anotherCCY = new Currency("USD","GBP","","");
+
     private BidEvent bid;
     private AskEvent ask;
+    
+    private BidEvent bidCCY;
+    private AskEvent askCCY;
+    
     private static final AtomicLong counter = new AtomicLong(0);
     /**
      * Executed once before all tests.
@@ -112,6 +121,12 @@ public class SimulatedExchangeTest
                                                   exchange.getCode(),
                                                   new BigDecimal("150"),
                                                   new BigDecimal("500"));
+       
+       bidCCY = EventTestBase.generateCurrencyBidEvent(testCCY,
+               new BigDecimal("150"));
+       // intentionally creating a large spread to make sure no trades get executed
+       askCCY = EventTestBase.generateCurrencyAskEvent(testCCY,
+               new BigDecimal("500"));
     }
     /**
      * Execute after each test. 
@@ -363,6 +378,110 @@ public class SimulatedExchangeTest
                           metc, null);
     }
     /**
+     * Tests snapshot requests for currency.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void snapshotsWithCurrency()
+        throws Exception
+    {
+        // exchange is not started yet
+        new ExpectedFailure<IllegalStateException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                exchange.getDepthOfBook(ExchangeRequestBuilder.newRequest().withInstrument(testCCY).create());
+            }
+        };
+        new ExpectedFailure<IllegalStateException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                exchange.getTopOfBook(ExchangeRequestBuilder.newRequest().withInstrument(testCCY).create());
+            }
+        };
+        new ExpectedFailure<IllegalStateException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                exchange.getLatestTick(ExchangeRequestBuilder.newRequest().withInstrument(testCCY).create());
+            }
+        };
+        // start the exchange with a script with only one event for each side of the book
+        List<QuoteEvent> script = new ArrayList<QuoteEvent>();
+        script.add(bidCCY);
+        script.add(askCCY);
+        exchange.start(script);
+        // get the depth-of-book for the symbol
+        List<AskEvent> asks = new ArrayList<AskEvent>();
+        asks.add(askCCY);
+        List<BidEvent> bids = new ArrayList<BidEvent>();
+        bids.add(bidCCY);
+        verifySnapshots(exchange,
+                        testCCY,
+                        null,
+                        asks,
+                        bids,
+                        null);
+        // re-execute the same query (book already exists, make sure we're reading from the already existing book)
+        verifySnapshots(exchange,
+        				testCCY,
+                        null,
+                        asks,
+                        bids,
+                        null);
+        // execute a request for an empty book
+        verifySnapshots(exchange,
+        				anotherCCY,
+                        null,
+                        new ArrayList<AskEvent>(),
+                        new ArrayList<BidEvent>(),
+                        null);
+        exchange.stop();
+        // start the exchange again in scripted mode, this time with events in opposition to each other
+        script.add(EventTestBase.generateEquityBidEvent(counter.incrementAndGet(),
+                                                        System.currentTimeMillis(),
+                                                        metc,
+                                                        exchange.getCode(),
+                                                        ask.getPrice(),
+                                                        ask.getSize()));
+        script.add(EventTestBase.generateEquityAskEvent(counter.incrementAndGet(),
+                                                        System.currentTimeMillis(),
+                                                        metc,
+                                                        exchange.getCode(),
+                                                        bid.getPrice(),
+                                                        bid.getSize()));
+        exchange.start(script);
+        // verify that the book is empty (but there should be an existing trade)
+        verifySnapshots(exchange,
+                        metc,
+                        null,
+                        new ArrayList<AskEvent>(),
+                        new ArrayList<BidEvent>(),
+                        EventTestBase.generateEquityTradeEvent(1,
+                                                               1,
+                                                               metc,
+                                                               exchange.getCode(),
+                                                               bid.getPrice(),
+                                                               bid.getSize()));
+        exchange.stop();
+        // restart exchange in random mode
+        exchange.start();
+        // books are empty
+        doRandomBookCheck(exchange,
+                          metc, null);
+        // re-execute (this time the book exists)
+        doRandomBookCheck(exchange,
+                          metc, null);
+    }
+    
+    
+    
+    /**
      * Tests snapshots using options instead of equities.
      * 
      * <p>Note that this method doesn't have to re-execute all
@@ -506,6 +625,56 @@ public class SimulatedExchangeTest
                           goog);
         exchange.stop();
     }
+    /**
+     * Tests that the <code>FilteringSubscriber</code> correctly tracks top-of-book state for Currency
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void subscriptionsWithCurrency()
+            throws Exception
+    {
+        List<QuoteEvent> script = new ArrayList<QuoteEvent>();
+        // set up a book for a few options in a chain
+        BidEvent bid1 = EventTestBase.generateCurrencyBidEvent(testCCY, new BigDecimal(95));
+
+        BidEvent bid2 = EventTestBase.generateCurrencyBidEvent(testCCY, new BigDecimal(100));
+        script.add(bid1); // top1
+        script.add(bid2); // top2
+        // there are two entries for currency
+        // add an ask for just one instrument - make sure the bid and the ask don't match
+        QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.currencyAskEvent();
+        askBuilder.withExchange(exchange.getCode())
+                  .withQuoteDate(DateUtils.dateToString(new Date()))
+                  .withInstrument(testCCY)
+                  .withExchange(exchange.getCode());
+        askBuilder.withInstrument(bid2.getInstrument());
+        // create an ask that is more than the bid to prevent a trade occurring (keeps the top populated)
+        askBuilder.withPrice(bid2.getPrice().add(BigDecimal.ONE)).withSize(bid2.getSize());
+        AskEvent ask1 = askBuilder.create();
+        script.add(ask1); // top3
+        // this creates a nice, two-sided top-of-book for the instrument
+        // create a new ask for the same instrument that *won't* change the top - a new top should not be generated
+        askBuilder.withPrice(bid2.getPrice().add(BigDecimal.TEN)).withSize(bid2.getSize());
+        AskEvent ask2 = askBuilder.create();
+        script.add(ask2); // no top4!
+        // set up a subscriber to top-of-book for the underlying instrument metc
+        TopOfBookSubscriber topOfBook = new TopOfBookSubscriber();
+        exchange.getTopOfBook(ExchangeRequestBuilder.newRequest().withInstrument(testCCY).create(),
+                              topOfBook);
+        // start the exchange
+        exchange.start(script);
+        exchange.stop();
+        // measure the tops collected by the subscriber
+        // should have:
+        //  a top for the bid1 instrument with just bid1
+        //  a top for the bid2 instrument with just bid2
+        //  a top for the bid2 instrument bid2-ask1
+        //  no new top for ask2 - a total of three tops
+        assertEquals(3,topOfBook.getTops().size());
+    }
+    
+    
     /**
      * Tests that the <code>FilteringSubscriber</code> correctly tracks top-of-book state for
      * different option chain members of the same underlying instrument.
