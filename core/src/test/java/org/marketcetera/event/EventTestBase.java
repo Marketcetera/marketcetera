@@ -244,7 +244,7 @@ public class EventTestBase
     {
         return QuoteEventBuilder.currencyBidEvent().withInstrument(inInstrument)
                                                  .withAction(inAction)
-                                                 .withExchange("exchange")
+                                                 .withExchange("TEST")
                                                  .withPrice(generateDecimalValue())
                                                  .withSize(generateDecimalValue())
                                                  .withContractSize(1)
@@ -262,7 +262,7 @@ public class EventTestBase
     {
         return QuoteEventBuilder.currencyBidEvent().withInstrument(inInstrument)
                                                  .withAction(QuoteAction.ADD)
-                                                 .withExchange("exchange")
+                                                 .withExchange("TEST")
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
@@ -280,7 +280,7 @@ public class EventTestBase
     {
         return QuoteEventBuilder.currencyAskEvent().withInstrument(inInstrument)
                                                  .withAction(inAction)
-                                                 .withExchange("exchange")
+                                                 .withExchange("TEST")
                                                  .withPrice(generateDecimalValue())
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())
@@ -298,7 +298,7 @@ public class EventTestBase
     {
         return QuoteEventBuilder.currencyAskEvent().withInstrument(inInstrument)
                                                  .withAction(QuoteAction.ADD)
-                                                 .withExchange("exchange")
+                                                 .withExchange("TEST")
                                                  .withPrice(inPrice)
                                                  .withContractSize(1)
                                                  .withSize(generateDecimalValue())

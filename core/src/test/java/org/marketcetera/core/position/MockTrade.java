@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.core.position.Trade;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
@@ -42,6 +43,12 @@ public class MockTrade<T extends Instrument> implements Trade<T> {
         return createTrade(PositionKeyFactory.createOptionKey(symbol, expiry,
                 new BigDecimal(strikePrice), type, account, traderId),
                 quantity, price);
+    }
+    
+    public static MockTrade<Currency> createCurrencyTrade(String leftCcy, String rightCcy,
+            String account, String traderId, String quantity, String price) {
+        return createTrade(PositionKeyFactory.createCurrencyKey(leftCcy, rightCcy,"","", account,
+                traderId), quantity, price);
     }
 
     public static <T extends Instrument> MockTrade<T> createTrade(T instrument,
