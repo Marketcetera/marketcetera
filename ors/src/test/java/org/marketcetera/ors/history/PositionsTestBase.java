@@ -651,7 +651,7 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
         return reports;
     }
 
-    private void createBackgroundNoise() throws Exception {
+    public void createBackgroundNoise() throws Exception {
         //Create all the reports for symbols A and B
         createChainReportsForBuyA();
         createChainReportsForBuyB1();
