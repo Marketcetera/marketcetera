@@ -35,6 +35,15 @@ public class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
         }
         mBrokerID = inBrokerID;
     }
+	@Override
+	public String getTraderUserName() {
+		return traderUserName;
+	}
+	@Override
+	public void setTraderUserName(String traderUserName) {
+		this.traderUserName = traderUserName;		
+	}
+    
     /**
      * Creates an instance.
      *
@@ -65,5 +74,6 @@ public class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
     }
 
     private BrokerID mBrokerID;
+    private String traderUserName;
     private static final long serialVersionUID = 1L;
 }

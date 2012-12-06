@@ -909,6 +909,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             }
             failIfDisconnected();
             SpringConfig cfg = SpringConfig.getSingleton();
+            inOrder.setTraderUserName(mParameters.getUsername());
             Collection<OrderModifier> orderModifiers = cfg.getOrderModifiers();
             for(OrderModifier modifier : orderModifiers) {
                 modifier.modify(inOrder);
