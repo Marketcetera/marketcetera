@@ -1,6 +1,5 @@
 package org.marketcetera.ors.filters;
 
-
 import java.util.Map;
 
 import org.marketcetera.core.CoreException;
@@ -8,44 +7,59 @@ import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Message;
 import quickfix.field.SenderSubID;
 
-public class UserInfoMessageModifier implements SessionAwareMessageModifier {
-	
-	private Map<String,String> orsToBrokerUserMap;
-	
-	@Override
-	public boolean modifyMessage(Message message,
-			ReportHistoryServices historyServices, FIXMessageAugmentor augmentor)
-			throws CoreException {
-			String orsUserName = null;
-			if(sessionInfo != null) {
-			    SimpleUser currentUser = (SimpleUser)sessionInfo.getValue(SessionInfo.ACTOR);
-			    if(currentUser == null) {
-	                SLF4JLoggerProxy.debug(this,
-	                                       "No session username, quitting");
-	                return false;
-			    }
-			    orsUserName = currentUser.getName();
-			}
-			String brokerUserName = orsToBrokerUserMap.get(orsUserName);		
-			if(brokerUserName ==null)
-			{
-			    SLF4JLoggerProxy.debug(this,
-			                           "No broker username for {}",
-			                           orsUserName);
-			    return false;
-			}
-			message.setField(new SenderSubID(brokerUserName));
-			return true;
-	}
+/* $License$ */
 
-	public void setOrsToBrokerUserMap(Map<String,String> orsToBrokerUserMap) {
-		this.orsToBrokerUserMap = orsToBrokerUserMap;
-	}
+/**
+ * Sets the SenderSubID on outgoing messages according to the Marketcetera user that initiated the order.
+ *
+ * @author Sameer Patil
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
+public class UserInfoMessageModifier
+        implements SessionAwareMessageModifier
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.filters.MessageModifier#modifyMessage(quickfix.Message, org.marketcetera.ors.history.ReportHistoryServices, org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor)
+     */
+    @Override
+    public boolean modifyMessage(Message inMessage,
+                                 ReportHistoryServices inHistoryServices,
+                                 FIXMessageAugmentor inAugmentor)
+            throws CoreException
+    {
+        String orsUserName = null;
+        if(sessionInfo != null) {
+            SimpleUser currentUser = (SimpleUser)sessionInfo.getValue(SessionInfo.ACTOR);
+            if(currentUser == null) {
+                Messages.NO_SESSION_USERNAME.warn(this);
+                return false;
+            }
+            orsUserName = currentUser.getName();
+        }
+        String brokerUserName = marketceteraToBrokerUserMap.get(orsUserName);
+        if(brokerUserName ==null) {
+            Messages.NO_BROKER_USERNAME.warn(this,
+                                             orsUserName);
+            return false;
+        }
+        inMessage.getHeader().setField(new SenderSubID(brokerUserName));
+        return true;
+    }
+    /**
+     * Sets the Marketcetera to Broker user map property.
+     *
+     * @param inMarketceteraToBrokerUserMap a <code>Map&lt;String,String&gt;</code> value
+     */
+    public void setMarketceteraToBrokerUserMap(Map<String,String> inMarketceteraToBrokerUserMap)
+    {
+        marketceteraToBrokerUserMap = inMarketceteraToBrokerUserMap;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.filters.SessionAwareMessageModifier#getSessionInfo()
      */
@@ -66,4 +80,8 @@ public class UserInfoMessageModifier implements SessionAwareMessageModifier {
      * session information value
      */
     private volatile SessionInfo sessionInfo;
+    /**
+     * stores broker-specific user identifiers keyed by Marketcetera username
+     */
+    private volatile Map<String,String> marketceteraToBrokerUserMap;
 }
