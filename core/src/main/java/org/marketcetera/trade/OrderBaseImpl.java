@@ -129,6 +129,14 @@ public class OrderBaseImpl implements OrderBase {
     {
         mText = inText;
     }
+    @Override
+	public String getTraderUserName() {
+		return traderUserName;
+	}
+	@Override
+	public void setTraderUserName(String traderUserName) {
+		this.traderUserName = traderUserName;		
+	}
     private OrderID mOrderID;
     private Side mSide;
     private BigDecimal mQuantity;
@@ -137,5 +145,6 @@ public class OrderBaseImpl implements OrderBase {
     private String mAccount;
     private String mText;
     private Instrument mInstrument;
+    private String traderUserName;
     private static final long serialVersionUID = 1L;
 }

@@ -51,6 +51,15 @@
             </map>
           </property>
         </bean>
+        <bean class="org.marketcetera.ors.filters.UserInfoMessageModifier">
+          <property name="orsToBrokerUserMap">
+            <map>
+                <entry key="admin" value="spatil"/>
+                <entry key="bjones" value="bjones3"/>
+                <entry key="sameer" value="spatil"/>                 
+            </map>
+          </property>
+        </bean>
       </list>
     </property>
   </bean>
