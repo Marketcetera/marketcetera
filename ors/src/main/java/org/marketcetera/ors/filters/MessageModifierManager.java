@@ -2,6 +2,7 @@ package org.marketcetera.ors.filters;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.info.RequestInfo;
 import org.marketcetera.ors.info.SystemInfo;
@@ -9,6 +10,7 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.Message;
 
 /**
@@ -42,7 +44,10 @@ public class MessageModifierManager {
         FIXMessageAugmentor augmentor=
             ((FIXMessageFactory)
              info.getValue(RequestInfo.FIX_MESSAGE_FACTORY)).getMsgAugmentor();
-        for (MessageModifier oneModifier : messageModifiers) {
+        for(MessageModifier oneModifier : messageModifiers) {
+            if(oneModifier instanceof SessionAwareMessageModifier) {
+                ((SessionAwareMessageModifier)oneModifier).setSessionInfo(info.getSessionInfo());
+            }
             oneModifier.modifyMessage(inMessage,historyServices,augmentor);
         }
     }
