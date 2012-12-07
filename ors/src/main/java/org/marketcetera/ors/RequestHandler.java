@@ -573,12 +573,6 @@ public class RequestHandler
             ThreadedMetric.event
                 ("requestHandler.orderAllowed"); //$NON-NLS-1$
 
-            //Add logged in user name in order
-            if(msg.getTraderUserName()!=null && !msg.getTraderUserName().isEmpty())
-            {
-            	qMsg.setField(new SenderSubID(msg.getTraderUserName()));
-            }
-   
             // Apply message modifiers.
             
             if (b.getModifiers()!=null) {
