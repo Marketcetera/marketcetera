@@ -41,17 +41,4 @@ public interface Order extends Serializable {
      * @param inBrokerID the brokerID to send this order to.
      */
     void setBrokerID(BrokerID inBrokerID);
-    /**
-     * Gets the Trader username from which this order is sent.
-     *
-     * @return the traderUserName to send this order to.
-     */
-    String getTraderUserName();
-
-    /**
-     * Sets the Trader username from which this order is sent.
-     *
-     * @param traderUserName the Trader username to send this order.
-     */
-    void setTraderUserName(String traderUserName);
 }
