@@ -46,7 +46,7 @@ public class UserInfoMessageModifier
         if(brokerUserName ==null) {
             Messages.NO_BROKER_USERNAME.warn(this,
                                              orsUserName);
-            return false;
+            brokerUserName = orsUserName;
         }
         inMessage.getHeader().setField(new SenderSubID(brokerUserName));
         return true;
