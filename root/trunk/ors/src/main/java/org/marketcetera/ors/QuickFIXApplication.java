@@ -207,9 +207,10 @@ public class QuickFIXApplication
                 return;
             }
         }
-
-        // Convert reply to FIX Agnostic messsage.
-
+        // Convert reply to FIX Agnostic message (unless it's a heartbeat)
+	if(FIXMessageUtil.isHeartbeat(msg)) {
+	    return;
+	}
         TradeMessage reply;
         try {
             reply=FIXConverter.fromQMessage
