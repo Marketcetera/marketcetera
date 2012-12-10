@@ -35,6 +35,7 @@ public class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
         }
         mBrokerID = inBrokerID;
     }
+    
     /**
      * Creates an instance.
      *

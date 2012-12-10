@@ -388,6 +388,22 @@ public class ReportsTestBase extends TestCaseBase {
         return getPositions(inDate, sViewer);
     }
     
+    protected static BigDecimal getPosition(Date inDate, Currency inCurrency)
+            throws Exception {
+        return getPosition(inDate, inCurrency, sViewer);
+    }
+    
+    protected static BigDecimal getPosition(Date inDate, Currency inCurrency, SimpleUser inViewer)
+            throws Exception {
+        return sServices.getCurrencyPositionAsOf(inViewer, inDate, inCurrency);
+    }
+
+    protected static Map<PositionKey<Currency>,BigDecimal> getCurrencyPositions(Date inDate)
+            throws Exception {
+        return getCurrencyPositions(inDate, sViewer);
+    }
+    
+    
     protected static BigDecimal getPosition(Date inDate, Option inOption) throws Exception {
         return getPosition(inDate, inOption, sViewer);
     }
@@ -421,6 +437,12 @@ public class ReportsTestBase extends TestCaseBase {
             throws Exception {
         return sServices.getAllEquityPositionsAsOf(inViewer, inDate);
     }
+    
+    protected static Map<PositionKey<Currency>,BigDecimal> getCurrencyPositions(Date inDate, SimpleUser inViewer)
+            throws Exception {
+        return sServices.getAllCurrencyPositionsAsOf(inViewer, inDate);
+    }
+
 
     protected static ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,

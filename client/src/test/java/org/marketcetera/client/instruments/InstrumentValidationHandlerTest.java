@@ -43,6 +43,12 @@ public class InstrumentValidationHandlerTest {
     }
 
     @Test
+    public void currency() throws Exception {
+        Currency currency = new Currency("USD", "GBP", "", "");
+        InstrumentValidationHandler.SELECTOR.forInstrument(currency).validate(currency);
+    }
+    
+    @Test
     public void option() throws Exception {
         validate("000001");
         validate("000009");

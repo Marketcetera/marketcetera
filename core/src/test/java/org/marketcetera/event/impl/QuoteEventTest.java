@@ -21,6 +21,7 @@ import org.marketcetera.util.test.EqualityAssert;
 /**
  * Tests {@link QuoteEventBuilder}, {@link EquityAskEventImpl}, {@link EquityBidEventImpl}, 
  * {@link OptionAskEventImpl}, and {@link OptionBidEventImpl}.
+ * {@link CurrencyAskEventImpl}, and {@link CurrencyBidEventImpl}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -75,6 +76,15 @@ public class QuoteEventTest
        verify(setDefaults(getBuilder()));
        instrument = future; useInstrument = true; useAsk = true;
        verify(setDefaults(getBuilder()));
+       instrument = currency; useInstrument = false; useAsk = false;
+       verify(setDefaults(getBuilder()));
+       instrument = currency; useInstrument = false; useAsk = true;
+       verify(setDefaults(getBuilder()));
+       instrument = currency; useInstrument = true; useAsk = false;
+       verify(setDefaults(getBuilder()));
+       instrument = currency; useInstrument = true; useAsk = true;
+       verify(setDefaults(getBuilder()));
+   
        // create a new kind of instrument
        final Instrument unsupportedInstrument = EventTestBase.generateUnsupportedInstrument(); 
        new ExpectedFailure<UnsupportedOperationException>() {
@@ -203,6 +213,22 @@ public class QuoteEventTest
                          QuoteAction.ADD,
                          sourceEvent.getSize(),
                          sourceEvent.getTimestamp());
+        instrument = currency; useAsk = false;
+        sourceEvent = generateQuote(QuoteAction.DELETE);
+        generatedEvent = QuoteEventBuilder.add(sourceEvent);
+        verifyQuoteEvent(sourceEvent,
+                         generatedEvent,
+                         QuoteAction.ADD,
+                         sourceEvent.getSize(),
+                         sourceEvent.getTimestamp());
+        instrument = currency; useAsk = true;
+        sourceEvent = generateQuote(QuoteAction.CHANGE);
+        generatedEvent = QuoteEventBuilder.add(sourceEvent);
+        verifyQuoteEvent(sourceEvent,
+                         generatedEvent,
+                         QuoteAction.ADD,
+                         sourceEvent.getSize(),
+                         sourceEvent.getTimestamp());
         // repeat the tests generating CHANGE events
         Date timestamp = new Date();
         BigDecimal size = new BigDecimal(100);
@@ -266,6 +292,27 @@ public class QuoteEventTest
                          QuoteAction.CHANGE,
                          size,
                          timestamp);
+        
+        instrument = currency; useAsk = false;
+        sourceEvent = generateQuote(QuoteAction.CHANGE);
+        generatedEvent = QuoteEventBuilder.change(sourceEvent,
+                                                  timestamp,
+                                                  size);
+        verifyQuoteEvent(sourceEvent,
+                         generatedEvent,
+                         QuoteAction.CHANGE,
+                         size,
+                         timestamp);
+        instrument = currency; useAsk = true;
+        sourceEvent = generateQuote(QuoteAction.CHANGE);
+        generatedEvent = QuoteEventBuilder.change(sourceEvent,
+                                                  timestamp,
+                                                  size);
+        verifyQuoteEvent(sourceEvent,
+                         generatedEvent,
+                         QuoteAction.CHANGE,
+                         size,
+                         timestamp);
         // repeat the tests generating DELETE events
         instrument = option; useAsk = false;
         sourceEvent = generateQuote(QuoteAction.ADD);
@@ -308,6 +355,22 @@ public class QuoteEventTest
                          sourceEvent.getSize(),
                          sourceEvent.getTimestamp());
         instrument = future; useAsk = true;
+        sourceEvent = generateQuote(QuoteAction.CHANGE);
+        generatedEvent = QuoteEventBuilder.delete(sourceEvent);
+        verifyQuoteEvent(sourceEvent,
+                         generatedEvent,
+                         QuoteAction.DELETE,
+                         sourceEvent.getSize(),
+                         sourceEvent.getTimestamp());
+        instrument = currency; useAsk = false;
+        sourceEvent = generateQuote(QuoteAction.DELETE);
+        generatedEvent = QuoteEventBuilder.delete(sourceEvent);
+        verifyQuoteEvent(sourceEvent,
+                         generatedEvent,
+                         QuoteAction.DELETE,
+                         sourceEvent.getSize(),
+                         sourceEvent.getTimestamp());
+        instrument = currency; useAsk = true;
         sourceEvent = generateQuote(QuoteAction.CHANGE);
         generatedEvent = QuoteEventBuilder.delete(sourceEvent);
         verifyQuoteEvent(sourceEvent,
@@ -507,6 +570,14 @@ public class QuoteEventTest
                      builder.getOption().getInstrument());
         verify(builder);
         instrument = future;
+        builder = setDefaults(getBuilder());
+        builder.withInstrument(instrument);
+        assertEquals(instrument,
+                     builder.getQuote().getInstrument());
+        assertEquals(instrument.getSymbol(),
+                     builder.getQuote().getInstrumentAsString());
+        verify(builder);
+        instrument = currency;
         builder = setDefaults(getBuilder());
         builder.withInstrument(instrument);
         assertEquals(instrument,
@@ -716,6 +787,12 @@ public class QuoteEventTest
         assertEquals(instrument,
                      builder.getOption().getUnderlyingInstrument());
         verify(builder);
+        instrument = currency;
+        builder = setDefaults(getBuilder());
+        builder.withUnderlyingInstrument(instrument);
+        assertEquals(instrument,
+                     builder.getOption().getUnderlyingInstrument());
+        verify(builder);
     }
     /**
      * Tests event <code>hashCode</code> and <code>equals</code>.
@@ -906,6 +983,54 @@ public class QuoteEventTest
                 futureBidBuilder.create();
             }
         };
+        
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_OPTION_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                optionBuilder.create();
+            }
+        };
+        final QuoteEventBuilder<?> currencyAskBuilder = QuoteEventBuilder.currencyAskEvent();
+        instrument = currency;
+        setDefaults(currencyAskBuilder).withInstrument(null);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                currencyAskBuilder.create();
+            }
+        };
+        setDefaults(currencyAskBuilder).withInstrument(equity);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                currencyAskBuilder.create();
+            }
+        };
+        final QuoteEventBuilder<?> currencyBidBuilder = QuoteEventBuilder.currencyBidEvent();
+        setDefaults(currencyBidBuilder).withInstrument(null);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                currencyBidBuilder.create();
+            }
+        };
+        setDefaults(currencyBidBuilder).withInstrument(equity);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                currencyBidBuilder.create();
+            }
+        };
     }
     /**
      * Verifies that the given builder can produce an event of the
@@ -1068,7 +1193,14 @@ public class QuoteEventTest
                 } else {
                     return QuoteEventBuilder.futureBidEvent();
                 }
-            } else {
+            } else if(instrument instanceof Currency) {
+                if(useAsk) {
+                    return QuoteEventBuilder.currencyAskEvent();
+                } else {
+                    return QuoteEventBuilder.currencyBidEvent();
+                }
+            }  
+            else {
                 throw new UnsupportedOperationException();
             }
         }
@@ -1131,6 +1263,14 @@ public class QuoteEventTest
             assertEquals(expectedFutureEvent.getContractSize(),
                          actualFutureEvent.getContractSize());
         }
+        if(inSourceEvent instanceof CurrencyEvent)  {
+        	CurrencyEvent expectedCurrencyEvent = (CurrencyEvent)inSourceEvent;
+        	CurrencyEvent actualCurrencyEvent = (CurrencyEvent)inGeneratedEvent;
+            assertEquals(expectedCurrencyEvent.getInstrument().getSymbol(),
+                         actualCurrencyEvent.getInstrument().getSymbol());
+            assertEquals(expectedCurrencyEvent.getContractSize(),
+                         actualCurrencyEvent.getContractSize());
+        }
     }
     /**
      * Generates a <code>QuoteEvent<?></code> value.
@@ -1164,6 +1304,14 @@ public class QuoteEventTest
                 return EventTestBase.generateFutureBidEvent(future,
                                                             inAction);
             }
+        } else if(instrument instanceof Currency) {
+            if(useAsk) {
+                return EventTestBase.generateCurrencyAskEvent(currency,
+                                                            inAction);
+            } else {
+                return EventTestBase.generateCurrencyBidEvent(currency,
+                                                            inAction);
+            }
         } else {
             throw new UnsupportedOperationException();
         }
@@ -1193,6 +1341,11 @@ public class QuoteEventTest
     private final Future future = new Future("GOOG",
                                              FutureExpirationMonth.DECEMBER,
                                              2015);
+    
+    /**
+     * test currency
+     */
+    private final Currency currency = new Currency("USD","INR","","");
     /**
      * indicates the test instrument to use
      */
