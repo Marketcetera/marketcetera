@@ -530,7 +530,7 @@ public class RequestHandler
             }
             requestInfo.setValue
                 (RequestInfo.BROKER_ID,bID);
-
+            
             // Ensure broker ID maps to existing broker.
 
             b=getBrokers().getBroker(bID);
@@ -574,7 +574,7 @@ public class RequestHandler
                 ("requestHandler.orderAllowed"); //$NON-NLS-1$
 
             // Apply message modifiers.
-
+            
             if (b.getModifiers()!=null) {
                 requestInfo.setValue(RequestInfo.CURRENT_MESSAGE,qMsg);
                 try {

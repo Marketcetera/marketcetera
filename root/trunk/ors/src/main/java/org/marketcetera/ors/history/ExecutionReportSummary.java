@@ -268,7 +268,7 @@ class ExecutionReportSummary extends EntityBase {
                 query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
                 query.setParameter("symbol", inCurrency.getSymbol());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.Currency.ordinal());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                         TemporalType.TIMESTAMP);
                 return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
@@ -370,11 +370,11 @@ class ExecutionReportSummary extends EntityBase {
             public Map<PositionKey<Currency>, BigDecimal> execute(EntityManager em,
                                                     PersistContext context) {
                 Query query = em.createNamedQuery(
-                        "crAllPositions");  //$NON-NLS-1$						//ToDo add currency SQL
+                        "crAllPositions");  //$NON-NLS-1$
                 query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
                 query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
                 query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
+                query.setParameter("securityType", SecurityType.Currency.ordinal());  //$NON-NLS-1$
                 query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                         TemporalType.TIMESTAMP);
                 HashMap<PositionKey<Currency>, BigDecimal> map =
@@ -383,21 +383,18 @@ class ExecutionReportSummary extends EntityBase {
                 Object[] columns;
                 for(Object o: list) {
                     columns = (Object[]) o;
-                    //6 columns
-                    if(columns.length > 1) {         	
-                        //first one is the baseCCY
-                        //second one is the plCCY
-                        //third one is the nearTenor
-                        //fourth one is the account
-                        //fifth one is the traderId
-                    	//sizth one is the position
+                    //4 columns
+                    if(columns.length > 1) {
+                        //first one is the symbol
+                        //second one is the account
+                        //third one is the actor ID
+                        //fourth one is the position
                         map.put(PositionKeyFactory.createCurrencyKey
                                 ((String)columns[0],
                                  (String)columns[1],
-                                 (String)columns[2],
-                                 (String)columns[3],
-                                 (String)columns[4]),
-                                 (BigDecimal)columns[5]);
+                                 ((columns[2]==null)?null:
+                                  ((BigInteger)columns[2]).toString())),
+                                 (BigDecimal)columns[3]);
                     }
                 }
                 return map;

@@ -54,9 +54,9 @@ public class PositionKeyFactory {
      * @throws IllegalArgumentException
      *             if symbol is null or whitespace
      */
-    public static PositionKey<Currency> createCurrencyKey(String baseCCY, String plCCY, String nearTenor,
+    public static PositionKey<Currency> createCurrencyKey(String symbol,
             @Nullable String account, @Nullable String traderId) {
-        return createKey(new Currency(baseCCY,plCCY,nearTenor), account, traderId);
+        return createKey(new Currency(symbol), account, traderId);
     }
     
     /**
