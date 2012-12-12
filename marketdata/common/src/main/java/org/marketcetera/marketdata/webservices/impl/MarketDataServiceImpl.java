@@ -1,6 +1,9 @@
 package org.marketcetera.marketdata.webservices.impl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
@@ -10,10 +13,10 @@ import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.event.Event;
-import org.marketcetera.core.symbolresolver.SymbolResolver;
 import org.marketcetera.marketdata.manager.MarketDataManager;
-import org.marketcetera.marketdata.request.MarketDataRequest;
 import org.marketcetera.marketdata.webservices.MarketDataService;
+import org.marketcetera.marketdata.webservices.WebServicesEvent;
+import org.marketcetera.marketdata.webservices.WebServicesMarketDataRequest;
 
 /* $License$ */
 
@@ -23,7 +26,7 @@ import org.marketcetera.marketdata.webservices.MarketDataService;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
- * todo create a max size for the buffered events
+ * TODO create a max size for the buffered events
  */
 @ThreadSafe
 public class MarketDataServiceImpl
@@ -48,15 +51,6 @@ public class MarketDataServiceImpl
         maxQueueInterval = inMaxQueueInterval;
     }
     /**
-     * Sets the symbolResolver value.
-     *
-     * @param inSymbolResolver a <code>SymbolResolverManager</code> value
-     */
-    public void setSymbolResolver(SymbolResolver inSymbolResolver)
-    {
-        symbolResolver = inSymbolResolver;
-    }
-    /**
      * Sets the marketDataManager value.
      *
      * @param inMarketDataManager a <code>MarketDataManager</code> value
@@ -69,7 +63,7 @@ public class MarketDataServiceImpl
      * @see org.marketcetera.marketdata.webservices.MarketDataService#request(org.marketcetera.marketdata.request.MarketDataRequest)
      */
     @Override
-    public long request(MarketDataRequest inRequest)
+    public long request(WebServicesMarketDataRequest inRequest)
     {
         long requestId = requestIdCounter.incrementAndGet();
         synchronized(events) {
@@ -81,6 +75,7 @@ public class MarketDataServiceImpl
                     public void publishTo(Object inData)
                     {
                         if(inData instanceof Event) {
+                            System.out.println("WS market data subscriber received: " + inData);
                             eventQueue.add((Event)inData);
                         }
                     }
@@ -97,17 +92,17 @@ public class MarketDataServiceImpl
      * @see org.marketcetera.marketdata.webservices.MarketDataService#getEvents(long)
      */
     @Override
-    public Collection<Event> getEvents(long inRequestId)
+    public List<WebServicesEvent> getEvents(long inRequestId)
     {
+        List<WebServicesEvent> eventsToReturn = new ArrayList<WebServicesEvent>();
         synchronized(events) {
             BlockingDeque<Event> waitingEvents = events.get(inRequestId);
             if(waitingEvents != null) {
-                Collection<Event> eventsToReturn = new ArrayList<Event>();
-                waitingEvents.drainTo(eventsToReturn);
+//                waitingEvents.drainTo(eventsToReturn);
                 return eventsToReturn;
             }
         }
-        return Collections.emptyList();
+        return eventsToReturn;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.webservices.MarketDataService#delete(long)
@@ -148,10 +143,6 @@ public class MarketDataServiceImpl
      * manages market data requests
      */
     private MarketDataManager marketDataManager;
-    /**
-     * resolvers symbols to instruments
-     */
-    private SymbolResolver symbolResolver;
     /**
      * generates unique request ids
      */

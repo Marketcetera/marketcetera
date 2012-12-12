@@ -6,6 +6,8 @@
     <service ref="bogusFeedBean" interface="org.marketcetera.marketdata.provider.MarketDataProvider"/>
     <bean id="bogusFeedBean" class="org.marketcetera.marketdata.bogus.BogusFeed" init-method="start">
         <property name="providerRegistry" ref="marketDataProviderRegistry"/>
+        <property name="symbolResolver" ref="symbolResolverService"/>
     </bean>
     <reference id="marketDataProviderRegistry" interface="org.marketcetera.marketdata.manager.MarketDataProviderRegistry"/>
+    <reference id="symbolResolverService" interface="org.marketcetera.core.symbolresolver.SymbolResolver"/>
 </blueprint>

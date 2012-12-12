@@ -146,6 +146,11 @@ public class BogusFeed
         Instrument resolvedInstrument = symbolResolver.resolve(inAtom.getSymbol());
         if(resolvedInstrument == null) {
             throw new MarketDataRequestFailed(); // TODO message
+        } else {
+            SLF4JLoggerProxy.debug(this,
+                                   "{} resolved to {}",
+                                   inAtom.getSymbol(),
+                                   resolvedInstrument);
         }
         addSymbolMapping(inAtom.getSymbol(),
                          resolvedInstrument);

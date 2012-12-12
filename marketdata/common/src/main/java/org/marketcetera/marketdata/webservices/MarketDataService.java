@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.webservices;
 
-import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -31,7 +31,7 @@ public interface MarketDataService
      */
     @POST
     @Consumes({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public long request(MarketDataRequest inRequest);
+    public long request(WebServicesMarketDataRequest inRequest);
     /**
      * Retrieve the events queued from a market data request.
      * 
@@ -44,12 +44,12 @@ public interface MarketDataService
      * exception will be thrown. TODO
      *
      * @param inRequestId a <code>log</code> value
-     * @return a <code>Collection&lt;Event&gt;</code> value
+     * @return a <code>List&lt;WebServicesEvent&gt;</code> value
      */
     @GET
-    @Path("events")
+    @Path("events/{id}")
     @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
-    public Collection<Event> getEvents(long inRequestId);
+    public List<WebServicesEvent> getEvents(@PathParam("id")long inRequestId);
     /**
      * Cancels an active market data request.
      * 

@@ -9,6 +9,11 @@
       <cxf:logging />
     </cxf:features>
   </cxf:bus>
+  <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+      <!-- argument ref="jacksonMapper"/-->
+  </bean>
+  <!-- set up the CXF endpoints for the webservices of this bundle -->
+  <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
   <jaxrs:server id="metcMarketData" address="/marketdata">
     <jaxrs:serviceBeans>
       <ref component-id="marketDataWebServiceBean" />
@@ -17,13 +22,15 @@
       <entry key="json" value="application/json" />
       <entry key="xml" value="application/xml" />
     </jaxrs:extensionMappings>
+    <jaxrs:providers>
+        <ref component-id="jsonProvider"/>
+        <ref component-id="searchContextProvider"/>
+    </jaxrs:providers>
   </jaxrs:server>
   <bean id="marketDataWebServiceBean" class="org.marketcetera.marketdata.webservices.impl.MarketDataServiceImpl">
     <property name="marketDataManager" ref="marketDataManagerBean" />
-    <property name="symbolResolver" ref="symbolResolverService"/>
   </bean>
   <bean id="marketDataManagerBean" class="org.marketcetera.marketdata.manager.impl.MarketDataManagerImpl" />
   <service ref="marketDataManagerBean" interface="org.marketcetera.marketdata.manager.MarketDataManager" />
   <service ref="marketDataManagerBean" interface="org.marketcetera.marketdata.manager.MarketDataProviderRegistry" />
-  <reference id="symbolResolverService" interface="org.marketcetera.core.symbolresolver.SymbolResolverManager"/>
 </blueprint>
