@@ -16,5 +16,5 @@
       </list>
     </property>
   </bean>
-  <service interface="org.marketcetera.core.symbolresolver.SymbolResolverManager" ref="marketceteraSymbolResolverBean" />
+  <service interface="org.marketcetera.core.symbolresolver.SymbolResolver" ref="marketceteraSymbolResolverBean" />
 </blueprint>
