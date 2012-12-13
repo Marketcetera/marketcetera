@@ -75,7 +75,6 @@ public class MarketDataServiceImpl
                     public void publishTo(Object inData)
                     {
                         if(inData instanceof Event) {
-                            System.out.println("WS market data subscriber received: " + inData);
                             eventQueue.add((Event)inData);
                         }
                     }
