@@ -29,6 +29,7 @@ public class WebServicesDividendEvent
      */
     public WebServicesDividendEvent(DividendEvent inEvent)
     {
+        super(inEvent);
         instrument = inEvent.getInstrument();
         amount = inEvent.getAmount();
         currency = inEvent.getCurrency();

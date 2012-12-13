@@ -5,10 +5,9 @@ import java.math.BigDecimal;
 import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.EquityEvent;
 import org.marketcetera.core.event.EventType;
-import org.marketcetera.core.event.QuoteAction;
+import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
@@ -20,24 +19,22 @@ import org.marketcetera.core.trade.Equity;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name="equityAskEvent")
+@XmlRootElement(name="equityTradeEvent")
 @XmlAccessorType(XmlAccessType.NONE)
-public class WebServicesEquityAskEvent
+public class WebServicesEquityTradeEvent
         extends WebServicesEvent
-        implements EquityEvent, AskEvent
+        implements EquityEvent, TradeEvent
 {
-    public WebServicesEquityAskEvent(AskEvent inEvent)
+    public WebServicesEquityTradeEvent(TradeEvent inEvent)
     {
         super(inEvent);
         Validate.isTrue(inEvent instanceof EquityEvent);
         EquityEvent equityEvent = (EquityEvent)inEvent;
-        action = inEvent.getAction();
-        eventType = inEvent.getEventType();
+//        instrument = equityEvent.getInstrument();
         exchange = inEvent.getExchange();
+        eventType = inEvent.getEventType();
         exchangeTimestamp = inEvent.getExchangeTimestamp();
-        instrument = equityEvent.getInstrument();
         price = inEvent.getPrice();
-        quoteDate = inEvent.getQuoteDate();
         size = inEvent.getSize();
     }
     /* (non-Javadoc)
@@ -46,7 +43,8 @@ public class WebServicesEquityAskEvent
     @Override
     public Equity getInstrument()
     {
-        return instrument;
+//        return instrument;
+        return null;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.HasInstrument#getInstrumentAsString()
@@ -54,23 +52,8 @@ public class WebServicesEquityAskEvent
     @Override
     public String getInstrumentAsString()
     {
-        return instrument == null ? null : instrument.getSymbol();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.event.QuoteEvent#getQuoteDate()
-     */
-    @Override
-    public String getQuoteDate()
-    {
-        return quoteDate;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.event.QuoteEvent#getAction()
-     */
-    @Override
-    public QuoteAction getAction()
-    {
-        return action;
+//        return instrument == null ? null : instrument.getSymbol();
+        return null;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.MarketDataEvent#getExchange()
@@ -120,14 +103,18 @@ public class WebServicesEquityAskEvent
     {
         eventType = inEventType;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.TradeEvent#getTradeDate()
+     */
+    @Override
+    public String getTradeDate()
+    {
+        return tradeDate;
+    }
     @SuppressWarnings("unused")
-    private WebServicesEquityAskEvent() {}
-    @XmlElement
-    private Equity instrument;
-    @XmlAttribute
-    private String quoteDate;
-    @XmlAttribute
-    private QuoteAction action;
+    private WebServicesEquityTradeEvent() {}
+//    @XmlElement
+//    private Equity instrument;
     @XmlAttribute
     private String exchange;
     @XmlAttribute
@@ -138,5 +125,7 @@ public class WebServicesEquityAskEvent
     private String exchangeTimestamp;
     @XmlAttribute
     private EventType eventType;
+    @XmlAttribute
+    private String tradeDate;
     private static final long serialVersionUID = 1L;
 }

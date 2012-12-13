@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.core.event.Event;
 
@@ -18,11 +17,16 @@ import org.marketcetera.core.event.Event;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class WebServicesEvent
+public class WebServicesEvent
         implements Event
 {
+    public WebServicesEvent(Event inEvent)
+    {
+        messageId = inEvent.getMessageId();
+        source = String.valueOf(inEvent.getSource());
+        timestamp = inEvent.getTimestamp();
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.TimestampCarrier#getTimeMillis()
      */
@@ -63,6 +67,7 @@ public abstract class WebServicesEvent
     {
         source = String.valueOf(inSource);
     }
+    protected WebServicesEvent() {}
     @XmlAttribute
     private long messageId;
     @XmlAttribute
