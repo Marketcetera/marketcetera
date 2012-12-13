@@ -6,7 +6,7 @@ import org.marketcetera.core.util.log.I18NBoundMessage;
 /**
  * An event was received from a data feed but could not be translated.
  *
- * @version $Id: UnsupportedEventException.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public class UnsupportedEventException
         extends CoreException

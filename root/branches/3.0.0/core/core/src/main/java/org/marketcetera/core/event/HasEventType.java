@@ -5,7 +5,7 @@ package org.marketcetera.core.event;
 /**
  * Indicates that the implements has an <code>EventType</code> attribute.
  *
- * @version $Id: HasEventType.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public interface HasEventType

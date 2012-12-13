@@ -9,7 +9,7 @@ import org.marketcetera.core.trade.Equity;
 /**
  * Represents a dividend for an equity at a particular time.
  *
- * @version $Id: DividendEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public interface DividendEvent

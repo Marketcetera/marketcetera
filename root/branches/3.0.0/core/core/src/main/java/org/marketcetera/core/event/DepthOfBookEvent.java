@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Represents the Depth-of-Book for a specific instrument.
  *
- * @version $Id: DepthOfBookEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public interface DepthOfBookEvent

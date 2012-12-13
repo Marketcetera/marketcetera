@@ -7,7 +7,7 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Indicates that the implementing class has an underlying instrument.
  *
- * @version $Id: HasUnderlyingInstrument.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public interface HasUnderlyingInstrument

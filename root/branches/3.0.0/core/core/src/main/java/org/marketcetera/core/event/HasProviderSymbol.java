@@ -5,7 +5,7 @@ package org.marketcetera.core.event;
 /**
  * Indicates the implementer may have access to an original symbol from the provider.
  *
- * @version $Id: HasProviderSymbol.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public interface HasProviderSymbol

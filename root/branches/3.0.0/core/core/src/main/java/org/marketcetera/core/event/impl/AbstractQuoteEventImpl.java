@@ -19,7 +19,7 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Implements {@link org.marketcetera.core.event.QuoteEvent}.
  *
- * @version $Id: AbstractQuoteEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe

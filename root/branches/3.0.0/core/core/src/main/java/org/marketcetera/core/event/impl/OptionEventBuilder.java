@@ -10,7 +10,7 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Indicates that the underlying event builder supports the attributes necessary to build option events.
  *
- * @version $Id: OptionEventBuilder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public interface OptionEventBuilder<B>

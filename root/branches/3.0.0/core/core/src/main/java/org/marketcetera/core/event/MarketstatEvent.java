@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * to retrieve available statistics for a specific symbol at a specific time.  Some
  * or all of the attributes may be null if the data was not available.
  * 
- * @version $Id: MarketstatEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public interface MarketstatEvent

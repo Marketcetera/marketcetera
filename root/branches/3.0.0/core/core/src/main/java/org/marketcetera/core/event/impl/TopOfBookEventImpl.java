@@ -23,7 +23,7 @@ import org.marketcetera.core.util.log.I18NBoundMessage2P;
 /**
  * Provides a {@link TopOfBookEvent} implementation.
  *
- * @version $Id: TopOfBookEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe

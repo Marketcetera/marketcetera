@@ -6,7 +6,7 @@ package org.marketcetera.core.event;
  * Represents the Top-of-Book or Best-Bid-and-Offer for a specific instrument
  * at a specific point in time.
  *
- * @version $Id: TopOfBookEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 1.5.0
  */
 public interface TopOfBookEvent

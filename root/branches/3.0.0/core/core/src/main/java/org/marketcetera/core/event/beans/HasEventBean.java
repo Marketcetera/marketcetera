@@ -6,7 +6,7 @@ package org.marketcetera.core.event.beans;
  * Indicates that the implementing class possesses an <code>EventBean</code> attribute
  * or has access to one.
  *
- * @version $Id: HasEventBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public interface HasEventBean

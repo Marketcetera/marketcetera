@@ -13,7 +13,7 @@ import org.marketcetera.core.trade.*;
 /**
  * Provides a Future implementation of {@link TradeEvent}.
  *
- * @version $Id: FutureTradeEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @ThreadSafe

@@ -1,36 +1,36 @@
 package org.marketcetera.core.event.impl;
 
-import javax.annotation.concurrent.ThreadSafe;
-
-import org.marketcetera.core.event.EquityEvent;
-import org.marketcetera.core.event.beans.MarketDataBean;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.event.BidEvent;
+import org.marketcetera.core.event.ConvertibleBondEvent;
+import org.marketcetera.core.event.beans.ConvertibleBondBean;
+import org.marketcetera.core.event.beans.QuoteBean;
+import org.marketcetera.core.trade.*;
 
 /* $License$ */
 
 /**
- * Provides an Equity implementation of {@link org.marketcetera.core.event.TradeEvent}.
  *
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 2.0.0
+ * @since $Release$
  */
-@ThreadSafe
-final class EquityTradeEventImpl
-        extends AbstractTradeEventImpl
-        implements EquityEvent
+class ConvertibleBondBidEventImpl
+        extends AbstractQuoteEventImpl
+        implements ConvertibleBondEvent, BidEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasEquity#getInstrument()
      */
     @Override
-    public Equity getInstrument()
+    public ConvertibleBond getInstrument()
     {
-        return (Equity)super.getInstrument();
+        return (ConvertibleBond)super.getInstrument();
     }
     /**
-     * Create a new EquityTradeEventImpl instance.
+     * Create a new ConvertibleBondBidEventImpl instance.
      *
-     * @param inMarketData a <code>MarketDataBean</code> value
+     * @param inQuote a <code>QuoteBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
@@ -38,10 +38,14 @@ final class EquityTradeEventImpl
      * @throws IllegalArgumentException if <code>Size</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Exchange</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
+     * @throws IllegalArgumentException if <code>Action</code> is <code>null</code>
      */
-    EquityTradeEventImpl(MarketDataBean inMarketData)
+    ConvertibleBondBidEventImpl(QuoteBean inQuote,
+                                ConvertibleBondBean inConvertibleBond)
     {
-        super(inMarketData);
+        super(inQuote);
+        bond = ConvertibleBondBean.copy(inConvertibleBond);
+        bond.validate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractQuoteEventImpl#getDescription()
@@ -54,6 +58,10 @@ final class EquityTradeEventImpl
     /**
      * provides a human-readable description of this event type (does not need to be localized)
      */
-    private static final String description = "Equity Trade"; //$NON-NLS-1$
+    private static final String description = "Convertible Bond Bid"; //$NON-NLS-1$
+    /**
+     * the convertible bond attributes 
+     */
+    private final ConvertibleBondBean bond;
     private static final long serialVersionUID = 1L;
 }

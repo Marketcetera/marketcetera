@@ -14,7 +14,7 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Stores the attributes necessary for {@link org.marketcetera.core.event.MarketstatEvent}.
  *
- * @version $Id: MarketstatBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe

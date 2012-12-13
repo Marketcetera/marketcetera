@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * Represents the set of statistics of a specific {@link org.marketcetera.core.trade.Option}.
  *
- * @version $Id: OptionMarketstatEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public interface OptionMarketstatEvent
