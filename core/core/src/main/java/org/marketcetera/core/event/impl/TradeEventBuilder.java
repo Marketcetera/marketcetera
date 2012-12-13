@@ -8,6 +8,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.core.event.beans.ConvertibleBondBean;
 import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.MarketDataBean;
 import org.marketcetera.core.event.beans.OptionBean;
@@ -24,12 +25,12 @@ import org.marketcetera.core.trade.*;
  * the builder does no validation.  The object does its own validation when {@link #create()} is
  * called.
  *
- * @version $Id: TradeEventBuilder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe
 public abstract class TradeEventBuilder<E extends TradeEvent>
-        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>, FutureEventBuilder<TradeEventBuilder<E>>
+        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>, FutureEventBuilder<TradeEventBuilder<E>>, ConvertibleBondEventBuilder<TradeEventBuilder<E>>
 {
     /**
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
@@ -52,6 +53,9 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         }
         if(inInstrument instanceof Future) {
             return futureTradeEvent().withInstrument(inInstrument);
+        }
+        if(inInstrument instanceof ConvertibleBond) {
+            return convertibleBondTradeEvent().withInstrument(inInstrument);
         }
         throw new UnsupportedOperationException();
     }
@@ -121,6 +125,29 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         };
     }
     /**
+     * Returns a <code>TradeEventBuilder</code> suitable for constructing a new ConvertibleBond <code>TradeEvent</code> object.
+     *
+     * @return a <code>TradeEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link ConvertibleBond}
+     */
+    public static TradeEventBuilder<TradeEvent> convertibleBondTradeEvent()
+    {
+        return new TradeEventBuilder<TradeEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public TradeEvent create()
+            {
+                if(getMarketData().getInstrument() instanceof ConvertibleBond) {
+                    return new ConvertibleBondTradeEventImpl(getMarketData(),
+                                                             getConvertibleBond());
+                }
+                throw new IllegalArgumentException(Messages.VALIDATION_CONVERTIBLE_BOND_REQUIRED.getText());
+            }
+        };
+    }
+    /**
      * Sets the message id to use with the new event. 
      *
      * @param inMessageId a <code>long</code> value
@@ -166,10 +193,13 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
+        } else if(inInstrument instanceof ConvertibleBond) {
+            convertibleBond.setInstrument((ConvertibleBond)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
+            convertibleBond.setInstrument(null);
         }
         return this;
     }
@@ -346,10 +376,11 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public String toString()
     {
-        return String.format("TradeEventBuilder [marketData=%s, option=%s, future=%s]", //$NON-NLS-1$
+        return String.format("TradeEventBuilder [marketData=%s, option=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
                              marketData,
                              option,
-                             future);
+                             future,
+                             convertibleBond);
     }
     /**
      * Get the marketData value.
@@ -379,6 +410,15 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         return future;
     }
     /**
+     * Gets the convertible bond value.
+     *
+     * @return a <code>ConvertibleBondBean</code> value
+     */
+    protected final ConvertibleBondBean getConvertibleBond()
+    {
+        return convertibleBond;
+    }
+    /**
      * the market data attributes 
      */
     private final MarketDataBean marketData = new MarketDataBean();
@@ -390,4 +430,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * the future attributes
      */
     private final FutureBean future = new FutureBean();
+    /**
+     * the convertible bond attributes
+     */
+    private final ConvertibleBondBean convertibleBond = new ConvertibleBondBean();
 }

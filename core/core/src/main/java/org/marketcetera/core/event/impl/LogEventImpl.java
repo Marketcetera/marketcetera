@@ -1,10 +1,10 @@
 package org.marketcetera.core.event.impl;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 
 import javax.annotation.concurrent.NotThreadSafe;
+
 import org.marketcetera.core.event.LogEvent;
 import org.marketcetera.core.event.LogEventLevel;
 import org.marketcetera.core.event.beans.EventBean;
@@ -20,7 +20,7 @@ import org.marketcetera.core.util.log.*;
  * 
  * <p>Note that this object is <em>not</em> thread-safe.
  *
- * @version $Id: LogEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe

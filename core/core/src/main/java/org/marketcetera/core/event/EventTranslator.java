@@ -7,7 +7,7 @@ import org.marketcetera.core.CoreException;
 /**
  * Translates to and from {@link Event} format.
  *
- * @version $Id: EventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
 public interface EventTranslator

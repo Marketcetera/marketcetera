@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.*;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.event.Event;
 
 /* $License$ */
@@ -17,7 +19,7 @@ import org.marketcetera.core.event.Event;
  */
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlSeeAlso({ WebServicesAskEvent.class, WebServicesTradeEvent.class })
+@XmlSeeAlso({ WebServicesAskEvent.class, WebServicesTradeEvent.class, WebServicesMarketstatEvent.class })
 public class WebServicesEvent
         implements Event
 {
@@ -67,11 +69,31 @@ public class WebServicesEvent
     {
         source = String.valueOf(inSource);
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append(messageId).append(timestamp).append(source).toString();
+    }
+    /**
+     * Create a new WebServicesEvent instance.
+     */
     protected WebServicesEvent() {}
+    /**
+     * message ID value
+     */
     @XmlAttribute
     private long messageId;
+    /**
+     * timestamp value
+     */
     @XmlAttribute
     private Date timestamp;
+    /**
+     * source value
+     */
     @XmlAttribute
     private String source;
     private static final long serialVersionUID = 1L;

@@ -3,7 +3,7 @@ package org.marketcetera.core.event;
 /**
  * Indicates the action to be taken.
  *
- * @version $Id: QuoteAction.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 0.6.0
  */
 public enum QuoteAction

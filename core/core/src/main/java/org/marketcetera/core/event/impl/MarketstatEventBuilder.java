@@ -8,6 +8,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.Messages;
+import org.marketcetera.core.event.beans.ConvertibleBondBean;
 import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.MarketstatBean;
 import org.marketcetera.core.event.beans.OptionBean;
@@ -24,7 +25,7 @@ import org.marketcetera.core.trade.*;
  * the builder does no validation.  The object does its own validation with {@link #create()} is
  * called.
  *
- * @version $Id: MarketstatEventBuilder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe
@@ -50,6 +51,8 @@ public abstract class MarketstatEventBuilder
             return optionMarketstat().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
             return futureMarketstat().withInstrument(inInstrument);
+        } else if(inInstrument instanceof ConvertibleBond) {
+            return convertibleBondMarketstat().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -122,6 +125,28 @@ public abstract class MarketstatEventBuilder
         };
     }
     /**
+     * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object
+     * of type <code>ConvertibleBond</code>.
+     *
+     * @return a <code>MarketstatEventBuilder</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link ConvertibleBond}
+     */
+    public static MarketstatEventBuilder convertibleBondMarketstat()
+    {
+        return new MarketstatEventBuilder()
+        {
+            @Override
+            public MarketstatEvent create()
+            {
+                if(!(getMarketstat().getInstrument() instanceof ConvertibleBond)) {
+                    throw new IllegalArgumentException(Messages.VALIDATION_CONVERTIBLE_BOND_REQUIRED.getText());
+                }
+                return new ConvertibleBondMarketstatEventImpl(getMarketstat(),
+                                                              getConvertibleBond());
+            }
+        };
+    }
+    /**
      * Sets the message id to use with the new event. 
      *
      * @param inMessageId a <code>long</code> value
@@ -167,10 +192,13 @@ public abstract class MarketstatEventBuilder
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
+        } else if(inInstrument instanceof ConvertibleBond) {
+            convertibleBond.setInstrument((ConvertibleBond)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
+            convertibleBond.setInstrument(null);
         }
         return this;
     }
@@ -489,10 +517,11 @@ public abstract class MarketstatEventBuilder
     @Override
     public String toString()
     {
-        return String.format("MarketstatEventBuilder [marketstat=%s, option=%s, future=%s]", //$NON-NLS-1$
+        return String.format("MarketstatEventBuilder [marketstat=%s, option=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
                              marketstat,
                              option,
-                             future);
+                             future,
+                             convertibleBond);
     }
     /**
      * Get the marketstat value.
@@ -520,6 +549,15 @@ public abstract class MarketstatEventBuilder
     protected final FutureBean getFuture()
     {
         return future;
+    }
+    /**
+     * Gets the convertible bond value.
+     *
+     * @return a <code>ConvertibleBondBean</code> value
+     */
+    protected final ConvertibleBondBean getConvertibleBond()
+    {
+        return convertibleBond;
     }
     /**
      * Gets the volume change value.
@@ -551,6 +589,10 @@ public abstract class MarketstatEventBuilder
      * the future attributes
      */
     private final FutureBean future = new FutureBean();
+    /**
+     * the convertible bond attributes
+     */
+    private final ConvertibleBondBean convertibleBond = new ConvertibleBondBean();
     /**
      * the change in volume since the previous close, may be <code>null</code> 
      */

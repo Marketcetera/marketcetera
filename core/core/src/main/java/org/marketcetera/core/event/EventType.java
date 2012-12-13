@@ -9,7 +9,7 @@ package org.marketcetera.core.event;
  * Atomic update events can be processed on their own, but a stream of snapshot
  * events should be completely processed before beginning any analysis.
  *
- * @version $Id: EventType.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public enum EventType

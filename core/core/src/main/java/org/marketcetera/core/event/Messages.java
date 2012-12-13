@@ -13,7 +13,7 @@ import org.marketcetera.core.util.log.I18NMessageProvider;
  * The internationalization constants used by this package.
  *
  * @since 0.6.0
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 public interface Messages
 {
@@ -97,4 +97,5 @@ public interface Messages
                                                                               "validation_option_required"); //$NON-NLS-1$
     static final I18NMessage0P VALIDATION_FUTURE_REQUIRED = new I18NMessage0P(LOGGER,
                                                                               "validation_future_required"); //$NON-NLS-1$
+    static final I18NMessage0P VALIDATION_CONVERTIBLE_BOND_REQUIRED = new I18NMessage0P(LOGGER,"validation_convertible_bond_required"); //$NON-NLS-1$
 }

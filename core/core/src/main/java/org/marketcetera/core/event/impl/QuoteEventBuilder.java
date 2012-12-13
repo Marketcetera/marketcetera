@@ -7,6 +7,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.Messages;
+import org.marketcetera.core.event.beans.ConvertibleBondBean;
 import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.event.beans.QuoteBean;
@@ -23,7 +24,7 @@ import org.marketcetera.core.trade.*;
  * the builder does no validation.  The object does its own validation with {@link #create()} is
  * called.
  *
- * @version $Id: QuoteEventBuilder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe
@@ -69,6 +70,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             } else {
                 return new FutureBidEventImpl(quote,
                                               future);
+            }
+        }
+        if(inEvent instanceof ConvertibleBondEvent) {
+            ConvertibleBondBean bond = ConvertibleBondBean.getConvertibleBondBeanFromEvent((ConvertibleBondEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return new ConvertibleBondAskEventImpl(quote,
+                                                       bond);
+            } else {
+                return new ConvertibleBondBidEventImpl(quote,
+                                                       bond);
             }
         }
         // from an asset class that is neither equity nor option
@@ -118,6 +129,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             } else {
                 return (E)new FutureBidEventImpl(quote,
                                                  future);
+            }
+        }
+        if(inEvent instanceof ConvertibleBondEvent) {
+            ConvertibleBondBean bond = ConvertibleBondBean.getConvertibleBondBeanFromEvent((ConvertibleBondEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new ConvertibleBondAskEventImpl(quote,
+                                                          bond);
+            } else {
+                return (E)new ConvertibleBondBidEventImpl(quote,
+                                                          bond);
             }
         }
         // from an asset class that is neither equity nor option
@@ -174,6 +195,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  future);
             }
         }
+        if(inEvent instanceof ConvertibleBondEvent) {
+            ConvertibleBondBean bond = ConvertibleBondBean.getConvertibleBondBeanFromEvent((ConvertibleBondEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new ConvertibleBondAskEventImpl(quote,
+                                                          bond);
+            } else {
+                return (E)new ConvertibleBondBidEventImpl(quote,
+                                                          bond);
+            }
+        }
         // from an asset class that is neither equity nor option
         throw new UnsupportedOperationException();
     }
@@ -219,6 +250,16 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
                                                  future);
             }
         }
+        if(inEvent instanceof ConvertibleBondEvent) {
+            ConvertibleBondBean bond = ConvertibleBondBean.getConvertibleBondBeanFromEvent((ConvertibleBondEvent)inEvent);
+            if(inEvent instanceof AskEvent) {
+                return (E)new ConvertibleBondAskEventImpl(quote,
+                                                          bond);
+            } else {
+                return (E)new ConvertibleBondBidEventImpl(quote,
+                                                          bond);
+            }
+        }
         // from an asset class that is neither equity nor option
         throw new UnsupportedOperationException();
     }
@@ -240,7 +281,9 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         } else if(inInstrument instanceof Option) {
             return optionAskEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
-                return futureAskEvent().withInstrument(inInstrument);
+            return futureAskEvent().withInstrument(inInstrument);
+        } else if(inInstrument instanceof ConvertibleBond) {
+            return convertibleBondAskEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -264,6 +307,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             return optionBidEvent().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
             return futureBidEvent().withInstrument(inInstrument);
+        } else if(inInstrument instanceof ConvertibleBond) {
+            return convertibleBondBidEvent().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -405,6 +450,52 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         };
     }
     /**
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new ConvertibleBond <code>AskEvent</code> object.
+     *
+     * @return a <code>QuoteEventBuilder&lt;AskEvent&gt;</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link ConvertibleBond}
+     */
+    public static QuoteEventBuilder<AskEvent> convertibleBondAskEvent()
+    {
+        return new QuoteEventBuilder<AskEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public AskEvent create()
+            {
+                if(getQuote().getInstrument() instanceof ConvertibleBond) {
+                    return new ConvertibleBondAskEventImpl(getQuote(),
+                                                           getConvertibleBond());
+                }
+                throw new IllegalArgumentException(Messages.VALIDATION_FUTURE_REQUIRED.getText());
+            }
+        };
+    }
+    /**
+     * Returns a <code>QuoteEventBuilder</code> suitable for constructing a new ConvertibleBond <code>BidEvent</code> object.
+     *
+     * @return a <code>QuoteEventBuilder&lt;BidEvent&gt;</code> value
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link ConvertibleBond}
+     */
+    public static QuoteEventBuilder<BidEvent> convertibleBondBidEvent()
+    {
+        return new QuoteEventBuilder<BidEvent>() {
+            /* (non-Javadoc)
+             * @see org.marketcetera.event.EventBuilder#create()
+             */
+            @Override
+            public BidEvent create()
+            {
+                if(getQuote().getInstrument() instanceof ConvertibleBond) {
+                    return new ConvertibleBondBidEventImpl(getQuote(),
+                                                           getConvertibleBond());
+                }
+                throw new IllegalArgumentException(Messages.VALIDATION_FUTURE_REQUIRED.getText());
+            }
+        };
+    }
+    /**
      * Sets the message id to use with the new event. 
      *
      * @param inMessageId a <code>long</code> value
@@ -450,10 +541,13 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
+        } else if(inInstrument instanceof ConvertibleBond) {
+            convertibleBond.setInstrument((ConvertibleBond)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
+            convertibleBond.setInstrument(null);
         }
         return this;
     }
@@ -640,10 +734,11 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
     @Override
     public String toString()
     {
-        return String.format("QuoteEventBuilder [option=%s, quote=%s, future=%s]", //$NON-NLS-1$
+        return String.format("QuoteEventBuilder [option=%s, quote=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
                              option,
                              quote,
-                             future);
+                             future,
+                             convertibleBond);
     }
     /**
      * Get the quote value.
@@ -673,6 +768,15 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         return future;
     }
     /**
+     * Gets the convertible bond value.
+     *
+     * @return a <code>ConvertibleBondBean</code> value
+     */
+    protected final ConvertibleBondBean getConvertibleBond()
+    {
+        return convertibleBond;
+    }
+    /**
      * the quote attributes
      */
     private final QuoteBean quote = new QuoteBean();
@@ -684,4 +788,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
      * the future attributes
      */
     private final FutureBean future = new FutureBean();
+    /**
+     * the convertible bond attributes
+     */
+    private final ConvertibleBondBean convertibleBond = new ConvertibleBondBean();
 }

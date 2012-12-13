@@ -10,7 +10,7 @@ import org.marketcetera.core.trade.StandardType;
 /**
  * Indicates that the implementing class represents a futures event.
  *
- * @version $Id: FutureEvent.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public interface FutureEvent

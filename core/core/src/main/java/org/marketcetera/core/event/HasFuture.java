@@ -7,7 +7,7 @@ import org.marketcetera.core.trade.Future;
 /**
  * Has a {@link org.marketcetera.core.trade.Future} attribute.
  *
- * @version $Id: HasFuture.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 public interface HasFuture

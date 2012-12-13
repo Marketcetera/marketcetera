@@ -18,7 +18,7 @@ import org.marketcetera.core.trade.Instrument;
 /**
  * Provides an implementation for {@link org.marketcetera.core.event.MarketstatEvent}.
  *
- * @version $Id: AbstractMarketstatEventImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe

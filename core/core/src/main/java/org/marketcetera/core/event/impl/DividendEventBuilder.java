@@ -19,7 +19,7 @@ import org.marketcetera.core.trade.Equity;
  * the builder does no validation.  The object does its own validation with {@link #create()} is
  * called.
  *
- * @version $Id: DividendEventBuilder.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 @NotThreadSafe

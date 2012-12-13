@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.*;
 
-import org.apache.commons.lang.Validate;
-import org.marketcetera.core.event.EquityEvent;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.event.TradeEvent;
@@ -29,7 +29,6 @@ public class WebServicesTradeEvent
     public WebServicesTradeEvent(TradeEvent inEvent)
     {
         super(inEvent);
-        Validate.isTrue(inEvent instanceof EquityEvent);
         instrument = inEvent.getInstrument();
         exchange = inEvent.getExchange();
         eventType = inEvent.getEventType();
@@ -109,20 +108,53 @@ public class WebServicesTradeEvent
     {
         return tradeDate;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.webservices.WebServicesEvent#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append(instrument).append(exchange).append(price).append(size)
+                                                                           .append(exchangeTimestamp).append(eventType).append(tradeDate).toString();
+    }
+    /**
+     * Create a new WebServicesTradeEvent instance.
+     */
     @SuppressWarnings("unused")
     private WebServicesTradeEvent() {}
+    /**
+     * instrument value
+     */
     @XmlElement
     private Instrument instrument;
+    /**
+     * exchange value
+     */
     @XmlAttribute
     private String exchange;
+    /**
+     * price value
+     */
     @XmlAttribute
     private BigDecimal price;
+    /**
+     * size value
+     */
     @XmlAttribute
     private BigDecimal size;
+    /**
+     * exchange timestamp value
+     */
     @XmlAttribute
     private String exchangeTimestamp;
+    /**
+     * event type value
+     */
     @XmlAttribute
     private EventType eventType;
+    /**
+     * trade date value
+     */
     @XmlAttribute
     private String tradeDate;
     private static final long serialVersionUID = 1L;
