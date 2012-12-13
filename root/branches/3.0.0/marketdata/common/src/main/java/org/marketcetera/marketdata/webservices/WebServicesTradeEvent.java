@@ -7,8 +7,9 @@ import javax.xml.bind.annotation.*;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.event.EquityEvent;
 import org.marketcetera.core.event.EventType;
+import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 
@@ -19,18 +20,17 @@ import org.marketcetera.core.trade.Equity;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name="equityTradeEvent")
+@XmlRootElement(name="tradeEvent")
 @XmlAccessorType(XmlAccessType.NONE)
-public class WebServicesEquityTradeEvent
+public class WebServicesTradeEvent
         extends WebServicesEvent
-        implements EquityEvent, TradeEvent
+        implements HasInstrument, TradeEvent
 {
-    public WebServicesEquityTradeEvent(TradeEvent inEvent)
+    public WebServicesTradeEvent(TradeEvent inEvent)
     {
         super(inEvent);
         Validate.isTrue(inEvent instanceof EquityEvent);
-        EquityEvent equityEvent = (EquityEvent)inEvent;
-//        instrument = equityEvent.getInstrument();
+        instrument = inEvent.getInstrument();
         exchange = inEvent.getExchange();
         eventType = inEvent.getEventType();
         exchangeTimestamp = inEvent.getExchangeTimestamp();
@@ -41,10 +41,9 @@ public class WebServicesEquityTradeEvent
      * @see org.marketcetera.core.event.HasEquity#getInstrument()
      */
     @Override
-    public Equity getInstrument()
+    public Instrument getInstrument()
     {
-//        return instrument;
-        return null;
+        return instrument;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.HasInstrument#getInstrumentAsString()
@@ -52,8 +51,7 @@ public class WebServicesEquityTradeEvent
     @Override
     public String getInstrumentAsString()
     {
-//        return instrument == null ? null : instrument.getSymbol();
-        return null;
+        return instrument == null ? null : instrument.getSymbol();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.MarketDataEvent#getExchange()
@@ -112,9 +110,9 @@ public class WebServicesEquityTradeEvent
         return tradeDate;
     }
     @SuppressWarnings("unused")
-    private WebServicesEquityTradeEvent() {}
-//    @XmlElement
-//    private Equity instrument;
+    private WebServicesTradeEvent() {}
+    @XmlElement
+    private Instrument instrument;
     @XmlAttribute
     private String exchange;
     @XmlAttribute

@@ -187,22 +187,22 @@ public class Option
     /**
      * option type value
      */
-    @XmlAttribute
+    @XmlAttribute(name="type")
     private final OptionType mType;
     /**
      * expiry value
      */
-    @XmlAttribute
+    @XmlAttribute(name="expiry")
     private final String mExpiry;
     /**
      * augmented expiry value
      */
-    @XmlAttribute
+    @XmlAttribute(name="augmentedExpiry")
     private final String mAugmentedExpiry;
     /**
      * strike price value
      */
-    @XmlAttribute
+    @XmlAttribute(name="strikePrice")
     private final BigDecimal mStrikePrice;
     private static final long serialVersionUID = 1L;
 }

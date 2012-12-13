@@ -2,9 +2,7 @@ package org.marketcetera.marketdata.webservices;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.*;
 
 import org.marketcetera.core.event.Event;
 
@@ -17,7 +15,9 @@ import org.marketcetera.core.event.Event;
  * @version $Id$
  * @since $Release$
  */
+@XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
+@XmlSeeAlso({ WebServicesAskEvent.class, WebServicesTradeEvent.class })
 public class WebServicesEvent
         implements Event
 {

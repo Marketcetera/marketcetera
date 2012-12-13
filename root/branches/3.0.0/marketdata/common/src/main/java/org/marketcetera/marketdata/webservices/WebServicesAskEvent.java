@@ -4,12 +4,11 @@ import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.*;
 
-import org.apache.commons.lang.Validate;
 import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.EquityEvent;
 import org.marketcetera.core.event.EventType;
+import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.event.QuoteAction;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 
@@ -20,22 +19,20 @@ import org.marketcetera.core.trade.Equity;
  * @version $Id$
  * @since $Release$
  */
-@XmlRootElement(name="equityAskEvent")
+@XmlRootElement(name="askEvent")
 @XmlAccessorType(XmlAccessType.NONE)
-public class WebServicesEquityAskEvent
+public class WebServicesAskEvent
         extends WebServicesEvent
-        implements EquityEvent, AskEvent
+        implements AskEvent, HasInstrument
 {
-    public WebServicesEquityAskEvent(AskEvent inEvent)
+    public WebServicesAskEvent(AskEvent inEvent)
     {
         super(inEvent);
-        Validate.isTrue(inEvent instanceof EquityEvent);
-        EquityEvent equityEvent = (EquityEvent)inEvent;
         action = inEvent.getAction();
         eventType = inEvent.getEventType();
         exchange = inEvent.getExchange();
         exchangeTimestamp = inEvent.getExchangeTimestamp();
-        instrument = equityEvent.getInstrument();
+        instrument = inEvent.getInstrument();
         price = inEvent.getPrice();
         quoteDate = inEvent.getQuoteDate();
         size = inEvent.getSize();
@@ -44,7 +41,7 @@ public class WebServicesEquityAskEvent
      * @see org.marketcetera.core.event.HasEquity#getInstrument()
      */
     @Override
-    public Equity getInstrument()
+    public Instrument getInstrument()
     {
         return instrument;
     }
@@ -121,9 +118,9 @@ public class WebServicesEquityAskEvent
         eventType = inEventType;
     }
     @SuppressWarnings("unused")
-    private WebServicesEquityAskEvent() {}
+    private WebServicesAskEvent() {}
     @XmlElement
-    private Equity instrument;
+    private Instrument instrument;
     @XmlAttribute
     private String quoteDate;
     @XmlAttribute
