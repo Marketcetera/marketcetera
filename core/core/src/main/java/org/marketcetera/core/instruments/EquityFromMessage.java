@@ -1,7 +1,7 @@
 package org.marketcetera.core.instruments;
 
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -22,7 +22,7 @@ public class EquityFromMessage extends InstrumentFromMessage {
     @Override
     public Instrument extract(Message inMessage) {
         String symbol = getSymbol(inMessage);
-        return symbol == null ? null : new EquityImpl(symbol);
+        return symbol == null ? null : new Equity(symbol);
     }
 
     @Override

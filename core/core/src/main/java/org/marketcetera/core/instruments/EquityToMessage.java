@@ -1,7 +1,7 @@
 package org.marketcetera.core.instruments;
 
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -14,12 +14,12 @@ import quickfix.field.Symbol;
  * @version $Id: EquityToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-public class EquityToMessage extends InstrumentToMessage<EquityImpl> {
+public class EquityToMessage extends InstrumentToMessage<Equity> {
     /**
      * Creates an instance.
      */
     public EquityToMessage() {
-        super(EquityImpl.class);
+        super(Equity.class);
     }
 
     @Override

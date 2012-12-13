@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.Message;
 import quickfix.field.*;
@@ -94,7 +93,7 @@ public class ExecutionReportTest extends TypesTestBase {
         BigDecimal lastPrice = new BigDecimal("9.234");
         BigDecimal cumQty = new BigDecimal("984.34");
         BigDecimal avgPrice = new BigDecimal("34.234");
-        Instrument instrument = new EquityImpl("METC");
+        Instrument instrument = new Equity("METC");
         String account= "yes";
         String text= "some text";
         UserID actorID = new UserID(2);

@@ -10,8 +10,8 @@ import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
@@ -430,7 +430,7 @@ public enum YahooFeedEventTranslator
     private Instrument getInstrumentFrom(String inSymbol)
     {
         // TODO account for other instrument types
-        return new EquityImpl(inSymbol);
+        return new Equity(inSymbol);
     }
     /**
      * MRU cache of events 

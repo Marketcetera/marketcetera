@@ -7,14 +7,13 @@ import java.util.List;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 import com.google.common.collect.ImmutableList;
 
 /* $License$ */
 
 /**
- * Tests {@link org.marketcetera.core.trade.impl.EquityImpl}.
+ * Tests {@link org.marketcetera.core.trade.Equity}.
  * 
  * @version $Id: EquityTest.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
@@ -23,18 +22,18 @@ public class EquityTest extends InstrumentTestBase<Equity> {
 
     @Override
     protected Equity createFixture() {
-        return new EquityImpl("METC");
+        return new Equity("METC");
     }
 
     @Override
     protected Equity createEqualFixture() {
-        return new EquityImpl("METC");
+        return new Equity("METC");
     }
 
     @Override
     protected List<Equity> createDifferentFixtures() {
-        return ImmutableList.<Equity> of(new EquityImpl("ABC"), new EquityImpl("IBM"),
-                new EquityImpl("MSFT"));
+        return ImmutableList.<Equity> of(new Equity("ABC"), new Equity("IBM"),
+                new Equity("MSFT"));
     }
     
 
@@ -48,7 +47,7 @@ public class EquityTest extends InstrumentTestBase<Equity> {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new EquityImpl(null);
+                new Equity(null);
             }
         };
     }
@@ -58,13 +57,13 @@ public class EquityTest extends InstrumentTestBase<Equity> {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new EquityImpl("");
+                new Equity("");
             }
         };
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                new EquityImpl("   \n");
+                new Equity("   \n");
             }
         };
     }

@@ -11,11 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.*;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
+import org.marketcetera.core.trade.*;
 
 /* $License$ */
 
@@ -37,8 +33,8 @@ public class DepthOfBookEventTest
     public void setup()
             throws Exception
     {
-        equity = new EquityImpl("METC");
-        option = new OptionImpl("MSFT",
+        equity = new Equity("METC");
+        option = new Option("MSFT",
                             "20100319",
                             BigDecimal.ONE,
                             OptionType.Call);
@@ -257,7 +253,7 @@ public class DepthOfBookEventTest
     /**
      * test equity
      */
-    private EquityImpl equity;
+    private Equity equity;
     /**
      * test option
      */

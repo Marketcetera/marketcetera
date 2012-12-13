@@ -15,8 +15,6 @@ import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.messagehistory.ReportHolder;
 import org.marketcetera.core.position.*;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -157,7 +155,7 @@ public class PositionEngineImplTest {
         }
         protected void addEquityTrade(String symbol, String account, String traderId, Side side,
                 String quantity, String price) {
-            addTrade(new EquityImpl(symbol), account, traderId, side, quantity, price);
+            addTrade(new Equity(symbol), account, traderId, side, quantity, price);
         }
         /**
          * Adds a trade with the given attributes.
@@ -182,7 +180,7 @@ public class PositionEngineImplTest {
                                       ExecutionType inExecutionType,
                                       Originator inOriginator)
         {
-            addTrade(new EquityImpl(inSymbol),
+            addTrade(new Equity(inSymbol),
                      inAccount,
                      Long.valueOf(inTraderId),
                      inSide,
@@ -228,7 +226,7 @@ public class PositionEngineImplTest {
 
         protected void assertEquityPosition(PositionRow position, String symbol, String account,
                 String traderId, String amount) {
-            assertPosition(position, new EquityImpl(symbol), symbol, account, traderId, amount);
+            assertPosition(position, new Equity(symbol), symbol, account, traderId, amount);
         }
 
         protected void assertPosition(PositionRow position, Instrument instrument, String underlying, String account,
@@ -678,12 +676,12 @@ public class PositionEngineImplTest {
         new PositionEngineTestTemplate() {
 
             private UnderlyingSymbolSupport mUnderlyingSymbolSupport;
-            private final EquityImpl equity = new EquityImpl("METC");
-            private final Option option1 = new OptionImpl("MTC", "20090910", BigDecimal.ONE,
+            private final Equity equity = new Equity("METC");
+            private final Option option1 = new Option("MTC", "20090910", BigDecimal.ONE,
                     OptionType.Call);
-            private final Option option2 = new OptionImpl("MEC", "20090910", BigDecimal.ONE,
+            private final Option option2 = new Option("MEC", "20090910", BigDecimal.ONE,
                     OptionType.Call);
-            private final Option option3 = new OptionImpl("PXR", "20090910", BigDecimal.ONE,
+            private final Option option3 = new Option("PXR", "20090910", BigDecimal.ONE,
                     OptionType.Call);
             
             protected UnderlyingSymbolSupport createUnderlyingSymbolSupport() {
@@ -721,12 +719,12 @@ public class PositionEngineImplTest {
         new PositionEngineTestTemplate() {
 
             private UnderlyingSymbolSupport mUnderlyingSymbolSupport;
-            private final EquityImpl metcEquity = new EquityImpl("METC");
-            private final EquityImpl ibmEquity = new EquityImpl("IBM");
-            private final EquityImpl yhooEquity = new EquityImpl("YHOO");
-            private final Option metcOption = new OptionImpl("MTC", "20090910",
+            private final Equity metcEquity = new Equity("METC");
+            private final Equity ibmEquity = new Equity("IBM");
+            private final Equity yhooEquity = new Equity("YHOO");
+            private final Option metcOption = new Option("MTC", "20090910",
                     BigDecimal.ONE, OptionType.Call);
-            private final Option yhooOption = new OptionImpl("PXR", "20090910",
+            private final Option yhooOption = new Option("PXR", "20090910",
                     BigDecimal.ONE, OptionType.Call);
 
             protected UnderlyingSymbolSupport createUnderlyingSymbolSupport() {

@@ -15,9 +15,6 @@ import org.marketcetera.core.event.impl.TradeEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.AbstractInstrumentImpl;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
 
 /* $License$ */
 
@@ -601,7 +598,7 @@ public class EventTestBase
      * @param inPrice a <code>BigDecimal</code> value
      * @return a <code>TradeEvent</code> value
      */
-    public static TradeEvent generateFutureTradeEvent(FutureImpl inInstrument,
+    public static TradeEvent generateFutureTradeEvent(Future inInstrument,
                                                       BigDecimal inPrice)
     {
         return TradeEventBuilder.futureTradeEvent().withInstrument(inInstrument)
@@ -804,7 +801,7 @@ public class EventTestBase
      */
     public static DividendEvent generateDividendEvent()
     {
-        return generateDividendEvent(new EquityImpl("METC"));
+        return generateDividendEvent(new Equity("METC"));
     }
     /**
      * Generates a <code>DividendEvent</code> with the given and preset values.
@@ -872,8 +869,7 @@ public class EventTestBase
      * @since 2.0.0
      */
     private static class UnsupportedInstrument
-            extends AbstractInstrumentImpl
-            implements Instrument
+            extends Instrument
     {
         /* (non-Javadoc)
          * @see org.marketcetera.trade.Instrument#getSecurityType()

@@ -13,7 +13,7 @@ import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 
@@ -81,7 +81,7 @@ public class MarketceteraFeedMessageTranslator
     {
         List<Equity> symbolList = new ArrayList<Equity>();
         for(String symbol : inRequest.getSymbols()) {
-            symbolList.add(new EquityImpl(symbol));
+            symbolList.add(new Equity(symbol));
         }
         long id = counter.incrementAndGet();
         // generate the message using the current FIXMessageFactory

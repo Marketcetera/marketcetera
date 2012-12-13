@@ -6,7 +6,6 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
-import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.log.I18NBoundMessage;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
@@ -106,7 +105,7 @@ public class FIXConverterTest
                  ("1"));
         }
         if (instrument) {
-            o.setInstrument(new EquityImpl("IBM"));
+            o.setInstrument(new Equity("IBM"));
             msg.setField
                 (new quickfix.field.Symbol
                  ("IBM"));

@@ -13,7 +13,6 @@ import org.marketcetera.core.event.beans.MarketstatBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 /* $License$ */
 
@@ -36,7 +35,7 @@ public abstract class MarketstatEventBuilder
      * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object.
      *
      * <p>The type of marketstat event returned will match the type of the given <code>Instrument</code>,
-     * i.e., an Equity-type marketstat event for an {@link org.marketcetera.core.trade.impl.EquityImpl}, an Option-type marketstat event for an
+     * i.e., an Equity-type marketstat event for an {@link org.marketcetera.core.trade.Equity}, an Option-type marketstat event for an
      * {@link org.marketcetera.core.trade.Option}, etc.
      * 
      * @param inInstrument an <code>Instrument</code> value indicating the type of {@link MarketstatEvent} to create
@@ -60,7 +59,7 @@ public abstract class MarketstatEventBuilder
      * of type <code>Equity</code>.
      *
      * @return a <code>MarketstatEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link EquityImpl}
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Equity}
      */
     public static MarketstatEventBuilder equityMarketstat()
     {

@@ -4,13 +4,7 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.BrokerID;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.trade.MessageCreationException;
-import org.marketcetera.core.trade.OrderID;
-import org.marketcetera.core.trade.Originator;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.*;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -50,7 +44,7 @@ public class ReportHolderTest {
                 .newExecutionReport("asdf", "asdf", "asdf", OrdStatus.CANCELED,
                         Side.BUY, BigDecimal.TEN, BigDecimal.ONE,
                         BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                        BigDecimal.ONE, new EquityImpl("123"), "asdf", "text");
+                        BigDecimal.ONE, new Equity("123"), "asdf", "text");
         return message;
     }
 

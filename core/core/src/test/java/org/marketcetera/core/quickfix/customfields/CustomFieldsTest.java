@@ -9,7 +9,7 @@ import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.Equity;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -32,7 +32,7 @@ public class CustomFieldsTest extends TestCase {
     public void testHistoricalMarketDataRequest() throws Exception {
         FIXMessageFactory msgFactory = FIXVersion.FIX44.getMessageFactory();
         List<Equity> list = new ArrayList<Equity>();
-        list.add(new EquityImpl("IFLI"));
+        list.add(new Equity("IFLI"));
         Message request = msgFactory.newMarketDataRequest("123", list);
         request.setField(new SubscriptionRequestType(CustomFIXFieldConstants.SUBSCRIPTION_REQUEST_TYPE_HISTORICAL));
         request.setField(new DateFrom(new GregorianCalendar(2001, 4, 1).getTime()));

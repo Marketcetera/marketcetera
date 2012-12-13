@@ -13,11 +13,7 @@ import org.marketcetera.core.event.OptionEvent;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -65,7 +61,7 @@ public class OptionBeanTest
         ExpirationType expirationType = ExpirationType.AMERICAN;
         boolean hasDeliverable = true;
         BigDecimal multiplier = new BigDecimal(-1);
-        Instrument underlyingInstrument = new EquityImpl("METC");
+        Instrument underlyingInstrument = new Equity("METC");
         String providerSymbol = "MET/W/X";
         final QuoteEventBuilder<BidEvent> builder = QuoteEventBuilder.bidEvent(option);
         builder.hasDeliverable(hasDeliverable)
@@ -125,7 +121,7 @@ public class OptionBeanTest
                          providerSymbol,
                          underlyingInstrument);
         // underlyingInstrument
-        underlyingInstrument = new OptionImpl("MSFT",
+        underlyingInstrument = new Option("MSFT",
                                           "20100319",
                                           BigDecimal.ONE,
                                           OptionType.Call);
@@ -208,7 +204,7 @@ public class OptionBeanTest
     {
         OptionBean bean = new OptionBean();
         assertNull(bean.getUnderlyingInstrument());
-        EquityImpl equity = new EquityImpl("METC");
+        Equity equity = new Equity("METC");
         bean.setUnderlyingInstrument(equity);
         assertEquals(equity,
                      bean.getUnderlyingInstrument());
@@ -295,7 +291,7 @@ public class OptionBeanTest
                 bean.validate();
             }
         };
-        bean.setInstrument(new OptionImpl("METC",
+        bean.setInstrument(new Option("METC",
                                       "201001",
                                       BigDecimal.TEN,
                                       OptionType.Put));
@@ -309,7 +305,7 @@ public class OptionBeanTest
                 bean.validate();
             }
         };
-        bean.setUnderlyingInstrument(new EquityImpl("METC"));
+        bean.setUnderlyingInstrument(new Equity("METC"));
         assertNull(bean.getExpirationType());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_EXPIRATION_TYPE.getText()) {
             @Override
@@ -363,7 +359,7 @@ public class OptionBeanTest
         bean3.setExpirationType(bean1.getExpirationType());
         // test instrument
         assertNull(bean1.getInstrument());
-        bean3.setInstrument(new OptionImpl("METC",
+        bean3.setInstrument(new Option("METC",
                                        "201001",
                                        BigDecimal.TEN,
                                        OptionType.Put));
@@ -389,7 +385,7 @@ public class OptionBeanTest
         // test underlyingInstrument
         // set bean3 to non-null
         assertNull(bean1.getUnderlyingInstrument());
-        bean3.setUnderlyingInstrument(new EquityImpl("METC"));
+        bean3.setUnderlyingInstrument(new Equity("METC"));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -421,7 +417,7 @@ public class OptionBeanTest
         ExpirationType expirationType = ExpirationType.AMERICAN;
         boolean hasDeliverable = true;
         BigDecimal multiplier = BigDecimal.TEN;
-        Instrument underlyingInstrument = new EquityImpl("METC");
+        Instrument underlyingInstrument = new Equity("METC");
         String providerSymbol = "MTC/W/X";
         inBean.setExpirationType(expirationType);
         inBean.setHasDeliverable(hasDeliverable);
@@ -482,7 +478,7 @@ public class OptionBeanTest
     /**
      * test option
      */
-    private final static Option option = new OptionImpl("METC",
+    private final static Option option = new Option("METC",
                                                         "201001",
                                                         BigDecimal.TEN,
                                                         OptionType.Put);

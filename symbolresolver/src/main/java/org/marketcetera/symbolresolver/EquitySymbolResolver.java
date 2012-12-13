@@ -3,13 +3,13 @@ package org.marketcetera.symbolresolver;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.core.symbolresolver.SymbolResolverElement;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 /* $License$ */
 
 /**
- * Attempts to resolve symbols as {@link org.marketcetera.core.trade.impl.EquityImpl} instruments.
+ * Attempts to resolve symbols as {@link org.marketcetera.core.trade.Equity} instruments.
  *
  * @version $Id: EquitySymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
@@ -34,6 +34,6 @@ public class EquitySymbolResolver
     public Instrument resolve(String inSymbol,
                               Object inContext)
     {
-        return new EquityImpl(inSymbol);
+        return new Equity(inSymbol);
     }
 }

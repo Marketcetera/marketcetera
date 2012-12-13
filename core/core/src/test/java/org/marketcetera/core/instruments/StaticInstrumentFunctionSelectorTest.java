@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.*;
 
 /* $License$ */
 /**
@@ -41,16 +40,16 @@ public class StaticInstrumentFunctionSelectorTest {
                 selector.forInstrument(null);
             }
         };
-        assertThat(selector.forInstrument(new EquityImpl("blue")),
+        assertThat(selector.forInstrument(new Equity("blue")),
                 instanceOf(EquityToMessage.class));
         assertThat(selector.forInstrument(
-                new OptionImpl("blue", "20091010", BigDecimal.TEN, OptionType.Call)),
+                new Option("blue", "20091010", BigDecimal.TEN, OptionType.Call)),
                 instanceOf(OptionToMessage.class));
-        assertThat(selector.forInstrument(new FutureImpl("blue",
+        assertThat(selector.forInstrument(new Future("blue",
                                                      FutureExpirationMonth.APRIL,
                                                      2012)),
                    instanceOf(FutureToMessage.class));
-        assertThat(selector.forInstrument(new ConvertibleBondImpl("yellow")),
+        assertThat(selector.forInstrument(new ConvertibleBond("yellow")),
                    instanceOf(ConvertibleBondToMessage.class));
         new ExpectedFailure<IllegalArgumentException>(
                 Messages.NO_HANDLER_FOR_INSTRUMENT.getText(
@@ -83,17 +82,17 @@ public class StaticInstrumentFunctionSelectorTest {
         assertEquals("Should load 4 handlers",
                      4,
                      selector.getHandlers().size());
-        assertThat(handlers.get(EquityImpl.class), instanceOf(EquityToMessage.class));
-        assertThat(handlers.get(OptionImpl.class), instanceOf(OptionToMessage.class));
-        assertThat(handlers.get(FutureImpl.class), instanceOf(FutureToMessage.class));
-        assertThat(handlers.get(ConvertibleBondImpl.class),
+        assertThat(handlers.get(Equity.class), instanceOf(EquityToMessage.class));
+        assertThat(handlers.get(Option.class), instanceOf(OptionToMessage.class));
+        assertThat(handlers.get(Future.class), instanceOf(FutureToMessage.class));
+        assertThat(handlers.get(ConvertibleBond.class),
                    instanceOf(ConvertibleBondToMessage.class));
     }
 
     /**
      * An unknown instrument class for testing.
      */
-    private static class UnknownInstrument extends AbstractInstrumentImpl implements Instrument {
+    private static class UnknownInstrument extends Instrument {
 
         @Override
         public String getSymbol() {

@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.Message;
 import quickfix.field.Account;
@@ -117,7 +116,7 @@ public class FIXOrderTest extends TypesTestBase {
         //Test map of fields
         String account = "myacc";
         BigDecimal qty = new BigDecimal("234.34");
-        EquityImpl symbol = new EquityImpl("IBM");
+        Equity symbol = new Equity("IBM");
         BigDecimal price = new BigDecimal("3498.343");
         msg = FIXVersion.FIX44.getMessageFactory().newLimitOrder("blah",
                 quickfix.field.Side.BUY, qty, symbol, price,

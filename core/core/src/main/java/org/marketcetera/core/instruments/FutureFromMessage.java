@@ -1,8 +1,8 @@
 package org.marketcetera.core.instruments;
 
 import org.marketcetera.core.trade.Future;
+import org.marketcetera.core.trade.Future;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.FutureImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -33,7 +33,7 @@ public class FutureFromMessage
             return null;
         }
         try {
-            return FutureImpl.fromString(symbol);
+            return Future.fromString(symbol);
         } catch (IllegalArgumentException ignored) {}
         // assume the symbol is the underlying, not the full symbol (this is the common case, it seems)
         // therefore, use the multi-argument constructor instead
@@ -41,7 +41,7 @@ public class FutureFromMessage
         if(expiry == null) {
             return null;
         }
-        Future future = new FutureImpl(symbol,
+        Future future = new Future(symbol,
                                        expiry);
         return future;
     }

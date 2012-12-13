@@ -11,12 +11,7 @@ import java.util.Date;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
+import org.marketcetera.core.trade.*;
 
 /* $License$ */
 
@@ -127,11 +122,11 @@ public class ExchangeRequestTest
     /**
      * test equity
      */
-    private final Equity equity = new EquityImpl("METC");
+    private final Equity equity = new Equity("METC");
     /**
      * test option
      */
-    private final Option option = new OptionImpl(equity.getSymbol(),
+    private final Option option = new Option(equity.getSymbol(),
                                              DateUtils.dateToString(new Date(), DateUtils.DAYS),
                                              EventTestBase.generateDecimalValue(),
                                              OptionType.Call);

@@ -14,9 +14,6 @@ import org.marketcetera.core.event.impl.MarketstatEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 
 /* $License$ */
 
@@ -444,18 +441,18 @@ public class MarketstatEventCacheTest
     /**
      * test equity
      */
-    private final Equity equity = new EquityImpl("METC");
+    private final Equity equity = new Equity("METC");
     /**
      * test option
      */
-    private final Option option = new OptionImpl(equity.getSymbol(),
+    private final Option option = new Option(equity.getSymbol(),
                                              DateUtils.dateToString(new Date()),
                                              EventTestBase.generateDecimalValue(),
                                              OptionType.Call);
     /**
      * test future
      */
-    private final Future future = new FutureImpl("IB",
+    private final Future future = new Future("IB",
                                              FutureExpirationMonth.FEBRUARY,
                                              2012);
 }

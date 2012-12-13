@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata.webservices.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.event.Event;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.marketdata.manager.MarketDataManager;
 import org.marketcetera.marketdata.webservices.MarketDataService;
 import org.marketcetera.marketdata.webservices.WebServicesEvent;
@@ -33,6 +35,22 @@ import org.marketcetera.marketdata.webservices.WebServicesMarketDataRequest;
 public class MarketDataServiceImpl
         implements MarketDataService
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.webservices.MarketDataService#test()
+     */
+    @Override
+    public List<Instrument> test()
+    {
+        List<Instrument> instruments = new ArrayList<Instrument>();
+        instruments.add(new Equity("GOOG"));
+        instruments.add(new Option("GOOG",
+                                   "20121215",
+                                   new BigDecimal("100.50"),
+                                   OptionType.Put));
+        instruments.add(Future.fromString("GOOG-20121231"));
+        instruments.add(new ConvertibleBond("123456"));
+        return instruments;
+    }
     /**
      * Sets the maxQueueSize value.
      *

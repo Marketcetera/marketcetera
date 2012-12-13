@@ -10,11 +10,7 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -52,8 +48,8 @@ public class MarketDataBeanTest
         MarketDataBean bean = constructBean();
         assertNull(bean.getInstrument());
         assertNull(bean.getInstrumentAsString());
-        EquityImpl equity = new EquityImpl("METC");
-        Option option = new OptionImpl("METC",
+        Equity equity = new Equity("METC");
+        Option option = new Option("METC",
                                    "201001",
                                    BigDecimal.TEN,
                                    OptionType.Put);
@@ -119,7 +115,7 @@ public class MarketDataBeanTest
         // test instrument
         // set bean3 to non-null
         assertNull(bean1.getInstrument());
-        bean3.setInstrument(new EquityImpl("METC"));
+        bean3.setInstrument(new Equity("METC"));
         EqualityAssert.assertEquality(bean1,
                                       bean2,
                                       bean3);
@@ -164,7 +160,7 @@ public class MarketDataBeanTest
                 inBean.validate();
             }
         };
-        inBean.setInstrument(new EquityImpl("METC"));
+        inBean.setInstrument(new Equity("METC"));
         assertNull(inBean.getPrice());
         new ExpectedFailure<IllegalArgumentException>(VALIDATION_NULL_PRICE.getText()) {
             @Override
@@ -268,7 +264,7 @@ public class MarketDataBeanTest
                              EventType.UNKNOWN);
         String exchange = "test exchange";
         String exchangeTimestamp = DateUtils.dateToString(new Date());
-        Instrument instrument = new EquityImpl("GOOG");
+        Instrument instrument = new Equity("GOOG");
         BigDecimal price = BigDecimal.ONE;
         BigDecimal size = BigDecimal.TEN;
         EventType metaType = EventType.UPDATE_FINAL;

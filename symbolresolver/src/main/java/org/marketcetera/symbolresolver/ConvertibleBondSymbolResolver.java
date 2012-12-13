@@ -5,13 +5,13 @@ import java.util.regex.Pattern;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.core.symbolresolver.SymbolResolverElement;
+import org.marketcetera.core.trade.ConvertibleBond;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
 
 /* $License$ */
 
 /**
- * Attempts to convert symbols to {@link org.marketcetera.core.trade.impl.ConvertibleBondImpl} instruments.
+ * Attempts to convert symbols to {@link org.marketcetera.core.trade.ConvertibleBond} instruments.
  *
  * @version $Id: ConvertibleBondSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
@@ -37,7 +37,7 @@ public class ConvertibleBondSymbolResolver
                               Object inContext)
     {
         if(isin.matcher(inSymbol).matches()) {
-            return new ConvertibleBondImpl(inSymbol);
+            return new ConvertibleBond(inSymbol);
         }
         return null;
     }

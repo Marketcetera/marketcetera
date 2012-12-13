@@ -3,8 +3,8 @@ package org.marketcetera.core.instruments;
 import java.math.BigDecimal;
 
 import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.OptionImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -31,7 +31,7 @@ public class OptionFromMessage extends InstrumentFromMessage {
         if(symbol == null || type == null || strike == null || expiry == null) {
             return null;
         }
-        return new OptionImpl(symbol, expiry, strike, type);
+        return new Option(symbol, expiry, strike, type);
     }
 
     @Override

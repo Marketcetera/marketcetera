@@ -21,15 +21,13 @@ import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.*;
+import org.marketcetera.core.trade.*;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.*;
+import quickfix.field.SecurityType;
 
 /* $License$ */
 /**
@@ -367,8 +365,8 @@ public class InstrumentToMessageTest {
 
     @Test
     public void optionExpiry() throws Exception {
-        final Option option = new OptionImpl("LBZ", "20101010", BigDecimal.TEN, OptionType.Call);
-        assertEquals(OptionImpl.class, InstrumentToMessage.SELECTOR.forInstrument(option).
+        final Option option = new Option("LBZ", "20101010", BigDecimal.TEN, OptionType.Call);
+        assertEquals(Option.class, InstrumentToMessage.SELECTOR.forInstrument(option).
                 getInstrumentType());
         final Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
         switch (mCurrentVersion) {
@@ -406,7 +404,7 @@ public class InstrumentToMessageTest {
     public void futures()
             throws Exception 
     {
-        for (final FutureImpl future : TEST_FUTURES) {
+        for (final Future future : TEST_FUTURES) {
             final Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
             SLF4JLoggerProxy.debug(InstrumentToMessageTest.class,
                                    "{} creates {}",
@@ -524,7 +522,7 @@ public class InstrumentToMessageTest {
     /**
      * Test instrument class to specify invalid security type values.
      */
-    private static class MyInstrument extends AbstractInstrumentImpl implements Instrument {
+    private static class MyInstrument extends Instrument {
         public MyInstrument(org.marketcetera.core.trade.SecurityType inSecurityType) {
             mSecurityType = inSecurityType;
         }
@@ -544,20 +542,20 @@ public class InstrumentToMessageTest {
     }
 
     private final FIXVersion mCurrentVersion;
-    private static final EquityImpl TEST_EQUITY = new EquityImpl("YBM");
-    private static final ConvertibleBondImpl TEST_CONVERTIBLE_BOND = new ConvertibleBondImpl("ZBM");
+    private static final Equity TEST_EQUITY = new Equity("YBM");
+    private static final ConvertibleBond TEST_CONVERTIBLE_BOND = new ConvertibleBond("ZBM");
     private static final Option [] TEST_OPTIONS = {
-            new OptionImpl("LBZ", "20101010", BigDecimal.TEN, OptionType.Call),
-            new OptionImpl("LBZ", "20101010", BigDecimal.ONE, OptionType.Put),
-            new OptionImpl("LBZ", "201010", BigDecimal.TEN, OptionType.Call),
-            new OptionImpl("LBZ", "201010w2", BigDecimal.TEN, OptionType.Call),
+            new Option("LBZ", "20101010", BigDecimal.TEN, OptionType.Call),
+            new Option("LBZ", "20101010", BigDecimal.ONE, OptionType.Put),
+            new Option("LBZ", "201010", BigDecimal.TEN, OptionType.Call),
+            new Option("LBZ", "201010w2", BigDecimal.TEN, OptionType.Call),
     };
-    private static final FutureImpl[] TEST_FUTURES = {
-        new FutureImpl("LBZ", JANUARY, 2010),
-        new FutureImpl("LBZ", FEBRUARY, 2011),
-        new FutureImpl("LBZ", MARCH, 2012),
-        new FutureImpl("LBZ", APRIL, 2013),
-        FutureImpl.fromString("LBZ-201101"),
-        FutureImpl.fromString("LBZ-20110130"),
+    private static final Future[] TEST_FUTURES = {
+        new Future("LBZ", JANUARY, 2010),
+        new Future("LBZ", FEBRUARY, 2011),
+        new Future("LBZ", MARCH, 2012),
+        new Future("LBZ", APRIL, 2013),
+        Future.fromString("LBZ-201101"),
+        Future.fromString("LBZ-20110130"),
     };
 }

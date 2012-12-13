@@ -8,7 +8,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.FutureImpl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -87,7 +86,7 @@ public class FutureBeanTest
                          null,
                          null,
                          1);
-        FutureImpl future = new FutureImpl("METC",
+        Future future = new Future("METC",
                                    FutureExpirationMonth.DECEMBER,
                                    2011);
         inBean.setInstrument(future);
@@ -135,7 +134,7 @@ public class FutureBeanTest
      * @throws Exception if an unexpected error occurs
      */
     private void verifyFutureBean(FutureBean inActualBean,
-                                  FutureImpl inExpectedInstrument,
+                                  Future inExpectedInstrument,
                                   DeliveryType inExpectedDeliveryType,
                                   String inExpectedProviderSymbol,
                                   StandardType inExpectedStandardType,

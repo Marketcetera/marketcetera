@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
@@ -62,7 +61,7 @@ public class OrderSingleSuggestionTest extends TypesTestBase {
         order.setPrice(new BigDecimal("983.32"));
         order.setQuantity(new BigDecimal("3.365"));
         order.setSide(Side.Sell);
-        order.setInstrument(new EquityImpl("IBM"));
+        order.setInstrument(new Equity("IBM"));
         order.setTimeInForce(TimeInForce.AtTheClose);
         OrderSingle clone = order.clone();
         inSuggest.setOrder(order);

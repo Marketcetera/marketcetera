@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -59,7 +58,7 @@ public class OrderCancelTest extends TypesTestBase {
         String orderID = "clorder-2";
         String destOrderID = "brokerder-2";
         org.marketcetera.core.trade.Side side = org.marketcetera.core.trade.Side.Buy;
-        Instrument instrument = new EquityImpl("IBM");
+        Instrument instrument = new Equity("IBM");
         String account = "what?";
         String text = "texty";
         BigDecimal orderQty = new BigDecimal("34.5");
@@ -153,7 +152,7 @@ public class OrderCancelTest extends TypesTestBase {
         String origOrderID = "testOrderID";
         BigDecimal qty = new BigDecimal("23434.56989");
         org.marketcetera.core.trade.SecurityType securityType = org.marketcetera.core.trade.SecurityType.CommonStock;
-        Instrument instrument = new EquityImpl("IBM");
+        Instrument instrument = new Equity("IBM");
         String account = "nonplus";
         String text = "some text";
         org.marketcetera.core.trade.Side side = org.marketcetera.core.trade.Side.Buy;
@@ -285,7 +284,7 @@ public class OrderCancelTest extends TypesTestBase {
     public void testSecurityExchangePreserved() throws Exception {
         Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("orderID", "clOrderID", "execID",
                 OrdStatus.NEW, org.marketcetera.core.trade.Side.Buy.getFIXValue(), new BigDecimal("10"), new BigDecimal("100.23"),
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new EquityImpl("IBM"),
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"),
                 "accountName", "some other text");
         erMsg.setString(SecurityExchange.FIELD, "box");
 
@@ -305,7 +304,7 @@ public class OrderCancelTest extends TypesTestBase {
     public void testCreateOrderCancel() throws Exception {
         Message erMsg = FIXVersion.FIX42.getMessageFactory().newExecutionReport("7600", "12345", "execID", //$NON-NLS-1$
                 OrdStatus.NEW, org.marketcetera.core.trade.Side.Buy.getFIXValue(), new BigDecimal("10"), new BigDecimal("100.23"),
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new EquityImpl("IBM"), //$NON-NLS-1$
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("IBM"), //$NON-NLS-1$
                 "accountName", null); //$NON-NLS-1$
         erMsg.setString(OrigClOrdID.FIELD, "12222");
         erMsg.setInt(HandlInst.FIELD, HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE);

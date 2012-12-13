@@ -6,10 +6,6 @@ import javax.annotation.Nullable;
 
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 
 /* $License$ */
 
@@ -36,7 +32,7 @@ public class PositionKeyFactory {
      */
     public static PositionKey<? extends Equity> createEquityKey(String symbol,
             @Nullable String account, @Nullable String traderId) {
-        return createKey(new EquityImpl(symbol), account, traderId);
+        return createKey(new Equity(symbol), account, traderId);
     }
     /**
      * Creates a convertible bond key.
@@ -53,7 +49,7 @@ public class PositionKeyFactory {
                                                                                   @Nullable String inAccount,
                                                                                   @Nullable String inTraderID)
     {
-        return createKey(new ConvertibleBondImpl(inSymbol),
+        return createKey(new ConvertibleBond(inSymbol),
                          inAccount,
                          inTraderID);
     }
@@ -72,7 +68,7 @@ public class PositionKeyFactory {
                                                                 @Nullable String inAccount,
                                                                 @Nullable String inTraderId)
     {
-        return createKey(new FutureImpl(inSymbol,
+        return createKey(new Future(inSymbol,
                                         inExpiry),
                          inAccount,
                          inTraderId);
@@ -95,7 +91,7 @@ public class PositionKeyFactory {
     public static PositionKey<? extends Option> createOptionKey(String symbol,
             String expiry, BigDecimal strikePrice, OptionType type,
             @Nullable String account, @Nullable String traderId) {
-        return createKey(new OptionImpl(symbol, expiry, strikePrice, type),
+        return createKey(new Option(symbol, expiry, strikePrice, type),
                 account, traderId);
     }
 

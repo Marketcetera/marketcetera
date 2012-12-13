@@ -13,13 +13,7 @@ import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.FutureExpirationMonth;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
+import org.marketcetera.core.trade.*;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
@@ -63,23 +57,23 @@ public class DynamicInstrumentFunctionSelectorTest {
         };
 
         //equity
-        Instrument instrument = new EquityImpl("YBM");
+        Instrument instrument = new Equity("YBM");
         Message msg = createExecReport(instrument);
         assertThat(selector.forValue(msg), instanceOf(EquityFromMessage.class));
 
         //option
-        instrument = new OptionImpl("YBM", "20101010", BigDecimal.TEN, OptionType.Call);
+        instrument = new Option("YBM", "20101010", BigDecimal.TEN, OptionType.Call);
         msg = createExecReport(instrument);
         assertThat(selector.forValue(msg), instanceOf(OptionFromMessage.class));
         // future
-        instrument = new FutureImpl("YBM",
+        instrument = new Future("YBM",
                                 FutureExpirationMonth.APRIL,
                                 2012);
         msg = createExecReport(instrument);
         assertThat(selector.forValue(msg),
                    instanceOf(FutureFromMessage.class));
         // convertible bond
-        instrument = new ConvertibleBondImpl("YBM");
+        instrument = new ConvertibleBond("YBM");
         msg = createExecReport(instrument);
         assertThat(selector.forValue(msg),
                    instanceOf(ConvertibleBondFromMessage.class));

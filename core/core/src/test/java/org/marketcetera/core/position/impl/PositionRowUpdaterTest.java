@@ -11,12 +11,7 @@ import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.position.*;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.ConvertibleBondImpl;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
+import org.marketcetera.core.trade.*;
 
 import ca.odell.glazedlists.BasicEventList;
 
@@ -30,10 +25,10 @@ import ca.odell.glazedlists.BasicEventList;
  */
 public class PositionRowUpdaterTest {
 
-    private static final Instrument EQUITY = new EquityImpl("METC");
-    private static final Instrument OPTION = new OptionImpl("METC", "20091010",
+    private static final Instrument EQUITY = new Equity("METC");
+    private static final Instrument OPTION = new Option("METC", "20091010",
             BigDecimal.TEN, OptionType.Put);
-    private static final Instrument CONVERTIBLE_BOND = new ConvertibleBondImpl("METC");
+    private static final Instrument CONVERTIBLE_BOND = new ConvertibleBond("METC");
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
     private InstrumentMarketDataListener mListener;

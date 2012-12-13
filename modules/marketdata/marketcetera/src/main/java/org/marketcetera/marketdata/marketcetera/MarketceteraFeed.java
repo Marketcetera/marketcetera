@@ -29,7 +29,7 @@ import org.marketcetera.core.quickfix.EventLogFactory;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageUtil;
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import quickfix.*;
@@ -163,11 +163,11 @@ public class MarketceteraFeed
                              sessionID);
     }
 
-    public EquityImpl symbolFromString(String symbolString) {
+    public Equity symbolFromString(String symbolString) {
 		if (MarketceteraOptionSymbol.matchesPattern(symbolString)){
 			return new MarketceteraOptionSymbol(symbolString);
 		}
-		return new EquityImpl(symbolString);
+		return new Equity(symbolString);
 	}
 
 	public boolean isRunning() 
