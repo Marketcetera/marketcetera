@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.core.event.Event;
@@ -19,7 +20,7 @@ import org.marketcetera.core.event.Event;
  */
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
-public class WebServicesEvent
+public abstract class WebServicesEvent
         implements Event
 {
     /* (non-Javadoc)
@@ -28,7 +29,7 @@ public class WebServicesEvent
     @Override
     public long getTimeMillis()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return timestamp == null ? -1 : timestamp.getTime();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.Event#getMessageId()
@@ -36,7 +37,7 @@ public class WebServicesEvent
     @Override
     public long getMessageId()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return messageId;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.Event#getTimestamp()
@@ -44,7 +45,7 @@ public class WebServicesEvent
     @Override
     public Date getTimestamp()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return timestamp;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.Event#getSource()
@@ -52,7 +53,7 @@ public class WebServicesEvent
     @Override
     public Object getSource()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return source;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.Event#setSource(java.lang.Object)
@@ -60,7 +61,13 @@ public class WebServicesEvent
     @Override
     public void setSource(Object inSource)
     {
-        throw new UnsupportedOperationException(); // TODO
+        source = String.valueOf(inSource);
     }
+    @XmlAttribute
+    private long messageId;
+    @XmlAttribute
+    private Date timestamp;
+    @XmlAttribute
+    private String source;
     private static final long serialVersionUID = 1L;
 }
