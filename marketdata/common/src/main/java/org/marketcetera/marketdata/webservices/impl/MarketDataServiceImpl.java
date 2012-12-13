@@ -1,10 +1,7 @@
 package org.marketcetera.marketdata.webservices.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,12 +10,15 @@ import javax.annotation.concurrent.ThreadSafe;
 import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.systemmodel.Subscriber;
+import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.impl.QuoteEventBuilder;
+import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
 import org.marketcetera.marketdata.manager.MarketDataManager;
 import org.marketcetera.marketdata.webservices.MarketDataService;
 import org.marketcetera.marketdata.webservices.WebServicesEvent;
-import org.marketcetera.marketdata.webservices.WebServicesEventBuilder;
+import org.marketcetera.marketdata.webservices.WebServicesEventFactory;
 import org.marketcetera.marketdata.webservices.WebServicesMarketDataRequest;
 
 /* $License$ */
@@ -39,7 +39,7 @@ public class MarketDataServiceImpl
      * @see org.marketcetera.marketdata.webservices.MarketDataService#test()
      */
     @Override
-    public List<Instrument> test()
+    public List<WebServicesEvent> test()
     {
         List<Instrument> instruments = new ArrayList<Instrument>();
         instruments.add(new Equity("GOOG"));
@@ -48,8 +48,23 @@ public class MarketDataServiceImpl
                                    new BigDecimal("100.50"),
                                    OptionType.Put));
         instruments.add(Future.fromString("GOOG-20121231"));
-        instruments.add(new ConvertibleBond("123456"));
-        return instruments;
+//        instruments.add(new ConvertibleBond("123456"));
+        WebServicesEventFactory eventFactory = new WebServicesEventFactory();
+        List<WebServicesEvent> events = new ArrayList<WebServicesEvent>();
+        for(Instrument instrument : instruments) {
+            QuoteEventBuilder<AskEvent> askBuilder = QuoteEventBuilder.askEvent(instrument);
+            askBuilder.withPrice(new BigDecimal("100.00"))
+                      .withSize(new BigDecimal("50.00"))
+                      .withExchange("test-exchange")
+                      .withQuoteDate(new Date().toString());
+            if(instrument instanceof Option) {
+                askBuilder.withUnderlyingInstrument(new Equity("GOOG"))
+                          .withExpirationType(ExpirationType.AMERICAN);
+            }
+            Event event = askBuilder.create();
+            events.add(eventFactory.create(event));
+        }
+        return events;
     }
     /**
      * Sets the maxQueueSize value.
@@ -112,7 +127,7 @@ public class MarketDataServiceImpl
     @Override
     public List<WebServicesEvent> getEvents(long inRequestId)
     {
-        WebServicesEventBuilder builder = new WebServicesEventBuilder();
+        WebServicesEventFactory factory = new WebServicesEventFactory();
         List<Event> queuedEvents = new ArrayList<Event>();
         synchronized(events) {
             BlockingDeque<Event> waitingEvents = events.get(inRequestId);
@@ -122,7 +137,7 @@ public class MarketDataServiceImpl
         }
         List<WebServicesEvent> eventsToReturn = new ArrayList<WebServicesEvent>();
         for(Event event : queuedEvents) {
-            WebServicesEvent eventToReturn = builder.create(event);
+            WebServicesEvent eventToReturn = factory.create(event);
             eventsToReturn.add(eventToReturn);
         }
         return eventsToReturn;
