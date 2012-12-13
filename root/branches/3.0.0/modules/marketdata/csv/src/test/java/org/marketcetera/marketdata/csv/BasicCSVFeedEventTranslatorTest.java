@@ -21,10 +21,10 @@ import org.marketcetera.core.marketdata.MarketDataRequest;
 import org.marketcetera.core.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.options.OptionUtils;
+import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 
 /* $License$ */
 
@@ -516,7 +516,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one" },
                                                                     request, 1.0)));
         // naked equity
-        assertEquals(new EquityImpl("symbol"),
+        assertEquals(new Equity("symbol"),
                      translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","symbol" },
                                                                  request, 1.0)));
         // naked option
@@ -550,7 +550,7 @@ public class BasicCSVFeedEventTranslatorTest
             }
         };
         // CFI equity
-        assertEquals(new EquityImpl("SYMBOL"),
+        assertEquals(new Equity("SYMBOL"),
                      translator.guessInstrument(CSVQuantum.getQuantum(new String[] { "zero","one","E:SYMBOL" },
                                                                  request, 1.0)));
         // CFI OSI-compliant option
@@ -741,7 +741,7 @@ public class BasicCSVFeedEventTranslatorTest
             }
         };
         // null line is ok
-        assertEquals(new EquityImpl(option.getSymbol()),
+        assertEquals(new Equity(option.getSymbol()),
                      translator.guessUnderlyingInstrument(null,
                                                           option));
     }
@@ -918,7 +918,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(translator.guessDividendEquity(null));
         assertNull(translator.guessDividendEquity(CSVQuantum.getQuantum(new String[] { "" },
                                                                         request, 1.0)));
-        assertEquals(new EquityImpl("symbol"),
+        assertEquals(new Equity("symbol"),
                      translator.guessDividendEquity(CSVQuantum.getQuantum(new String[] { "one","two","symbol","four","five","six","seven","eight" },
                                                                           request, 1.0)));
     }
@@ -1415,7 +1415,7 @@ public class BasicCSVFeedEventTranslatorTest
                      ask.getExchange());
         assertEquals("ask-date",
                      ask.getExchangeTimestamp());
-        assertEquals(new EquityImpl("ask-symbol"),
+        assertEquals(new Equity("ask-symbol"),
                      ask.getInstrument());
         assertEquals(new BigDecimal("1234.56"),
                      ask.getPrice());
@@ -1433,7 +1433,7 @@ public class BasicCSVFeedEventTranslatorTest
                      bid.getExchange());
         assertEquals("bid-date",
                      bid.getExchangeTimestamp());
-        assertEquals(new EquityImpl("bid-symbol"),
+        assertEquals(new Equity("bid-symbol"),
                      bid.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      bid.getPrice());
@@ -1498,7 +1498,7 @@ public class BasicCSVFeedEventTranslatorTest
                      trade.getExchange());
         assertEquals("trade-date",
                      trade.getExchangeTimestamp());
-        assertEquals(new EquityImpl("trade-symbol"),
+        assertEquals(new Equity("trade-symbol"),
                      trade.getInstrument());
         assertEquals(new BigDecimal("1234.56"),
                      trade.getPrice());
@@ -1564,13 +1564,13 @@ public class BasicCSVFeedEventTranslatorTest
                      dividend.getCurrency());
         assertEquals(null,
                      dividend.getDeclareDate());
-        assertEquals(new EquityImpl("dividend-symbol"),
+        assertEquals(new Equity("dividend-symbol"),
                      dividend.getEquity());
         assertEquals("execution-date",
                      dividend.getExecutionDate());
         assertEquals(DividendFrequency.ANNUALLY,
                      dividend.getFrequency());
-        assertEquals(new EquityImpl("dividend-symbol"),
+        assertEquals(new Equity("dividend-symbol"),
                      dividend.getInstrument());
         assertEquals(null,
                      dividend.getPaymentDate());
@@ -1590,13 +1590,13 @@ public class BasicCSVFeedEventTranslatorTest
                      dividend.getCurrency());
         assertEquals("declare-date",
                      dividend.getDeclareDate());
-        assertEquals(new EquityImpl("dividend-symbol-new"),
+        assertEquals(new Equity("dividend-symbol-new"),
                      dividend.getEquity());
         assertEquals("new-execution-date",
                      dividend.getExecutionDate());
         assertEquals(DividendFrequency.MONTHLY,
                      dividend.getFrequency());
-        assertEquals(new EquityImpl("dividend-symbol-new"),
+        assertEquals(new Equity("dividend-symbol-new"),
                      dividend.getInstrument());
         assertEquals("payment-date",
                      dividend.getPaymentDate());
@@ -1643,7 +1643,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(marketstat.getCloseExchange());
         assertNull(marketstat.getHigh());
         assertNull(marketstat.getHighExchange());
-        assertEquals(new EquityImpl("marketstat-symbol"),
+        assertEquals(new Equity("marketstat-symbol"),
                      marketstat.getInstrument());
         assertNull(marketstat.getLow());
         assertNull(marketstat.getLowExchange());
@@ -1775,7 +1775,7 @@ public class BasicCSVFeedEventTranslatorTest
                      bid.getExchange());
         assertEquals("bid-date",
                      bid.getExchangeTimestamp());
-        assertEquals(new EquityImpl("bid-symbol"),
+        assertEquals(new Equity("bid-symbol"),
                      bid.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      bid.getPrice());
@@ -1811,7 +1811,7 @@ public class BasicCSVFeedEventTranslatorTest
                      ask.getExchange());
         assertEquals("ask-date",
                      ask.getExchangeTimestamp());
-        assertEquals(new EquityImpl("ask-symbol"),
+        assertEquals(new Equity("ask-symbol"),
                      ask.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      ask.getPrice());
@@ -1845,7 +1845,7 @@ public class BasicCSVFeedEventTranslatorTest
                      trade.getExchange());
         assertEquals("trade-date",
                      trade.getExchangeTimestamp());
-        assertEquals(new EquityImpl("trade-symbol"),
+        assertEquals(new Equity("trade-symbol"),
                      trade.getInstrument());
         assertEquals(new BigDecimal("12340.056"),
                      trade.getPrice());
@@ -1881,13 +1881,13 @@ public class BasicCSVFeedEventTranslatorTest
                      dividend.getCurrency());
         assertEquals(null,
                      dividend.getDeclareDate());
-        assertEquals(new EquityImpl("dividend-symbol"),
+        assertEquals(new Equity("dividend-symbol"),
                      dividend.getEquity());
         assertEquals("execution-date",
                      dividend.getExecutionDate());
         assertEquals(DividendFrequency.ANNUALLY,
                      dividend.getFrequency());
-        assertEquals(new EquityImpl("dividend-symbol"),
+        assertEquals(new Equity("dividend-symbol"),
                      dividend.getInstrument());
         assertEquals(null,
                      dividend.getPaymentDate());
@@ -1919,7 +1919,7 @@ public class BasicCSVFeedEventTranslatorTest
         assertNull(marketstat.getCloseExchange());
         assertNull(marketstat.getHigh());
         assertNull(marketstat.getHighExchange());
-        assertEquals(new EquityImpl("marketstat-symbol"),
+        assertEquals(new Equity("marketstat-symbol"),
                      marketstat.getInstrument());
         assertNull(marketstat.getLow());
         assertNull(marketstat.getLowExchange());
@@ -1945,7 +1945,7 @@ public class BasicCSVFeedEventTranslatorTest
     /**
      * option to use for testing
      */
-    private final Option option = new OptionImpl("symbol",
+    private final Option option = new Option("symbol",
                                                  "20120319",
                                                  BigDecimal.ONE,
                                                  OptionType.Call);

@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
-import org.marketcetera.core.trade.impl.EquityImpl;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -82,7 +81,7 @@ public class OrderSingleTest extends TypesTestBase {
         BigDecimal qty = new BigDecimal("23434.56989");
         BigDecimal price = new BigDecimal("98923.2345");
         org.marketcetera.core.trade.SecurityType securityType = org.marketcetera.core.trade.SecurityType.CommonStock;
-        Instrument instrument = new EquityImpl("IBM");
+        Instrument instrument = new Equity("IBM");
         String account = "walloween";
         msg = factory.newLimitOrder(orderID.getValue(),
                 org.marketcetera.core.trade.Side.Buy.getFIXValue(), qty, instrument, price,

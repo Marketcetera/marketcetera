@@ -6,8 +6,8 @@ import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.OptionImpl;
 
 /* $License$ */
 
@@ -147,7 +147,7 @@ public class OptionUtils
             BigDecimal strike = new BigDecimal(String.format("%s.%s", //$NON-NLS-1$
                                                              strikeWhole,
                                                              strikeDecimal));
-            Option osiOption = new OptionImpl(symbol,
+            Option osiOption = new Option(symbol,
                                               String.format("%s%s%s", //$NON-NLS-1$
                                                             expiryYear,
                                                             expiryMonth,

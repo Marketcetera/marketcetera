@@ -1,21 +1,21 @@
 package org.marketcetera.core.position.impl;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.Equity;
 
 /* $License$ */
 /**
- * A comparator for {@link EquityImpl} instruments.
+ * A comparator for {@link Equity} instruments.
  *
  * @version $Id: EquityPositionKeyComparator.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-public class EquityPositionKeyComparator extends InstrumentPositionKeyComparator<EquityImpl> {
+public class EquityPositionKeyComparator extends InstrumentPositionKeyComparator<Equity> {
     /**
      * Creates an instance.
      */
     public EquityPositionKeyComparator() {
-        super(EquityImpl.class);
+        super(Equity.class);
     }
 
     /**
@@ -29,7 +29,7 @@ public class EquityPositionKeyComparator extends InstrumentPositionKeyComparator
     }
 
     @Override
-    public int compare(EquityImpl o1, EquityImpl o2) {
+    public int compare(Equity o1, Equity o2) {
         return new CompareToBuilder().
                 append(o1.getSymbol(), o2.getSymbol()).toComparison();
     }

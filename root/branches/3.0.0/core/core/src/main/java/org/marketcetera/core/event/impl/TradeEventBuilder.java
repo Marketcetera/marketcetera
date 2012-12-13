@@ -13,8 +13,6 @@ import org.marketcetera.core.event.beans.MarketDataBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
 
 /* $License$ */
 
@@ -37,7 +35,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
      *
      * <p>The type of <code>TradeEvent</code> returned will match the type of the given <code>Instrument</code>,
-     * i.e., an Equity-type <code>TradeEvent</code> for an {@link org.marketcetera.core.trade.impl.EquityImpl}, an Option-type <code>TradeEvent</code> for an
+     * i.e., an Equity-type <code>TradeEvent</code> for an {@link org.marketcetera.core.trade.Equity}, an Option-type <code>TradeEvent</code> for an
      * {@link org.marketcetera.core.trade.Option}, etc.
      * 
      * @param inInstrument an <code>Instrument</code> value indicating the type of {@link TradeEvent} to create
@@ -61,7 +59,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Equity <code>TradeEvent</code> object.
      *
      * @return a <code>TradeEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link EquityImpl}
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not an {@link Equity}
      */
     public static TradeEventBuilder<TradeEvent> equityTradeEvent()
     {
@@ -103,7 +101,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new Future <code>TradeEvent</code> object.
      *
      * @return a <code>TradeEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link FutureImpl}
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link Future}
      */
     public static TradeEventBuilder<TradeEvent> futureTradeEvent()
     {

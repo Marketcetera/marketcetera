@@ -10,12 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.*;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
+import org.marketcetera.core.trade.*;
 
 /* $License$ */
 
@@ -264,11 +259,11 @@ public class TopOfBookEventTest
     /**
      * test instrument
      */
-    private final Equity equity = new EquityImpl("METC");
+    private final Equity equity = new Equity("METC");
     /**
      * test option
      */
-    private final Option option = new OptionImpl("MSFT",
+    private final Option option = new Option("MSFT",
                                                  "20100319",
                                                  BigDecimal.ONE,
                                                  OptionType.Call);

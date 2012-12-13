@@ -14,7 +14,6 @@ import org.junit.BeforeClass;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import quickfix.FieldNotFound;
@@ -327,7 +326,7 @@ public class TypesTestBase {
         inOrder.setQuantity(null);
         assertEquals(null, inOrder.getQuantity());
 
-        EquityImpl instrument = new EquityImpl("IBM");
+        Equity instrument = new Equity("IBM");
         inOrder.setInstrument(instrument);
         assertEquals(instrument, inOrder.getInstrument());
         assertEquals(SecurityType.CommonStock, inOrder.getSecurityType());

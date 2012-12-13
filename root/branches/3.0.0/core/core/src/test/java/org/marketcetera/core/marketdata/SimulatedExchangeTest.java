@@ -24,9 +24,6 @@ import org.marketcetera.core.marketdata.SimulatedExchange.Token;
 import org.marketcetera.core.marketdata.SimulatedExchange.TopOfBook;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.CollectionAssert;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -46,33 +43,33 @@ public class SimulatedExchangeTest
     extends TestCaseBase
 {
     private SimulatedExchange exchange;
-    private final Equity metc = new EquityImpl("METC");
-    private final Equity goog = new EquityImpl("GOOG");
-    private final Option metc1Put = new OptionImpl(metc.getSymbol(),
+    private final Equity metc = new Equity("METC");
+    private final Equity goog = new Equity("GOOG");
+    private final Option metc1Put = new Option(metc.getSymbol(),
                                                    "20100319",
                                                    EventTestBase.generateDecimalValue(),
                                                    OptionType.Put);
-    private final Option metc1Call = new OptionImpl(metc1Put.getSymbol(),
+    private final Option metc1Call = new Option(metc1Put.getSymbol(),
                                                     metc1Put.getExpiry(),
                                                     metc1Put.getStrikePrice(),
                                                     OptionType.Call);
-    private final Option metc2Put = new OptionImpl(metc.getSymbol(),
+    private final Option metc2Put = new Option(metc.getSymbol(),
                                                    "20110319",
                                                    EventTestBase.generateDecimalValue(),
                                                    OptionType.Put);
-    private final Option metc2Call = new OptionImpl(metc2Put.getSymbol(),
+    private final Option metc2Call = new Option(metc2Put.getSymbol(),
                                                     metc2Put.getExpiry(),
                                                     metc2Put.getStrikePrice(),
                                                     OptionType.Call);
-    private final Option goog1Put = new OptionImpl(goog.getSymbol(),
+    private final Option goog1Put = new Option(goog.getSymbol(),
                                                    "20100319",
                                                    EventTestBase.generateDecimalValue(),
                                                    OptionType.Put);
-    private final Option goog1Call = new OptionImpl(goog1Put.getSymbol(),
+    private final Option goog1Call = new Option(goog1Put.getSymbol(),
                                                     goog1Put.getExpiry(),
                                                     goog1Put.getStrikePrice(),
                                                     OptionType.Call);
-    private final Future brn201212 = new FutureImpl("BRN",
+    private final Future brn201212 = new Future("BRN",
                                                     FutureExpirationMonth.DECEMBER,
                                                     2012);
     private BidEvent bid;
@@ -691,7 +688,7 @@ public class SimulatedExchangeTest
             }
         };
         for(int i=0;i<1000;i++) {
-            EquityImpl e = new EquityImpl(String.format("equity-%s",
+            Equity e = new Equity(String.format("equity-%s",
                                                 i));
             verifyDividends(exchange.getDividends(ExchangeRequestBuilder.newRequest().withInstrument(e).create()),
                             e);
@@ -713,7 +710,7 @@ public class SimulatedExchangeTest
             public Boolean call()
                     throws Exception
             {
-                Equity e = new EquityImpl("e-" + counter.incrementAndGet());
+                Equity e = new Equity("e-" + counter.incrementAndGet());
                 exchange.getDividends(ExchangeRequestBuilder.newRequest().withInstrument(e).create(),
                                       dividendStream);
                 return dividendStream.events.size() >= 20;

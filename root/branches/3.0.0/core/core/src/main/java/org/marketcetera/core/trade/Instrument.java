@@ -2,41 +2,78 @@ package org.marketcetera.core.trade;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.*;
 
-import com.sun.xml.bind.AnyTypeAdapter;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 
 /* $License$ */
 
 /**
- * Represents the common attributes of an <code>Instrument</code> implementation.
+ * Provides common routines for <code>Instrument</code> implementations.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
+ * @version $Id: AbstractInstrumentImpl.java 16345 2012-11-01 21:44:15Z colin $
  * @since $Release$
  */
+@ThreadSafe
 @XmlRootElement
-@XmlJavaTypeAdapter(AnyTypeAdapter.class)
-public interface Instrument
-        extends Serializable
+@XmlSeeAlso({ Equity.class, Option.class, Future.class, ConvertibleBond.class })
+@XmlAccessorType(XmlAccessType.NONE)
+public abstract class Instrument
+        implements Serializable
 {
     /**
      * Gets the symbol value.
      *
      * @return a <code>String</code> value
      */
-    public String getSymbol();
+    public String getSymbol()
+    {
+        return symbol;
+    }
     /**
      * Gets the full symbol value.
      *
      * @return a <code>String</code> value
      */
-    public String getFullSymbol();
+    public String getFullSymbol()
+    {
+        return symbol;
+    }
     /**
      * Gets the security type value.
      *
      * @return a <code>SecurityType</code> value
      */
-    public SecurityType getSecurityType();
+    @XmlAttribute
+    public abstract SecurityType getSecurityType();
+    /**
+     * Create a new AbstractInstrumentImpl instance.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @throws IllegalArgumentException if the symbol is invalid
+     */
+    protected Instrument(String inSymbol)
+    {
+        symbol = StringUtils.trimToNull(inSymbol);
+        Validate.notNull(symbol,
+                         Messages.NULL_SYMBOL.getText());
+    }
+    /**
+     * Create a new AbstractInstrumentImpl instance.
+     * 
+     * <b>Used for JAXB, should not be used otherwise.
+     */
+    protected Instrument()
+    {
+        symbol = null;
+    }
+    /**
+     * symbol value
+     */
+    @XmlAttribute
+    private final String symbol;
+    private static final long serialVersionUID = 1L;
 }

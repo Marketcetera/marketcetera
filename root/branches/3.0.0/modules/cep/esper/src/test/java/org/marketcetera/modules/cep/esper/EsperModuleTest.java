@@ -20,8 +20,8 @@ import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.event.HasInstrument;
 import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.core.module.*;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.modules.cep.system.CEPTestBase;
 
@@ -67,9 +67,9 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                        EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        EventTestBase.generateEquityTradeEvent(5, 6, new EquityImpl("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300")),
-                        EventTestBase.generateEquityTradeEvent(3, 4, new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"))
+                        EventTestBase.generateEquityBidEvent(1, 2, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        EventTestBase.generateEquityTradeEvent(5, 6, new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300")),
+                        EventTestBase.generateEquityTradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"))
                 }),
                 // Esper -> Sink: only get IBM trade events
                 new DataRequest(TEST_URN, "select * from trade where instrumentAsString='IBM'")
@@ -99,9 +99,9 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                        EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        EventTestBase.generateEquityTradeEvent(3, 4, new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        EventTestBase.generateEquityTradeEvent(5, 6, new EquityImpl("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        EventTestBase.generateEquityBidEvent(1, 2, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        EventTestBase.generateEquityTradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        EventTestBase.generateEquityTradeEvent(5, 6, new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // Esper -> Sink: only get IBM trade events
                 new DataRequest(TEST_URN, new String[]{"select * from trade where instrumentAsString='IBM'", "select * from trade where instrumentAsString='JAVA'"})
@@ -123,9 +123,9 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                        EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        EventTestBase.generateEquityTradeEvent(3, 4, new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        EventTestBase.generateEquityTradeEvent(5, 6, new EquityImpl("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        EventTestBase.generateEquityBidEvent(1, 2, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        EventTestBase.generateEquityTradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        EventTestBase.generateEquityTradeEvent(5, 6, new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // Esper -> Sink: only get IBM trade events
                 new DataRequest(TEST_URN, "select * from trade where instrumentAsString='IBM'")
@@ -140,9 +140,9 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flowID2 = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 3 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                        EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
-                        EventTestBase.generateEquityTradeEvent(3, 4, new EquityImpl("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
-                        EventTestBase.generateEquityTradeEvent(5, 6, new EquityImpl("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
+                        EventTestBase.generateEquityBidEvent(1, 2, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("100")),
+                        EventTestBase.generateEquityTradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200")),
+                        EventTestBase.generateEquityTradeEvent(5, 6, new Equity("JAVA"), "NASDAQ", new BigDecimal("1.23"), new BigDecimal("300"))
                 }),
                 // Esper -> Sink: only get IBM trade events
                 new DataRequest(TEST_URN, "select * from trade where instrumentAsString='JAVA'")
@@ -196,7 +196,7 @@ public class EsperModuleTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> Esper
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                                EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                                EventTestBase.generateEquityBidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
                         }),
                         // ESPER -> Sink: invalid type name
                         new DataRequest(TEST_URN, "select * from bob")
@@ -212,7 +212,7 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                        EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        EventTestBase.generateEquityBidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
                 }),
                 // ESPER -> Sink: invalid type name
                 new DataRequest(TEST_URN, new String[] {"select * from trade"})});
@@ -229,7 +229,7 @@ public class EsperModuleTest extends CEPTestBase {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> Esper
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                                EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                                EventTestBase.generateEquityBidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
                         }),
                         // ESPER -> Sink: invalid type name
                         new DataRequest(TEST_URN, new String[] {"select * from trade", "select * from bob"})
@@ -251,8 +251,8 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper: send 2 events
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                        EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                        EventTestBase.generateEquityAskEvent(1, 2, new EquityImpl("IBM"), "NYSE", new BigDecimal("100"), new BigDecimal("100")),
+                        EventTestBase.generateEquityBidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        EventTestBase.generateEquityAskEvent(1, 2, new Equity("IBM"), "NYSE", new BigDecimal("100"), new BigDecimal("100")),
                 }),
                 // ESPER -> Sink: pattern
                 new DataRequest(TEST_URN, new String[] {"p: ask(instrumentAsString='IBM') -> timer:interval(10 seconds)"})});
@@ -272,8 +272,8 @@ public class EsperModuleTest extends CEPTestBase {
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> Esper
                 new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
-                        EventTestBase.generateEquityBidEvent(1, 2, new EquityImpl("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
-                        EventTestBase.generateEquityAskEvent(1, 2, new EquityImpl("IBM"), "NYSE", new BigDecimal("100"), new BigDecimal("100")),
+                        EventTestBase.generateEquityBidEvent(1, 2, new Equity("GOOG"), "NYSE", new BigDecimal("300"), new BigDecimal("100")),
+                        EventTestBase.generateEquityAskEvent(1, 2, new Equity("IBM"), "NYSE", new BigDecimal("100"), new BigDecimal("100")),
                 }),
                 // ESPER -> Sink: explicit pattern
                 new DataRequest(TEST_URN, new String[] {"select 1 as toli from pattern [ask(instrumentAsString='IBM') -> timer:interval(10 seconds)]"})});

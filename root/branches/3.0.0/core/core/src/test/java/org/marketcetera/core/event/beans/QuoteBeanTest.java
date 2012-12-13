@@ -16,10 +16,10 @@ import org.marketcetera.core.event.QuoteAction;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
+import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -55,7 +55,7 @@ public class QuoteBeanTest
     public void getQuoteBeanFromEvent()
             throws Exception
     {
-        Instrument equity = new EquityImpl("METC");
+        Instrument equity = new Equity("METC");
         Date timestamp = new Date();
         BigDecimal size = BigDecimal.ONE;
         QuoteAction action = QuoteAction.CHANGE;
@@ -373,7 +373,7 @@ public class QuoteBeanTest
                             action,
                             ask.getEventType());
         // last, show that it doesn't have to be either an ask or an equity
-        Instrument option = new OptionImpl("MSFT",
+        Instrument option = new Option("MSFT",
                                        "20100319",
                                        BigDecimal.ONE,
                                        OptionType.Call);

@@ -15,8 +15,8 @@ import java.util.Locale;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.trade.Option;
+import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.trade.impl.OptionImpl;
 
 /* $License$ */
 
@@ -503,7 +503,7 @@ public class OptionUtilsTest
             throws Exception
     {
         assertEquals(inExpectedSymbol, OptionUtils
-                .getOsiSymbolFromOption(new OptionImpl(inRootSymbol, inExpiry,
+                .getOsiSymbolFromOption(new Option(inRootSymbol, inExpiry,
                         inStrike, inOptionType)));
     }
 
@@ -528,7 +528,7 @@ public class OptionUtilsTest
             protected void run()
                     throws Exception
             {
-                OptionUtils.getOsiSymbolFromOption(new OptionImpl(inRootSymbol,
+                OptionUtils.getOsiSymbolFromOption(new Option(inRootSymbol,
                         inExpiry, inStrike, inOptionType));
             }
         };

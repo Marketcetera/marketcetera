@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.impl.OptionImpl;
+import org.marketcetera.core.trade.Option;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -18,12 +18,12 @@ import quickfix.field.*;
  * @version $Id: OptionToMessage.java 16063 2012-01-31 18:21:55Z colin $
  * @since 2.0.0
  */
-public class OptionToMessage extends InstrumentToMessage<OptionImpl> {
+public class OptionToMessage extends InstrumentToMessage<Option> {
     /**
      * Creates an instance that handles options.
      */
     public OptionToMessage() {
-        super(OptionImpl.class);
+        super(Option.class);
     }
 
     @Override

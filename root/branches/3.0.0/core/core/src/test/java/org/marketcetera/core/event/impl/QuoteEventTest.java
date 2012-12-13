@@ -14,9 +14,6 @@ import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -1051,7 +1048,7 @@ public class QuoteEventTest
                 return QuoteEventBuilder.bidEvent(instrument);
             }
         } else {
-            if(instrument instanceof EquityImpl) {
+            if(instrument instanceof Equity) {
                 if(useAsk) {
                     return QuoteEventBuilder.equityAskEvent();
                 } else {
@@ -1063,7 +1060,7 @@ public class QuoteEventTest
                 } else {
                     return QuoteEventBuilder.optionBidEvent();
                 }
-            } else if(instrument instanceof FutureImpl) {
+            } else if(instrument instanceof Future) {
                 if(useAsk) {
                     return QuoteEventBuilder.futureAskEvent();
                 } else {
@@ -1141,7 +1138,7 @@ public class QuoteEventTest
      */
     private QuoteEvent generateQuote(QuoteAction inAction)
     {
-        if(instrument instanceof EquityImpl) {
+        if(instrument instanceof Equity) {
             if(useAsk) {
                 return EventTestBase.generateEquityAskEvent(equity,
                                                             inAction);
@@ -1157,7 +1154,7 @@ public class QuoteEventTest
                 return EventTestBase.generateOptionBidEvent(option,
                                                             inAction);
             }
-        } else if(instrument instanceof FutureImpl) {
+        } else if(instrument instanceof Future) {
             if(useAsk) {
                 return EventTestBase.generateFutureAskEvent(future,
                                                             inAction);
@@ -1180,18 +1177,18 @@ public class QuoteEventTest
     /**
      * test instrument
      */
-    private final Equity equity = new EquityImpl("METC");
+    private final Equity equity = new Equity("METC");
     /**
      * test option
      */
-    private final Option option = new OptionImpl("MSFT",
+    private final Option option = new Option("MSFT",
                                              "20100319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
     /**
      * test future
      */
-    private final Future future = new FutureImpl("GOOG",
+    private final Future future = new Future("GOOG",
                                              FutureExpirationMonth.DECEMBER,
                                              2015);
     /**

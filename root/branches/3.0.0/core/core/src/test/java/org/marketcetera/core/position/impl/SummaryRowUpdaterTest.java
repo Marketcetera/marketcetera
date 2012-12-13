@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.Equity;
 
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
@@ -32,12 +32,12 @@ public class SummaryRowUpdaterTest {
         createAndAssert(list, "0", "0", null, null, null, null, null);
 
         list = new BasicEventList<PositionRow>();
-        list.add(new PositionRowImpl(new EquityImpl("ABC"), "ABC", "SYZ", "123", PositionMetricsImplTest.createMetrics(
+        list.add(new PositionRowImpl(new Equity("ABC"), "ABC", "SYZ", "123", PositionMetricsImplTest.createMetrics(
                 "0", "5", "4", "3", "2", "1", "7")));
         createAndAssert(list, "0", "5", "4", "3", "2", "1", "7");
 
         list = new BasicEventList<PositionRow>();
-        list.add(new PositionRowImpl(new EquityImpl("ABC"), "ABC", "SYZ", "123", PositionMetricsImplTest.createMetrics(
+        list.add(new PositionRowImpl(new Equity("ABC"), "ABC", "SYZ", "123", PositionMetricsImplTest.createMetrics(
                 "0", "5", "4", "3", "2", "1", "7")));
         list.add(new PositionRowImpl(null, null, null, null, PositionMetricsImplTest.createMetrics("1",
                 "4.5", "14", null, "-52", "18", "97")));
@@ -65,7 +65,7 @@ public class SummaryRowUpdaterTest {
         SummaryRowUpdater fixture = new SummaryRowUpdater(summary);
         assertSummary(fixture, summary, "0", "0", "0", "0", "0", "0", "0");
         // add a position
-        PositionRowImpl microsoft = new PositionRowImpl(new EquityImpl("MSFT"), "MSFT", "Account", "Yoram", BigDecimal.ZERO);
+        PositionRowImpl microsoft = new PositionRowImpl(new Equity("MSFT"), "MSFT", "Account", "Yoram", BigDecimal.ZERO);
         list.add(microsoft);
         assertSummary(fixture, summary, "0", "0", null, null, null, null, null);
         // start over with a position already in the list
@@ -83,7 +83,7 @@ public class SummaryRowUpdaterTest {
         list.set(0, microsoft);
         assertSummary(fixture, summary, "1", "3", "2.2", "77", "11", "10000.3", "123");
         // add a new position
-        PositionRowImpl ibm = new PositionRowImpl(new EquityImpl("IBM"), "IBM", "Account",
+        PositionRowImpl ibm = new PositionRowImpl(new Equity("IBM"), "IBM", "Account",
                 "Yoram", PositionMetricsImplTest.createMetrics("4", "7", "8", "3", "9", ".7", "7"));
         list.add(ibm);
         assertSummary(fixture, summary, "5", "10", "10.2", "80", "20", "10001", "130");
@@ -113,7 +113,7 @@ public class SummaryRowUpdaterTest {
     }
 
     private PositionRowImpl createTestSummary(EventList<PositionRow> list) {
-        return new PositionRowImpl(new EquityImpl("ABC"), "ABC", "XYZ", "123", new Grouping[] { Grouping.Account }, list);
+        return new PositionRowImpl(new Equity("ABC"), "ABC", "XYZ", "123", new Grouping[] { Grouping.Account }, list);
     }
 
     private void assertSummary(SummaryRowUpdater fixture, PositionRow summary,

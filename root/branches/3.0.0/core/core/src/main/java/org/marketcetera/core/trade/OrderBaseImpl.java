@@ -8,8 +8,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
 
 /* $License$ */
 /**
@@ -30,9 +28,9 @@ import org.marketcetera.core.trade.impl.FutureImpl;
     ({OrderCancelImpl.class,
       OrderReplaceImpl.class,
       OrderSingleImpl.class,
-      EquityImpl.class,
+      Equity.class,
       Option.class,
-      FutureImpl.class})
+      Future.class})
 //todo: figure out a way to dynamic add instrument types to the XmlSeeAlso list
 public class OrderBaseImpl implements OrderBase {
     @Override

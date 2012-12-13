@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.Trade;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import ca.odell.glazedlists.BasicEventList;
@@ -32,7 +32,7 @@ import com.google.common.collect.Sets;
 public class PositionRowUpdaterConcurrencyTest {
 
     private final Random mGenerator = new Random();
-    private static final Instrument INSTRUMENT = new EquityImpl("METC");
+    private static final Instrument INSTRUMENT = new Equity("METC");
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
     private PositionRowImpl mRow;

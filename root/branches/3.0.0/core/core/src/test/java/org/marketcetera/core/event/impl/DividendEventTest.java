@@ -13,7 +13,7 @@ import org.marketcetera.core.event.DividendType;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.util.test.EqualityAssert;
 
 import static org.junit.Assert.*;
@@ -124,7 +124,7 @@ public class DividendEventTest
         verify(builder);
     }
     /**
-     * Tests {@link DividendEventBuilder#withEquity(EquityImpl)}.
+     * Tests {@link DividendEventBuilder#withEquity(Equity)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -640,7 +640,7 @@ public class DividendEventTest
     /**
      * test instrument
      */
-    private EquityImpl equity = new EquityImpl("METC");
+    private Equity equity = new Equity("METC");
     /**
      * id counter used to guarantee unique events
      */

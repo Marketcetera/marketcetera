@@ -4,10 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.symbology.IEquityOptionSymbol;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.Equity;
 
 public class MarketceteraOptionSymbol
-    extends EquityImpl 
+    extends Equity 
     implements IEquityOptionSymbol, Messages
 {
     static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)"); //$NON-NLS-1$

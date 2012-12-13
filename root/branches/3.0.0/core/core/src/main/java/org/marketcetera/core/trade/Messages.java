@@ -14,7 +14,7 @@ public interface Messages {
      * The message provider
      */
     static final I18NMessageProvider PROVIDER =
-            new I18NMessageProvider("core_trade");  //$NON-NLS-1$
+            new I18NMessageProvider("core_trade",Messages.class.getClassLoader());  //$NON-NLS-1$
     /**
      * The message logger.
      */

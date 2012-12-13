@@ -6,8 +6,8 @@ import org.junit.Test;
 import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.symbolresolver.MockSymbolResolver;
+import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.impl.EquityImpl;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 import org.marketcetera.marketdata.request.MarketDataRequestBuilder;
@@ -41,7 +41,7 @@ public class BogusFeedTest
             throws Exception
     {
         symbolResolver = new MockSymbolResolver();
-        equity = new EquityImpl("METC");
+        equity = new Equity("METC");
         symbolResolver.addSymbolMap(equity.getFullSymbol(),
                                     equity);
         feed = new BogusFeed();

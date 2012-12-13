@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.marketcetera.core.event.Event;
+import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.marketdata.request.MarketDataRequest;
 
 /* $License$ */
@@ -20,6 +21,9 @@ import org.marketcetera.marketdata.request.MarketDataRequest;
  */
 public interface MarketDataService
 {
+    @GET
+    @Path("test")
+    public List<Instrument> test();
     /**
      * Request market data.
      * 

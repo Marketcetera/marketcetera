@@ -14,9 +14,6 @@ import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -646,11 +643,11 @@ public class TradeEventTest
         if(useInstrument) {
             return TradeEventBuilder.tradeEvent(instrument);
         } else {
-            if(instrument instanceof EquityImpl) {
+            if(instrument instanceof Equity) {
                 return TradeEventBuilder.equityTradeEvent();
             } else if(instrument instanceof Option) {
                 return TradeEventBuilder.optionTradeEvent();
-            } else if(instrument instanceof FutureImpl) {
+            } else if(instrument instanceof Future) {
                 return TradeEventBuilder.futureTradeEvent();
             }
         }
@@ -663,18 +660,18 @@ public class TradeEventTest
     /**
      * test instrument with {@link TradeEventBuilder#tradeEvent(org.marketcetera.core.trade.Instrument)}.
      */
-    private final Equity equity = new EquityImpl("METC");
+    private final Equity equity = new Equity("METC");
     /**
      * test option
      */
-    private final Option option = new OptionImpl("MSFT",
+    private final Option option = new Option("MSFT",
                                              "20100319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
     /**
      * test instrument with {@link TradeEventBuilder#tradeEvent(org.marketcetera.core.trade.Instrument)}.
      */
-    private final Future future = new FutureImpl("METC",
+    private final Future future = new Future("METC",
                                              FutureExpirationMonth.MARCH,
                                              15);
     /**

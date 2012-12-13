@@ -23,7 +23,7 @@ import org.marketcetera.core.event.QuoteEvent;
 import org.marketcetera.core.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.core.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.core.trade.impl.EquityImpl;
+import org.marketcetera.core.trade.Equity;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.core.marketdata.AssetClass.*;
@@ -39,7 +39,7 @@ import static org.marketcetera.core.marketdata.AssetClass.*;
 public class AbstractMarketDataFeedTest
     extends MarketDataFeedTestBase
 {
-    private final EquityImpl metc = new EquityImpl("METC");
+    private final Equity metc = new Equity("METC");
     private final String exchange = "TEST";
     @Test
     public void testConstructor()

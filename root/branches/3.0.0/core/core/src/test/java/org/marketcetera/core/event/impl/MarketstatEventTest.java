@@ -14,9 +14,6 @@ import org.marketcetera.core.event.*;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.impl.EquityImpl;
-import org.marketcetera.core.trade.impl.FutureImpl;
-import org.marketcetera.core.trade.impl.OptionImpl;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -1111,11 +1108,11 @@ public class MarketstatEventTest
         if(useInstrument) {
             return MarketstatEventBuilder.marketstat(instrument);
         } else {
-            if(instrument instanceof EquityImpl) {
+            if(instrument instanceof Equity) {
                 return MarketstatEventBuilder.equityMarketstat();
             } else if(instrument instanceof Option) {
                 return MarketstatEventBuilder.optionMarketstat();
-            } else if(instrument instanceof FutureImpl) {
+            } else if(instrument instanceof Future) {
                 return MarketstatEventBuilder.futureMarketstat();
             }
         }
@@ -1132,18 +1129,18 @@ public class MarketstatEventTest
     /**
      * test instrument
      */
-    private final Equity equity = new EquityImpl("METC");
+    private final Equity equity = new Equity("METC");
     /**
      * test option
      */
-    private final Option option = new OptionImpl("MSFT",
+    private final Option option = new Option("MSFT",
                                              "20100319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
     /**
      * test future
      */
-    private final Future future = new FutureImpl("AAPL",
+    private final Future future = new Future("AAPL",
                                              FutureExpirationMonth.APRIL,
                                              12);
     /**
