@@ -16,6 +16,7 @@ import org.marketcetera.core.event.Event;
 import org.marketcetera.marketdata.manager.MarketDataManager;
 import org.marketcetera.marketdata.webservices.MarketDataService;
 import org.marketcetera.marketdata.webservices.WebServicesEvent;
+import org.marketcetera.marketdata.webservices.WebServicesEventBuilder;
 import org.marketcetera.marketdata.webservices.WebServicesMarketDataRequest;
 
 /* $License$ */
@@ -93,13 +94,18 @@ public class MarketDataServiceImpl
     @Override
     public List<WebServicesEvent> getEvents(long inRequestId)
     {
-        List<WebServicesEvent> eventsToReturn = new ArrayList<WebServicesEvent>();
+        WebServicesEventBuilder builder = new WebServicesEventBuilder();
+        List<Event> queuedEvents = new ArrayList<Event>();
         synchronized(events) {
             BlockingDeque<Event> waitingEvents = events.get(inRequestId);
             if(waitingEvents != null) {
-//                waitingEvents.drainTo(eventsToReturn);
-                return eventsToReturn;
+                waitingEvents.drainTo(queuedEvents);
             }
+        }
+        List<WebServicesEvent> eventsToReturn = new ArrayList<WebServicesEvent>();
+        for(Event event : queuedEvents) {
+            WebServicesEvent eventToReturn = builder.create(event);
+            eventsToReturn.add(eventToReturn);
         }
         return eventsToReturn;
     }
