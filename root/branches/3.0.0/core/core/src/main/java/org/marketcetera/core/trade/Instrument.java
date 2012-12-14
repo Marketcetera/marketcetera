@@ -22,7 +22,7 @@ import org.apache.commons.lang.Validate;
 @XmlSeeAlso({ Equity.class, Option.class, Future.class, ConvertibleBond.class })
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class Instrument
-        implements Serializable
+        implements Serializable, Comparable<Instrument>
 {
     /**
      * Gets the symbol value.
@@ -49,6 +49,14 @@ public abstract class Instrument
      */
     @XmlAttribute
     public abstract SecurityType getSecurityType();
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(Instrument inO)
+    {
+        return symbol.compareTo(inO.getSymbol());
+    }
     /**
      * Create a new AbstractInstrumentImpl instance.
      *

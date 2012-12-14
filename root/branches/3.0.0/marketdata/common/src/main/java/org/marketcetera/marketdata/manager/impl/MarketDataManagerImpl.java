@@ -13,6 +13,8 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.marketdata.FeedStatus;
@@ -71,6 +73,9 @@ public class MarketDataManagerImpl
     public long requestMarketData(MarketDataRequest inRequest,
                                   Subscriber inSubscriber)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Received: {}",
+                               inRequest);
         // route the request to available providers or to a particular provider
         Lock requestLock = requestLockObject.writeLock();
         try {
@@ -83,12 +88,20 @@ public class MarketDataManagerImpl
                 if(provider == null) {
                     throw new MarketDataProviderNotAvailable();
                 }
+                SLF4JLoggerProxy.debug(this,
+                                       "Submitting {} to {}",
+                                       token,
+                                       provider);
                 provider.requestMarketData(token);
                 providersByToken.put(token,
                                      provider);
             } else {
                 for(MarketDataProvider provider : activeProvidersByName.values()) {
                     try {
+                        SLF4JLoggerProxy.debug(this,
+                                               "Submitting {} to {}",
+                                               token,
+                                               provider);
                         provider.requestMarketData(token);
                         providersByToken.put(token,
                                              provider);
@@ -105,6 +118,10 @@ public class MarketDataManagerImpl
             }
             tokensByTokenId.put(token.getId(),
                                 token);
+            SLF4JLoggerProxy.debug(this,
+                                   "Returning {} for {}",
+                                   token.getId(),
+                                   inRequest);
             return token.getId();
         } catch (InterruptedException e) {
             SLF4JLoggerProxy.warn(this,
@@ -121,12 +138,19 @@ public class MarketDataManagerImpl
     @Override
     public void cancelMarketDataRequest(long inRequestId)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Canceling request {}",
+                               inRequestId);
         Lock cancelLock = requestLockObject.writeLock();
         try {
             cancelLock.lockInterruptibly();
             MarketDataRequestToken token = tokensByTokenId.remove(inRequestId);
             if(token != null) {
                 for(MarketDataProvider provider : providersByToken.removeAll(token)) {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Canceling request {} with {}",
+                                           inRequestId,
+                                           provider);
                     provider.cancelMarketDataRequest(token);
                 }
             }
@@ -162,6 +186,14 @@ public class MarketDataManagerImpl
         public MarketDataRequest getRequest()
         {
             return request;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append(id).append(request).toString();
         }
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
