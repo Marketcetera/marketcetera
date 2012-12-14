@@ -113,8 +113,6 @@ public class MarketDataServiceImpl
                         }
                     }
             };
-            subscribers.put(requestId,
-                            subscriber);
             // TODO manage exceptions (and remove the newly added objects if an error occurs)
             marketDataManager.requestMarketData(inRequest,
                                                 subscriber);
@@ -149,10 +147,7 @@ public class MarketDataServiceImpl
     public Response cancel(long inRequestId)
     {
         synchronized(events) {
-            Subscriber subscriber = subscribers.remove(inRequestId);
-            if(subscriber != null) {
-                marketDataManager.cancelMarketDataRequest(subscriber);
-            }
+            marketDataManager.cancelMarketDataRequest(inRequestId);
             BlockingDeque<Event> eventQueue = events.remove(inRequestId);
             if(eventQueue != null) {
                 eventQueue.clear();
@@ -173,10 +168,6 @@ public class MarketDataServiceImpl
      * event queues by request Id
      */
     private final Map<Long,BlockingDeque<Event>> events = new HashMap<Long,BlockingDeque<Event>>();
-    /**
-     * subscriber liason objects by request Id
-     */
-    private final Map<Long,Subscriber> subscribers = new HashMap<Long,Subscriber>();
     /**
      * manages market data requests
      */

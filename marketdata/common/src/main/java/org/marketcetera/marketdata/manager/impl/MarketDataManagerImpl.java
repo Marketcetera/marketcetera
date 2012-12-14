@@ -68,7 +68,7 @@ public class MarketDataManagerImpl
      * @see org.marketcetera.marketdata.manager.MarketDataManager#requestMarketData(org.marketcetera.marketdata.request.MarketDataRequest, org.marketcetera.api.systemmodel.Subscriber)
      */
     @Override
-    public void requestMarketData(MarketDataRequest inRequest,
+    public long requestMarketData(MarketDataRequest inRequest,
                                   Subscriber inSubscriber)
     {
         // route the request to available providers or to a particular provider
@@ -103,8 +103,9 @@ public class MarketDataManagerImpl
                 }
                 // TODO throw no providers available if the request could not be submitted
             }
-            tokensBySubscriber.put(inSubscriber,
-                                   token);
+            tokensByTokenId.put(token.getId(),
+                                token);
+            return token.getId();
         } catch (InterruptedException e) {
             SLF4JLoggerProxy.warn(this,
                                   "Market data request {} interrupted", // TODO
@@ -118,12 +119,13 @@ public class MarketDataManagerImpl
      * @see org.marketcetera.marketdata.manager.MarketDataManager#cancelMarketDataRequest(org.marketcetera.api.systemmodel.Subscriber)
      */
     @Override
-    public void cancelMarketDataRequest(Subscriber inSubscriber)
+    public void cancelMarketDataRequest(long inRequestId)
     {
         Lock cancelLock = requestLockObject.writeLock();
         try {
             cancelLock.lockInterruptibly();
-            for(MarketDataRequestToken token : tokensBySubscriber.removeAll(inSubscriber)) {
+            MarketDataRequestToken token = tokensByTokenId.remove(inRequestId);
+            if(token != null) {
                 for(MarketDataProvider provider : providersByToken.removeAll(token)) {
                     provider.cancelMarketDataRequest(token);
                 }
@@ -207,7 +209,7 @@ public class MarketDataManagerImpl
     @GuardedBy("requestLockObject")
     private final Map<String,MarketDataProvider> activeProvidersByName = new HashMap<String,MarketDataProvider>();
     private final ReadWriteLock requestLockObject = new ReentrantReadWriteLock();
-    private final Multimap<Subscriber,MarketDataRequestToken> tokensBySubscriber = HashMultimap.create();
+    private final Map<Long,MarketDataRequestToken> tokensByTokenId = new HashMap<Long,MarketDataRequestToken>();
     private final Multimap<MarketDataRequestToken,MarketDataProvider> providersByToken = HashMultimap.create();
     private final AtomicLong requestCounter = new AtomicLong(0);
 }
