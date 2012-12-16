@@ -20,9 +20,6 @@ import org.marketcetera.marketdata.request.MarketDataRequest;
  */
 public interface MarketDataService
 {
-    @GET
-    @Path("test")
-    public List<WebServicesEvent> test();
     /**
      * Request market data.
      * 
