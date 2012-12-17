@@ -1,0 +1,109 @@
+import org.marketcetera.strategy.java.Strategy;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.event.TradeEvent;
+
+/**
+ * Sample strategy template.
+ */
+public class __TEMPLATE_CLASS_NAME__ extends Strategy
+{
+    /**
+     * Called when a strategy is started.
+     */
+    @Override
+    public void onStart() {
+    }
+
+    /**
+     * Called when a strategy is about to be stopped.
+     */
+    @Override
+    public void onStop() {
+    }
+
+    /**
+     * Indicates an <code>AskEvent</code> has been received.
+     * 
+     * @param ask an <code>AskEvent</code> value
+     */
+    @Override
+    public void onAsk(AskEvent ask) {
+    }
+
+    /**
+     * Indicates a <code>BidEvent</code> has been received.
+     * 
+     * @param bid a <code>BidEvent</code> value
+     */
+    @Override
+    public void onBid(BidEvent bid) {
+    }
+
+    /**
+     * Indicates a <code>MarketstatEvent</code> has been received. 
+     *
+     * @param statistics a <code>MarketstatEvent</code> value
+     */
+    @Override
+    public void onMarketstat(MarketstatEvent statistics) {
+    }
+
+    /**
+     * Indicates a <code>DividendEvent</code> has been received. 
+     *
+     * @param dividend a <code>DividendEvent</code> value
+     */
+    @Override
+    public void onDividend(DividendEvent dividend) {
+    }
+    
+    /**
+     * Indicates a scheduled callback has been executed.
+     * 
+     * @param data an <code>Object</code> value passed to the request for callback method 
+     */
+    @Override
+    public void onCallback(Object data) {
+    }
+
+    /**
+     * Indicates an <code>ExecutionReport</code> has been received.
+     * 
+     * @param executionReport an <code>ExecutionReport</code> value
+     */
+    @Override
+    public void onExecutionReport(ExecutionReport executionReport) {
+    }  
+
+    /**
+     * Indicates an <code>OrderCancelReject</code> has been received.
+     *
+     * @param cancel an <code>OrderCancelReject</code> value
+     */
+    @Override
+    public void onCancelReject(OrderCancelReject cancel) {
+    }
+
+    /**
+     * Indicates a <code>TradeEvent</code> has been received.
+     * 
+     * @param trade a <code>TradeEvent</code> value
+     */
+    @Override
+    public void onTrade(TradeEvent trade) {
+    }
+
+    /**
+     * Indicates an object has been sent that does not fit any of the other callbacks.
+     * 
+     * @param data an <code>Object</code> value
+     */
+    @Override
+    public void onOther(Object data) {
+    }
+}

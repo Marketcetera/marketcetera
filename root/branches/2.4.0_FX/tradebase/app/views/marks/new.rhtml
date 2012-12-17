@@ -1,0 +1,8 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "P &amp; L", :action_name => "New Mark", :top_level_controller => @controller.controller_name } %>
+<h1>New Mark</h1>
+
+<% form_tag :action => 'create' do %>
+  <%= render :partial => 'form' %>
+  <%= render :partial => '/shared/clear_create_form_buttons' %>
+<% end -%>

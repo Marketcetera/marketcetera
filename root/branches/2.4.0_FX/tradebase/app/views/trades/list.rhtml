@@ -1,0 +1,8 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Trades", :action_name => "List Trades", :top_level_controller => @controller.controller_name } %>
+
+<h1>Listing Trades</h1>
+
+<%= render :partial => 'trades/trade_list_display' %>
+
+<%= pagination_links(@trade_pages) %>

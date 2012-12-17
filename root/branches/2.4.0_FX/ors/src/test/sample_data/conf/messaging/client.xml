@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Messaging configuration: client configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - The connection factory for incoming connections. Note that ActiveMQ
+    - pooled factories only support outgoing connections, hence a simple
+    - factory is used for incoming ones.
+    -
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/spring/ActiveMQConnectionFactory.html' for a complete list
+    - of options.
+    -->
+  <bean
+   id="metc_connection_factory_in"
+   class="org.apache.activemq.ActiveMQConnectionFactory"
+   depends-on="metc_jms_broker">
+    <property
+     name="brokerURL"
+     value="vm://localhost?create=false&amp;waitForStart=30000"/>
+    <property
+     name="userName"
+     ref="runtimeUsername"/>
+    <property
+     name="password"
+     ref="runtimePassword"/>
+  </bean>
+
+  <!--
+    - The connection factory for outgoing connections.
+    -
+    - See 'http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/
+    - activemq/pool/PooledConnectionFactory.html' for a complete list
+    - of options.
+    -->
+  <bean
+   id="metc_connection_factory_out"
+   class="org.apache.activemq.pool.PooledConnectionFactory"
+   depends-on="metc_jms_broker">
+    <property
+     name="connectionFactory"
+     ref="metc_connection_factory_in"/>
+  </bean>
+</beans>
