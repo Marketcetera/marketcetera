@@ -65,6 +65,14 @@ public class BogusFeed
         return capabilities;
     }
     /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return getProviderName();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.provider.AbstractMarketDataProvider#addSymbolMapping(java.lang.String, org.marketcetera.core.trade.Instrument)
      */
     @Override

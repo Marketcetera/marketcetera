@@ -151,6 +151,7 @@ public abstract class AbstractMarketDataProvider
             throw new MarketDataRequestFailed(e);
         }
         try {
+            mapRequestToInstruments(inRequestToken);
             for(MarketDataRequestAtom atom : atoms) {
                 Capability requiredCapability = necessaryCapabilities.get(atom.getContent());
                 if(requiredCapability == null) {
@@ -269,6 +270,10 @@ public abstract class AbstractMarketDataProvider
     protected void addSymbolMapping(String inSymbol,
                                     Instrument inInstrument)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Adding symbol mapping: {} -> {}",
+                               inSymbol,
+                               inInstrument);
         Lock symbolMappingLock = marketdataLock.writeLock();
         try {
             symbolMappingLock.lockInterruptibly();
@@ -284,6 +289,31 @@ public abstract class AbstractMarketDataProvider
             stop();
         } finally {
             symbolMappingLock.unlock();
+        }
+    }
+    /**
+     * 
+     *
+     * <p>This method requires an external write-lock on {@link #requestsByInstrument} and
+     * an external read-lock on {@link #instrumentsBySymbol}.
+     *
+     * @param inToken
+     */
+    private void mapRequestToInstruments(MarketDataRequestToken inToken)
+    {
+        for(String symbol : inToken.getRequest().getSymbols()) {
+            Instrument instrument = instrumentsBySymbol.get(symbol);
+            if(instrument != null) {
+                requestsByInstrument.put(instrument,
+                                         inToken);
+            }
+        }
+        for(String symbol : inToken.getRequest().getUnderlyingSymbols()) {
+            Instrument instrument = instrumentsBySymbol.get(symbol);
+            if(instrument != null) {
+                requestsByInstrument.put(instrument,
+                                         inToken);
+            }
         }
     }
     /**
@@ -636,7 +666,7 @@ public abstract class AbstractMarketDataProvider
         @Override
         public String toString()
         {
-            return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append(instrument).append(" ").append(content).append(" [") //$NON-NLS-1$ //$NON-NLS-2$
+            return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append("instrument",instrument).append("content",content).append(" [") //$NON-NLS-1$ //$NON-NLS-2$
                                                                              .append(Arrays.toString(events)).append(" ]").toString(); //$NON-NLS-1$
         }
         /**

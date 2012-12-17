@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.core.xml.MapAdapter;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.Messages;
@@ -88,8 +86,27 @@ class MarketDataRequestImpl
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this,
-                                   ToStringStyle.SHORT_PREFIX_STYLE).append(symbols).append(underlyingSymbols).append(provider).append(exchange).append(content).append(parameters).toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append("MarketDataRequest");
+        if(!symbols.isEmpty()) {
+            builder.append(" symbols: ").append(symbols);
+        }
+        if(!underlyingSymbols.isEmpty()) {
+            builder.append(" underlying symbols: ").append(underlyingSymbols);
+        }
+        if(!content.isEmpty()) {
+            builder.append(" content: ").append(content);
+        }
+        if(provider != null) {
+            builder.append(" provider: ").append(provider);
+        }
+        if(exchange != null) {
+            builder.append(" exchange: ").append(exchange);
+        }
+        if(!parameters.isEmpty()) {
+            builder.append(" parameters: ").append(parameters);
+        }
+        return builder.toString();
     }
     /**
      * Sets the provider value.

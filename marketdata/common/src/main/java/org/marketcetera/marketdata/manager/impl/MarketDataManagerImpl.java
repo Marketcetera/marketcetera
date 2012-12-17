@@ -13,8 +13,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.marketdata.FeedStatus;
@@ -197,7 +195,7 @@ public class MarketDataManagerImpl
         @Override
         public String toString()
         {
-            return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append(id).append(request).toString();
+            return new StringBuilder().append("Token [").append(id).append("] ").append(request).toString();
         }
         /* (non-Javadoc)
          * @see java.lang.Object#hashCode()
