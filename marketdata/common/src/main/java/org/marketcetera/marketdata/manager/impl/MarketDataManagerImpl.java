@@ -96,6 +96,7 @@ public class MarketDataManagerImpl
                 providersByToken.put(token,
                                      provider);
             } else {
+                boolean submitted = false;
                 for(MarketDataProvider provider : activeProvidersByName.values()) {
                     try {
                         SLF4JLoggerProxy.debug(this,
@@ -105,6 +106,7 @@ public class MarketDataManagerImpl
                         provider.requestMarketData(token);
                         providersByToken.put(token,
                                              provider);
+                        submitted = true;
                     } catch (MarketDataException e) {
                         SLF4JLoggerProxy.warn(this,
                                               e,
@@ -114,7 +116,9 @@ public class MarketDataManagerImpl
                         // continue to try from the next provider
                     }
                 }
-                // TODO throw no providers available if the request could not be submitted
+                if(!submitted) {
+                    throw new NoMarketDataProvidersAvailable();
+                }
             }
             tokensByTokenId.put(token.getId(),
                                 token);
