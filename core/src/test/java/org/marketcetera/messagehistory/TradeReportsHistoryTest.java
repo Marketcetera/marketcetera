@@ -998,19 +998,22 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
     public void testUnderlyingSymbolSupportCurrency()
             throws Exception
     {
-        UnderlyingSymbolSupport mockSupport = mock(UnderlyingSymbolSupport.class);
-        TradeReportsHistory history = new TradeReportsHistory(msgFactory,
-                                                                  mockSupport);
-        Message message = createSimpleMessage(Side.BUY,
-                                                  "1");
-        Currency currency = new Currency("USD/GBP");
-        InstrumentToMessage.SELECTOR.forInstrument(currency).set(currency,
-                                                                   fixVersion.toString(),
-                                                                   message);
-        when(mockSupport.getUnderlying(currency)).thenReturn("USD/GBP");
-        history.addIncomingMessage(createBrokerReport(message));
-        assertThat(history.getAllMessagesList().get(0).getUnderlying(),
-                       is("USD/GBP"));
+    	//FX not supported in FIX 4.0 
+    	if (fixVersion != FIXVersion.FIX40) {
+	        UnderlyingSymbolSupport mockSupport = mock(UnderlyingSymbolSupport.class);
+	        TradeReportsHistory history = new TradeReportsHistory(msgFactory,
+	                                                                  mockSupport);
+	        Message message = createSimpleMessage(Side.BUY,
+	                                                  "1");
+	        Currency currency = new Currency("USD/GBP");
+	        InstrumentToMessage.SELECTOR.forInstrument(currency).set(currency,
+	                                                                   fixVersion.toString(),
+	                                                                   message);
+	        when(mockSupport.getUnderlying(currency)).thenReturn("USD/GBP");
+	        history.addIncomingMessage(createBrokerReport(message));
+	        assertThat(history.getAllMessagesList().get(0).getUnderlying(),
+	                       is("USD/GBP"));
+    	}
     }
 
     public void testUnderlyingSymbolSupportEquity() throws Exception {
