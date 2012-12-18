@@ -59,7 +59,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 username);
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         Subject subject = securityService.getSubject();
-        subject.login(token);
+        try {
+            subject.login(token);
+        } catch (RuntimeException e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+            throw new RuntimeException(e);
+        }
         List<WebServicesPermission> decoratedPermissions = new ArrayList<WebServicesPermission>();
         for (Permission permission : permissionDao.getAllByUsername(username)) {
             decoratedPermissions.add(new WebServicesPermission(permission));

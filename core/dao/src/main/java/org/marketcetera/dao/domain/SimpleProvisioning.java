@@ -102,8 +102,55 @@ public class SimpleProvisioning
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("ProvisioningImpl [users=").append(users).append(", permissions=").append(permissions)
-                .append(", roles=").append(roles).append(", assignments=").append(assignments).append("]");
+        builder.append("Provisioning Command:");
+        boolean separatorNeeded = false;
+        if(users != null && !users.isEmpty()) {
+            builder.append(" users:[");
+            for(User user : users) {
+                if(separatorNeeded) {
+                    builder.append(',');
+                }
+                builder.append(user.getName());
+                separatorNeeded = true;
+            }
+            builder.append("]");
+        }
+        separatorNeeded = false;
+        if(permissions != null && !permissions.isEmpty()) {
+            builder.append(" permissions:[");
+            for(Permission permission : permissions) {
+                if(separatorNeeded) {
+                    builder.append(',');
+                }
+                builder.append(permission.getName());
+                separatorNeeded = true;
+            }
+            builder.append("]");
+        }
+        separatorNeeded = false;
+        if(roles != null && !roles.isEmpty()) {
+            builder.append(" roles:[");
+            for(Role role : roles) {
+                if(separatorNeeded) {
+                    builder.append(',');
+                }
+                builder.append(role.getName());
+                separatorNeeded = true;
+            }
+            builder.append("]");
+        }
+        separatorNeeded = false;
+        if(assignments != null && !assignments.isEmpty()) {
+            builder.append(" assignments:[");
+            for(AssignToRole assignment : assignments) {
+                if(separatorNeeded) {
+                    builder.append(',');
+                }
+                builder.append(assignment);
+                separatorNeeded = true;
+            }
+            builder.append("]");
+        }
         return builder.toString();
     }
     /**

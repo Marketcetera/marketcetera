@@ -1,4 +1,4 @@
-package org.marketcetera.dao.impl;
+package org.marketcetera.core.systemmodel;
 
 import java.util.Set;
 
@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Specifies a user and its member groups.
  *
- * @version $Id$
+ * @version $Id: UserSpecification.java 16253 2012-09-04 18:35:21Z topping $
  * @since $Release$
  */
 public class UserSpecification
@@ -15,7 +15,7 @@ public class UserSpecification
     /**
      * Sets the username value.
      *
-     * @param a <code>String</code> value
+     * @param inUsername a <code>String</code> value
      */
     public void setUsername(String inUsername)
     {
@@ -24,7 +24,7 @@ public class UserSpecification
     /**
      * Sets the password value.
      *
-     * @param a <code>String</code> value
+     * @param inPassword a <code>String</code> value
      */
     public void setPassword(String inPassword)
     {
@@ -33,7 +33,7 @@ public class UserSpecification
     /**
      * Sets the groups value.
      *
-     * @param a <code>Set&lt;String&gt;</code> value
+     * @param inRoles a <code>Set&lt;String&gt;</code> value
      */
     public void setRoles(Set<String> inRoles)
     {
@@ -65,6 +65,24 @@ public class UserSpecification
     public Set<String> getRoles()
     {
         return roles;
+    }
+    /**
+     * Get the description value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getDescription()
+    {
+        return description;
+    }
+    /**
+     * Sets the description value.
+     *
+     * @param inDescription a <code>String</code> value
+     */
+    public void setDescription(String inDescription)
+    {
+        description = inDescription;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -109,7 +127,7 @@ public class UserSpecification
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("UserSpecification [username=").append(username).append(", groups=").append(roles).append("]");
+        builder.append("UserSpecification [username=").append(username).append(", roles=").append(roles).append("]");
         return builder.toString();
     }
     /**
@@ -120,6 +138,10 @@ public class UserSpecification
      * password value
      */
     private String password;
+    /**
+     * description value
+     */
+    private String description;
     /**
      * groups value
      */
