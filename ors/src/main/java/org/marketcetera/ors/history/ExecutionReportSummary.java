@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.*;
 import org.marketcetera.trade.Currency;
 
-import javax.annotation.Nullable;
 import javax.persistence.*;
 
 import org.marketcetera.core.position.PositionKey;
@@ -262,7 +261,7 @@ class ExecutionReportSummary extends EntityBase {
             @Override
             public BigDecimal execute(EntityManager em, PersistContext context) {
                 Query query = em.createNamedQuery(	
-                        "crPositionForSymbol");  //$NON-NLS-1$									//ToDo Add Currency SQL
+                        "crPositionForSymbol");  //$NON-NLS-1$
 
                 query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
                 query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$

@@ -23,6 +23,7 @@ import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.StrategyTestBase.MockClient;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 import org.marketcetera.util.test.CollectionAssert;
 
@@ -843,6 +844,25 @@ public class AbstractRunningStrategyTest
          */
         @Override
         public Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+                throws ConnectionException, ClientInitException
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.ServicesProvider#getCurrencyPositionAsOf(java.util.Date, org.marketcetera.trade.Currency)
+         */
+        @Override
+        public BigDecimal getCurrencyPositionAsOf(Date inDate,
+                                                Currency inCurrency)
+                throws ConnectionException, ClientInitException
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.ServicesProvider#getAllCurrencyPositionsAsOf(java.util.Date)
+         */
+        @Override
+        public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
                 throws ConnectionException, ClientInitException
         {
             throw new UnsupportedOperationException(); // TODO

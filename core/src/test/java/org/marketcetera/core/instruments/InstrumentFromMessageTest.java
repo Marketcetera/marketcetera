@@ -18,6 +18,7 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -78,6 +79,19 @@ public class InstrumentFromMessageTest {
         //security type set, symbol set
         msg.setField(new SecurityType(SecurityType.COMMON_STOCK));
         assertEquals(new Equity("PQR"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+    }
+    
+    @Test
+    public void currency() throws Exception {
+        //no security type, no symbol
+        Message msg = FIX_VERSION.getMessageFactory().newBasicOrder();
+        assertEquals(false, msg.isSetField(SecurityType.FIELD));
+        assertNull(InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+        // no security type, symbol set
+        msg.setField(new Symbol("GBP/USD"));
+        //security type set, symbol set
+        msg.setField(new SecurityType(SecurityType.FOREIGN_EXCHANGE_CONTRACT));
+        assertEquals(new Currency("GBP/USD"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
 
     @SuppressWarnings("unchecked")

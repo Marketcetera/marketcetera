@@ -7,6 +7,7 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.strategy.java.Strategy;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Option;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.OptionType;
 
 /* $License$ */
@@ -31,6 +32,8 @@ public class Positions
         doGetAllPositionsAsOf(true);
         doGetOptionPositionAsOf(true);
         doGetAllOptionPositionsAsOf(true);
+        doGetCurrencyPositionAsOf(true);    
+        doGetAllCurrencyPositionsAsOf(true);
         doGetOptionPositionsAsOf(true);
         doGetUnderlying(true);
         doGetOptionRoots(true);
@@ -45,6 +48,8 @@ public class Positions
         doGetAllPositionsAsOf(false);
         doGetOptionPositionAsOf(false);
         doGetAllOptionPositionsAsOf(false);
+        doGetCurrencyPositionAsOf(false);        
+        doGetAllCurrencyPositionsAsOf(false);
         doGetOptionPositionsAsOf(false);
         doGetUnderlying(false);
         doGetOptionRoots(false);
@@ -79,6 +84,36 @@ public class Positions
         }
     }
     /**
+     * Executes {@link #getCurrencyPositionAsOf(java.util.Date, String)}.
+     */
+    private void doGetCurrencyPositionAsOf(boolean duringStart)
+    {
+        String symbol = getProperty("symbol");
+        String dateString = getProperty("date");
+        Date date;
+        if(dateString == null) {
+            date = null;
+        } else {
+            date = new Date(Long.parseLong(dateString));
+        }
+        BigDecimal result = getCurrencyPositionAsOf(date,
+                                            symbol);
+        String resultString;
+        if(result == null) {
+            resultString = null;
+        } else {
+            resultString = result.toString();
+        }
+        if(duringStart) {
+            setProperty("currencyPositionAsOf",
+                        resultString);
+        } else {
+            setProperty("currencyPositionAsOfDuringStop",
+                        resultString);
+        }
+    }
+    
+    /**
      * Executes {@link #getAllPositionsAsOf(java.util.Date)}.
      */
     private void doGetAllPositionsAsOf(boolean duringStart)
@@ -105,6 +140,35 @@ public class Positions
                         resultString);
         }
     }
+    /**
+     * Executes {@link #getAllCurrencyPositionsAsOf(java.util.Date)}.
+     */
+    private void doGetAllCurrencyPositionsAsOf(boolean duringStart)
+    {
+        String dateString = getProperty("date");
+        Date date;
+        if(dateString == null) {
+            date = null;
+        } else {
+            date = new Date(Long.parseLong(dateString));
+        }
+        Map<PositionKey<Currency>,BigDecimal> result = getAllCurrencyPositionsAsOf(date);
+        String resultString;
+        if(result == null) {
+            resultString = null;
+        } else {
+            resultString = result.toString();
+        }
+        if(duringStart) {
+            setProperty("allCurrencyPositionsAsOf",
+                        resultString);
+        } else {
+            setProperty("allCurrencyPositionsAsOfDuringStop",
+                        resultString);
+        }
+    }
+    
+    
     /**
      * Executes {@link #getOptionPositionAsOf(java.util.Date, String, String, java.math.BigDecimal, org.marketcetera.trade.OptionType)}
      */

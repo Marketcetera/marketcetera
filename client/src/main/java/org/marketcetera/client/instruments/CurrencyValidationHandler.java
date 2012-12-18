@@ -1,7 +1,6 @@
 package org.marketcetera.client.instruments;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.trade.Currency;
@@ -17,6 +16,8 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id: CurrencyValidationHandler")
 public class CurrencyValidationHandler extends InstrumentValidationHandler<Currency>{
+	
+	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 
 	public CurrencyValidationHandler(){
         super(Currency.class);
@@ -61,7 +62,7 @@ public class CurrencyValidationHandler extends InstrumentValidationHandler<Curre
 	
 	public static void validateTenor(String tenor) throws OrderValidationException
 	{
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		
 		sdf.setLenient(false);
 		try {
 			sdf.parse(tenor);	

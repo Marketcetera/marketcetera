@@ -71,9 +71,11 @@ public class MarketstatEventCacheTest
         final MarketstatEventBuilder equityBuilder = MarketstatEventBuilder.marketstat(equity);
         final MarketstatEventBuilder optionBuilder = MarketstatEventBuilder.marketstat(option);
         final MarketstatEventBuilder futureBuilder = MarketstatEventBuilder.marketstat(future);
+        final MarketstatEventBuilder currencyBuilder = MarketstatEventBuilder.marketstat(currency);
         final MarketstatEventCache equityCache = new MarketstatEventCache(equity);
         final MarketstatEventCache optionCache = new MarketstatEventCache(option);
         final MarketstatEventCache futureCache = new MarketstatEventCache(future);
+        final MarketstatEventCache currencyCache = new MarketstatEventCache(currency);
         new ExpectedFailure<IllegalArgumentException>()
         {
             @Override
@@ -101,6 +103,15 @@ public class MarketstatEventCacheTest
                 futureCache.cache(equityBuilder.create());
             }
         };
+        new ExpectedFailure<IllegalArgumentException>()
+        {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                currencyCache.cache(equityBuilder.create());
+            }
+        };
         // these values are not nullable, so set them up now
         optionBuilder.withExpirationType(ExpirationType.EUROPEAN);
         optionBuilder.withUnderlyingInstrument(equity);
@@ -110,6 +121,8 @@ public class MarketstatEventCacheTest
                     optionCache);
         doCacheTest(futureBuilder,
                     futureCache);
+        doCacheTest(currencyBuilder,
+                currencyCache);
     }
     /**
      * Executes a set of cache tests with the given builder and cache.
@@ -456,4 +469,8 @@ public class MarketstatEventCacheTest
     private final Future future = new Future("IB",
                                              FutureExpirationMonth.FEBRUARY,
                                              2012);
+    /**
+     * test currency
+     */
+    private final Currency currency = new Currency("USD/GBP");
 }

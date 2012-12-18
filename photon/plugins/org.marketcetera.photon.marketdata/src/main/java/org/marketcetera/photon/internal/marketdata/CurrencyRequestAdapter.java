@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Produces market data requests for {@link Currency} instruments.
  *
  */
-@ClassVersion("$Id: CurrencyRequestAdapter.java")
+@ClassVersion("$Id$")
 public class CurrencyRequestAdapter
         extends InstrumentRequestAdapter<Currency>
 {

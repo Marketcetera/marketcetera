@@ -3,6 +3,7 @@ package org.marketcetera.core.instruments;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -14,12 +15,23 @@ import quickfix.field.Product;
 import quickfix.field.SecurityType;
 import quickfix.field.Symbol;
 
+/**
+ * Adds the appropriate fields for a currency instrument to a FIX Message.
+ *
+ */
+@ClassVersion("$Id$")
 public class CurrencyToMessage extends InstrumentToMessage<Currency>{
 
+    /**
+     * Creates an instance.
+     */
 	public CurrencyToMessage(){
 		super(org.marketcetera.trade.Currency.class);
 	}
 	
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.InstrumentToMessage#isSupported(quickfix.DataDictionary, java.lang.String)
+     */
 	@Override
 	public boolean isSupported(DataDictionary inDictionary, String inMsgType) {
 		if(MsgType.ORDER_CANCEL_REQUEST.equals(inMsgType))
@@ -34,6 +46,9 @@ public class CurrencyToMessage extends InstrumentToMessage<Currency>{
 		}
 	}
 
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, java.lang.String, quickfix.Message)
+     */
 	@Override
 	public void set(Instrument inInstrument, String inBeginString, Message inMessage) {
 	       if(FIXVersion.FIX40.equals(FIXVersion.getFIXVersion(inBeginString))) {
@@ -44,22 +59,24 @@ public class CurrencyToMessage extends InstrumentToMessage<Currency>{
 	        Currency currency = (Currency)inInstrument;
 	        switch(FIXVersion.getFIXVersion(inBeginString)){
 	            case FIX_SYSTEM: //fall through
-	            case FIX41: //fall through
-	            case FIX42:
+	            case FIX40:  //fall through
+	            case FIX41:  //fall through
+	            case FIX42:  //fall through
+	            case FIX43:  //fall through
+	            case FIX44:  //fall through
 	                setSecurityType(inInstrument, inBeginString, inMessage);
 	                break;
 	            default:
+	            	setSecurityType(inInstrument, inBeginString, inMessage);
 	                setCFICode(inMessage, currency);
 	                break;
 	        }
 		
 	}
 
-	/**
-	 * simply plug the values in.
-	 * 
-	 *   do some basic conditioning on message type
-	 */
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, quickfix.DataDictionary, java.lang.String, quickfix.Message)
+     */
 	@Override
 	public void set(Instrument instrument, DataDictionary dictionary,String msgType, Message message) {
 
