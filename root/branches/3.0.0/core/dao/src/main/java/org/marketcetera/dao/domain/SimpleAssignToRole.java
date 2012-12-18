@@ -80,8 +80,7 @@ public class SimpleAssignToRole
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("SimpleAssignToRole [roleName=").append(roleName).append(", usernames=").append(usernames)
-                .append(", permissionNames=").append(permissionNames).append("]");
+        builder.append("Assign users:").append(usernames).append(" and permissions:").append(permissionNames).append(" to ").append(roleName);
         return builder.toString();
     }
     /**
