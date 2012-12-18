@@ -1,8 +1,6 @@
 package org.marketcetera.trade;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -366,14 +364,18 @@ public class Currency extends Instrument implements Comparable<Currency>{
         return true;
 		
 	}
-    
+
 	
 	@Override
 	public String toString() {
-		return "Currency [leftCCY=" + leftCCY + ", rightCCY=" + rightCCY
-				+ ", nearTenor=" + nearTenor + ", farTenor=" + farTenor
-				+ ", fixSymbol=" + fixSymbol + ", hashCode=" + hashCode
-				+ ", tradedCCY=" + tradedCCY + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("Currency [leftCCY=").append(leftCCY)
+				.append(", rightCCY=").append(rightCCY).append(", nearTenor=")
+				.append(nearTenor).append(", farTenor=").append(farTenor)
+				.append(", fixSymbol=").append(fixSymbol).append(", hashCode=")
+				.append(hashCode).append(", tradedCCY=").append(tradedCCY)
+				.append("]");
+		return builder.toString();
 	}
 
 

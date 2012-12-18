@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The model for a currency order ticket.
  *
  */
-@ClassVersion("$Id")
+@ClassVersion("$Id$")
 public class CurrencyOrderTicketModel
         extends OrderTicketModel
 {

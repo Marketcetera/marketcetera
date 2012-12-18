@@ -102,7 +102,8 @@ public class SystemFIXMessageFactory extends FIXMessageFactory {
                 OrigClOrdID.FIELD,
                 HandlInst.FIELD,
                 TransactTime.FIELD,
-                AvgPx.FIELD
+                AvgPx.FIELD,   
+                Currency.FIELD
         ));
         tmp.addAll(ORDER_SINGLE_FIELDS);
         EXECUTION_REPORT_FIELDS = Collections.unmodifiableSet(tmp);

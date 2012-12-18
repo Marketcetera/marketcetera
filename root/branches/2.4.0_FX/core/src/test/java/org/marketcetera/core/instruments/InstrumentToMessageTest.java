@@ -8,6 +8,7 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.module.ExpectedFailure;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -91,6 +92,32 @@ public class InstrumentToMessageTest {
         //Test equivalence with InstrumentFromMessage
         assertEquals(TEST_EQUITY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
+    
+    /**
+     * Tests currency instrument handling without dictionary.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void currency() throws Exception {
+    	if (FIXVersion.FIX40.equals(mCurrentVersion))  // FX not supported in FIX 4.0
+    	{
+    		return;
+    	}
+        Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+        InstrumentToMessage.SELECTOR.forInstrument(TEST_CURRENCY).set(TEST_CURRENCY, mCurrentVersion.toString(), msg);
+        //verify security type
+
+            assertEquals(true, msg.isSetField(SecurityType.FIELD));
+            assertEquals(TEST_CURRENCY.getSecurityType().getFIXValue(),
+                    msg.getString(SecurityType.FIELD));
+        //}
+        //verify symbol
+        assertEquals(true, msg.isSetField(Symbol.FIELD));
+        assertEquals(TEST_CURRENCY.getSymbol(), msg.getString(Symbol.FIELD));
+        //Test equivalence with InstrumentFromMessage
+        assertEquals(TEST_CURRENCY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+    }
 
     /**
      * Tests equity instrument handling with dictionary.
@@ -116,6 +143,36 @@ public class InstrumentToMessageTest {
         //Test equivalence with InstrumentFromMessage
         assertEquals(TEST_EQUITY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
+    
+    /**
+     * Tests currency instrument handling with dictionary.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void currencyDictionary() throws Exception {
+    	if (FIXVersion.FIX40.equals(mCurrentVersion))  // FX not supported in FIX 4.0
+    	{
+    		return;
+    	}    	
+        Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+        String msgType = msg.getHeader().getString(MsgType.FIELD);
+        DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(mCurrentVersion).getDictionary();
+        assertTrue(InstrumentToMessage.SELECTOR.forInstrument(TEST_CURRENCY).isSupported(dictionary, msgType));
+        InstrumentToMessage.SELECTOR.forInstrument(TEST_CURRENCY).set(TEST_CURRENCY, dictionary, msgType, msg);
+        //verify security type
+        if (isFieldPresent(dictionary, msg, msgType, SecurityType.FIELD)) {
+            assertEquals(TEST_CURRENCY.getSecurityType().getFIXValue(),
+                    msg.getString(SecurityType.FIELD));
+        }
+        //verify symbol
+        if (isFieldPresent(dictionary, msg, msgType, Symbol.FIELD)) {
+            assertEquals(TEST_CURRENCY.getSymbol(), msg.getString(Symbol.FIELD));
+        }
+        //Test equivalence with InstrumentFromMessage
+        assertEquals(TEST_CURRENCY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+    }
+    
 
     /**
      * Tests option instrument handling without dictionary.
@@ -440,6 +497,7 @@ public class InstrumentToMessageTest {
 
     private final FIXVersion mCurrentVersion;
     private static final Equity TEST_EQUITY = new Equity("YBM");
+    private static final Currency TEST_CURRENCY = new Currency("GBP/USD");
     private static final Option [] TEST_OPTIONS = {
             new Option("LBZ", "20101010", BigDecimal.TEN, OptionType.Call),
             new Option("LBZ", "20101010", BigDecimal.ONE, OptionType.Put),

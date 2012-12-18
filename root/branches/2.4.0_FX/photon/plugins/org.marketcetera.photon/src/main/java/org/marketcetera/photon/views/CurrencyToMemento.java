@@ -2,6 +2,7 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.ui.IMemento;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -10,7 +11,7 @@ import org.marketcetera.trade.Currency;
  * 
  * 
  */
-
+@ClassVersion("$Id$")
 public class CurrencyToMemento extends InstrumentToMemento<Currency> {
 
     static final String CURRENCY_TAG = "currency"; //$NON-NLS-1$

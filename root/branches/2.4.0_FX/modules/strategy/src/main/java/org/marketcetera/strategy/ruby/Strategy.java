@@ -16,6 +16,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 
 import quickfix.Message;
 
@@ -846,6 +847,31 @@ public class Strategy
                                      inExpirationMonth,
                                      inExpirationYear);
     }
+    /**
+     * Gets all open <code>Currency</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Currency&gt;,BigDecimal&gt;</code> value
+     */
+    public final Map<PositionKey<Currency>,BigDecimal> get_all_currency_positions_as_of(Date inDate)
+    {
+        return getAllCurrencyPositionsAsOf(inDate);
+    }
+    /**
+     * Gets the position in the given <code>Currency</code> at the given point in time.
+     * 
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inUnderlyingSymbol a <code>String</code> value containing the underlying <code>Currency</code> symbol
+     * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found 
+     */
+    public final BigDecimal get_currency_position_as_of(Date inDate,
+                                                      String inUnderlyingSymbol)
+    {
+        return getCurrencyPositionAsOf(inDate,
+                                     inUnderlyingSymbol);
+    }
+    
+    
     /**
      * Gets the {@link ModuleURN} of this strategy.
      *

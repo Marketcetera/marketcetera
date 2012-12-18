@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.ui.CurrencyPerspectiveFactory;
 
 /* $License$ */
@@ -8,6 +9,7 @@ import org.marketcetera.photon.ui.CurrencyPerspectiveFactory;
  * Controller for the currency order ticket.
  *
  */
+@ClassVersion("$Id$")
 public class CurrencyOrderTicketController
         extends OrderTicketController<CurrencyOrderTicketModel>
 {

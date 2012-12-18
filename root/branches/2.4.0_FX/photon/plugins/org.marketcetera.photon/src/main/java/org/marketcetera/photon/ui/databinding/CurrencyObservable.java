@@ -5,6 +5,7 @@ import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ImmutableList;
 
@@ -15,6 +16,7 @@ import com.google.common.collect.ImmutableList;
  * currency components.
  *
  */
+@ClassVersion("$Id$")
 public class CurrencyObservable
         extends CompoundObservableManager<ITypedObservableValue<Instrument>>
 {

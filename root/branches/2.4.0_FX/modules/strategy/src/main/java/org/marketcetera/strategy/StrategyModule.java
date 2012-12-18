@@ -25,6 +25,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.module.*;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
@@ -624,6 +625,26 @@ final class StrategyModule
     {
         return clientFactory.getClient().getFuturePositionAsOf(inDate,
                                                                inFuture);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getAllCurrencyPositionsAsOf(java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException
+    {
+        return clientFactory.getClient().getAllCurrencyPositionsAsOf(inDate);
+    }    
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getCurrencyPositionAsOf(java.util.Date, org.marketcetera.trade.Currency)
+     */
+    @Override
+    public BigDecimal getCurrencyPositionAsOf(Date inDate,
+                                            Currency inCurrency)
+            throws ConnectionException, ClientInitException
+    {
+        return clientFactory.getClient().getCurrencyPositionAsOf(inDate,
+        														inCurrency);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
