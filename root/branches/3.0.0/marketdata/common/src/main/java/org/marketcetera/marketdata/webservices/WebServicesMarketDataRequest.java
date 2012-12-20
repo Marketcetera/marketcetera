@@ -99,8 +99,38 @@ public class WebServicesMarketDataRequest
     {
         exchange = inExchange;
     }
-    @SuppressWarnings("unused")
-    private WebServicesMarketDataRequest() {}
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MarketDataRequest");
+        if(!symbols.isEmpty()) {
+            builder.append(" symbols: ").append(symbols);
+        }
+        if(!underlyingSymbols.isEmpty()) {
+            builder.append(" underlying symbols: ").append(underlyingSymbols);
+        }
+        if(!content.isEmpty()) {
+            builder.append(" content: ").append(content);
+        }
+        if(provider != null) {
+            builder.append(" provider: ").append(provider);
+        }
+        if(exchange != null) {
+            builder.append(" exchange: ").append(exchange);
+        }
+        if(!parameters.isEmpty()) {
+            builder.append(" parameters: ").append(parameters);
+        }
+        return builder.toString();
+    }
+    /**
+     * Create a new WebServicesMarketDataRequest instance.
+     */
+    public WebServicesMarketDataRequest() {}
     @XmlElementWrapper(name="symbols")
     private final Set<String> symbols = new LinkedHashSet<String>();
     @XmlElementWrapper(name="underlyingSymbols")

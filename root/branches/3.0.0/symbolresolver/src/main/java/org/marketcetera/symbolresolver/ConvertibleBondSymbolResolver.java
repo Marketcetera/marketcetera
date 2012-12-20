@@ -1,7 +1,5 @@
 package org.marketcetera.symbolresolver;
 
-import java.util.regex.Pattern;
-
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.core.symbolresolver.SymbolResolverElement;
@@ -36,10 +34,9 @@ public class ConvertibleBondSymbolResolver
     public Instrument resolve(String inSymbol,
                               Object inContext)
     {
-        if(isin.matcher(inSymbol).matches()) {
+        if(ConvertibleBond.isinPattern.matcher(inSymbol).matches()) {
             return new ConvertibleBond(inSymbol);
         }
         return null;
     }
-    private static final Pattern isin = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]");
 }

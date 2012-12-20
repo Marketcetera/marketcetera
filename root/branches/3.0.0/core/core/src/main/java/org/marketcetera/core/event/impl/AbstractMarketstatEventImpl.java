@@ -226,6 +226,14 @@ abstract class AbstractMarketstatEventImpl
         return marketstat.getTimeMillis();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.event.MarketstatEvent#getTradesToday()
+     */
+    @Override
+    public Integer getTradesToday()
+    {
+        return marketstat.getTradesToday();
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

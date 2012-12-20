@@ -51,6 +51,7 @@ public class WebServicesMarketstatEvent
         closeExchange = inEvent.getCloseExchange();
         eventType = inEvent.getEventType();
         instrument = inEvent.getInstrument();
+        tradesToday = inEvent.getTradesToday();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.MarketstatEvent#getOpen()
@@ -205,6 +206,14 @@ public class WebServicesMarketstatEvent
         return instrument == null ? null : instrument.getFullSymbol();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.event.MarketstatEvent#getTradesToday()
+     */
+    @Override
+    public Integer getTradesToday()
+    {
+        return tradesToday;
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.webservices.WebServicesEvent#toString()
      */
     @Override
@@ -212,7 +221,7 @@ public class WebServicesMarketstatEvent
     {
         return new ToStringBuilder(this,ToStringStyle.SHORT_PREFIX_STYLE).append(instrument).append(open).append(high).append(low).append(close)
                 .append(previousClose).append(volume).append(value).append(closeDate).append(previousCloseDate).append(tradeHighTime)
-                .append(tradeLowTime).append(openExchange).append(highExchange).append(lowExchange).append(closeExchange).append(eventType).toString();
+                .append(tradeLowTime).append(openExchange).append(highExchange).append(lowExchange).append(closeExchange).append(eventType).append(tradesToday).toString();
     }
     /**
      * Create a new WebServicesMarketstatEvent instance.
@@ -253,5 +262,7 @@ public class WebServicesMarketstatEvent
     private EventType eventType;
     @XmlElement
     private Instrument instrument;
+    @XmlAttribute
+    private Integer tradesToday;
     private static final long serialVersionUID = 1L;
 }

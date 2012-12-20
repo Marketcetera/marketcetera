@@ -180,6 +180,17 @@ public abstract class MarketstatEventBuilder
         return this;
     }
     /**
+     * Sets the trades today value.
+     *
+     * @param inTradesToday an <code>Integer</code> value
+     * @return a <code>MarketstatEventBuilder</code> value
+     */
+    public MarketstatEventBuilder withTradesToday(Integer inTradesToday)
+    {
+        marketstat.setTradesToday(inTradesToday);
+        return this;
+    }
+    /**
      * Sets the instrument value.
      *
      * @param inInstrument an <code>Instrument</code> value or <code>null</code>

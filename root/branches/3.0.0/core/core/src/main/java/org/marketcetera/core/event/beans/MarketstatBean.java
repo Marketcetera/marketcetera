@@ -353,6 +353,24 @@ public final class MarketstatBean
         eventType = inEventType;
     }
     /**
+     * Get the tradesToday value.
+     *
+     * @return a <code>Integer</code> value
+     */
+    public Integer getTradesToday()
+    {
+        return tradesToday;
+    }
+    /**
+     * Sets the tradesToday value.
+     *
+     * @param inTradesToday a <code>Integer</code> value
+     */
+    public void setTradesToday(Integer inTradesToday)
+    {
+        tradesToday = inTradesToday;
+    }
+    /**
      * Performs validation of the attributes.
      *
      * <p>Subclasses should override this method to validate
@@ -398,6 +416,7 @@ public final class MarketstatBean
         result = prime * result + ((volume == null) ? 0 : volume.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         result = prime * result + ((eventType == null) ? 0 : eventType.hashCode());
+        result = prime * result + ((tradesToday == null) ? 0 : tradesToday.hashCode());
         return result;
     }
     /* (non-Javadoc)
@@ -535,6 +554,13 @@ public final class MarketstatBean
         } else if (!eventType.equals(other.eventType)) {
             return false;
         }
+        if (tradesToday == null) {
+            if (other.tradesToday != null) {
+                return false;
+            }
+        } else if (!tradesToday.equals(other.tradesToday)) {
+            return false;
+        }
         return true;
     }
     /* (non-Javadoc)
@@ -543,7 +569,7 @@ public final class MarketstatBean
     @Override
     public String toString()
     {
-        return String.format("Marketstat: [closeDate=%s, closeExchange=%s, closePrice=%s, highExchange=%s, highPrice=%s, instrument=%s, lowExchange=%s, lowPrice=%s, openExchange=%s, openPrice=%s, previousCloseDate=%s, previousClosePrice=%s, tradeHighTime=%s, tradeLowTime=%s, volume=%s, value=%s, eventType=%s [%s with source %s at %s]]", //$NON-NLS-1$
+        return String.format("Marketstat: [closeDate=%s, closeExchange=%s, closePrice=%s, highExchange=%s, highPrice=%s, instrument=%s, lowExchange=%s, lowPrice=%s, openExchange=%s, openPrice=%s, previousCloseDate=%s, previousClosePrice=%s, tradeHighTime=%s, tradeLowTime=%s, volume=%s, value=%s, tradesToday=%s, eventType=%s [%s with source %s at %s]]", //$NON-NLS-1$
                              closeDate,
                              closeExchange,
                              closePrice,
@@ -560,6 +586,7 @@ public final class MarketstatBean
                              tradeLowTime,
                              volume,
                              value,
+                             tradesToday,
                              eventType,
                              getMessageId(),
                              getSource(),
@@ -593,6 +620,7 @@ public final class MarketstatBean
         inRecipient.setTradeLowTime(inDonor.getTradeLowTime());
         inRecipient.setVolume(inDonor.getVolume());
         inRecipient.setValue(inDonor.getValue());
+        inRecipient.setTradesToday(inDonor.getTradesToday());
     }
     /**
      * the open price for the current or most recent session
@@ -658,6 +686,10 @@ public final class MarketstatBean
      * the instrument
      */
     private Instrument instrument;
+    /**
+     * number of trades today
+     */
+    private Integer tradesToday;
     /**
      * the event meta-type
      */
