@@ -78,4 +78,11 @@ public interface MarketDataService
     @Produces({ MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON })
     public Event getSnapshot(@PathParam("symbol")String inSymbol,
                              @PathParam("content")String inContent);
+    @GET
+    @Path("request/{symbol}/{content}")
+    public long createRequest(@PathParam("symbol")String inSymbol,
+                              @PathParam("content")String inContent);
+    @GET
+    @Path("cancel/{id}")
+    public Response cancelRequest(@PathParam("id")long inId);
 }

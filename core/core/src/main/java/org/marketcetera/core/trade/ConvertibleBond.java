@@ -1,5 +1,7 @@
 package org.marketcetera.core.trade;
 
+import java.util.regex.Pattern;
+
 import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -31,6 +33,21 @@ public class ConvertibleBond
     public ConvertibleBond(String inIsin)
     {
         super(inIsin);
+        if(!isinPattern.matcher(inIsin).matches()) {
+            throw new IllegalArgumentException();
+        }
+    }
+    /**
+     * Gets the CUSIP value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getCusip()
+    {
+        // symbol is the ISIN
+        String isin = getSymbol();
+        // remove the first two letters and the last checksum
+        return isin.substring(2,isin.length()-1);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSecurityType()
@@ -91,4 +108,8 @@ public class ConvertibleBond
     @SuppressWarnings("unused")
     private ConvertibleBond() {}
     private static final long serialVersionUID = 1L;
+    /**
+     * isin regex
+     */
+    public static final Pattern isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]");
 }

@@ -125,6 +125,12 @@ public interface MarketstatEvent
      */
     public String getCloseExchange();
     /**
+     * Gets the number of trades today.
+     *
+     * @return an <code>Integer</code> value or <code>null</code>
+     */
+    public Integer getTradesToday();
+    /**
      * Gets the type of the event.
      *
      * @return an <code>EventType</code> value

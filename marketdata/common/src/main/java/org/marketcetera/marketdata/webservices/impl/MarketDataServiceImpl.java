@@ -13,6 +13,8 @@ import javax.ws.rs.core.Response;
 
 import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.event.Event;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.manager.MarketDataManager;
 import org.marketcetera.marketdata.webservices.MarketDataService;
 import org.marketcetera.marketdata.webservices.WebServicesEvent;
@@ -87,6 +89,18 @@ public class MarketDataServiceImpl
         return requestId;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.webservices.MarketDataService#createRequest(java.lang.String, java.lang.String)
+     */
+    @Override
+    public long createRequest(String inSymbol,
+                              String inContent)
+    {
+        WebServicesMarketDataRequest request = new WebServicesMarketDataRequest();
+        request.getSymbols().add(inSymbol);
+        request.getContent().add(Content.valueOf(inContent));
+        return request(request);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.webservices.MarketDataService#getEvents(long)
      */
     @Override
@@ -113,6 +127,9 @@ public class MarketDataServiceImpl
     @Override
     public Response cancel(long inRequestId)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Canceling market data request {}",
+                               inRequestId);
         synchronized(events) {
             marketDataManager.cancelMarketDataRequest(inRequestId);
             BlockingDeque<Event> eventQueue = events.remove(inRequestId);
@@ -121,6 +138,14 @@ public class MarketDataServiceImpl
             }
         }
         return Response.ok().build();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.webservices.MarketDataService#cancelRequest(long)
+     */
+    @Override
+    public Response cancelRequest(long inRequestId)
+    {
+        return cancel(inRequestId);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.webservices.MarketDataService#getSnapshot(java.lang.String, java.lang.String)
