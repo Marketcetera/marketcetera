@@ -381,7 +381,7 @@ public abstract class AbstractMarketDataProvider
      */
     private Set<MarketDataRequestAtom> explodeRequest(MarketDataRequest inRequest)
     {
-        Set<MarketDataRequestAtom> atoms = new HashSet<MarketDataRequestAtom>();
+        Set<MarketDataRequestAtom> atoms = new LinkedHashSet<MarketDataRequestAtom>();
         if(inRequest.getSymbols().isEmpty()) {
             for(String underlyingSymbol : inRequest.getUnderlyingSymbols()) {
                 for(Content content : inRequest.getContent()) {
