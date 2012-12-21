@@ -108,6 +108,9 @@ public class MarketstatEventCache
         if(inEvent.getValue() != null) {
             builder.withValue(inEvent.getValue());
         }
+        if(inEvent.getTradesToday() != null) {
+            builder.withTradesToday(inEvent.getTradesToday());
+        }
         if(inEvent instanceof OptionMarketstatEvent) {
             OptionMarketstatEvent optionEvent = (OptionMarketstatEvent)inEvent;
             builder.hasDeliverable(optionEvent.hasDeliverable());
