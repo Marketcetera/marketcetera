@@ -35,10 +35,10 @@
     </feature>
     <feature description="Derby Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.derbyDS">
         <feature version="${pom.version}">org.marketcetera.datasource</feature>
-        <bundle>wrap:mvn:org.apache.derby/derbyclient/10.9.1.0</bundle>
+        <bundle>wrap:mvn:org.apache.derby/derby/10.9.1.0</bundle>
         <config name="org.marketcetera.datasource">
             jdbc.driverClassName=org.apache.derby.jdbc.EmbeddedDriver
-            jdbc.url=jdbc:derby:metc
+            jdbc.url=jdbc:derby:metc;create=true
             jdbc.username=metc
             jdbc.password=pw4metc
         </config>
