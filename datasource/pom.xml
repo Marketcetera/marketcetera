@@ -113,6 +113,12 @@
             <version>8.4-701.jdbc4</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.9.1.0</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>

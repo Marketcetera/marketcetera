@@ -4,13 +4,6 @@
 
     <cm:property-placeholder persistent-id="org.marketcetera.datasource" update-strategy="none">
         <cm:default-properties>
-
-            <!-- These are covered in the per-feature configuration -->
-            <!--<cm:property name="jdbc.driverClassName" value="org.postgresql.Driver"/>-->
-            <!--<cm:property name="jdbc.url" value="jdbc:postgresql:metc"/>-->
-            <!--<cm:property name="jdbc.username" value="metc"/>-->
-            <!--<cm:property name="jdbc.password" value="pw4metc"/>-->
-
             <!-- Connection Pooling DBCP -->
             <cm:property name="jdbc.initialSize" value="5"/>
             <cm:property name="jdbc.maxActive" value="10"/>
