@@ -1,9 +1,7 @@
 package org.marketcetera.ors.filters;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.ors.history.ReportHistoryServices;
@@ -20,7 +18,6 @@ public class PartyInfoMessageModifier implements SessionAwareMessageModifier {
      * Party information
      */
 	Map<String,String> partyMap;	
-	NoPartySubIDs noPartySubIDs;
 	PartySubID partySubID;
 	PartySubIDType partySubIDType;
 	
@@ -28,7 +25,7 @@ public class PartyInfoMessageModifier implements SessionAwareMessageModifier {
      * session information value
      */
     private volatile SessionInfo sessionInfo;
-    // Session Info can be added to 
+    // Session Info can be added to Message depending upon broker requirement.
 	
 	@Override
 	public boolean modifyMessage(Message message,
@@ -54,20 +51,16 @@ public class PartyInfoMessageModifier implements SessionAwareMessageModifier {
     	   group.setField(new PartyRole(Integer.parseInt(partyMap.get(key+"Role"))));    	   //$NON-NLS-1$
     	   message.addGroup(group);
        }       
-       group.setField(noPartySubIDs);
-       group.setField(partySubID);
-       group.setField(partySubIDType);
-       message.addGroup(group);
+       quickfix.fix44.NewOrderSingle.NoPartyIDs.NoPartySubIDs subGroup = new quickfix.fix44.NewOrderSingle.NoPartyIDs.NoPartySubIDs();
+       subGroup.setField(partySubID);
+       subGroup.setField(partySubIDType);
+       message.addGroup(subGroup);
        return true;
 	}
 
 
 	public void setPartyMap(Map<String, String> partyMap) {
 		this.partyMap = partyMap;
-	}
-
-    public void setNoPartySubIDs(NoPartySubIDs noPartySubIDs) {
-		this.noPartySubIDs = noPartySubIDs;
 	}
 
 	public void setPartySubID(PartySubID partySubID) {
@@ -77,7 +70,6 @@ public class PartyInfoMessageModifier implements SessionAwareMessageModifier {
 	public void setPartySubIDType(PartySubIDType partySubIDType) {
 		this.partySubIDType = partySubIDType;
 	}
-
 
 	/* (non-Javadoc)
      * @see org.marketcetera.ors.filters.SessionAwareMessageModifier#getSessionInfo()
