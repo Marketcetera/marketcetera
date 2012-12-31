@@ -3,9 +3,12 @@ package org.marketcetera.security.shiro.impl;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.session.UnknownSessionException;
 import org.marketcetera.api.security.AuthenticationToken;
 import org.marketcetera.api.security.Session;
 import org.marketcetera.api.security.Subject;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /**
  * @version $Id$
@@ -24,7 +27,17 @@ public class SubjectImpl implements Subject {
 
     @Override
     public void login(final AuthenticationToken token) {
-        subject.login(new org.apache.shiro.authc.UsernamePasswordToken(token.getPrincipal(), token.getCredentials()));
+        try {
+            subject.login(new org.apache.shiro.authc.UsernamePasswordToken(token.getPrincipal(), token.getCredentials()));
+        } catch (AuthenticationException e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+            throw e;
+        } catch (UnknownSessionException e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e);
+            throw new org.marketcetera.core.security.UnknownSessionException(e);
+        }
     }
 
     @Override

@@ -24,7 +24,7 @@ public class SecurityServiceImpl implements SecurityService {
         Realm realm = new ShiroRealm(userDao);
 
         org.apache.shiro.mgt.SecurityManager securityManager = new DefaultSecurityManager(realm);
-
+//        ((DefaultSessionManager)((DefaultSecurityManager)securityManager).getSessionManager()).setGlobalSessionTimeout(10000);
         //Make the SecurityManager instance available to the entire application via static memory:
         SecurityUtils.setSecurityManager(securityManager);
     }

@@ -36,6 +36,15 @@ public enum EventType
      */
     UNKNOWN;
     /**
+     * Indicates if the underlying event is part of a snapshot or not.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isSnapshot()
+    {
+        return this == SNAPSHOT_PART || this == SNAPSHOT_FINAL;
+    }
+    /**
      * Indicates if the underlying event represents a consistent state or not.
      *
      * @return a <code>boolean</code> value
