@@ -7,6 +7,7 @@ import org.marketcetera.api.security.SecurityService;
 import org.marketcetera.api.security.Subject;
 import org.marketcetera.api.security.UsernamePasswordToken;
 import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.core.security.UnknownSessionException;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.webservices.security.AuthenticationService;
@@ -61,10 +62,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Subject subject = securityService.getSubject();
         try {
             subject.login(token);
+        } catch (UnknownSessionException e) {
+            subject.getSession().invalidate();
+            return authenticate(username,
+                                password);
         } catch (RuntimeException e) {
             SLF4JLoggerProxy.warn(this,
                                   e);
-            throw new RuntimeException(e);
+            throw e;
         }
         List<WebServicesPermission> decoratedPermissions = new ArrayList<WebServicesPermission>();
         for (Permission permission : permissionDao.getAllByUsername(username)) {
