@@ -22,8 +22,8 @@ import org.marketcetera.core.util.log.I18NBoundMessage2P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.Messages;
+import org.marketcetera.marketdata.ProviderStatus;
 import org.marketcetera.marketdata.cache.MarketdataCache;
 import org.marketcetera.marketdata.manager.MarketDataException;
 import org.marketcetera.marketdata.manager.MarketDataProviderNotAvailable;
@@ -86,12 +86,20 @@ public abstract class AbstractMarketDataProvider
         }
         try {
             doStart();
+            totalRequests = 0;
+            totalEvents = 0;
+            instrumentsBySymbol.clear();
+            cachedMarketdata.clear();
+            notifications.clear();
+            requestsByInstrument.clear();
+            requestsByAtom.clear();
+            requestsBySymbol.clear();
             notifier = new EventNotifier();
             notifier.start();
             running.set(true);
-            setFeedStatus(FeedStatus.AVAILABLE);
+            setFeedStatus(ProviderStatus.AVAILABLE);
         } catch (Exception e) {
-            setFeedStatus(FeedStatus.ERROR);
+            setFeedStatus(ProviderStatus.ERROR);
             throw new MarketDataProviderStartFailed(e);
         }
     }
@@ -106,9 +114,9 @@ public abstract class AbstractMarketDataProvider
         }
         try {
             doStop();
-            setFeedStatus(FeedStatus.OFFLINE);
+            setFeedStatus(ProviderStatus.OFFLINE);
         } catch (Exception e) {
-            setFeedStatus(FeedStatus.ERROR);
+            setFeedStatus(ProviderStatus.ERROR);
         } finally {
             notifier.stop();
             instrumentsBySymbol.clear();
@@ -138,6 +146,7 @@ public abstract class AbstractMarketDataProvider
             throw new MarketDataProviderNotAvailable();
         }
         Set<MarketDataRequestAtom> atoms = explodeRequest(inRequestToken.getRequest());
+        totalRequests += atoms.size();
         SLF4JLoggerProxy.debug(this,
                                "Received market data request {}, exploded to {}", //$NON-NLS-1$
                                inRequestToken,
@@ -231,7 +240,7 @@ public abstract class AbstractMarketDataProvider
      * @see org.marketcetera.marketdata.MarketDataProvider#getFeedStatus()
      */
     @Override
-    public FeedStatus getFeedStatus()
+    public ProviderStatus getProviderStatus()
     {
         return status;
     }
@@ -243,6 +252,41 @@ public abstract class AbstractMarketDataProvider
     public void setProviderRegistry(MarketDataProviderRegistry inProviderRegistry)
     {
         providerRegistry = inProviderRegistry;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.provider.MarketDataProviderMXBean#getTotalRequests()
+     */
+    @Override
+    public int getTotalRequests()
+    {
+        return totalRequests;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.provider.MarketDataProviderMXBean#getActiveRequests()
+     */
+    @Override
+    public int getActiveRequests()
+    {
+        Lock marketdataQueryLock = marketdataLock.readLock();
+        try {
+            marketdataQueryLock.lockInterruptibly();
+        } catch (InterruptedException e) {
+            Messages.UNABLE_TO_ACQUIRE_LOCK.error(this);
+            throw new MarketDataRequestFailed(e);
+        }
+        try {
+            return requestsByAtom.size();
+        } finally {
+            marketdataQueryLock.unlock();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.provider.MarketDataProviderMXBean#getTotalEvents()
+     */
+    @Override
+    public int getTotalEvents()
+    {
+        return totalEvents;
     }
     /**
      * Indicates that the given events have been received by the provider and should be sent to interested subscribers.
@@ -257,6 +301,7 @@ public abstract class AbstractMarketDataProvider
     {
         // TODO validation: make sure each event has the proper content and instrument (don't do this every time, just if the provider requests validation)
         // TODO validation: make sure each instrument has a mapping
+        totalEvents += inEvents.length;
         notifications.add(new EventNotification(inContent,
                                                 inInstrument,
                                                 inEvents));
@@ -321,7 +366,7 @@ public abstract class AbstractMarketDataProvider
      *
      * @param inNewStatus a <code>FeedStatus</code> value
      */
-    protected void setFeedStatus(FeedStatus inNewStatus)
+    protected void setFeedStatus(ProviderStatus inNewStatus)
     {
         if(inNewStatus != status) {
             status = inNewStatus;
@@ -700,7 +745,7 @@ public abstract class AbstractMarketDataProvider
     /**
      * feed status value
      */
-    private volatile FeedStatus status = FeedStatus.UNKNOWN;
+    private volatile ProviderStatus status = ProviderStatus.UNKNOWN;
     /**
      * indicates if the provider is running
      */
@@ -709,6 +754,14 @@ public abstract class AbstractMarketDataProvider
      * provider registry value with which to register/unregister or <code>null</code>
      */
     private volatile MarketDataProviderRegistry providerRegistry;
+    /**
+     * total number of requests submitted
+     */
+    private volatile int totalRequests;
+    /**
+     * total number of events created
+     */
+    private volatile int totalEvents;
     /**
      * notification collection that contains events to publish
      */

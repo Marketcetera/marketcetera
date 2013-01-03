@@ -3,7 +3,6 @@ package org.marketcetera.marketdata.provider;
 import java.util.Set;
 
 import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.FeedType;
 import org.marketcetera.marketdata.request.MarketDataRequestToken;
 import org.springframework.context.Lifecycle;
@@ -18,7 +17,7 @@ import org.springframework.context.Lifecycle;
  * @since $Release$
  */
 public interface MarketDataProvider
-        extends Lifecycle
+        extends MarketDataProviderMBean
 {
     /**
      * Requests market data as indicated in the given request token.
@@ -53,12 +52,6 @@ public interface MarketDataProvider
      * @return a <code>Set&lt;Capability&gt;</code>
      */
     public Set<Capability> getCapabilities();
-    /**
-     * Gets the status of the provider.
-     *
-     * @return a <code>FeedStatus</code> value
-     */
-    public FeedStatus getFeedStatus();
     /**
      * Gets the feed type of the provider.
      *
