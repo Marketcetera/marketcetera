@@ -9,7 +9,7 @@ package org.marketcetera.marketdata;
  * @version $Id: FeedStatus.java 16325 2012-10-25 23:13:12Z colin $
  * @since $Release$
  */
-public enum FeedStatus
+public enum ProviderStatus
 {
     /**
      * Feed is off-line -it may be started to be made available

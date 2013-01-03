@@ -17,7 +17,7 @@ import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.ProviderStatus;
 import org.marketcetera.marketdata.Messages;
 import org.marketcetera.marketdata.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.manager.MarketDataRequestFailed;
@@ -71,20 +71,20 @@ public class AbstractMarketDataProviderTest
             throws Exception
     {
         assertTrue(provider.isRunning());
-        assertEquals(FeedStatus.AVAILABLE,
-                     provider.getFeedStatus());
+        assertEquals(ProviderStatus.AVAILABLE,
+                     provider.getProviderStatus());
         provider.start();
         assertTrue(provider.isRunning());
-        assertEquals(FeedStatus.AVAILABLE,
-                     provider.getFeedStatus());
+        assertEquals(ProviderStatus.AVAILABLE,
+                     provider.getProviderStatus());
         provider.stop();
         assertFalse(provider.isRunning());
-        assertEquals(FeedStatus.OFFLINE,
-                     provider.getFeedStatus());
+        assertEquals(ProviderStatus.OFFLINE,
+                     provider.getProviderStatus());
         provider.stop();
         assertFalse(provider.isRunning());
-        assertEquals(FeedStatus.OFFLINE,
-                     provider.getFeedStatus());
+        assertEquals(ProviderStatus.OFFLINE,
+                     provider.getProviderStatus());
         // pathological cases
         NullPointerException exception = new NullPointerException("this exception is expected");
         provider.setExceptionOnStart(exception);
@@ -97,18 +97,18 @@ public class AbstractMarketDataProviderTest
             }
         };
         assertFalse(provider.isRunning());
-        assertEquals(FeedStatus.ERROR,
-                     provider.getFeedStatus());
+        assertEquals(ProviderStatus.ERROR,
+                     provider.getProviderStatus());
         provider.reset();
         provider.start();
         assertTrue(provider.isRunning());
-        assertEquals(FeedStatus.AVAILABLE,
-                     provider.getFeedStatus());
+        assertEquals(ProviderStatus.AVAILABLE,
+                     provider.getProviderStatus());
         provider.setExceptionOnStop(exception);
         provider.stop();
         assertFalse(provider.isRunning());
-        assertEquals(FeedStatus.ERROR,
-                     provider.getFeedStatus());
+        assertEquals(ProviderStatus.ERROR,
+                     provider.getProviderStatus());
     }
     /**
      * Tests {@link AbstractMarketDataProvider#requestMarketData(org.marketcetera.marketdata.request.MarketDataRequestToken)}.

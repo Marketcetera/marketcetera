@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata.manager;
 
-import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.ProviderStatus;
 import org.marketcetera.marketdata.provider.MarketDataProvider;
 
 /* $License$ */
@@ -21,5 +21,5 @@ public interface MarketDataProviderRegistry
      * @param inStatus a <code>FeedStatus</code> value
      */
     public void setStatus(MarketDataProvider inProvider,
-                          FeedStatus inStatus);
+                          ProviderStatus inStatus);
 }
