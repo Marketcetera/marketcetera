@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.DividendEvent;
 import org.marketcetera.core.event.DividendFrequency;
 import org.marketcetera.core.event.DividendStatus;
@@ -14,6 +13,7 @@ import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.util.test.EqualityAssert;
 
 import static org.junit.Assert.*;

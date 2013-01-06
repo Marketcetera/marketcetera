@@ -3,8 +3,8 @@ package org.marketcetera.core.event;
 import org.apache.log4j.Level;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.impl.LogEventBuilder;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.util.test.LogTestAssist;
 
 import static org.junit.Assert.assertEquals;

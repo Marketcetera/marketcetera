@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.log.I18NMessage0P;
 import org.marketcetera.core.util.misc.NamedThreadFactory;
 

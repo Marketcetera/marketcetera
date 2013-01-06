@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 
+import org.marketcetera.core.util.except.ExpectedFailure;
+
 import junit.framework.TestCase;
 
 /**

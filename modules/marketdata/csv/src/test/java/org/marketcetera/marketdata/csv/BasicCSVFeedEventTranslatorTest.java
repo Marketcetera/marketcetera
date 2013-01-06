@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.marketdata.MarketDataRequest;
@@ -25,6 +24,7 @@ import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /* $License$ */
 

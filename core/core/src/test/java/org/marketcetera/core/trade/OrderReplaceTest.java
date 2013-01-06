@@ -13,9 +13,9 @@ import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.HasFIXMessage;
 import org.marketcetera.core.quickfix.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

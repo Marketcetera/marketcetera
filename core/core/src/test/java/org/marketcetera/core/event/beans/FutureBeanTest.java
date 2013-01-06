@@ -6,8 +6,8 @@ import java.io.ObjectOutputStream;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

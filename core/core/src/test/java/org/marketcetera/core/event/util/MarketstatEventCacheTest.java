@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.OptionMarketstatEvent;
@@ -14,6 +13,7 @@ import org.marketcetera.core.event.impl.MarketstatEventBuilder;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /* $License$ */
 

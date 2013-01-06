@@ -11,11 +11,11 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 import static java.math.BigDecimal.TEN;
 import static org.junit.Assert.*;

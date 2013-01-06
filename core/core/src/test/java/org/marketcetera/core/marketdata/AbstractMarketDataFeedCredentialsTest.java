@@ -2,7 +2,7 @@ package org.marketcetera.core.marketdata;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.core.marketdata.Messages.NULL_URL;

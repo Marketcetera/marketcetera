@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.EventType;
@@ -20,6 +19,7 @@ import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */

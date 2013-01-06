@@ -6,9 +6,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.marketcetera.api.systemmodel.Subscriber;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.MockEventTranslator;
 import org.marketcetera.core.publisher.MockSubscriber;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 import static org.junit.Assert.fail;
 

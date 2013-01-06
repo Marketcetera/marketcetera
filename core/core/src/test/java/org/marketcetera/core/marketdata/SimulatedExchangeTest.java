@@ -15,8 +15,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.api.systemmodel.Subscriber;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.QuoteEventBuilder;
 import org.marketcetera.core.event.impl.TradeEventBuilder;
@@ -24,6 +22,8 @@ import org.marketcetera.core.marketdata.SimulatedExchange.Token;
 import org.marketcetera.core.marketdata.SimulatedExchange.TopOfBook;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.util.test.CollectionAssert;
 import org.marketcetera.util.test.TestCaseBase;
 

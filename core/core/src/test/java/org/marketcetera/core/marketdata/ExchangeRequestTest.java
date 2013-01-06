@@ -9,9 +9,9 @@ import static org.marketcetera.core.marketdata.Messages.OPTION_REQUIRES_UNDERLYI
 import java.util.Date;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /* $License$ */
 

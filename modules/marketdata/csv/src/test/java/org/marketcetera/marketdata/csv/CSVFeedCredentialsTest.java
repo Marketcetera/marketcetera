@@ -7,7 +7,7 @@ import java.io.File;
 
 import org.junit.Test;
 import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /* $License$ */
 

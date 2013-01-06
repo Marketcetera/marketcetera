@@ -4,11 +4,11 @@ import java.util.Date;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.core.publisher.PublisherEngineTest;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 import static org.junit.Assert.*;
 

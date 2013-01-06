@@ -4,11 +4,11 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.beans.EventBean;
 import org.marketcetera.core.event.beans.HasEventBean;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.util.test.EqualityAssert;
 
 import static org.junit.Assert.*;

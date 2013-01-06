@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.marketcetera.api.systemmodel.Subscriber;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.publisher.MockSubscriber;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

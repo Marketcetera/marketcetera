@@ -1,7 +1,8 @@
 package org.marketcetera.core.quickfix.cficode;
 
 import junit.framework.TestCase;
-import org.marketcetera.core.ExpectedFailure;
+
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 public class CFICodeTest extends TestCase {
 

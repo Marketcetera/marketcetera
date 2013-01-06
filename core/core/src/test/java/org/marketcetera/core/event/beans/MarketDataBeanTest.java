@@ -7,10 +7,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */

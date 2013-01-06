@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.util.test.EqualityAssert;
 
 import static org.junit.Assert.*;

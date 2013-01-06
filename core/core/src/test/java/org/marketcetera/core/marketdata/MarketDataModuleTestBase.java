@@ -13,10 +13,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.module.ConfigurationProviderTest.MockConfigurationProvider;
 import org.marketcetera.core.module.*;
 import org.marketcetera.core.module.Messages;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.CollectionAssert;
 

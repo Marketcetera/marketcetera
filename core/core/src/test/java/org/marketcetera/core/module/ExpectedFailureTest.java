@@ -3,7 +3,7 @@ package org.marketcetera.core.module;
 import java.io.Serializable;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.except.I18NException;
 import org.marketcetera.core.util.except.I18NInterruptedException;
 import org.marketcetera.core.util.log.I18NBoundMessage;

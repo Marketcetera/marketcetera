@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.position.Grouping;
 import org.marketcetera.core.position.PositionRow;
 import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;

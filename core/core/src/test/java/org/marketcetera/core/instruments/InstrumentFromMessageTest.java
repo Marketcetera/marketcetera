@@ -13,11 +13,11 @@ import java.math.BigDecimal;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import quickfix.*;

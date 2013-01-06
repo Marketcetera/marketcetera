@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.marketcetera.api.systemmodel.MutableRole;
 import org.marketcetera.api.systemmodel.Role;
 import org.marketcetera.api.systemmodel.RoleFactory;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.RoleDao;
 import org.marketcetera.webservices.WebServicesTestBase;

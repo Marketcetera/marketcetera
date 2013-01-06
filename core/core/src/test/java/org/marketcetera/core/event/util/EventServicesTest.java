@@ -1,10 +1,10 @@
 package org.marketcetera.core.event.util;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.beans.EventBean;
 import org.marketcetera.core.event.beans.HasEventBean;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

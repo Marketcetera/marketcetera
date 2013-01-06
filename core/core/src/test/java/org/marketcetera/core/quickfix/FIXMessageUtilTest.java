@@ -11,6 +11,8 @@ import junit.framework.Test;
 import org.marketcetera.core.*;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 import quickfix.*;
 import quickfix.field.*;

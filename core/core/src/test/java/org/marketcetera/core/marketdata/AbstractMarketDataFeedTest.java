@@ -11,7 +11,6 @@ import java.util.concurrent.Semaphore;
 import org.junit.Assert;
 import org.junit.Test;
 import org.marketcetera.api.systemmodel.Subscriber;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.event.AggregateEvent;
 import org.marketcetera.core.event.Event;
@@ -24,6 +23,7 @@ import org.marketcetera.core.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.core.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.core.trade.Equity;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.core.marketdata.AssetClass.*;

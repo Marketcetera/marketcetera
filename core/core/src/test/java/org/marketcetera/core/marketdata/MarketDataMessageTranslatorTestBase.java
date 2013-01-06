@@ -11,9 +11,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 import static org.marketcetera.core.marketdata.Content.*;
