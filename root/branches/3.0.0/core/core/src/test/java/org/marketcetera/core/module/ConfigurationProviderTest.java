@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 import javax.management.JMX;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 import static org.junit.Assert.*;

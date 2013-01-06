@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /* $License$ */
 

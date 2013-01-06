@@ -5,7 +5,7 @@ import java.io.PrintStream;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 import static org.junit.Assert.*;
 

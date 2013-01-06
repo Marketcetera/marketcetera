@@ -10,7 +10,6 @@ import java.util.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.event.*;
 import org.marketcetera.core.event.impl.LogEventBuilder;
@@ -20,6 +19,7 @@ import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageUtilTest;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import quickfix.Message;
 import quickfix.field.Symbol;

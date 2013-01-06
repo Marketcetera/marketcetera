@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import quickfix.Message;
 import quickfix.field.*;

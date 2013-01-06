@@ -3,8 +3,8 @@ package org.marketcetera.core.event.beans;
 import java.util.Date;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.Messages;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import static org.junit.Assert.*;
 

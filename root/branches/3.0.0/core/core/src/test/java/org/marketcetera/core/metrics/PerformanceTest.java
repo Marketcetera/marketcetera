@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */

@@ -17,9 +17,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.module.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 /* $License$ */
 /**

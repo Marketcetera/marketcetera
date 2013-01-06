@@ -1,4 +1,4 @@
-package org.marketcetera.core;
+package org.marketcetera.core.util.log;
 
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.apache.log4j.PropertyConfigurator;

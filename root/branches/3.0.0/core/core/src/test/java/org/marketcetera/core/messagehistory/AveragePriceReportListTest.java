@@ -7,12 +7,12 @@ import java.math.BigDecimal;
 
 import junit.framework.Test;
 
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.position.impl.ExpectedListChanges;
 import org.marketcetera.core.quickfix.FIXVersion;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import quickfix.Message;
 import quickfix.field.*;

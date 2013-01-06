@@ -13,13 +13,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.module.*;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Factory;
 import org.marketcetera.core.trade.Suggestion;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.util.test.LogTestAssist;
 
 /**

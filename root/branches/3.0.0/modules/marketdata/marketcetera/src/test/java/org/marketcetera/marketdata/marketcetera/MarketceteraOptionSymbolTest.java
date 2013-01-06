@@ -3,7 +3,7 @@ package org.marketcetera.marketdata.marketcetera;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 public class MarketceteraOptionSymbolTest
 {

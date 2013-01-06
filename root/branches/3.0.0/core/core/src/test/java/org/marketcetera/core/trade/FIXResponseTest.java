@@ -3,7 +3,8 @@ package org.marketcetera.core.trade;
 import java.util.HashMap;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
+
 import quickfix.Message;
 
 import static org.junit.Assert.assertEquals;

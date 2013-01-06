@@ -14,7 +14,6 @@ import javax.management.JMX;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.event.HasInstrument;
@@ -22,6 +21,7 @@ import org.marketcetera.core.event.TradeEvent;
 import org.marketcetera.core.module.*;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Factory;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.modules.cep.system.CEPTestBase;
 

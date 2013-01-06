@@ -14,9 +14,9 @@ import javax.management.MBeanParameterInfo;
 import javax.management.MBeanServer;
 import javax.management.openmbean.SimpleType;
 import org.junit.BeforeClass;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.marketdata.MockMarketDataFeedModuleFactory;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.util.test.CollectionAssert;
 
 import static org.junit.Assert.*;

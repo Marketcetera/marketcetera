@@ -44,6 +44,13 @@
       <artifactId>jackson-jaxrs</artifactId>
       <version>1.5.7</version>
     </dependency>
+    <dependency>
+      <groupId>org.marketcetera.core</groupId>
+      <artifactId>util</artifactId>
+      <version>3.0.0-SNAPSHOT</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.*;
-import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.dao.RoleDao;
 import org.marketcetera.dao.UserDao;

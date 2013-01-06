@@ -3,8 +3,8 @@ package org.marketcetera.modules.cep.esper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.module.*;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /* $License$ */
 /**

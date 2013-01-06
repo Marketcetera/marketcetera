@@ -8,7 +8,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
-import org.marketcetera.core.LoggerConfiguration;
+
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 import java.util.Random;
 import java.util.List;

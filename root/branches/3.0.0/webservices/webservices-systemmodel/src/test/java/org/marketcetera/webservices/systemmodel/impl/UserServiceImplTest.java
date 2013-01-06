@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.MutableUser;
 import org.marketcetera.api.systemmodel.UserFactory;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.UserDao;
 import org.marketcetera.webservices.WebServicesTestBase;

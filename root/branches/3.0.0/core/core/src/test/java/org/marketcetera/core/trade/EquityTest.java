@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import com.google.common.collect.ImmutableList;
 

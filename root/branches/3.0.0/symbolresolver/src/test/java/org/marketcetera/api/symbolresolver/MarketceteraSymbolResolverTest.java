@@ -1,7 +1,7 @@
 package org.marketcetera.api.symbolresolver;
 
 import org.junit.BeforeClass;
-import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.symbolresolver.EquitySymbolResolver;
 
 /* $License$ */

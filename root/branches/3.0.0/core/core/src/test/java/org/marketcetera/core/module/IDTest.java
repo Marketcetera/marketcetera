@@ -1,7 +1,7 @@
 package org.marketcetera.core.module;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import static org.junit.Assert.*;
 

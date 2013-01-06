@@ -13,10 +13,10 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.Option;
 import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /* $License$ */
 

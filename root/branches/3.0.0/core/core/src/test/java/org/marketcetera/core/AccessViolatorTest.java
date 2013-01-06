@@ -1,5 +1,7 @@
 package org.marketcetera.core;
 
+import org.marketcetera.core.util.except.ExpectedFailure;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 

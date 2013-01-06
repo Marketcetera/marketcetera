@@ -1,4 +1,4 @@
-package org.marketcetera.core;
+package org.marketcetera.core.util.except;
 
 import static org.junit.Assert.*;
 

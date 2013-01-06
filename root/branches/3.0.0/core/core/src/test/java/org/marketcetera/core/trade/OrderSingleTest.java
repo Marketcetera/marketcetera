@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.quickfix.FIXDataDictionary;
 import org.marketcetera.core.quickfix.FIXMessageFactory;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

@@ -12,7 +12,6 @@ import java.util.concurrent.BlockingQueue;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.BidEvent;
 import org.marketcetera.core.event.Event;
@@ -21,6 +20,7 @@ import org.marketcetera.core.marketdata.Capability;
 import org.marketcetera.core.marketdata.MarketDataModuleTestBase;
 import org.marketcetera.core.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.core.module.*;
+import org.marketcetera.core.util.log.LoggerConfiguration;
 
 /**
  * Subclass from the main Market data test and verify that basic module functionality works

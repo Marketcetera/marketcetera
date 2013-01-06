@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.marketcetera.api.systemmodel.MutablePermission;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.api.systemmodel.PermissionFactory;
-import org.marketcetera.core.ExpectedFailure;
+import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.webservices.WebServicesTestBase;

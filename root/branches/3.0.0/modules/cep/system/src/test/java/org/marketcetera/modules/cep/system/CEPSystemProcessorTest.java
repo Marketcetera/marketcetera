@@ -9,13 +9,13 @@ import java.util.Date;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.EventTestBase;
 import org.marketcetera.core.marketdata.DateUtils;
 import org.marketcetera.core.module.*;
 import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.Factory;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /**
  * @version $Id: CEPSystemProcessorTest.java 16063 2012-01-31 18:21:55Z colin $

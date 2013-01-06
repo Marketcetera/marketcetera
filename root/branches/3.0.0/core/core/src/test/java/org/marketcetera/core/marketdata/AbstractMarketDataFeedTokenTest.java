@@ -6,9 +6,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.api.systemmodel.Subscriber;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.marketdata.MarketDataFeedToken.Status;
 import org.marketcetera.core.publisher.MockSubscriber;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import static org.junit.Assert.*;
 

@@ -8,12 +8,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.marketdata.Content;
 import org.marketcetera.core.marketdata.DataRequestTranslator;
 import org.marketcetera.core.marketdata.MarketDataMessageTranslatorTestBase;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
 import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;

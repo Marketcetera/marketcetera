@@ -7,8 +7,8 @@ import static org.marketcetera.core.position.impl.OrderingComparison.comparesEqu
 import java.math.BigDecimal;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.position.PositionMetrics;
+import org.marketcetera.core.util.except.ExpectedFailure;
 
 /* $License$ */
 
