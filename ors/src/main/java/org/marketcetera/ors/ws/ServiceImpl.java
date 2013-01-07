@@ -123,7 +123,7 @@ public class ServiceImpl
     {
         SimpleUser u=(new SingleSimpleUserQuery(id.getValue())).fetch();
         return new UserInfo
-            (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()),Util.propertiesFromString(u.getSystemData()));
+            (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()));
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
