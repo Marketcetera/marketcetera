@@ -16,7 +16,6 @@ CREATE TABLE ors_users (
     hashedPassword VARCHAR(255) NOT NULL,
     superuser BIT NOT NULL,
     userdata text,
-    systemdata text,
     PRIMARY KEY (id),
     UNIQUE (name)
 );
