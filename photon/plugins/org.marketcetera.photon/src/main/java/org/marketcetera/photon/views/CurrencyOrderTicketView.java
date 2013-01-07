@@ -73,6 +73,10 @@ public class CurrencyOrderTicketView extends
     @Override
     protected void customizeWidgets(final ICurrencyOrderTicket ticket) {
         super.customizeWidgets(ticket);
+        
+        //Initialize base ccy radio buttons
+        ticket.getRadioButtonCCY1().setSelection(true);
+        ticket.getRadioButtonCCY2().setSelection(false);        
 
         /*
          * Update size of text fields since default will be small.
@@ -203,8 +207,13 @@ public class CurrencyOrderTicketView extends
         DataBindingUtils.initControlDecorationSupportFor(farTenorValidator,
                 SWT.BOTTOM | SWT.LEFT);
         dbc.addValidationStatusProvider(farTenorValidator);
+        final IObservableValue baseCCYTarget = SWTObservables.observeSelection(ticket.getRadioButtonCCY1());
+        dbc.bindValue(baseCCYTarget, model.getBaseCCY());
+        
         enableForNewOrderOnly(ticket.getFarTenorText());
         enableForNewOrderOnly(ticket.getSelectFarTenorButton());
+        enableForNewOrderOnly(ticket.getRadioButtonCCY1());
+        enableForNewOrderOnly(ticket.getRadioButtonCCY2());
 
     }
 

@@ -25,6 +25,7 @@ public class CurrencyOrderTicketModel
         mSymbol = currencyObservable.observeSymbol();
         mNearTenor = currencyObservable.observeNearTenor();
         mFarTenor = currencyObservable.observeFarTenor();
+        mBaseCCY = currencyObservable.observeBaseCCY();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketModel#getSymbol()
@@ -42,6 +43,9 @@ public class CurrencyOrderTicketModel
 	public ITypedObservableValue<String> getFarTenor() {
 		return mFarTenor;
 	}
+	public ITypedObservableValue<Boolean> getBaseCCY() {
+		return mBaseCCY;
+	}
 
 	/**
      * the symbol of the current order
@@ -55,4 +59,9 @@ public class CurrencyOrderTicketModel
      * the far tenor of the current order
      */  
     private final ITypedObservableValue<String> mFarTenor;
+    
+    /**
+     * the base currency of the current order
+     */  
+    private final ITypedObservableValue<Boolean> mBaseCCY;
 }

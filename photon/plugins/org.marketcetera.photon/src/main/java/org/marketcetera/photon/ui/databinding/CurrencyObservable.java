@@ -31,7 +31,8 @@ public class CurrencyObservable
         mSymbol = TypedObservableValueDecorator.create(String.class);
         mNearTenor = TypedObservableValueDecorator.create(String.class);
         mFarTenor = TypedObservableValueDecorator.create(String.class);
-        init(ImmutableList.of(mSymbol,mNearTenor,mFarTenor));
+        mBaseCCY = TypedObservableValueDecorator.create(Boolean.class);
+        init(ImmutableList.of(mSymbol,mNearTenor,mFarTenor,mBaseCCY));
     }
     /**
      * Observes the currency symbol.
@@ -60,6 +61,16 @@ public class CurrencyObservable
     {
         return mFarTenor;
     }
+    /**
+     * Observes the base currency.
+     * 
+     * @return an <code>ITypedObservableValue&lt;Boolean&gt;</code> value
+     */
+    public ITypedObservableValue<Boolean> observeBaseCCY()
+    {
+        return mBaseCCY;
+    }
+    
     /* (non-Javadoc)
      * @see org.marketcetera.photon.ui.databinding.CompoundObservableManager#updateParent()
      */
@@ -74,12 +85,19 @@ public class CurrencyObservable
         }        
         String nearTenor = mNearTenor.getTypedValue();
         String farTenor = mFarTenor.getTypedValue();
+        boolean baseCCYSelector = mBaseCCY.getTypedValue();
         Currency newValue = null;
         if(currencyPair!=null && currencyPair.length==2 && StringUtils.isNotBlank(currencyPair[0]) 
         		&& StringUtils.isNotBlank(currencyPair[1]))
         {
             try {
-                    newValue = new Currency(currencyPair[0],currencyPair[1],nearTenor,farTenor);
+            		String baseCCY;
+            		if(baseCCYSelector){
+            			baseCCY = currencyPair[0];
+            		}else{
+            			baseCCY = currencyPair[1];
+            		}	
+                    newValue = new Currency(currencyPair[0],currencyPair[1],nearTenor,farTenor,baseCCY);
             } catch (Exception ignored) {
             }
         }
@@ -99,6 +117,10 @@ public class CurrencyObservable
             setIfChanged(mSymbol,currency.getSymbol());
             setIfChanged(mNearTenor,currency.getNearTenor());
             setIfChanged(mFarTenor,currency.getFarTenor());
+            if(currency.getLeftCCY()!=null)
+            {
+            	setIfChanged(mBaseCCY,currency.getTradedCCY()==currency.getLeftCCY());
+            }
         } else {
             setIfChanged(mSymbol,
                          null);
@@ -106,6 +128,8 @@ public class CurrencyObservable
                          null);
             setIfChanged(mFarTenor,
                          null);
+            setIfChanged(mBaseCCY,
+                    false);
         }
     }
     /**
@@ -120,4 +144,9 @@ public class CurrencyObservable
      * observes the currency far tenor
      */
     private final ITypedObservableValue<String> mFarTenor;
+    
+    /**
+     * observes the base currency
+     */
+    private final ITypedObservableValue<Boolean> mBaseCCY;
 }

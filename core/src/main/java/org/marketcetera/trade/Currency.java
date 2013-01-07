@@ -200,22 +200,23 @@ public class Currency extends Instrument implements Comparable<Currency>{
 	/**
 	 * outright trade constructor -OR- generic swap constructor
 	 * 
-	 * @param baseCCY
-	 * @param plCCY
+	 * @param leftCCY
+	 * @param rightCCY
 	 * @param nearTenor
 	 * @param farTenor
+ 	 * @param baseCCY
 	 * 
 	 */
-	public Currency(String baseCCY, String plCCY, String nearTenor, String farTenor){
-		baseCCY = StringUtils.trimToNull(baseCCY);
-		plCCY = StringUtils.trimToNull(plCCY);
+	public Currency(String leftCCY, String rightCCY, String nearTenor, String farTenor, String baseCCY){
+		leftCCY = StringUtils.trimToNull(leftCCY);
+		rightCCY = StringUtils.trimToNull(rightCCY);
 		nearTenor = StringUtils.trimToNull(nearTenor);
 		farTenor = StringUtils.trimToNull(farTenor);
-		Validate.notNull(baseCCY,Messages.MISSING_LEFT_CURRENCY.getText());
-		Validate.notNull(plCCY,Messages.MISSING_RIGHT_CURRENCY.getText());
-		this.leftCCY = baseCCY;
-		this.rightCCY   = plCCY;
-		this.fixSymbol = leftCCY+"/"+rightCCY;
+		Validate.notNull(leftCCY,Messages.MISSING_LEFT_CURRENCY.getText());
+		Validate.notNull(rightCCY,Messages.MISSING_RIGHT_CURRENCY.getText());
+		this.leftCCY = leftCCY;
+		this.rightCCY   = rightCCY;
+		this.fixSymbol = this.leftCCY+"/"+this.rightCCY;
 		if(Currency.isValidTenor(nearTenor)){
 			this.nearTenor = nearTenor;
 		}else{
@@ -234,6 +235,11 @@ public class Currency extends Instrument implements Comparable<Currency>{
 		this.hashCode   = hashSymbol.hashCode();
 	}
 	
+	public Currency(String leftCCY, String rightCCY, String nearTenor, String farTenor){
+		this(leftCCY, rightCCY, nearTenor, farTenor, leftCCY);
+	}
+	
+
 	/**
 	 * utility method determining if this is a currency swap
 	 *   eg when the farTenor is null
@@ -360,6 +366,11 @@ public class Currency extends Instrument implements Comparable<Currency>{
             if (other.rightCCY != null)
                 return false;
         } else if (!rightCCY.equals(other.rightCCY))
+            return false;
+        if (tradedCCY == null) {
+            if (other.tradedCCY != null)
+                return false;
+        } else if (!tradedCCY.equals(other.tradedCCY))
             return false;
         return true;
 		
