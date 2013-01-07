@@ -1,6 +1,6 @@
 package org.marketcetera.core.util.thread;
 
-import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -182,9 +182,9 @@ public abstract class QueueProcessor<Clazz>
     /**
      * Create a new QueueProcessor instance.
      *
-     * @param inQueue a <code>BlockingDeque&lt;Clazz&gt;</code> value
+     * @param inQueue a <code>BlockingQueue&lt;Clazz&gt;</code> value
      */
-    protected QueueProcessor(BlockingDeque<Clazz> inQueue)
+    protected QueueProcessor(BlockingQueue<Clazz> inQueue)
     {
         this(inQueue,
              "Unknown Queue Processor");
@@ -192,10 +192,10 @@ public abstract class QueueProcessor<Clazz>
     /**
      * Create a new QueueProcessor instance.
      *
-     * @param inQueue a <code>BlockingDeque&lt;Clazz&gt;</code> value
+     * @param inQueue a <code>BlockingQueue&lt;Clazz&gt;</code> value
      * @param inThreadDescriptor a <code>String</code> value describing the processor
      */
-    protected QueueProcessor(BlockingDeque<Clazz> inQueue,
+    protected QueueProcessor(BlockingQueue<Clazz> inQueue,
                              String inThreadDescriptor)
     {
         if(inQueue == null) {
@@ -230,7 +230,7 @@ public abstract class QueueProcessor<Clazz>
     /**
      * queue used to hold data to be processed
      */
-    private final BlockingDeque<Clazz> queue;
+    private final BlockingQueue<Clazz> queue;
     /**
      * describes the thread
      */
