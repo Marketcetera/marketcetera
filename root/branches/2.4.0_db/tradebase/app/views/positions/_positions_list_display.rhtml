@@ -1,0 +1,26 @@
+<table>
+  <tr>
+    <th>Position</th>
+    <th>Symbol</th>
+    <th>Account</th>
+    <th/>
+  </tr>
+
+<% 
+i=0
+for position in @positions %>
+  <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : '' %> >
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(position.position.to_s, 2, true)   %></td>
+    <td><%= link_to  position.tradeable.m_symbol_root, :action => 'trade_search', :controller => 'queries',
+                      :m_symbol_root => position.tradeable.m_symbol_root, :all_dates => "yes"  %></td>
+    <td><%= link_to position.account.nickname, :controller => 'accounts', :action => 'show', :id => position.account %></td>
+    <td><%= link_to(image_tag("/images/icons/text_list_numbers.png", :alt => 'See all trades'), 
+                    :action => 'trade_search', :controller => 'queries',
+                    :m_symbol_root => position.tradeable.m_symbol_root, :all_dates => "yes") -%>
+        <%= link_to('See all trades', 
+                    :action => 'trade_search', :controller => 'queries',
+                    :m_symbol_root => position.tradeable.m_symbol_root, :all_dates => "yes")                    
+                     %></td>
+  </tr>
+<% end %>
+</table>

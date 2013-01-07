@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main configuration for database initialization (test wrapper).
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <import
+   resource="properties.xml"/>
+  <import
+   resource="db/db.xml"/>
+
+  <bean
+   class="org.marketcetera.persist.ExecuteSQLFromFile">
+    <constructor-arg>
+      <list>
+        <value>file:src/main/sample_data/create_server_schema.sql</value>
+        <value>file:src/test/sample_data/conf/dbinit/101_create_admin_user.sql</value>
+      </list>
+    </constructor-arg>
+    <constructor-arg
+     ref="metc_sql_pool"/>
+  </bean>
+</beans>

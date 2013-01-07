@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Global filter configuration: supported messages.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.1.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean
+   id="metc_supported_messages"
+   class="org.marketcetera.ors.filters.MessageTypeFilter">
+    <!--
+      - If true, messages of unknown type are accepted.  If omitted, false
+      - is assumed.
+      -->
+    <property
+     name="acceptUnknown"
+     value="false"/>
+    <!--
+      - The set of acceptable message types. A non-null set is required
+      - (an empty set is acceptable).
+      -->
+    <property
+     name="acceptedMessages">
+      <set>
+        <value>0</value>  <!-- HEARTBEAT -->
+        <value>1</value>  <!-- TEST_REQUEST -->
+        <value>2</value>  <!-- RESEND_REQUEST -->
+        <value>3</value>  <!-- REJECT -->
+        <value>4</value>  <!-- SEQUENCE_RESET -->
+        <value>5</value>  <!-- LOGOUT -->
+        <value>6</value>  <!-- INDICATION_OF_INTEREST -->
+        <value>7</value>  <!-- ADVERTISEMENT -->
+        <value>8</value>  <!-- EXECUTION_REPORT -->
+        <value>9</value>  <!-- ORDER_CANCEL_REJECT -->
+        <value>A</value>  <!-- LOGON -->
+        <value>B</value>  <!-- NEWS -->
+        <value>C</value>  <!-- EMAIL -->
+        <value>D</value>  <!-- ORDER_SINGLE -->
+        <value>E</value>  <!-- ORDER_LIST -->
+        <value>F</value>  <!-- ORDER_CANCEL_REQUEST -->
+        <value>G</value>  <!-- ORDER_CANCEL_REPLACE_REQUEST -->
+        <value>H</value>  <!-- ORDER_STATUS_REQUEST -->
+        <value>J</value>  <!-- ALLOCATION_INSTRUCTION -->
+        <value>K</value>  <!-- LIST_CANCEL_REQUEST -->
+        <value>L</value>  <!-- LIST_EXECUTE -->
+        <value>M</value>  <!-- LIST_STATUS_REQUEST -->
+        <value>N</value>  <!-- LIST_STATUS -->
+        <!-- 'O' is not a valid FIX message type, hence omitted. -->
+        <!-- Not supported: P (ALLOCATION_INSTRUCTION_ACK). -->
+        <value>Q</value>  <!-- DONT_KNOW_TRADE -->
+        <value>R</value>  <!-- QUOTE_REQUEST -->
+        <value>S</value>  <!-- QUOTE -->
+        <value>T</value>  <!-- SETTLEMENT_INSTRUCTIONS -->
+        <value>V</value>  <!-- MARKET_DATA_REQUEST -->
+        <value>W</value>  <!-- MARKET_DATA_SNAPSHOT_FULL_REFRESH -->
+        <value>X</value>  <!-- MARKET_DATA_INCREMENTAL_REFRESH -->
+        <value>Y</value>  <!-- MARKET_DATA_REQUEST_REJECT -->
+        <value>Z</value>  <!-- QUOTE_CANCEL -->
+        <value>a</value>  <!-- QUOTE_STATUS_REQUEST -->
+        <value>b</value>  <!-- MASS_QUOTE_ACKNOWLEDGEMENT -->
+        <value>c</value>  <!-- SECURITY_DEFINITION_REQUEST -->
+        <value>d</value>  <!-- SECURITY_DEFINITION -->
+        <value>e</value>  <!-- SECURITY_STATUS_REQUEST -->
+        <value>f</value>  <!-- SECURITY_STATUS -->
+        <value>g</value>  <!-- TRADING_SESSION_STATUS_REQUEST -->
+        <value>h</value>  <!-- TRADING_SESSION_STATUS -->
+        <value>i</value>  <!-- MASS_QUOTE -->
+        <value>j</value>  <!-- BUSINESS_MESSAGE_REJECT -->
+        <value>k</value>  <!-- BID_REQUEST -->
+        <value>l</value>  <!-- BID_RESPONSE -->
+        <value>m</value>  <!-- LIST_STRIKE_PRICE -->
+        <value>n</value>  <!-- XML_MESSAGE -->
+        <value>o</value>  <!-- REGISTRATION_INSTRUCTIONS -->
+        <value>p</value>  <!-- REGISTRATION_INSTRUCTIONS_RESPONSE -->
+        <value>q</value>  <!-- ORDER_MASS_CANCEL_REQUEST -->
+        <value>r</value>  <!-- ORDER_MASS_CANCEL_REPORT -->
+        <value>s</value>  <!-- NEW_ORDER_CROSS -->
+        <value>t</value>  <!-- CROSS_ORDER_CANCEL_REPLACE_REQUEST -->
+        <value>u</value>  <!-- CROSS_ORDER_CANCEL_REQUEST -->
+        <value>v</value>  <!-- SECURITY_TYPE_REQUEST -->
+        <value>w</value>  <!-- SECURITY_TYPES -->
+        <value>x</value>  <!-- SECURITY_LIST_REQUEST -->
+        <value>y</value>  <!-- SECURITY_LIST -->
+        <value>z</value>  <!-- DERIVATIVE_SECURITY_LIST_REQUEST -->
+        <value>AA</value> <!-- DERIVATIVE_SECURITY_LIST -->
+        <value>AB</value> <!-- NEW_ORDER_MULTILEG -->
+        <value>AC</value> <!-- MULTILEG_ORDER_CANCEL_REPLACE -->
+        <value>AD</value> <!-- TRADE_CAPTURE_REPORT_REQUEST -->
+        <value>AE</value> <!-- TRADE_CAPTURE_REPORT -->
+        <value>AF</value> <!-- ORDER_MASS_STATUS_REQUEST -->
+        <value>AG</value> <!-- QUOTE_REQUEST_REJECT -->
+        <value>AH</value> <!-- RFQ_REQUEST -->
+        <value>AI</value> <!-- QUOTE_STATUS_REPORT -->
+        <value>AJ</value> <!-- QUOTE_RESPONSE -->
+        <value>AK</value> <!-- CONFIRMATION -->
+        <value>AL</value> <!-- POSITION_MAINTENANCE_REQUEST -->
+        <value>AM</value> <!-- POSITION_MAINTENANCE_REPORT -->
+        <value>AN</value> <!-- REQUEST_FOR_POSITIONS -->
+        <value>AO</value> <!-- REQUEST_FOR_POSITIONS_ACK -->
+        <value>AP</value> <!-- POSITION_REPORT -->
+        <value>AQ</value> <!-- TRADE_CAPTURE_REPORT_REQUEST_ACK -->
+        <value>AR</value> <!-- TRADE_CAPTURE_REPORT_ACK -->
+        <value>AS</value> <!-- ALLOCATION_REPORT -->
+        <value>AT</value> <!-- ALLOCATION_REPORT_ACK -->
+        <value>AU</value> <!-- CONFIRMATION_ACK -->
+        <value>AV</value> <!-- SETTLEMENT_INSTRUCTION_REQUEST -->
+        <value>AW</value> <!-- ASSIGNMENT_REPORT -->
+        <value>AX</value> <!-- COLLATERAL_REQUEST -->
+        <value>AY</value> <!-- COLLATERAL_ASSIGNMENT -->
+        <value>AZ</value> <!-- COLLATERAL_RESPONSE -->
+        <value>BA</value> <!-- COLLATERAL_REPORT -->
+        <value>BB</value> <!-- COLLATERAL_INQUIRY -->
+        <value>BC</value> <!-- NETWORK_STATUS_REQEST -->
+        <value>BD</value> <!-- NETWORK_STATUS_RESPONSE -->
+        <value>BE</value> <!-- USER_REQUEST -->
+        <value>BF</value> <!-- USER_RESPONSE -->
+        <value>BG</value> <!-- COLLATERAL_INQUIRY_ACK -->
+        <value>BH</value> <!-- CONFIRMATION_REQUEST -->
+      </set> 
+    </property>
+  </bean>
+</beans>

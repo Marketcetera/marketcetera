@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<title>The FIX Protocol</title>
+</head>
+
+<body>
+    <div>
+    <h1>Overview</h1>
+    <p>The Financial Information eXchange ("FIX") Protocol is a specification of interaction
+    techniques and formats for traders, brokers and other parties to electronic trading.
+    The FIX Protocol <a href="http://www.fixprotocol.org/">website</a> further clarifies:</p>
+    <blockquote>
+    More precisely, the
+    FIX Protocol is a series of messaging specifications developed through the
+    collaboration of banks, broker-dealers, exchanges, industry utilities and
+    associations, institutional investors, and information technology providers
+    from around the world. These market participants share a vision of a common,
+    global language for automated trading of securities, derivative, and other
+    financial instruments.
+    </blockquote>
+
+    <p>The specification entails two important message types.  First, the "application messages"
+    represent common requests and updates that travel between between parties, for example
+    a new limit order, a cancel, or a fill.  Second, the specification requires parties to
+    exchange messages about the connection itself.  These "session messages" ensure that both
+    sides of a conversation are aware of events like the begin or end of a session, or the
+    receipt of malformed messages.</p>
+
+    <p>In addition the specification includes a significant amount of semantic information for
+    each of the messages--that is information about what the messages mean, and how they should
+    be interpreted.  See the Resources section below for links to FIX reference materials.</p>
+
+    <p>The FIX protocol currently exists in 5 variants, versions 4.0 through 4.4.  The "first"
+    version of the protocol, 4.0, contains just specifications of the messages required to effect
+    a simple equity transaction between a customer and a broker.  With each successive release of
+    the protocol, more functionality was added, including options, futures and fixed income orders,
+    third party transactions, and security description messages.  In practice, at the time of this writing
+    most equity brokers support 4.0, 4.1 or 4.2.  Note that the versions are not--in general--backward
+    compatible.</p>
+
+    </div>
+    <div>
+    <h1>FIX and the Marketcetera Platform</h1>
+        <p>
+            The Marketcetera platform uses the entire FIX protocol for communication with brokers and other
+            counterparties.  For internal communications, the platform uses the FIX application message
+            formats and semantics but does not necessarily implement the session level requirements
+            Currently the Marketcetera platform supports only version 4.2 of the FIX protocol.
+        </p>
+        <p>
+            Marketcetera uses the QuickFIX/J Engine (part of the QuickFIX project, see Resources below)
+            to manage fix connections to counterparties.
+        </p>
+   </div>
+    <div>
+    <h1>Resources</h1>
+        B2Bits hosts an excellent summary of all of the versions of the FIX protocol, "The FIXopaedia"
+        at <a href="http://b2bits.com/fixopaedia/index.html">http://b2bits.com/fixopaedia/index.html</a>
+
+    </div>
+</body>
+</html>

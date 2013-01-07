@@ -1,0 +1,22 @@
+<%= render :partial => 'shared/breadcrumbs',
+           :locals=> { :top_level => "P &amp; L", :top_level_controller => 'pnl', :action_name=>'Missing Marks'} %>
+<h1>Missing Marks</h1>
+Please create the following missing marks:
+<table>
+  <tr>
+  <th>Symbol</th>
+  <th>Date</th>
+  <th colspan="3"/>
+  </tr>
+
+<% i=0
+ for mark in @missing_marks %>
+    <tr <%= ((i+=1)%2 ==1) ? 'class="odd"':''%> >
+    <td><%= mark.tradeable_m_symbol_root %></td>
+    <td><%=h mark.mark_date %></td>
+    <td><%= link_to(image_tag("/images/icons/pencil.png", :alt=> 'Create New', :width => 16, :height => 16),
+                    :action => 'new_missing', :controller => 'marks', 
+                    :mark_date => mark.mark_date, :tradeable_id => mark.tradeable_id, :tradeable_type => mark.tradeable_type) %></td>
+  </tr>
+<% end %>
+</table>
