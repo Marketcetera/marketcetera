@@ -2,6 +2,7 @@ package org.marketcetera.security.shiro.impl;
 
 import java.io.Serializable;
 
+import org.apache.shiro.session.UnknownSessionException;
 import org.marketcetera.api.security.Session;
 
 /**
@@ -25,7 +26,12 @@ public class SessionImpl implements Session {
 
     @Override
     public void invalidate() {
-        session.stop();
-        session = null;
+        try {
+            session.stop();
+        } catch (UnknownSessionException e) {
+            throw new org.marketcetera.core.security.UnknownSessionException(e);
+        } finally {
+            session = null;
+        }
     }
 }

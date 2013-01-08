@@ -63,7 +63,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             subject.login(token);
         } catch (UnknownSessionException e) {
-            subject.getSession().invalidate();
+            try {
+                subject.getSession().invalidate();
+            } catch (UnknownSessionException ignored) {}
             return authenticate(username,
                                 password);
         } catch (RuntimeException e) {
