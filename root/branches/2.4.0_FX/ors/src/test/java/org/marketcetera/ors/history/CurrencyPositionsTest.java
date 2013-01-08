@@ -1,19 +1,12 @@
 package org.marketcetera.ors.history;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
-import org.hamcrest.Matchers;
-import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Side;
 
 /* $License$ */
 /**
