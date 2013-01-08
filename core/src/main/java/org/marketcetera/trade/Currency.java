@@ -137,10 +137,12 @@ public class Currency extends Instrument implements Comparable<Currency>{
 		{
 			leftCCY = currencies[0];
 			rightCCY = currencies[1];
+			tradedCCY = currencies[0];
 			hashCode = symbol.hashCode();
 		} else {
 			leftCCY=null;
 			rightCCY=null;
+			tradedCCY=null;
 			hashCode=-1;
 		}		
 	}
