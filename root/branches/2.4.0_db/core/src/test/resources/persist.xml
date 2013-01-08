@@ -3,22 +3,11 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
     <!-- JDBC Setup -->
-    <bean name="JdbcDriver" class="java.lang.String"><constructor-arg value="com.mysql.jdbc.Driver"/></bean>
+    <bean name="JdbcDriver" class="java.lang.String"><constructor-arg value="org.apache.derby.jdbc.EmbeddedDriver"/></bean>
     <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="marketcetera"/></bean>
     <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="marketcetera"/></bean>
-    <!--
-    The mysql jdbc url. See
-    http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-configuration-properties.html
-    for a complete list of options that can be specified for connecting to msql.
-    -->
-    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera?logSlowQueries=true"/></bean>
+    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:derby:memory:metc;create=true"/></bean>
 
-  <!-- Initialize MySQL as DB Vendor Implementation -->
-    <bean id="dbVendor" class="org.marketcetera.persist.MySQLDBVendor"
-          scope="singleton"/>
-  <!-- Initialize hibernate as JPA Vendor Implementation -->
-    <bean id="jpaVendor" class="org.marketcetera.persist.HibernateVendor"
-          scope="singleton" depends-on="dbVendor"/>
     <!--
     Properties for configuring the dbcp connection pool. See
     http://commons.apache.org/dbcp/configuration.html
@@ -47,7 +36,7 @@
         <property name="preferredTestQuery" value="select 1"/>
         <property name="testConnectionOnCheckout" value="true"/>
     </bean>
-    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="jpaVendor">
+    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="mysqlpool"/>
         <property name="persistenceUnitName" value="unit-testing"/>
     </bean>
