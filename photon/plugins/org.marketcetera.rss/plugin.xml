@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+  <extension point="org.eclipse.ui.preferencePages">
+    <page name="RSS/Atom Feed View" class="biz.junginger.newsfeed.eclipse.prefs.FeedPreferencePage" id="biz.junginger.newsfeed.eclipse.FeedPreferencePage"/>
+  </extension>
+  <extension point="org.eclipse.ui.views">
+    <category name="RSS/Atom Feed View" id="EclipseNewsFeed"/>
+    <view name="Feeds" icon="icons/rss.gif" category="EclipseNewsFeed" class="biz.junginger.newsfeed.eclipse.FeedView" id="biz.junginger.newsfeed.eclipse.FeedView"/>
+  </extension>
+  <extension point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+         <view ratio="0.5" relative="org.eclipse.ui.views.TaskList" relationship="right" id="biz.junginger.newsfeed.eclipse.FeedView"/>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.marketcetera.photon.EquityPerspective">
+         <view
+               id="biz.junginger.newsfeed.eclipse.FeedView"
+               ratio="0.5"
+               relationship="right"
+               relative="org.marketcetera.photon.views.FIXMessagesView"
+               visible="true">
+         </view>
+      </perspectiveExtension>
+  </extension>
+  <extension point="org.eclipse.core.runtime.preferences">
+    <initializer class="biz.junginger.newsfeed.eclipse.prefs.FeedPreferenceInitializer"/>
+  </extension>
+</plugin>

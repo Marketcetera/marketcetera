@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Broker 1 configuration: QuickFIX/J session descriptor.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!--
+    - See
+    - http://www.quickfixj.org/quickfixj/usermanual/usage/configuration.html
+    - for a complete list of standard options.
+    -->
+
+  <bean
+   id="metc_broker1_qdescriptor"
+   class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+    <property
+     name="dictionary">
+      <map>
+        <entry
+         key="BeginString"
+         value="${metc.broker1.qf.begin.string}"/>
+        <!--
+          - An acceptable value for this option is
+          - 'metc.DefaultDataDictionary', which will choose the standard
+          - QuickFIX/J dictionary for the FIX version deduced from the
+          - 'BeginString' option.
+          -->
+        <entry
+         key="DataDictionary"
+         value="${metc.broker1.qf.data.dictionary}"/>
+        <entry
+         key="SenderCompID"
+         value="${metc.broker1.qf.sender.comp.id}"/>
+        <entry
+         key="TargetCompID"
+         value="${metc.broker1.qf.target.comp.id}"/>
+        <entry
+         key="FileStorePath"
+         value="${metc.broker1.qf.store}"/>
+        <entry
+         key="SocketConnectHost"
+         value="${metc.broker1.qf.host}"/>
+        <entry
+         key="SocketConnectPort"
+         value="${metc.broker1.qf.port}"/>
+      </map>
+    </property>
+  </bean>
+</beans>

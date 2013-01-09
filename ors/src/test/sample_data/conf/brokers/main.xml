@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main broker configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../README.html' for detailed documentation.
+  -->
+
+<beans
+ xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <import
+   resource="broker1/main.xml"/>
+  <import
+   resource="broker2/main.xml"/>
+  <import
+   resource="qsettings.xml"/>
+  <import
+   resource="selector.xml"/>
+
+  <bean
+   id="metc_brokers"
+   class="org.marketcetera.ors.brokers.SpringBrokers">
+    <!-- The QuickFIX/J session settings. -->
+    <property
+     name="settings"
+     ref="metc_qsettings"/>
+    <!-- The brokers (order is not significant). -->
+    <property
+     name="brokers">
+      <list>
+        <ref bean="metc_broker1_broker"/>
+        <ref bean="metc_broker2_broker"/>
+      </list>
+    </property>
+  </bean>
+</beans>
