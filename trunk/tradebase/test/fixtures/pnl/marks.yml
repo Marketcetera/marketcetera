@@ -1,0 +1,370 @@
+--- 
+mark_00046: 
+  created_on: 2007-04-19 17:47:41 -07:00
+  updated_on: 2007-04-19 17:47:41 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 46
+  mark_value: 86.0
+  tradeable_id: 4
+  tradeable_type: Equity
+mark_00013:
+  created_on: 2007-04-16 13:52:54 -07:00
+  updated_on: 2007-04-16 13:52:54 -07:00
+  mark_date: 2007-05-05
+  mark_type: C
+  id: 13
+  mark_value: 3.33
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00002:
+  created_on: 2007-04-13 17:07:20 -07:00
+  updated_on: 2007-04-13 17:07:20 -07:00
+  mark_date: 2007-04-13
+  mark_type: C
+  id: 2
+  mark_value: 450.0
+  tradeable_id: 3
+  tradeable_type: Equity
+mark_00024:
+  created_on: 2007-04-17 10:57:48 -07:00
+  updated_on: 2007-04-17 10:57:48 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 24
+  mark_value: 3.3
+  tradeable_id: 12
+  tradeable_type: Equity
+mark_00025:
+  created_on: 2007-04-17 10:57:56 -07:00
+  updated_on: 2007-04-17 10:57:56 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 25
+  mark_value: 234.4
+  tradeable_id: 13
+  tradeable_type: Equity
+mark_00003:
+  created_on: 2007-04-13 17:19:48 -07:00
+  updated_on: 2007-04-13 17:19:48 -07:00
+  mark_date: 2007-04-13
+  mark_type: C
+  id: 3
+  mark_value: 34.5
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00014:
+  created_on: 2007-04-16 13:55:30 -07:00
+  updated_on: 2007-04-17 12:26:17 -07:00
+  mark_date: 2006-05-07
+  mark_type: C
+  id: 14
+  mark_value: 5.33
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00036:
+  created_on: 2007-04-19 14:52:40 -07:00
+  updated_on: 2007-04-19 14:52:40 -07:00
+  mark_date: 2002-04-19
+  mark_type: C
+  id: 36
+  mark_value: 44.0
+  tradeable_id: 14
+  tradeable_type: Equity
+mark_00047:
+  created_on: 2007-04-19 17:47:49 -07:00
+  updated_on: 2007-04-19 17:47:49 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 47
+  mark_value: 23.0
+  tradeable_id: 3
+  tradeable_type: Equity
+mark_00048:
+  created_on: 2007-04-19 17:47:56 -07:00
+  updated_on: 2007-04-19 17:47:56 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 48
+  mark_value: 3.45
+  tradeable_id: 2
+  tradeable_type: Equity
+mark_00037:
+  created_on: 2007-04-19 16:37:46 -07:00
+  updated_on: 2007-04-19 16:37:46 -07:00
+  mark_date: 2007-04-19
+  mark_type: C
+  id: 37
+  mark_value: 3.45
+  tradeable_id: 2
+  tradeable_type: Equity
+mark_00015:
+  created_on: 2007-04-16 13:57:05 -07:00
+  updated_on: 2007-04-17 12:11:57 -07:00
+  mark_date: 2007-04-16
+  mark_type: C
+  id: 15
+  mark_value: 123.4
+  tradeable_id: 7
+  tradeable_type: Equity
+mark_00004:
+  created_on: 2007-04-13 17:21:55 -07:00
+  updated_on: 2007-04-13 17:21:55 -07:00
+  mark_date: 2007-04-14
+  mark_type: C
+  id: 4
+  mark_value: 34.5
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00026:
+  created_on: 2007-04-17 10:58:06 -07:00
+  updated_on: 2007-04-17 10:58:06 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 26
+  mark_value: 23.0
+  tradeable_id: 9
+  tradeable_type: Equity
+mark_00027:
+  created_on: 2007-04-17 10:58:48 -07:00
+  updated_on: 2007-04-17 10:58:48 -07:00
+  mark_date: 2007-04-08
+  mark_type: C
+  id: 27
+  mark_value: 33.4
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00016:
+  created_on: 2007-04-16 13:58:55 -07:00
+  updated_on: 2007-04-16 13:58:55 -07:00
+  mark_date: 2007-04-15
+  mark_type: C
+  id: 16
+  mark_value: 4.44
+  tradeable_id: 7
+  tradeable_type: Equity
+mark_00038:
+  created_on: 2007-04-19 16:38:07 -07:00
+  updated_on: 2007-04-19 16:38:07 -07:00
+  mark_date: 2007-04-19
+  mark_type: C
+  id: 38
+  mark_value: 23.0
+  tradeable_id: 3
+  tradeable_type: Equity
+mark_00039:
+  created_on: 2007-04-19 16:38:31 -07:00
+  updated_on: 2007-04-19 16:38:31 -07:00
+  mark_date: 2007-04-19
+  mark_type: C
+  id: 39
+  mark_value: 86.0
+  tradeable_id: 4
+  tradeable_type: Equity
+mark_00017:
+  created_on: 2007-04-16 13:59:14 -07:00
+  updated_on: 2007-04-16 13:59:14 -07:00
+  mark_date: 2007-04-15
+  mark_type: C
+  id: 17
+  mark_value: 3.33
+  tradeable_id: 8
+  tradeable_type: Equity
+mark_00006:
+  created_on: 2007-04-13 17:30:29 -07:00
+  updated_on: 2007-04-13 17:30:29 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 6
+  mark_value: 34.5
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00028:
+  created_on: 2007-04-17 10:59:00 -07:00
+  updated_on: 2007-04-17 10:59:00 -07:00
+  mark_date: 2007-04-07
+  mark_type: C
+  id: 28
+  mark_value: 33.4
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00029:
+  created_on: 2007-04-17 10:59:05 -07:00
+  updated_on: 2007-04-17 10:59:05 -07:00
+  mark_date: 2007-04-06
+  mark_type: C
+  id: 29
+  mark_value: 33.4
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00018:
+  created_on: 2007-04-16 14:15:04 -07:00
+  updated_on: 2007-04-16 14:15:04 -07:00
+  mark_date: 2007-04-14
+  mark_type: C
+  id: 18
+  mark_value: 0.0
+  tradeable_id: 7
+  tradeable_type: Equity
+mark_00030:
+  created_on: 2007-04-17 10:59:10 -07:00
+  updated_on: 2007-04-17 10:59:10 -07:00
+  mark_date: 2007-04-04
+  mark_type: C
+  id: 30
+  mark_value: 33.4
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00041:
+  created_on: 2007-04-19 16:43:14 -07:00
+  updated_on: 2007-04-19 16:43:14 -07:00
+  mark_date: 2007-04-19
+  mark_type: C
+  id: 41
+  mark_value: 456.0
+  tradeable_id: 6
+  tradeable_type: Equity
+mark_00042:
+  created_on: 2007-04-19 17:17:37 -07:00
+  updated_on: 2007-04-19 17:17:37 -07:00
+  mark_date: 2007-01-01
+  mark_type: C
+  id: 42
+  mark_value: 80.0
+  tradeable_id: 4
+  tradeable_type: Equity
+mark_00031:
+  created_on: 2007-04-17 10:59:30 -07:00
+  updated_on: 2007-04-17 10:59:30 -07:00
+  mark_date: 2007-03-07
+  mark_type: C
+  id: 31
+  mark_value: 33.4
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00019:
+  created_on: 2007-04-16 15:17:48 -07:00
+  updated_on: 2007-04-16 15:17:48 -07:00
+  mark_date: 2007-04-16
+  mark_type: C
+  id: 19
+  mark_value: 0.0
+  tradeable_id: 9
+  tradeable_type: Equity
+mark_00008:
+  created_on: 2007-04-13 17:39:27 -07:00
+  updated_on: 2007-04-13 17:39:27 -07:00
+  mark_date: 2007-04-02
+  mark_type: C
+  id: 8
+  mark_value: 3.3
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00020:
+  created_on: 2007-04-16 17:47:03 -07:00
+  updated_on: 2007-04-16 17:47:03 -07:00
+  mark_date: 2007-04-09
+  mark_type: C
+  id: 20
+  mark_value: 10.23
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00021:
+  created_on: 2007-04-16 18:57:26 -07:00
+  updated_on: 2007-04-16 18:57:26 -07:00
+  mark_date: 2007-04-16
+  mark_type: C
+  id: 21
+  mark_value: 23.0
+  tradeable_id: 10
+  tradeable_type: Equity
+mark_00009:
+  created_on: 2007-04-13 17:47:50 -07:00
+  updated_on: 2007-04-13 17:47:50 -07:00
+  mark_date: 2007-04-01
+  mark_type: C
+  id: 9
+  mark_value: 3.45
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00010:
+  created_on: 2007-04-13 18:20:50 -07:00
+  updated_on: 2007-04-13 18:20:50 -07:00
+  mark_date: 2007-04-18
+  mark_type: C
+  id: 10
+  mark_value: 3.3
+  tradeable_id: 5
+  tradeable_type: Equity
+mark_00032:
+  created_on: 2007-04-19 13:56:55 -07:00
+  updated_on: 2007-04-19 14:07:39 -07:00
+  mark_date: 2007-04-19
+  mark_type: C
+  id: 32
+  mark_value: 44.2
+  tradeable_id: 14
+  tradeable_type: Equity
+mark_00043:
+  created_on: 2007-04-19 17:17:58 -07:00
+  updated_on: 2007-04-19 17:17:58 -07:00
+  mark_date: 2007-01-01
+  mark_type: C
+  id: 43
+  mark_value: 400.0
+  tradeable_id: 6
+  tradeable_type: Equity
+mark_00044:
+  created_on: 2007-04-19 17:18:06 -07:00
+  updated_on: 2007-04-19 17:18:06 -07:00
+  mark_date: 2007-01-01
+  mark_type: C
+  id: 44
+  mark_value: 17.0
+  tradeable_id: 3
+  tradeable_type: Equity
+mark_00033:
+  created_on: 2007-04-19 14:10:42 -07:00
+  updated_on: 2007-04-19 14:10:42 -07:00
+  mark_date: 2007-04-18
+  mark_type: C
+  id: 33
+  mark_value: 44.2
+  tradeable_id: 14
+  tradeable_type: Equity
+mark_00022:
+  created_on: 2007-04-17 10:57:31 -07:00
+  updated_on: 2007-04-17 10:57:31 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 22
+  mark_value: 23.4
+  tradeable_id: 10
+  tradeable_type: Equity
+mark_00023:
+  created_on: 2007-04-17 10:57:39 -07:00
+  updated_on: 2007-04-17 10:57:39 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 23
+  mark_value: 234.4
+  tradeable_id: 11
+  tradeable_type: Equity
+mark_00001:
+  created_on: 2007-04-13 17:03:13 -07:00
+  updated_on: 2007-04-13 17:03:13 -07:00
+  mark_date: 2007-04-13
+  mark_type: C
+  id: 1
+  mark_value: 450.0
+  tradeable_id: 6
+  tradeable_type: Equity
+mark_00045:
+  created_on: 2007-04-19 17:47:34 -07:00
+  updated_on: 2007-04-19 17:47:34 -07:00
+  mark_date: 2007-04-17
+  mark_type: C
+  id: 45
+  mark_value: 456.0
+  tradeable_id: 6
+  tradeable_type: Equity

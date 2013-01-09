@@ -1,0 +1,25 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Currencies", :action_name => "List Currencies", :top_level_controller => @controller.controller_name } %>
+
+<h1>Listing Currencies</h1>
+
+<table>
+  <tr>
+  <%= show_relevant_table_columns(Currency.new, true) %>
+  <th/>
+  </tr>
+  
+<% i=0
+  for currency in @currencies %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+  <td><%=h currency.alpha_code %></td>
+  <td><%=h currency.numeric_code %></td>
+  <td><%=h currency.description %></td>
+  <td><%=h currency.obsolete %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', 
+               :locals=> { :object => currency, :controller_name => 'currencies', :skipEditDelete => true} %>
+  </tr>
+<% end %>
+</table>
+
+<%= pagination_links @currency_pages %>

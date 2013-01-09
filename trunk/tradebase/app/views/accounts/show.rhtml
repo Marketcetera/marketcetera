@@ -1,0 +1,36 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Accounts", :action_name => "View Account", :top_level_controller => @controller.controller_name } %>
+<h1>View Account</h1>
+
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <label for="account_nickname" class="view_background">Nickname</label>
+            <div id="account_nickname" class="data view_data"><%=df(@account.nickname)  %></div>
+            
+            <label for="account_institution_identifier" class="view_background">Institution identifier</label>
+            <div id="account_institution_identifier" class="data view_data"><%=df(@account.institution_identifier) %></div>
+    
+            <label for="account_description" class="view_background">Description</label>
+            <div id="account_description" class="data view_data"><%=df(@account.description)  %></div>
+        </div>
+        
+        <div class="form_right">
+            <label for="created_on" class="view_background">Created On</label>
+            <div id="created_on" class="data view_data"><%=df(@account.created_on) %></div>
+
+            <label for="updated_on" class="view_background">Updated On</label>
+            <div id="updated_on" class="data view_data"><%=df(@account.updated_on) %></div>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
+
+<%= link_to 'View all positions for this account', :controller => 'positions_queries', :action => 'positions_by_account', 
+             :nickname => @account.nickname %>
+<p>
+<h2>Sub-accounts</h2>
+<% @sub_accounts = @account.sub_accounts %>
+<%= render :partial => 'sub_accounts/sub_account_list_display' %>
+
+<%= button_to "Edit", {:action => 'edit', :id => @account}, {:class => "submit floatright"} %>

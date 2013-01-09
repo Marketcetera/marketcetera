@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.marketcetera.photon.internal.marketdata.ui.MarketDataPreferencePage"
+            id="org.marketcetera.photon.marketdata.ui.MarketDataPreferencePage"
+            name="%marketDataPreferencePage.name">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.marketcetera.photon.internal.marketdata.ui.FeedPreferencePageInitializer">
+      </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.marketcetera.photon.marketdata.MarketDataViewCategory"
+            name="%marketDataViewCategory.name">
+      </category>
+      <view
+            allowMultiple="true"
+            class="org.marketcetera.photon.internal.marketdata.ui.MarketDepthView"
+            icon="icons/chart_line.png"
+            id="org.marketcetera.photon.marketdata.MarketDepthView"
+            name="%marketDepthView.name"
+            restorable="false">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="org.marketcetera.photon.internal.marketdata.ui.ShowMarketDepthHandler"
+            description="%showMarketDepth.description"
+            id="org.marketcetera.photon.marketdata.ui.commands.ShowMarketDepth"
+            name="%showMarketDepth.name">
+         <commandParameter
+               id="symbol"
+               name="%showMarketDepthSymbolParameter"
+               optional="false">
+         </commandParameter>
+         <commandParameter
+               id="source"
+               name="%showMarketDepthSourceParameter"
+               optional="false">
+         </commandParameter>
+      </command>
+   </extension>
+</plugin>
