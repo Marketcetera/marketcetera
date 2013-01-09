@@ -48,10 +48,10 @@
     <properties>
         <mvn.javase.version>6</mvn.javase.version>
         <mvn.javaee.version>5</mvn.javaee.version>
-        <mvn.spring.version>2.5.2</mvn.spring.version>
-        <mvn.cxf.version>2.1.2</mvn.cxf.version>
+        <mvn.spring.version>3.1.3.RELEASE</mvn.spring.version>
+        <mvn.cxf.version>2.7.1</mvn.cxf.version>
         <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
-        <mvn.xjc.version>2.1.7</mvn.xjc.version>
+        <mvn.xjc.version>2.7.1</mvn.xjc.version>
         <mvn.eclipse.version>3.5</mvn.eclipse.version>
         <!-- Build Number. -->
         <mvn.build.number>Development Build</mvn.build.number>
@@ -156,16 +156,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http</artifactId>
                 <version>${mvn.cxf.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring</artifactId>
-                <version>${mvn.spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${mvn.spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.skife.kasparov</groupId>
@@ -319,29 +309,36 @@
                 <artifactId>protobuf-java</artifactId>
                 <version>2.3.0</version>
             </dependency>
-            <!-- Runtime. -->
-            <dependency>
-                <groupId>org.apache.activemq</groupId>
-                <artifactId>activemq-pool</artifactId>
-                <version>5.2.0</version>
-                <scope>runtime</scope>
-            </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
                 <version>${mvn.spring.version}</version>
-                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${mvn.spring.version}</version>
-                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${mvn.spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jms</artifactId>
+                <version>${mvn.spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>${mvn.spring.version}</version>
+            </dependency>
+            <!-- Runtime. -->
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-pool</artifactId>
+                <version>5.2.0</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
@@ -433,7 +430,7 @@
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib-nodep</artifactId>
-                <version>2.1_3</version>
+                <version>2.2.2</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
@@ -509,6 +506,12 @@
                         <artifactId>junit</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-orm</artifactId>
+                <version>${mvn.spring.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
