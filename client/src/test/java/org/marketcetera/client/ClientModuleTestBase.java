@@ -1,23 +1,24 @@
 package org.marketcetera.client;
 
-import org.marketcetera.client.jms.OrderEnvelope;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.tags.SessionId;
-import org.marketcetera.module.*;
-import org.marketcetera.trade.*;
-
-import static org.marketcetera.trade.TypesTestBase.*;
-import org.marketcetera.quickfix.FIXVersion;
-import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.apache.commons.lang.ObjectUtils;
+import static org.marketcetera.trade.TypesTestBase.*;
 
-import javax.management.JMX;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.math.BigDecimal;
+
+import javax.management.JMX;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.junit.*;
+import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.module.*;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 /**

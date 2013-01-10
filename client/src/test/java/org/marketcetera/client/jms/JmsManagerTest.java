@@ -1,15 +1,20 @@
 package org.marketcetera.client.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import javax.jms.ConnectionFactory;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.client.MockServer;
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.test.TestCaseBase;
 import org.springframework.jms.core.JmsTemplate;
-import quickfix.Message;
 
-import static org.junit.Assert.*;
+import quickfix.Message;
 
 /**
  * @author tlerios@marketcetera.com
@@ -38,16 +43,18 @@ public class JmsManagerTest
         "-bsx";
     static final int TEST_COUNT=
         10;
-
-
-    private static <T> void single
-        (JmsTemplate sender,
-         SampleReplyHandler<T> replies[],
-         SampleReceiveOnlyHandler<T> receivers[])
+    @BeforeClass
+    public static void once()
+    {
+        LoggerConfiguration.logSetup();
+    }
+    private static <T> void single(JmsTemplate sender,
+                                   SampleReplyHandler<T> replies[],
+                                   SampleReceiveOnlyHandler<T> receivers[])
         throws Exception
     {
         // Send messages.
-        SampleReplyHandler<T> firstReply=replies[0];
+        SampleReplyHandler<T> firstReply = replies[0];
         for (int i=0;i<TEST_COUNT;i++) {
             sender.convertAndSend(firstReply.create(i));
         }
@@ -74,15 +81,15 @@ public class JmsManagerTest
         }
     }
 
-    private static <T> void single
-        (JmsTemplate sender,
-         SampleReplyHandler<T> reply,
-         SampleReceiveOnlyHandler<T> receiver)
+    @SuppressWarnings("unchecked")
+    private static <T> void single(JmsTemplate sender,
+                                   SampleReplyHandler<T> reply,
+                                   SampleReceiveOnlyHandler<T> receiver)
         throws Exception
     {
         single(sender,
-               new SampleReplyHandler[]{reply},
-               new SampleReceiveOnlyHandler[]{receiver});
+               new SampleReplyHandler[] { reply },
+               new SampleReceiveOnlyHandler[] { receiver });
     }
 
 
@@ -90,34 +97,31 @@ public class JmsManagerTest
     public void simpleMessages()
         throws Exception
     {
-        MockServer server=new MockServer();
-        JmsManager mgr=new JmsManager
-            ((ConnectionFactory)
-             (server.getContext().getBean("metc_connection_factory_in")),
-             (ConnectionFactory)
-             (server.getContext().getBean("metc_connection_factory_out")));
-
+        MockServer server = new MockServer();
+        JmsManager mgr = new JmsManager((ConnectionFactory)(server.getContext().getBean("metc_connection_factory_in")),
+                                        (ConnectionFactory)(server.getContext().getBean("metc_connection_factory_out")));
         // STANDARD CONVERTER.
-
-        String senderName=TEST_SEND_DEST;
-        String replyName=TEST_REPLY_DEST;
-
+        String senderName = TEST_SEND_DEST;
+        String replyName = TEST_REPLY_DEST;
         // Queues.
-        SampleIntegerReplyHandler reply=
-            new SampleIntegerReplyHandler();
-        SampleReceiveOnlyHandler<Integer> receiveOnly=
-            new SampleReceiveOnlyHandler<Integer>();
-        mgr.getIncomingJmsFactory().registerHandler
-            (reply,senderName,false,replyName,false);
-        mgr.getIncomingJmsFactory().registerHandler
-            (receiveOnly,replyName,false);
-        single(mgr.getOutgoingJmsFactory().createJmsTemplate
-               (senderName,false),reply,receiveOnly);
-
+        SampleIntegerReplyHandler reply = new SampleIntegerReplyHandler();
+        SampleReceiveOnlyHandler<Integer> receiveOnly = new SampleReceiveOnlyHandler<Integer>();
+        mgr.getIncomingJmsFactory().registerHandler(reply,
+                                                    senderName,
+                                                    false,
+                                                    replyName,
+                                                    false);
+        mgr.getIncomingJmsFactory().registerHandler(receiveOnly,
+                                                    replyName,
+                                                    false);
+        single(mgr.getOutgoingJmsFactory().createJmsTemplate(senderName,
+                                                             false),
+               reply,
+               receiveOnly);
         // Topics.
-        SampleIntegerReplyHandler[] replies=new SampleIntegerReplyHandler[] {
+        SampleIntegerReplyHandler[] replies = new SampleIntegerReplyHandler[] {
             new SampleIntegerReplyHandler(),
-            new SampleIntegerReplyHandler()};
+            new SampleIntegerReplyHandler() };
         SampleReceiveOnlyHandler[] receivers=new SampleReceiveOnlyHandler[] {
             new SampleReceiveOnlyHandler<Integer>(),
             new SampleReceiveOnlyHandler<Integer>()};            
