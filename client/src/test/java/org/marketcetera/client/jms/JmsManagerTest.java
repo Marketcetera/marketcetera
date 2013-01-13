@@ -94,6 +94,7 @@ public class JmsManagerTest
 
 
     @Test
+    @SuppressWarnings("rawtypes")
     public void simpleMessages()
         throws Exception
     {
