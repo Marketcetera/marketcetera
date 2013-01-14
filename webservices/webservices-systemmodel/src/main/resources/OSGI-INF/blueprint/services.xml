@@ -21,7 +21,7 @@
     <bean id="jacksonProvider" class="org.marketcetera.webservices.systemmodel.impl.JacksonMarshallingService"/>
     <service ref="jacksonProvider" interface="org.marketcetera.webservices.systemmodel.JsonMarshallingService"/>
 
-    <jaxrs:server id="cstsUserService" address="/userservice/v1">
+    <jaxrs:server id="coreServicesServer" address="/metc/core">
         <jaxrs:serviceBeans>
             <ref component-id="permissionManagerWebServiceBean"/>
             <ref component-id="roleManagerWebServiceBean"/>
@@ -54,6 +54,7 @@
     <bean id="authenticationWebServiceBean" class="org.marketcetera.webservices.security.impl.AuthenticationServiceImpl">
         <property name="securityService" ref="securityService"/>
         <property name="permissionDao" ref="permissionDao"/>
+        <property name="userDao" ref="userDao"/>
     </bean>
     <bean id="provisioningWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.ProvisioningServiceImpl">
         <property name="provisioningManager" ref="provisioningManager"/>

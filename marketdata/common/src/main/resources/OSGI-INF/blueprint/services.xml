@@ -14,7 +14,7 @@
   </bean>
   <!-- set up the CXF endpoints for the webservices of this bundle -->
   <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
-  <jaxrs:server id="metcMarketData" address="/marketdata">
+  <jaxrs:server id="metcMarketData" address="/metc/marketdata">
     <jaxrs:serviceBeans>
       <ref component-id="marketDataWebServiceBean" />
     </jaxrs:serviceBeans>
