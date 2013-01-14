@@ -6,11 +6,9 @@ import static org.junit.Assert.assertThat;
 import java.math.BigDecimal;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.core.position.MarketDataSupport;
-import org.marketcetera.core.position.MockTrade;
-import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.core.position.Trade;
+import org.marketcetera.core.position.*;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.module.ExpectedFailure;
@@ -30,6 +28,7 @@ import ca.odell.glazedlists.BasicEventList;
  * @version $Id$
  * @since 1.5.0
  */
+@Ignore
 public class PositionRowUpdaterTest {
 
     private static final Instrument EQUITY = new Equity("METC");

@@ -1,17 +1,20 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.file.CopyCharsUtils;
-import org.marketcetera.client.ClientParameters;
-import org.marketcetera.core.LoggerConfiguration;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.marketcetera.orderloader.Messages.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 
 import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.io.File;
+import java.io.PrintStream;
+
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.marketcetera.client.ClientParameters;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.util.file.CopyCharsUtils;
 
 /* $License$ */
 /**
@@ -21,7 +24,7 @@ import java.io.File;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@Ignore
 public class MainTest {
     @BeforeClass
     public static void setupLogger() {

@@ -165,7 +165,7 @@ public class StrategyAgentTestBase extends TestCaseBase {
      */
     protected static byte[] generateSubclass(
             Class inSuperClass, String inSubClassName) {
-        ClassWriter cw = new ClassWriter(false);
+        ClassWriter cw = new ClassWriter(0);
         cw.visit(org.objectweb.asm.Opcodes.V1_6,
                 org.objectweb.asm.Opcodes.ACC_PUBLIC,
                 transformName(inSubClassName),null,
@@ -194,7 +194,7 @@ public class StrategyAgentTestBase extends TestCaseBase {
      */
     protected static byte[] generateSubclassURNConstructor(
             Class inSuperClass, String inSubClassName) {
-        ClassWriter cw = new ClassWriter(false);
+        ClassWriter cw = new ClassWriter(0);
         cw.visit(org.objectweb.asm.Opcodes.V1_6,
                 org.objectweb.asm.Opcodes.ACC_PUBLIC,
                 transformName(inSubClassName),null,

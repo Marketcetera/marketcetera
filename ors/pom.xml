@@ -66,8 +66,8 @@
       <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
     <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm</artifactId>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
     </dependency>
     <dependency>
       <groupId>c3p0</groupId>
@@ -90,7 +90,7 @@
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
+      <artifactId>hamcrest-all</artifactId>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -99,6 +99,10 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
 

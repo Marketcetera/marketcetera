@@ -96,12 +96,16 @@
     </dependency>
     <dependency>
       <groupId>cglib</groupId>
-      <artifactId>cglib-nodep</artifactId>
+      <artifactId>cglib</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
+    <!--dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
+    </dependency-->
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -118,16 +122,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm-attrs</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <scope>test</scope>
@@ -136,6 +130,10 @@
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
 
@@ -252,7 +250,7 @@
     								<artifactId>
     									hibernate3-maven-plugin
     								</artifactId>
-    								<versionRange>[2.1,)</versionRange>
+    								<versionRange>2.1</versionRange> <!-- update version -->
     								<goals>
     									<goal>hbm2ddl</goal>
     								</goals>

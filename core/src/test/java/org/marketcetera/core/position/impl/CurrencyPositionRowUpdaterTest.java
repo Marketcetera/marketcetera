@@ -6,11 +6,9 @@ import static org.junit.Assert.assertThat;
 import java.math.BigDecimal;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.core.position.MarketDataSupport;
-import org.marketcetera.core.position.MockTrade;
-import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.core.position.Trade;
+import org.marketcetera.core.position.*;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.module.ExpectedFailure;
@@ -26,6 +24,7 @@ import ca.odell.glazedlists.BasicEventList;
  * Test {@link PositionRowUpdater}.
  * 
  */
+@Ignore
 public class CurrencyPositionRowUpdaterTest {
 
     private static final Instrument CURRENCY = new Currency("USD","INR","","");

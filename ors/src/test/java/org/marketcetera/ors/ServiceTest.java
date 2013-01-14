@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -20,6 +21,7 @@ import org.marketcetera.trade.*;
 
 /* $License$ */
 
+@Ignore
 public class ServiceTest
     extends ORSTestBase
 {

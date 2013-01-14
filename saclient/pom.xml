@@ -79,7 +79,7 @@
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
+      <artifactId>hamcrest-all</artifactId>
     </dependency> 
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -95,6 +95,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>client</artifactId>
       <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
 

@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.Trade;
@@ -30,6 +31,7 @@ import com.google.common.collect.Sets;
  * @version $Id$
  * @since 1.5.0
  */
+@Ignore
 public class PositionRowUpdaterConcurrencyTest {
 
     private final Random mGenerator = new Random();
