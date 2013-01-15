@@ -112,21 +112,6 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-
-      <!-- Configure Eclipse IDE metadata. -->
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <pde>true</pde>
-          <manifest>null</manifest>
-          <resolveDependencies>false</resolveDependencies>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
   <profiles>
 
     <!-- Command-line execution: test. -->

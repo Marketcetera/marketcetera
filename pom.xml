@@ -536,11 +536,6 @@
 	  <artifactId>maven-dependency-plugin</artifactId>
 	  <version>2.6</version>
 	</plugin>
-	<!-- mvn eclipse:* -->
-	<plugin>
-	  <artifactId>maven-eclipse-plugin</artifactId>
-	  <version>2.9</version>
-	</plugin>
 	<!-- mvn clean -->
 	<plugin>
 	  <artifactId>maven-clean-plugin</artifactId>
