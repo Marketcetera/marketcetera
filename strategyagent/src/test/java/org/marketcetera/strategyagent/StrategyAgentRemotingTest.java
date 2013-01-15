@@ -552,15 +552,16 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
         ModuleTestBase.assertModuleInfo(saClient.getModuleInfo(urn), urn,
                 ModuleState.CREATED, null, null,
                 false, false, true, true, true);
-        Map<String, Object> props = saClient.getProperties(urn);
+        Map<String,Object> props = saClient.getProperties(urn);
         assertNotNull(props);
         assertFalse(props.isEmpty());
         assertEquals(props.toString(), 5, props.size());
-        assertThat(props, allOf(hasEntry("Parameters", null),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, false),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
+        assertThat(props,
+                   allOf(hasEntry("Parameters",null),
+                         hasEntry("Name",(Object)"HelloWorld"),
+                         hasEntry("Language",(Object)Language.RUBY.toString()),
+                         hasEntry(STRAT_PROP_ROUTING_ORDERS,(Object)false),
+                         hasEntry("OutputDestination",(Object)RECEIVER_URN.parent().getValue())));
 
         //start the strategy
         saClient.start(urn);
@@ -570,11 +571,11 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
         assertNotNull(props);
         assertEquals(props.toString(), 6, props.size());
         assertThat(props, allOf(hasEntry("Parameters", null),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, false),
-                hasEntry("Status", "RUNNING"),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
+                hasEntry("Name",(Object)"HelloWorld"),
+                hasEntry("Language",(Object)Language.RUBY.toString()),
+                hasEntry(STRAT_PROP_ROUTING_ORDERS,(Object)false),
+                hasEntry("Status",(Object)"RUNNING"),
+                hasEntry("OutputDestination",(Object)RECEIVER_URN.parent().getValue())));
 
         //stop the strategy
         saClient.stop(urn);
@@ -589,18 +590,19 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
         props = saClient.setProperties(urn, props);
         assertNotNull(props);
         assertEquals(props.toString(), 2, props.size());
-        assertThat(props, allOf(hasEntry("Parameters", (Object)paramValue),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, true)));
+        assertThat(props,
+                   allOf(hasEntry("Parameters", (Object)paramValue),
+                hasEntry(STRAT_PROP_ROUTING_ORDERS,(Object)true)));
         //verify that the property indeed changed by fetching them again
         props = saClient.getProperties(urn);
         assertNotNull(props);
         assertEquals(props.toString(), 6, props.size());
         assertThat(props, allOf(hasEntry("Parameters", (Object)paramValue),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, true),
-                hasEntry("Status", "STOPPED"),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
+                hasEntry("Name",(Object)"HelloWorld"),
+                hasEntry("Language",(Object)Language.RUBY.toString()),
+                hasEntry(STRAT_PROP_ROUTING_ORDERS,(Object)true),
+                hasEntry("Status",(Object)"STOPPED"),
+                hasEntry("OutputDestination",(Object)RECEIVER_URN.parent().getValue())));
 
         props.clear();
         props.put(STRAT_PROP_ROUTING_ORDERS, BigDecimal.ONE);

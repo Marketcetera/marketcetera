@@ -1,17 +1,19 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.trade.*;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.core.position.PositionKey;
-import org.junit.Test;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
+
+import org.junit.Test;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Side;
 
 /* $License$ */
 /**

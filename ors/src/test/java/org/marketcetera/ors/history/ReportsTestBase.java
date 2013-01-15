@@ -645,11 +645,11 @@ public class ReportsTestBase extends TestCaseBase {
         return new PositionKeyImpl<T>(inSymbol, inAccount, inActor);
     }
 
-    protected static Matcher<Map> isOfSize(int inLength) {
+    protected static Matcher<Map<?,?>> isOfSize(int inLength) {
         return new SizeMatcher(inLength);
     }
 
-    private static class SizeMatcher extends TypeSafeMatcher<Map> {
+    private static class SizeMatcher extends TypeSafeMatcher<Map<?,?>> {
         SizeMatcher(int inExpectedSize) {
             mExpectedSize = inExpectedSize;
         }
