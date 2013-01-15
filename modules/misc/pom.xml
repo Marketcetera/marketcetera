@@ -46,7 +46,7 @@
     <!-- Testing. -->
     <dependency>
       <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
+      <artifactId>hamcrest-library</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
