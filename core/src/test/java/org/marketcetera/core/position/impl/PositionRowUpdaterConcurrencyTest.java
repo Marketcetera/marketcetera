@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
  * @version $Id$
  * @since 1.5.0
  */
-@Ignore
+//@Ignore
 public class PositionRowUpdaterConcurrencyTest {
 
     private final Random mGenerator = new Random();

@@ -24,7 +24,7 @@ import ca.odell.glazedlists.BasicEventList;
  * Test {@link PositionRowUpdater}.
  * 
  */
-@Ignore
+//@Ignore
 public class CurrencyPositionRowUpdaterTest {
 
     private static final Instrument CURRENCY = new Currency("USD","INR","","");

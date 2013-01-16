@@ -28,7 +28,7 @@ import ca.odell.glazedlists.BasicEventList;
  * @version $Id$
  * @since 1.5.0
  */
-@Ignore
+//@Ignore
 public class PositionRowUpdaterTest {
 
     private static final Instrument EQUITY = new Equity("METC");
