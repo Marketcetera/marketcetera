@@ -135,11 +135,12 @@
 	<version>1.5.2-bd</version>
       </dependency>
       <!-- Compile: other. -->
-      <dependency>
+      <!-- CD 20130116: Disabled until the hibernate/cglib debacle can be resolved -->
+      <!--dependency>
 	<groupId>asm</groupId>
 	<artifactId>asm</artifactId>
 	<version>3.3.1</version>
-      </dependency>
+      </dependency-->
       <dependency>
 	<groupId>org.apache.cxf</groupId>
 	<artifactId>cxf-rt-frontend-jaxws</artifactId>
@@ -148,10 +149,10 @@
 	  <!-- CD 20130116: excluding this version of asm makes the compile dependency
                more obvious: in fact, we want to pair our asm version with the one brought
 	       in by cxf (3.3.1 as of now) -->
-	  <exclusion>
+	  <!--exclusion>
 	    <groupId>asm</groupId>
 	    <artifactId>asm</artifactId>
-	  </exclusion>
+	  </exclusion-->
 	</exclusions>
       </dependency>
       <dependency>
@@ -397,16 +398,18 @@
 	<version>1.8.0.10</version>
 	<scope>runtime</scope>
       </dependency>
+      <!-- this jar causes problems because it wants to bring in asm 1.5.3, which is ancient -->
       <dependency>
 	<groupId>org.hibernate</groupId>
 	<artifactId>hibernate-entitymanager</artifactId>
 	<version>3.3.2.GA</version> <!-- update version, mysql throws non-javax.persistence exceptions for constraint violation also, can't build schema from maven with H4 -->
 	<scope>runtime</scope>
       </dependency>
+      <!-- this jar causes problems because it wants to bring in asm 1.5.3, which is ancient -->
       <dependency>
 	<groupId>cglib</groupId>
 	<artifactId>cglib</artifactId>
-	<version>2.1_3</version>
+	<version>2.1_3</version> <!-- wants to be version 2.2.2 -->
 	<scope>runtime</scope>
       </dependency>
       <dependency>
@@ -596,7 +599,7 @@
 	<plugin>
 	  <artifactId>maven-javadoc-plugin</artifactId>
 	  <version>2.9</version>
-	  <configuration>
+	  <!--configuration>
 	    <links>
 	      <link>http://commons.apache.org/cli/api-release/</link>
 	      <link>http://commons.apache.org/collections/api-release/</link>
@@ -608,7 +611,7 @@
 	      <link>http://static.springframework.org/spring/docs/3.1.3.RELEASE/javadoc-api/</link>
 	      <link>http://www.quickfixj.org/quickfixj/javadoc/1.5.1</link>
 	    </links>
-	  </configuration>
+	  </configuration-->
 	</plugin>
 	<!-- Database schema generator. -->
 	<plugin>
@@ -684,34 +687,6 @@
 	  </execution>
 	</executions>
       </plugin>
-      <plugin>
-	<artifactId>maven-javadoc-plugin</artifactId>
-	<version>2.9</version>
-	<executions>
-	  <execution>
-	    <id>attach-javadocs</id>
-	    <goals>
-	      <goal>jar</goal>
-	    </goals>
-	  </execution>
-	</executions>
-	<configuration>
-	  <doctitle>Marketcetera Platform ${project.version} API</doctitle>
-	  <windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
-	  <overview>tools/javadoc/overview.html</overview>
-	  <links>
-	    <link>http://commons.apache.org/cli/api-release/</link>
-	    <link>http://commons.apache.org/collections/api-release/</link>
-	    <link>http://commons.apache.org/io/api-release/</link>
-	    <link>http://commons.apache.org/lang/api-release/</link>
-	    <link>http://commons.apache.org/vfs/apidocs/</link>
-	    <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
-	    <link>http://publicobject.com/glazedlists/glazedlists-1.8.0/api/</link>
-	    <link>http://static.springframework.org/spring/docs/3.1.3.RELEASE/javadoc-api/</link>
-	    <link>http://www.quickfixj.org/quickfixj/javadoc/1.5.1</link>
-	  </links>
-	</configuration>
-      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -772,6 +747,34 @@
 		</goals>
 	      </execution>
 	    </executions>
+	  </plugin>
+	  <plugin>
+	    <artifactId>maven-javadoc-plugin</artifactId>
+	    <version>2.9</version>
+	    <executions>
+	      <execution>
+		<id>attach-javadocs</id>
+		<goals>
+		  <goal>jar</goal>
+		</goals>
+	      </execution>
+	    </executions>
+	    <configuration>
+	      <doctitle>Marketcetera Platform ${project.version} API</doctitle>
+	      <windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
+	      <overview>tools/javadoc/overview.html</overview>
+	      <links>
+		<link>http://commons.apache.org/cli/api-release/</link>
+		<link>http://commons.apache.org/collections/api-release/</link>
+		<link>http://commons.apache.org/io/api-release/</link>
+		<link>http://commons.apache.org/lang/api-release/</link>
+		<link>http://commons.apache.org/vfs/apidocs/</link>
+		<link>http://logging.apache.org/log4j/1.2/apidocs/</link>
+		<link>http://publicobject.com/glazedlists/glazedlists-1.8.0/api/</link>
+		<link>http://static.springframework.org/spring/docs/3.1.3.RELEASE/javadoc-api/</link>
+		<link>http://www.quickfixj.org/quickfixj/javadoc/1.5.1</link>
+	      </links>
+	    </configuration>
 	  </plugin>
 	</plugins>
       </build>
