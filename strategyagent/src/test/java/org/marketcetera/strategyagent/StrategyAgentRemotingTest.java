@@ -565,6 +565,12 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
 
         //start the strategy
         saClient.start(urn);
+	// Sameer TODO begins
+	// this call fails, I think the strategy problem is a red herring (hides the real problem here)
+	// obviously, the strategy failing to compile is an issue: I'm working on that. try to figure out
+	// why this call is failing. it looks like it's throwing an NPE.
+	ModuleState state = saClient.getModuleInfo(urn).getState();
+	// Sameer TODO ends
         //verify properties and state
         assertEquals(ModuleState.STARTED, saClient.getModuleInfo(urn).getState());
         props = saClient.getProperties(urn);

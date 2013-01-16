@@ -136,9 +136,23 @@
       </dependency>
       <!-- Compile: other. -->
       <dependency>
+	<groupId>asm</groupId>
+	<artifactId>asm</artifactId>
+	<version>3.3.1</version>
+      </dependency>
+      <dependency>
 	<groupId>org.apache.cxf</groupId>
 	<artifactId>cxf-rt-frontend-jaxws</artifactId>
 	<version>${mvn.cxf.version}</version>
+	<exclusions>
+	  <!-- CD 20130116: excluding this version of asm makes the compile dependency
+               more obvious: in fact, we want to pair our asm version with the one brought
+	       in by cxf (3.3.1 as of now) -->
+	  <exclusion>
+	    <groupId>asm</groupId>
+	    <artifactId>asm</artifactId>
+	  </exclusion>
+	</exclusions>
       </dependency>
       <dependency>
 	<groupId>org.apache.cxf</groupId>
