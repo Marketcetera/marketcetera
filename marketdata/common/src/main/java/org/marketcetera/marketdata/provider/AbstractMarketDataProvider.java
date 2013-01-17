@@ -162,22 +162,29 @@ public abstract class AbstractMarketDataProvider
         try {
             mapRequestToInstruments(inRequestToken);
             for(MarketDataRequestAtom atom : atoms) {
-                Capability requiredCapability = necessaryCapabilities.get(atom.getContent());
-                if(requiredCapability == null) {
-                    throw new UnsupportedOperationException(Messages.UNKNOWN_MARKETDATA_CONTENT.getText(atom.getContent()));
+                if(requestsByAtom.containsKey(atom)) {
+                    requestsByAtom.put(atom,
+                                       inRequestToken);
+                    requestsBySymbol.put(atom.getSymbol(),
+                                         inRequestToken);
+                } else {
+                    Capability requiredCapability = necessaryCapabilities.get(atom.getContent());
+                    if(requiredCapability == null) {
+                        throw new UnsupportedOperationException(Messages.UNKNOWN_MARKETDATA_CONTENT.getText(atom.getContent()));
+                    }
+                    Set<Capability> capabilities = getCapabilities();
+                    if(!capabilities.contains(requiredCapability)) {
+                        throw new MarketDataRequestFailed(new I18NBoundMessage2P(Messages.UNSUPPORTED_MARKETDATA_CONTENT,
+                                                                                 atom.getContent(),
+                                                                                 capabilities.toString()));
+                    }
+                    requestsByAtom.put(atom,
+                                       inRequestToken);
+                    requestsBySymbol.put(atom.getSymbol(),
+                                         inRequestToken);
+                    doMarketDataRequest(inRequestToken.getRequest(),
+                                        atom);
                 }
-                Set<Capability> capabilities = getCapabilities();
-                if(!capabilities.contains(requiredCapability)) {
-                    throw new MarketDataRequestFailed(new I18NBoundMessage2P(Messages.UNSUPPORTED_MARKETDATA_CONTENT,
-                                                                             atom.getContent(),
-                                                                             capabilities.toString()));
-                }
-                requestsByAtom.put(atom,
-                                   inRequestToken);
-                requestsBySymbol.put(atom.getSymbol(),
-                                     inRequestToken);
-                doMarketDataRequest(inRequestToken.getRequest(),
-                                    atom);
             }
         } catch (Exception e) {
             try {

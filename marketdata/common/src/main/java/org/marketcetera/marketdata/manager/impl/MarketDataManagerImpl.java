@@ -141,6 +141,8 @@ public class MarketDataManagerImpl
                 providersByToken.put(token,
                                      provider);
             }
+            tokensByTokenId.put(token.getId(),
+                                token);
         } catch (InterruptedException e) {
             SLF4JLoggerProxy.warn(this,
                                   "Market data request {} interrupted", // TODO

@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.experlog</groupId>
             <artifactId>xapool</artifactId>
-            <version>1.5.0</version>
+            <version>1.6-beta</version>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>
