@@ -1,20 +1,23 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
 import static org.marketcetera.persist.Messages.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessage0P;
 
-import javax.persistence.*;
-import javax.persistence.PersistenceException;
-import java.util.List;
-import java.util.Hashtable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Hashtable;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceException;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 /* $License$ */
 
 /**
@@ -167,8 +170,17 @@ class EntityRemoteServer extends EntityRemoteServices {
     private void translateAndThrow(javax.persistence.PersistenceException e)
             throws org.marketcetera.persist.PersistenceException {
         //Translate the exception using the exception translation table.
-        ExceptionTranslator translator =
-                exceptionTable.get(e.getClass());
+        ExceptionTranslator translator = exceptionTable.get(e.getClass());
+        if(translator == null) {
+            // CD 20130116 - Switching to 3.4.0.GA of Hibernate caused javax.persistence.PersistenceException instead of
+            //  javax.persistence.EntityExistsException
+            Throwable cause = e.getCause();
+            if(cause != null &&
+               cause.getClass().getName().contains("ConstraintViolationException")) {  //$NON-NLS-1$
+                e = new javax.persistence.EntityExistsException(cause);
+                translator = exceptionTable.get(e.getClass());
+            }
+        }
         try {
             if(translator != null) {
                 throw translator.translate(e);
@@ -331,12 +343,12 @@ class EntityRemoteServer extends EntityRemoteServices {
      */
     static String getEntityName(Object o) {
         String entityName = null;
-        Class clazz = null;
+        Class<?> clazz = null;
         if (o != null) {
             if(o instanceof EntityBase) {
                 clazz = o.getClass();
             } else if (o instanceof Class) {
-                clazz = (Class) o;
+                clazz = (Class<?>) o;
             } else if (o instanceof String) {
                 try {
                     clazz = Class.forName((String)o);

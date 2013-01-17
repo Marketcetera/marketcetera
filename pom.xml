@@ -135,12 +135,11 @@
 	<version>1.5.2-bd</version>
       </dependency>
       <!-- Compile: other. -->
-      <!-- CD 20130116: Disabled until the hibernate/cglib debacle can be resolved -->
-      <!--dependency>
+      <dependency>
 	<groupId>asm</groupId>
 	<artifactId>asm</artifactId>
 	<version>3.3.1</version>
-      </dependency-->
+      </dependency>
       <dependency>
 	<groupId>org.apache.cxf</groupId>
 	<artifactId>cxf-rt-frontend-jaxws</artifactId>
@@ -148,11 +147,12 @@
 	<exclusions>
 	  <!-- CD 20130116: excluding this version of asm makes the compile dependency
                more obvious: in fact, we want to pair our asm version with the one brought
-	       in by cxf (3.3.1 as of now) -->
-	  <!--exclusion>
+	       in by cxf (3.3.1 as of now). this is to allow a compile-time dependency on asm
+               without including cxf -->
+	  <exclusion>
 	    <groupId>asm</groupId>
 	    <artifactId>asm</artifactId>
-	  </exclusion-->
+	  </exclusion>
 	</exclusions>
       </dependency>
       <dependency>
@@ -398,18 +398,16 @@
 	<version>1.8.0.10</version>
 	<scope>runtime</scope>
       </dependency>
-      <!-- this jar causes problems because it wants to bring in asm 1.5.3, which is ancient -->
       <dependency>
 	<groupId>org.hibernate</groupId>
 	<artifactId>hibernate-entitymanager</artifactId>
-	<version>3.3.2.GA</version> <!-- update version, mysql throws non-javax.persistence exceptions for constraint violation also, can't build schema from maven with H4 -->
+	<version>3.4.0.GA</version>
 	<scope>runtime</scope>
       </dependency>
-      <!-- this jar causes problems because it wants to bring in asm 1.5.3, which is ancient -->
       <dependency>
 	<groupId>cglib</groupId>
 	<artifactId>cglib</artifactId>
-	<version>2.1_3</version> <!-- wants to be version 2.2.2 -->
+	<version>2.2.2</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
@@ -427,7 +425,7 @@
       <dependency>
 	<groupId>org.apache.mina</groupId>
 	<artifactId>mina-core</artifactId>
-	<version>1.1.7</version> <!-- upgrade version: quickfixj 1.5.2 requires 1.1.7 -->
+	<version>[1.1.7]</version> <!-- upgrade version to 2.0.7 quickfixj 1.5.2 requires 1.1.7 -->
 	<scope>runtime</scope>
       </dependency>
       <!-- Testing: local modules. -->

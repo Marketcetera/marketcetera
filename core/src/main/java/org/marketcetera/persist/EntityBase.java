@@ -339,6 +339,7 @@ public abstract class EntityBase implements SummaryEntityBase {
      * This method is automatically invoked by ORM
      * whenever the entity is being saved.
      */
+    @SuppressWarnings("unused")
     @PrePersist
     @PreUpdate
     private void setLastUpdated() {

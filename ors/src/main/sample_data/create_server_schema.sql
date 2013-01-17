@@ -27,7 +27,7 @@ CREATE TABLE reports (
     updateCount INTEGER NOT NULL,
     brokerID VARCHAR(255),
     reportID BIGINT NOT NULL,
-    fixMessage TEXT NOT NULL,
+    fixMessage LONGTEXT NOT NULL,
     originator INTEGER,
     reportType INTEGER NOT NULL,
     sendingTime DATETIME NOT NULL,

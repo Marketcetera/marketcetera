@@ -39,12 +39,12 @@ public class EnvironmentConfigurationTest extends PersistTestBase {
         while(res.hasMoreElements()) {
             URL url = res.nextElement();
             SLF4JLoggerProxy.debug(this,url.toString());
-            if(url.getPath().indexOf("/hibernate/hibernate/") >= 0) { //$NON-NLS-1$
-                verifyPropertyValue(url,"Hibernate-Version","3.2.6.ga"); //$NON-NLS-1$ //$NON-NLS-2$
+            if(url.getPath().indexOf("/hibernate/hibernate-core/") >= 0) { //$NON-NLS-1$
+                verifyPropertyValue(url,"Specification-Version","3.3.0.SP1"); //$NON-NLS-1$ //$NON-NLS-2$
                 foundCore = true;
             }
             if(url.getPath().indexOf("/hibernate-entitymanager/") >= 0) { //$NON-NLS-1$
-                verifyPropertyValue(url,"Implementation-Version","3.3.2.GA"); //$NON-NLS-1$ //$NON-NLS-2$
+                verifyPropertyValue(url,"Implementation-Version","3.4.0.GA"); //$NON-NLS-1$ //$NON-NLS-2$
                 foundEntityMgr = true;
             }
         }
