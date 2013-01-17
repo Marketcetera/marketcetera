@@ -37,7 +37,7 @@ public final class DataFlowID implements Serializable {
      * to be used for any other purpose.
      */
     private DataFlowID() {
-        this(null);
+        this("");
     }
 
     /**
