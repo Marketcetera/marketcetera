@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.PrintStream;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.core.LoggerConfiguration;
@@ -24,7 +23,6 @@ import org.marketcetera.util.file.CopyCharsUtils;
  * @version $Id$
  * @since 1.0.0
  */
-@Ignore
 public class MainTest {
     @BeforeClass
     public static void setupLogger() {
@@ -49,21 +47,21 @@ public class MainTest {
         MockMain main = run("-m");
         assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
-        assertTrue(output, output.contains("option:m"));
+        assertTrue(output, output.contains("option: m"));
     }
     @Test
     public void incorrectBrokerSyntax() {
         MockMain main = run("-b");
         assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
-        assertTrue(output, output.contains("option:b"));
+        assertTrue(output, output.contains("option: b"));
     }
     @Test
     public void incorrectUsernameSyntax() {
         MockMain main = run("-u");
         assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
-        assertTrue(output, output.contains("option:u"));
+        assertTrue(output, output.contains("option: u"));
         //verify that the copyright message is printed even when there's failure.
         assertTrue(output, output.contains(LOG_APP_COPYRIGHT.getText()));
     }
@@ -72,7 +70,7 @@ public class MainTest {
         MockMain main = run("-p");
         assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
-        assertTrue(output, output.contains("option:p"));
+        assertTrue(output, output.contains("option: p"));
     }
     @Test
     public void systemOrder() throws Exception {

@@ -21,7 +21,6 @@ import javax.management.Notification;
 import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.Util;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
@@ -40,7 +39,6 @@ import org.marketcetera.util.test.UnicodeData;
  * @version $Id$
  * @since 1.0.0
  */
-@Ignore
 public class StrategyModuleTest
         extends StrategyTestBase
 {

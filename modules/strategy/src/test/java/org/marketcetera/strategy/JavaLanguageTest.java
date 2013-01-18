@@ -2,7 +2,6 @@ package org.marketcetera.strategy;
 
 import java.io.File;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
@@ -16,7 +15,6 @@ import org.marketcetera.module.ModuleException;
  * @version $Id$
  * @since 1.0.0
  */
-@Ignore
 public class JavaLanguageTest
         extends LanguageTestBase
 {

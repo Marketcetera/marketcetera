@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.module.*;
@@ -22,7 +21,6 @@ import org.marketcetera.util.test.SerializableAssert;
  * @version $Id$
  * @since 1.0.0
  */
-@Ignore
 public class RubyLanguageTest
         extends LanguageTestBase
 {

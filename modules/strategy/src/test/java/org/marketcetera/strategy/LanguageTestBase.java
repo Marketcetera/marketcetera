@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -1561,7 +1562,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test
+    @Test@Ignore
     public void brokers()
         throws Exception
     {
