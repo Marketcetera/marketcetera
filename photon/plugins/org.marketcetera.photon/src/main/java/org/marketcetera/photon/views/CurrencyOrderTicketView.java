@@ -66,11 +66,7 @@ public class CurrencyOrderTicketView extends
 
     @Override
     protected void customizeWidgets(final ICurrencyOrderTicket ticket) {
-        super.customizeWidgets(ticket);
-        
-        //Initialize base ccy radio buttons
-        ticket.getRadioButtonCCY1().setSelection(true);
-        ticket.getRadioButtonCCY2().setSelection(false);        
+        super.customizeWidgets(ticket); 
 
         /*
          * Update size of text fields since default will be small.
@@ -91,7 +87,7 @@ public class CurrencyOrderTicketView extends
          */
         addSendOrderListener(ticket.getNearTenorText());
         addSendOrderListener(ticket.getFarTenorText());
-
+        
         ticket.getSelectNearTenorButton().addSelectionListener(
                 new SelectionAdapter() {
                     @Override
@@ -108,7 +104,7 @@ public class CurrencyOrderTicketView extends
                         PopupDialog d = new CalendarPopup(getSite().getShell(), ticket.getSelectFarTenorButton(),ticket.getFarTenorText());
                         d.open();
                     };
-                });
+                });       
     }
 
     /**

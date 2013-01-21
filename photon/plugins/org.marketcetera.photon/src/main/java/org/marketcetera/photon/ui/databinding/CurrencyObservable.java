@@ -129,7 +129,7 @@ public class CurrencyObservable
             setIfChanged(mFarTenor,
                          null);
             setIfChanged(mBaseCCY,
-                    false);
+                    	mBaseCCY.getTypedValue());
         }
     }
     /**
