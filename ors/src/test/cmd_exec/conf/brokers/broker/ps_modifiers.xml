@@ -55,10 +55,6 @@
             </map>
           </property>
         </bean>
-        
-         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
-            <constructor-arg value="15(F)"></constructor-arg>
-         </bean>
       </list>
     </property>
   </bean>

@@ -1016,18 +1016,72 @@ public class StrategyTestBase
          * if non-null, will be thrown during {@link #getReportsSince(Date)}.
          */
         private volatile ConnectionException getReportsSinceThrows;
-		@Override
-		public BigDecimal getCurrencyPositionAsOf(Date inDate,
-				Currency inCurrency) throws ConnectionException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(
-				Date inDate) throws ConnectionException {
-			// TODO Auto-generated method stub
-			return null;
-		}
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getCurrencyPositionAsOf(java.util.Date, org.marketcetera.trade.Currency)
+         */
+        @Override
+        public BigDecimal getCurrencyPositionAsOf(Date inDate,
+                                          Currency inCurrency)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            Position position = positions.get(inCurrency);
+            if(position == null) {
+                return null;
+            }
+            return position.getPositionAt(inDate);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getAllCurrencyPositionsAsOf(java.util.Date)
+         */
+        @Override
+        public Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            Map<PositionKey<Currency>,BigDecimal> result = new LinkedHashMap<PositionKey<Currency>,BigDecimal>();
+            for(Map.Entry<Instrument,Position> entry : positions.entrySet()) {
+                if(entry.getKey() instanceof Currency) {
+                    final Currency currency = (Currency)entry.getKey();
+                    BigDecimal value = getCurrencyPositionAsOf(inDate,
+                                                       currency);
+                    if(value != null) {
+                        PositionKey<Currency> key = new PositionKey<Currency>() {
+                            @Override
+                            public String getAccount()
+                            {
+                                return null;
+                            }
+                            /* (non-Javadoc)
+                             * @see java.lang.Object#toString()
+                             */
+                            @Override
+                            public String toString()
+                            {
+                                return getInstrument().getSymbol();
+                            }
+                            @Override
+                            public Currency getInstrument()
+                            {
+                                return currency;
+                            }
+                            @Override
+                            public String getTraderId()
+                            {
+                                return null;
+                            }
+                        };
+                        result.put(key,
+                                   value);
+                    }
+                }
+            }
+            return result;
+        }
     }
     /**
      * Compares the sending times of two <code>ReportBase</code> values.
@@ -1420,6 +1474,9 @@ public class StrategyTestBase
                                                               DateUtils.DAYS),
                                         EventTestBase.generateDecimalValue(),
                                         OptionType.Put));
+        testInstruments.add(new Currency("USD/GBP"));
+        testInstruments.add(new Currency("USD/JPY"));
+        testInstruments.add(new Currency("USD/INR"));
         roots.putAll("METC",
                      Arrays.asList(new String[] { "METC1", "METC2", "METC3", "METC4" } ));
         underlyings.put("METC1",

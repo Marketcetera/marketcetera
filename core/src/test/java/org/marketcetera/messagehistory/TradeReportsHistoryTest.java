@@ -22,6 +22,7 @@ import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -992,6 +993,27 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
             assertThat(history.getAllMessagesList().get(0).getUnderlying(),
                        is("ABC"));
         }
+    }
+    
+    public void testUnderlyingSymbolSupportCurrency()
+            throws Exception
+    {
+    	//FX not supported in FIX 4.0 
+    	if (fixVersion != FIXVersion.FIX40) {
+	        UnderlyingSymbolSupport mockSupport = mock(UnderlyingSymbolSupport.class);
+	        TradeReportsHistory history = new TradeReportsHistory(msgFactory,
+	                                                                  mockSupport);
+	        Message message = createSimpleMessage(Side.BUY,
+	                                                  "1");
+	        Currency currency = new Currency("USD/GBP");
+	        InstrumentToMessage.SELECTOR.forInstrument(currency).set(currency,
+	                                                                   fixVersion.toString(),
+	                                                                   message);
+	        when(mockSupport.getUnderlying(currency)).thenReturn("USD/GBP");
+	        history.addIncomingMessage(createBrokerReport(message));
+	        assertThat(history.getAllMessagesList().get(0).getUnderlying(),
+	                       is("USD/GBP"));
+    	}
     }
 
     public void testUnderlyingSymbolSupportEquity() throws Exception {

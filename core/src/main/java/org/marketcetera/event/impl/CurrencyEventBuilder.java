@@ -11,5 +11,5 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id: CurrencyEventBuilder.java")
 public interface CurrencyEventBuilder<B>
 {
-	//ToDo add appropriate methods for Currency
+	//Currently there are no methods. Used as marker interface
 }

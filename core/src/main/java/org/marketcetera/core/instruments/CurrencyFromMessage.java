@@ -1,5 +1,6 @@
 package org.marketcetera.core.instruments;
 
+import org.marketcetera.core.Messages;
 import org.marketcetera.trade.Currency;
 
 import org.marketcetera.trade.Instrument;
@@ -19,7 +20,7 @@ import quickfix.field.Symbol;
  *
  * @author <a href="mailto:richard.obrien@qmscapital.com">Richard O'Brien</a>
  * @version $Id$
- * @since 2.1.0
+ * @since $Release$
  */
 @ClassVersion("$Id$")
 public class CurrencyFromMessage extends InstrumentFromMessage
@@ -53,7 +54,7 @@ public class CurrencyFromMessage extends InstrumentFromMessage
 		        instrument.setTradedCCY(tradedCCY);
 	        }
         }catch(Exception e){
-        	SLF4JLoggerProxy.error(this,"Error in extracting Instrument object from FIX message in CurrencyFromMessage:" +e.toString());
+            Messages.ERROR_CURRENCY_FROM_MESSAGE.getText(e.toString());
         }
         return instrument;
         

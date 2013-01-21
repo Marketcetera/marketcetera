@@ -39,7 +39,6 @@ public class SessionInfoImpl
         (SystemInfo systemInfo)
     {
         this(NAME_GENERATOR.getNextName(),systemInfo);
-        instance = this;
     }
 
     /**
@@ -55,7 +54,6 @@ public class SessionInfoImpl
          SystemInfo systemInfo)
     {
         super(name,systemInfo);
-        instance = this;
     }
 
 
@@ -65,18 +63,5 @@ public class SessionInfoImpl
     public SystemInfo getSystemInfo()
     {
         return getParentInfo();
-    }
-    /**
-     * Gets the most recently instantiated of this object.
-     *
-     * @return a <code>SessionInfo</code> value
-     */
-    public static SessionInfo getInstance()
-    {
-        return instance;
-    }
-    /**
-     * static instance value
-     */
-    private static SessionInfoImpl instance;
+    } 
 }

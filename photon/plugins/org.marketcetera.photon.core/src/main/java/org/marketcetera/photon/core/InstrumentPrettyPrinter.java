@@ -3,11 +3,10 @@ package org.marketcetera.photon.core;
 import org.marketcetera.core.instruments.InstrumentFunctionHandler;
 import org.marketcetera.core.instruments.StaticInstrumentFunctionSelector;
 import org.marketcetera.photon.commons.Validate;
+import org.marketcetera.photon.internal.core.CurrencyPrettyPrinter;
 import org.marketcetera.photon.internal.core.FuturePrettyPrinter;
 import org.marketcetera.photon.internal.core.OptionPrettyPrinter;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -81,6 +80,21 @@ public abstract class InstrumentPrettyPrinter<I extends Instrument> extends
     public static String printOptionExpiry(Option option) {
         return OptionPrettyPrinter.printExpiry(option);
     }
+    
+    /**
+     * Pretty prints an currency expiry. If the expiry cannot be parsed, it is
+     * returned.
+     * 
+     * @param currency
+     *            the Currency
+     * @return the string value
+     * @throws IllegalArgumentException
+     *             if currency is null
+     */
+    public static String printCurrencyExpiry(Currency currency) {
+        return CurrencyPrettyPrinter.printExpiry(currency);
+    }
+    
     /**
      * Prints a future expiry.
      *
@@ -92,8 +106,7 @@ public abstract class InstrumentPrettyPrinter<I extends Instrument> extends
     {
         return FuturePrettyPrinter.printExpiry(inFuture);
     }
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private static final StaticInstrumentFunctionSelector<InstrumentPrettyPrinter> SELECTOR = new StaticInstrumentFunctionSelector<InstrumentPrettyPrinter>(
             InstrumentPrettyPrinter.class);
 }

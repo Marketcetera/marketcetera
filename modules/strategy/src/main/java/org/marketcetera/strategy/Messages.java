@@ -107,6 +107,8 @@ public interface Messages
                                                                                    "invalid_equity_position_request"); //$NON-NLS-1$
     static final I18NMessage3P INVALID_FUTURE_POSITION_REQUEST = new I18NMessage3P(LOGGER,
                                                                                    "invalid_future_position_request"); //$NON-NLS-1$
+    static final I18NMessage3P INVALID_CURRENCY_POSITION_REQUEST = new I18NMessage3P(LOGGER,
+            																		"invalid_currency_position_request"); //$NON-NLS-1$
     static final I18NMessage2P INVALID_UNDERLYING_REQUEST = new I18NMessage2P(LOGGER,
                                                                               "invalid_underlying_request"); //$NON-NLS-1$
     static final I18NMessage6P INVALID_OPTION_POSITION_REQUEST = new I18NMessage6P(LOGGER,
@@ -123,6 +125,8 @@ public interface Messages
                                                                                    "cannot_retrieve_option_position"); //$NON-NLS-1$
     static final I18NMessage3P CANNOT_RETRIEVE_FUTURE_POSITION = new I18NMessage3P(LOGGER,
                                                                                    "cannot_retrieve_future_position"); //$NON-NLS-1$
+    static final I18NMessage3P CANNOT_RETRIEVE_CURRENCY_POSITION = new I18NMessage3P(LOGGER,
+            																		"cannot_retrieve_currency_position"); //$NON-NLS-1$
     static final I18NMessage2P CANNOT_RETRIEVE_POSITIONS = new I18NMessage2P(LOGGER,
                                                                              "cannot_retrieve_positions"); //$NON-NLS-1$
     static final I18NMessage3P CANNOT_RETRIEVE_POSITIONS_BY_OPTION_ROOTS = new I18NMessage3P(LOGGER,

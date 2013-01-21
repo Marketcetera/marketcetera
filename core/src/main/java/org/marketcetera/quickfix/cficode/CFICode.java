@@ -12,6 +12,7 @@ public abstract class CFICode implements CharSequence{
 	public static final char CATEGORY_OPTION = 'O';
 	public static final char CATEGORY_FUTURE = 'F';
 	public static final char CATEGORY_OTHER = 'M';
+	public static final char CATEGORY_CURRENCY = 'C';
 
 	private char [] chars = new char[6];
 

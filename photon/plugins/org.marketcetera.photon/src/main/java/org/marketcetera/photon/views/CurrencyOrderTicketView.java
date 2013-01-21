@@ -3,7 +3,6 @@ package org.marketcetera.photon.views;
 import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
@@ -15,12 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.client.OrderValidationException;
@@ -36,7 +30,7 @@ import org.marketcetera.photon.commons.ui.databinding.DataBindingUtils;
  * in--and graphically interact with--currency orders.
  * 
  */
-@ClassVersion("$Id: OptionOrderTicketView.java")
+@ClassVersion("$Id$")
 public class CurrencyOrderTicketView extends
         OrderTicketView<CurrencyOrderTicketModel, ICurrencyOrderTicket> {
 
@@ -203,8 +197,13 @@ public class CurrencyOrderTicketView extends
         DataBindingUtils.initControlDecorationSupportFor(farTenorValidator,
                 SWT.BOTTOM | SWT.LEFT);
         dbc.addValidationStatusProvider(farTenorValidator);
+        final IObservableValue baseCCYTarget = SWTObservables.observeSelection(ticket.getRadioButtonCCY1());
+        dbc.bindValue(baseCCYTarget, model.getBaseCCY());
+        
         enableForNewOrderOnly(ticket.getFarTenorText());
         enableForNewOrderOnly(ticket.getSelectFarTenorButton());
+        enableForNewOrderOnly(ticket.getRadioButtonCCY1());
+        enableForNewOrderOnly(ticket.getRadioButtonCCY2());
 
     }
 

@@ -13,6 +13,7 @@ import org.marketcetera.event.LogEvent;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.*;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
@@ -231,6 +232,28 @@ interface ServicesProvider
      * @throws ClientInitException if the information could not be retrieved 
      */
     Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException;
+    /**
+     * Gets the position in the given <code>Currency</code> at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inCurrency a <code>Currency</code> value
+     * @return a <code>BigDecimal</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
+     */
+    BigDecimal getCurrencyPositionAsOf(Date inDate,
+                                     Currency inCurrency)
+            throws ConnectionException, ClientInitException;
+    /**
+     * Gets all open <code>Currency</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Currency&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if the information could not be retrieved 
+     * @throws ClientInitException if the information could not be retrieved 
+     */
+    Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
             throws ConnectionException, ClientInitException;
     /**
      * Gets the position in the given <code>Option</code> at the given point in time.

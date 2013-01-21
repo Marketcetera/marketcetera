@@ -57,7 +57,7 @@
                 </combo>
                 <composite>
                     <layout x:class="gridLayout" numColumns="4" marginWidth="0" marginHeight="0" verticalSpacing="1" horizontalSpacing="10"/>
-                    <layoutData x:class="gridData" horizontalAlignment="SWT.FILL" horizontalSpan="5"/>
+                    <layoutData x:class="gridData" horizontalAlignment="SWT.FILL" horizontalSpan="3"/>
                     <label text="NearTenor"/>
                     <label text=""/>
                     <label text="FarTenor"/>
@@ -67,14 +67,41 @@
                         horizontalAlignment="GridData.FILL" 
                         verticalAlignment="GridData.CENTER"/>
                 </text>
-                <button x:id="SelectNearTenorButton" text="Select..."/>
+                <button x:id="SelectNearTenorButton" text="Select...">
+                 <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+                        horizontalAlignment="GridData.FILL" 
+                        verticalAlignment="GridData.CENTER"/>
+                     </button>
                 <text x:style="SINGLE|BORDER" x:id="FarTenorText" text="">
                     <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
                         horizontalAlignment="GridData.FILL" 
                         verticalAlignment="GridData.CENTER"/>
                 </text>
-                <button x:id="SelectFarTenorButton" text="Select..."/>
+                <button x:id="SelectFarTenorButton" text="Select...">
+                 <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+                        horizontalAlignment="GridData.FILL" 
+                        verticalAlignment="GridData.CENTER"/>
+                </button>
                 </composite>
+                <composite>
+                     <layout x:class="gridLayout" numColumns="4" marginWidth="0" marginHeight="0" verticalSpacing="1" horizontalSpacing="10"/>
+                    <layoutData x:class="gridData" horizontalAlignment="SWT.FILL" horizontalSpan="2"/>
+                    <label text="Base Currency"/>
+                    <label text=""/>
+                    <label text=""/>
+                    <label text=""/>
+                    <button x:style="RADIO" x:id="RadioButtonCCY1" text="CCY1" selection="true">
+                    <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
+                        horizontalAlignment="GridData.FILL" 
+                        verticalAlignment="GridData.CENTER"/>
+                     </button>
+                    <button x:style="RADIO" x:id="RadioButtonCCY2" text="CCY2">
+                    <layoutData x:class="gridData" grabExcessHorizontalSpace="false" 
+                        horizontalAlignment="GridData.FILL" 
+                        verticalAlignment="GridData.CENTER"/>
+                    </button>
+                </composite>
+                
                 <composite>
                     <layout x:class="rowLayout" x:style="HORIZONTAL"/>
                     <layoutData x:class="gridData" verticalAlignment="SWT.BOTTOM" horizontalAlignment="SWT.END" horizontalSpan="2"/>

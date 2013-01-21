@@ -3,8 +3,19 @@ package org.marketcetera.quickfix.cficode;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.instruments.CFICodeUtils;
+import org.marketcetera.trade.Currency;
 
 public class CFICodeTest extends TestCase {
+
+	public void testCurrencyCFICode() throws Exception {
+		String spotCode = CFICodeUtils.getCFICode(new Currency("USD/GBP"));		
+		assertEquals("FFCPNO", spotCode);
+		spotCode = CFICodeUtils.getCFICode(new Currency("USD","GBP","20121231",""));		
+		assertEquals("FFCPNO", spotCode);
+		String forwardCode = CFICodeUtils.getCFICode(new Currency("USD","GBP","20121231","20130131"));
+		assertEquals("FFCPNW", forwardCode);		
+	}
 
 	public void testOptionCFICode() throws Exception {
 		OptionCFICode code;
