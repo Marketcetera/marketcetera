@@ -1,11 +1,10 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 
 /* $License$ */
 /**
@@ -15,7 +14,6 @@ import java.util.LinkedList;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiQueryDateFilterTestHelper<E extends EntityBase,
         S extends SummaryEntityBase> extends
         MultiQueryFilterTestHelper<E, S> {
@@ -83,7 +81,7 @@ public class MultiQueryDateFilterTestHelper<E extends EntityBase,
         return mFilters.toArray(new FilterPair[mFilters.size()]);
     }
 
-    private static FilterPair f(Date filter, long count) throws ValidationException {
+    private static FilterPair f(Date filter, long count) {
         return new FilterPair(filter, count);
     }
 

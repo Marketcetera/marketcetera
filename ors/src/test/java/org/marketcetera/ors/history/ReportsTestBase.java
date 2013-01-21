@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import javax.persistence.PersistenceException;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -24,7 +26,6 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.ors.security.MultiSimpleUserQuery;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistTestBase;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
@@ -337,7 +338,7 @@ public class ReportsTestBase extends TestCaseBase {
             protected void run() throws Exception {
                 inTest.call();
             }
-        }.getException().getLocalizedDetail();
+        }.getException().getLocalizedMessage();
         assertTrue(exceptMsg, exceptMsg.contains(inFieldName));
     }
 

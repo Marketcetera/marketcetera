@@ -1,11 +1,14 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
 import static org.marketcetera.persist.JPQLConstants.*;
 
-import javax.persistence.Query;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 /**
@@ -133,7 +136,7 @@ public abstract class MultipleEntityQuery
      * @throws PersistenceException if there was an error executing
      * the query
      */
-    public long fetchCount() throws PersistenceException {
+    public long fetchCount() {
         return executeRemote(new CountQueryProcessor()).getResult();
     }
 

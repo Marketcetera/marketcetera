@@ -1,9 +1,10 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
 import static org.junit.Assert.assertEquals;
 
 import java.util.regex.Pattern;
+
+import javax.persistence.PersistenceException;
 
 /* $License$ */
 /**
@@ -11,9 +12,7 @@ import java.util.regex.Pattern;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class MultiQueryStringFilterTestHelper<E extends EntityBase,
-        S extends SummaryEntityBase> extends
+public class MultiQueryStringFilterTestHelper<E extends EntityBase,S extends SummaryEntityBase> extends
         MultiQueryFilterTestHelper<E, S> {
     /**
      * Creates an instance
@@ -56,7 +55,7 @@ public class MultiQueryStringFilterTestHelper<E extends EntityBase,
         return TEST_FILTERS;
     }
 
-    private static FilterPair f(String filter, long count) throws ValidationException {
+    private static FilterPair f(String filter, long count) throws PersistenceException {
         return new FilterPair(new StringFilter(filter), count);
     }
 
@@ -89,7 +88,7 @@ public class MultiQueryStringFilterTestHelper<E extends EntityBase,
                     f("*y", 0), //$NON-NLS-1$
                     f("*etc*", 0) //$NON-NLS-1$
             };
-        } catch (ValidationException e) {
+        } catch (PersistenceException e) {
             throw new RuntimeException(e);
         }
     }

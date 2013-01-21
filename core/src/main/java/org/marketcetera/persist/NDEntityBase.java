@@ -1,14 +1,15 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-import static org.marketcetera.persist.Messages.*;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
+import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
+
+import java.util.regex.Pattern;
 
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PersistenceException;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import java.util.regex.Pattern;
+
+import org.marketcetera.core.ClassVersion;
 
 /**
  * Base class for entities that have a name and description.
@@ -81,26 +82,21 @@ public abstract class NDEntityBase extends EntityBase
     /**
      * Validates if this entity can be saved. This method
      *
-     * @throws ValidationException if the validation failed.
      * @throws PersistenceException if a problem was encountered
      * when carrying out validation.
      */
     @PrePersist
     @PreUpdate
-    public void validate() throws PersistenceException {
+    public void validate() {
         if(getName() == null || getName().trim().length() < 1) {
-            throw new ValidationException(UNSPECIFIED_NAME_ATTRIBUTE);
+            throw new PersistenceException(UNSPECIFIED_NAME_ATTRIBUTE.getText());
         }
         if(getName().length() > 255) {
-            throw new ValidationException(new I18NBoundMessage1P(
-                    NAME_ATTRIBUTE_TOO_LONG,getName()));
+            throw new PersistenceException(Messages.NAME_ATTRIBUTE_TOO_LONG.getText(getName()));
         }
-        //Verify that the name can be saved
-        VendorUtils.validateText(getName());
         if(!namePattern.matcher(getName()).matches()) {
-            throw new ValidationException(new I18NBoundMessage2P(
-                    NAME_ATTRIBUTE_INVALID,getName(),
-                    namePattern.toString()));
+            throw new PersistenceException(Messages.NAME_ATTRIBUTE_INVALID.getText(getName(),
+                                                                                   namePattern.toString()));
         }
     }
 

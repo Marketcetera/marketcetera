@@ -1,22 +1,23 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.ors.Principals;
-import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
-
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.persist.*;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.*;
-import org.marketcetera.event.HasFIXMessage;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-import quickfix.Message;
+import javax.persistence.*;
+
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.ors.Principals;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.persist.EntityBase;
+import org.marketcetera.persist.PersistContext;
+import org.marketcetera.persist.Transaction;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.InvalidMessage;
+import quickfix.Message;
 
 /* $License$ */
 /**
@@ -248,11 +249,13 @@ class PersistentReport extends EntityBase {
         mBrokerID = inBrokerID;
     }
     @Column(name = "brokerID")
+    @SuppressWarnings("unused")
     private String getBrokerIDAsString() {
         return getBrokerID() == null
                 ? null
                 : getBrokerID().toString();
     }
+    @SuppressWarnings("unused")
     private void setBrokerIDAsString(String inValue) {
         setBrokerID(inValue == null
                 ? null
@@ -268,9 +271,11 @@ class PersistentReport extends EntityBase {
         mReportID = inReportID;
     }
     @Column(name = "reportID", nullable = false)
+    @SuppressWarnings("unused")
     private long getReportIDAsLong() {
         return getReportID().longValue();
     }
+    @SuppressWarnings("unused")
     private void setReportIDAsLong(long inValue) {
         setReportID(new ReportID(inValue));
     }
@@ -286,6 +291,7 @@ class PersistentReport extends EntityBase {
     }
 
     @Column(nullable = false)
+    @SuppressWarnings("unused")
     private Date getSendingTime() {
         return mSendingTime;
     }
@@ -299,6 +305,7 @@ class PersistentReport extends EntityBase {
         return mReportType;
     }
 
+    @SuppressWarnings("unused")
     private void setReportType(ReportType inReportType) {
         mReportType = inReportType;
     }

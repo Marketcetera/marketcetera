@@ -9,7 +9,6 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -55,7 +54,7 @@ public interface ReportHistoryServices {
      * @return the reports that were received after the date-time
      * value, and which are visible to the given user.
      *
-     * @throws PersistenceException if there were persistence errors
+     * @ if there were persistence errors
      * fetching the reports.
      * @throws ReportPersistenceException if the data retrieved had
      * unexpected errors.
@@ -63,7 +62,7 @@ public interface ReportHistoryServices {
     public ReportBaseImpl[] getReportsSince
         (SimpleUser inUser,
          Date inDate)
-        throws PersistenceException, ReportPersistenceException;
+        throws ReportPersistenceException;
 
     /**
      * Returns the position of the equity based on all reports
@@ -85,8 +84,7 @@ public interface ReportHistoryServices {
     public BigDecimal getEquityPositionAsOf
         (SimpleUser inUser,
          Date inDate,
-         Equity inEquity)
-        throws PersistenceException;
+         Equity inEquity);
     
     /**
      * Returns the position of the currency based on all reports
@@ -108,8 +106,7 @@ public interface ReportHistoryServices {
     public BigDecimal getCurrencyPositionAsOf
         (SimpleUser inUser,
          Date inDate,
-         Currency inCurrency)
-        throws PersistenceException;
+         Currency inCurrency);
 
     /**
      * Returns the aggregate position of each (equity,account,actor)
@@ -123,13 +120,12 @@ public interface ReportHistoryServices {
      *
      * @return the position map.
      *
-     * @throws PersistenceException if there were errors retrieving the
+     * @ if there were errors retrieving the
      * position map.
      */
     public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
         (SimpleUser inUser,
-         Date inDate)
-        throws PersistenceException;
+         Date inDate);
     
     
     /**
@@ -149,8 +145,7 @@ public interface ReportHistoryServices {
      */
     public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
         (SimpleUser inUser,
-         Date inDate)
-        throws PersistenceException;
+         Date inDate);
 
     /**
      * Gets the current aggregate position for the option instrument based on
@@ -174,8 +169,7 @@ public interface ReportHistoryServices {
     public BigDecimal getOptionPositionAsOf
         (final SimpleUser inUser,
          final Date inDate,
-         final Option inOption)
-        throws PersistenceException;
+         final Option inOption);
 
     /**
      * Returns the aggregate position of each option
@@ -198,8 +192,7 @@ public interface ReportHistoryServices {
      */
     public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
         (final SimpleUser inUser,
-         final Date inDate)
-        throws PersistenceException;
+         final Date inDate);
     /**
      * Gets the current aggregate position for the future instrument based on
      * execution reports received before or on the supplied date, and which
@@ -221,8 +214,7 @@ public interface ReportHistoryServices {
      */
     public BigDecimal getFuturePositionAsOf(final SimpleUser inUser,
                                             final Date inDate,
-                                            final Future inFuture)
-        throws PersistenceException;
+                                            final Future inFuture);
     /**
      * Returns the aggregate position of each future
      * (future,account,actor)
@@ -243,8 +235,7 @@ public interface ReportHistoryServices {
      * position map.
      */
     public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(final SimpleUser inUser,
-                                                                         final Date inDate)
-            throws PersistenceException;
+                                                                         final Date inDate);
     /**
      * Returns the aggregate position of each option
      * (option,account,actor)
@@ -268,8 +259,7 @@ public interface ReportHistoryServices {
     public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
         (final SimpleUser inUser,
          final Date inDate,
-         final String... inSymbols)
-        throws PersistenceException;
+         final String... inSymbols);
 
     /**
      * Saves the supplied report to the database. Saving may be
@@ -281,8 +271,7 @@ public interface ReportHistoryServices {
      * @throws org.marketcetera.persist.PersistenceException if there
      * were errors saving the report.
      */
-    public void save(ReportBase report)
-        throws PersistenceException;
+    public void save(ReportBase report);
 
     /**
      * Returns the principals associated with the report with given
@@ -299,6 +288,5 @@ public interface ReportHistoryServices {
      */
 
     public Principals getPrincipals
-        (OrderID orderID)
-        throws PersistenceException;
+        (OrderID orderID);
 }

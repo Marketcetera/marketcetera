@@ -37,7 +37,7 @@ public class MultiGroupQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error executing
      * the query
      */
-    public List<Group> fetch() throws PersistenceException {
+    public List<Group> fetch() {
         return fetchRemote(new MultiQueryProcessor<Group>(true));
     }
     /**
@@ -50,7 +50,7 @@ public class MultiGroupQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error executing
      * the query
      */
-    public List<SummaryGroup> fetchSummary() throws PersistenceException {
+    public List<SummaryGroup> fetchSummary() {
         return fetchRemote(new MultiQueryProcessor<SummaryGroup>(false));
     }
 
@@ -64,7 +64,7 @@ public class MultiGroupQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error deleting
      * the user instances
      */
-    public int delete() throws PersistenceException {
+    public int delete() {
         return executeRemote(new DeleteEntityProcessor<Group>(
                 Group.class)).getResult();
     }

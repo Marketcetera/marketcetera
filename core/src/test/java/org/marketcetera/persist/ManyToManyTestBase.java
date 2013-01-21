@@ -1,18 +1,19 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
+import static org.junit.Assert.*;
 import static org.marketcetera.persist.Messages.ENTITY_EXISTS_GENERIC_ERROR;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import org.junit.BeforeClass;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.EntityExistsException;
+import javax.persistence.NoResultException;
+import javax.persistence.RollbackException;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 /**
@@ -188,7 +189,7 @@ public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
                 fail("Delete should've failed"); //$NON-NLS-1$
             } catch(EntityExistsException expected) {
                 assertEquals(ENTITY_EXISTS_GENERIC_ERROR,
-                        expected.getI18NBoundMessage().getMessage());
+                             expected.getMessage());
             }
             assertContainedEquals(e,fetch(e.getId()));
             //Remove relationship and verify that it can be deleted.

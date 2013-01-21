@@ -1,8 +1,9 @@
 package org.marketcetera.ors;
 
+import javax.persistence.PersistenceException;
+
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportSavedListener;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;

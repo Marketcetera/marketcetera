@@ -36,8 +36,7 @@ public class CountQueryProcessor extends QueryProcessor<Long> {
         queryString.append(SELECT).append(S).append(COUNT_ALL);
     }
 
-    public QueryResults<Long> process(EntityManager em, Query q)
-            throws PersistenceException {
+    public QueryResults<Long> process(EntityManager em, Query q) {
         final Long result = (Long) q.getSingleResult();
         SLF4JLoggerProxy.debug(this,"Fetched Count is {}",result); //$NON-NLS-1$
         return new SingleResult<Long>(result);

@@ -1,15 +1,15 @@
 package org.marketcetera.persist.example;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.NDEntityBase;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.SaveResult;
-import org.marketcetera.persist.PersistContext;
-import org.marketcetera.util.log.I18NMessage0P;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.*;
-import java.util.Set;
-import java.util.HashSet;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.persist.NDEntityBase;
+import org.marketcetera.persist.PersistContext;
+import org.marketcetera.persist.SaveResult;
+import org.marketcetera.util.log.I18NMessage0P;
 
 /* $License$ */
 /**
@@ -112,6 +112,7 @@ public class Authorization extends NDEntityBase {
         return groups;
     }
 
+    @SuppressWarnings("unused")
     private void setGroups(Set<SummaryGroup> groups) {
         this.groups = groups;
     }
@@ -121,6 +122,7 @@ public class Authorization extends NDEntityBase {
      *
      * @return custom localized name for authorizations.
      */
+    @SuppressWarnings("unused")
     private static I18NMessage0P getUserFriendlyName() {
         //return null to test the edge case where this method
         //returns null. The generic entity name should be used

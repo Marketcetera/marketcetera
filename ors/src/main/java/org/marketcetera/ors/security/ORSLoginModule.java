@@ -1,22 +1,24 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
 import static org.marketcetera.ors.security.Messages.*;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.NoResultException;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 
-import javax.security.auth.spi.LoginModule;
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginException;
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.AccountNotFoundException;
-import javax.security.auth.callback.*;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+import javax.security.auth.Subject;
+import javax.security.auth.callback.*;
+import javax.security.auth.login.AccountNotFoundException;
+import javax.security.auth.login.FailedLoginException;
+import javax.security.auth.login.LoginException;
+import javax.security.auth.spi.LoginModule;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.sun.security.auth.UserPrincipal;
 
@@ -31,6 +33,7 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
+@SuppressWarnings("restriction")
 @ClassVersion("$Id$")
 public class ORSLoginModule implements LoginModule {
 

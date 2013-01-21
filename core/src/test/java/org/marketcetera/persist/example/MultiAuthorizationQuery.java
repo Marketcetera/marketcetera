@@ -39,7 +39,7 @@ public class MultiAuthorizationQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error executing the
      * query
      */
-    public List<Authorization> fetch() throws PersistenceException {
+    public List<Authorization> fetch() {
         return fetchRemote(new MultiQueryProcessor<Authorization>(true));
     }
 
@@ -51,7 +51,7 @@ public class MultiAuthorizationQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error executing
      * the query
      */
-    public int delete() throws PersistenceException {
+    public int delete() {
         //Carry out a special delete to allow Authorizations
         //to be removed even if there are groups referring to it.
         return executeRemote(new DeleteEntityProcessor<Authorization>(
@@ -60,7 +60,7 @@ public class MultiAuthorizationQuery extends MultiNDQuery {
 
             @Override
             protected void removeEntity(EntityManager em, Long id)
-                            throws PersistenceException {
+                            {
                         Authorization.deleteAuthorization(em,id);
                     }
                 }).getResult();

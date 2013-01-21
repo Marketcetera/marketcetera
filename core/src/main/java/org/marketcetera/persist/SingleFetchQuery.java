@@ -1,5 +1,8 @@
 package org.marketcetera.persist;
 
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+
 import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
@@ -27,7 +30,7 @@ public abstract class SingleFetchQuery<S extends SummaryNDEntityBase,
      * @throws PersistenceException if there was an error
      * executing the query
      */
-    public S fetchSummary() throws PersistenceException {
+    public S fetchSummary() {
         return fetchRemote(new SingleQueryProcessor<S>(false));
     }
 
@@ -43,7 +46,7 @@ public abstract class SingleFetchQuery<S extends SummaryNDEntityBase,
      * @throws PersistenceException if there was an
      * error executing the query
      */
-    public E fetch() throws PersistenceException {
+    public E fetch() {
         return fetchRemote(new SingleQueryProcessor<E>(true));
     }
     protected SingleFetchQuery(String entityName, long id) {

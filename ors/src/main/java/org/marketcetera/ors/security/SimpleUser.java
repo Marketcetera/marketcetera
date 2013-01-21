@@ -1,6 +1,5 @@
 package org.marketcetera.ors.security;
 
-import static org.marketcetera.ors.security.Messages.CANNOT_SET_PASSWORD;
 import static org.marketcetera.ors.security.Messages.EMPTY_PASSWORD;
 import static org.marketcetera.ors.security.Messages.INVALID_PASSWORD;
 import static org.marketcetera.ors.security.Messages.SIMPLE_USER_NAME;
@@ -15,10 +14,7 @@ import javax.persistence.*;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.NDEntityBase;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.ValidationException;
 import org.marketcetera.trade.UserID;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage0P;
 
 /* $License$ */
@@ -170,16 +166,15 @@ public class SimpleUser extends NDEntityBase {
      *
      * @param password The user password value, cannot be null.
      *
-     * @throws ValidationException If the user password is already set, or if
+     * @throws PersistenceException If the user password is already set, or if
      * an empty password is supplied or if the user name is not set.
      */
-    public void setPassword(char[] password) throws ValidationException {
+    public void setPassword(char[] password)  {
         if(getName() == null) {
-            throw new ValidationException(UNSPECIFIED_NAME_ATTRIBUTE);
+            throw new PersistenceException(UNSPECIFIED_NAME_ATTRIBUTE.getText());
         }
         if(isPasswordSet()) {
-            throw new ValidationException(
-                    new I18NBoundMessage1P(CANNOT_SET_PASSWORD,getName()));
+            throw new PersistenceException(Messages.CANNOT_SET_PASSWORD.getText(getName()));
         }
         validateAndSetPassword(password);
     }
@@ -195,12 +190,12 @@ public class SimpleUser extends NDEntityBase {
      *
      * @param newPassword the new password, cannot be empty.
      *
-     * @throws org.marketcetera.persist.ValidationException if there were
+     * @throws org.marketcetera.persist.PersistenceException if there were
      * errors validating the original or the new password password.
      */
     public void changePassword(char [] originalPassword,
                                char[] newPassword)
-            throws ValidationException {
+             {
         validatePassword(originalPassword);
         validateAndSetPassword(newPassword);
     }
@@ -215,18 +210,18 @@ public class SimpleUser extends NDEntityBase {
      *
      * @param password the password to test.
      *
-     * @throws ValidationException If a nonempty password is presently
+     * @throws PersistenceException If a nonempty password is presently
      * configured and either an empty password value was specified, or
      * the specified password doesn't match the currently configured
      * user password.
      */
-    public void validatePassword(char[] password) throws ValidationException {
+    public void validatePassword(char[] password) {
         if(getHashedPassword() == null || getHashedPassword().length() == 0) {
             return;
         }
         validatePasswordValue(password);
         if(!getHashedPassword().equals(hash(getName().toCharArray(),password))) {
-            throw new ValidationException(INVALID_PASSWORD);
+            throw new PersistenceException(INVALID_PASSWORD.getText());
         }
     }
 
@@ -242,24 +237,24 @@ public class SimpleUser extends NDEntityBase {
      *
      * @throws PersistenceException if there were validation failures
      */
-    public void validate() throws PersistenceException {
+    public void validate() {
         super.validate();
         if(getHashedPassword() == null || getHashedPassword().length() == 0) {
-            throw new ValidationException(EMPTY_PASSWORD);
+            throw new PersistenceException(EMPTY_PASSWORD.getText());
         }
     }
 
     /**
      * Saves the user to the database.
      *
-     * @throws ValidationException if {@link #validate() validation}
+     * @throws PersistenceException if {@link #validate() validation}
      * failed when saving the user.
      * @throws org.marketcetera.persist.EntityExistsException if a user
      * with the supplied name already exists in the database.
      * @throws org.marketcetera.persist.PersistenceException If there were
      * errors saving the user to the database.
      */
-    public void save() throws org.marketcetera.persist.PersistenceException {
+    public void save() {
         saveRemote(null);
     }
 
@@ -270,7 +265,7 @@ public class SimpleUser extends NDEntityBase {
      *
      * @throws PersistenceException if there were errors deleting the user
      */
-    public void delete() throws PersistenceException {
+    public void delete()  {
         deleteRemote(null);
     }
 
@@ -280,9 +275,9 @@ public class SimpleUser extends NDEntityBase {
      *
      * @param password the user password
      *
-     * @throws ValidationException if the supplied password is empty.
+     * @throws PersistenceException if the supplied password is empty.
      */
-    private void validateAndSetPassword(char[] password) throws ValidationException {
+    private void validateAndSetPassword(char[] password) {
         validatePasswordValue(password);
         setHashedPassword(hash(getName().toCharArray(), password));
     }
@@ -303,12 +298,11 @@ public class SimpleUser extends NDEntityBase {
      *
      * @param password the user password
      *
-     * @throws ValidationException if the user password is empty
+     * @throws PersistenceException if the user password is empty
      */
-    private static void validatePasswordValue(char[] password)
-            throws ValidationException {
+    private static void validatePasswordValue(char[] password) {
         if(password == null || password.length == 0) {
-            throw new ValidationException(EMPTY_PASSWORD);
+            throw new PersistenceException(EMPTY_PASSWORD.getText());
         }
     }
 

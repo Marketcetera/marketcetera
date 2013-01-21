@@ -1,13 +1,15 @@
 package org.marketcetera.persist.example;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.*;
 import static org.junit.Assert.assertNull;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
 
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.persist.CorePersistNDTestBase;
+import org.marketcetera.persist.MultipleEntityQuery;
 
 /* $License$ */
 /**
@@ -153,14 +155,14 @@ public class GroupTest extends CorePersistNDTestBase<Group,SummaryGroup> {
         auth2 = null;
     }
 
-    private static Authorization createAuth() throws PersistenceException {
+    private static Authorization createAuth() {
         Authorization a = new Authorization();
         a.setName(randomString());
         a.save();
         return a;
     }
 
-    private static User createUser() throws PersistenceException {
+    private static User createUser() {
         User u = new User();
         u.setName(randomString());
         u.save();

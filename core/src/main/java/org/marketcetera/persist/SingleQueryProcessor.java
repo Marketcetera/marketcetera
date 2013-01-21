@@ -1,9 +1,9 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 /**
@@ -27,10 +27,9 @@ public class SingleQueryProcessor<R extends SummaryEntityBase>
         super(detail);
     }
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
-    public QueryResults<R> process(EntityManager em, Query q)
-            throws PersistenceException {
+    @SuppressWarnings("unchecked")
+    public QueryResults<R> process(EntityManager em,
+                                   Query q) {
         return new SingleResult<R>((R) q.getSingleResult());
     }
-
 }

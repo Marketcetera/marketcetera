@@ -66,7 +66,7 @@ class MultiPersistentReportQuery extends MultipleEntityQuery {
      * @throws PersistenceException if there were errors fetching
      * the reports.
      */
-    List<PersistentReport> fetch() throws PersistenceException {
+    List<PersistentReport> fetch() {
         return fetchRemote(new MultiQueryProcessor<PersistentReport>(false));
     }
 
@@ -116,7 +116,7 @@ class MultiPersistentReportQuery extends MultipleEntityQuery {
      *
      * @throws PersistenceException if there were errors deleting the reports.
      */
-    int delete() throws PersistenceException {
+    int delete() {
         return deleteRemote();
     }
     /**

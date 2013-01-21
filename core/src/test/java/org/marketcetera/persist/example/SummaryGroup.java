@@ -1,6 +1,5 @@
 package org.marketcetera.persist.example;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.SummaryNDEntityBase;
 
 /* $License$ */
@@ -9,6 +8,7 @@ import org.marketcetera.persist.SummaryNDEntityBase;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public interface SummaryGroup extends SummaryNDEntityBase {
+public interface SummaryGroup
+        extends SummaryNDEntityBase
+{
 }

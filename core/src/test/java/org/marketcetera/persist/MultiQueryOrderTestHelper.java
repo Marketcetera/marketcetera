@@ -114,6 +114,7 @@ public abstract class MultiQueryOrderTestHelper<C extends EntityBase,
      *
      * @return the comparator instance
      */
+    @SuppressWarnings("rawtypes")
     protected abstract Comparator getComparator();
 
     /**

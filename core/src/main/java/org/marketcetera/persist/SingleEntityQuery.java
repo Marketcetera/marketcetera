@@ -1,7 +1,11 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
 import static org.marketcetera.persist.JPQLConstants.*;
+
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 /**
@@ -31,7 +35,7 @@ public abstract class SingleEntityQuery
      * @throws PersistenceException if there was an error executing
      * the query
      */
-    public boolean exists() throws PersistenceException {
+    public boolean exists() {
         return executeRemote(new CountQueryProcessor()).getResult() > 0;
     }
 
@@ -52,8 +56,7 @@ public abstract class SingleEntityQuery
      * executing the query
      */
     protected <T extends SummaryEntityBase>T fetchRemote(
-            SingleQueryProcessor<T> processor)
-            throws PersistenceException {
+            SingleQueryProcessor<T> processor) {
         return executeRemote(processor).getResult();
     }
 

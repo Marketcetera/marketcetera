@@ -1,19 +1,20 @@
 package org.marketcetera.core;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.io.File;
-
-import org.marketcetera.util.file.Deleter;
-
-import org.marketcetera.persist.PersistTestBase;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import static org.junit.Assert.*;
 
 import javax.sql.DataSource;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.persist.PersistTestBase;
 
 /**
  * Tests the database ID factory to make sure that if the DB is not there
@@ -32,7 +33,7 @@ public class DatabaseIDFactoryTest {
         new File("junit").deleteOnExit(); //$NON-NLS-1$
         if(mDataSource == null) {
             mDataSource = (DataSource) PersistTestBase.springSetup(
-                    new String[]{"persist.xml"}).getBean("mysqlpool", //$NON-NLS-1$ //$NON-NLS-2$
+                    new String[]{"persist.xml"}).getBean("poolDataSource", //$NON-NLS-1$ //$NON-NLS-2$
                     DataSource.class);
         }
     }

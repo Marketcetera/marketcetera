@@ -17,7 +17,6 @@ import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -119,7 +118,7 @@ public class ServiceImpl
 
     private UserInfo getUserInfoImpl
         (UserID id)
-        throws PersistenceException
+        
     {
         SimpleUser u=(new SingleSimpleUserQuery(id.getValue())).fetch();
         return new UserInfo
@@ -129,8 +128,7 @@ public class ServiceImpl
     private ReportBaseImpl[] getReportsSinceImpl
         (ClientSession session,
          Date date)
-        throws ReportPersistenceException,
-               PersistenceException
+        throws ReportPersistenceException
     {
         return getHistoryServices().getReportsSince
             (session.getUser(),date);
@@ -140,7 +138,7 @@ public class ServiceImpl
         (ClientSession session,
          Date date,
          Equity equity)
-        throws PersistenceException
+        
     {
         return getHistoryServices().getEquityPositionAsOf
             (session.getUser(),date,equity);
@@ -149,20 +147,20 @@ public class ServiceImpl
     private MapWrapper<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOfImpl
         (ClientSession session,
          Date date)
-        throws PersistenceException
+        
     {
         return new MapWrapper<PositionKey<Equity>, BigDecimal>(
                 getHistoryServices().getAllEquityPositionsAsOf(session.getUser(),date));
     }
     
 	private BigDecimal getCurrencyPositionAsOfImpl(ClientSession session,
-			Date date, Currency currency) throws PersistenceException {
+			Date date, Currency currency)  {
 		return getHistoryServices().getCurrencyPositionAsOf(session.getUser(),
 				date, currency);
 	}
 
 	private MapWrapper<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOfImpl(
-			ClientSession session, Date date) throws PersistenceException {
+			ClientSession session, Date date)  {
 		return new MapWrapper<PositionKey<Currency>, BigDecimal>(
 				getHistoryServices().getAllCurrencyPositionsAsOf(
 						session.getUser(), date));
@@ -175,12 +173,12 @@ public class ServiceImpl
      * @param inDate a <code>Date</code> value
      * @param inFuture a <code>Future</code> value
      * @return a <code>BigDecimal</code> value
-     * @throws PersistenceException if an error occurs
+     * @ if an error occurs
      */
     private BigDecimal getFuturePositionAsOfImpl(ClientSession inSession,
                                                  Date inDate,
                                                  Future inFuture)
-            throws PersistenceException
+            
     {
         return getHistoryServices().getFuturePositionAsOf(inSession.getUser(),
                                                           inDate,
@@ -192,11 +190,11 @@ public class ServiceImpl
      * @param inSession a <code>ClientSession</code> value
      * @param inDate a <code>Date</code> value
      * @return a <code>MapWrapper&lt;PositionKey&lt;Future&gt;,BigDecimal&gt;</code> value
-     * @throws PersistenceException if an error occurs
+     * @ if an error occurs
      */
     private MapWrapper<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOfImpl(ClientSession inSession,
                                                                                      Date inDate)
-            throws PersistenceException
+            
     {
         return new MapWrapper<PositionKey<Future>,BigDecimal>(getHistoryServices().getAllFuturePositionsAsOf(inSession.getUser(),
                                                                                                              inDate));
@@ -204,7 +202,7 @@ public class ServiceImpl
     private BigDecimal getOptionPositionAsOfImpl
     (ClientSession session,
      Date date,
-     Option inOption) throws PersistenceException
+     Option inOption) 
      {
         return getHistoryServices().getOptionPositionAsOf(session.getUser(),
                                                           date, inOption);
@@ -212,7 +210,7 @@ public class ServiceImpl
     private MapWrapper<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOfImpl
         (ClientSession session,
          Date date)
-        throws PersistenceException
+        
     {
         return new MapWrapper<PositionKey<Option>, BigDecimal>(
                 getHistoryServices().getAllOptionPositionsAsOf(session.getUser(),
@@ -223,7 +221,7 @@ public class ServiceImpl
         (ClientSession session,
          Date date,
          String... symbols)
-        throws PersistenceException
+        
     {
         return new MapWrapper<PositionKey<Option>, BigDecimal>(
                 getHistoryServices().getOptionPositionsAsOf(
@@ -254,10 +252,10 @@ public class ServiceImpl
      *
      * @param inUsername a <code>String</code> value
      * @return a <code>String</code> value
-     * @throws PersistenceException if an error occurs retrieving the user data
+     * @ if an error occurs retrieving the user data
      */
     private String getUserDataImpl(String inUsername)
-            throws PersistenceException
+            
     {
         return new SingleSimpleUserQuery(inUsername).fetch().getUserData();
     }
@@ -266,11 +264,11 @@ public class ServiceImpl
      *
      * @param inUsername a <code>String</code> value
      * @param inUserData a <code>String</code> value
-     * @throws PersistenceException if an error occurs saving the user data
+     * @ if an error occurs saving the user data
      */
     private void setUserDataImpl(String inUsername,
                                  String inUserData)
-            throws PersistenceException
+            
     {
         SimpleUser user = new SingleSimpleUserQuery(inUsername).fetch();
         user.setUserData(inUserData);
@@ -306,7 +304,7 @@ public class ServiceImpl
             protected UserInfo call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws PersistenceException
+                
             {
                 return getUserInfoImpl(id);
             }}).execute(context);
@@ -324,8 +322,7 @@ public class ServiceImpl
             protected ReportBaseImpl[] call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws ReportPersistenceException,
-                       PersistenceException
+                throws ReportPersistenceException
             {
                 return getReportsSinceImpl
                     (sessionHolder.getSession(),date.getRaw());
@@ -345,7 +342,7 @@ public class ServiceImpl
             protected BigDecimal call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws PersistenceException
+                
             {
                 return getEquityPositionAsOfImpl
                     (sessionHolder.getSession(),date.getRaw(),equity);
@@ -365,7 +362,7 @@ public class ServiceImpl
             protected MapWrapper<PositionKey<Equity>,BigDecimal> call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws PersistenceException
+                
             {
                 return getAllEquityPositionsAsOfImpl
                     (sessionHolder.getSession(),date.getRaw());
@@ -385,7 +382,7 @@ public class ServiceImpl
             protected BigDecimal call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws PersistenceException
+                
             {
                 return getCurrencyPositionAsOfImpl
                     (sessionHolder.getSession(),date.getRaw(),currency);
@@ -405,7 +402,7 @@ public class ServiceImpl
             protected MapWrapper<PositionKey<Currency>,BigDecimal> call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws PersistenceException
+                
             {
                 return getAllCurrencyPositionsAsOfImpl
                     (sessionHolder.getSession(),date.getRaw());
@@ -424,7 +421,7 @@ public class ServiceImpl
             @Override
             protected MapWrapper<PositionKey<Future>,BigDecimal> call(ClientContext context,
                                                                       SessionHolder<ClientSession> sessionHolder)
-                     throws PersistenceException
+                     
              {
                 return getAllFuturePositionsAsOfImpl(sessionHolder.getSession(),
                                                      inDate.getRaw());
@@ -443,7 +440,7 @@ public class ServiceImpl
             @Override
             protected BigDecimal call(ClientContext context,
                                       SessionHolder<ClientSession> sessionHolder)
-                    throws PersistenceException
+                    
             {
                 return getFuturePositionAsOfImpl(sessionHolder.getSession(),
                                                  inDate.getRaw(),
@@ -463,7 +460,7 @@ public class ServiceImpl
             protected BigDecimal call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws PersistenceException
+                
             {
                 return getOptionPositionAsOfImpl
                     (sessionHolder.getSession(),date.getRaw(),
@@ -484,7 +481,7 @@ public class ServiceImpl
             protected MapWrapper<PositionKey<Option>,BigDecimal> call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws PersistenceException
+                
             {
                 return getAllOptionPositionsAsOfImpl
                     (sessionHolder.getSession(),date.getRaw());
@@ -505,7 +502,7 @@ public class ServiceImpl
             protected MapWrapper<PositionKey<Option>,BigDecimal> call
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
-                throws PersistenceException
+                
             {
                 return getOptionPositionsAsOfImpl
                     (sessionHolder.getSession(),date.getRaw(), rootSymbols);
@@ -596,7 +593,7 @@ public class ServiceImpl
             @Override
             protected String call(ClientContext context,
                                   SessionHolder<ClientSession> sessionHolder)
-                    throws CoreException, PersistenceException
+                    throws CoreException
             {
                 return getUserDataImpl(getSessionManager().get(inContext.getSessionId()).getSession().getUser().getName());
         }}).execute(inContext);
@@ -614,7 +611,7 @@ public class ServiceImpl
             @Override
             protected void run(ClientContext context,
                                SessionHolder<ClientSession> sessionHolder)
-                    throws PersistenceException
+                    
             {
                 setUserDataImpl(getSessionManager().get(inContext.getSessionId()).getSession().getUser().getName(),
                                 inData);

@@ -42,7 +42,7 @@ class MultiExecReportSummary extends MultipleEntityQuery {
      * @throws PersistenceException if there were errors fetching
      * the reports.
      */
-    List<ExecutionReportSummary> fetch() throws PersistenceException {
+    List<ExecutionReportSummary> fetch() {
         return fetchRemote(new MultiQueryProcessor<ExecutionReportSummary>(false));
     }
     /**
@@ -52,7 +52,7 @@ class MultiExecReportSummary extends MultipleEntityQuery {
      *
      * @throws PersistenceException if there were errors deleting the reports.
      */
-    int delete() throws PersistenceException {
+    int delete() {
         return deleteRemote();
     }
     /**

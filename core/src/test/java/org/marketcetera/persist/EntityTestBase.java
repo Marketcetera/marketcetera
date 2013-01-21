@@ -1,20 +1,24 @@
 package org.marketcetera.persist;
 
+import static org.junit.Assert.*;
+import static org.marketcetera.persist.Messages.DEFAULT_ENTITY_NAME;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import javax.persistence.NoResultException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+import javax.persistence.TemporalType;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import static org.marketcetera.persist.Messages.DEFAULT_ENTITY_NAME;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.Ignore;
-import static org.junit.Assert.*;
-
-import javax.persistence.*;
-import java.util.List;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.concurrent.Callable;
 
 /* $License$ */
 /**
@@ -197,8 +201,8 @@ public abstract class EntityTestBase<E extends EntityBase,
             fail("This test should've failed"); //$NON-NLS-1$
         } catch (OptimisticLockException expected) {
             assertEquals(new I18NBoundMessage1P(Messages.OPTMISTIC_LOCK_ERROR,
-                    getUserFriendlyName()).getText(),
-                    expected.getI18NBoundMessage().getText());
+                                                getUserFriendlyName()).getText(),
+                                                expected.getMessage());
             assertNotNull(expected.getCause());
             assertTrue(expected.getCause() instanceof
                     javax.persistence.OptimisticLockException);
@@ -307,10 +311,8 @@ public abstract class EntityTestBase<E extends EntityBase,
                                         thisValue,
                                         helper.compareOrderField(prev,s) >= 0);
                             } else {
-                                assertTrue(prevValue +
-                                        "!<=" + //$NON-NLS-1$
-                                        thisValue,
-                                        helper.compareOrderField(prev,s) <= 0);
+                                assertTrue(prevValue + "!<=" + thisValue,
+                                           helper.compareOrderField(prev,s) <= 0);
                             }
                         }
                         E e = ldi.next();
@@ -804,11 +806,9 @@ public abstract class EntityTestBase<E extends EntityBase,
         } catch(Exception ex) {
             assertTrue(ex.toString(), clazz.isInstance(ex));
             PersistenceException pe = (PersistenceException) ex;
-            if (message != null) {
+            if(message != null) {
                 assertEquals(message.getMessage(),
-                        pe.getI18NBoundMessage().getMessage());
-                assertArrayEquals(message.getParams(),
-                        pe.getI18NBoundMessage().getParams());
+                             pe.getMessage());
             }
         }
     }

@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.PersistenceException;
+
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
@@ -11,7 +14,6 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -62,7 +64,7 @@ public class BasicReportHistoryServices
     public ReportBaseImpl[] getReportsSince
         (SimpleUser inUser,
          Date inDate)
-            throws PersistenceException, ReportPersistenceException {
+            throws ReportPersistenceException {
         MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
         query.setSendingTimeAfterFilter(inDate);
         if (!inUser.isSuperuser()) {
@@ -245,14 +247,14 @@ public class BasicReportHistoryServices
      */
 
     protected void assignID(ReportBase report)
-        throws PersistenceException
     {
         try {
             ReportBaseImpl.assignReportID
                 ((ReportBaseImpl)report,
                  new ReportID(getReportIDFactory().getNext()));
         } catch (NoMoreIDsException ex) {
-            throw new PersistenceException(ex,Messages.RHS_NO_MORE_IDS);
+            throw new PersistenceException(Messages.RHS_NO_MORE_IDS.getText(),
+                                           ex);
         }
     }
 

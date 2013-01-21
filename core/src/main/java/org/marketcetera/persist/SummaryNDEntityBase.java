@@ -9,15 +9,16 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public interface SummaryNDEntityBase extends SummaryEntityBase {
+@ClassVersion("$Id$")
+public interface SummaryNDEntityBase
+        extends SummaryEntityBase
+{
     /**
      * The name of this entity
      * 
      * @return the name of this entity
      */
     String getName();
-
     /**
      * The description of this entity.
      * @return The description.

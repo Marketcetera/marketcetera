@@ -9,6 +9,8 @@ import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 import java.util.List;
 import java.util.Properties;
 
+import javax.persistence.PersistenceException;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
@@ -16,7 +18,6 @@ import org.marketcetera.core.Util;
 import org.marketcetera.persist.MultiQueryFilterTestHelper;
 import org.marketcetera.persist.MultipleEntityQuery;
 import org.marketcetera.persist.NDEntityTestBase;
-import org.marketcetera.persist.ValidationException;
 import org.marketcetera.util.log.I18NMessage;
 
 /* $License$ */
@@ -165,23 +166,22 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         //verify that the password cannot be set when the name is not set
         try {
             u.setPassword(randomString().toCharArray());
-        } catch(ValidationException e) {
-            assertEquals(UNSPECIFIED_NAME_ATTRIBUTE,e.getI18NBoundMessage());
+        } catch(PersistenceException e) {
+            assertEquals(UNSPECIFIED_NAME_ATTRIBUTE.getText(),e.getMessage());
         }
         u.setName(randomString());
         assertFalse(u.isPasswordSet());
         //verify that the password is being validated
         assertValidateAndSaveFailure(u,EMPTY_PASSWORD);
-        u.setPassword(randomString().toCharArray());
+        char[] password = randomString().toCharArray();
+        u.setPassword(password);
         assertTrue(u.isPasswordSet());
         //verify that password set fails if the current password is non-empty
         try {
             u.setPassword(randomString().toCharArray());
-        } catch(ValidationException ex) {
-            assertEquals(CANNOT_SET_PASSWORD,
-                    ex.getI18NBoundMessage().getMessage());
-            assertArrayEquals(new Object[]{u.getName()},
-                    ex.getI18NBoundMessage().getParams());
+        } catch(PersistenceException ex) {
+            assertEquals(CANNOT_SET_PASSWORD.getText(password),
+                    ex.getMessage());
         }
         //verify that password gets reset, when the user name is reset
         u.setName(randomString());
@@ -223,7 +223,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         fetched.validatePassword(pass);
     }
 
-    private char[] doValidateChangePassTests(SimpleUser u) throws ValidationException {
+    private char[] doValidateChangePassTests(SimpleUser u) throws PersistenceException {
         final String pass = randomString();
         u.setName(randomString());
         //any password validates because changing a name resets the password
@@ -268,8 +268,8 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         try {
             u.validatePassword(password);
             fail("Password validation should fail"); //$NON-NLS-1$
-        } catch (ValidationException e) {
-            assertEquals(msg,e.getI18NBoundMessage());
+        } catch (PersistenceException e) {
+            assertEquals(msg,e.getMessage());
         }
     }
     private static void assertChangePasswordFailure(SimpleUser u,
@@ -279,8 +279,8 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         try {
             u.changePassword(oldPassword, newPassword);
             fail("Password validation should fail"); //$NON-NLS-1$
-        } catch (ValidationException e) {
-            assertEquals(msg,e.getI18NBoundMessage());
+        } catch (PersistenceException e) {
+            assertEquals(msg,e.getMessage());
         }
     }
     private static void assertValidateAndSaveFailure(
@@ -290,20 +290,16 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         try {
             u.validate();
             fail("Validation should fail"); //$NON-NLS-1$
-        } catch(ValidationException ex) {
+        } catch(PersistenceException ex) {
             assertEquals(expectedMsg,
-                    ex.getI18NBoundMessage().getMessage());
-            assertArrayEquals(params,
-                    ex.getI18NBoundMessage().getParams());
+                    ex.getMessage());
         }
         try {
             u.save();
             fail("Save should fail"); //$NON-NLS-1$
-        } catch(ValidationException ex) {
+        } catch(PersistenceException ex) {
             assertEquals(expectedMsg,
-                    ex.getI18NBoundMessage().getMessage());
-            assertArrayEquals(params,
-                    ex.getI18NBoundMessage().getParams());
+                    ex.getMessage());
         }
     }
 

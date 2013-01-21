@@ -1,13 +1,10 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NMessageProvider;
-import org.marketcetera.util.l10n.MessageComparator;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Locale;
+import org.junit.Test;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.l10n.MessageComparator;
 
 /* $License$ */
 

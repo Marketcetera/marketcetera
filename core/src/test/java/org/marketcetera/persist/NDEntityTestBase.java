@@ -1,13 +1,20 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import static org.marketcetera.persist.Messages.*;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.marketcetera.persist.Messages.NAME_ATTRIBUTE_INVALID;
+import static org.marketcetera.persist.Messages.NAME_ATTRIBUTE_TOO_LONG;
+import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 
 import java.util.List;
+
+import javax.persistence.EntityExistsException;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+
+import org.junit.Test;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 
 /* $License$ */
 /**
@@ -78,11 +85,10 @@ public abstract class NDEntityTestBase<E extends NDEntityBase,
             fail();
         } catch(EntityExistsException expected) {
             assertEquals(new I18NBoundMessage1P(Messages.ENTITY_EXISTS_INSERT_ERROR,
-                    getUserFriendlyName()).getText(),
-                    expected.getI18NBoundMessage().getText());
+                                                getUserFriendlyName()).getText(),
+                                                expected.getMessage());
             assertNotNull(expected.getCause());
-            assertTrue(expected.getCause() instanceof
-                    javax.persistence.EntityExistsException);
+            assertTrue(expected.getCause() instanceof javax.persistence.EntityExistsException);
         }
         //Verify that the entity state is not
         //dirtied as the result of failed transaction
@@ -116,49 +122,49 @@ public abstract class NDEntityTestBase<E extends NDEntityBase,
 
     private void nameValidationFailures(E e) {
         e.setName(null);
-        assertSaveFailure(e, ValidationException.class,UNSPECIFIED_NAME_ATTRIBUTE);
+        assertSaveFailure(e, PersistenceException.class,UNSPECIFIED_NAME_ATTRIBUTE);
         e.setName(""); //$NON-NLS-1$
-        assertSaveFailure(e,ValidationException.class,UNSPECIFIED_NAME_ATTRIBUTE);
+        assertSaveFailure(e,PersistenceException.class,UNSPECIFIED_NAME_ATTRIBUTE);
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < 256; i++) {
             sb.append('a');
         }
         e.setName(sb.toString());
-        assertSaveFailure(e,ValidationException.class,
+        assertSaveFailure(e,PersistenceException.class,
                 new I18NBoundMessage1P(NAME_ATTRIBUTE_TOO_LONG,sb.toString()));
         String name = "a12_"; //$NON-NLS-1$
         e.setName(name);
-        assertSaveFailure(e,ValidationException.class,
+        assertSaveFailure(e,PersistenceException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
         name = "a12%"; //$NON-NLS-1$
         e.setName(name);
-        assertSaveFailure(e,ValidationException.class,
+        assertSaveFailure(e,PersistenceException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
         name = "a12#"; //$NON-NLS-1$
         e.setName(name);
-        assertSaveFailure(e,ValidationException.class,
+        assertSaveFailure(e,PersistenceException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
         name = "a12$"; //$NON-NLS-1$
         e.setName(name);
-        assertSaveFailure(e,ValidationException.class,
+        assertSaveFailure(e,PersistenceException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
         name = "a12^"; //$NON-NLS-1$
         e.setName(name);
-        assertSaveFailure(e,ValidationException.class,
+        assertSaveFailure(e,PersistenceException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
         name = "a12?"; //$NON-NLS-1$
         e.setName(name);
-        assertSaveFailure(e,ValidationException.class,
+        assertSaveFailure(e,PersistenceException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
         name = "a12*"; //$NON-NLS-1$
         e.setName(name);
-        assertSaveFailure(e,ValidationException.class,
+        assertSaveFailure(e,PersistenceException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
     }

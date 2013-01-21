@@ -20,7 +20,6 @@ import java.io.IOException;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 public class ExecuteSQLFromFile {
     /**
      * Runs the set of SQL files on the specified data source.

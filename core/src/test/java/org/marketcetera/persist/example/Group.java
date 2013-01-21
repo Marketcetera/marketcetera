@@ -1,28 +1,28 @@
 package org.marketcetera.persist.example;
-import org.marketcetera.persist.*;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.util.log.I18NMessage0P;
+import java.util.Set;
 
 import javax.persistence.*;
-import java.util.Set;
+
+import org.marketcetera.persist.NDEntityBase;
+import org.marketcetera.util.log.I18NMessage0P;
 
 /**
  * Instances of this class represent group of users
  * of the system.
  */
 @Entity
-@Table(name = "test_group", //$NON-NLS-1$
-        uniqueConstraints={@UniqueConstraint(columnNames={"name"})}) //$NON-NLS-1$
-public class Group extends NDEntityBase implements SummaryGroup {
-    private static final long serialVersionUID = 3166790225173409322L;
-
+@Table(name = "test_group",uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
+public class Group
+        extends NDEntityBase
+        implements SummaryGroup
+{
     /**
      * The set of users that are a member of this group.
      *
      * @return The set of users of users that are a member of this group.
      */
     @ManyToMany(targetEntity = User.class)
-    @JoinTable(name = "test_group_user") //$NON-NLS-1$
+    @JoinTable(name = "test_group_user")
     public Set<SummaryUser> getUsers() {
         return users;
     }
@@ -42,7 +42,7 @@ public class Group extends NDEntityBase implements SummaryGroup {
      * @return the set of authorizations assigned to this group
      */
     @ManyToMany
-    @JoinTable(name = "test_group_auth") //$NON-NLS-1$
+    @JoinTable(name = "test_group_auth")
     public Set<Authorization> getAuthorizations() {
         return authorizations;
     }
@@ -62,7 +62,7 @@ public class Group extends NDEntityBase implements SummaryGroup {
      * @throws org.marketcetera.persist.PersistenceException if there
      * was an error saving the Group
      */
-    public void save() throws org.marketcetera.persist.PersistenceException {
+    public void save() {
         saveRemote(null);
     }
 
@@ -72,7 +72,7 @@ public class Group extends NDEntityBase implements SummaryGroup {
      * @throws org.marketcetera.persist.PersistenceException if there was an
      * error deleting the Group
      */
-    public void delete() throws PersistenceException {
+    public void delete() {
         deleteRemote(null);
     }
 
@@ -81,6 +81,7 @@ public class Group extends NDEntityBase implements SummaryGroup {
      *
      * @return custom localized name for groups.
      */
+    @SuppressWarnings("unused")
     private static I18NMessage0P getUserFriendlyName() {
         return Messages.NAME_GROUP;
     }
@@ -88,17 +89,18 @@ public class Group extends NDEntityBase implements SummaryGroup {
     /**
      * The entity name as is used in various JPQL Queries
      */
-    static final String ENTITY_NAME = "Group"; //$NON-NLS-1$
+    static final String ENTITY_NAME = "Group";
 
     /**
      * The attribute name for user relations
      */
-    static final String ATTRIBUTE_USER = "users"; //$NON-NLS-1$
+    static final String ATTRIBUTE_USER = "users";
     /**
      * The attribute name for authorization relations
      */
-    static final String ATTRIBUTE_AUTH = "authorizations"; //$NON-NLS-1$
+    static final String ATTRIBUTE_AUTH = "authorizations";
 
     private Set<SummaryUser> users;
     private Set<Authorization> authorizations;
+    private static final long serialVersionUID = 1L;
 }

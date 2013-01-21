@@ -75,7 +75,6 @@ public abstract class QueryProcessor<R>
     protected boolean needsFetchJoins() {
         return isDetail();
     }
-
     /**
      * Returns true if the results should be ordered
      * based on the ordering configured on the query base
@@ -91,7 +90,6 @@ public abstract class QueryProcessor<R>
     protected boolean needsOrderBy() {
         return true;
     }
-
     /**
      * Executes the supplied query and processes its results.
      *
@@ -99,13 +97,9 @@ public abstract class QueryProcessor<R>
      * @param q the query thats being executed.
      *
      * @return the result of the query.
-     *
-     * @throws PersistenceException if there was an error
-     * processing results
      */
-    protected abstract QueryResults<R> process(EntityManager em, Query q)
-            throws PersistenceException;
-
+    protected abstract QueryResults<R> process(EntityManager em,
+                                               Query q);
     /**
      * This method is invoked after the query string
      * has been completely generated. This method may

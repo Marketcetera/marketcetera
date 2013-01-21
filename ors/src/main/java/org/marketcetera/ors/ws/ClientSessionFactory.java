@@ -1,13 +1,14 @@
 package org.marketcetera.ors.ws;
 
+import javax.persistence.PersistenceException;
 import javax.xml.bind.JAXBException;
+
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.ors.UserManager;
 import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.util.except.I18NRuntimeException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;

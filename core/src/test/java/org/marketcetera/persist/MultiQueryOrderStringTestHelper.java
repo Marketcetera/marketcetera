@@ -13,10 +13,9 @@ import java.text.Collator;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class MultiQueryOrderStringTestHelper<C extends EntityBase,
-        S extends SummaryEntityBase> extends
-        MultiQueryOrderTestHelper<C, S> {
+@ClassVersion("$Id$")
+public class MultiQueryOrderStringTestHelper<C extends EntityBase,S extends SummaryEntityBase>
+        extends MultiQueryOrderTestHelper<C,S> {
     /**
      * Creates an instance to test ordering of string attribute fields
      *
@@ -36,7 +35,7 @@ public class MultiQueryOrderStringTestHelper<C extends EntityBase,
         assertEquals(String.class,pDesc.getPropertyType());
     }
 
-    protected Comparator getComparator() {
+    protected Comparator<?> getComparator() {
         return Collator.getInstance(Locale.US);
     }
 

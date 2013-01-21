@@ -1,17 +1,18 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.junit.Test;
-import org.junit.BeforeClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Enumeration;
-import java.util.Properties;
-import java.net.URL;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Properties;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 /**
@@ -40,44 +41,16 @@ public class EnvironmentConfigurationTest extends PersistTestBase {
             URL url = res.nextElement();
             SLF4JLoggerProxy.debug(this,url.toString());
             if(url.getPath().indexOf("/hibernate/hibernate-core/") >= 0) { //$NON-NLS-1$
-                verifyPropertyValue(url,"Specification-Version","3.3.0.SP1"); //$NON-NLS-1$ //$NON-NLS-2$
+                verifyPropertyValue(url,"Implementation-Version","4.1.9.Final"); //$NON-NLS-1$ //$NON-NLS-2$
                 foundCore = true;
             }
             if(url.getPath().indexOf("/hibernate-entitymanager/") >= 0) { //$NON-NLS-1$
-                verifyPropertyValue(url,"Implementation-Version","3.4.0.GA"); //$NON-NLS-1$ //$NON-NLS-2$
+                verifyPropertyValue(url,"Implementation-Version","4.1.9.Final"); //$NON-NLS-1$ //$NON-NLS-2$
                 foundEntityMgr = true;
             }
         }
         assertTrue("Hibernate core library not found",foundCore); //$NON-NLS-1$
         assertTrue("Hibernate entity manager library not found", foundEntityMgr); //$NON-NLS-1$
-    }
-
-    /**
-     * Tests the mysql version number and configuration.
-     *
-     * @throws Exception if there was an error fetching the mysql
-     * version number
-     */
-    @Test
-    public void mysql() throws Exception {
-        DataTypes dt = new DataTypes();
-        final String version = dt.fetchDBVersion();
-        SLF4JLoggerProxy.debug(this,version);
-        // If the mysql version number is updated, search for source
-        // files containing the string mysql to find sections of code
-        // that might have mysql version dependency
-        // (like change in supported unicode version)
-        //assertTrue("Unexpected MySQL version: "+version, //$NON-NLS-1$
-        //        version.indexOf("5.0") >= 0); //$NON-NLS-1$
-        assertEquals("Unexpected database charset","utf8",dt.fetchDBCharset()); //$NON-NLS-1$ //$NON-NLS-2$
-        assertEquals("Unexpected connection charset","utf8",dt.fetchConnCharset()); //$NON-NLS-1$ //$NON-NLS-2$
-        assertEquals("Unexpected client charset","utf8",dt.fetchClientCharset()); //$NON-NLS-1$ //$NON-NLS-2$
-        assertEquals("Unexpected database collation","utf8_general_ci", //$NON-NLS-1$ //$NON-NLS-2$
-                dt.fetchDBCollation());
-        assertEquals("Unexpected connection collation","utf8_general_ci", //$NON-NLS-1$ //$NON-NLS-2$
-                dt.fetchDBConnCollation());
-        assertEquals("Unexpected connection timezone","+00:00",dt.fetchDBConnTz()); //$NON-NLS-1$ //$NON-NLS-2$
-        assertEquals("Unexpected locale","en_US",dt.fetchDBLocale()); //$NON-NLS-1$ //$NON-NLS-2$
     }
     @BeforeClass
     public static void setup() throws Exception {
@@ -95,8 +68,10 @@ public class EnvironmentConfigurationTest extends PersistTestBase {
      * @throws IOException if there was an error reading the properties file.
      */
     private void verifyPropertyValue(URL url,
-                               String propertyName,
-                               String propertyValue) throws IOException {
+                                     String propertyName,
+                                     String propertyValue)
+        throws IOException
+    {
         Properties p = new Properties();
         InputStream inStream = url.openStream();
         try {

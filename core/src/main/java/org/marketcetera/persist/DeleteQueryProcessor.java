@@ -95,8 +95,8 @@ public class DeleteQueryProcessor extends QueryProcessor<Integer>  {
         return false;
     }
 
-    protected QueryResults<Integer> process(EntityManager em, Query q)
-            throws PersistenceException {
+    protected QueryResults<Integer> process(EntityManager em,
+                                            Query q) {
         final int result = q.executeUpdate();
         SLF4JLoggerProxy.debug(this,"Deleted {} rows",result); //$NON-NLS-1$
         return new SingleResult<Integer>(result);

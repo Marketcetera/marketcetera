@@ -1,9 +1,9 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
+import java.io.Serializable;
 
 import javax.persistence.EntityManager;
-import java.io.Serializable;
+import javax.persistence.PersistenceException;
 
 /**
  * Represents a database transaction. The lifecycles
@@ -26,6 +26,6 @@ public interface Transaction<R> extends Serializable {
      * @throws PersistenceException if there's an error running the
      * transaction.
      */
-    public R execute(EntityManager em, PersistContext context)
-            throws PersistenceException;
+    public R execute(EntityManager em,
+                     PersistContext context);
 }

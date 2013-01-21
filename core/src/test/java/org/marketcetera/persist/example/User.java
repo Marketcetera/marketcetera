@@ -1,17 +1,21 @@
 package org.marketcetera.persist.example;
-import org.marketcetera.persist.*;
-import org.marketcetera.persist.PersistenceException;
 import static org.marketcetera.persist.JPQLConstants.*;
-import org.marketcetera.util.log.I18NMessage0P;
 
-import javax.persistence.*;
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.*;
+
+import org.marketcetera.persist.EntityBase;
+import org.marketcetera.persist.NDEntityBase;
+import org.marketcetera.persist.PersistContext;
+import org.marketcetera.persist.SaveResult;
+import org.marketcetera.util.log.I18NMessage0P;
 
 /**
  * Instances of this class represent individual users
@@ -254,6 +258,7 @@ public class User extends NDEntityBase implements SummaryUser {
      *
      * @param groups the set of groups that this user belongs to
      */
+    @SuppressWarnings("unused")
     private void setGroups(Set<SummaryGroup> groups) {
         this.groups = groups;
     }
@@ -315,20 +320,20 @@ public class User extends NDEntityBase implements SummaryUser {
      * Saves this user to the system. If this user doesn't exist,
      * its created, otherwise the existing user is updated.
      *
-     * @throws org.marketcetera.persist.PersistenceException if there was
+     * @throws PersistenceException if there was
      * an error saving the User
      */
-    public void save() throws org.marketcetera.persist.PersistenceException {
+    public void save() {
         saveRemote(null);
     }
 
     /**
      * Deletes this user from the system.
      *
-     * @throws org.marketcetera.persist.PersistenceException if there was
+     * @throws PersistenceException if there was
      * an error deleting the User
      */
-    public void delete() throws PersistenceException {
+    public void delete() {
         deleteRemote(null);
     }
 
@@ -442,6 +447,7 @@ public class User extends NDEntityBase implements SummaryUser {
      *
      * @return custom localized name for users.
      */
+    @SuppressWarnings("unused")
     private static I18NMessage0P getUserFriendlyName() {
         return Messages.NAME_USER;
     }

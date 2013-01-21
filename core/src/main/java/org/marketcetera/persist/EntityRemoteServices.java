@@ -1,10 +1,14 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import static org.marketcetera.persist.Messages.*;
+import static org.marketcetera.persist.Messages.ERS_ALREADY_INITIALIZED;
+import static org.marketcetera.persist.Messages.ERS_NOT_INITIALIZED;
 
 import java.util.List;
+
+import javax.persistence.PersistenceException;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 /* $License$ */
 
 /**
@@ -32,13 +36,9 @@ abstract class EntityRemoteServices {
      *
      * @return An object encapsulating the state changes that
      * were made to the supplied entity when saving it.
-     *
-     * @throws PersistenceException if there was an error
-     * saving the entity
      */
     public abstract SaveResult save(EntityBase entity,
-                                    PersistContext context)
-            throws PersistenceException;
+                                    PersistContext context);
 
     /**
      * Sends a request to delete the supplied entity.
@@ -48,14 +48,9 @@ abstract class EntityRemoteServices {
      *
      * @return The save result instance to reset entity's
      * state back to unsaved.
-     * 
-     * @throws PersistenceException if there was an error deleting
-     * the entity
      */
     public abstract SaveResult delete(EntityBase entity,
-                                      PersistContext context)
-            throws PersistenceException;
-
+                                      PersistContext context);
     /**
      * Sends the query for execution and returns its results back.
      *
@@ -63,15 +58,9 @@ abstract class EntityRemoteServices {
      * @param processors the processors to process query's results
      *
      * @return The results from query's execution.
-     *
-     * @throws PersistenceException if there's an error executing
-     * the query
      */
-    public abstract <T> List<QueryResults<T>> execute(
-            QueryBase query,
-            List<QueryProcessor<T>> processors)
-            throws PersistenceException;
-
+    public abstract <T> List<QueryResults<T>> execute(QueryBase query,
+                                                      List<QueryProcessor<T>> processors);
     /**
      * Executes the supplied transaction. Invocations to this method
      * can be nested. The transaction is created for the outer-most invocation
@@ -82,25 +71,18 @@ abstract class EntityRemoteServices {
      * @param context the persist context, if any.
      *
      * @return The results from a transaction
-     * 
-     * @throws PersistenceException if there was an error executing the
-     * transaction
      */
-    public abstract <R> R execute(Transaction<R> t, PersistContext context)
-            throws PersistenceException;
+    public abstract <R> R execute(Transaction<R> t, PersistContext context);
     /**
      * Returns the configured remote entity persistence services
      * instance for the environment.
      *
      * @return The configured remote entity persistence services
      * instance.
-     *
-     * @throws PersistSetupException if the instance is not
-     * initialized already.
      */
-    public static EntityRemoteServices getInstance() throws PersistSetupException {
+    public static EntityRemoteServices getInstance() {
         if(singleton == null) {
-            throw new PersistSetupException(ERS_NOT_INITIALIZED);
+            throw new PersistenceException(ERS_NOT_INITIALIZED.getText());
         }
         return singleton;
     }
@@ -109,16 +91,12 @@ abstract class EntityRemoteServices {
      * Creates an instance. Only one instance of this class
      * can be created. If an attempt is made to create more
      * than one instance, an exception is thrown.
-     * 
-     * @throws PersistSetupException if an instance of this class
-     * already exists.
      */
-    protected EntityRemoteServices() throws PersistSetupException {
+    protected EntityRemoteServices() {
         super();
         if(singleton != null) {
-            throw new PersistSetupException(new I18NBoundMessage2P(
-                    ERS_ALREADY_INITIALIZED, getClass().getName(),
-                    singleton.getClass().getName()));
+            throw new PersistenceException(new I18NBoundMessage2P(ERS_ALREADY_INITIALIZED, getClass().getName(),
+                                                                  singleton.getClass().getName()).getText());
         }
         singleton = this;
     }

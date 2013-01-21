@@ -51,7 +51,7 @@ public class MultiUserQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error fetching
      * the Users
      */
-    public List<User> fetch() throws PersistenceException {
+    public List<User> fetch() {
         return fetchRemote(new MultiQueryProcessor<User>(true));
     }
     /**
@@ -64,7 +64,7 @@ public class MultiUserQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error fetching
      * the summary views of the users.
      */
-    public List<SummaryUser> fetchSummary() throws PersistenceException {
+    public List<SummaryUser> fetchSummary() {
         return fetchRemote(new MultiQueryProcessor<SummaryUser>(false));
     }
 
@@ -76,7 +76,7 @@ public class MultiUserQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error deleting
      * the user instances
      */
-    public int delete() throws PersistenceException {
+    public int delete() {
         //Run a query that first deletes the session objects
         //followed by a query that deletes the user objects.
         final String alias = "s"; //$NON-NLS-1$

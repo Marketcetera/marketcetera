@@ -1,13 +1,16 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import static org.marketcetera.persist.JPQLConstants.*;
+import static org.marketcetera.persist.JPQLConstants.DOT;
+import static org.marketcetera.persist.JPQLConstants.S;
+import static org.marketcetera.persist.JPQLConstants.SELECT;
 
 import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 /**
@@ -59,10 +62,9 @@ public class DeleteEntityProcessor<E extends EntityBase> extends QueryProcessor<
      * @param q  the query thats being executed.
      * @return the result of the query.
      */
-    protected QueryResults<Integer> process(EntityManager em, Query q)
-            throws PersistenceException {
+    protected QueryResults<Integer> process(EntityManager em, Query q) {
         //Get the list of IDs, iterate through them and delete each of the entities.
-        List l = q.getResultList();
+        List<?> l = q.getResultList();
         Long id;
         for(Object o:l) {
             id = (Long) o;
@@ -80,8 +82,7 @@ public class DeleteEntityProcessor<E extends EntityBase> extends QueryProcessor<
      * @param id The ID of the entity being deleted.
      * @throws PersistenceException if there was an error removing the entity.
      */
-    protected void removeEntity(EntityManager em, Long id)
-            throws PersistenceException {
+    protected void removeEntity(EntityManager em, Long id) {
         em.remove(em.getReference(getEntityClass(),id));
     }
 
@@ -92,14 +93,14 @@ public class DeleteEntityProcessor<E extends EntityBase> extends QueryProcessor<
      * @return The class for the entity being processed
      * @throws PersistenceException if there was an error fetching the class.
      */
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
-    protected final Class<E> getEntityClass() throws PersistenceException {
+    @SuppressWarnings("unchecked")
+    protected final Class<E> getEntityClass() {
         if(clazz == null) {
             try {
                 clazz = (Class<E>)Class.forName(className);
             } catch (ClassNotFoundException e) {
-                throw new PersistSetupException(e,
-                        Messages.UNEXPECTED_SETUP_ISSUE);
+                throw new PersistenceException(Messages.UNEXPECTED_SETUP_ISSUE.getText(),
+                                               e);
             }
         }
         return clazz;

@@ -68,7 +68,6 @@ public abstract class QueryBase implements Serializable {
         this.whereClause = whereClause;
         entityAlias = alias;
     }
-
     /**
      * Sends the query with the supplied query processor for
      * execution and returns the results back. This method is the same
@@ -78,17 +77,12 @@ public abstract class QueryBase implements Serializable {
      * @param processor the query processor
      *
      * @return the query results
-     *
-     * @throws PersistenceException if there was an error executing the query
      */
-    protected final <T> QueryResults<T> executeRemote(
-            QueryProcessor<T> processor)
-            throws PersistenceException {
+    protected final <T> QueryResults<T> executeRemote(QueryProcessor<T> processor) {
         List<QueryProcessor<T>> l = new LinkedList<QueryProcessor<T>>();
         l.add(processor);
         return executeRemoteMultiple(l).get(0);
     }
-
     /**
      * Sends the query with supplied query processors. The query is run with
      * each query processor within the context of the same transaction and
@@ -99,14 +93,11 @@ public abstract class QueryBase implements Serializable {
      * @param processors the array of processors
      *
      * @return the query results.
-     *
-     * @throws PersistenceException if there was an error executing the query
      */
-    protected final <T> List<QueryResults<T>> executeRemoteMultiple(
-            List<QueryProcessor<T>> processors) throws PersistenceException {
-        return EntityRemoteServices.getInstance().execute(this, processors);
+    protected final <T> List<QueryResults<T>> executeRemoteMultiple(List<QueryProcessor<T>> processors) {
+        return EntityRemoteServices.getInstance().execute(this,
+                                                          processors);
     }
-
     /**
      * This method is invoked to add order by clauses to the supplied
      * queryString. This implementation simply returns the supplied
@@ -204,14 +195,10 @@ public abstract class QueryBase implements Serializable {
      * @param processors the query processors to process query results
      *
      * @return The results of the query.
-     *
-     * @throws PersistenceException if there was an error executing
-     * the query.
      */
     final <T> List<QueryResults<T>> executeLocal(
             EntityManager em,
-            List<QueryProcessor<T>> processors)
-            throws org.marketcetera.persist.PersistenceException {
+            List<QueryProcessor<T>> processors) {
         ArrayList<QueryResults<T>> results =
                 new ArrayList<QueryResults<T>>(processors.size());
         for(QueryProcessor<T>p:processors) {
@@ -242,9 +229,8 @@ public abstract class QueryBase implements Serializable {
      * when creating this instance
      * @throws PersistenceException if there were errors creating the query
      */
-    private <T> Query createQuery(
-            EntityManager em, QueryProcessor<T> processor)
-            throws PersistenceException {
+    private <T> Query createQuery(EntityManager em,
+                                  QueryProcessor<T> processor) {
         StringBuilder queryString = new StringBuilder();
         generateQueryString(queryString, processor);
 
@@ -253,12 +239,10 @@ public abstract class QueryBase implements Serializable {
         String s = queryString.toString();
         SLF4JLoggerProxy.debug(this,"Creating Query {}",s); //$NON-NLS-1$
         Query query = em.createQuery(s);
-
         //Set the query parameters.
         setParameters(query);
         return query;
     }
-
     /**
      * Generates the query string stiching together the from & where
      * clauses and adding fetch join , filtering and ordering clauses
@@ -311,17 +295,13 @@ public abstract class QueryBase implements Serializable {
             }
         }
     }
-
     /**
      * Sets the parameters specified via {@link #setParameter(String, Object)}
      * on the query instance before its executed.
      *
      * @param q the query instance on which the parameters need to be set.
-     * 
-     * @throws PersistenceException if there were errors setting 
-     * the parameters
      */
-    private void setParameters(Query q) throws PersistenceException {
+    private void setParameters(Query q) {
         //Let subclasses set any parameters if they want
         preSetParameters(q);
         if(!queryParameters.isEmpty()) {
@@ -339,9 +319,6 @@ public abstract class QueryBase implements Serializable {
                     q.setParameter(e.getKey(), (Date)e.getValue(),
                             TemporalType.TIME);
                 } else {
-                    if(e.getValue() instanceof String) {
-                        VendorUtils.validateText((String)e.getValue());
-                    }
                     q.setParameter(e.getKey(), e.getValue());
                 }
             }

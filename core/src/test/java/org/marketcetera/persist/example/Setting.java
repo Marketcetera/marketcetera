@@ -73,6 +73,7 @@ class Setting implements Serializable {
     void setValue(String value) {
         this.value = value;
     }
+    @SuppressWarnings("unused")
     @ManyToOne
     private User getOwner() {
         return owner;
@@ -81,12 +82,14 @@ class Setting implements Serializable {
     private void setOwner(User owner) {
         this.owner = owner;
     }
+    @SuppressWarnings("unused")
     @Id
     @GeneratedValue
     private long getId() {
         return id;
     }
 
+    @SuppressWarnings("unused")
     private void setId(long id) {
         this.id = id;
     }

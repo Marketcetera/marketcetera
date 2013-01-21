@@ -28,10 +28,9 @@ public class MultiQueryProcessor<R extends SummaryEntityBase>
         super(detail);
     }
 
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public QueryResults<List<R>> process(EntityManager em,
-                                   Query q)
-            throws PersistenceException {
+                                         Query q) {
         final List result = q.getResultList();
         SLF4JLoggerProxy.debug(this,"Fetched {} rows",result.size());  //$NON-NLS-1$
         return new MultipleResults<R>(result);

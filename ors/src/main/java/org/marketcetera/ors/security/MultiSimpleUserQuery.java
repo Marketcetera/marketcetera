@@ -1,13 +1,15 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.MultiNDQuery;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.MultiQueryProcessor;
 import static org.marketcetera.persist.JPQLConstants.FROM;
 import static org.marketcetera.persist.JPQLConstants.S;
 
 import java.util.List;
+
+import javax.persistence.PersistenceException;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.persist.MultiNDQuery;
+import org.marketcetera.persist.MultiQueryProcessor;
 
 /* $License$ */
 /**
@@ -48,7 +50,7 @@ public class MultiSimpleUserQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error fetching
      * the users.
      */
-    public List<SimpleUser> fetch() throws PersistenceException {
+    public List<SimpleUser> fetch() {
         return fetchRemote(new MultiQueryProcessor<SimpleUser>(false));
     }
 
@@ -60,7 +62,7 @@ public class MultiSimpleUserQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error deleting the
      * instances
      */
-    public int delete() throws PersistenceException {
+    public int delete() {
         return deleteRemote();
     }
 

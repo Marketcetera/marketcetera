@@ -1,5 +1,7 @@
 package org.marketcetera.persist;
 
+import javax.persistence.PersistenceException;
+
 import org.marketcetera.core.ClassVersion;
 
 /* $License$ */

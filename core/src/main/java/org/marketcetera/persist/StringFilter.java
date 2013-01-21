@@ -1,11 +1,11 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.except.I18NRuntimeException;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-
 import java.io.Serializable;
 import java.util.regex.Pattern;
+
+import javax.persistence.PersistenceException;
+
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 /**
@@ -27,17 +27,16 @@ public class StringFilter implements Serializable {
      *
      * @param value the filter text. the value cannot be null
      *
-     * @throws ValidationException if the specified string filter
+     * @throws PersistenceException if the specified string filter
      * is not valid
      */
-    public StringFilter(String value) throws ValidationException {
+    public StringFilter(String value) {
         if(value == null) {
             throw new NullPointerException();
         }
         if(!VALIDATOR.matcher(value).matches()) {
-            throw new ValidationException(new I18NBoundMessage2P(
-                    Messages.INVALID_STRING_FILTER,value,
-                    VALIDATOR.toString()));
+            throw new PersistenceException(Messages.INVALID_STRING_FILTER.getText(value,
+                                                                                  VALIDATOR.toString()));
         }
         this.value = value;
     }

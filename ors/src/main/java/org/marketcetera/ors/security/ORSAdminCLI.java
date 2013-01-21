@@ -1,26 +1,27 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ApplicationBase;
 import static org.marketcetera.ors.security.Messages.*;
+
+import java.io.Console;
+import java.io.File;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.persistence.PersistenceException;
+
+import org.apache.commons.cli.*;
+import org.apache.commons.lang.SystemUtils;
+import org.apache.log4j.PropertyConfigurator;
+import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.persist.StringFilter;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.StringFilter;
-import org.apache.log4j.PropertyConfigurator;
-
-import org.apache.commons.cli.*;
-import org.apache.commons.lang.SystemUtils;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
-
-import java.io.File;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Console;
-import java.util.List;
-import java.util.Arrays;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /* $License$ */
 /**
@@ -294,12 +295,12 @@ public class ORSAdminCLI
      * @param active the desired value of the active flag (null means
      * "don't care")
      *
-     * @throws PersistenceException if there was an error fetching the users.
+     * @ if there was an error fetching the users.
      */
     private void listUsers
         (String nameFilter,
          Boolean active)
-        throws PersistenceException
+        
     {
         MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
         q.setActiveFilter(active);
@@ -393,14 +394,14 @@ public class ORSAdminCLI
      * @param opPass the password for the new user
      * @param superuser the new value of the superuser flag.
      *
-     * @throws PersistenceException if there was an error adding
+     * @ if there was an error adding
      * the new user
      */
     private void addUser
         (String opUser,
          String opPass,
          Boolean superuser)
-        throws PersistenceException
+        
     {
         SimpleUser u = new SimpleUser();
         u.setName(opUser);
@@ -455,6 +456,7 @@ public class ORSAdminCLI
      *
      * @return the options accepted by the CLI
      */
+    @SuppressWarnings("static-access")
     private static Options options() {
         Options opts = new Options();
         opts.addOption(OptionBuilder.hasArg().
