@@ -6,9 +6,9 @@
 # version: $Id$
 #
 #   
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
-include_class "org.marketcetera.marketdata.AssetClass"
+import_java org.marketcetera.strategy.ruby.Strategy
+import_java org.marketcetera.marketdata.MarketDataRequestBuilder
+import_java org.marketcetera.marketdata.AssetClass
 
 #######################################
 # Strategy that receives marketdata   #

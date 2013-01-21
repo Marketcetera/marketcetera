@@ -7,15 +7,15 @@
 # version: $Id$
 #
 #
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "java.lang.System"
-include_class "org.marketcetera.trade.Factory"
-include_class "org.marketcetera.trade.OrderType"
-include_class "org.marketcetera.trade.Side"
-include_class "org.marketcetera.trade.TimeInForce"
-include_class "org.marketcetera.trade.Equity"
-include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
-include_class "java.math.BigDecimal"
+import_java org.marketcetera.strategy.ruby.Strategy
+import_java java.lang.System
+import_java org.marketcetera.trade.Factory
+import_java org.marketcetera.trade.OrderType
+import_java org.marketcetera.trade.Side
+import_java org.marketcetera.trade.TimeInForce
+import_java org.marketcetera.trade.Equity
+import_java org.marketcetera.marketdata.MarketDataRequestBuilder
+import_java java.math.BigDecimal
 
 
 ###############################

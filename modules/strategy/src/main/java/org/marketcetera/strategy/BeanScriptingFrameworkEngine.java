@@ -45,6 +45,18 @@ class BeanScriptingFrameworkEngine
      * the processed script to execute
      */
     private String processedScript;
+    /**
+     * Resets the stored state of the scripting engine.
+     */
+    public static void reset()
+    {
+        synchronized(scriptManager) {
+            if(scriptEngine != null) {
+                scriptEngine.terminate();
+                scriptEngine = null;
+            }
+        }
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.ExecutionEngine#prepare(org.marketcetera.strategy.Strategy, java.lang.String)
      */

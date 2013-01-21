@@ -6,9 +6,8 @@
 # version: $Id$
 #
 #
-'require java'
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
+import_java org.marketcetera.strategy.ruby.Strategy
+import_java org.marketcetera.marketdata.MarketDataRequestBuilder
 
 ##################################################
 # Strategy that processes market data via CEP    #

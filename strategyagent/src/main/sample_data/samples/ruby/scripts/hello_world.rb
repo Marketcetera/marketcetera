@@ -6,7 +6,7 @@
 # version: $Id$
 #
 #
-include_class "org.marketcetera.strategy.ruby.Strategy"
+import_java org.marketcetera.strategy.ruby.Strategy
 
 ###############################
 # Hello World Strategy        #

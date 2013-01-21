@@ -16,7 +16,6 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -1190,6 +1189,7 @@ public abstract class LanguageTestBase
     public void sendMessages()
         throws Exception
     {
+        BeanScriptingFrameworkEngine.reset();
         Properties parameters = new Properties();
         Date messageDate = new Date();
         parameters.setProperty("date",
@@ -1562,7 +1562,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test@Ignore
+    @Test
     public void brokers()
         throws Exception
     {

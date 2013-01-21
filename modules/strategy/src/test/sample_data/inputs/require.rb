@@ -1,4 +1,4 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
+java_import org.marketcetera.strategy.ruby.Strategy
 require "other1"
 
 ###############################

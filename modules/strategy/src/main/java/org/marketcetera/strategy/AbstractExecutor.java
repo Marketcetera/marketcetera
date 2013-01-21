@@ -37,7 +37,7 @@ abstract class AbstractExecutor
         Object objectReturned = engine.start();
         if(objectReturned == null) {
             StrategyModule.log(LogEventBuilder.error().withMessage(STRATEGY_COMPILATION_NULL_RESULT,
-                                                                   String.valueOf(getStrategy())).create(),                               
+                                                                   String.valueOf(getStrategy())).create(),
                                getStrategy());                               
             throw new StrategyException(new I18NBoundMessage1P(STRATEGY_COMPILATION_NULL_RESULT,
                                                                getStrategy().toString()));
