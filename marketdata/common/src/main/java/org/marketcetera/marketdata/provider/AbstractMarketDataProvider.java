@@ -16,6 +16,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
@@ -159,10 +160,35 @@ public abstract class AbstractMarketDataProvider
             stop();
             throw new MarketDataRequestFailed(e);
         }
+        SLF4JLoggerProxy.trace(this,
+                               "Acquired lock"); //$NON-NLS-1$
         try {
             mapRequestToInstruments(inRequestToken);
             for(MarketDataRequestAtom atom : atoms) {
                 if(requestsByAtom.containsKey(atom)) {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Already requested {}, adding to reference count",
+                                           atom);
+                    Instrument snapshotInstrument = instrumentsBySymbol.get(atom.getSymbol());
+                    if(snapshotInstrument == null) {
+                        SLF4JLoggerProxy.warn(this,
+                                              "Symbol {} not yet mapped, cannot send snapshot",
+                                               atom.getSymbol());
+                    } else {
+                        Event snapshotEvent = getSnapshot(snapshotInstrument,
+                                                          atom.getContent());
+                        // TODO make the snapshot event a SNAPSHOT instead of UPDATE
+                        if(snapshotEvent != null) {
+                            SLF4JLoggerProxy.debug(this,
+                                                   "Sending snapshot: {}",
+                                                   snapshotEvent);
+                            inRequestToken.getSubscriber().publishTo(snapshotEvent);
+                        } else {
+                            SLF4JLoggerProxy.debug(this,
+                                                   "No snapshot for {}",
+                                                   atom);
+                        }
+                    }
                     requestsByAtom.put(atom,
                                        inRequestToken);
                     requestsBySymbol.put(atom.getSymbol(),
@@ -170,10 +196,15 @@ public abstract class AbstractMarketDataProvider
                 } else {
                     Capability requiredCapability = necessaryCapabilities.get(atom.getContent());
                     if(requiredCapability == null) {
+                        Messages.UNKNOWN_MARKETDATA_CONTENT.error(this,
+                                                                  atom.getContent());
                         throw new UnsupportedOperationException(Messages.UNKNOWN_MARKETDATA_CONTENT.getText(atom.getContent()));
                     }
                     Set<Capability> capabilities = getCapabilities();
                     if(!capabilities.contains(requiredCapability)) {
+                        Messages.UNSUPPORTED_MARKETDATA_CONTENT.error(this,
+                                                                      atom.getContent(),
+                                                                      capabilities.toString());
                         throw new MarketDataRequestFailed(new I18NBoundMessage2P(Messages.UNSUPPORTED_MARKETDATA_CONTENT,
                                                                                  atom.getContent(),
                                                                                  capabilities.toString()));
@@ -182,6 +213,9 @@ public abstract class AbstractMarketDataProvider
                                        inRequestToken);
                     requestsBySymbol.put(atom.getSymbol(),
                                          inRequestToken);
+                    SLF4JLoggerProxy.debug(this,
+                                           "Requesting {}",
+                                           atom);
                     doMarketDataRequest(inRequestToken.getRequest(),
                                         atom);
                 }
@@ -198,6 +232,8 @@ public abstract class AbstractMarketDataProvider
             throw new MarketDataRequestFailed(e);
         } finally {
             marketdataRequestLock.unlock();
+            SLF4JLoggerProxy.trace(this,
+                                   "Lock released"); //$NON-NLS-1$
         }
     }
     /* (non-Javadoc)
@@ -623,6 +659,10 @@ public abstract class AbstractMarketDataProvider
                         } finally {
                             requestLock.unlock();
                         }
+                        SLF4JLoggerProxy.trace("events.publishing",
+                                               "Publishing {} to {}",
+                                               outgoingEvents,
+                                               requests);
                         for(MarketDataRequestToken request : requests) {
                             // for each subscriber, determine if the request contents justifies the update
                             if(request.getRequest().getContent().contains(notification.content)) {
@@ -630,7 +670,8 @@ public abstract class AbstractMarketDataProvider
                                 //  we don't want a misbehaving subscriber to break the market data mechanism
                                 try {
                                     for(Event outgoingEvent : outgoingEvents) {
-                                        request.getSubscriber().publishTo(outgoingEvent);
+                                        Subscriber subscriber = request.getSubscriber();
+                                        subscriber.publishTo(outgoingEvent);
                                     }
                                 } catch (Exception e) {
                                     Messages.EVENT_NOTIFICATION_FAILED.warn(AbstractMarketDataProvider.this,

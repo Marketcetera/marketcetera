@@ -19,6 +19,11 @@ class MarketdataCacheElement
     }
     Event getSnapshot(Content inContent)
     {
+        if(inContent == Content.MARKET_STAT) {
+            return marketstatCache.get();
+        } else if(inContent == Content.LATEST_TICK) {
+            return trade;
+        }
         throw new UnsupportedOperationException(); // TODO
     }
     List<Event> update(Content inContent,
