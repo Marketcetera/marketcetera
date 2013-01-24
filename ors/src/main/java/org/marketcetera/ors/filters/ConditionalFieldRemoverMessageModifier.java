@@ -20,7 +20,9 @@ import quickfix.field.MsgType;
 
 /**
  * Removes fields based on conditions.
- *
+ *@param skipField constructor argument to specify which tag to be removed
+ *@param conditionalField specifies which field should be matched with filter criteria
+ *@param matchCriteria specifies list of values to be matched with conditional field
  */
 @ClassVersion("$Id$")
 public class ConditionalFieldRemoverMessageModifier
@@ -69,7 +71,8 @@ public class ConditionalFieldRemoverMessageModifier
         	try {
 				matcherValue = inMessage.getString(conditionalField);
 			} catch (FieldNotFound e) {
-				e.printStackTrace();
+				//Its valid case to have message not containing the conditional field
+				//Its safe to swallow FieldNotFound exception in this case
 			}
         	for(String value: matchCriteria)
         	{
@@ -99,7 +102,7 @@ public class ConditionalFieldRemoverMessageModifier
 	                    throw new CoreException(e);
 	                }
 	                if(thisMessageType.valueEquals(msgType)) {
-	                    SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
+	                	SLF4JLoggerProxy.debug(ConditionalFieldRemoverMessageModifier.class,
 	                                           "Message type specified matches message, removing field"); //$NON-NLS-1$
 	                    inMessage.removeField(field);
 	                    isModified = true;
@@ -144,9 +147,15 @@ public class ConditionalFieldRemoverMessageModifier
     }
     
 
+	/** Set conditionalField value that specifies which field should be matched with filter criteria
+	 * @param conditionalField
+	 */
 	public void setConditionalField(int conditionalField) {
 		this.conditionalField = conditionalField;
 	}
+	/** Set matchCriteria that specifies list of values to be matched with conditional field
+	 * @param matchCriteria
+	 */
 	public void setMatchCriteria(List<String> matchCriteria) {
 		this.matchCriteria = matchCriteria;
 	}
