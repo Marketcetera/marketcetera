@@ -147,41 +147,4 @@
       <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <!-- Database schema generator. -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>hibernate3-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- In this phase, the persistence.xml file has been copied. -->
-            <phase>process-test-classes</phase>
-            <goals>
-              <goal>hbm2ddl</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <components>
-            <component>
-              <name>hbm2ddl</name>
-              <implementation>annotationconfiguration</implementation>
-            </component>
-          </components>
-          <componentProperties>
-            <implementation>jpaconfiguration</implementation>
-            <persistenceunit>unit-testing</persistenceunit>
-            <outputfilename>schema.sql</outputfilename>
-            <jdk5>true</jdk5>
-            <drop>false</drop>
-            <create>true</create>
-            <export>false</export>
-            <format>true</format>
-          </componentProperties>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

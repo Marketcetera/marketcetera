@@ -1,15 +1,16 @@
-package org.marketcetera.persist;
+package org.marketcetera.newpersist;
 
 import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
+
 /**
  * Presents summary view of the entities that have
  * a name and description
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id: SummaryNDEntityBase.java 16461 2013-01-21 22:58:07Z colin $")
 public interface SummaryNDEntityBase
         extends SummaryEntityBase
 {

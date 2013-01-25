@@ -6,7 +6,7 @@
     <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="metc"/></bean>
     <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="pw4metc"/></bean>
     <!-- mysql -->
-    <bean name="mysqlURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera?logSlowQueries=true"/></bean>
+    <bean name="mysqlURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/metc?logSlowQueries=true"/></bean>
     <bean name="mysqlDriver" class="java.lang.String"><constructor-arg value="com.mysql.jdbc.Driver"/></bean>
     <!-- derby -->
     <bean name="derbyURL" class="java.lang.String"><constructor-arg value="jdbc:derby:metc;create=true"/></bean>
@@ -26,7 +26,7 @@
         <property name="username" ref="JdbcUser"/>
         <property name="password" ref="JdbcPassword"/>
         <property name="maxActive" value="10"/>
-        <property name="validationQuery" value="select 1"></property>> <!-- use this for mysql, postgres, and others -->
+        <property name="validationQuery" value="select 1"></property> <!-- use this for mysql, postgres, and others -->
         <!--property name="validationQuery" value="VALUES 1"/--> <!-- use this for derby -->
         <property name="testOnBorrow" value="true"/>
     </bean>

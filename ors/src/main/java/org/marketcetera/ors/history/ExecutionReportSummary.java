@@ -9,9 +9,6 @@ import javax.persistence.*;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.EntityBase;
-import org.marketcetera.persist.PersistContext;
-import org.marketcetera.persist.Transaction;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -294,10 +291,9 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    static Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
-        (final SimpleUser inUser,
-         final Date inDate)
-        throws PersistenceException
+    static Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf(final SimpleUser inUser,
+                                                                          final Date inDate)
+            throws PersistenceException
     {
         return executeRemote(new Transaction<Map<PositionKey<Equity>, BigDecimal>>() {
             private static final long serialVersionUID = 1L;
@@ -356,9 +352,8 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    static Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
-        (final SimpleUser inUser,
-         final Date inDate)
+    static Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(final SimpleUser inUser,
+                                                                              final Date inDate)
         throws PersistenceException
     {
         return executeRemote(new Transaction<Map<PositionKey<Currency>, BigDecimal>>() {

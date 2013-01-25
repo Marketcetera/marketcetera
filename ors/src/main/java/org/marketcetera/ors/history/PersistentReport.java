@@ -9,9 +9,6 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.persist.EntityBase;
-import org.marketcetera.persist.PersistContext;
-import org.marketcetera.persist.Transaction;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -29,23 +26,22 @@ import quickfix.Message;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
 @Entity
 @Table(name = "reports")
-
-@NamedQuery(name = "forOrderID",
-    query = "select e from PersistentReport e " +
-            "where e.orderID = :orderID")
-class PersistentReport extends EntityBase {
+@NamedQuery(name = "forOrderID",query = "select e from PersistentReport e where e.orderID = :orderID")
+@ClassVersion("$Id$")
+class PersistentReport
+        extends EntityBase
+{
     /**
      * Saves the supplied report to the database.
      *
      * @param inReport The report to be saved.
      *
-     * @throws PersistenceException if there were errors saving the
-     * report to the database.
+     * @throws PersistenceException if there were errors saving the report to the database.
      */
-    static void save(ReportBase inReport) throws PersistenceException {
+    static void save(ReportBase inReport)
+    {
         PersistentReport report = new PersistentReport(inReport);
         report.saveRemote(null);
     }
@@ -64,9 +60,7 @@ class PersistentReport extends EntityBase {
      * report.
      */
 
-    static Principals getPrincipals
-        (final OrderID orderID)
-        throws PersistenceException 
+    static Principals getPrincipals(final OrderID orderID)
     {
         return executeRemote(new Transaction<Principals>() {
             private static final long serialVersionUID=1L;
@@ -98,7 +92,6 @@ class PersistentReport extends EntityBase {
      * instance.
      */
     PersistentReport(ReportBase inReport)
-        throws PersistenceException
     {
         mReportBase = inReport;
         setBrokerID(inReport.getBrokerID());
@@ -175,7 +168,7 @@ class PersistentReport extends EntityBase {
     protected void postSaveLocal(EntityManager em,
                                  EntityBase merged,
                                  PersistContext context)
-            throws PersistenceException {
+    {
         super.postSaveLocal(em, merged, context);
         PersistentReport mergedReport = (PersistentReport) merged;
         //Save the summary if the report is an execution report.
