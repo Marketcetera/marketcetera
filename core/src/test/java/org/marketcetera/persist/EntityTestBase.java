@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -12,6 +13,7 @@ import javax.persistence.EntityNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
+import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
@@ -38,6 +40,7 @@ public abstract class EntityTestBase<Clazz extends EntityBase>
      * @throws Exception if an unexpected error occurs
      */
     @Test
+    @Transactional
     public void testAdd()
             throws Exception
     {
@@ -57,6 +60,7 @@ public abstract class EntityTestBase<Clazz extends EntityBase>
      * @throws Exception if an unexpected error occurs
      */
     @Test
+    @Transactional
     public void testGetById()
             throws Exception
     {
@@ -73,7 +77,7 @@ public abstract class EntityTestBase<Clazz extends EntityBase>
         };
         // create a new one
         Clazz newEntity = getNewEntity();
-        service.create(newEntity);
+        newEntity = service.create(newEntity);
         // retrieve by the ID and compare
         Clazz entityCopy = service.read(newEntity.getId());
         verifyEntity(newEntity,
@@ -91,30 +95,74 @@ public abstract class EntityTestBase<Clazz extends EntityBase>
         Clazz entity = getNewEntity();
         assertNull(entity.getCreated());
         assertNull(entity.getUpdated());
-        service.create(entity);
-        assertNotNull(entity.getCreated());
-        assertNotNull(entity.getUpdated());
-        assertEquals(entity.getCreated(),
-                     entity.getUpdated());
-        Thread.sleep(250);
-        changeEntity(entity);
-        service.update(entity);
-        assertNotEquals(entity.getCreated(),
-                        entity.getUpdated());
-    }
-    @Test
-    public void testUpdateTransaction()
-    {
-        Clazz entity = getNewEntity();
-        service.create(entity);
-        changeEntity(entity);
-        System.out.println("Entity id is " + entity.getId());
-        service.setAfterException(new RuntimeException("this exception is expected"));
+        entity = service.create(entity);
         try {
-            System.out.println("Calling busted update");
-            service.update(entity);
-        } catch (Exception e) {}
-        System.out.println(service.read(entity.getId()));
+            assertNotNull(entity.getCreated());
+            assertNotNull(entity.getUpdated());
+            assertEquals(entity.getCreated(),
+                         entity.getUpdated());
+            Thread.sleep(1000);
+            changeEntity(entity);
+            entity = service.update(entity);
+            assertNotEquals(entity.getCreated(),
+                            entity.getUpdated());
+        } finally {
+            service.delete(entity);
+        }
+    }
+    /**
+     * Tests that transactions are rolled back in the service layer if an exception occurs before commit.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testTransactionRollback()
+            throws Exception
+    {
+        // explicitly do not make this test transactional because we need
+        //  to pull the unchanged value from the db instead of the transaction cache to prove
+        //  we busted the transaction with an exception. note that we have to clean up because of this
+        List<Clazz> entitiesToCleanUp = new ArrayList<Clazz>();
+        try {
+            // entity doesn't exist yet
+            assertEquals(0,
+                         service.readAll().size());
+            service.setAfterException(new RuntimeException("this exception is expected"));
+            new ExpectedFailure<RuntimeException>() {
+                @Override
+                protected void run()
+                        throws Exception
+                {
+                    service.create(getNewEntity());
+                }
+            };
+            service.resetExceptions();
+            // entity still doesn't exist
+            assertEquals(0,
+                         service.readAll().size());
+            // create the entity
+            final Clazz entity = service.create(getNewEntity());
+            entitiesToCleanUp.add(entity);
+            // entity exists
+            assertNotNull(service.read(entity.getId()));
+            // set services to blow chunks
+            service.setAfterException(new RuntimeException("this exception is expected"));
+            new ExpectedFailure<RuntimeException>() {
+                @Override
+                protected void run()
+                        throws Exception
+                {
+                    service.delete(entity);
+                }
+            };
+            service.resetExceptions();
+            // entity exists (not deleted)
+            assertNotNull(service.read(entity.getId()));
+        } finally {
+            for(Clazz entity : entitiesToCleanUp) {
+                service.delete(entity);
+            }
+        }
     }
     protected TestEntityService<Clazz> getEntityService()
     {

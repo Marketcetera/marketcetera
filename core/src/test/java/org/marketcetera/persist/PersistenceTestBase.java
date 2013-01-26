@@ -1,5 +1,8 @@
 package org.marketcetera.persist;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -7,7 +10,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
@@ -18,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id$
  * @since $Release$
  */
-@Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:persist.xml"})
 @TransactionConfiguration(defaultRollback=true)
@@ -39,22 +40,13 @@ public abstract class PersistenceTestBase
         return (Clazz)applicationContext.getBean(inType);
     }
     /**
-     * Gets the <code>FruitService</code> for this application.
+     * Get the entityManager value.
      *
-     * @return a <code>FruitService</code> value
+     * @return a <code>EntityManager</code> value
      */
-    protected FruitService getFruitService()
+    protected EntityManager getEntityManager()
     {
-        return getBean(FruitService.class);
-    }
-    /**
-     * Gets the <code>FruitServiceDataAccessObject</code> for this application.
-     *
-     * @return a <code>FruitDataAccessObject</code> value
-     */
-    protected FruitDataAccessObject getFruitDao()
-    {
-        return getBean(FruitDataAccessObject.class);
+        return entityManager;
     }
     /**
      * Gets the Spring context for this test application.
@@ -69,4 +61,9 @@ public abstract class PersistenceTestBase
      * underlying spring context for tests
      */
     private ApplicationContext applicationContext;
+    /**
+     * provides access to datastore managed entities
+     */
+    @PersistenceContext
+    private EntityManager entityManager;
 }

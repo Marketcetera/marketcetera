@@ -50,9 +50,13 @@
         <!--property name="preferredTestQuery" value="VALUES 1"/--> <!-- use this for derby -->
         <property name="testConnectionOnCheckout" value="true"/>
     </bean>
+    <bean id="hibernateJpaAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="true" />
+    </bean>
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="poolDataSource"/>
         <property name="persistenceUnitName" value="unit-testing"/>
+        <property name="jpaVendorAdapter" ref="hibernateJpaAdapter"/>
     </bean>
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory" />

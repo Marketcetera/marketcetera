@@ -58,36 +58,6 @@ public class FruitDataAccessObjectImpl
                             inOrderBy);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.persist.AbstractDataAccessObject#save(org.marketcetera.persist.EntityBase)
-     */
-    @Override
-    public void save(Fruit inData)
-    {
-        super.save(inData);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.persist.AbstractDataAccessObject#add(org.marketcetera.persist.EntityBase)
-     */
-    @Override
-    public void add(Fruit inData)
-    {
-        if(exceptionBefore != null) {
-            throw exceptionBefore;
-        }
-        super.add(inData);
-        if(exceptionAfter != null) {
-            throw exceptionAfter;
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.persist.AbstractDataAccessObject#delete(org.marketcetera.persist.EntityBase)
-     */
-    @Override
-    public void delete(Fruit inData)
-    {
-        super.delete(inData);
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.persist.AbstractDataAccessObject#getCount()
      */
     @Override
@@ -106,38 +76,11 @@ public class FruitDataAccessObjectImpl
         return query.getResultList();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.persist.FruitDataAccessObject#setExceptionBefore(java.lang.RuntimeException)
-     */
-    @Override
-    public void setExceptionBefore(RuntimeException inException)
-    {
-        exceptionBefore = inException;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.persist.FruitDataAccessObject#setExceptionAfter(java.lang.RuntimeException)
-     */
-    @Override
-    public void setExceptionAfter(RuntimeException inException)
-    {
-        exceptionAfter = inException;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.persist.FruitDataAccessObject#reset()
-     */
-    @Override
-    public void reset()
-    {
-        exceptionAfter = null;
-        exceptionBefore = null;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.persist.AbstractDataAccessObject#getDataType()
      */
     @Override
-    protected Class<? extends Fruit> getDataType()
+    protected Class<Fruit> getDataType()
     {
         return Fruit.class;
     }
-    private RuntimeException exceptionAfter;
-    private RuntimeException exceptionBefore;
 }

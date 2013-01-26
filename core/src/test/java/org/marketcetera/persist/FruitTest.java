@@ -51,6 +51,6 @@ public class FruitTest
     @Override
     protected void changeEntity(Fruit inEntity)
     {
-        inEntity.setName(inEntity.getName() + "-changed");
+        inEntity.setName("name-changed-" + System.nanoTime());
     }
 }

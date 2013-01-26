@@ -12,7 +12,4 @@ package org.marketcetera.persist;
 public interface TestNDDataAccessObject<Clazz extends NDEntityBase>
         extends TestDataAccessObject<Clazz>
 {
-    public void setExceptionBefore(RuntimeException inException);
-    public void setExceptionAfter(RuntimeException inException);
-    public void reset();
 }

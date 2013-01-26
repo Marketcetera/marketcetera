@@ -29,7 +29,7 @@ public class FruitServiceImpl
         Fruit fruit = new Fruit(inName,
                                 inDescription,
                                 inType);
-        fruitDao.add(fruit);
+        fruitDao.persist(fruit);
         return fruit;
     }
 //    /* (non-Javadoc)

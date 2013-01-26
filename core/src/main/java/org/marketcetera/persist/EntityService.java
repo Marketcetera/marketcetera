@@ -13,8 +13,9 @@ import java.util.List;
  */
 public interface EntityService<Clazz extends EntityBase>
 {
-    public void create(Clazz inData);
+    public Clazz create(Clazz inData);
     public Clazz read(long inId);
     public List<Clazz> readAll();
-    public void update(Clazz inData);
+    public Clazz update(Clazz inData);
+    public void delete(Clazz inData);
 }
