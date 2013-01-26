@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class FruitServiceImpl
-        extends AbstractEntityService<Fruit>
+        extends TestAbstractEntityService<Fruit>
         implements FruitService
 {
     /* (non-Javadoc)
@@ -29,9 +29,7 @@ public class FruitServiceImpl
         Fruit fruit = new Fruit(inName,
                                 inDescription,
                                 inType);
-        System.out.println("Adding " + fruit);
         fruitDao.add(fruit);
-        System.out.println("Done: " + fruitDao.getAll());
         return fruit;
     }
 //    /* (non-Javadoc)

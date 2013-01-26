@@ -1,6 +1,5 @@
 package org.marketcetera.persist;
 
-import java.util.List;
 
 /* $License$ */
 
@@ -12,7 +11,7 @@ import java.util.List;
  * @since $Release$
  */
 public interface FruitService
-        extends NDEntityService<Fruit>
+        extends TestEntityService<Fruit>
 {
     public Fruit add(String inName,
                      String inDescription,

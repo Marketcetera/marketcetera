@@ -12,5 +12,7 @@ package org.marketcetera.persist;
 public interface TestEntityService<Clazz extends EntityBase>
         extends EntityService<Clazz>
 {
-
+    public void resetExceptions();
+    public void setBeforeException(RuntimeException inException);
+    public void setAfterException(RuntimeException inException);
 }

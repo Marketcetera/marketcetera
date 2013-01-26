@@ -3,10 +3,12 @@ package org.marketcetera.persist;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +32,16 @@ public abstract class AbstractDataAccessObject<Clazz extends EntityBase>
     @Override
     public Clazz getById(long inId)
     {
-        return entityManager.find(getDataType(),
-                                  inId);
+        Clazz returnValue = entityManager.find(getDataType(),
+                                               inId);
+        SLF4JLoggerProxy.trace(this,
+                               "getById({}) found {}",
+                               inId,
+                               returnValue);
+        if(returnValue == null) {
+            throw new EntityNotFoundException();
+        }
+        return returnValue;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Dao#getAll()
@@ -62,7 +72,14 @@ public abstract class AbstractDataAccessObject<Clazz extends EntityBase>
     @Override
     public void save(Clazz inData)
     {
-        entityManager.merge(inData);
+        SLF4JLoggerProxy.trace(this,
+                               "Saving entity: {}",
+                               inData);
+        if(!entityManager.contains(inData)) {
+            inData = entityManager.merge(inData);
+        }
+        entityManager.persist(inData);
+//        entityManager.flush(); // TODO this is not correct because we want the wrapping service transaction to be able to rollback
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Dao#add(java.lang.Object)
@@ -70,6 +87,9 @@ public abstract class AbstractDataAccessObject<Clazz extends EntityBase>
     @Override
     public void add(Clazz inData)
     {
+        SLF4JLoggerProxy.trace(this,
+                               "Adding new entity: {}",
+                               inData);
         entityManager.persist(inData);
     }
     /* (non-Javadoc)

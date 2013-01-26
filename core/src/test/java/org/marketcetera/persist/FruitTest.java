@@ -1,5 +1,6 @@
 package org.marketcetera.persist;
 
+import static org.junit.Assert.assertEquals;
 
 /* $License$ */
 
@@ -31,5 +32,25 @@ public class FruitTest
     protected Class<FruitService> getEntityServiceType()
     {
         return FruitService.class;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.persist.EntityTestBase#verifyEntity(org.marketcetera.persist.EntityBase, org.marketcetera.persist.EntityBase)
+     */
+    @Override
+    protected void verifyEntity(Fruit inExpectedValue,
+                                Fruit inActualValue)
+    {
+        super.verifyEntity(inExpectedValue,
+                           inActualValue);
+        assertEquals(inExpectedValue.getType(),
+                     inActualValue.getType());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.persist.EntityTestBase#changeEntity(org.marketcetera.persist.EntityBase)
+     */
+    @Override
+    protected void changeEntity(Fruit inEntity)
+    {
+        inEntity.setName(inEntity.getName() + "-changed");
     }
 }

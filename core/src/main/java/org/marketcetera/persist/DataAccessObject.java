@@ -21,6 +21,7 @@ public interface DataAccessObject<Clazz extends EntityBase>
      *
      * @param inId a <code>long</code> value
      * @return a <code>Clazz</code> value
+     * @throws EntityNotFoundException if no object exists with the given id
      */
     public Clazz getById(long inId);
     /**

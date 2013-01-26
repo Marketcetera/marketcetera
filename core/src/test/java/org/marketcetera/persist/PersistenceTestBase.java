@@ -1,10 +1,13 @@
 package org.marketcetera.persist;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.marketcetera.core.LoggerConfiguration;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
@@ -15,37 +18,25 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id$
  * @since $Release$
  */
+@Transactional
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"classpath:persist.xml"})
+@TransactionConfiguration(defaultRollback=true)
 public abstract class PersistenceTestBase
+        implements ApplicationContextAware
 {
-    /**
-     * Runs once before all tests.
-     *
-     * @throws Exception if an unexpected error occurs
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
-    @BeforeClass
-    public static void onceBefore()
-            throws Exception
+    @Override
+    public void setApplicationContext(ApplicationContext inApplicationContext)
+            throws BeansException
     {
-        LoggerConfiguration.logSetup();
-        context = new ClassPathXmlApplicationContext(new String[] { "persist.xml" });
-        context.start();
-    }
-    /**
-     * Runs once after all tests.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @AfterClass
-    public static void onceAfter()
-            throws Exception
-    {
-        if(context != null) {
-            context.stop();
-        }
+        applicationContext = inApplicationContext;
     }
     protected <Clazz> Clazz getBean(Class<Clazz> inType)
     {
-        return (Clazz)context.getBean(inType);
+        return (Clazz)applicationContext.getBean(inType);
     }
     /**
      * Gets the <code>FruitService</code> for this application.
@@ -68,14 +59,14 @@ public abstract class PersistenceTestBase
     /**
      * Gets the Spring context for this test application.
      *
-     * @return an <code>AbstractApplicationContext</code> value
+     * @return an <code>ApplicationContext</code> value
      */
-    protected static AbstractApplicationContext getContext()
+    protected ApplicationContext getApplicationContext()
     {
-        return context;
+        return applicationContext;
     }
     /**
      * underlying spring context for tests
      */
-    private static AbstractApplicationContext context;
+    private ApplicationContext applicationContext;
 }
