@@ -1,4 +1,4 @@
-package org.marketcetera.newpersist;
+package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.*;
@@ -9,7 +9,7 @@ import org.marketcetera.util.log.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: Messages.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public interface Messages {
     /**
      * The message provider

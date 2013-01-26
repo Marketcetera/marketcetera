@@ -1,4 +1,4 @@
-package org.marketcetera.newpersist;
+package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
 
@@ -10,7 +10,7 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id: SummaryNDEntityBase.java 16461 2013-01-21 22:58:07Z colin $")
+@ClassVersion("$Id$")
 public interface SummaryNDEntityBase
         extends SummaryEntityBase
 {

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+    <!-- set up Spring context scanning -->
+    <context:component-scan base-package="org.marketcetera.persist"/>
     <!-- JDBC Setup -->
     <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="metc"/></bean>
     <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="pw4metc"/></bean>
@@ -14,7 +20,6 @@
     <!-- postgresql -->
     <bean name="psqlURL" class="java.lang.String"><constructor-arg value="jdbc:postgresql:metc"/></bean>
     <bean name="psqlDriver" class="java.lang.String"><constructor-arg value="org.postgresql.Driver"/></bean>
-
     <!--
     Properties for configuring the dbcp connection pool. See
     http://commons.apache.org/dbcp/configuration.html
@@ -26,8 +31,8 @@
         <property name="username" ref="JdbcUser"/>
         <property name="password" ref="JdbcPassword"/>
         <property name="maxActive" value="10"/>
-        <property name="validationQuery" value="select 1"></property> <!-- use this for mysql, postgres, and others -->
-        <!--property name="validationQuery" value="VALUES 1"/--> <!-- use this for derby -->
+        <!-- property name="validationQuery" value="select 1"></property--> <!-- use this for mysql, postgres, and others -->
+        <property name="validationQuery" value="VALUES 1"/> <!-- use this for derby -->
         <property name="testOnBorrow" value="true"/>
     </bean>
     <!--
@@ -42,14 +47,15 @@
         <property name="password" ref="JdbcPassword"/>
         <property name="maxPoolSize" value="10"/>
         <property name="preferredTestQuery" value="select 1"/> <!-- use this for mysql, postgres, and others -->
-        <!-- property name="preferredTestQuery" value="VALUES 1"/--> <!-- use this for derby -->
+        <!--property name="preferredTestQuery" value="VALUES 1"/--> <!-- use this for derby -->
         <property name="testConnectionOnCheckout" value="true"/>
     </bean>
-    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="poolDataSource"/>
         <property name="persistenceUnitName" value="unit-testing"/>
     </bean>
-    <bean id="ers" class="org.marketcetera.persist.EntityRemoteServer" scope="singleton">
-        <constructor-arg ref="emf"/>
+    <bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
     </bean>
+    <tx:annotation-driven transaction-manager="txManager"/>
 </beans>

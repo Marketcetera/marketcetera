@@ -1,8 +1,12 @@
-package org.marketcetera.newpersist;
+package org.marketcetera.persist;
 
 import java.util.regex.Pattern;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.marketcetera.core.ClassVersion;
 
@@ -11,9 +15,11 @@ import org.marketcetera.core.ClassVersion;
  * This class provides support for the name and description
  * properties.
  */
+@NotThreadSafe
 @MappedSuperclass
 @Access(AccessType.FIELD)
-@ClassVersion("$Id: NDEntityBase.java 16461 2013-01-21 22:58:07Z colin $")
+@XmlAccessorType(XmlAccessType.NONE)
+@ClassVersion("$Id$")
 public abstract class NDEntityBase
         extends EntityBase
         implements SummaryNDEntityBase
@@ -75,6 +81,22 @@ public abstract class NDEntityBase
         }
     }
     /**
+     * Create a new NDEntityBase instance.
+     *
+     * @param inName a <code>String</code> value
+     * @param inDescription a <code>String</code> value
+     */
+    protected NDEntityBase(String inName,
+                           String inDescription)
+    {
+        name = inName;
+        description = inDescription;
+    }
+    /**
+     * Create a new NDEntityBase instance.
+     */
+    protected NDEntityBase() {}
+    /**
      * attribute name of the name column
      */
     protected static final String ATTRIBUTE_NAME = "name"; //$NON-NLS-1$
@@ -89,11 +111,13 @@ public abstract class NDEntityBase
     /**
      * name value
      */
+    @XmlAttribute(required=true)
     @Column(name=ATTRIBUTE_NAME,length=255,nullable=false)
     private String name;
     /**
      * description value
      */
+    @XmlAttribute(required=false)
     @Column(name=ATTRIBUTE_DESCRIPTION,nullable=true)
     private String description;
     private static final long serialVersionUID = -4305155142443172457L;

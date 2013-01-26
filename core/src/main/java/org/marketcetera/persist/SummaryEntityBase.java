@@ -1,4 +1,4 @@
-package org.marketcetera.newpersist;
+package org.marketcetera.persist;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,7 +14,7 @@ import org.marketcetera.core.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: SummaryEntityBase.java 16461 2013-01-21 22:58:07Z colin $")
+@ClassVersion("$Id$")
 public interface SummaryEntityBase
         extends Serializable
 {

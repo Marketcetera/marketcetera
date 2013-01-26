@@ -1,7 +1,11 @@
-package org.marketcetera.newpersist;
+package org.marketcetera.persist;
 import java.util.Date;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.marketcetera.core.ClassVersion;
@@ -30,10 +34,13 @@ import org.marketcetera.core.ClassVersion;
  * class name is used to refer to the entity in user visible messages.
  * 
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlants</a>
  */
 @MappedSuperclass
+@NotThreadSafe
 @Access(AccessType.FIELD)
-@ClassVersion("$Id: EntityBase.java 16455 2013-01-17 05:17:00Z colin $")
+@XmlAccessorType(XmlAccessType.NONE)
+@ClassVersion("$Id$")
 public abstract class EntityBase
         implements SummaryEntityBase
 {
@@ -94,6 +101,10 @@ public abstract class EntityBase
         return new ToStringBuilder(this).append(id).append(version).append(updated).append(created).toString();
     }
     /**
+     * Create a new EntityBase instance.
+     */
+    protected EntityBase() {}
+    /**
      * attribute name of the updated column
      */
     protected static final String ATTRIBUTE_UPDATED = "updated"; //$NON-NLS-1$
@@ -113,6 +124,7 @@ public abstract class EntityBase
      * unique identifier for this object
      */
     @Id
+    @XmlAttribute(required=true)
     @GeneratedValue(strategy=GenerationType.AUTO)
     @Column(name=ATTRIBUTE_ID)
     private long id;
@@ -120,17 +132,20 @@ public abstract class EntityBase
      * update counter indicates the number of times this object has been updated
      */
     @Version
+    @XmlAttribute(required=true)
     @Column(name=ATTRIBUTE_VERSION)
     private int version;
     /**
      * indicates the last time this object was updated
      */
+    @XmlAttribute(required=true)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name=ATTRIBUTE_UPDATED)
     private Date updated;
     /**
      * indicates the time this object was created
      */
+    @XmlAttribute(required=true)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name=ATTRIBUTE_CREATED)
     private Date created;
