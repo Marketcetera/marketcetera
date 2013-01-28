@@ -2,6 +2,8 @@ package org.marketcetera.persist;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Test;
+
 /* $License$ */
 
 /**
@@ -14,6 +16,18 @@ import static org.junit.Assert.assertEquals;
 public class FruitTest
         extends EntityTestBase<Fruit>
 {
+    /**
+     * 
+     *
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testMultiQueryAll()
+            throws Exception
+    {
+        MultiFruitQuery query = MultiFruitQuery.all();
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.persist.EntityTestBase#getNewEntity()
      */

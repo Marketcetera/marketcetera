@@ -7,10 +7,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -166,6 +163,9 @@ public abstract class AbstractDataAccessObject<Clazz extends EntityBase>
         synchronized(defaultOrderBy) {
             if(defaultOrderBy.isEmpty()) {
                 CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+                Class<Clazz> dataType = getDataType();
+                CriteriaQuery<Clazz> query = builder.createQuery(dataType);
+                Root<Clazz> from = query.from(dataType);
                 // TODO refactor to allow special order-by
                 /*
 CriteriaQuery<Object> select = criteriaQuery.select(from);

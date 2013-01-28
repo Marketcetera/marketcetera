@@ -3,6 +3,7 @@ package org.marketcetera.persist;
 import java.util.List;
 
 import javax.persistence.Query;
+import javax.persistence.criteria.Order;
 
 import org.marketcetera.persist.Fruit.Type;
 import org.springframework.stereotype.Repository;
@@ -51,7 +52,7 @@ public class FruitDataAccessObjectImpl
     @Override
     public List<Fruit> getAll(int inMaxResults,
                               int inFirstResult,
-                              String inOrderBy)
+                              List<Order> inOrderBy)
     {
         return super.getAll(inMaxResults,
                             inFirstResult,

@@ -41,13 +41,13 @@
     for a complete list of options that can be specified here
      -->
     <bean id="poolDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="driverClass" ref="psqlDriver"/>
-        <property name="jdbcUrl" ref="psqlURL"/>
+        <property name="driverClass" ref="derbyDriver"/>
+        <property name="jdbcUrl" ref="derbyURL"/>
         <property name="user" ref="JdbcUser"/>
         <property name="password" ref="JdbcPassword"/>
         <property name="maxPoolSize" value="10"/>
-        <property name="preferredTestQuery" value="select 1"/> <!-- use this for mysql, postgres, and others -->
-        <!--property name="preferredTestQuery" value="VALUES 1"/--> <!-- use this for derby -->
+        <!-- property name="preferredTestQuery" value="select 1"/--> <!-- use this for mysql, postgres, and others -->
+        <property name="preferredTestQuery" value="VALUES 1"/> <!-- use this for derby -->
         <property name="testConnectionOnCheckout" value="true"/>
     </bean>
     <bean id="hibernateJpaAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
