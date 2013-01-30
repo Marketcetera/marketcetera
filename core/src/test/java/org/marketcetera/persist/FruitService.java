@@ -1,5 +1,7 @@
 package org.marketcetera.persist;
 
+import org.springframework.data.repository.NoRepositoryBean;
+
 
 /* $License$ */
 
@@ -10,6 +12,7 @@ package org.marketcetera.persist;
  * @version $Id$
  * @since $Release$
  */
+@NoRepositoryBean
 public interface FruitService
         extends TestEntityService<Fruit>
 {

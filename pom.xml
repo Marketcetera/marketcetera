@@ -327,22 +327,10 @@
       </dependency>
       <dependency>
 	<groupId>org.springframework.data</groupId>
-	<artifactId>spring-data-commons-core</artifactId>
-	<version>1.4.0.RELEASE</version>
+	<artifactId>spring-data-jpa</artifactId>
+	<version>1.2.0.RELEASE</version>
       </dependency>
       <!-- Runtime. -->
-      <dependency>
-	<groupId>org.springframework</groupId>
-	<artifactId>spring-aop</artifactId>
-	<version>${mvn.spring.version}</version>
-	<scope>runtime</scope>
-      </dependency>
-      <dependency>
-	<groupId>org.springframework</groupId>
-	<artifactId>spring-jpa</artifactId>
-	<version>2.0.8</version>
-	<scope>runtime</scope>
-      </dependency>
       <dependency>
 	<groupId>javax.servlet</groupId>
 	<artifactId>jstl</artifactId>

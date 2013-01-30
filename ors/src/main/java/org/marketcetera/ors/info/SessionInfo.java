@@ -1,6 +1,6 @@
 package org.marketcetera.ors.info;
 
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.SessionId;
@@ -35,7 +35,7 @@ public interface SessionInfo
         "ACTOR_ID"; //$NON-NLS-1$
 
     /**
-     * The {@link SimpleUser} key for the session's actor.
+     * The {@link User} key for the session's actor.
      */
 
     static final String ACTOR=

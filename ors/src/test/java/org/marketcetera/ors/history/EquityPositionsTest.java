@@ -2,15 +2,15 @@ package org.marketcetera.ors.history;
 
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.*;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 
 import java.util.*;
 import java.math.BigDecimal;
 
 /* $License$ */
 /**
- * Verifies {@link ReportHistoryServices#getEquityPositionAsOf(org.marketcetera.ors.security.SimpleUser, Date, Equity)}
- * & {@link ReportHistoryServices#getAllEquityPositionsAsOf(org.marketcetera.ors.security.SimpleUser, Date)}.
+ * Verifies {@link ReportHistoryServices#getEquityPositionAsOf(org.marketcetera.persist.User, Date, Equity)}
+ * & {@link ReportHistoryServices#getAllEquityPositionsAsOf(org.marketcetera.persist.User, Date)}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -39,7 +39,7 @@ public class EquityPositionsTest extends PositionsTestBase<Equity> {
     }
 
     @Override
-    protected BigDecimal getInstrumentPosition(Date inDate, Equity inInstrument, SimpleUser inUser) throws Exception {
+    protected BigDecimal getInstrumentPosition(Date inDate, Equity inInstrument, User inUser) throws Exception {
         return getPosition(inDate, inInstrument, inUser);
     }
 
@@ -49,7 +49,7 @@ public class EquityPositionsTest extends PositionsTestBase<Equity> {
     }
 
     @Override
-    protected Map<PositionKey<Equity>, BigDecimal> getInstrumentPositions(Date inAfter, SimpleUser inUser) throws Exception {
+    protected Map<PositionKey<Equity>, BigDecimal> getInstrumentPositions(Date inAfter, User inUser) throws Exception {
         return getPositions(inAfter, inUser);
     }
 

@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -199,7 +199,7 @@ class ExecutionReportSummary extends EntityBase {
      * position.
      */
     static BigDecimal getEquityPositionAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate,
          final Equity inEquity)
         throws PersistenceException
@@ -246,7 +246,7 @@ class ExecutionReportSummary extends EntityBase {
      * position.
      */
     static BigDecimal getCurrencyPositionAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate,
          final Currency inCurrency)
         throws PersistenceException
@@ -291,7 +291,7 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    static Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf(final SimpleUser inUser,
+    static Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf(final User inUser,
                                                                           final Date inDate)
             throws PersistenceException
     {
@@ -352,7 +352,7 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    static Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(final SimpleUser inUser,
+    static Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(final User inUser,
                                                                               final Date inDate)
         throws PersistenceException
     {
@@ -416,7 +416,7 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    static BigDecimal getFuturePositionAsOf(final SimpleUser inUser,
+    static BigDecimal getFuturePositionAsOf(final User inUser,
                                             final Date inDate,
                                             final Future inFuture)
             throws PersistenceException
@@ -464,7 +464,7 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    static Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(final SimpleUser inUser,
+    static Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(final User inUser,
                                                                           final Date inDate)
             throws PersistenceException
     {
@@ -526,7 +526,7 @@ class ExecutionReportSummary extends EntityBase {
      * position.
      */
     static BigDecimal getOptionPositionAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate,
          final Option inOption)
         throws PersistenceException {
@@ -575,7 +575,7 @@ class ExecutionReportSummary extends EntityBase {
      * position map.
      */
     static Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate)
         throws PersistenceException {
         return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
@@ -645,7 +645,7 @@ class ExecutionReportSummary extends EntityBase {
      * position map.
      */
     static Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate,
          final String... inRootSymbols)
         throws PersistenceException {
@@ -959,12 +959,12 @@ class ExecutionReportSummary extends EntityBase {
     }
 
     @ManyToOne
-    public SimpleUser getViewer() {
+    public User getViewer() {
         return mViewer;
     }
 
     @SuppressWarnings("unused")
-    private void setViewer(SimpleUser inViewer) {
+    private void setViewer(User inViewer) {
         mViewer = inViewer;
     }
 
@@ -998,7 +998,7 @@ class ExecutionReportSummary extends EntityBase {
     private BigDecimal mLastPrice;
     private OrderStatus mOrderStatus;
     private Date mSendingTime;
-    private SimpleUser mViewer; 
+    private User mViewer; 
     private PersistentReport mReport;
     /**
      * The attribute viewer used in JPQL queries

@@ -11,14 +11,14 @@ import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Side;
 
 /* $License$ */
 /**
- * Verifies {@link ReportHistoryServices#getCurrencyPositionAsOf(org.marketcetera.ors.security.SimpleUser, Date, Currency)}
- * & {@link ReportHistoryServices#getAllCurrencyPositionsAsOf(org.marketcetera.ors.security.SimpleUser, Date)}.
+ * Verifies {@link ReportHistoryServices#getCurrencyPositionAsOf(org.marketcetera.persist.User, Date, Currency)}
+ * & {@link ReportHistoryServices#getAllCurrencyPositionsAsOf(org.marketcetera.persist.User, Date)}.
  *
  */
 public class CurrencyPositionsTest extends PositionsTestBase<Currency> {
@@ -44,7 +44,7 @@ public class CurrencyPositionsTest extends PositionsTestBase<Currency> {
     }
 
     @Override
-    protected BigDecimal getInstrumentPosition(Date inDate, Currency inInstrument, SimpleUser inUser) throws Exception {
+    protected BigDecimal getInstrumentPosition(Date inDate, Currency inInstrument, User inUser) throws Exception {
         return getPosition(inDate, inInstrument, inUser);
     }
 
@@ -54,7 +54,7 @@ public class CurrencyPositionsTest extends PositionsTestBase<Currency> {
     }
 
     @Override
-    protected Map<PositionKey<Currency>, BigDecimal> getInstrumentPositions(Date inAfter, SimpleUser inUser) throws Exception {
+    protected Map<PositionKey<Currency>, BigDecimal> getInstrumentPositions(Date inAfter, User inUser) throws Exception {
         return getCurrencyPositions(inAfter, inUser);
     }
     

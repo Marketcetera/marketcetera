@@ -8,7 +8,7 @@ import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.Principals;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -60,7 +60,7 @@ public interface ReportHistoryServices {
      * unexpected errors.
      */
     public ReportBaseImpl[] getReportsSince
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate)
         throws ReportPersistenceException;
 
@@ -82,7 +82,7 @@ public interface ReportHistoryServices {
      * position
      */
     public BigDecimal getEquityPositionAsOf
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate,
          Equity inEquity);
     
@@ -104,7 +104,7 @@ public interface ReportHistoryServices {
      * position
      */
     public BigDecimal getCurrencyPositionAsOf
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate,
          Currency inCurrency);
 
@@ -124,7 +124,7 @@ public interface ReportHistoryServices {
      * position map.
      */
     public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate);
     
     
@@ -144,7 +144,7 @@ public interface ReportHistoryServices {
      * position map.
      */
     public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate);
 
     /**
@@ -167,7 +167,7 @@ public interface ReportHistoryServices {
      * position.
      */
     public BigDecimal getOptionPositionAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate,
          final Option inOption);
 
@@ -191,7 +191,7 @@ public interface ReportHistoryServices {
      * position map.
      */
     public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate);
     /**
      * Gets the current aggregate position for the future instrument based on
@@ -212,7 +212,7 @@ public interface ReportHistoryServices {
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    public BigDecimal getFuturePositionAsOf(final SimpleUser inUser,
+    public BigDecimal getFuturePositionAsOf(final User inUser,
                                             final Date inDate,
                                             final Future inFuture);
     /**
@@ -234,7 +234,7 @@ public interface ReportHistoryServices {
      * @throws PersistenceException if there were errors retrieving the
      * position map.
      */
-    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(final SimpleUser inUser,
+    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(final User inUser,
                                                                          final Date inDate);
     /**
      * Returns the aggregate position of each option
@@ -257,7 +257,7 @@ public interface ReportHistoryServices {
      * position map.
      */
     public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate,
          final String... inSymbols);
 

@@ -19,10 +19,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 @Entity
 @Access(AccessType.FIELD)
 @XmlAccessorType(XmlAccessType.NONE)
-@Table(name="fruit",uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
-@NamedQueries({
-    @NamedQuery(name="Fruit.findAll",query="select f from Fruit f"),
-    @NamedQuery(name="Fruit.count",query="select count(f) from Fruit f") })
+@Table(name="fruits",uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
 public class Fruit
         extends NDEntityBase
 {

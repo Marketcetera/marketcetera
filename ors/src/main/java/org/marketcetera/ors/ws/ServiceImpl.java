@@ -15,8 +15,8 @@ import org.marketcetera.ors.OptionRootUnderlyingMap;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -120,7 +120,7 @@ public class ServiceImpl
         (UserID id)
         
     {
-        SimpleUser u=(new SingleSimpleUserQuery(id.getValue())).fetch();
+        User u=(new SingleSimpleUserQuery(id.getValue())).fetch();
         return new UserInfo
             (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()),Util.propertiesFromString(u.getSystemData()));
     }
@@ -270,7 +270,7 @@ public class ServiceImpl
                                  String inUserData)
             
     {
-        SimpleUser user = new SingleSimpleUserQuery(inUsername).fetch();
+        User user = new SingleSimpleUserQuery(inUsername).fetch();
         user.setUserData(inUserData);
         user.save();
     }

@@ -2,6 +2,8 @@ package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.PersistTestBase;
+import org.marketcetera.persist.User;
+
 import static org.marketcetera.ors.security.Messages.EMPTY_USERNAME;
 import static org.marketcetera.ors.security.Messages.PROMPT_USERNAME;
 import static org.marketcetera.ors.security.Messages.PROMPT_PASSWORD;
@@ -15,7 +17,6 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.After;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 import org.apache.log4j.Level;
 
 import javax.security.auth.callback.*;
@@ -34,7 +35,7 @@ import com.sun.security.auth.UserPrincipal;
  */
 @ClassVersion("$Id$")
 public class ORSLoginModuleTest extends TestCaseBase {
-    private static SimpleUser user;
+    private static User user;
     private static char[] password;
     private static boolean doNotHandleCallbacks = false;
     private static IOException callbackException = null;
@@ -135,7 +136,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
     @BeforeClass
     public static void setup() throws Exception {
         springSetup();
-        user = new SimpleUser();
+        user = new User();
         user.setName(randomString());
         password = randomString().toCharArray();
         user.setPassword(password);

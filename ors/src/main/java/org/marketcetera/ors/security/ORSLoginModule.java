@@ -18,6 +18,7 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.persist.User;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.sun.security.auth.UserPrincipal;
@@ -26,7 +27,7 @@ import com.sun.security.auth.UserPrincipal;
 /**
  * Login module that authenticates with users setup in ORS database
  * This login module will only allow username, password combinations
- * that are persisted in ORS via the {@link SimpleUser} instances.
+ * that are persisted in ORS via the {@link User} instances.
  * <p>
  * This login module doesn't accept any configuration options and it
  * logs to the ORS log file via ORS logging mechanism.
@@ -66,7 +67,7 @@ public class ORSLoginModule implements LoginModule {
         }
         char [] password = ((PasswordCallback)callbacks[1]).getPassword();
         try {
-            SimpleUser u = new SingleSimpleUserQuery(username).fetch();
+            User u = new SingleSimpleUserQuery(username).fetch();
             if (!u.isActive()) {
                 USER_LOGIN_ERROR_LOG.warn(this,username);
                 throw new AccountNotFoundException(USER_LOGIN_ERROR.getText());

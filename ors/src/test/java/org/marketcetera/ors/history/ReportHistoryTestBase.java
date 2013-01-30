@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Side;
 
@@ -128,7 +128,7 @@ public abstract class ReportHistoryTestBase<I extends Instrument> extends Report
      *
      * @throws Exception if there were unexpected errors.
      */
-    protected abstract BigDecimal getInstrumentPosition(Date inDate, I inInstrument, SimpleUser inUser) throws Exception;
+    protected abstract BigDecimal getInstrumentPosition(Date inDate, I inInstrument, User inUser) throws Exception;
 
     /**
      * Fetches all open positions for the specific instrument type.
@@ -150,7 +150,7 @@ public abstract class ReportHistoryTestBase<I extends Instrument> extends Report
      *
      * @throws Exception if there were unexpected errors.
      */
-    protected abstract Map<PositionKey<I>,BigDecimal> getInstrumentPositions(Date inDate, SimpleUser inUser) throws Exception;
+    protected abstract Map<PositionKey<I>,BigDecimal> getInstrumentPositions(Date inDate, User inUser) throws Exception;
 
     /**
      * Expected position for the regular user.

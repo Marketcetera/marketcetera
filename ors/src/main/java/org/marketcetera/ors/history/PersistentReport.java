@@ -7,8 +7,8 @@ import javax.persistence.*;
 
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.ors.Principals;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -200,11 +200,11 @@ class PersistentReport
     }
 
     @ManyToOne
-    public SimpleUser getActor() {
+    public User getActor() {
         return mActor;
     }
 
-    private void setActor(SimpleUser inActor) {
+    private void setActor(User inActor) {
         mActor = inActor;
     }
 
@@ -217,11 +217,11 @@ class PersistentReport
     }
 
     @ManyToOne
-    public SimpleUser getViewer() {
+    public User getViewer() {
         return mViewer;
     }
 
-    private void setViewer(SimpleUser inViewer) {
+    private void setViewer(User inViewer) {
         mViewer = inViewer;
     }
 
@@ -328,8 +328,8 @@ class PersistentReport
 
     private Originator mOriginator;
     private OrderID mOrderID;
-    private SimpleUser mActor; 
-    private SimpleUser mViewer; 
+    private User mActor; 
+    private User mViewer; 
     private BrokerID mBrokerID;
     private ReportID mReportID;
     private String mFixMessage;

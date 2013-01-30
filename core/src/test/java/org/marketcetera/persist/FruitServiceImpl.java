@@ -2,6 +2,7 @@ package org.marketcetera.persist;
 
 import org.marketcetera.persist.Fruit.Type;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Component;
 
 /* $License$ */
@@ -29,17 +30,19 @@ public class FruitServiceImpl
         Fruit fruit = new Fruit(inName,
                                 inDescription,
                                 inType);
-        fruitDao.persist(fruit);
-        return fruit;
+        return getRepository().save(fruit);
     }
-//    /* (non-Javadoc)
-//     * @see org.marketcetera.persist.FruitService#getAllByType(org.marketcetera.persist.Fruit.Type)
-//     */
-//    @Override
-//    public List<Fruit> getAllByType(Type inType)
-//    {
-//        return fruitDao.getByType(inType);
-//    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.persist.AbstractEntityService#getRepository()
+     */
+    @Override
+    protected PagingAndSortingRepository<Fruit,Long> getRepository()
+    {
+        return repository;
+    }
+    /**
+     * provides datastore access to Clazz objects
+     */
     @Autowired
-    private FruitDataAccessObject fruitDao;
+    private FruitRepository repository;
 }

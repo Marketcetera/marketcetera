@@ -3,7 +3,7 @@ package org.marketcetera.ors.ws;
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.info.SessionInfoImpl;
 import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.springframework.jms.core.JmsOperations;
@@ -25,7 +25,7 @@ public class ClientSession
     // INSTANCE DATA.
 
     private final SessionId mSessionId;
-    private final SimpleUser mUser;
+    private final User mUser;
     private final JmsOperations mReplyTopic;
     private final SessionInfo mSessionInfo;
 
@@ -47,7 +47,7 @@ public class ClientSession
     public ClientSession
         (SystemInfo systemInfo,
          SessionId sessionId,
-         SimpleUser user,
+         User user,
          JmsOperations replyTopic)
     {
         mSessionId=sessionId;
@@ -82,7 +82,7 @@ public class ClientSession
      * @return The user.
      */
     
-    public SimpleUser getUser()
+    public User getUser()
     {
         return mUser;
     }

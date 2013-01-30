@@ -15,6 +15,7 @@ import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.persist.User;
 import org.marketcetera.persist.StringFilter;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -243,10 +244,10 @@ public class ORSAdminCLI
      * @throws I18NException if there were errors fetching the user.
      */
 
-    private SimpleUser fetchUser(String user)
+    private User fetchUser(String user)
         throws I18NException
     {
-        SimpleUser u = new SingleSimpleUserQuery(user).fetch();
+        User u = new SingleSimpleUserQuery(user).fetch();
         if (!u.isActive()) {
             throw new I18NException(CLI_ERR_INACTIVE_USER);
         }
@@ -270,7 +271,7 @@ public class ORSAdminCLI
                                 String password,
                                 String opPass)
         throws I18NException {
-        SimpleUser u = null;
+        User u = null;
         if(opUser != null && !opUser.equals(userName)) {
             u = fetchUser(opUser);
             //go through set name to reset the password as we do not have
@@ -308,8 +309,8 @@ public class ORSAdminCLI
         if(nameFilter != null) {
             q.setNameFilter(new StringFilter(nameFilter));
         }
-        List<SimpleUser> l = q.fetch();
-        for(SimpleUser u:l) {
+        List<User> l = q.fetch();
+        for(User u:l) {
             StringBuilder flags=new StringBuilder();
             if (u.isSuperuser()) {
                 flags.append(OPT_OPERATED_SUPERUSER); 
@@ -340,7 +341,7 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_DELETE,opUser));
         }
-        SimpleUser u = new SingleSimpleUserQuery(opUser).fetch();
+        User u = new SingleSimpleUserQuery(opUser).fetch();
         u.setActive(false);
         u.save();
         out.println(CLI_OUT_USER_DELETED.getText(u.getName()));
@@ -358,7 +359,7 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_RESTORE,opUser));
         }
-        SimpleUser u = new SingleSimpleUserQuery(opUser).fetch();
+        User u = new SingleSimpleUserQuery(opUser).fetch();
         u.setActive(true);
         u.save();
         out.println(CLI_OUT_USER_RESTORED.getText(u.getName()));
@@ -381,7 +382,7 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_CHANGE_SUPERUSER,opUser));
         }
-        SimpleUser u = fetchUser(opUser);
+        User u = fetchUser(opUser);
         u.setSuperuser(superuser);
         u.save();
         out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(u.getName()));
@@ -403,7 +404,7 @@ public class ORSAdminCLI
          Boolean superuser)
         
     {
-        SimpleUser u = new SimpleUser();
+        User u = new User();
         u.setName(opUser);
         u.setPassword(opPass.toCharArray());
         if (superuser!=null) {
@@ -438,7 +439,7 @@ public class ORSAdminCLI
         }
         private static void validateUser(String userName, String password)
                 throws I18NException {
-            SimpleUser u;
+            User u;
             try {
                 u=new SingleSimpleUserQuery(userName).fetch();
                 u.validatePassword(password.toCharArray());

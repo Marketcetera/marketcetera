@@ -19,7 +19,7 @@ import org.marketcetera.ors.filters.Messages;
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.info.SessionInfoImpl;
 import org.marketcetera.ors.info.SystemInfoImpl;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -65,7 +65,7 @@ public class UserInfoMessageModifierTest
     public void testUserMappingExists() throws Exception {
         Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         UserInfoMessageModifier umod = new UserInfoMessageModifier();
-        SimpleUser simUser = new SimpleUser();
+        User simUser = new User();
         simUser.setName("admin");
         SESSION_INFO.setValue(SessionInfo.ACTOR, simUser);
         umod.setSessionInfo(SESSION_INFO);
@@ -81,7 +81,7 @@ public class UserInfoMessageModifierTest
     public void testUserMappingDoesNotExists() throws Exception {
         Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         UserInfoMessageModifier umod = new UserInfoMessageModifier();
-        SimpleUser simUser = new SimpleUser();
+        User simUser = new User();
         simUser.setName("admin_invalid");
         SESSION_INFO.setValue(SessionInfo.ACTOR, simUser);
         umod.setSessionInfo(SESSION_INFO);
@@ -97,7 +97,7 @@ public class UserInfoMessageModifierTest
     public void testSessionUserNotFound() throws Exception {
         Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         UserInfoMessageModifier umod = new UserInfoMessageModifier();
-        SimpleUser simUser = new SimpleUser();
+        User simUser = new User();
         simUser.setName("admin_invalid");
         SESSION_INFO.removeValue(SessionInfo.ACTOR);
         umod.setSessionInfo(SESSION_INFO);

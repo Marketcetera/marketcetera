@@ -18,6 +18,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.persist.MultiQueryFilterTestHelper;
 import org.marketcetera.persist.MultipleEntityQuery;
 import org.marketcetera.persist.NDEntityTestBase;
+import org.marketcetera.persist.User;
 import org.marketcetera.util.log.I18NMessage;
 
 /* $License$ */
@@ -27,7 +28,7 @@ import org.marketcetera.util.log.I18NMessage;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
+public class SimpleUserTest extends NDEntityTestBase<User,User> {
     /**
      * Validates the update behavior of name and password
      *
@@ -35,7 +36,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
      */
     @Test
     public void nameAndPassword() throws Exception {
-        SimpleUser u = new SimpleUser();
+        User u = new User();
         //run tests on an unsaved user
         doNamePasswordTests(u);
         //verify that user can be saved after password has been set
@@ -61,7 +62,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
             throws Exception
     {
         // null user data
-        SimpleUser u = new SimpleUser();
+        User u = new User();
         final String name = "colin-" + System.nanoTime();
         u.setName(name);
         u.setPassword("password".toCharArray());
@@ -73,7 +74,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         assertNull(u.getUserData());
         u.delete();
         // empty userdata
-        u = new SimpleUser();
+        u = new User();
         u.setName(name);
         u.setPassword("password".toCharArray());
         u.setUserData("");
@@ -91,7 +92,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
                                "value1");
         properties.setProperty("key2",
                                "value2");
-        u = new SimpleUser();
+        u = new User();
         u.setName(name);
         u.setPassword("password".toCharArray());
         u.setUserData(Util.propertiesToString(properties));
@@ -111,7 +112,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
     public void superuser()
         throws Exception
     {
-        SimpleUser u=new SimpleUser();
+        User u=new User();
         final String name="TESTUSER";
         u.setName(name);
 
@@ -140,7 +141,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
     public void active()
         throws Exception
     {
-        SimpleUser u=new SimpleUser();
+        User u=new User();
         final String name="TESTUSER";
         u.setName(name);
 
@@ -160,7 +161,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         u.delete();
     }
 
-    private void doNamePasswordTests(SimpleUser u) throws Exception {
+    private void doNamePasswordTests(User u) throws Exception {
         //verify that user cannot be saved without a user name
         assertValidateAndSaveFailure(u,UNSPECIFIED_NAME_ATTRIBUTE);
         //verify that the password cannot be set when the name is not set
@@ -198,7 +199,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
      */
     @Test
     public void validateAndChangePassword() throws Exception {
-        SimpleUser u = new SimpleUser();
+        User u = new User();
         //any password validates until a non-empty password is set
         u.validatePassword(null);
         u.validatePassword("".toCharArray()); //$NON-NLS-1$
@@ -209,7 +210,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         //verify that the password still validates
         u.validatePassword(pass);
         //verify db copy is the same
-        SimpleUser fetched = fetchByID(u.getId());
+        User fetched = fetchByID(u.getId());
         assertEntityEquals(u, fetched);
         fetched.validatePassword(pass);
         //run tests on a saved user
@@ -223,7 +224,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         fetched.validatePassword(pass);
     }
 
-    private char[] doValidateChangePassTests(SimpleUser u) throws PersistenceException {
+    private char[] doValidateChangePassTests(User u) throws PersistenceException {
         final String pass = randomString();
         u.setName(randomString());
         //any password validates because changing a name resets the password
@@ -262,7 +263,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         return newPass;
     }
 
-    private static void assertPasswordValidateFailure(SimpleUser u,
+    private static void assertPasswordValidateFailure(User u,
                                                       char []password,
                                                       I18NMessage msg) {
         try {
@@ -272,7 +273,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
             assertEquals(msg,e.getMessage());
         }
     }
-    private static void assertChangePasswordFailure(SimpleUser u,
+    private static void assertChangePasswordFailure(User u,
                                                     char[] oldPassword,
                                                     char[] newPassword,
                                                     I18NMessage msg) {
@@ -284,7 +285,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         }
     }
     private static void assertValidateAndSaveFailure(
-            SimpleUser u, I18NMessage expectedMsg,
+            User u, I18NMessage expectedMsg,
             Object ...params)
             throws Exception {
         try {
@@ -305,7 +306,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
 
     /* *****Implement necessary methods****** */
 
-    protected SimpleUser fetchByName(String name) throws Exception {
+    protected User fetchByName(String name) throws Exception {
         return new SingleSimpleUserQuery(name).fetch();
     }
 
@@ -313,11 +314,11 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         return new SingleSimpleUserQuery(name).exists();
     }
 
-    protected SimpleUser fetchSummaryByName(String name) throws Exception {
+    protected User fetchSummaryByName(String name) throws Exception {
         return new SingleSimpleUserQuery(name).fetchSummary();
     }
 
-    protected void save(SimpleUser simpleUser) throws Exception {
+    protected void save(User simpleUser) throws Exception {
         //Set the password to avoid validation failure when saving
         if(!simpleUser.isPasswordSet()) {
             simpleUser.setPassword(randomString().toCharArray());
@@ -325,7 +326,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         simpleUser.save();
     }
 
-    protected void delete(SimpleUser simpleUser) throws Exception {
+    protected void delete(User simpleUser) throws Exception {
         simpleUser.delete();
     }
 
@@ -333,7 +334,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         MultiSimpleUserQuery.all().delete();
     }
 
-    protected SimpleUser fetchByID(long id) throws Exception {
+    protected User fetchByID(long id) throws Exception {
         return new SingleSimpleUserQuery(id).fetch();
     }
 
@@ -341,15 +342,15 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         return new SingleSimpleUserQuery(id).exists();
     }
 
-    protected SimpleUser fetchSummaryByID(long id) throws Exception {
+    protected User fetchSummaryByID(long id) throws Exception {
         return new SingleSimpleUserQuery(id).fetchSummary();
     }
 
-    protected List<SimpleUser> fetchSummaryQuery(MultipleEntityQuery query) throws Exception {
+    protected List<User> fetchSummaryQuery(MultipleEntityQuery query) throws Exception {
         return ((MultiSimpleUserQuery)query).fetch();
     }
 
-    protected List<SimpleUser> fetchQuery(MultipleEntityQuery query) throws Exception {
+    protected List<User> fetchQuery(MultipleEntityQuery query) throws Exception {
         return ((MultiSimpleUserQuery)query).fetch();
     }
 
@@ -357,12 +358,12 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         return MultiSimpleUserQuery.all();
     }
 
-    protected SimpleUser createEmpty() throws Exception {
-        return new SimpleUser();
+    protected User createEmpty() throws Exception {
+        return new User();
     }
 
-    protected Class<SimpleUser> getEntityClass() {
-        return SimpleUser.class;
+    protected Class<User> getEntityClass() {
+        return User.class;
     }
 
     protected Class<? extends MultipleEntityQuery> getMultiQueryClass() {
@@ -371,11 +372,11 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
     /* *****Over-ride necessary methods****** */
 
     @Override
-    protected List<MultiQueryFilterTestHelper<SimpleUser, SimpleUser>>
+    protected List<MultiQueryFilterTestHelper<User, User>>
             getFilterTestHelpers() throws Exception {
-        List<MultiQueryFilterTestHelper<SimpleUser, SimpleUser>> l =
+        List<MultiQueryFilterTestHelper<User, User>> l =
                 super.getFilterTestHelpers();
-        l.add(booleanFilterHelper(SimpleUser.ATTRIBUTE_ACTIVE, "activeFilter")); //$NON-NLS-1$
+        l.add(booleanFilterHelper(User.ATTRIBUTE_ACTIVE, "activeFilter")); //$NON-NLS-1$
         return l;
     }
 

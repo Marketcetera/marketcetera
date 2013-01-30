@@ -7,8 +7,8 @@ import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.ors.UserManager;
 import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.persist.User;
 import org.marketcetera.util.except.I18NRuntimeException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -108,7 +108,7 @@ public class ClientSessionFactory
          SessionId id)
     {
         JmsOperations jmsOps;
-        SimpleUser dbUser;
+        User dbUser;
         String topicName=JmsUtils.getReplyTopicName(id);
         try {
             jmsOps=getJmsManager().getOutgoingJmsFactory().createJmsTemplateX

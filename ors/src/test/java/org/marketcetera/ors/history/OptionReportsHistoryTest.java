@@ -3,7 +3,7 @@ package org.marketcetera.ors.history;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.core.position.PositionKey;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -54,7 +54,7 @@ public class OptionReportsHistoryTest extends ReportHistoryTestBase<Option> {
     }
 
     @Override
-    protected BigDecimal getInstrumentPosition(Date inDate, Option inInstrument, SimpleUser inUser) throws Exception {
+    protected BigDecimal getInstrumentPosition(Date inDate, Option inInstrument, User inUser) throws Exception {
         return getPosition(inDate, inInstrument, inUser);
     }
 
@@ -64,7 +64,7 @@ public class OptionReportsHistoryTest extends ReportHistoryTestBase<Option> {
     }
 
     @Override
-    protected Map<PositionKey<Option>, BigDecimal> getInstrumentPositions(Date inDate, SimpleUser inUser) throws Exception {
+    protected Map<PositionKey<Option>, BigDecimal> getInstrumentPositions(Date inDate, User inUser) throws Exception {
         return getAllOptionPositions(inDate, inUser);
     }
 }

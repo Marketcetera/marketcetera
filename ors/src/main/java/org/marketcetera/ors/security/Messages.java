@@ -21,14 +21,6 @@ public interface Messages {
      */
     static final I18NLoggerProxy LOGGER =
             new I18NLoggerProxy(PROVIDER);
-    static final I18NMessage0P EMPTY_USERNAME =
-            new I18NMessage0P(LOGGER, "empty_username");  //$NON-NLS-1$
-    static final I18NMessage1P CANNOT_SET_PASSWORD =
-            new I18NMessage1P(LOGGER, "cannot_set_password"); //$NON-NLS-1$
-    static final I18NMessage0P EMPTY_PASSWORD =
-            new I18NMessage0P(LOGGER, "empty_password"); //$NON-NLS-1$
-    static final I18NMessage0P INVALID_PASSWORD =
-            new I18NMessage0P(LOGGER, "invalid_password"); //$NON-NLS-1$
     static final I18NMessage0P PROMPT_USERNAME =
             new I18NMessage0P(LOGGER, "prompt_username"); //$NON-NLS-1$
     static final I18NMessage0P PROMPT_PASSWORD =

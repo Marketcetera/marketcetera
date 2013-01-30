@@ -5,7 +5,7 @@ import java.util.Map;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.info.SessionInfo;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 
 import quickfix.Message;
@@ -35,7 +35,7 @@ public class UserInfoMessageModifier
     {
         String orsUserName = null;
         if(sessionInfo != null) {
-            SimpleUser currentUser = (SimpleUser)sessionInfo.getValue(SessionInfo.ACTOR);
+            User currentUser = (User)sessionInfo.getValue(SessionInfo.ACTOR);
             if(currentUser == null) {
                 Messages.NO_SESSION_USERNAME.warn(this);
                 return false;

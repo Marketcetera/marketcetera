@@ -3,7 +3,7 @@ package org.marketcetera.ors.history;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.trade.*;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 
 /* $License$ */
 /**
- * Verifies {@link org.marketcetera.ors.history.ReportHistoryServices#getOptionPositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Option)}
- * , {@link org.marketcetera.ors.history.ReportHistoryServices#getAllOptionPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)} &
- * {@link org.marketcetera.ors.history.ReportHistoryServices#getOptionPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, String[])}.
+ * Verifies {@link org.marketcetera.ors.history.ReportHistoryServices#getOptionPositionAsOf(org.marketcetera.persist.User, java.util.Date, org.marketcetera.trade.Option)}
+ * , {@link org.marketcetera.ors.history.ReportHistoryServices#getAllOptionPositionsAsOf(org.marketcetera.persist.User, java.util.Date)} &
+ * {@link org.marketcetera.ors.history.ReportHistoryServices#getOptionPositionsAsOf(org.marketcetera.persist.User, java.util.Date, String[])}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -46,7 +46,7 @@ public class OptionPositionsTest extends PositionsTestBase<Option> {
     }
 
     @Override
-    protected BigDecimal getInstrumentPosition(Date inDate, Option inOption, SimpleUser inUser) throws Exception {
+    protected BigDecimal getInstrumentPosition(Date inDate, Option inOption, User inUser) throws Exception {
         return getPosition(inDate, inOption, inUser);
     }
 
@@ -56,7 +56,7 @@ public class OptionPositionsTest extends PositionsTestBase<Option> {
     }
 
     @Override
-    protected Map<PositionKey<Option>, BigDecimal> getInstrumentPositions(Date inAfter, SimpleUser inUser) throws Exception {
+    protected Map<PositionKey<Option>, BigDecimal> getInstrumentPositions(Date inAfter, User inUser) throws Exception {
         return getAllOptionPositions(inAfter, inUser);
     }
 
@@ -77,7 +77,7 @@ public class OptionPositionsTest extends PositionsTestBase<Option> {
         UserID [] actors = {superUserID, regularUserID};
         UserID [] viewers = {superUserID, regularUserID};
         BigDecimal individualPosition = BigDecimal.ONE;
-        SimpleUser []viewerUsers = {sActor, sViewer};
+        User []viewerUsers = {sActor, sViewer};
         int orderID = 1;
         //Create ERs for all combinations
         for(String symbol: symbols) {
@@ -106,7 +106,7 @@ public class OptionPositionsTest extends PositionsTestBase<Option> {
                 for(BigDecimal strike: strikes) {
                     for(OptionType opType: types) {
                         Option option = new Option(symbol, expiry, strike, opType);
-                        for(SimpleUser viewer: viewerUsers) {
+                        for(User viewer: viewerUsers) {
                             BigDecimal position = getPosition(date, option, viewer);
                             SLF4JLoggerProxy.error(this, "Option:{}: Viewer: {}: Position: {}",
                                     option, viewer, position);
@@ -125,7 +125,7 @@ public class OptionPositionsTest extends PositionsTestBase<Option> {
         //Verify root symbol summaries
         Map<PositionKey<Option>, BigDecimal> positions;
         for(String symbol:symbols) {
-            for(SimpleUser viewer: viewerUsers) {
+            for(User viewer: viewerUsers) {
                 int numExpectedEntries = 0;
                 positions = getOptionPositions(date, viewer, symbol);
                 SLF4JLoggerProxy.error(this, "Symbol:{}: Viewer: {}: Positions: {}",
@@ -154,7 +154,7 @@ public class OptionPositionsTest extends PositionsTestBase<Option> {
         }
 
         //Verify all positions
-        for(SimpleUser viewer: viewerUsers) {
+        for(User viewer: viewerUsers) {
             int numExpectedEntries = 0;
             positions = getAllOptionPositions(date, viewer);
             SLF4JLoggerProxy.error(this, "Viewer: {}: Positions: {}",

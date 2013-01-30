@@ -1,15 +1,18 @@
 package org.marketcetera.persist;
 
-import java.util.List;
+import javax.persistence.EntityNotFoundException;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
 /**
- *
+ * Provides common behaviors for entity service implementations.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -20,134 +23,118 @@ public abstract class AbstractEntityService<Clazz extends EntityBase>
         implements EntityService<Clazz>
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.persist.EntityService#delete(org.marketcetera.persist.EntityBase)
+     * @see org.springframework.data.getRepository().PagingAndSortinggetRepository()#findAll(org.springframework.data.domain.Pageable)
      */
     @Override
-    @Transactional(readOnly=false)
-    public void delete(Clazz inData)
+    public Page<Clazz> findAll(Pageable inPage)
     {
-        doBeforeDelete(inData);
-        dao.remove(inData);
-        doAfterDelete(inData);
+        return getRepository().findAll(inPage);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.persist.EntityService#update(org.marketcetera.persist.EntityBase)
+     * @see org.springframework.data.getRepository().PagingAndSortinggetRepository()#findAll(org.springframework.data.domain.Sort)
      */
     @Override
-    @Transactional(readOnly=false)
-    public Clazz update(Clazz inData)
+    public Iterable<Clazz> findAll(Sort inSort)
     {
-        doBeforeUpdate(inData);
-        inData = dao.persist(inData);
-        doAfterUpdate(inData);
-        return inData;
+        return getRepository().findAll(inSort);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.persist.EntityService#read(long)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#count()
      */
     @Override
-    public Clazz read(long inId)
+    public long count()
     {
-        doBeforeRead(inId);
-        Clazz value = dao.getById(inId);
-        doAfterRead(value);
+        return getRepository().count();
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#delete(java.lang.Object)
+     */
+    @Override
+    public void delete(Clazz inType)
+    {
+        getRepository().delete(inType);
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#delete(java.lang.Iterable)
+     */
+    @Override
+    public void delete(Iterable<? extends Clazz> inIterator)
+    {
+        getRepository().delete(inIterator);
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#delete(java.io.Serializable)
+     */
+    @Override
+    public void delete(Long inId)
+    {
+        getRepository().delete(inId);
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#deleteAll()
+     */
+    @Override
+    public void deleteAll()
+    {
+        getRepository().deleteAll();
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#exists(java.io.Serializable)
+     */
+    @Override
+    public boolean exists(Long inId)
+    {
+        return getRepository().exists(inId);
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#findAll()
+     */
+    @Override
+    public Iterable<Clazz> findAll()
+    {
+        return getRepository().findAll();
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#findAll(java.lang.Iterable)
+     */
+    @Override
+    public Iterable<Clazz> findAll(Iterable<Long> inIdSet)
+    {
+        return getRepository().findAll(inIdSet);
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#findOne(java.io.Serializable)
+     */
+    @Override
+    public Clazz findOne(Long inId)
+    {
+        Clazz value = getRepository().findOne(inId);
+        if(value == null) {
+            throw new EntityNotFoundException();
+        }
         return value;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.persist.EntityService#readAll()
+     * @see org.springframework.data.getRepository().CrudgetRepository()#save(java.lang.Iterable)
      */
     @Override
-    public List<Clazz> readAll()
+    public <S extends Clazz> Iterable<S> save(Iterable<S> inDataSet)
     {
-        doBeforeReadAll();
-        List<Clazz> values = dao.getAll();
-        doAfterReadAll(values);
-        return values;
+        return getRepository().save(inDataSet);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.persist.EntityService#create(org.marketcetera.persist.EntityBase)
+     * @see org.springframework.data.getRepository().CrudgetRepository()#save(java.lang.Object)
      */
     @Override
-    @Transactional(readOnly=false)
-    public Clazz create(Clazz inData)
+    public <S extends Clazz> S save(S inData)
     {
-        doBeforeCreate(inData);
-        Clazz value = dao.persist(inData);
-        doAfterCreate(value);
-        return value;
+        return getRepository().save(inData);
     }
     /**
      * 
      *
      *
-     * @param inData
+     * @return a <code>PagingAndSortinggetRepository()&lt;Clazz,Long&gt;</code> value
      */
-    protected void doBeforeCreate(Clazz inData) {}
-    /**
-     * 
-     *
-     *
-     * @param inData
-     */
-    protected void doAfterCreate(Clazz inData) {}
-    /**
-     * 
-     *
-     *
-     * @param inId
-     */
-    protected void doBeforeRead(long inId) {}
-    /**
-     * 
-     *
-     *
-     * @param inData
-     */
-    protected void doAfterRead(Clazz inData) {}
-    /**
-     * 
-     *
-     *
-     * @param inData
-     */
-    protected void doBeforeUpdate(Clazz inData) {}
-    /**
-     * 
-     *
-     *
-     * @param inData
-     */
-    protected void doAfterUpdate(Clazz inData) {}
-    /**
-     * 
-     *
-     *
-     * @param inData
-     */
-    protected void doBeforeDelete(Clazz inData) {}
-    /**
-     * 
-     *
-     *
-     * @param inData
-     */
-    protected void doAfterDelete(Clazz inData) {}
-    /**
-     * 
-     *
-     *
-     */
-    protected void doBeforeReadAll() {}
-    /**
-     * 
-     *
-     *
-     * @param inData
-     */
-    protected void doAfterReadAll(List<Clazz> inData) {}
-    /**
-     * provides datastore access to Clazz objects
-     */
-    @Autowired
-    private DataAccessObject<Clazz> dao;
+    protected abstract PagingAndSortingRepository<Clazz,Long> getRepository();
 }

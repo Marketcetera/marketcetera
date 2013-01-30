@@ -24,8 +24,8 @@ import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.ors.security.MultiSimpleUserQuery;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistTestBase;
+import org.marketcetera.persist.User;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
@@ -57,7 +57,7 @@ public class ReportsTestBase extends TestCaseBase {
         sServices=new BasicReportHistoryServices();
         sServices.init(idFactory,null,null);
 
-        sActor=new SimpleUser();
+        sActor=new User();
         sActor.setName("actor");
         sActor.setPassword("pass".toCharArray());
         sActor.setActive(true);
@@ -65,7 +65,7 @@ public class ReportsTestBase extends TestCaseBase {
         sActor.save();
         sActorID=new UserID(sActor.getId());
 
-        sViewer=new SimpleUser();
+        sViewer=new User();
         sViewer.setName("viewer");
         sViewer.setPassword("pass2".toCharArray());
         sViewer.setActive(true);
@@ -73,7 +73,7 @@ public class ReportsTestBase extends TestCaseBase {
         sViewer.save();
         sViewerID=new UserID(sViewer.getId());
 
-        sExtraUser=new SimpleUser();
+        sExtraUser=new User();
         sExtraUser.setName("extra");
         sExtraUser.setPassword("pass2".toCharArray());
         sExtraUser.setActive(true);
@@ -379,7 +379,7 @@ public class ReportsTestBase extends TestCaseBase {
         return getPosition(inDate, inEquity, sViewer);
     }
     
-    protected static BigDecimal getPosition(Date inDate, Equity inEquity, SimpleUser inViewer)
+    protected static BigDecimal getPosition(Date inDate, Equity inEquity, User inViewer)
             throws Exception {
         return sServices.getEquityPositionAsOf(inViewer, inDate, inEquity);
     }
@@ -394,7 +394,7 @@ public class ReportsTestBase extends TestCaseBase {
         return getPosition(inDate, inCurrency, sViewer);
     }
     
-    protected static BigDecimal getPosition(Date inDate, Currency inCurrency, SimpleUser inViewer)
+    protected static BigDecimal getPosition(Date inDate, Currency inCurrency, User inViewer)
             throws Exception {
         return sServices.getCurrencyPositionAsOf(inViewer, inDate, inCurrency);
     }
@@ -409,7 +409,7 @@ public class ReportsTestBase extends TestCaseBase {
         return getPosition(inDate, inOption, sViewer);
     }
     protected static BigDecimal getPosition(Date inDate, Option inOption,
-                                            SimpleUser inViewer)
+                                            User inViewer)
             throws Exception {
         return sServices.getOptionPositionAsOf(inViewer, inDate, inOption);
     }
@@ -419,7 +419,7 @@ public class ReportsTestBase extends TestCaseBase {
         return getAllOptionPositions(inDate, sViewer);
     }
     protected static Map<PositionKey<Option>,BigDecimal> getAllOptionPositions(
-            Date inDate, SimpleUser inViewer) throws PersistenceException {
+            Date inDate, User inViewer) throws PersistenceException {
         return sServices.getAllOptionPositionsAsOf(inViewer, inDate);
     }
 
@@ -429,17 +429,17 @@ public class ReportsTestBase extends TestCaseBase {
     }
     
     protected static Map<PositionKey<Option>,BigDecimal> getOptionPositions(
-            Date inDate, SimpleUser inViewer, String... inSymbols)
+            Date inDate, User inViewer, String... inSymbols)
             throws PersistenceException {
         return sServices.getOptionPositionsAsOf(inViewer, inDate, inSymbols);
     }
 
-    protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
+    protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate, User inViewer)
             throws Exception {
         return sServices.getAllEquityPositionsAsOf(inViewer, inDate);
     }
     
-    protected static Map<PositionKey<Currency>,BigDecimal> getCurrencyPositions(Date inDate, SimpleUser inViewer)
+    protected static Map<PositionKey<Currency>,BigDecimal> getCurrencyPositions(Date inDate, User inViewer)
             throws Exception {
         return sServices.getAllCurrencyPositionsAsOf(inViewer, inDate);
     }
@@ -671,11 +671,11 @@ public class ReportsTestBase extends TestCaseBase {
     protected static final BrokerID BROKER = new BrokerID("TestBroker");
     protected static final String ACCOUNT = "account";
     protected static final String TEXT = "text";
-    protected static SimpleUser sActor;
+    protected static User sActor;
     protected static UserID sActorID;
-    protected static SimpleUser sViewer;
+    protected static User sViewer;
     protected static UserID sViewerID;
-    protected static SimpleUser sExtraUser;
+    protected static User sExtraUser;
     protected static UserID sExtraUserID;
     private static FIXMessageFactory sMessageFactory;
     protected static ReportHistoryServices sServices;

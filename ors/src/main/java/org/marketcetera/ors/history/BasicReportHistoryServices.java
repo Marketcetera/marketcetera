@@ -13,7 +13,7 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.Principals;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -62,7 +62,7 @@ public class BasicReportHistoryServices
 
     @Override
     public ReportBaseImpl[] getReportsSince
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate)
             throws ReportPersistenceException {
         MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
@@ -83,7 +83,7 @@ public class BasicReportHistoryServices
 
     @Override
     public BigDecimal getEquityPositionAsOf
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate,
          Equity inEquity)
         throws PersistenceException
@@ -94,7 +94,7 @@ public class BasicReportHistoryServices
 
     @Override
     public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate)
         throws PersistenceException
     {
@@ -104,7 +104,7 @@ public class BasicReportHistoryServices
     
     @Override
     public BigDecimal getCurrencyPositionAsOf
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate,
          Currency inCurrency)
         throws PersistenceException
@@ -118,7 +118,7 @@ public class BasicReportHistoryServices
      */
     @Override
     public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
-        (SimpleUser inUser,
+        (User inUser,
          Date inDate)
         throws PersistenceException
     {
@@ -129,7 +129,7 @@ public class BasicReportHistoryServices
      * @see org.marketcetera.ors.history.ReportHistoryServices#getAllFuturePositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
-    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(SimpleUser inUser,
+    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(User inUser,
                                                                          Date inDate)
             throws PersistenceException
     {
@@ -140,7 +140,7 @@ public class BasicReportHistoryServices
      * @see org.marketcetera.ors.history.ReportHistoryServices#getFuturePositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Future)
      */
     @Override
-    public BigDecimal getFuturePositionAsOf(SimpleUser inUser,
+    public BigDecimal getFuturePositionAsOf(User inUser,
                                             Date inDate,
                                             Future inFuture)
             throws PersistenceException
@@ -151,7 +151,7 @@ public class BasicReportHistoryServices
     }     
     @Override
     public BigDecimal getOptionPositionAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate,
          final Option inOption)
         throws PersistenceException {
@@ -161,7 +161,7 @@ public class BasicReportHistoryServices
 
     @Override
     public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate)
         throws PersistenceException {
         return ExecutionReportSummary.getAllOptionPositionsAsOf(inUser, inDate);
@@ -169,7 +169,7 @@ public class BasicReportHistoryServices
 
     @Override
     public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
-        (final SimpleUser inUser,
+        (final User inUser,
          final Date inDate,
          final String... inSymbols)
         throws PersistenceException {

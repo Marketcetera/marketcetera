@@ -10,6 +10,7 @@ import javax.persistence.PersistenceException;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.MultiNDQuery;
 import org.marketcetera.persist.MultiQueryProcessor;
+import org.marketcetera.persist.User;
 
 /* $License$ */
 /**
@@ -26,7 +27,7 @@ public class MultiSimpleUserQuery extends MultiNDQuery {
     @Override
     protected void addWhereClauses(StringBuilder queryString) {
         super.addWhereClauses(queryString);
-        addFilterIfNotNull(queryString, SimpleUser.ATTRIBUTE_ACTIVE,
+        addFilterIfNotNull(queryString, User.ATTRIBUTE_ACTIVE,
                 getActiveFilter());
     }
 
@@ -37,7 +38,7 @@ public class MultiSimpleUserQuery extends MultiNDQuery {
      */
     public static MultiSimpleUserQuery all() {
         return new MultiSimpleUserQuery(FROM + S +
-                SimpleUser.ENTITY_NAME + S +  ENTITY_ALIAS,null);
+                User.ENTITY_NAME + S +  ENTITY_ALIAS,null);
     }
 
     /**
@@ -50,8 +51,8 @@ public class MultiSimpleUserQuery extends MultiNDQuery {
      * @throws PersistenceException if there was an error fetching
      * the users.
      */
-    public List<SimpleUser> fetch() {
-        return fetchRemote(new MultiQueryProcessor<SimpleUser>(false));
+    public List<User> fetch() {
+        return fetchRemote(new MultiQueryProcessor<User>(false));
     }
 
     /**
@@ -68,7 +69,7 @@ public class MultiSimpleUserQuery extends MultiNDQuery {
 
     /**
      * A filter which, when applied, filters the users based on the
-     * value of their {@link SimpleUser#isActive()} flag.
+     * value of their {@link User#isActive()} flag.
      *
      * @return the active flag filter.
      */

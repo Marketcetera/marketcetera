@@ -15,7 +15,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.trade.*;
 
 /* $License$ */
@@ -480,7 +480,7 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
      */
     protected abstract BigDecimal getInstrumentPosition(Date inDate,
                                                         T inInstrument,
-                                                        SimpleUser inUser) throws Exception;
+                                                        User inUser) throws Exception;
 
     /**
      * Fetches the positions for all instruments with non-zero positions.
@@ -507,7 +507,7 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
      * @throws Exception if there were unexpected errors
      */
     protected abstract Map<PositionKey<T>, BigDecimal> getInstrumentPositions(
-            Date inDate, SimpleUser inUser)
+            Date inDate, User inUser)
             throws Exception;
 
     private void verifyShortPosition(BigDecimal inValue,

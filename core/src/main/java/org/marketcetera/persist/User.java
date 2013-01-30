@@ -1,8 +1,5 @@
-package org.marketcetera.ors.security;
+package org.marketcetera.persist;
 
-import static org.marketcetera.ors.security.Messages.EMPTY_PASSWORD;
-import static org.marketcetera.ors.security.Messages.INVALID_PASSWORD;
-import static org.marketcetera.ors.security.Messages.SIMPLE_USER_NAME;
 import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 
 import java.io.UnsupportedEncodingException;
@@ -11,9 +8,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.I18NMessage0P;
 
@@ -29,25 +27,23 @@ import org.marketcetera.util.log.I18NMessage0P;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
 @Entity
-@Table(
-        name = "ors_users",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})}
-)
+@Access(AccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @AttributeOverride(name = "name", column = @Column(nullable = false))
-public class SimpleUser extends NDEntityBase {
-    private static final long serialVersionUID = -244334398553751199L;
-
+@Table(name="users",uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
+@ClassVersion("$Id$")
+public class User
+        extends NDEntityBase
+{
     /**
      * The superuser flag of this user.
      * @return The flag.
      */
-    @Column(nullable = false)
-    public boolean isSuperuser() {
+    public boolean isSuperuser()
+    {
         return superuser;
     }
-
     /**
      * Set the superuser flag for this user.
      * @param superuser the superuser flag for this user.
@@ -55,14 +51,10 @@ public class SimpleUser extends NDEntityBase {
     public void setSuperuser(boolean superuser) {
         this.superuser = superuser;
     }
-
-    private boolean superuser = false;
-
     /**
      * The active flag of this user.
      * @return The flag.
      */
-    @Column(nullable = false)
     public boolean isActive() {
         return active;
     }
@@ -74,14 +66,11 @@ public class SimpleUser extends NDEntityBase {
     public void setActive(boolean active) {
         this.active = active;
     }
-
-    private boolean active = true;
     /**
      * Gets the user data as a <code>String</code>.
      *
      * @return a <code>String</code> value or <code>null</code>
      */
-    @Column(nullable = true,columnDefinition="text")
     public String getUserData()
     {
         return userData;
@@ -96,50 +85,21 @@ public class SimpleUser extends NDEntityBase {
         userData = inUserData;
     }
     /**
-     * the user data associated with this used - may be <code>null</code>
-     */
-    private String userData;
-    /**
-     * Gets the system data as a <code>String</code>.
-     *
-     * @return a <code>String</code> value or <code>null</code>
-     */
-    @Column(nullable = true,columnDefinition="text")
-    public String getSystemData()
-    {
-        return systemData;
-    }
-    /**
-     * Sets the system data.
-     * 
-     * @param inSystemData a <code>String</code> value
-     */
-    public void setSystemData(String inSystemData)
-    {
-        systemData = inSystemData;
-    }
-    /**
-     * the system data associated with this used - may be <code>null</code>
-     */
-    private String systemData;
-    /**
      * The UserID of this user.
      * @return The UserID.
      */
-    @Transient
-    public UserID getUserID() {
+    public UserID getUserID()
+    {
         return new UserID(getId());
     }
-
     /**
      * Returns true if the user password is set.
      * @return true if the user password is set.
      */
-    @Transient
-    public boolean isPasswordSet() {
-        return getHashedPassword() != null;
+    public boolean isPasswordSet()
+    {
+        return getPassword() != null;
     }
-
     /**
      * Sets the user name. The user password is emptied whenever the
      * user name is modified. Make sure to the set the user
@@ -148,13 +108,13 @@ public class SimpleUser extends NDEntityBase {
      * @param name the user name
      */
     @Override
-    public void setName(String name) {
+    public void setName(String name)
+    {
         if(name == null || (!name.equals(getName()))) {
             super.setName(name);
-            setHashedPassword(null);
+            setPassword((char[])null);
         }
     }
-
     /**
      * Sets the user's password. The user name should be set to a
      * non-empty value before this method is invoked 
@@ -169,7 +129,8 @@ public class SimpleUser extends NDEntityBase {
      * @throws PersistenceException If the user password is already set, or if
      * an empty password is supplied or if the user name is not set.
      */
-    public void setPassword(char[] password)  {
+    public void setPassword(char[] password)
+    {
         if(getName() == null) {
             throw new PersistenceException(UNSPECIFIED_NAME_ATTRIBUTE.getText());
         }
@@ -178,7 +139,6 @@ public class SimpleUser extends NDEntityBase {
         }
         validateAndSetPassword(password);
     }
-
     /**
      * Changes the user's password after
      * {@link #validatePassword(char[]) validating} the supplied password.
@@ -195,7 +155,7 @@ public class SimpleUser extends NDEntityBase {
      */
     public void changePassword(char [] originalPassword,
                                char[] newPassword)
-             {
+    {
         validatePassword(originalPassword);
         validateAndSetPassword(newPassword);
     }
@@ -215,13 +175,14 @@ public class SimpleUser extends NDEntityBase {
      * the specified password doesn't match the currently configured
      * user password.
      */
-    public void validatePassword(char[] password) {
-        if(getHashedPassword() == null || getHashedPassword().length() == 0) {
+    public void validatePassword(char[] password)
+    {
+        if(getPassword() == null || getPassword().length() == 0) {
             return;
         }
         validatePasswordValue(password);
-        if(!getHashedPassword().equals(hash(getName().toCharArray(),password))) {
-            throw new PersistenceException(INVALID_PASSWORD.getText());
+        if(!getPassword().equals(hash(getName().toCharArray(),password))) {
+            throw new PersistenceException(Messages.INVALID_PASSWORD.getText());
         }
     }
 
@@ -237,38 +198,13 @@ public class SimpleUser extends NDEntityBase {
      *
      * @throws PersistenceException if there were validation failures
      */
-    public void validate() {
+    public void validate()
+    {
         super.validate();
-        if(getHashedPassword() == null || getHashedPassword().length() == 0) {
-            throw new PersistenceException(EMPTY_PASSWORD.getText());
+        if(getPassword() == null || getPassword().length() == 0) {
+            throw new PersistenceException(Messages.EMPTY_PASSWORD.getText());
         }
     }
-
-    /**
-     * Saves the user to the database.
-     *
-     * @throws PersistenceException if {@link #validate() validation}
-     * failed when saving the user.
-     * @throws org.marketcetera.persist.EntityExistsException if a user
-     * with the supplied name already exists in the database.
-     * @throws org.marketcetera.persist.PersistenceException If there were
-     * errors saving the user to the database.
-     */
-    public void save() {
-        saveRemote(null);
-    }
-
-    /**
-     * Deletes the user from the database. After a user is deleted,
-     * any attempt to login as that user fails. Do note that
-     * deleting a user will not force logout the user from the system.
-     *
-     * @throws PersistenceException if there were errors deleting the user
-     */
-    public void delete()  {
-        deleteRemote(null);
-    }
-
     /**
      * Validates if the supplied password matches the password rules
      * and saves it
@@ -277,22 +213,21 @@ public class SimpleUser extends NDEntityBase {
      *
      * @throws PersistenceException if the supplied password is empty.
      */
-    private void validateAndSetPassword(char[] password) {
+    private void validateAndSetPassword(char[] password)
+    {
         validatePasswordValue(password);
-        setHashedPassword(hash(getName().toCharArray(), password));
+        setPassword(hash(getName().toCharArray(),
+                         password));
     }
 
-    @Column(nullable = false)
-    private String getHashedPassword() {
-        return hashedPassword;
+    private String getPassword()
+    {
+        return password;
     }
-
-    private void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
+    private void setPassword(String inHashedPassword)
+    {
+        password = inHashedPassword;
     }
-
-    private String hashedPassword = null;
-
     /**
      * Validates if the supplied password value is valid
      *
@@ -300,22 +235,22 @@ public class SimpleUser extends NDEntityBase {
      *
      * @throws PersistenceException if the user password is empty
      */
-    private static void validatePasswordValue(char[] password) {
+    private static void validatePasswordValue(char[] password)
+    {
         if(password == null || password.length == 0) {
-            throw new PersistenceException(EMPTY_PASSWORD.getText());
+            throw new PersistenceException(Messages.EMPTY_PASSWORD.getText());
         }
     }
-
     /**
      * The custom localized name for users.
      *
      * @return custom localized name for users.
      */
     @SuppressWarnings("unused")
-    private static I18NMessage0P getUserFriendlyName() {
-        return SIMPLE_USER_NAME;
+    private static I18NMessage0P getUserFriendlyName()
+    {
+        return Messages.SIMPLE_USER_NAME;
     }
-
     /**
      * Hashes the supplied value
      *
@@ -336,12 +271,10 @@ public class SimpleUser extends NDEntityBase {
             throw new IllegalArgumentException(e);
         }
     }
-
     /**
      * The digest used to hash the password.
      */
-    private static ThreadLocal<MessageDigest> digest =
-            new ThreadLocal<MessageDigest>(){
+    private static ThreadLocal<MessageDigest> digest = new ThreadLocal<MessageDigest>() {
         protected MessageDigest initialValue() {
             try {
                 return MessageDigest.getInstance("SHA1"); //$NON-NLS-1$
@@ -350,6 +283,16 @@ public class SimpleUser extends NDEntityBase {
             }
         }
     };
-    static final String ATTRIBUTE_ACTIVE = "active"; //$NON-NLS-1$
-    static final String ENTITY_NAME = "SimpleUser"; //$NON-NLS-1$
+    @Column(nullable = false)
+    private String password = null;
+    @Column(nullable = false)
+    private boolean active = true;
+    @Column(nullable = false)
+    private boolean superuser = false;
+    /**
+     * the user data associated with this used - may be <code>null</code>
+     */
+    @Column(nullable = true,columnDefinition="text")
+    private String userData;
+    private static final long serialVersionUID = -244334398553751199L;
 }

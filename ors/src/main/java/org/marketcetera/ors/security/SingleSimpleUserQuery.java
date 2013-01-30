@@ -1,6 +1,7 @@
 package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.persist.User;
 import org.marketcetera.persist.SingleFetchQuery;
 
 /* $License$ */
@@ -11,7 +12,7 @@ import org.marketcetera.persist.SingleFetchQuery;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class SingleSimpleUserQuery extends SingleFetchQuery<SimpleUser,SimpleUser> {
+public class SingleSimpleUserQuery extends SingleFetchQuery<User,User> {
     private static final long serialVersionUID = 681794352575625450L;
 
     /**
@@ -20,7 +21,7 @@ public class SingleSimpleUserQuery extends SingleFetchQuery<SimpleUser,SimpleUse
      * @param id The user ID.
      */
     public SingleSimpleUserQuery(long id) {
-        super(SimpleUser.ENTITY_NAME, id);
+        super(User.ENTITY_NAME, id);
     }
 
     /**
@@ -29,7 +30,7 @@ public class SingleSimpleUserQuery extends SingleFetchQuery<SimpleUser,SimpleUse
      * @param name The user name.
      */
     public SingleSimpleUserQuery(String name) {
-        super(SimpleUser.ENTITY_NAME,  name);
+        super(User.ENTITY_NAME,  name);
     }
 
     protected String[] getFetchJoinAttributeNames() {

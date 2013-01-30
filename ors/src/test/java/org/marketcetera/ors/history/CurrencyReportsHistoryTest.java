@@ -2,7 +2,7 @@ package org.marketcetera.ors.history;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
-import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.User;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.module.ExpectedFailure;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class CurrencyReportsHistoryTest extends ReportHistoryTestBase<Currency> 
     }
 
     @Override
-    protected BigDecimal getInstrumentPosition(Date inDate, Currency inInstrument, SimpleUser inUser) throws Exception {
+    protected BigDecimal getInstrumentPosition(Date inDate, Currency inInstrument, User inUser) throws Exception {
         return getPosition(inDate, inInstrument, inUser);
     }
 
@@ -65,7 +65,7 @@ public class CurrencyReportsHistoryTest extends ReportHistoryTestBase<Currency> 
     }
 
     @Override
-    protected Map<PositionKey<Currency>, BigDecimal> getInstrumentPositions(Date inDate, SimpleUser inUser) throws Exception {
+    protected Map<PositionKey<Currency>, BigDecimal> getInstrumentPositions(Date inDate, User inUser) throws Exception {
         return getCurrencyPositions(inDate, inUser);
     }
 }

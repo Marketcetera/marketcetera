@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.PersistTestBase;
+import org.marketcetera.persist.User;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
@@ -220,7 +221,7 @@ public class ORSCLITest extends PersistTestBase {
     @Test
     public void commands() throws Exception {
         //Create an admin account
-        SimpleUser admin = new SimpleUser();
+        User admin = new User();
         admin.setName("admin"); //$NON-NLS-1$
         final String password = "admin"; //$NON-NLS-1$
         admin.setPassword(password.toCharArray());
