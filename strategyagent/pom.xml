@@ -74,6 +74,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>client</artifactId>
       <type>test-jar</type>
     </dependency>
