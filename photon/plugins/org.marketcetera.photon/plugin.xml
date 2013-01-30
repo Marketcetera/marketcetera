@@ -101,7 +101,7 @@
             id="org.marketcetera.photon.views.AveragePriceView"
             name="Average Price"/>
       <view
-            category="org.marketcetera.photon.category"
+            category="org.marketcetera.photon.marketdata.MarketDataViewCategory"
             class="org.marketcetera.photon.views.MarketDataView"
             icon="icons/silk/chart_curve.png"
             id="org.marketcetera.photon.views.MarketDataView"

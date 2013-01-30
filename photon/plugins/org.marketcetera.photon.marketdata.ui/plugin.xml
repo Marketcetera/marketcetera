@@ -24,6 +24,7 @@
       </category>
       <view
             allowMultiple="true"
+            category="org.marketcetera.photon.marketdata.MarketDataViewCategory"
             class="org.marketcetera.photon.internal.marketdata.ui.MarketDepthView"
             icon="icons/chart_line.png"
             id="org.marketcetera.photon.marketdata.MarketDepthView"
