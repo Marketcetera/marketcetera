@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.marketcetera.core.ClassVersion;
-import org.springframework.data.jpa.domain.AbstractAuditable;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 /* $License$ */
 /**
@@ -40,7 +40,7 @@ import org.springframework.data.jpa.domain.AbstractAuditable;
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public abstract class EntityBase
-        extends AbstractAuditable<User,Long>
+        extends AbstractPersistable<Long>
 {
     /**
      * Get the version value.

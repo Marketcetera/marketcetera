@@ -55,14 +55,6 @@ public class FruitTest
         return fruit;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.persist.EntityTestBase#getEntityServiceType()
-     */
-    @Override
-    protected Class<FruitService> getEntityServiceType()
-    {
-        return FruitService.class;
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.persist.EntityTestBase#verifyEntity(org.marketcetera.persist.EntityBase, org.marketcetera.persist.EntityBase)
      */
     @Override
@@ -81,5 +73,13 @@ public class FruitTest
     protected void changeEntity(Fruit inEntity)
     {
         inEntity.setName("name-changed-" + System.nanoTime());
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.persist.EntityTestBase#getRepositoryType()
+     */
+    @Override
+    protected Class<FruitRepository> getRepositoryType()
+    {
+        return FruitRepository.class;
     }
 }

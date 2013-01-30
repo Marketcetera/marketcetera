@@ -1,6 +1,5 @@
 package org.marketcetera.persist;
 
-import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 /* $License$ */
@@ -12,8 +11,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  * @version $Id$
  * @since $Release$
  */
-@NoRepositoryBean
-public interface EntityService<Clazz extends EntityBase>
+public interface EntityRepository<Clazz extends EntityBase>
         extends PagingAndSortingRepository<Clazz,Long>
 {
 }
