@@ -1,4 +1,6 @@
 package org.marketcetera.persist;
+import java.util.Date;
+
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,6 +53,37 @@ public abstract class EntityBase
     {
         return version;
     }
+    @PrePersist
+    @PreUpdate
+    public void beforeSave()
+    {
+        if(created == null) {
+            created = new Date();
+        }
+        if(updated == null) {
+            updated = created;
+        } else {
+            updated = new Date();
+        }
+    }
+    /**
+     * Get the updated value.
+     *
+     * @return a <code>Date</code> value
+     */
+    public Date getUpdated()
+    {
+        return updated;
+    }
+    /**
+     * Get the created value.
+     *
+     * @return a <code>Date</code> value
+     */
+    public Date getCreated()
+    {
+        return created;
+    }
     /**
      * Create a new EntityBase instance.
      */
@@ -62,5 +95,13 @@ public abstract class EntityBase
     @XmlAttribute(required=true)
     @Column(name="version")
     private int version;
+    @XmlAttribute(required=true)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="updated",nullable=false)
+    private Date updated;
+    @XmlAttribute(required=true)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="created",updatable=false,nullable=false)
+    private Date created;
     private static final long serialVersionUID = -3037569609427708409L;
 }

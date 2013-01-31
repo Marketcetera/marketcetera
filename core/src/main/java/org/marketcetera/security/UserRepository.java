@@ -1,6 +1,6 @@
 package org.marketcetera.security;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.marketcetera.persist.NDEntityRepository;
 
 /* $License$ */
 
@@ -12,6 +12,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  * @since $Release$
  */
 public interface UserRepository
-        extends PagingAndSortingRepository<User,Long>
+        extends NDEntityRepository<User>
 {
 }

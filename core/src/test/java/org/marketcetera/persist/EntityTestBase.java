@@ -1,13 +1,14 @@
 package org.marketcetera.persist;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.module.ExpectedFailure;
-import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
@@ -33,7 +34,6 @@ public abstract class EntityTestBase<Clazz extends EntityBase>
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Transactional
     public void testAdd()
             throws Exception
     {
@@ -57,27 +57,63 @@ public abstract class EntityTestBase<Clazz extends EntityBase>
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Transactional
     public void testGetById()
             throws Exception
     {
         assertEquals(0,
                      repository.count());
         // does not exist
-        new ExpectedFailure<EntityNotFoundException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                repository.findOne(0l);
-            }
-        };
+        assertNull(repository.findOne(0l));
         // create a new one
         Clazz newEntity = getNewEntity();
         newEntity = repository.save(newEntity);
         // retrieve by the ID and compare
         Clazz entityCopy = repository.findOne(newEntity.getId());
         verifyEntity(newEntity,
+                     entityCopy);
+    }
+    /**
+     * 
+     *
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testFindAll()
+            throws Exception
+    {
+        assertEquals(0,
+                     repository.count());
+        Collection<Clazz> someEntities = new ArrayList<Clazz>();
+        for(int i=0;i<10;i++) {
+            Clazz entity = getNewEntity();
+            someEntities.add(entity);
+            repository.save(entity);
+        }
+        assertEquals(someEntities.size(),
+                     repository.count());
+    }
+    /**
+     * Tests that an entity can be updated properly.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testUpdate()
+            throws Exception
+    {
+        assertEquals(0,
+                     repository.count());
+        Clazz entity = getNewEntity();
+        entity = repository.save(entity);
+        assertEquals(0,
+                     entity.getVersion());
+        assertEquals(1,
+                     repository.count());
+        changeEntity(entity);
+        entity = repository.save(entity);
+        Clazz entityCopy = repository.findOne(entity.getId());
+        verifyEntity(entity,
                      entityCopy);
     }
     /**
@@ -89,33 +125,30 @@ public abstract class EntityTestBase<Clazz extends EntityBase>
     public void testCreatedAndUpdated()
             throws Exception
     {
-//        Clazz entity = getNewEntity();
-//        assertNull(entity.getCreatedDate());
-//        assertNull(entity.getLastModifiedDate());
+        Clazz entity = getNewEntity();
+        assertNull(entity.getCreated());
+        assertNull(entity.getUpdated());
+        entity = repository.save(entity);
+        assertNotNull(entity.getCreated());
+        assertNotNull(entity.getUpdated());
+        assertEquals(entity.getCreated(),
+                     entity.getUpdated());
+//        Thread.sleep(1000);
+//        changeEntity(entity);
 //        entity = repository.save(entity);
-//        try {
-//            assertNotNull(entity.getCreatedDate());
-//            assertNotNull(entity.getLastModifiedDate());
-//            assertEquals(entity.getCreatedDate(),
-//                         entity.getLastModifiedDate());
-//            Thread.sleep(1000);
-//            changeEntity(entity);
-//            entity = repository.save(entity);
-//            assertNotEquals(entity.getCreatedDate(),
-//                            entity.getLastModifiedDate());
-//        } finally {
-//            repository.delete(entity);
-//        }
+//        Clazz entityCopy = repository.findOne(entity.getId());
+//        assertNotEquals(entityCopy.getCreated(),
+//                        entityCopy.getUpdated());
     }
     protected void verifyEntity(Clazz inExpectedValue,
                                 Clazz inActualValue)
     {
         assertEquals(inExpectedValue.getId(),
                      inActualValue.getId());
-//        assertEquals(inExpectedValue.getCreatedDate(),
-//                     inActualValue.getCreatedDate());
-//        assertEquals(inExpectedValue.getLastModifiedDate(),
-//                     inActualValue.getLastModifiedDate());
+        assertEquals(inExpectedValue.getCreated(),
+                     inActualValue.getCreated());
+        assertEquals(inExpectedValue.getUpdated(),
+                     inActualValue.getUpdated());
         assertEquals(inExpectedValue.getVersion(),
                      inActualValue.getVersion());
     }

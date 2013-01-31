@@ -294,7 +294,7 @@ public class User
     /**
      * the user data associated with this used - may be <code>null</code>
      */
-    @Column(nullable = true,columnDefinition="text")
+    @Column(nullable = true,length=2048)
     private String userData;
     private static final long serialVersionUID = -244334398553751199L;
 }

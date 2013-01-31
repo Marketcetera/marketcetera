@@ -34,19 +34,6 @@ class PersistentReport
         extends EntityBase
 {
     /**
-     * Saves the supplied report to the database.
-     *
-     * @param inReport The report to be saved.
-     *
-     * @throws PersistenceException if there were errors saving the report to the database.
-     */
-    static void save(ReportBase inReport)
-    {
-        PersistentReport report = new PersistentReport(inReport);
-        report.saveRemote(null);
-    }
-
-    /**
      * Returns the principals associated with the report with given
      * order ID.
      *
@@ -59,7 +46,6 @@ class PersistentReport
      * @throws PersistenceException if there were errors accessing the
      * report.
      */
-
     static Principals getPrincipals(final OrderID orderID)
     {
         return executeRemote(new Transaction<Principals>() {
@@ -82,7 +68,6 @@ class PersistentReport
             }
         },null);
     }
-
     /**
      * Creates an instance, given a report.
      *
@@ -102,9 +87,8 @@ class PersistentReport
         setOriginator(inReport.getOriginator());
         setOrderID(inReport.getOrderID());
         setReportID(inReport.getReportID());
-        if (inReport.getActorID()!=null) {
-            setActor(new SingleSimpleUserQuery
-                     (inReport.getActorID().getValue()).fetch());
+        if(inReport.getActorID()!=null) {
+            setActor(new SingleSimpleUserQuery(inReport.getActorID().getValue()).fetch());
         }
         if (inReport.getViewerID()!=null) {
             setViewer(new SingleSimpleUserQuery
@@ -163,7 +147,6 @@ class PersistentReport
                     Messages.ERROR_RECONSTITUTE_FIX_MSG, fixMsgString));
         }
     }
-
     @Override
     protected void postSaveLocal(EntityManager em,
                                  EntityBase merged,
@@ -173,9 +156,9 @@ class PersistentReport
         PersistentReport mergedReport = (PersistentReport) merged;
         //Save the summary if the report is an execution report.
         if(mergedReport.getReportType() == ReportType.ExecutionReport) {
-            new ExecutionReportSummary(
-                    (ExecutionReport) mReportBase,
-                    mergedReport).localSave(em, context);
+            new ExecutionReportSummary((ExecutionReport)mReportBase,
+                                       mergedReport).localSave(em,
+                                                               context);
         }
     }
 

@@ -15,8 +15,9 @@ import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.ApplicationBase;
-import org.marketcetera.persist.StringFilter;
 import org.marketcetera.security.User;
+import org.marketcetera.security.UserRepository;
+import org.marketcetera.security.UserService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
@@ -44,16 +45,17 @@ public class ORSAdminCLI
      * @param out The output stream to write output to
      * @param err The error stream to write error output to
      */
-    public ORSAdminCLI(PrintStream out, PrintStream err) {
-        PropertyConfigurator.configureAndWatch
-            (CONF_DIR+"log4j"+File.separator+"cli.properties", //$NON-NLS-1$ //$NON-NLS-2$
-             LOGGER_WATCH_DELAY);
+    public ORSAdminCLI(PrintStream out,
+                       PrintStream err)
+    {
+        PropertyConfigurator.configureAndWatch(CONF_DIR+"log4j"+File.separator+"cli.properties", //$NON-NLS-1$ //$NON-NLS-2$
+                                               LOGGER_WATCH_DELAY);
         this.out = out;
         this.err = err;
         context = new ClassPathXmlApplicationContext(getConfigurations());
         context.registerShutdownHook();
+        userService = context.getBean(UserService.class);
     }
-
     public static void main(String[] args) {
         ORSAdminCLI cli = new ORSAdminCLI(System.out,System.err);
         try {
@@ -247,7 +249,7 @@ public class ORSAdminCLI
     private User fetchUser(String user)
         throws I18NException
     {
-        User u = new SingleSimpleUserQuery(user).fetch();
+        User u = userService.findByName(user);
         if (!u.isActive()) {
             throw new I18NException(CLI_ERR_INACTIVE_USER);
         }
@@ -270,7 +272,8 @@ public class ORSAdminCLI
                                 String opUser,
                                 String password,
                                 String opPass)
-        throws I18NException {
+        throws I18NException
+    {
         User u = null;
         if(opUser != null && !opUser.equals(userName)) {
             u = fetchUser(opUser);
@@ -284,7 +287,7 @@ public class ORSAdminCLI
             u = fetchUser(userName);
             u.changePassword(password.toCharArray(), opPass.toCharArray());
         }
-        u.save();
+        userService.save(u);
         out.println(CLI_OUT_USER_CHG_PASS.getText(u.getName()));
     }
 
@@ -547,6 +550,10 @@ public class ORSAdminCLI
     }
     private PrintStream out;
     private PrintStream err;
+    /**
+     * provides datastore access to users
+     */
+    private UserService userService;
     private static final String CMD_LIST_USERS = "listUsers"; //$NON-NLS-1$
     private static final String CMD_ADD_USER = "addUser"; //$NON-NLS-1$
     private static final String CMD_DELETE_USER = "deleteUser"; //$NON-NLS-1$

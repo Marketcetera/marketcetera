@@ -7,9 +7,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
@@ -20,9 +23,11 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
 @ContextConfiguration(locations={"classpath:persist.xml"})
 @TransactionConfiguration(defaultRollback=true)
+@RunWith(SpringJUnit4ClassRunner.class)
+@DirtiesContext(classMode=ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class PersistenceTestBase
         implements ApplicationContextAware
 {

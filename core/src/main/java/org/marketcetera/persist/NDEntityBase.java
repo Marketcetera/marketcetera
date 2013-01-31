@@ -22,7 +22,6 @@ import org.marketcetera.core.ClassVersion;
 @ClassVersion("$Id$")
 public abstract class NDEntityBase
         extends EntityBase
-        implements SummaryNDEntityBase
 {
     /**
      * Gets the name value.
