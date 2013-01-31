@@ -18,7 +18,7 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.sun.security.auth.UserPrincipal;

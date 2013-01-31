@@ -1,16 +1,16 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.security.User;
 import org.marketcetera.trade.*;
-import org.marketcetera.persist.User;
 
 import java.util.*;
 import java.math.BigDecimal;
 
 /* $License$ */
 /**
- * Verifies {@link ReportHistoryServices#getEquityPositionAsOf(org.marketcetera.persist.User, Date, Equity)}
- * & {@link ReportHistoryServices#getAllEquityPositionsAsOf(org.marketcetera.persist.User, Date)}.
+ * Verifies {@link ReportHistoryServices#getEquityPositionAsOf(org.marketcetera.security.User, Date, Equity)}
+ * & {@link ReportHistoryServices#getAllEquityPositionsAsOf(org.marketcetera.security.User, Date)}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$

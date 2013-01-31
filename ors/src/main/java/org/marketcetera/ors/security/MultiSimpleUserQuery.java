@@ -10,7 +10,7 @@ import javax.persistence.PersistenceException;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.MultiNDQuery;
 import org.marketcetera.persist.MultiQueryProcessor;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 
 /* $License$ */
 /**

@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;

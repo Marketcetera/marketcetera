@@ -1,9 +1,9 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.security.User;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
-import org.marketcetera.persist.User;
 import org.marketcetera.core.position.PositionKey;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.*;

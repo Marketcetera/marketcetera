@@ -1,8 +1,8 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.security.User;
 import org.marketcetera.trade.*;
-import org.marketcetera.persist.User;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.module.ExpectedFailure;
 import org.junit.Test;

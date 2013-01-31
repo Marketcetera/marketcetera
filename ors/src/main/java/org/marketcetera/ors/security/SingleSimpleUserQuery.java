@@ -1,8 +1,8 @@
 package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.User;
 import org.marketcetera.persist.SingleFetchQuery;
+import org.marketcetera.security.User;
 
 /* $License$ */
 /**

@@ -11,7 +11,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Side;
 

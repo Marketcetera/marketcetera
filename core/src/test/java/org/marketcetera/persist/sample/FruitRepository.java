@@ -1,4 +1,6 @@
-package org.marketcetera.persist;
+package org.marketcetera.persist.sample;
+
+import org.marketcetera.persist.EntityRepository;
 
 
 /* $License$ */

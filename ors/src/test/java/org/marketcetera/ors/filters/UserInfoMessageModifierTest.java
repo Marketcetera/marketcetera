@@ -19,13 +19,13 @@ import org.marketcetera.ors.filters.Messages;
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.info.SessionInfoImpl;
 import org.marketcetera.ors.info.SystemInfoImpl;
-import org.marketcetera.persist.User;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor;
+import org.marketcetera.security.User;
 
 import quickfix.Message;
 import quickfix.field.MsgType;

@@ -1,4 +1,4 @@
-package org.marketcetera.persist;
+package org.marketcetera.persist.sample;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.marketcetera.persist.NDEntityBase;
 
 /* $License$ */
 

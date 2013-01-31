@@ -3,7 +3,7 @@ package org.marketcetera.ors.ws;
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.info.SessionInfoImpl;
 import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.springframework.jms.core.JmsOperations;

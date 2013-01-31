@@ -9,7 +9,7 @@ import org.marketcetera.client.IncompatibleComponentsException;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;

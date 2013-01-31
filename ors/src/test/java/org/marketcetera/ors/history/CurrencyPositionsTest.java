@@ -11,14 +11,14 @@ import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Side;
 
 /* $License$ */
 /**
- * Verifies {@link ReportHistoryServices#getCurrencyPositionAsOf(org.marketcetera.persist.User, Date, Currency)}
- * & {@link ReportHistoryServices#getAllCurrencyPositionsAsOf(org.marketcetera.persist.User, Date)}.
+ * Verifies {@link ReportHistoryServices#getCurrencyPositionAsOf(org.marketcetera.security.User, Date, Currency)}
+ * & {@link ReportHistoryServices#getAllCurrencyPositionsAsOf(org.marketcetera.security.User, Date)}.
  *
  */
 public class CurrencyPositionsTest extends PositionsTestBase<Currency> {

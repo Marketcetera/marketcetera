@@ -16,7 +16,7 @@ import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;

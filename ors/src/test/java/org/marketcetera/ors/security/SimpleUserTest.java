@@ -18,7 +18,7 @@ import org.marketcetera.core.Util;
 import org.marketcetera.persist.MultiQueryFilterTestHelper;
 import org.marketcetera.persist.MultipleEntityQuery;
 import org.marketcetera.persist.NDEntityTestBase;
-import org.marketcetera.persist.User;
+import org.marketcetera.security.User;
 import org.marketcetera.util.log.I18NMessage;
 
 /* $License$ */

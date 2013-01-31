@@ -1,4 +1,4 @@
-package org.marketcetera.persist;
+package org.marketcetera.security;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 

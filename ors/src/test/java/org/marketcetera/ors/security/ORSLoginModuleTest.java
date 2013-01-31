@@ -2,7 +2,6 @@ package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.PersistTestBase;
-import org.marketcetera.persist.User;
 
 import static org.marketcetera.ors.security.Messages.EMPTY_USERNAME;
 import static org.marketcetera.ors.security.Messages.PROMPT_USERNAME;
@@ -11,6 +10,8 @@ import static org.marketcetera.ors.security.Messages.USER_LOGIN_ERROR;
 import static org.marketcetera.ors.security.Messages.USER_LOGIN_ERROR_LOG;
 import static org.marketcetera.ors.security.Messages.USER_LOGIN_LOG;
 import static org.marketcetera.ors.security.Messages.USER_LOGOUT_LOG;
+
+import org.marketcetera.security.User;
 import org.marketcetera.util.test.TestCaseBase;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;

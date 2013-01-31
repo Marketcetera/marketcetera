@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.junit.Test;
+import org.marketcetera.persist.sample.Fruit;
+import org.marketcetera.persist.sample.FruitRepository;
+import org.marketcetera.security.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
@@ -31,6 +34,7 @@ public class FruitTest
     public void testMultiQueryAll()
             throws Exception
     {
+//        UserRepository userRepo = getBean(UserRepository.class);
         FruitRepository fruitRepo = getBean(FruitRepository.class);
         assertEquals(0,
                      fruitRepo.count());

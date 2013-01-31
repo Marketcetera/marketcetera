@@ -25,9 +25,9 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.ors.security.MultiSimpleUserQuery;
 import org.marketcetera.persist.PersistTestBase;
-import org.marketcetera.persist.User;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.security.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.test.TestCaseBase;
 

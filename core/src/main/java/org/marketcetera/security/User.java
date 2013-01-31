@@ -1,4 +1,4 @@
-package org.marketcetera.persist;
+package org.marketcetera.security;
 
 import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 
@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.persist.Messages;
+import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.I18NMessage0P;
 
