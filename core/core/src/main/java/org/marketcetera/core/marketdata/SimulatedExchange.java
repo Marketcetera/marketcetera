@@ -1584,7 +1584,7 @@ public class SimulatedExchange
                     }
                 }
             }
-            dividends = ImmutableList.of(tempDividends.toArray(new DividendEvent[tempDividends.size()]));
+            dividends = ImmutableList.copyOf(tempDividends);
         }
         /**
          * Get the underlyingInstrument value.
