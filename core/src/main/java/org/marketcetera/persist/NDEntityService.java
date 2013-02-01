@@ -10,6 +10,6 @@ package org.marketcetera.persist;
  * @since $Release$
  */
 public interface NDEntityService<Clazz extends NDEntityBase>
-        extends NDEntityRepository<Clazz>
+        extends NDEntityRepository<Clazz>, EntityService<Clazz>
 {
 }

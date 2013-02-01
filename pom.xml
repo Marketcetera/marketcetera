@@ -330,6 +330,11 @@
 	<artifactId>spring-data-jpa</artifactId>
 	<version>1.2.0.RELEASE</version>
       </dependency>
+      <dependency>
+	<groupId>com.mysema.querydsl</groupId>
+	<artifactId>querydsl-jpa</artifactId>
+	<version>2.7.0</version>
+      </dependency>
       <!-- Runtime. -->
       <dependency>
 	<groupId>javax.servlet</groupId>
@@ -521,6 +526,13 @@
 	<artifactId>hamcrest-library</artifactId>
 	<version>1.3</version>
 	<scope>test</scope>
+      </dependency>
+      <!-- provided -->
+      <dependency>
+	<groupId>com.mysema.querydsl</groupId>
+	<artifactId>querydsl-apt</artifactId>
+	<version>2.7.0</version>
+	<scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

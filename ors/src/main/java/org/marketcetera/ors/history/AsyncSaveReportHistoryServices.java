@@ -38,18 +38,19 @@ public class AsyncSaveReportHistoryServices
         public void receiveMessage
             (TradeMessage msg)
         {
-            final ReportBase report=(ReportBase)msg;
-            Messages.RHS_DEQUEUED_REPLY.info(this,report);
-            boolean success=false;
-            try {
-                PersistentReport.save(report);
-                success=true;
-                Messages.RHS_PERSISTED_REPLY.info(this,report);
-            } catch (PersistenceException ex) {
-                Messages.RHS_PERSIST_ERROR.error(this,ex,report);
-            } finally {
-                invokeListener(report,success);
-            }
+//            final ReportBase report=(ReportBase)msg;
+//            Messages.RHS_DEQUEUED_REPLY.info(this,report);
+//            boolean success=false;
+//            try {
+//                PersistentReport.save(report);
+//                success=true;
+//                Messages.RHS_PERSISTED_REPLY.info(this,report);
+//            } catch (PersistenceException ex) {
+//                Messages.RHS_PERSIST_ERROR.error(this,ex,report);
+//            } finally {
+//                invokeListener(report,success);
+//            }
+            throw new UnsupportedOperationException(); // TODO COLIN
         }
     }
 

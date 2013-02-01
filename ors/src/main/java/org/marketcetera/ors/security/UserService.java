@@ -1,4 +1,4 @@
-package org.marketcetera.security;
+package org.marketcetera.ors.security;
 
 import org.marketcetera.persist.NDEntityService;
 import org.springframework.data.repository.NoRepositoryBean;

@@ -1,7 +1,7 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.core.position.PositionKey;

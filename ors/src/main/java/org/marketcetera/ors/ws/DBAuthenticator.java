@@ -8,13 +8,14 @@ import org.marketcetera.client.ClientVersion;
 import org.marketcetera.client.IncompatibleComponentsException;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
+import org.marketcetera.ors.security.UserService;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A session authenticator that uses the database for authentication. 
@@ -91,7 +92,7 @@ public class DBAuthenticator
                  serverVersion);
         }
         try {
-            User u=new SingleSimpleUserQuery(user).fetch();
+            User u = userService.findByName(user);
             if (!u.isActive()) {
                 Messages.BAD_CREDENTIALS.warn(this,user);
                 return false;
@@ -106,4 +107,6 @@ public class DBAuthenticator
         }
         return true;
     }
+    @Autowired
+    private UserService userService;
 }

@@ -1,16 +1,16 @@
 package org.marketcetera.ors.history;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.*;
 
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
+import org.marketcetera.persist.EntityBase;
 import org.marketcetera.trade.*;
-import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -198,32 +198,30 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    static BigDecimal getEquityPositionAsOf
-        (final User inUser,
-         final Date inDate,
-         final Equity inEquity)
-        throws PersistenceException
+    static BigDecimal getEquityPositionAsOf(final User inUser,
+                                            final Date inDate,
+                                            final Equity inEquity)
     {
-        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public BigDecimal execute(EntityManager em, PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "eqPositionForSymbol");  //$NON-NLS-1$
-
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbol", inEquity.getSymbol());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
-            }
-        }, null);
-        return position == null? BigDecimal.ZERO: position;
-
+//        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
+//            private static final long serialVersionUID = 1L;
+//
+//            @Override
+//            public BigDecimal execute(EntityManager em, PersistContext context) {
+//                Query query = em.createNamedQuery(
+//                        "eqPositionForSymbol");  //$NON-NLS-1$
+//
+//                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+//                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+//                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+//                query.setParameter("symbol", inEquity.getSymbol());  //$NON-NLS-1$
+//                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
+//                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+//                        TemporalType.TIMESTAMP);
+//                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
+//            }
+//        }, null);
+//        return position == null? BigDecimal.ZERO: position;
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
     
     /**
@@ -245,32 +243,30 @@ class ExecutionReportSummary extends EntityBase {
      * @throws PersistenceException if there were errors retrieving the
      * position.
      */
-    static BigDecimal getCurrencyPositionAsOf
-        (final User inUser,
-         final Date inDate,
-         final Currency inCurrency)
-        throws PersistenceException
+    static BigDecimal getCurrencyPositionAsOf(final User inUser,
+                                              final Date inDate,
+                                              final Currency inCurrency)
     {
-        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public BigDecimal execute(EntityManager em, PersistContext context) {
-                Query query = em.createNamedQuery(	
-                        "crPositionForSymbol");  //$NON-NLS-1$									//ToDo Add Currency SQL
-
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbol", inCurrency.getSymbol());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Currency.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
-            }
-        }, null);
-        return position == null? BigDecimal.ZERO: position;
-
+//        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
+//            private static final long serialVersionUID = 1L;
+//
+//            @Override
+//            public BigDecimal execute(EntityManager em, PersistContext context) {
+//                Query query = em.createNamedQuery(	
+//                        "crPositionForSymbol");  //$NON-NLS-1$									//ToDo Add Currency SQL
+//
+//                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+//                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+//                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+//                query.setParameter("symbol", inCurrency.getSymbol());  //$NON-NLS-1$
+//                query.setParameter("securityType", SecurityType.Currency.ordinal());  //$NON-NLS-1$
+//                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+//                        TemporalType.TIMESTAMP);
+//                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
+//            }
+//        }, null);
+//        return position == null? BigDecimal.ZERO: position;
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
     
     /**
@@ -295,44 +291,44 @@ class ExecutionReportSummary extends EntityBase {
                                                                           final Date inDate)
             throws PersistenceException
     {
-        return executeRemote(new Transaction<Map<PositionKey<Equity>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Map<PositionKey<Equity>, BigDecimal> execute(EntityManager em,
-                                                    PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "eqAllPositions");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Equity>, BigDecimal> map =
-                        new HashMap<PositionKey<Equity>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //4 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the account
-                        //third one is the actor ID
-                        //fourth one is the position
-                        map.put(PositionKeyFactory.createEquityKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 ((columns[2]==null)?null:
-                                  ((BigInteger)columns[2]).toString())),
-                                 (BigDecimal)columns[3]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-
+//        return executeRemote(new Transaction<Map<PositionKey<Equity>, BigDecimal>>() {
+//            private static final long serialVersionUID = 1L;
+//
+//            @Override
+//            public Map<PositionKey<Equity>, BigDecimal> execute(EntityManager em,
+//                                                    PersistContext context) {
+//                Query query = em.createNamedQuery(
+//                        "eqAllPositions");  //$NON-NLS-1$
+//                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+//                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+//                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+//                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
+//                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+//                        TemporalType.TIMESTAMP);
+//                HashMap<PositionKey<Equity>, BigDecimal> map =
+//                        new HashMap<PositionKey<Equity>, BigDecimal>();
+//                List<?> list = query.getResultList();
+//                Object[] columns;
+//                for(Object o: list) {
+//                    columns = (Object[]) o;
+//                    //4 columns
+//                    if(columns.length > 1) {
+//                        //first one is the symbol
+//                        //second one is the account
+//                        //third one is the actor ID
+//                        //fourth one is the position
+//                        map.put(PositionKeyFactory.createEquityKey
+//                                ((String)columns[0],
+//                                 (String)columns[1],
+//                                 ((columns[2]==null)?null:
+//                                  ((BigInteger)columns[2]).toString())),
+//                                 (BigDecimal)columns[3]);
+//                    }
+//                }
+//                return map;
+//            }
+//        }, null);
+        throw new UnsupportedOperationException(); // TODO COLIN
     }    
     /**
      * Returns the aggregate position of each (currency,account,actor)
@@ -356,44 +352,44 @@ class ExecutionReportSummary extends EntityBase {
                                                                               final Date inDate)
         throws PersistenceException
     {
-        return executeRemote(new Transaction<Map<PositionKey<Currency>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Map<PositionKey<Currency>, BigDecimal> execute(EntityManager em,
-                                                    PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "crAllPositions");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Currency.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Currency>, BigDecimal> map =
-                        new HashMap<PositionKey<Currency>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //4 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the account
-                        //third one is the actor ID
-                        //fourth one is the position
-                        map.put(PositionKeyFactory.createCurrencyKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 ((columns[2]==null)?null:
-                                  ((BigInteger)columns[2]).toString())),
-                                 (BigDecimal)columns[3]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-
+//        return executeRemote(new Transaction<Map<PositionKey<Currency>, BigDecimal>>() {
+//            private static final long serialVersionUID = 1L;
+//
+//            @Override
+//            public Map<PositionKey<Currency>, BigDecimal> execute(EntityManager em,
+//                                                    PersistContext context) {
+//                Query query = em.createNamedQuery(
+//                        "crAllPositions");  //$NON-NLS-1$
+//                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+//                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+//                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+//                query.setParameter("securityType", SecurityType.Currency.ordinal());  //$NON-NLS-1$
+//                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+//                        TemporalType.TIMESTAMP);
+//                HashMap<PositionKey<Currency>, BigDecimal> map =
+//                        new HashMap<PositionKey<Currency>, BigDecimal>();
+//                List<?> list = query.getResultList();
+//                Object[] columns;
+//                for(Object o: list) {
+//                    columns = (Object[]) o;
+//                    //4 columns
+//                    if(columns.length > 1) {
+//                        //first one is the symbol
+//                        //second one is the account
+//                        //third one is the actor ID
+//                        //fourth one is the position
+//                        map.put(PositionKeyFactory.createCurrencyKey
+//                                ((String)columns[0],
+//                                 (String)columns[1],
+//                                 ((columns[2]==null)?null:
+//                                  ((BigInteger)columns[2]).toString())),
+//                                 (BigDecimal)columns[3]);
+//                    }
+//                }
+//                return map;
+//            }
+//        }, null);
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
     
     
@@ -421,30 +417,31 @@ class ExecutionReportSummary extends EntityBase {
                                             final Future inFuture)
             throws PersistenceException
     {
-        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
-            private static final long serialVersionUID = 1L;
-            @Override
-            public BigDecimal execute(EntityManager em,
-                                      PersistContext context)
-            {
-                Query query = em.createNamedQuery("futPositionForSymbol");  //$NON-NLS-1$
-                query.setParameter("viewerID",  //$NON-NLS-1$
-                                   inUser.getUserID().getValue());
-                query.setParameter("allViewers",  //$NON-NLS-1$
-                                   inUser.isSuperuser());
-                query.setParameter("sideBuy",  //$NON-NLS-1$
-                                   Side.Buy.ordinal());
-                query.setParameter("symbol",  //$NON-NLS-1$
-                                   inFuture.getSymbol());
-                query.setParameter("securityType",  //$NON-NLS-1$
-                                   SecurityType.Future.ordinal());
-                query.setParameter("sendingTime",  //$NON-NLS-1$
-                                   inDate,
-                        TemporalType.TIMESTAMP);
-                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
-            }
-        }, null);
-        return position == null? BigDecimal.ZERO: position;
+//        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
+//            private static final long serialVersionUID = 1L;
+//            @Override
+//            public BigDecimal execute(EntityManager em,
+//                                      PersistContext context)
+//            {
+//                Query query = em.createNamedQuery("futPositionForSymbol");  //$NON-NLS-1$
+//                query.setParameter("viewerID",  //$NON-NLS-1$
+//                                   inUser.getUserID().getValue());
+//                query.setParameter("allViewers",  //$NON-NLS-1$
+//                                   inUser.isSuperuser());
+//                query.setParameter("sideBuy",  //$NON-NLS-1$
+//                                   Side.Buy.ordinal());
+//                query.setParameter("symbol",  //$NON-NLS-1$
+//                                   inFuture.getSymbol());
+//                query.setParameter("securityType",  //$NON-NLS-1$
+//                                   SecurityType.Future.ordinal());
+//                query.setParameter("sendingTime",  //$NON-NLS-1$
+//                                   inDate,
+//                        TemporalType.TIMESTAMP);
+//                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
+//            }
+//        }, null);
+//        return position == null? BigDecimal.ZERO: position;
+                throw new UnsupportedOperationException(); // TODO COLIN
     }
     /**
      * Returns the aggregate position of each (future,account,actor)
@@ -468,43 +465,44 @@ class ExecutionReportSummary extends EntityBase {
                                                                           final Date inDate)
             throws PersistenceException
     {
-        return executeRemote(new Transaction<Map<PositionKey<Future>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-            @Override
-            public Map<PositionKey<Future>,BigDecimal> execute(EntityManager em,
-                                                               PersistContext context)
-            {
-                Query query = em.createNamedQuery("futAllPositions");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Future.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Future>, BigDecimal> map =
-                        new HashMap<PositionKey<Future>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //5 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the expiry
-                        //third one is the account
-                        //fourth one is the actor ID
-                        //fifth one is the position
-                        map.put(PositionKeyFactory.createFutureKey((String)columns[0],
-                                                                   (String)columns[1],
-                                                                   (String)columns[2],
-                                                                   ((columns[3]==null)?null:
-                                  ((BigInteger)columns[3]).toString())),
-                                 (BigDecimal)columns[4]);
-                    }
-                }
-                return map;
-            }
-        }, null);
+//        return executeRemote(new Transaction<Map<PositionKey<Future>, BigDecimal>>() {
+//            private static final long serialVersionUID = 1L;
+//            @Override
+//            public Map<PositionKey<Future>,BigDecimal> execute(EntityManager em,
+//                                                               PersistContext context)
+//            {
+//                Query query = em.createNamedQuery("futAllPositions");  //$NON-NLS-1$
+//                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+//                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+//                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+//                query.setParameter("securityType", SecurityType.Future.ordinal());  //$NON-NLS-1$
+//                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+//                        TemporalType.TIMESTAMP);
+//                HashMap<PositionKey<Future>, BigDecimal> map =
+//                        new HashMap<PositionKey<Future>, BigDecimal>();
+//                List<?> list = query.getResultList();
+//                Object[] columns;
+//                for(Object o: list) {
+//                    columns = (Object[]) o;
+//                    //5 columns
+//                    if(columns.length > 1) {
+//                        //first one is the symbol
+//                        //second one is the expiry
+//                        //third one is the account
+//                        //fourth one is the actor ID
+//                        //fifth one is the position
+//                        map.put(PositionKeyFactory.createFutureKey((String)columns[0],
+//                                                                   (String)columns[1],
+//                                                                   (String)columns[2],
+//                                                                   ((columns[3]==null)?null:
+//                                  ((BigInteger)columns[3]).toString())),
+//                                 (BigDecimal)columns[4]);
+//                    }
+//                }
+//                return map;
+//            }
+//        }, null);
+                throw new UnsupportedOperationException(); // TODO COLIN
     }
     /**
      * Gets the current aggregate position for the option tuple based on
@@ -530,29 +528,29 @@ class ExecutionReportSummary extends EntityBase {
          final Date inDate,
          final Option inOption)
         throws PersistenceException {
-        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public BigDecimal execute(EntityManager em, PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "optPositionForTuple");  //$NON-NLS-1$
-
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbol", inOption.getSymbol());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
-                query.setParameter("expiry", inOption.getExpiry());  //$NON-NLS-1$
-                query.setParameter("strikePrice", inOption.getStrikePrice());  //$NON-NLS-1$
-                query.setParameter("optionType", inOption.getType().ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
-            }
-        }, null);
-        return position == null? BigDecimal.ZERO: position;
-
+//        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
+//            private static final long serialVersionUID = 1L;
+//
+//            @Override
+//            public BigDecimal execute(EntityManager em, PersistContext context) {
+//                Query query = em.createNamedQuery(
+//                        "optPositionForTuple");  //$NON-NLS-1$
+//
+//                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+//                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+//                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+//                query.setParameter("symbol", inOption.getSymbol());  //$NON-NLS-1$
+//                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
+//                query.setParameter("expiry", inOption.getExpiry());  //$NON-NLS-1$
+//                query.setParameter("strikePrice", inOption.getStrikePrice());  //$NON-NLS-1$
+//                query.setParameter("optionType", inOption.getType().ordinal());  //$NON-NLS-1$
+//                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+//                        TemporalType.TIMESTAMP);
+//                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
+//            }
+//        }, null);
+//        return position == null? BigDecimal.ZERO: position;
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     /**
@@ -578,50 +576,50 @@ class ExecutionReportSummary extends EntityBase {
         (final User inUser,
          final Date inDate)
         throws PersistenceException {
-        return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Map<PositionKey<Option>, BigDecimal> execute(EntityManager em,
-                                                    PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "optAllPositions");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Option>, BigDecimal> map =
-                        new HashMap<PositionKey<Option>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //7 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the expiry
-                        //third one is the strikePrice
-                        //fourth one is the option type
-                        //fifth one is the account
-                        //sixth one is the actor ID
-                        //seventh one is the position
-                        map.put(PositionKeyFactory.createOptionKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 (BigDecimal)columns[2],
-                                 OptionType.values()[(Integer)columns[3]],
-                                 (String)columns[4],
-                                 ((columns[5]==null)?null:
-                                  ((BigInteger)columns[5]).toString())),
-                                 (BigDecimal)columns[6]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-
+//        return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
+//            private static final long serialVersionUID = 1L;
+//
+//            @Override
+//            public Map<PositionKey<Option>, BigDecimal> execute(EntityManager em,
+//                                                    PersistContext context) {
+//                Query query = em.createNamedQuery(
+//                        "optAllPositions");  //$NON-NLS-1$
+//                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+//                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+//                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+//                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
+//                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+//                        TemporalType.TIMESTAMP);
+//                HashMap<PositionKey<Option>, BigDecimal> map =
+//                        new HashMap<PositionKey<Option>, BigDecimal>();
+//                List<?> list = query.getResultList();
+//                Object[] columns;
+//                for(Object o: list) {
+//                    columns = (Object[]) o;
+//                    //7 columns
+//                    if(columns.length > 1) {
+//                        //first one is the symbol
+//                        //second one is the expiry
+//                        //third one is the strikePrice
+//                        //fourth one is the option type
+//                        //fifth one is the account
+//                        //sixth one is the actor ID
+//                        //seventh one is the position
+//                        map.put(PositionKeyFactory.createOptionKey
+//                                ((String)columns[0],
+//                                 (String)columns[1],
+//                                 (BigDecimal)columns[2],
+//                                 OptionType.values()[(Integer)columns[3]],
+//                                 (String)columns[4],
+//                                 ((columns[5]==null)?null:
+//                                  ((BigInteger)columns[5]).toString())),
+//                                 (BigDecimal)columns[6]);
+//                    }
+//                }
+//                return map;
+//            }
+//        }, null);
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     /**
@@ -649,50 +647,50 @@ class ExecutionReportSummary extends EntityBase {
          final Date inDate,
          final String... inRootSymbols)
         throws PersistenceException {
-        return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Map<PositionKey<Option>, BigDecimal> execute(EntityManager em,
-                                                    PersistContext context) {
-                Query query = em.createNamedQuery("optPositionsForRoots");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbols", Arrays.asList(inRootSymbols));  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Option>, BigDecimal> map =
-                        new HashMap<PositionKey<Option>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //7 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the expiry
-                        //third one is the strikePrice
-                        //fourth one is the optionType
-                        //fifth one is the account
-                        //sixth one is the actor ID
-                        //seventh one is the position
-                        map.put(PositionKeyFactory.createOptionKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 (BigDecimal)columns[2],
-                                 OptionType.values()[(Integer)columns[3]],
-                                 (String)columns[4],
-                                 ((columns[5]==null)?null:
-                                  ((BigInteger)columns[5]).toString())),
-                                 (BigDecimal)columns[6]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-
+//        return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
+//            private static final long serialVersionUID = 1L;
+//
+//            @Override
+//            public Map<PositionKey<Option>, BigDecimal> execute(EntityManager em,
+//                                                    PersistContext context) {
+//                Query query = em.createNamedQuery("optPositionsForRoots");  //$NON-NLS-1$
+//                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+//                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+//                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
+//                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
+//                query.setParameter("symbols", Arrays.asList(inRootSymbols));  //$NON-NLS-1$
+//                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
+//                        TemporalType.TIMESTAMP);
+//                HashMap<PositionKey<Option>, BigDecimal> map =
+//                        new HashMap<PositionKey<Option>, BigDecimal>();
+//                List<?> list = query.getResultList();
+//                Object[] columns;
+//                for(Object o: list) {
+//                    columns = (Object[]) o;
+//                    //7 columns
+//                    if(columns.length > 1) {
+//                        //first one is the symbol
+//                        //second one is the expiry
+//                        //third one is the strikePrice
+//                        //fourth one is the optionType
+//                        //fifth one is the account
+//                        //sixth one is the actor ID
+//                        //seventh one is the position
+//                        map.put(PositionKeyFactory.createOptionKey
+//                                ((String)columns[0],
+//                                 (String)columns[1],
+//                                 (BigDecimal)columns[2],
+//                                 OptionType.values()[(Integer)columns[3]],
+//                                 (String)columns[4],
+//                                 ((columns[5]==null)?null:
+//                                  ((BigInteger)columns[5]).toString())),
+//                                 (BigDecimal)columns[6]);
+//                    }
+//                }
+//                return map;
+//            }
+//        }, null);
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     /**
@@ -725,25 +723,9 @@ class ExecutionReportSummary extends EntityBase {
         mSendingTime = inReport.getSendingTime();
         mViewer = inSavedReport.getViewer();
     }
-
-    /**
-     * Saves this instance within an existing transaction.
-     *
-     * @param inManager the entity manager instance
-     * @param inContext the persistence context
-     *
-     * @throws PersistenceException if there were errors.
-     */
-    void localSave(EntityManager inManager,
-                   PersistContext inContext)
-            throws PersistenceException {
-        super.saveLocal(inManager, inContext);
-    }
-
-    @Override
-    protected void preSaveLocal(EntityManager em, PersistContext context)
-            throws PersistenceException {
-        super.preSaveLocal(em, context);
+    protected void preSaveLocal(EntityManager em)
+            {
+//        super.preSaveLocal(em, null);
         // CD 17-Mar-2011 ORS-79
         // we need to find the correct root ID of the incoming ER. for cancels and cancel/replaces,
         //  this is easy - we can look up the root ID from the origOrderID. for a partial fill or fill

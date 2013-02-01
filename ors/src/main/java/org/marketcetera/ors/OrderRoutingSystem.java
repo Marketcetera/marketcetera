@@ -3,7 +3,6 @@ package org.marketcetera.ors;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -39,6 +38,7 @@ import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.quickfixj.jmx.JmxExporter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -48,7 +48,10 @@ import quickfix.DefaultMessageFactory;
 import quickfix.Message;
 import quickfix.SessionNotFound;
 import quickfix.SocketInitiator;
-import quickfix.field.*;
+import quickfix.field.MsgType;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.TargetCompID;
 
 /**
  * The main application. See {@link SpringConfig} for configuration
@@ -73,8 +76,6 @@ public class OrderRoutingSystem
     private static final String APP_CONTEXT_CFG_BASE=
         "file:"+CONF_DIR+ //$NON-NLS-1$
         "properties.xml"; //$NON-NLS-1$
-    private static final String TRADE_RECORDER_QUEUE=
-        "trade-recorder"; //$NON-NLS-1$
     private static final String JMX_NAME=
         "org.marketcetera.ors.mbean:type=ORSAdmin"; //$NON-NLS-1$
 
@@ -88,6 +89,8 @@ public class OrderRoutingSystem
     private SimpleMessageListenerContainer mListener;
     private SocketInitiator mInitiator;
     private final QuickFIXSender qSender;
+    @Autowired
+    private UserManager userManager;
 
     // CONSTRUCTORS.
 
@@ -129,96 +132,92 @@ public class OrderRoutingSystem
 
         // Read Spring configuration.
 
-        mContext=new FileSystemXmlApplicationContext
-            (new String[] {"file:"+CONF_DIR+ //$NON-NLS-1$
-                           "server.xml"}, //$NON-NLS-1$
-                parentContext);
+        mContext = new FileSystemXmlApplicationContext(new String[] {"file:"+CONF_DIR+"server.xml"}, //$NON-NLS-1$
+                                                       parentContext);
         mContext.start();
 
         // Create system information.
+        // TODO from here down, add to ORS context server.xml
 
         SystemInfoImpl systemInfo=new SystemInfoImpl();
 
         // Create resource managers.
 
-        SpringConfig cfg=SpringConfig.getSingleton();
-        if (cfg==null) {
+        SpringConfig cfg = SpringConfig.getSingleton();
+        if(cfg==null) {
             throw new I18NException(Messages.APP_NO_CONFIGURATION);
         }
         cfg.getIDFactory().init();
-        JmsManager jmsMgr=new JmsManager
-            (cfg.getIncomingConnectionFactory(),
-             cfg.getOutgoingConnectionFactory());
-        ReportHistoryServices historyServices=cfg.getReportHistoryServices();
-        systemInfo.setValue
-            (SystemInfo.HISTORY_SERVICES,historyServices);
-        mBrokers=new Brokers(cfg.getBrokers(),historyServices);
-        Selector selector=new Selector(getBrokers(),cfg.getSelector());
-        UserManager userManager=new UserManager();
-        ReplyPersister persister=new ReplyPersister
-            (historyServices,cfg.getOrderInfoCache());
-        historyServices.init(cfg.getIDFactory(),jmsMgr,persister);
-
+        JmsManager jmsMgr = new JmsManager(cfg.getIncomingConnectionFactory(),
+                                           cfg.getOutgoingConnectionFactory());
+        ReportHistoryServices historyServices = cfg.getReportHistoryServices();
+        systemInfo.setValue(SystemInfo.HISTORY_SERVICES,
+                            historyServices);
+        mBrokers = new Brokers(cfg.getBrokers(),
+                               historyServices);
+        Selector selector = new Selector(getBrokers(),
+                                         cfg.getSelector());
+        ReplyPersister persister = new ReplyPersister(historyServices,
+                                                      cfg.getOrderInfoCache());
+        historyServices.init(cfg.getIDFactory(),
+                             jmsMgr,persister);
         // Set dictionary for all QuickFIX/J messages we generate.
-
-        CurrentFIXDataDictionary.setCurrentFIXDataDictionary
-            (FIXDataDictionary.initializeDataDictionary
-             (FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
-
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionary.initializeDataDictionary
+                                                             (FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
         // Initiate web services.
-
-        SessionManager<ClientSession> sessionManager=
-            new SessionManager<ClientSession>
-            (new ClientSessionFactory(systemInfo,jmsMgr,userManager),
-             (cfg.getServerSessionLife()==
-              SessionManager.INFINITE_SESSION_LIFESPAN)?
-             SessionManager.INFINITE_SESSION_LIFESPAN:
-             (cfg.getServerSessionLife()*1000));
+        SessionManager<ClientSession> sessionManager = new SessionManager<ClientSession>(new ClientSessionFactory(systemInfo,
+                                                                                                                  jmsMgr,
+                                                                                                                  userManager),
+                                                                                                                  (cfg.getServerSessionLife() == SessionManager.INFINITE_SESSION_LIFESPAN) ? SessionManager.INFINITE_SESSION_LIFESPAN:(cfg.getServerSessionLife()*1000));
         userManager.setSessionManager(sessionManager);
-        Server<ClientSession> server=new Server<ClientSession>
-            (cfg.getServerHost(),cfg.getServerPort(),
-             new DBAuthenticator(),sessionManager);
-        server.publish
-            (new ServiceImpl(sessionManager,getBrokers(),
-                             cfg.getIDFactory(),historyServices),
-             Service.class);
-
+        Server<ClientSession> server = new Server<ClientSession>(cfg.getServerHost(),
+                                                                 cfg.getServerPort(),
+                                                                 new DBAuthenticator(),
+                                                                 sessionManager);
+        server.publish(new ServiceImpl(sessionManager,
+                                       getBrokers(),
+                                       cfg.getIDFactory(),historyServices),
+                                       Service.class);
         // Initiate JMS.
-
-        qSender=new QuickFIXSender();
+        qSender = new QuickFIXSender();
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
         localIdFactory.init();
-        RequestHandler handler=new RequestHandler
-            (getBrokers(),selector,cfg.getAllowedOrders(),
-             persister,qSender,userManager,localIdFactory);
-        mListener=jmsMgr.getIncomingJmsFactory().registerHandlerOEX
-            (handler,Service.REQUEST_QUEUE,false);
-        mQFApp=new QuickFIXApplication(systemInfo,getBrokers(),cfg.getSupportedMessages(),
-                                       persister,
-                                       qSender,
-                                       userManager,
-                                       jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
-                                                                                         true),
-                                       null); // CD 20101202 - Removed as I don't think this is used any more and just consumes memory
-
+        RequestHandler handler=new RequestHandler(getBrokers(),
+                                                  selector,
+                                                  cfg.getAllowedOrders(),
+                                                  persister,
+                                                  qSender,
+                                                  userManager,
+                                                  localIdFactory);
+        mListener = jmsMgr.getIncomingJmsFactory().registerHandlerOEX(handler,
+                                                                      Service.REQUEST_QUEUE,
+                                                                      false);
+        mQFApp = new QuickFIXApplication(systemInfo,
+                                         getBrokers(),
+                                         cfg.getSupportedMessages(),
+                                         persister,
+                                         qSender,
+                                         userManager,
+                                         jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
+                                                                                           true),
+                                         null); // CD 20101202 - Removed as I don't think this is used any more and just consumes memory
         // Initiate broker connections.
-
         SpringSessionSettings settings=getBrokers().getSettings();
-        mInitiator=new SocketInitiator
-            (mQFApp,settings.getQMessageStoreFactory(),
-             settings.getQSettings(),settings.getQLogFactory(),
-             new DefaultMessageFactory());
+        mInitiator = new SocketInitiator(mQFApp,
+                                         settings.getQMessageStoreFactory(),
+                                         settings.getQSettings(),
+                                         settings.getQLogFactory(),
+                                         new DefaultMessageFactory());
         mInitiator.start();
-
         // Initiate JMX (for QuickFIX/J and application MBeans).
-
-        MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
+        MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
         (new JmxExporter(mbeanServer)).export(mInitiator);
-        mbeanServer.registerMBean
-            (new ORSAdmin(getBrokers(),qSender,localIdFactory,userManager),
-             new ObjectName(JMX_NAME));
+        mbeanServer.registerMBean(new ORSAdmin(getBrokers(),
+                                               qSender,
+                                               localIdFactory,
+                                               userManager),
+                                  new ObjectName(JMX_NAME));
     }
-
     // INSTANCE METHODS.
 
     /**
@@ -248,7 +247,6 @@ public class OrderRoutingSystem
      *
      * @return The context.
      */
-    private static final AtomicInteger counter = new AtomicInteger(0);
     synchronized void stop()
     {
         Brokers brokers = getBrokers();

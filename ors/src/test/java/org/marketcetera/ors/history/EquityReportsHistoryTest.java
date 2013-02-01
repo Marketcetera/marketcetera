@@ -1,10 +1,10 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.security.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.ors.security.User;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 

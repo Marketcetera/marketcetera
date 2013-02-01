@@ -8,7 +8,7 @@ import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.Principals;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 

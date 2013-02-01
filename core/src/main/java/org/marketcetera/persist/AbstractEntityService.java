@@ -1,5 +1,8 @@
 package org.marketcetera.persist;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -8,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.mysema.query.jpa.impl.JPAQuery;
 
 /* $License$ */
 
@@ -22,6 +27,15 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class AbstractEntityService<Clazz extends EntityBase>
         implements EntityService<Clazz>, ApplicationContextAware
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.persist.EntityService#createQuery()
+     */
+    @Override
+    @Transactional(propagation=Propagation.SUPPORTS)
+    public JPAQuery createCustomQuery()
+    {
+        return new JPAQuery();
+    }
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
      */
@@ -136,14 +150,32 @@ public abstract class AbstractEntityService<Clazz extends EntityBase>
     {
         return repository.save(inDataIterator);
     }
+    /**
+     * Gets the <code>EntityRepository</code> for this service.
+     *
+     * @return an <code>EntityRepository&lt;Clazz&gt;</code> value
+     */
     protected EntityRepository<Clazz> getRepository()
     {
         return repository;
     }
+    /**
+     * Returns the class type of the natural repository.
+     *
+     * @return a <code>Class&lt;? extends EntityRepository&lt;Clazz&gt;&gt;</code> value
+     */
     protected abstract Class<? extends EntityRepository<Clazz>> getRepositoryType();
     /**
      * application context
      */
     private ApplicationContext applicationContext;
+    /**
+     * natural repository object for this service
+     */
     private EntityRepository<Clazz> repository;
+    /**
+     * directly injected JPA entity manager to use for custom queries (otherwise, rely on managed repositories)
+     */
+    @PersistenceContext
+    private EntityManager entityManager;
 }

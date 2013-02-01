@@ -2,7 +2,6 @@ package org.marketcetera.ors.history;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.PersistenceException;
@@ -13,7 +12,7 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.Principals;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -65,20 +64,21 @@ public class BasicReportHistoryServices
         (User inUser,
          Date inDate)
             throws ReportPersistenceException {
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        query.setSendingTimeAfterFilter(inDate);
-        if (!inUser.isSuperuser()) {
-            query.setViewerFilter(inUser);
-        }
-        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
-
-        List<PersistentReport> reportList = query.fetch();
-        ReportBaseImpl [] reports = new ReportBaseImpl[reportList.size()];
-        int i = 0;
-        for(PersistentReport report: reportList) {
-            reports[i++] = (ReportBaseImpl) report.toReport();
-        }
-        return reports;
+        throw new UnsupportedOperationException(); // TODO COLIN
+//        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
+//        query.setSendingTimeAfterFilter(inDate);
+//        if (!inUser.isSuperuser()) {
+//            query.setViewerFilter(inUser);
+//        }
+//        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
+//
+//        List<PersistentReport> reportList = query.fetch();
+//        ReportBaseImpl [] reports = new ReportBaseImpl[reportList.size()];
+//        int i = 0;
+//        for(PersistentReport report: reportList) {
+//            reports[i++] = (ReportBaseImpl) report.toReport();
+//        }
+//        return reports;
     }
 
     @Override
@@ -180,15 +180,16 @@ public class BasicReportHistoryServices
         (ReportBase report)
         throws PersistenceException
     {
-        boolean success=false;
-        try {
-            assignID(report);
-            PersistentReport.save(report);
-            success=true;
-            Messages.RHS_PERSISTED_REPLY.info(this,report);
-        } finally {
-            invokeListener(report,success);
-        }
+//        boolean success=false;
+//        try {
+//            assignID(report);
+//            PersistentReport.save(report);
+//            success=true;
+//            Messages.RHS_PERSISTED_REPLY.info(this,report);
+//        } finally {
+//            invokeListener(report,success);
+//        }
+            throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     @Override

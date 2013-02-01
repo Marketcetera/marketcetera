@@ -2,7 +2,7 @@ package org.marketcetera.ors.history;
 
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.junit.Test;
@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 
 /* $License$ */
 /**
- * Verifies {@link org.marketcetera.ors.history.ReportHistoryServices#getOptionPositionAsOf(org.marketcetera.security.User, java.util.Date, org.marketcetera.trade.Option)}
- * , {@link org.marketcetera.ors.history.ReportHistoryServices#getAllOptionPositionsAsOf(org.marketcetera.security.User, java.util.Date)} &
- * {@link org.marketcetera.ors.history.ReportHistoryServices#getOptionPositionsAsOf(org.marketcetera.security.User, java.util.Date, String[])}.
+ * Verifies {@link org.marketcetera.ors.history.ReportHistoryServices#getOptionPositionAsOf(org.marketcetera.ors.security.User, java.util.Date, org.marketcetera.trade.Option)}
+ * , {@link org.marketcetera.ors.history.ReportHistoryServices#getAllOptionPositionsAsOf(org.marketcetera.ors.security.User, java.util.Date)} &
+ * {@link org.marketcetera.ors.history.ReportHistoryServices#getOptionPositionsAsOf(org.marketcetera.ors.security.User, java.util.Date, String[])}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$

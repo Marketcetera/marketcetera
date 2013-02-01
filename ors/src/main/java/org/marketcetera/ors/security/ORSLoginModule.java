@@ -18,8 +18,8 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.security.User;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sun.security.auth.UserPrincipal;
 
@@ -34,18 +34,22 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
-@SuppressWarnings("restriction")
 @ClassVersion("$Id$")
-public class ORSLoginModule implements LoginModule {
-
-    public void initialize(Subject subject,
-                           CallbackHandler callbackHandler,
-                           Map<String, ?> sharedState,
-                           Map<String, ?> options) {
-        this.subject = subject;
-        this.callback = callbackHandler;
+public class ORSLoginModule
+        implements LoginModule
+{
+    /* (non-Javadoc)
+     * @see javax.security.auth.spi.LoginModule#initialize(javax.security.auth.Subject, javax.security.auth.callback.CallbackHandler, java.util.Map, java.util.Map)
+     */
+    @Override
+    public void initialize(Subject inSubject,
+                           CallbackHandler inCallbackHandler,
+                           Map<String,?> inSharedState,
+                           Map<String,?> inOptions)
+    {
+        subject = inSubject;
+        callback = inCallbackHandler;
     }
-
     public boolean login() throws LoginException {
         Callback[] callbacks = new Callback[2];
         callbacks[0] = new NameCallback(PROMPT_USERNAME.getText());
@@ -67,12 +71,12 @@ public class ORSLoginModule implements LoginModule {
         }
         char [] password = ((PasswordCallback)callbacks[1]).getPassword();
         try {
-            User u = new SingleSimpleUserQuery(username).fetch();
-            if (!u.isActive()) {
+            User user = userService.findByName(username);
+            if (!user.isActive()) {
                 USER_LOGIN_ERROR_LOG.warn(this,username);
                 throw new AccountNotFoundException(USER_LOGIN_ERROR.getText());
             }
-            u.validatePassword(password);
+            user.validatePassword(password);
         } catch (NoResultException e) {
             USER_LOGIN_ERROR_LOG.warn(this,e,username);
             throw new AccountNotFoundException(USER_LOGIN_ERROR.getText());
@@ -111,4 +115,9 @@ public class ORSLoginModule implements LoginModule {
     private CallbackHandler callback;
     private Set<Principal> principals = new HashSet<Principal>();
     private String username;
+    /**
+     * provides access to datastore user objects
+     */
+    @Autowired
+    private UserService userService;
 }

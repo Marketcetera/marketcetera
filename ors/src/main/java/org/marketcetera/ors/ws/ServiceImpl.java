@@ -15,8 +15,8 @@ import org.marketcetera.ors.OptionRootUnderlyingMap;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
+import org.marketcetera.ors.security.UserService;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -24,6 +24,7 @@ import org.marketcetera.util.ws.stateful.*;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The implementation of the application's web services.
@@ -120,9 +121,12 @@ public class ServiceImpl
         (UserID id)
         
     {
-        User u=(new SingleSimpleUserQuery(id.getValue())).fetch();
-        return new UserInfo
-            (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()),Util.propertiesFromString(u.getSystemData()));
+        User u = userService.findOne(id.getValue());
+        return new UserInfo(u.getName(),
+                            u.getUserID(),
+                            u.isActive(),
+                            u.isSuperuser(),
+                            Util.propertiesFromString(u.getUserData()));
     }
 
     private ReportBaseImpl[] getReportsSinceImpl
@@ -252,27 +256,27 @@ public class ServiceImpl
      *
      * @param inUsername a <code>String</code> value
      * @return a <code>String</code> value
-     * @ if an error occurs retrieving the user data
+     * @throws PersistenceException if an error occurs retrieving the user data
      */
     private String getUserDataImpl(String inUsername)
             
     {
-        return new SingleSimpleUserQuery(inUsername).fetch().getUserData();
+        return userService.findByName(inUsername).getUserData();
     }
     /**
      * Sets the user data associated with the given username.
      *
      * @param inUsername a <code>String</code> value
      * @param inUserData a <code>String</code> value
-     * @ if an error occurs saving the user data
+     * @throws PersistenceException if an error occurs saving the user data
      */
     private void setUserDataImpl(String inUsername,
                                  String inUserData)
             
     {
-        User user = new SingleSimpleUserQuery(inUsername).fetch();
+        User user = userService.findByName(inUsername);
         user.setUserData(inUserData);
-        user.save();
+        userService.save(user);
     }
     // Service.
 
@@ -617,4 +621,6 @@ public class ServiceImpl
                                 inData);
             }}).execute(inContext);
     }
+    @Autowired
+    private UserService userService;
 }

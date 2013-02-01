@@ -69,7 +69,7 @@ public class MockServiceImpl
         if (id==null) {
             throw new NullPointerException();
         }
-        return new UserInfo("bob",id,sActive,false,null,null);
+        return new UserInfo("bob",id,sActive,false,null);
     }
 
     private ReportBaseImpl[] getReportsSinceImpl

@@ -1,9 +1,6 @@
-package org.marketcetera.security.impl;
+package org.marketcetera.ors.security;
 
 import org.marketcetera.persist.AbstractNDEntityService;
-import org.marketcetera.security.User;
-import org.marketcetera.security.UserRepository;
-import org.marketcetera.security.UserService;
 import org.springframework.stereotype.Component;
 
 /* $License$ */

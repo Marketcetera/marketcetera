@@ -9,9 +9,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import javax.persistence.PersistenceException;
 
 import org.marketcetera.ors.info.SessionInfo;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.ors.security.User;
+import org.marketcetera.ors.security.UserService;
 import org.marketcetera.ors.ws.ClientSession;
-import org.marketcetera.security.User;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
@@ -20,6 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.tags.SessionId;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A manager of the set of connected users (active sessions). It also
@@ -133,11 +134,11 @@ public class UserManager
         Set<UserID> allUserIDs=new HashSet<UserID>();
         allUserIDs.addAll(getSUserIDs());
         allUserIDs.addAll(getRUserIDs());
-        for (UserID userID:allUserIDs) {
+        for(UserID userID:allUserIDs) {
             // Assume user is nonexistent/inactive.
-            User user=null;
+            User user = null;
             try {
-                user=new SingleSimpleUserQuery(userID.getValue()).fetch();
+                user = userService.findOne(userID.getValue());
             } catch (PersistenceException ex) {
                 // Ignored: user remains null.
             }
@@ -304,4 +305,9 @@ public class UserManager
             SLF4JLoggerProxy.debug(this," {}",e); //$NON-NLS-1$
         }
     }
+    /**
+     * provides access to the datastore-backed users
+     */
+    @Autowired
+    private UserService userService;
 }

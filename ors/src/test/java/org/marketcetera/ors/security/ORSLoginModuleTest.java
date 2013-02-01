@@ -1,30 +1,22 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.PersistTestBase;
-
-import static org.marketcetera.ors.security.Messages.EMPTY_USERNAME;
-import static org.marketcetera.ors.security.Messages.PROMPT_USERNAME;
-import static org.marketcetera.ors.security.Messages.PROMPT_PASSWORD;
-import static org.marketcetera.ors.security.Messages.USER_LOGIN_ERROR;
-import static org.marketcetera.ors.security.Messages.USER_LOGIN_ERROR_LOG;
-import static org.marketcetera.ors.security.Messages.USER_LOGIN_LOG;
-import static org.marketcetera.ors.security.Messages.USER_LOGOUT_LOG;
-
-import org.marketcetera.security.User;
-import org.marketcetera.util.test.TestCaseBase;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.junit.After;
 import static org.junit.Assert.*;
-import org.apache.log4j.Level;
+import static org.marketcetera.ors.security.Messages.*;
+import static org.marketcetera.persist.Messages.EMPTY_USERNAME;
 
-import javax.security.auth.callback.*;
-import javax.security.auth.login.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
+import javax.security.auth.callback.*;
+import javax.security.auth.login.*;
+
+import org.apache.log4j.Level;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.util.test.TestCaseBase;
 
 import com.sun.security.auth.UserPrincipal;
 
@@ -34,8 +26,9 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
-public class ORSLoginModuleTest extends TestCaseBase {
+public class ORSLoginModuleTest
+        extends TestCaseBase
+{
     private static User user;
     private static char[] password;
     private static boolean doNotHandleCallbacks = false;
@@ -141,12 +134,12 @@ public class ORSLoginModuleTest extends TestCaseBase {
         user.setName(randomString());
         password = randomString().toCharArray();
         user.setPassword(password);
-        user.save();
+        userService.save(user);
         Configuration.setConfiguration(new MockConfiguration());
     }
     @AfterClass
     public static void cleanup() throws Exception {
-        user.delete();
+        userService.delete(user);
         user = null;
     }
     @After
@@ -157,7 +150,8 @@ public class ORSLoginModuleTest extends TestCaseBase {
 
     public static void springSetup()
         throws Exception {
-        PersistTestBase.springSetup(getSpringFiles()); //$NON-NLS-1$
+//        PersistTestBase.springSetup(getSpringFiles()); //$NON-NLS-1$
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     static String[] getSpringFiles() {
@@ -168,7 +162,8 @@ public class ORSLoginModuleTest extends TestCaseBase {
     }
 
     private static String randomString() {
-        return PersistTestBase.randomString();
+//        return PersistTestBase.randomString();
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     /**
@@ -301,4 +296,5 @@ public class ORSLoginModuleTest extends TestCaseBase {
             };
         }
     }
+    private static UserService userService;
 }

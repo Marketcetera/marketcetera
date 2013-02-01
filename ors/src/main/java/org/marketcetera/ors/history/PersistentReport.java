@@ -1,14 +1,12 @@
 package org.marketcetera.ors.history;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.*;
 
-import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.ors.Principals;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
+import org.marketcetera.persist.EntityBase;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -27,8 +25,8 @@ import quickfix.Message;
  * @since 1.0.0
  */
 @Entity
-@Table(name = "reports")
-@NamedQuery(name = "forOrderID",query = "select e from PersistentReport e where e.orderID = :orderID")
+@Table(name="reports")
+//@NamedQuery(name = "forOrderID",query = "select e from PersistentReport e where e.orderID = :orderID")
 @ClassVersion("$Id$")
 class PersistentReport
         extends EntityBase
@@ -48,25 +46,26 @@ class PersistentReport
      */
     static Principals getPrincipals(final OrderID orderID)
     {
-        return executeRemote(new Transaction<Principals>() {
-            private static final long serialVersionUID=1L;
-
-            @Override
-            public Principals execute
-                (EntityManager em,
-                 PersistContext context)
-            {
-                Query query=em.createNamedQuery("forOrderID"); //$NON-NLS-1$
-                query.setParameter("orderID",orderID); //$NON-NLS-1$
-                List<?> list=query.getResultList();
-                if (list.isEmpty()) {
-                    return Principals.UNKNOWN;
-                }
-                PersistentReport report=(PersistentReport)(list.get(0));
-                return new Principals(report.getActorID(),
-                                      report.getViewerID());
-            }
-        },null);
+//        return executeRemote(new Transaction<Principals>() {
+//            private static final long serialVersionUID=1L;
+//
+//            @Override
+//            public Principals execute
+//                (EntityManager em,
+//                 PersistContext context)
+//            {
+//                Query query=em.createNamedQuery("forOrderID"); //$NON-NLS-1$
+//                query.setParameter("orderID",orderID); //$NON-NLS-1$
+//                List<?> list=query.getResultList();
+//                if (list.isEmpty()) {
+//                    return Principals.UNKNOWN;
+//                }
+//                PersistentReport report=(PersistentReport)(list.get(0));
+//                return new Principals(report.getActorID(),
+//                                      report.getViewerID());
+//            }
+//        },null);
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
     /**
      * Creates an instance, given a report.
@@ -78,31 +77,32 @@ class PersistentReport
      */
     PersistentReport(ReportBase inReport)
     {
-        mReportBase = inReport;
-        setBrokerID(inReport.getBrokerID());
-        setSendingTime(inReport.getSendingTime());
-        if(inReport instanceof HasFIXMessage) {
-            setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
-        }
-        setOriginator(inReport.getOriginator());
-        setOrderID(inReport.getOrderID());
-        setReportID(inReport.getReportID());
-        if(inReport.getActorID()!=null) {
-            setActor(new SingleSimpleUserQuery(inReport.getActorID().getValue()).fetch());
-        }
-        if (inReport.getViewerID()!=null) {
-            setViewer(new SingleSimpleUserQuery
-                      (inReport.getViewerID().getValue()).fetch());
-        }
-        if(inReport instanceof ExecutionReport) {
-            mReportType = ReportType.ExecutionReport;
-        } else if (inReport instanceof OrderCancelReject) {
-            mReportType = ReportType.CancelReject;
-        } else {
-            //You added new report types but forgot to update the code
-            //to persist them.
-            throw new IllegalArgumentException();
-        }
+//        mReportBase = inReport;
+//        setBrokerID(inReport.getBrokerID());
+//        setSendingTime(inReport.getSendingTime());
+//        if(inReport instanceof HasFIXMessage) {
+//            setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
+//        }
+//        setOriginator(inReport.getOriginator());
+//        setOrderID(inReport.getOrderID());
+//        setReportID(inReport.getReportID());
+//        if(inReport.getActorID()!=null) {
+//            setActor(new SingleSimpleUserQuery(inReport.getActorID().getValue()).fetch());
+//        }
+//        if (inReport.getViewerID()!=null) {
+//            setViewer(new SingleSimpleUserQuery
+//                      (inReport.getViewerID().getValue()).fetch());
+//        }
+//        if(inReport instanceof ExecutionReport) {
+//            mReportType = ReportType.ExecutionReport;
+//        } else if (inReport instanceof OrderCancelReject) {
+//            mReportType = ReportType.CancelReject;
+//        } else {
+//            //You added new report types but forgot to update the code
+//            //to persist them.
+//            throw new IllegalArgumentException();
+//        }
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
 
@@ -147,20 +147,20 @@ class PersistentReport
                     Messages.ERROR_RECONSTITUTE_FIX_MSG, fixMsgString));
         }
     }
-    @Override
-    protected void postSaveLocal(EntityManager em,
-                                 EntityBase merged,
-                                 PersistContext context)
-    {
-        super.postSaveLocal(em, merged, context);
-        PersistentReport mergedReport = (PersistentReport) merged;
-        //Save the summary if the report is an execution report.
-        if(mergedReport.getReportType() == ReportType.ExecutionReport) {
-            new ExecutionReportSummary((ExecutionReport)mReportBase,
-                                       mergedReport).localSave(em,
-                                                               context);
-        }
-    }
+//    @Override
+//    protected void postSaveLocal(EntityManager em,
+//                                 EntityBase merged,
+//                                 PersistContext context)
+//    {
+//        super.postSaveLocal(em, merged, context);
+//        PersistentReport mergedReport = (PersistentReport) merged;
+//        //Save the summary if the report is an execution report.
+//        if(mergedReport.getReportType() == ReportType.ExecutionReport) {
+//            new ExecutionReportSummary((ExecutionReport)mReportBase,
+//                                       mergedReport).localSave(em,
+//                                                               context);
+//        }
+//    }
 
     private Originator getOriginator() {
         return mOriginator;

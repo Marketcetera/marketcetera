@@ -12,6 +12,8 @@
     <context:component-scan base-package="org.marketcetera"/>
     <!-- set up Spring jpa component scanning -->
     <jpa:repositories base-package="org.marketcetera"/>
+    <!-- bean post-processor for JPA annotations -->
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
     <!-- JDBC Setup -->
     <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="metc"/></bean>
     <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="pw4metc"/></bean>

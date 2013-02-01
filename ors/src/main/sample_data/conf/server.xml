@@ -114,4 +114,6 @@
     -->
     <property name="includeTypes" value="EU,EL"/>
   </bean>
+  <!-- create userManager bean -->
+  <bean id="UserManager" class="org.marketcetera.ors.UserManager"/>
 </beans>

@@ -1,4 +1,4 @@
-package org.marketcetera.security;
+package org.marketcetera.ors.security;
 
 import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 

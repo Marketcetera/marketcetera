@@ -13,11 +13,11 @@ import javax.persistence.EntityExistsException;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.PersistTestBase;
-import org.marketcetera.security.User;
+import org.marketcetera.persist.PersistenceTestBase;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
@@ -29,15 +29,20 @@ import org.marketcetera.util.test.UnicodeData;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class ORSCLITest extends PersistTestBase {
+public class ORSCLITest
+        extends PersistenceTestBase
+{
     private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
     private static ORSAdminCLI instance;
     private static ByteArrayOutputStream bOut = new ByteArrayOutputStream();
     private static PrintStream pOut;
     private static ByteArrayOutputStream bErr = new ByteArrayOutputStream();
     private static PrintStream pErr;
+    private UserService userService;
     @BeforeClass
-    public static void setup() throws Exception {
+    public static void oneTimeSetup()
+            throws Exception
+    {
         if(pOut == null) {
             pOut = new PrintStream(bOut, false, ENCODING);
         }
@@ -62,6 +67,12 @@ public class ORSCLITest extends PersistTestBase {
             SLF4JLoggerProxy.error(ORSCLITest.class, e);
             throw e;
         }
+    }
+    @Before
+    public void setup()
+            throws Exception
+    {
+        userService = getBean(UserService.class);
     }
     @Test
     public void parsingFailures() throws Exception {
@@ -226,7 +237,7 @@ public class ORSCLITest extends PersistTestBase {
         final String password = "admin"; //$NON-NLS-1$
         admin.setPassword(password.toCharArray());
         admin.setSuperuser(true);
-        admin.save();
+        userService.save(admin);
         //Try list users
         runCLI("-u",admin.getName(),"-p",password,"--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         matchOut("^\\s*admin \\[sa\\]\\s*$"); //$NON-NLS-1$

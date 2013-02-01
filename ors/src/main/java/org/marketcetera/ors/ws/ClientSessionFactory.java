@@ -7,14 +7,15 @@ import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.ors.UserManager;
 import org.marketcetera.ors.info.SystemInfo;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
-import org.marketcetera.security.User;
+import org.marketcetera.ors.security.User;
+import org.marketcetera.ors.security.UserService;
 import org.marketcetera.util.except.I18NRuntimeException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.SessionFactory;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.tags.SessionId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsOperations;
 
 /**
@@ -102,10 +103,9 @@ public class ClientSessionFactory
     // SessionFactory.
 
     @Override
-    public ClientSession createSession
-        (StatelessClientContext context,
-         String user,
-         SessionId id)
+    public ClientSession createSession(StatelessClientContext context,
+                                       String user,
+                                       SessionId id)
     {
         JmsOperations jmsOps;
         User dbUser;
@@ -119,7 +119,7 @@ public class ClientSessionFactory
                  (Messages.CANNOT_CREATE_REPLY_TOPIC,topicName));
         }
         try {
-            dbUser=(new SingleSimpleUserQuery(user)).fetch();
+            dbUser = userService.findByName(user);
         } catch (PersistenceException ex) {
             throw new I18NRuntimeException
                 (ex,new I18NBoundMessage1P
@@ -136,4 +136,6 @@ public class ClientSessionFactory
     {
         getUserManager().removedSession(session);
     }
+    @Autowired
+    private UserService userService;
 }

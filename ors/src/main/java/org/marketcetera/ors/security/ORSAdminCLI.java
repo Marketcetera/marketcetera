@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.persistence.PersistenceException;
 
@@ -15,9 +14,6 @@ import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.ApplicationBase;
-import org.marketcetera.security.User;
-import org.marketcetera.security.UserRepository;
-import org.marketcetera.security.UserService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
@@ -214,12 +210,17 @@ public class ORSAdminCLI
     }
     private void authorize(Authorization auth,
                            String userName,
-                           String password) throws I18NException {
-        password = getOptionFromConsole(userName, password,
-                OPT_CURRENT_PASSWORD, CLI_PROMPT_PASSWORD);
-        auth.authorize(userName, password);
+                           String password)
+            throws I18NException
+    {
+        password = getOptionFromConsole(userName,
+                                        password,
+                                        OPT_CURRENT_PASSWORD,
+                                        CLI_PROMPT_PASSWORD);
+        auth.authorize(userName,
+                       password,
+                       userService);
     }
-
     private String getOptionFromConsole(String userName,
                                         String password,
                                         String optName,
@@ -299,36 +300,36 @@ public class ORSAdminCLI
      * @param active the desired value of the active flag (null means
      * "don't care")
      *
-     * @ if there was an error fetching the users.
+     * @throws PersistenceException if the given username does not match a user
      */
-    private void listUsers
-        (String nameFilter,
-         Boolean active)
-        
+    private void listUsers(String nameFilter,
+                           Boolean active)
     {
-        MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
-        q.setActiveFilter(active);
-        q.setEntityOrder(MultiSimpleUserQuery.BY_NAME);
-        if(nameFilter != null) {
-            q.setNameFilter(new StringFilter(nameFilter));
-        }
-        List<User> l = q.fetch();
-        for(User u:l) {
-            StringBuilder flags=new StringBuilder();
-            if (u.isSuperuser()) {
-                flags.append(OPT_OPERATED_SUPERUSER); 
-            }
-            if ((active==null) && u.isActive()) {
-                flags.append(OPT_OPERATED_ACTIVE);
-            }
-            out.print(u.getName());
-            if (flags.length()>0) {
-                out.print(" ["); //$NON-NLS-1$
-                out.print(flags.toString());
-                out.print(']');
-            }
-            out.println();
-        }
+//        JPAQuery query = userService.createCustomQuery().from(user);
+//        if(nameFilter != null) {
+//            query = query.where(user.active.isTrue());
+//        } else {
+//            query = query.where(user.active.isTrue().and(user.name.eq(nameFilter)));
+//        }
+//        query = query.orderBy(user.name.asc());
+//        List<User> userList = query.list(user);
+//        for(User u:userList) {
+//            StringBuilder flags=new StringBuilder();
+//            if (u.isSuperuser()) {
+//                flags.append(OPT_OPERATED_SUPERUSER); 
+//            }
+//            if ((active==null) && u.isActive()) {
+//                flags.append(OPT_OPERATED_ACTIVE);
+//            }
+//            out.print(u.getName());
+//            if (flags.length()>0) {
+//                out.print(" ["); //$NON-NLS-1$
+//                out.print(flags.toString());
+//                out.print(']');
+//            }
+//            out.println();
+//        }
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     /**
@@ -338,16 +339,19 @@ public class ORSAdminCLI
      *
      * @throws I18NException if there were errors deleting the user, or
      * an attempt was made to delete the admin user.
+     * @throws PersistenceException if the given username does not match a user
      */
-    private void deleteUser(String opUser) throws I18NException {
+    private void deleteUser(String opUser)
+            throws I18NException
+    {
         if(ADMIN_USER_NAME.equals(opUser)) {
-            throw new I18NException(new I18NBoundMessage1P(
-                    CLI_ERR_UNAUTH_DELETE,opUser));
+            throw new I18NException(new I18NBoundMessage1P(CLI_ERR_UNAUTH_DELETE,
+                                                           opUser));
         }
-        User u = new SingleSimpleUserQuery(opUser).fetch();
-        u.setActive(false);
-        u.save();
-        out.println(CLI_OUT_USER_DELETED.getText(u.getName()));
+        User user = userService.findByName(opUser);
+        user.setActive(false);
+        userService.save(user);
+        out.println(CLI_OUT_USER_DELETED.getText(user.getName()));
     }
 
     /**
@@ -356,16 +360,19 @@ public class ORSAdminCLI
      * @param opUser the name of the user to be restored.
      *
      * @throws I18NException if there were errors restoring the user.
+     * @throws PersistenceException if the given username does not match a user
      */
-    private void restoreUser(String opUser) throws I18NException {
+    private void restoreUser(String opUser)
+            throws I18NException
+    {
         if(ADMIN_USER_NAME.equals(opUser)) {
-            throw new I18NException(new I18NBoundMessage1P(
-                    CLI_ERR_UNAUTH_RESTORE,opUser));
+            throw new I18NException(new I18NBoundMessage1P(CLI_ERR_UNAUTH_RESTORE,
+                                                           opUser));
         }
-        User u = new SingleSimpleUserQuery(opUser).fetch();
-        u.setActive(true);
-        u.save();
-        out.println(CLI_OUT_USER_RESTORED.getText(u.getName()));
+        User user = userService.findByName(opUser);
+        user.setActive(true);
+        userService.save(user);
+        out.println(CLI_OUT_USER_RESTORED.getText(user.getName()));
     }
 
     /**
@@ -375,20 +382,20 @@ public class ORSAdminCLI
      * @param superuser the new value of the superuser flag.
      *
      * @throws I18NException if there were errors setting the flag.
+     * @throws PersistenceException if the given username does not match a user
      */
-    private void changeSuperuser
-        (String opUser,
-         Boolean superuser)
+    private void changeSuperuser(String opUser,
+                                 Boolean superuser)
         throws I18NException
     {
         if(ADMIN_USER_NAME.equals(opUser)) {
-            throw new I18NException(new I18NBoundMessage1P(
-                    CLI_ERR_UNAUTH_CHANGE_SUPERUSER,opUser));
+            throw new I18NException(new I18NBoundMessage1P(CLI_ERR_UNAUTH_CHANGE_SUPERUSER,
+                                                           opUser));
         }
-        User u = fetchUser(opUser);
-        u.setSuperuser(superuser);
-        u.save();
-        out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(u.getName()));
+        User user = userService.findByName(opUser);
+        user.setSuperuser(superuser);
+        userService.save(user);
+        out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(user.getName()));
     }
 
     /**
@@ -398,29 +405,26 @@ public class ORSAdminCLI
      * @param opPass the password for the new user
      * @param superuser the new value of the superuser flag.
      *
-     * @ if there was an error adding
-     * the new user
+     * @throws PersistenceException if there was an error adding the new user
      */
-    private void addUser
-        (String opUser,
-         String opPass,
-         Boolean superuser)
-        
+    private void addUser(String opUser,
+                         String opPass,
+                         Boolean superuser)
     {
-        User u = new User();
-        u.setName(opUser);
-        u.setPassword(opPass.toCharArray());
-        if (superuser!=null) {
-            u.setSuperuser(superuser);
+        User user = new User();
+        user.setName(opUser);
+        user.setPassword(opPass.toCharArray());
+        if(superuser!=null) {
+            user.setSuperuser(superuser);
         }
-        u.save();
-        out.println(CLI_OUT_USER_CREATED.getText(u.getName()));
+        userService.save(user);
+        out.println(CLI_OUT_USER_CREATED.getText(user.getName()));
     }
-
     /**
      * Enum to aid authorization of running various user commands
      */
-    private enum Authorization {
+    private enum Authorization
+    {
         ADD_USER,
         DELETE_USER,
         RESTORE_USER,
@@ -428,28 +432,40 @@ public class ORSAdminCLI
         CHANGE_SUPERUSER,
         LIST_USERS {
             @Override
-            public void authorize(String userName, String password)
-                    throws I18NException {
-                validateUser(userName, password);
-            }}
-        ;
-
-        public void authorize(String userName, String password) throws I18NException {
-            validateUser(userName,password);
+            public void authorize(String userName,
+                                  String password,
+                                  UserService inUserService)
+                    throws I18NException
+            {
+                validateUser(userName,
+                             password,
+                             inUserService);
+            }};
+        public void authorize(String userName,
+                              String password,
+                              UserService inUserService)
+                throws I18NException
+        {
+            validateUser(userName,
+                         password,
+                         inUserService);
             if(!userName.toLowerCase().equals(ADMIN_USER_NAME)) {
                 throw new I18NException(CLI_UNAUTHORIZED_ACTION);
             }
         }
-        private static void validateUser(String userName, String password)
-                throws I18NException {
-            User u;
+        private static void validateUser(String userName,
+                                         String password,
+                                         UserService inUserService)
+                throws I18NException
+        {
+            User user;
             try {
-                u=new SingleSimpleUserQuery(userName).fetch();
-                u.validatePassword(password.toCharArray());
+                user = inUserService.findByName(userName);
+                user.validatePassword(password.toCharArray());
             } catch (PersistenceException e) {
                 throw new I18NException(CLI_ERR_INVALID_LOGIN);
             }
-            if (!u.isActive()) {
+            if (!user.isActive()) {
                 throw new I18NException(CLI_ERR_INVALID_LOGIN);
             }
         }

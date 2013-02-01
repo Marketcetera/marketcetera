@@ -23,11 +23,9 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.ors.security.MultiSimpleUserQuery;
-import org.marketcetera.persist.PersistTestBase;
+import org.marketcetera.ors.security.User;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.security.User;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -49,60 +47,63 @@ public class ReportsTestBase extends TestCaseBase {
     @BeforeClass
     public static void springSetup()
         throws Exception {
-        PersistTestBase.springSetup(getSpringFiles());
-        sMessageFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
-
-        InMemoryIDFactory idFactory=new InMemoryIDFactory(0);
-        idFactory.init();
-        sServices=new BasicReportHistoryServices();
-        sServices.init(idFactory,null,null);
-
-        sActor=new User();
-        sActor.setName("actor");
-        sActor.setPassword("pass".toCharArray());
-        sActor.setActive(true);
-        sActor.setSuperuser(true);
-        sActor.save();
-        sActorID=new UserID(sActor.getId());
-
-        sViewer=new User();
-        sViewer.setName("viewer");
-        sViewer.setPassword("pass2".toCharArray());
-        sViewer.setActive(true);
-        sViewer.setSuperuser(false);
-        sViewer.save();
-        sViewerID=new UserID(sViewer.getId());
-
-        sExtraUser=new User();
-        sExtraUser.setName("extra");
-        sExtraUser.setPassword("pass2".toCharArray());
-        sExtraUser.setActive(true);
-        sExtraUser.setSuperuser(false);
-        sExtraUser.save();
-        sExtraUserID=new UserID(sExtraUser.getId());
+//        PersistTestBase.springSetup(getSpringFiles());
+//        sMessageFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
+//
+//        InMemoryIDFactory idFactory=new InMemoryIDFactory(0);
+//        idFactory.init();
+//        sServices=new BasicReportHistoryServices();
+//        sServices.init(idFactory,null,null);
+//
+//        sActor=new User();
+//        sActor.setName("actor");
+//        sActor.setPassword("pass".toCharArray());
+//        sActor.setActive(true);
+//        sActor.setSuperuser(true);
+//        sActor.save();
+//        sActorID=new UserID(sActor.getId());
+//
+//        sViewer=new User();
+//        sViewer.setName("viewer");
+//        sViewer.setPassword("pass2".toCharArray());
+//        sViewer.setActive(true);
+//        sViewer.setSuperuser(false);
+//        sViewer.save();
+//        sViewerID=new UserID(sViewer.getId());
+//
+//        sExtraUser=new User();
+//        sExtraUser.setName("extra");
+//        sExtraUser.setPassword("pass2".toCharArray());
+//        sExtraUser.setActive(true);
+//        sExtraUser.setSuperuser(false);
+//        sExtraUser.save();
+//        sExtraUserID=new UserID(sExtraUser.getId());
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     @AfterClass
     public static void cleanUser() throws Exception {
-        MultiSimpleUserQuery suQuery = MultiSimpleUserQuery.all();
-        suQuery.delete();
-        //Verify everything's gone
-        assertEquals(0, suQuery.fetchCount());
-        assertEquals(0, suQuery.fetch().size());
+//        MultiSimpleUserQuery suQuery = MultiSimpleUserQuery.all();
+//        suQuery.delete();
+//        //Verify everything's gone
+//        assertEquals(0, suQuery.fetchCount());
+//        assertEquals(0, suQuery.fetch().size());
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     @Before
     @After
     public void cleanTables() throws Exception {
-        MultiExecReportSummary erQuery = MultiExecReportSummary.all();
-        MultiPersistentReportQuery prQuery = MultiPersistentReportQuery.all();
-        erQuery.delete();
-        prQuery.delete();
-        //Verify everything's gone
-        assertEquals(0, erQuery.fetchCount());
-        assertEquals(0, erQuery.fetch().size());
-        assertEquals(0, prQuery.fetchCount());
-        assertEquals(0, prQuery.fetch().size());
+//        MultiExecReportSummary erQuery = MultiExecReportSummary.all();
+//        MultiPersistentReportQuery prQuery = MultiPersistentReportQuery.all();
+//        erQuery.delete();
+//        prQuery.delete();
+//        //Verify everything's gone
+//        assertEquals(0, erQuery.fetchCount());
+//        assertEquals(0, erQuery.fetch().size());
+//        assertEquals(0, prQuery.fetchCount());
+//        assertEquals(0, prQuery.fetch().size());
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     static OrderCancelReject createCancelReject()
@@ -371,7 +372,8 @@ public class ReportsTestBase extends TestCaseBase {
      * @throws InterruptedException if interrupted.
      */
     protected static void sleepForSignificantTime() throws InterruptedException {
-        PersistTestBase.sleepForSignificantTime();
+//        PersistTestBase.sleepForSignificantTime();
+        throw new UnsupportedOperationException(); // TODO COLIN
     }
 
     protected static BigDecimal getPosition(Date inDate, Equity inEquity)

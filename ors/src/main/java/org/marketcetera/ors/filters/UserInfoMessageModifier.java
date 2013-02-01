@@ -5,8 +5,8 @@ import java.util.Map;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.info.SessionInfo;
+import org.marketcetera.ors.security.User;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.security.User;
 
 import quickfix.Message;
 import quickfix.field.SenderSubID;
