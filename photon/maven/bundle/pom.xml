@@ -95,8 +95,8 @@
       <artifactId>tools</artifactId>
     </dependency>
     <dependency>
-      <groupId>joda-primatives</groupId>
-      <artifactId>joda-primatives</artifactId>
+      <groupId>org.joda</groupId>
+      <artifactId>joda-primitives</artifactId>
     </dependency>
     <dependency>
       <groupId>jparsec</groupId>

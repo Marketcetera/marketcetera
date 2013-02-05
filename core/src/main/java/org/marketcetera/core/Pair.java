@@ -16,6 +16,19 @@ import javax.annotation.concurrent.Immutable;
 @ClassVersion("$Id$")
 public class Pair<T1, T2>
 {
+    /**
+     * Creates a new <code>Pair</code> with the given attributes.
+     *
+     * @param inType1 a <code>Clazz1</code> value
+     * @param inType2 a <code>Clazz2</code> value
+     * @return a <code>Pair&lt;Clazz1,Clazz2&gt;</code> value
+     */
+    public static <Clazz1,Clazz2> Pair<Clazz1,Clazz2> create(Clazz1 inType1,
+                                                             Clazz2 inType2)
+    {
+        return new Pair<Clazz1,Clazz2>(inType1,
+                                        inType2);
+    }
 	/**
 	 * Create a new Pair instance.
 	 *
