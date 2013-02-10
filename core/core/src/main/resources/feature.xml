@@ -3,7 +3,7 @@
     <repository>mvn:org.apache.karaf.features/spring/3.0.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.apache.cxf.karaf/apache-cxf/${mvn.cxf.version}/xml/features</repository>
     <feature name="org.marketcetera.core.core" version="3.0.0-SNAPSHOT" description="Marketcetera Core">
-        <feature version="${mvn.cxf.version}">cxf-jaxrs</feature>
+        <feature>cxf-jaxrs</feature>
         <feature version="${mvn.spring.version}">spring</feature>
         <!-- marketcetera bundles -->
         <bundle>mvn:org.marketcetera/api/3.0.0-SNAPSHOT</bundle>
@@ -14,7 +14,7 @@
         <bundle>mvn:org.marketcetera.fork/csvtools/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.fork/commons-i18n/3.0.0-SNAPSHOT</bundle>
         <!-- external bundles -->
-        <bundle>wrap:mvn:com.google.collections/google-collections/1.0</bundle>
+        <bundle>wrap:mvn:com.google.guava/guava/14.0-rc2</bundle>
         <bundle>mvn:commons-beanutils/commons-beanutils/1.8.3</bundle>
         <bundle>mvn:commons-collections/commons-collections/3.2.1</bundle>
         <bundle>mvn:commons-io/commons-io/2.1</bundle>

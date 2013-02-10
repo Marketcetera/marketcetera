@@ -18,6 +18,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.api.systemmodel.Subscriber;
 import org.marketcetera.core.event.Event;
+import org.marketcetera.core.event.EventType;
+import org.marketcetera.core.event.HasEventType;
 import org.marketcetera.core.trade.Instrument;
 import org.marketcetera.core.util.log.I18NBoundMessage2P;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
@@ -177,7 +179,10 @@ public abstract class AbstractMarketDataProvider
                     } else {
                         Event snapshotEvent = getSnapshot(snapshotInstrument,
                                                           atom.getContent());
-                        // TODO make the snapshot event a SNAPSHOT instead of UPDATE
+                        if(snapshotEvent instanceof HasEventType) {
+                            HasEventType eventTypeSnapshot = (HasEventType)snapshotEvent;
+                            eventTypeSnapshot.setEventType(EventType.SNAPSHOT_FINAL);
+                        }
                         if(snapshotEvent != null) {
                             SLF4JLoggerProxy.debug(this,
                                                    "Sending snapshot: {}",
