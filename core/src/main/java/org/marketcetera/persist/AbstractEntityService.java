@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.path.EntityPathBase;
 
 /* $License$ */
 
 /**
- *
+ * Provides common behaviors for services to manage <code>EntityBase</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -34,7 +35,7 @@ public abstract class AbstractEntityService<Clazz extends EntityBase>
     @Transactional(propagation=Propagation.SUPPORTS)
     public JPAQuery createCustomQuery()
     {
-        return new JPAQuery();
+        return new JPAQuery().from(getBaseType());
     }
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
@@ -159,6 +160,12 @@ public abstract class AbstractEntityService<Clazz extends EntityBase>
     {
         return repository;
     }
+    /**
+     * Returns the base generated type of the associated resource.
+     *
+     * @return an <code>EntityPathBase&lt;Clazz&gt;</code> value
+     */
+    protected abstract EntityPathBase<Clazz> getBaseType();
     /**
      * Returns the class type of the natural repository.
      *

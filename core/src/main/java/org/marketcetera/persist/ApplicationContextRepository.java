@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /* $License$ */
 
 /**
- *
+ * Provides access to the application context.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -21,6 +21,16 @@ import org.springframework.stereotype.Component;
 public class ApplicationContextRepository
         implements ApplicationContextAware
 {
+    /**
+     * Gets the single bean with the given type.
+     *
+     * @param inType a <code>Class&lt;Clazz&gt;</code> value
+     * @return a <code>Clazz</code> value
+     */
+    public <Clazz> Clazz getBean(Class<Clazz> inType)
+    {
+        return applicationContext.getBean(inType);
+    }
     /**
      * Gets the singleton instance of this object.
      *

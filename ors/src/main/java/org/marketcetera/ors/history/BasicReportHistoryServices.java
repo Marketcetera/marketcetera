@@ -13,8 +13,13 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.User;
+import org.marketcetera.persist.AbstractEntityService;
+import org.marketcetera.persist.EntityRepository;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.stereotype.Component;
+
+import com.mysema.query.types.path.EntityPathBase;
 
 /* $License$ */
 /**
@@ -24,9 +29,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.1.0
  */
+@Component
 @ClassVersion("$Id$")
 public class BasicReportHistoryServices
-    implements ReportHistoryServices
+        extends AbstractEntityService<PersistentReport>
+        implements ReportHistoryServices
 {
 
     // INSTANCE DATA.
@@ -176,20 +183,18 @@ public class BasicReportHistoryServices
         return ExecutionReportSummary.getOptionPositionsAsOf(inUser, inDate, inSymbols);
     }
     @Override
-    public void save
-        (ReportBase report)
-        throws PersistenceException
+    public void save(ReportBase report)
     {
-//        boolean success=false;
-//        try {
-//            assignID(report);
-//            PersistentReport.save(report);
-//            success=true;
-//            Messages.RHS_PERSISTED_REPLY.info(this,report);
-//        } finally {
-//            invokeListener(report,success);
-//        }
-            throw new UnsupportedOperationException(); // TODO COLIN
+        boolean success=false;
+        try {
+            assignID(report);
+            PersistentReport wrappedReport = new PersistentReport(report);
+            super.save(wrappedReport);
+            success=true;
+            Messages.RHS_PERSISTED_REPLY.info(this,report);
+        } finally {
+            invokeListener(report,success);
+        }
     }
 
     @Override
@@ -232,12 +237,10 @@ public class BasicReportHistoryServices
      *
      * @return The listener. It may be null.
      */
-
     protected ReportSavedListener getReportSavedListener()
     {
         return mReportSavedListener;
     }
-
     /**
      * Sets the ID of the given report.
      *
@@ -246,19 +249,16 @@ public class BasicReportHistoryServices
      * @throws PersistenceException Thrown if there were errors
      * assigning the ID.
      */
-
     protected void assignID(ReportBase report)
     {
         try {
-            ReportBaseImpl.assignReportID
-                ((ReportBaseImpl)report,
-                 new ReportID(getReportIDFactory().getNext()));
+            ReportBaseImpl.assignReportID((ReportBaseImpl)report,
+                                          new ReportID(getReportIDFactory().getNext()));
         } catch (NoMoreIDsException ex) {
             throw new PersistenceException(Messages.RHS_NO_MORE_IDS.getText(),
                                            ex);
         }
     }
-
     /**
      * Invokes the listener which should be notified after the given
      * report has been saved. The given flag indicates whether saving
@@ -267,13 +267,27 @@ public class BasicReportHistoryServices
      * @param report The report.
      * @param status True if saving completed successfully.
      */
-
-    protected void invokeListener
-        (ReportBase report,
-         boolean status)
+    protected void invokeListener(ReportBase report,
+                                  boolean status)
     {
         if (getReportSavedListener()!=null) {
             getReportSavedListener().reportSaved(report,status);
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.persist.AbstractEntityService#getBaseType()
+     */
+    @Override
+    protected EntityPathBase<PersistentReport> getBaseType()
+    {
+        return QPersistentReport.persistentReport;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.persist.AbstractEntityService#getRepositoryType()
+     */
+    @Override
+    protected Class<? extends EntityRepository<PersistentReport>> getRepositoryType()
+    {
+        return ReportRepository.class;
     }
 }

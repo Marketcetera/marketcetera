@@ -4,13 +4,17 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
+import javax.persistence.PersistenceException;
+
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.User;
+import org.marketcetera.persist.EntityService;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.data.repository.NoRepositoryBean;
 
 /* $License$ */
 /**
@@ -20,9 +24,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
+@NoRepositoryBean
 @ClassVersion("$Id$")
-public interface ReportHistoryServices {
-
+public interface ReportHistoryServices
+        extends EntityService<PersistentReport>
+{
     /**
      * Initializes the receiver with the given system resources.
      *
@@ -38,12 +44,10 @@ public interface ReportHistoryServices {
      * @throws ReportPersistenceException Thrown if initialization
      * cannot complete.
      */
-    public void init
-        (IDFactory idFactory,
-         JmsManager jmsManager,
-         ReportSavedListener reportSavedListener)
+    public void init(IDFactory idFactory,
+                     JmsManager jmsManager,
+                     ReportSavedListener reportSavedListener)
         throws ReportPersistenceException;
-
     /**
      * Returns all the reports received after the supplied date-time
      * value, and which are visible to the given user.
@@ -59,9 +63,8 @@ public interface ReportHistoryServices {
      * @throws ReportPersistenceException if the data retrieved had
      * unexpected errors.
      */
-    public ReportBaseImpl[] getReportsSince
-        (User inUser,
-         Date inDate)
+    public ReportBaseImpl[] getReportsSince(User inUser,
+                                            Date inDate)
         throws ReportPersistenceException;
 
     /**

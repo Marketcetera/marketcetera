@@ -11,7 +11,7 @@ import org.marketcetera.persist.NDEntityBase;
 /* $License$ */
 
 /**
- *
+ * Sample persistent object.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

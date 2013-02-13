@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.PersistenceException;
 
@@ -21,6 +22,8 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.mysema.query.jpa.impl.JPAQuery;
+
 /* $License$ */
 /**
  * The CLI to manage users and password on ORS.
@@ -34,8 +37,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ORSAdminCLI
     extends ApplicationBase {
     private AbstractApplicationContext context;
-
-
     /**
      * Creates an instance
      * @param out The output stream to write output to
@@ -305,33 +306,32 @@ public class ORSAdminCLI
     private void listUsers(String nameFilter,
                            Boolean active)
     {
-//        JPAQuery query = userService.createCustomQuery().from(user);
-//        if(nameFilter != null) {
-//            query = query.where(user.active.isTrue());
-//        } else {
-//            query = query.where(user.active.isTrue().and(user.name.eq(nameFilter)));
-//        }
-//        query = query.orderBy(user.name.asc());
-//        List<User> userList = query.list(user);
-//        for(User u:userList) {
-//            StringBuilder flags=new StringBuilder();
-//            if (u.isSuperuser()) {
-//                flags.append(OPT_OPERATED_SUPERUSER); 
-//            }
-//            if ((active==null) && u.isActive()) {
-//                flags.append(OPT_OPERATED_ACTIVE);
-//            }
-//            out.print(u.getName());
-//            if (flags.length()>0) {
-//                out.print(" ["); //$NON-NLS-1$
-//                out.print(flags.toString());
-//                out.print(']');
-//            }
-//            out.println();
-//        }
-        throw new UnsupportedOperationException(); // TODO COLIN
+        JPAQuery query = userService.createCustomQuery();
+        QUser user = QUser.user;
+        if(nameFilter != null) {
+            query = query.where(user.active.isTrue());
+        } else {
+            query = query.where(user.active.isTrue().and(user.name.eq(nameFilter)));
+        }
+        query = query.orderBy(user.name.asc());
+        List<User> userList = query.list(user);
+        for(User u:userList) {
+            StringBuilder flags=new StringBuilder();
+            if (u.isSuperuser()) {
+                flags.append(OPT_OPERATED_SUPERUSER); 
+            }
+            if ((active==null) && u.isActive()) {
+                flags.append(OPT_OPERATED_ACTIVE);
+            }
+            out.print(u.getName());
+            if (flags.length()>0) {
+                out.print(" ["); //$NON-NLS-1$
+                out.print(flags.toString());
+                out.print(']');
+            }
+            out.println();
+        }
     }
-
     /**
      * Deletes the user from the database.
      *

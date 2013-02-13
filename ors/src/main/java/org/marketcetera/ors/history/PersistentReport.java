@@ -4,8 +4,11 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.User;
+import org.marketcetera.ors.security.UserService;
+import org.marketcetera.persist.ApplicationContextRepository;
 import org.marketcetera.persist.EntityBase;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -26,7 +29,8 @@ import quickfix.Message;
  */
 @Entity
 @Table(name="reports")
-//@NamedQuery(name = "forOrderID",query = "select e from PersistentReport e where e.orderID = :orderID")
+@Access(AccessType.FIELD)
+@NamedQuery(name = "forOrderID",query = "select e from PersistentReport e where e.orderID = :orderID")
 @ClassVersion("$Id$")
 class PersistentReport
         extends EntityBase
@@ -46,6 +50,7 @@ class PersistentReport
      */
     static Principals getPrincipals(final OrderID orderID)
     {
+        
 //        return executeRemote(new Transaction<Principals>() {
 //            private static final long serialVersionUID=1L;
 //
@@ -77,35 +82,33 @@ class PersistentReport
      */
     PersistentReport(ReportBase inReport)
     {
-//        mReportBase = inReport;
-//        setBrokerID(inReport.getBrokerID());
-//        setSendingTime(inReport.getSendingTime());
-//        if(inReport instanceof HasFIXMessage) {
-//            setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
-//        }
-//        setOriginator(inReport.getOriginator());
-//        setOrderID(inReport.getOrderID());
-//        setReportID(inReport.getReportID());
-//        if(inReport.getActorID()!=null) {
-//            setActor(new SingleSimpleUserQuery(inReport.getActorID().getValue()).fetch());
-//        }
-//        if (inReport.getViewerID()!=null) {
-//            setViewer(new SingleSimpleUserQuery
-//                      (inReport.getViewerID().getValue()).fetch());
-//        }
-//        if(inReport instanceof ExecutionReport) {
-//            mReportType = ReportType.ExecutionReport;
-//        } else if (inReport instanceof OrderCancelReject) {
-//            mReportType = ReportType.CancelReject;
-//        } else {
-//            //You added new report types but forgot to update the code
-//            //to persist them.
-//            throw new IllegalArgumentException();
-//        }
+        mReportBase = inReport;
+        setBrokerID(inReport.getBrokerID());
+        setSendingTime(inReport.getSendingTime());
+        if(inReport instanceof HasFIXMessage) {
+            setFixMessage(((HasFIXMessage) inReport).getMessage().toString());
+        }
+        setOriginator(inReport.getOriginator());
+        setOrderID(inReport.getOrderID());
+        setReportID(inReport.getReportID());
+        UserService userService = ApplicationContextRepository.getInstance().getBean(UserService.class);
+        if(inReport.getActorID()!=null) {
+            setActor(userService.findOne(inReport.getActorID().getValue()));
+        }
+        if (inReport.getViewerID()!=null) {
+            setActor(userService.findOne(inReport.getViewerID().getValue()));
+        }
+        if(inReport instanceof ExecutionReport) {
+            mReportType = ReportType.ExecutionReport;
+        } else if (inReport instanceof OrderCancelReject) {
+            mReportType = ReportType.CancelReject;
+        } else {
+            //You added new report types but forgot to update the code
+            //to persist them.
+            throw new IllegalArgumentException();
+        }
         throw new UnsupportedOperationException(); // TODO COLIN
     }
-
-
     /**
      * Converts the report into a system report instance.
      *
@@ -115,7 +118,9 @@ class PersistentReport
      * the message from its persistent representation to system report
      * instance.
      */
-    ReportBase toReport() throws ReportPersistenceException {
+    ReportBase toReport()
+            throws ReportPersistenceException
+    {
         ReportBase returnValue = null;
         String fixMsgString = null;
         try {
@@ -161,45 +166,38 @@ class PersistentReport
 //                                                               context);
 //        }
 //    }
-
-    private Originator getOriginator() {
+    private Originator getOriginator()
+    {
         return mOriginator;
     }
-
-    private void setOriginator(Originator inOriginator) {
+    private void setOriginator(Originator inOriginator)
+    {
         mOriginator = inOriginator;
     }
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name="value",
-                    column = @Column(name = "orderID", nullable = false))})
-    OrderID getOrderID() {
+    OrderID getOrderID()
+    {
         return mOrderID;
     }
-
-    private void setOrderID(OrderID inOrderID) {
+    private void setOrderID(OrderID inOrderID)
+    {
         mOrderID = inOrderID;
     }
-
-    @ManyToOne
-    public User getActor() {
-        return mActor;
+    public User getActor()
+    {
+        return actor;
     }
-
-    private void setActor(User inActor) {
-        mActor = inActor;
+    private void setActor(User inActor)
+    {
+        actor = inActor;
     }
-
-    @Transient
-    UserID getActorID() {
-        if (getActor()==null) {
+    UserID getActorID()
+    {
+        if(getActor()==null) {
             return null;
         }
         return getActor().getUserID();
     }
 
-    @ManyToOne
     public User getViewer() {
         return mViewer;
     }
@@ -216,7 +214,6 @@ class PersistentReport
         return getViewer().getUserID();
     }
 
-    @Transient
     BrokerID getBrokerID() {
         return mBrokerID;
     }
@@ -256,8 +253,6 @@ class PersistentReport
         setReportID(new ReportID(inValue));
     }
 
-    @Lob
-    @Column(nullable = false)
     private String getFixMessage() {
         return mFixMessage;
     }
@@ -266,7 +261,6 @@ class PersistentReport
         mFixMessage = inFIXMessage;
     }
 
-    @Column(nullable = false)
     @SuppressWarnings("unused")
     private Date getSendingTime() {
         return mSendingTime;
@@ -276,7 +270,6 @@ class PersistentReport
         mSendingTime = inSendingTime;
     }
 
-    @Column(nullable = false)
     private ReportType getReportType() {
         return mReportType;
     }
@@ -285,13 +278,11 @@ class PersistentReport
     private void setReportType(ReportType inReportType) {
         mReportType = inReportType;
     }
-
     /**
-     * Declared to get JPA to work.
+     * Create a new PersistentReport instance.
      */
-    PersistentReport() {
-    }
-
+    @SuppressWarnings("unused")
+    private PersistentReport() {}
     /**
      * The attribute sending time used in JPQL queries
      */
@@ -308,16 +299,27 @@ class PersistentReport
      * The entity name as is used in various JPQL Queries
      */
     static final String ENTITY_NAME = PersistentReport.class.getSimpleName();
-
-    private Originator mOriginator;
+    @Embedded
+    @AttributeOverrides( { @AttributeOverride(name="value",column=@Column(name="orderID",nullable=false)) } )
     private OrderID mOrderID;
-    private User mActor; 
+    @ManyToOne
+    private User actor; 
+    @ManyToOne
     private User mViewer; 
-    private BrokerID mBrokerID;
-    private ReportID mReportID;
+    @Lob
+    @Column(nullable=false)
     private String mFixMessage;
+    @Column(nullable=false)
     private Date mSendingTime;
+    @Column(nullable = false)
     private ReportType mReportType;
+    @Transient
     private ReportBase mReportBase;
+    @Transient
+    private BrokerID mBrokerID;
+    @Transient
+    private ReportID mReportID;
+    @Transient
+    private Originator mOriginator;
     private static final long serialVersionUID = 1;
 }

@@ -5,7 +5,7 @@ import com.mysema.query.jpa.impl.JPAQuery;
 /* $License$ */
 
 /**
- *
+ * Provides services to manage <code>EntityBase</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
