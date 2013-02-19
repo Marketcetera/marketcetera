@@ -6,7 +6,7 @@
         <cm:default-properties>
             <!-- Connection Pooling DBCP -->
             <cm:property name="jdbc.initialSize" value="5"/>
-            <cm:property name="jdbc.maxActive" value="10"/>
+            <cm:property name="jdbc.maxActive" value="50"/>
             <cm:property name="jdbc.maxIdle" value="10"/>
             <cm:property name="jdbc.defaultAutoCommit" value="false"/>
             <cm:property name="jdbc.removeAbandoned" value="false"/>
