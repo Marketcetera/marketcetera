@@ -298,7 +298,6 @@ public class ClientTest
         assertFalse(info.getActive());
         assertFalse(info.getSuperuser());
         assertNull(info.getUserData());
-        assertNull(info.getSystemData());
 
         MockServiceImpl.sActive = true;
         // cache contains old value.

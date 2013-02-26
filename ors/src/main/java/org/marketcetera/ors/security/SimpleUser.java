@@ -85,7 +85,7 @@ public class SimpleUser extends NDEntityBase {
      *
      * @return a <code>String</code> value or <code>null</code>
      */
-    @Column(nullable = true,columnDefinition="text")
+    @Column(nullable=true,length=8096)
     public String getUserData()
     {
         return userData;
@@ -103,29 +103,6 @@ public class SimpleUser extends NDEntityBase {
      * the user data associated with this used - may be <code>null</code>
      */
     private String userData;
-    /**
-     * Gets the system data as a <code>String</code>.
-     *
-     * @return a <code>String</code> value or <code>null</code>
-     */
-    @Column(nullable = true,columnDefinition="text")
-    public String getSystemData()
-    {
-        return systemData;
-    }
-    /**
-     * Sets the system data.
-     * 
-     * @param inSystemData a <code>String</code> value
-     */
-    public void setSystemData(String inSystemData)
-    {
-        systemData = inSystemData;
-    }
-    /**
-     * the system data associated with this used - may be <code>null</code>
-     */
-    private String systemData;
     /**
      * The UserID of this user.
      * @return The UserID.

@@ -122,8 +122,7 @@ public class ServiceImpl
         throws PersistenceException
     {
         SimpleUser u=(new SingleSimpleUserQuery(id.getValue())).fetch();
-        return new UserInfo
-            (u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()),Util.propertiesFromString(u.getSystemData()));
+        return new UserInfo(u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()));
     }
 
     private ReportBaseImpl[] getReportsSinceImpl

@@ -39,8 +39,6 @@ public class UserInfo
     private final boolean mActive;
     private final boolean mSuperuser;
     private final Properties mUserData;
-    private final Properties mSystemData;
-
 
     // CONSTRUCTORS.
 
@@ -61,15 +59,13 @@ public class UserInfo
          UserID id,
          boolean active,
          boolean superuser,
-         Properties userdata,
-         Properties systemdata)
+         Properties userdata)
     {
         mName=name;
         mId=id;
         mActive=active;
         mSuperuser=superuser;
         mUserData=userdata;
-        mSystemData=systemdata;
     }
 
     /**
@@ -84,7 +80,6 @@ public class UserInfo
         mActive=false;
         mSuperuser=false;
         mUserData=null;
-        mSystemData=null;
     }
 
 
@@ -142,16 +137,6 @@ public class UserInfo
     public Properties getUserData()
     {
         return mUserData;
-    }
-
-    /**
-     * Returns the receiver's system data.
-     *
-     * @return The Properties.
-     */
-    public Properties getSystemData()
-    {
-        return mSystemData;
     }
 
     // Object.
