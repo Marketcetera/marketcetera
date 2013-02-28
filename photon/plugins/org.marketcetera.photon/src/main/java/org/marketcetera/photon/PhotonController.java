@@ -157,12 +157,14 @@ public class PhotonController
 						.debug("Exec id for cancel execution report:" + report.getExecutionID()); //$NON-NLS-1$
 			}
 			OrderCancel cancel = Factory.getInstance().createOrderCancel(report);
-            /*
-             * Remove the broker order id since some of our reports have "NONE"
-             * which is an invalid value.
-             */
-            cancel.setBrokerOrderID(null);
-			sendOrder(cancel);
+			if(cancel.getBrokerOrderID().equals("NONE")) {
+			    /*
+			     * Remove the broker order id since some of our reports have "NONE"
+			     * which is an invalid value.
+			     */
+			    cancel.setBrokerOrderID(null);
+			}
+            sendOrder(cancel);
 		} else {
 			internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
 			return;
@@ -185,11 +187,6 @@ public class PhotonController
         if (originalReport != null) {
             OrderReplace replace = Factory.getInstance().createOrderReplace(
                     originalReport);
-            /*
-             * Remove the broker order id since some of our reports have "NONE"
-             * which is an invalid value.
-             */
-            replace.setBrokerOrderID(null);
             replace.setPrice(report.getPrice());
             PhotonPlugin.getDefault().showOrderInTicket(replace);
         }
