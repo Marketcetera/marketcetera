@@ -820,6 +820,7 @@ class ExecutionReportSummary extends EntityBase {
         return mOrderID;
     }
 
+    @SuppressWarnings("unused")
     private void setOrderID(OrderID inOrderID) {
         mOrderID = inOrderID;
     }
@@ -832,6 +833,7 @@ class ExecutionReportSummary extends EntityBase {
         return mOrigOrderID;
     }
 
+    @SuppressWarnings("unused")
     private void setOrigOrderID(OrderID inOrigOrderID) {
         mOrigOrderID = inOrigOrderID;
     }
@@ -840,6 +842,7 @@ class ExecutionReportSummary extends EntityBase {
         return mSecurityType;
     }
 
+    @SuppressWarnings("unused")
     private void setSecurityType(SecurityType inSecurityType) {
         mSecurityType = inSecurityType;
     }
@@ -849,6 +852,7 @@ class ExecutionReportSummary extends EntityBase {
         return mSymbol;
     }
 
+    @SuppressWarnings("unused")
     private void setSymbol(String inSymbol) {
         mSymbol = inSymbol;
     }
@@ -857,6 +861,7 @@ class ExecutionReportSummary extends EntityBase {
         return mExpiry;
     }
 
+    @SuppressWarnings("unused")
     private void setExpiry(String inExpiry) {
         mExpiry = inExpiry;
     }
@@ -866,6 +871,7 @@ class ExecutionReportSummary extends EntityBase {
         return mStrikePrice;
     }
 
+    @SuppressWarnings("unused")
     private void setStrikePrice(BigDecimal inStrikePrice) {
         mStrikePrice = inStrikePrice;
     }
@@ -874,6 +880,7 @@ class ExecutionReportSummary extends EntityBase {
         return mOptionType;
     }
 
+    @SuppressWarnings("unused")
     private void setOptionType(OptionType inOptionType) {
         mOptionType = inOptionType;
     }
@@ -882,6 +889,7 @@ class ExecutionReportSummary extends EntityBase {
         return mAccount;
     }
 
+    @SuppressWarnings("unused")
     private void setAccount(String inAccount) {
         mAccount = inAccount;
     }
@@ -891,6 +899,7 @@ class ExecutionReportSummary extends EntityBase {
         return mSide;
     }
 
+    @SuppressWarnings("unused")
     private void setSide(Side inSide) {
         mSide = inSide;
     }
@@ -900,6 +909,7 @@ class ExecutionReportSummary extends EntityBase {
         return mCumQuantity;
     }
 
+    @SuppressWarnings("unused")
     private void setCumQuantity(BigDecimal inCumQuantity) {
         mCumQuantity = inCumQuantity;
     }
@@ -909,6 +919,7 @@ class ExecutionReportSummary extends EntityBase {
         return mAvgPrice;
     }
 
+    @SuppressWarnings("unused")
     private void setAvgPrice(BigDecimal inAvgPrice) {
         mAvgPrice = inAvgPrice;
     }
@@ -918,6 +929,7 @@ class ExecutionReportSummary extends EntityBase {
         return mLastQuantity;
     }
 
+    @SuppressWarnings("unused")
     private void setLastQuantity(BigDecimal inLastQuantity) {
         mLastQuantity = inLastQuantity;
     }
@@ -927,6 +939,7 @@ class ExecutionReportSummary extends EntityBase {
         return mLastPrice;
     }
 
+    @SuppressWarnings("unused")
     private void setLastPrice(BigDecimal inLastPrice) {
         mLastPrice = inLastPrice;
     }
@@ -936,6 +949,7 @@ class ExecutionReportSummary extends EntityBase {
         return mOrderStatus;
     }
 
+    @SuppressWarnings("unused")
     private void setOrderStatus(OrderStatus inOrderStatus) {
         mOrderStatus = inOrderStatus;
     }
@@ -945,6 +959,7 @@ class ExecutionReportSummary extends EntityBase {
         return mSendingTime;
     }
 
+    @SuppressWarnings("unused")
     private void setSendingTime(Date inSendingTime) {
         mSendingTime = inSendingTime;
     }
@@ -954,6 +969,7 @@ class ExecutionReportSummary extends EntityBase {
         return mViewer;
     }
 
+    @SuppressWarnings("unused")
     private void setViewer(SimpleUser inViewer) {
         mViewer = inViewer;
     }
@@ -1001,10 +1017,10 @@ class ExecutionReportSummary extends EntityBase {
     /**
      * The scale used for storing all decimal values.
      */
-    static final int DECIMAL_SCALE = 5;
+    static final int DECIMAL_SCALE = 7;
     /**
      * The precision used for storing all decimal values.
      */
-    static final int DECIMAL_PRECISION = 15;
+    static final int DECIMAL_PRECISION = 17;
     private static final long serialVersionUID = 1L;
 }

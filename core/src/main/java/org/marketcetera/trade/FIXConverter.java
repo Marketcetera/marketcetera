@@ -530,17 +530,16 @@ public final class FIXConverter
      * @param o The order.
      * @param msg The message.
      */
-
-    private static void addCustomFields
-        (OrderBase o,
-         Message msg)
+    private static void addCustomFields(OrderBase o,
+                                        Message msg)
     {
         Map<String,String> fields=o.getCustomFields();
         if (fields==null) {
             return;
         }
-        for (String k:fields.keySet()) {
-            msg.setString(Integer.parseInt(k),fields.get(k));
+        for(Map.Entry<String,String> entry : fields.entrySet()) {
+            msg.setString(Integer.parseInt(String.valueOf(entry.getKey())),
+                          String.valueOf(entry.getValue()));
         }
     }
 
