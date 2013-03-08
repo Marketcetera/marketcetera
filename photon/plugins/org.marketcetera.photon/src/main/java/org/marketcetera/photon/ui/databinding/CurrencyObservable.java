@@ -31,8 +31,9 @@ public class CurrencyObservable
         mSymbol = TypedObservableValueDecorator.create(String.class);
         mNearTenor = TypedObservableValueDecorator.create(String.class);
         mFarTenor = TypedObservableValueDecorator.create(String.class);
-        mBaseCCY = TypedObservableValueDecorator.create(Boolean.class);
-        init(ImmutableList.of(mSymbol,mNearTenor,mFarTenor,mBaseCCY));
+        mLeftCCY = TypedObservableValueDecorator.create(Boolean.class);
+        mRightCCY = TypedObservableValueDecorator.create(Boolean.class);
+        init(ImmutableList.of(mSymbol,mNearTenor,mFarTenor,mLeftCCY,mRightCCY));
     }
     /**
      * Observes the currency symbol.
@@ -62,13 +63,23 @@ public class CurrencyObservable
         return mFarTenor;
     }
     /**
-     * Observes the base currency.
+     * Observes the left currency.
      * 
      * @return an <code>ITypedObservableValue&lt;Boolean&gt;</code> value
      */
-    public ITypedObservableValue<Boolean> observeBaseCCY()
+    public ITypedObservableValue<Boolean> observeLeftCCY()
     {
-        return mBaseCCY;
+        return mLeftCCY;
+    }
+    
+    /**
+     * Observes the right currency.
+     * 
+     * @return an <code>ITypedObservableValue&lt;Boolean&gt;</code> value
+     */
+    public ITypedObservableValue<Boolean> observeRightCCY()
+    {
+        return mRightCCY;
     }
     
     /* (non-Javadoc)
@@ -85,11 +96,11 @@ public class CurrencyObservable
         }        
         String nearTenor = mNearTenor.getTypedValue();
         String farTenor = mFarTenor.getTypedValue();
-        boolean baseCCYSelector = mBaseCCY.getTypedValue();
         Currency newValue = null;
         if(currencyPair!=null && currencyPair.length==2 && StringUtils.isNotBlank(currencyPair[0]) 
         		&& StringUtils.isNotBlank(currencyPair[1]))
-        {
+        {        	
+        	boolean baseCCYSelector = mLeftCCY.getTypedValue();
             try {
             		String baseCCY;
             		if(baseCCYSelector){
@@ -117,10 +128,9 @@ public class CurrencyObservable
             setIfChanged(mSymbol,currency.getSymbol());
             setIfChanged(mNearTenor,currency.getNearTenor());
             setIfChanged(mFarTenor,currency.getFarTenor());
-            if(currency.getLeftCCY()!=null)
-            {
-            	setIfChanged(mBaseCCY,currency.getTradedCCY()==currency.getLeftCCY());
-            }
+            boolean baseCCY = currency.getLeftCCY().equals(currency.getTradedCCY());
+            setIfChanged(mLeftCCY,baseCCY);
+            setIfChanged(mRightCCY,!baseCCY);
         } else {
             setIfChanged(mSymbol,
                          null);
@@ -128,8 +138,10 @@ public class CurrencyObservable
                          null);
             setIfChanged(mFarTenor,
                          null);
-            setIfChanged(mBaseCCY,
-                    	mBaseCCY.getTypedValue());
+            setIfChanged(mLeftCCY, 
+            			true);
+            setIfChanged(mRightCCY,
+            			false);
         }
     }
     /**
@@ -146,7 +158,11 @@ public class CurrencyObservable
     private final ITypedObservableValue<String> mFarTenor;
     
     /**
-     * observes the base currency
+     * observes the left currency
      */
-    private final ITypedObservableValue<Boolean> mBaseCCY;
+    private final ITypedObservableValue<Boolean> mLeftCCY;
+    /**
+     * observes the right currency
+     */
+    private final ITypedObservableValue<Boolean> mRightCCY;
 }

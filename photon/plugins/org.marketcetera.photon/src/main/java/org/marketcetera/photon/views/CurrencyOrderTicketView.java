@@ -197,8 +197,11 @@ public class CurrencyOrderTicketView extends
         DataBindingUtils.initControlDecorationSupportFor(farTenorValidator,
                 SWT.BOTTOM | SWT.LEFT);
         dbc.addValidationStatusProvider(farTenorValidator);
-        final IObservableValue baseCCYTarget = SWTObservables.observeSelection(ticket.getRadioButtonCCY1());
-        dbc.bindValue(baseCCYTarget, model.getBaseCCY());
+        final IObservableValue leftCCYTarget = SWTObservables.observeSelection(ticket.getRadioButtonCCY1());
+        dbc.bindValue(leftCCYTarget, model.getLeftCCY());
+        
+        final IObservableValue rightCCYTarget = SWTObservables.observeSelection(ticket.getRadioButtonCCY2());
+        dbc.bindValue(rightCCYTarget, model.getRightCCY());
         
         enableForNewOrderOnly(ticket.getFarTenorText());
         enableForNewOrderOnly(ticket.getSelectFarTenorButton());
