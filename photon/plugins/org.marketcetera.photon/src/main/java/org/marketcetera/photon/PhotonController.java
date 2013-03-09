@@ -149,26 +149,24 @@ public class PhotonController
 	}
 	
 	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
-		OrderID orderid = new OrderID(clOrdID);
-		ExecutionReport report = getReportForCancel(orderid);
-		if (report != null) {
-			if (internalMainLogger.isDebugEnabled()) {
-				internalMainLogger
-						.debug("Exec id for cancel execution report:" + report.getExecutionID()); //$NON-NLS-1$
-			}
-			OrderCancel cancel = Factory.getInstance().createOrderCancel(report);
-			if(cancel.getBrokerOrderID().equals("NONE")) {
-			    /*
-			     * Remove the broker order id since some of our reports have "NONE"
-			     * which is an invalid value.
-			     */
-			    cancel.setBrokerOrderID(null);
-			}
+        OrderID orderid = new OrderID(clOrdID);
+        ExecutionReport report = getReportForCancel(orderid);
+        if (report != null) {
+            if (internalMainLogger.isDebugEnabled()) {
+                internalMainLogger
+                        .debug("Exec id for cancel execution report:" + report.getExecutionID()); //$NON-NLS-1$
+            }
+            OrderCancel cancel = Factory.getInstance().createOrderCancel(report);
+            /*
+             * Remove the broker order id since some of our reports have "NONE"
+             * which is an invalid value.
+             */
+            cancel.setBrokerOrderID(null);
             sendOrder(cancel);
-		} else {
-			internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
-			return;
-		}
+        } else {
+            internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
+            return;
+        }
 	}
 
 	private ExecutionReport getReportForCancel(OrderID orderid) {
@@ -188,6 +186,7 @@ public class PhotonController
             OrderReplace replace = Factory.getInstance().createOrderReplace(
                     originalReport);
             replace.setPrice(report.getPrice());
+            replace.setBrokerOrderID(report.getBrokerOrderID());
             PhotonPlugin.getDefault().showOrderInTicket(replace);
         }
 	}
