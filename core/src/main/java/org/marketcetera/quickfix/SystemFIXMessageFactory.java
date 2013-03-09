@@ -1,15 +1,16 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_44;
-import org.marketcetera.quickfix.messagefactory.SystemMessageFactory;
-import org.marketcetera.util.misc.ClassVersion;
-import quickfix.Message;
-import quickfix.field.*;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_44;
+import org.marketcetera.quickfix.messagefactory.SystemMessageFactory;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.Message;
+import quickfix.field.*;
 
 /* $License$ */
 /**
@@ -103,7 +104,9 @@ public class SystemFIXMessageFactory extends FIXMessageFactory {
                 HandlInst.FIELD,
                 TransactTime.FIELD,
                 AvgPx.FIELD,   
-                Currency.FIELD
+                Currency.FIELD,
+                FutSettDate.FIELD,
+                SettlDate2.FIELD
         ));
         tmp.addAll(ORDER_SINGLE_FIELDS);
         EXECUTION_REPORT_FIELDS = Collections.unmodifiableSet(tmp);
