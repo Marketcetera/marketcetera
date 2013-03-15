@@ -47,11 +47,11 @@
         <property name="userDao" ref="userDaoBean"/>
     </bean>
 
-    <bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
+    <!-- bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
         <property name="permissionFactory" ref="permissionFactoryBean"/>
         <property name="roleFactory" ref="roleFactoryBean"/>
         <property name="userFactory" ref="userFactoryBean"/>
         <property name="provisioningManager" ref="provisioningManagerBean"/>
-    </bean>
+    </bean-->
 
 </blueprint>
