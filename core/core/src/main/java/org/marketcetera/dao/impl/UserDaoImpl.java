@@ -6,9 +6,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import org.apache.cxf.jaxrs.ext.search.SearchCondition;
-import org.apache.cxf.jaxrs.ext.search.jpa.JPATypedQueryVisitor;
+
 import org.marketcetera.api.systemmodel.MutableUser;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.core.security.User;
@@ -52,19 +50,6 @@ public class UserDaoImpl implements UserDao {
     public MutableUser getById(long inId) {
         return (MutableUser)entityManager.find(PersistentUser.class,
                                                inId);
-    }
-
-    @Override
-    public List<MutableUser> getAll(SearchCondition<MutableUser> sc) {
-        JPATypedQueryVisitor visitor = new JPATypedQueryVisitor(entityManager, PersistentUser.class);
-
-        if (sc == null) {
-            return getAll();
-        }
-
-        sc.accept(visitor);
-        TypedQuery typedQuery = visitor.getQuery();
-        return typedQuery.getResultList();
     }
 
     @SuppressWarnings("unchecked")
