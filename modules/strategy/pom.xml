@@ -15,12 +15,12 @@
     <parent>
         <groupId>org.marketcetera.modules</groupId>
         <artifactId>modules-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>3.0.1</version>
     </parent>
 
     <groupId>org.marketcetera.modules</groupId>
     <artifactId>strategy</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.1</version>
 
     <packaging>jar</packaging>
 
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.1</version>
         </dependency>
         <dependency>
             <groupId>bsf</groupId>
@@ -54,33 +54,33 @@
         <dependency>
             <groupId>org.marketcetera.modules</groupId>
             <artifactId>cep-system</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.marketcetera.modules</groupId>
             <artifactId>marketdata-bogus</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.1</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.marketcetera</groupId>
             <artifactId>util-test</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.1</version>
             <scope>test</scope>
         </dependency>
         <!-- test: other -->
         <dependency>
             <groupId>org.marketcetera</groupId>
             <artifactId>cep-esper</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

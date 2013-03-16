@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.1.0" name="org.marketcetera.core.util">
     <repository>mvn:org.apache.karaf.features/spring/3.0.0-SNAPSHOT/xml/features</repository>
-    <feature name="org.marketcetera.core.util" version="3.0.0-SNAPSHOT" description="Marketcetera Core Utils">
+    <feature name="org.marketcetera.core.util" version="3.0.1" description="Marketcetera Core Utils">
         <!-- marketcetera bundles -->
         <bundle>mvn:org.marketcetera/api/3.0.0-SNAPSHOT</bundle>
         <bundle>mvn:org.marketcetera.core/util/3.0.0-SNAPSHOT</bundle>

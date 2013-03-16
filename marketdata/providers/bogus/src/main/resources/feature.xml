@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.1.0" name="org.marketcetera.marketdata.providers.bogus">
     <repository>mvn:org.apache.karaf.features/enterprise/3.0.0-SNAPSHOT/xml/features</repository>
-    <feature description="Marketcetera Bogus Market Data Provider" version="3.0.0-SNAPSHOT" name="org.marketcetera.marketdata.providers.bogus">
+    <feature description="Marketcetera Bogus Market Data Provider" version="3.0.1" name="org.marketcetera.marketdata.providers.bogus">
         <bundle>wrap:mvn:com.google.guava/guava/14.0-rc2</bundle>
         <bundle>mvn:org.marketcetera.marketdata.providers/marketdata-bogus/3.0.0-SNAPSHOT</bundle>
         <!-- 

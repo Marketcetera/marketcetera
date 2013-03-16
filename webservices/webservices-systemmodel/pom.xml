@@ -9,7 +9,7 @@
   </parent>
   <groupId>org.marketcetera.webservices</groupId>
   <artifactId>core-webservices</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.0.1</version>
   <packaging>bundle</packaging>
   <licenses>
     <license>
@@ -22,12 +22,12 @@
     <dependency>
       <groupId>org.marketcetera.core</groupId>
       <artifactId>core</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.marketcetera.core</groupId>
       <artifactId>dao</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
@@ -46,8 +46,8 @@
     </dependency>
     <dependency>
       <groupId>org.marketcetera.core</groupId>
-      <artifactId>util</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <artifactId>core</artifactId>
+      <version>3.0.1</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>

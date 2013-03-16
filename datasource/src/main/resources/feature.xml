@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.1.0" name="org.marketcetera.datasource">
     <repository>mvn:org.apache.karaf.features/enterprise/3.0.0-SNAPSHOT/xml/features</repository>
-    <feature description="Marketcetera Datasource" version="3.0.0-SNAPSHOT" name="org.marketcetera.datasource">
+    <feature description="Marketcetera Datasource" version="3.0.1" name="org.marketcetera.datasource">
         <feature>jpa</feature>
         <feature>jndi</feature>
         <feature>transaction</feature>
@@ -13,7 +13,7 @@
         <bundle>wrap:mvn:commons-logging/commons-logging/1.1.1</bundle>
     </feature>
 
-    <feature description="PostgreSQL Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.postgresDS">
+    <feature description="PostgreSQL Data Source" version="3.0.1" name="org.marketcetera.postgresDS">
         <feature version="${pom.version}">org.marketcetera.datasource</feature>
         <bundle>wrap:mvn:postgresql/postgresql/8.4-701.jdbc4</bundle>
         <config name="org.marketcetera.datasource">
@@ -23,7 +23,7 @@
             jdbc.password=pw4metc
         </config>
     </feature>
-    <feature description="MySQL Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.mysqlDS">
+    <feature description="MySQL Data Source" version="3.0.1" name="org.marketcetera.mysqlDS">
         <feature version="${pom.version}">org.marketcetera.datasource</feature>
         <bundle>wrap:mvn:mysql/mysql-connector-java/5.1.21</bundle>
         <config name="org.marketcetera.datasource">
@@ -33,7 +33,7 @@
             jdbc.password=pw4metc
         </config>
     </feature>
-    <feature description="Derby Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.derbyDS">
+    <feature description="Derby Data Source" version="3.0.1" name="org.marketcetera.derbyDS">
         <feature version="${pom.version}">org.marketcetera.datasource</feature>
         <bundle>wrap:mvn:org.apache.derby/derby/10.9.1.0</bundle>
         <config name="org.marketcetera.datasource">
@@ -43,7 +43,7 @@
             jdbc.password=pw4metc
         </config>
     </feature>
-    <feature description="Sybase Data Source" version="3.0.0-SNAPSHOT" name="org.marketcetera.sybaseDS">
+    <feature description="Sybase Data Source" version="3.0.1" name="org.marketcetera.sybaseDS">
         <feature version="${pom.version}">org.marketcetera.datasource</feature>
         <bundle>wrap:mvn:com.sybase/jdbc/4</bundle>
         <config name="org.marketcetera.datasource">

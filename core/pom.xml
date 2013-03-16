@@ -20,7 +20,5 @@
     <modules>
         <module>core</module>
         <module>dao</module>
-        <module>quickfix</module>
-        <module>util</module>
     </modules>
 </project>

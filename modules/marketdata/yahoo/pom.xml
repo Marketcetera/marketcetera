@@ -11,7 +11,7 @@
 
     <groupId>org.marketcetera.modules</groupId>
     <artifactId>marketdata-yahoo</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.1</version>
 
     <packaging>jar</packaging>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.marketcetera.core</groupId>
             <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <version>3.0.1</version>
         </dependency>
     </dependencies>
 </project>

@@ -2,7 +2,7 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.1.0" name="org.marketcetera.core.core">
     <repository>mvn:org.apache.karaf.features/spring/3.0.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.apache.cxf.karaf/apache-cxf/${mvn.cxf.version}/xml/features</repository>
-    <feature name="org.marketcetera.core.core" version="3.0.0-SNAPSHOT" description="Marketcetera Core">
+    <feature name="org.marketcetera.core.core" version="3.0.1" description="Marketcetera Core">
         <feature>cxf-jaxrs</feature>
         <feature version="${mvn.spring.version}">spring</feature>
         <!-- marketcetera bundles -->

@@ -3,10 +3,10 @@
     <repository>mvn:org.apache.karaf.features/enterprise/3.0.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.apache.cxf.karaf/apache-cxf/${mvn.cxf.version}/xml/features</repository>
     <repository>mvn:org.marketcetera.core/core/3.0.0-SNAPSHOT/xml/features</repository>
-    <feature description="Marketcetera Core DAO" version="3.0.0-SNAPSHOT" name="org.marketcetera.core.dao">
+    <feature description="Marketcetera Core DAO" version="3.0.1" name="org.marketcetera.core.dao">
         <feature>jpa</feature>
         <feature version="${mvn.cxf.version}">cxf-jaxrs</feature>
-        <feature version="3.0.0-SNAPSHOT">org.marketcetera.core.core</feature>
+        <feature version="3.0.1">org.marketcetera.core.core</feature>
         <!-- Marketcetera Bundles -->
         <bundle>mvn:org.marketcetera.core/dao/3.0.0-SNAPSHOT</bundle>
         <!-- External Dependencies -->

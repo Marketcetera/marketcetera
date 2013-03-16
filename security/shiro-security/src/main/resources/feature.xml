@@ -2,8 +2,8 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.1.0" name="org.marketcetera.security.shiro-security">
     <repository>mvn:org.apache.karaf.features/spring/3.0.0-SNAPSHOT/xml/features</repository>
     <repository>mvn:org.marketcetera.core/dao/3.0.0-SNAPSHOT/xml/features</repository>
-    <feature name="org.marketcetera.security.shiro-security" version="3.0.0-SNAPSHOT" description="Marketcetera Shiro Security">
-        <feature version="3.0.0-SNAPSHOT">org.marketcetera.core.dao</feature>
+    <feature name="org.marketcetera.security.shiro-security" version="3.0.1" description="Marketcetera Shiro Security">
+        <feature version="3.0.1">org.marketcetera.core.dao</feature>
         <!-- marketcetera bundles -->
         <bundle>mvn:org.marketcetera.security/shiro-security/3.0.0-SNAPSHOT</bundle>
         <!-- external bundles -->
