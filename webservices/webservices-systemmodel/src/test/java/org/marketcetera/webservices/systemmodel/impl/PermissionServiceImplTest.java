@@ -15,7 +15,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.api.systemmodel.MutablePermission;
@@ -154,15 +153,6 @@ public class PermissionServiceImplTest
     public void testGetPermission()
             throws Exception
     {
-        // no result
-        new ExpectedFailure<ServerWebApplicationException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                service.get(-1);
-            }
-        };
         verify(permissionDao).getById(anyLong());
         // good result
         WebServicesPermission newPermission = generatePermission();

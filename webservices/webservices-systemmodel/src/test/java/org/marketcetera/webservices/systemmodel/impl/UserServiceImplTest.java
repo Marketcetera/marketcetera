@@ -1,11 +1,19 @@
 package org.marketcetera.webservices.systemmodel.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.api.security.User;
@@ -19,11 +27,6 @@ import org.marketcetera.webservices.systemmodel.UserService;
 import org.marketcetera.webservices.systemmodel.WebServicesUser;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.*;
 
 /* $License$ */
 
@@ -138,15 +141,6 @@ public class UserServiceImplTest
     public void testGetUser()
             throws Exception
     {
-        // no result
-        new ExpectedFailure<ServerWebApplicationException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                service.get("-1");
-            }
-        };
         verify(userDao).getById(anyLong());
         // good result
         WebServicesUser newUser = generateUser();

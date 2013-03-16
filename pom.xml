@@ -43,10 +43,8 @@
 
     <properties>
         <project.groupId>org.marketcetera</project.groupId>
-        <mvn.spring.version>3.1.3.RELEASE</mvn.spring.version>
-        <mvn.spring.security.version>3.1.0.RELEASE</mvn.spring.security.version>
-        <mvn.hibernate.version>4.1.0.Final</mvn.hibernate.version>
-        <mvn.cxf.version>2.6.2</mvn.cxf.version>
+        <mvn.spring.version>3.2.1.RELEASE</mvn.spring.version>
+        <mvn.cxf.version>2.7.3</mvn.cxf.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.6.4</slf4j.version>
     </properties>
@@ -87,9 +85,9 @@
             </dependency>
             <!-- compile: other -->
             <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>${mvn.hibernate.version}</version>
+                <groupId>org.ow2.sirocco</groupId>
+                <artifactId>sirocco-text-table-formatter</artifactId>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -144,7 +142,7 @@
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.1</version>
+                <version>1.6</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
@@ -499,13 +497,10 @@
         <module>core</module>
         <module>datasource</module>
         <module>fork</module>
-        <!-- Disabled until such time that these tests do anything important -->
-        <!--<module>itests</module>-->
 	<module>marketdata</module>
         <module>modules</module>
         <module>security</module>
 	<module>symbolresolver</module>
-        <module>util-test</module>
 	<module>webservices</module>
     </modules>
 </project>

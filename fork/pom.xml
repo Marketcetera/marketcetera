@@ -19,7 +19,6 @@
     <modules>
         <module>commons-csv</module>
         <module>commons-i18n</module>
-        <module>texttablefmt</module>
         <module>csvtools</module>
         <module>glazed-subset</module>
     </modules>
