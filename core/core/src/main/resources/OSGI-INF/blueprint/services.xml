@@ -1,6 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.1.0"
-           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+           xmlns:cxf="http://cxf.apache.org/blueprint/core"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs
+                               http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd">
+    <cxf:bus>
+        <cxf:features>
+            <cxf:logging/>
+        </cxf:features>
+    </cxf:bus>
+    <bean id="jacksonMapper" class="org.marketcetera.webservices.systemmodel.impl.JacksonObjectMapper"/>
+    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+        <argument ref="jacksonMapper"/>
+    </bean>
+    <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
+    <!-- set up the JSON marshalling provider service -->
+    <bean id="jacksonProvider" class="org.marketcetera.webservices.systemmodel.impl.JacksonMarshallingService"/>
+    <service ref="jacksonProvider" interface="org.marketcetera.webservices.systemmodel.JsonMarshallingService"/>
+
+    <jaxrs:server id="coreServicesServer" address="/metc/core">
+        <jaxrs:serviceBeans>
+            <ref component-id="permissionManagerWebServiceBean"/>
+            <ref component-id="roleManagerWebServiceBean"/>
+            <ref component-id="userManagerWebServiceBean"/>
+            <ref component-id="authenticationWebServiceBean"/>
+            <ref component-id="provisioningWebServiceBean"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json" />
+            <entry key="xml" value="application/xml" />
+        </jaxrs:extensionMappings>
+        <jaxrs:providers>
+            <ref component-id="jsonProvider"/>
+            <ref component-id="searchContextProvider"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+
+    <bean id="permissionManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.PermissionServiceImpl">
+        <property name="permissionDao" ref="permissionDao"/>
+        <property name="permissionFactory" ref="permissionFactory"/>
+    </bean>
+    <bean id="roleManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.RoleServiceImpl">
+        <property name="roleDao" ref="roleDao"/>
+        <property name="roleFactory" ref="roleFactory"/>
+    </bean>
+    <bean id="userManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+        <property name="userFactory" ref="userFactory"/>
+    </bean>
+    <bean id="authenticationWebServiceBean" class="org.marketcetera.webservices.security.impl.AuthenticationServiceImpl">
+        <property name="securityService" ref="securityService"/>
+        <property name="permissionDao" ref="permissionDao"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
+    <bean id="provisioningWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.ProvisioningServiceImpl">
+        <property name="provisioningManager" ref="provisioningManager"/>
+    </bean>
+
+    <service ref="provisioningManagerBean" interface="org.marketcetera.api.security.ProvisioningManager"/>
+    <service ref="permissionDaoBean" interface="org.marketcetera.dao.PermissionDao"/>
+    <service ref="roleDaoBean" interface="org.marketcetera.dao.RoleDao"/>
+    <service ref="userDaoBean" interface="org.marketcetera.dao.UserDao"/>
+    <service ref="systemInformationDaoBean" interface="org.marketcetera.dao.SystemInformationDao"/>
+
+    <service ref="permissionFactoryBean" interface="org.marketcetera.api.systemmodel.PermissionFactory"/>
+    <service ref="roleFactoryBean" interface="org.marketcetera.api.systemmodel.RoleFactory"/>
+    <service ref="userFactoryBean" interface="org.marketcetera.api.systemmodel.UserFactory"/>
+    <service ref="systemInformationFactoryBean" interface="org.marketcetera.api.systemmodel.SystemInformationFactory"/>
+
+    <bean id="permissionDaoBean" class="org.marketcetera.dao.impl.PermissionDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="roleDaoBean" class="org.marketcetera.dao.impl.RoleDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="userDaoBean" class="org.marketcetera.dao.impl.UserDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="systemInformationDaoBean" class="org.marketcetera.dao.impl.SystemInformationDaoImpl">
+        <jpa:context property="entityManager" unitname="marketcetera-core"/>
+        <tx:transaction method="*" value="Required"/>
+    </bean>
+
+    <bean id="permissionFactoryBean" class="org.marketcetera.dao.domain.PersistentPermissionFactory"/>
+    <bean id="roleFactoryBean" class="org.marketcetera.dao.domain.PersistentRoleFactory"/>
+    <bean id="userFactoryBean" class="org.marketcetera.dao.domain.PersistentUserFactory"/>
+    <bean id="systemInformationFactoryBean" class="org.marketcetera.dao.domain.PersistentSystemInformationFactory"/>
+    
+    <bean id="provisioningManagerBean" class="org.marketcetera.dao.impl.ProvisioningManagerImpl">
+        <property name="permissionDao" ref="permissionDaoBean"/>
+        <property name="roleDao" ref="roleDaoBean"/>
+        <property name="userDao" ref="userDaoBean"/>
+    </bean>
+
+    <!-- bean id="startupBean" class="org.marketcetera.dao.impl.StartupBean" init-method="activate">
+        <property name="permissionFactory" ref="permissionFactoryBean"/>
+        <property name="roleFactory" ref="roleFactoryBean"/>
+        <property name="userFactory" ref="userFactoryBean"/>
+        <property name="provisioningManager" ref="provisioningManagerBean"/>
+    </bean-->
+
+    <reference id="securityService" interface="org.marketcetera.api.security.SecurityService"/>
 </blueprint>

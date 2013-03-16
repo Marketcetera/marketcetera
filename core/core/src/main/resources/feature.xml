@@ -33,5 +33,14 @@
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-dbcp/1.4_3</bundle>
         <bundle>mvn:commons-pool/commons-pool/1.6</bundle>
         <bundle>mvn:org.apache.openjpa/openjpa/2.2.0</bundle>
+
+
+        <feature version="3.0.1">org.marketcetera.core.dao</feature>
+        <!-- marketcetera bundles -->
+        <bundle>mvn:org.marketcetera.webservices/core-webservices/3.0.0-SNAPSHOT</bundle>
+        <!-- external bundles -->
+        <bundle>mvn:org.codehaus.jackson/jackson-core-asl/1.9.8</bundle>
+        <bundle>mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.8</bundle>
+        <bundle>mvn:org.codehaus.jackson/jackson-jaxrs/1.9.8</bundle>
     </feature>
 </features>
