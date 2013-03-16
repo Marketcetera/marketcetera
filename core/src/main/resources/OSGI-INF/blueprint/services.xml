@@ -99,5 +99,5 @@
         <property name="userFactory" ref="userFactoryBean"/>
         <property name="provisioningManager" ref="provisioningManagerBean"/>
     </bean-->
-    <reference id="securityService" interface="org.marketcetera.core.security.SecurityService"/>
+    <reference id="securityService" interface="org.marketcetera.core.security.SecurityService" availability="optional"/>
 </blueprint>
