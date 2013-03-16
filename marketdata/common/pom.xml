@@ -21,7 +21,7 @@
   <dependencies>
     <!-- compile local -->
     <dependency>
-      <groupId>org.marketcetera.core</groupId>
+      <groupId>org.marketcetera</groupId>
       <artifactId>core</artifactId>
       <version>3.0.1</version>
     </dependency>
@@ -52,7 +52,7 @@
     </dependency>
     <!-- test local -->
     <dependency>
-      <groupId>org.marketcetera.core</groupId>
+      <groupId>org.marketcetera</groupId>
       <artifactId>core</artifactId>
       <version>3.0.1</version>
       <type>test-jar</type>

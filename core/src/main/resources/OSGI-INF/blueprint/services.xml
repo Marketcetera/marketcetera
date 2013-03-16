@@ -13,15 +13,7 @@
             <cxf:logging/>
         </cxf:features>
     </cxf:bus>
-    <bean id="jacksonMapper" class="org.marketcetera.webservices.systemmodel.impl.JacksonObjectMapper"/>
-    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
-        <argument ref="jacksonMapper"/>
-    </bean>
     <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
-    <!-- set up the JSON marshalling provider service -->
-    <bean id="jacksonProvider" class="org.marketcetera.webservices.systemmodel.impl.JacksonMarshallingService"/>
-    <service ref="jacksonProvider" interface="org.marketcetera.webservices.systemmodel.JsonMarshallingService"/>
-
     <jaxrs:server id="coreServicesServer" address="/metc/core">
         <jaxrs:serviceBeans>
             <ref component-id="permissionManagerWebServiceBean"/>
@@ -35,7 +27,6 @@
             <entry key="xml" value="application/xml" />
         </jaxrs:extensionMappings>
         <jaxrs:providers>
-            <ref component-id="jsonProvider"/>
             <ref component-id="searchContextProvider"/>
         </jaxrs:providers>
     </jaxrs:server>
@@ -61,7 +52,7 @@
         <property name="provisioningManager" ref="provisioningManager"/>
     </bean>
 
-    <service ref="provisioningManagerBean" interface="org.marketcetera.api.security.ProvisioningManager"/>
+    <service ref="provisioningManagerBean" interface="org.marketcetera.core.security.ProvisioningManager"/>
     <service ref="permissionDaoBean" interface="org.marketcetera.dao.PermissionDao"/>
     <service ref="roleDaoBean" interface="org.marketcetera.dao.RoleDao"/>
     <service ref="userDaoBean" interface="org.marketcetera.dao.UserDao"/>
@@ -109,6 +100,5 @@
         <property name="userFactory" ref="userFactoryBean"/>
         <property name="provisioningManager" ref="provisioningManagerBean"/>
     </bean-->
-
-    <reference id="securityService" interface="org.marketcetera.api.security.SecurityService"/>
+    <reference id="securityService" interface="org.marketcetera.core.security.SecurityService"/>
 </blueprint>

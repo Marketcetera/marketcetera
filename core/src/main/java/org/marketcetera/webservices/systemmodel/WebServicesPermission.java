@@ -5,11 +5,9 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.marketcetera.api.systemmodel.MutablePermission;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.api.systemmodel.PermissionAttribute;
-import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */
 
@@ -21,7 +19,6 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
  */
 @XmlRootElement(name="permission")
 @XmlAccessorType(XmlAccessType.NONE)
-@JsonRootName(value="permission")
 public class WebServicesPermission
         extends WebServicesNamedObject
         implements MutablePermission
@@ -38,17 +35,6 @@ public class WebServicesPermission
     public WebServicesPermission(Permission inPermission)
     {
         copyAttributes(inPermission);
-    }
-    /**
-     * Create a new WebServicesPermission instance.
-     *
-     * @param inPermissionValue a <code>String</code> value
-     */
-    public WebServicesPermission(String inPermissionValue)
-    {
-        WebServicesPermission proxyObject = JsonMarshallingProvider.getInstance().getService().unmarshal(inPermissionValue,
-                                                                                                         WebServicesPermission.class);
-        copyAttributes(proxyObject);
     }
     /**
      * Get the method value.
@@ -90,10 +76,6 @@ public class WebServicesPermission
     @Override
     public String toString()
     {
-        if(JsonMarshallingProvider.getInstance() != null &&
-           JsonMarshallingProvider.getInstance().getService() != null) {
-            return JsonMarshallingProvider.getInstance().getService().marshal(this);
-        }
         StringBuilder builder = new StringBuilder();
         builder.append("WebServicesPermission [method=").append(method).append(" permission=").append(permission).append("]");
         return builder.toString();

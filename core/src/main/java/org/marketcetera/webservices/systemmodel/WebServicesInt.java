@@ -5,9 +5,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
-
 /* $License$ */
 
 /**
@@ -19,37 +16,21 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
  */
 @XmlRootElement(name="int")
 @XmlAccessorType(XmlAccessType.NONE)
-@JsonRootName(value="int")
 public class WebServicesInt
 {
     /**
      * Create a new WebServicesInt instance.
      */
     public WebServicesInt() {}
-    /**
-     * Create a new WebServicesInt instance.
-     *
-     * @param inData a <code>WebServicesInt</code> value
-     */
-    public WebServicesInt(String inData)
-    {
-        WebServicesInt unmarshalledValue = JsonMarshallingProvider.getInstance().getService().unmarshal(inData,
-                                                                                                        WebServicesInt.class);
-        setValue(unmarshalledValue.getValue());
-    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        if(JsonMarshallingProvider.getInstance() == null ||
-           JsonMarshallingProvider.getInstance().getService() == null) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("WebServicesInt [value=").append(value).append("]");
-            return builder.toString();
-        }
-        return JsonMarshallingProvider.getInstance().getService().marshal(this);
+        StringBuilder builder = new StringBuilder();
+        builder.append("WebServicesInt [value=").append(value).append("]");
+        return builder.toString();
     }
     /**
      * Get the value value.

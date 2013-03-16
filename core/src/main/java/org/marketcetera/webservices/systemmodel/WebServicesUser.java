@@ -6,12 +6,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.Validate;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.marketcetera.api.systemmodel.MutableUser;
 import org.marketcetera.core.security.User;
-import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */
 
@@ -23,8 +19,6 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
  */
 @XmlRootElement(name="user")
 @XmlAccessorType(XmlAccessType.NONE)
-@JsonRootName(value="user")
-@JsonIgnoreProperties(value={ "accountNonExpired","name" })
 public class WebServicesUser
         extends WebServicesNamedObject
         implements MutableUser
@@ -41,16 +35,6 @@ public class WebServicesUser
     public WebServicesUser(User inUser)
     {
         copyAttributes(inUser);
-    }
-    /**
-     * Create a new WebServicesUser instance.
-     *
-     * @param inUserValue a <code>String</code> value
-     */
-    public WebServicesUser(String inUserValue)
-    {
-        copyAttributes(JsonMarshallingProvider.getInstance().getService().unmarshal(inUserValue,
-                                                                                    WebServicesUser.class));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.security.User#getPassword()
@@ -72,7 +56,6 @@ public class WebServicesUser
      * @see org.marketcetera.api.security.User#isAccountNonExpired()
      */
     @Override
-    @JsonProperty(value="accountNonExpired")
     public boolean isAccountNonExpired()
     {
         return !enabled;
@@ -81,7 +64,6 @@ public class WebServicesUser
      * @see org.marketcetera.api.security.User#isAccountNonLocked()
      */
     @Override
-    @JsonProperty(value="accountNonLocked")
     public boolean isAccountNonLocked()
     {
         return !locked;
@@ -90,7 +72,6 @@ public class WebServicesUser
      * @see org.marketcetera.api.security.User#isCredentialsNonExpired()
      */
     @Override
-    @JsonProperty(value="credentialsNonExpired")
     public boolean isCredentialsNonExpired()
     {
         return !credentialsExpired;
@@ -99,7 +80,6 @@ public class WebServicesUser
      * @see org.marketcetera.api.security.User#isEnabled()
      */
     @Override
-    @JsonProperty(value="enabled")
     public boolean isEnabled()
     {
         return enabled;
@@ -132,7 +112,6 @@ public class WebServicesUser
      * @see org.marketcetera.api.dao.MutableUser#setIsAccountNonLocked(boolean)
      */
     @Override
-    @JsonProperty(value="accountNonLocked")
     public void setIsAccountNonLocked(boolean inIsNonLocked)
     {
         locked = ! inIsNonLocked;
@@ -141,7 +120,6 @@ public class WebServicesUser
      * @see org.marketcetera.api.dao.MutableUser#setIsCredentialsNonExpired(boolean)
      */
     @Override
-    @JsonProperty(value="credentialsNonExpired")
     public void setIsCredentialsNonExpired(boolean inIsNonExpired)
     {
         credentialsExpired = !inIsNonExpired;
@@ -150,7 +128,6 @@ public class WebServicesUser
      * @see org.marketcetera.api.dao.MutableUser#setIsEnabled(boolean)
      */
     @Override
-    @JsonProperty(value="enabled")
     public void setIsEnabled(boolean inIsEnabled)
     {
         enabled = inIsEnabled;
@@ -161,10 +138,6 @@ public class WebServicesUser
     @Override
     public String toString()
     {
-        if(JsonMarshallingProvider.getInstance() != null &&
-                JsonMarshallingProvider.getInstance().getService() != null) {
-            return JsonMarshallingProvider.getInstance().getService().marshal(this);
-        }
         StringBuilder builder = new StringBuilder();
         builder.append("WebServicesUser [password=").append(password).append(", enabled=").append(enabled)
                 .append(", locked=").append(locked).append(", credentialsExpired=").append(credentialsExpired)

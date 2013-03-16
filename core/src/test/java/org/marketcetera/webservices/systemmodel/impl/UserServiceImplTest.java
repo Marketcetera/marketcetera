@@ -20,7 +20,6 @@ import org.marketcetera.api.systemmodel.MutableUser;
 import org.marketcetera.api.systemmodel.UserFactory;
 import org.marketcetera.core.security.User;
 import org.marketcetera.core.util.except.ExpectedFailure;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.UserDao;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.UserService;
@@ -65,21 +64,6 @@ public class UserServiceImplTest
             }
         });
         super.setup();
-    }
-    @Test
-    public void testMarshalling()
-            throws Exception
-    {
-        WebServicesUser user = generateUser();
-        String marshalledValue = JsonMarshallingProvider.getInstance().getService().marshal(user);
-        SLF4JLoggerProxy.debug(this,
-                               "Marshalled value is {}",
-                               marshalledValue);
-        WebServicesUser newUser = JsonMarshallingProvider.getInstance().getService().unmarshal(marshalledValue,
-                                                                                               WebServicesUser.class);
-        SLF4JLoggerProxy.debug(this,
-                               "Unmarshalled value is {}",
-                               newUser);
     }
     /**
      * Tests {@link org.marketcetera.webservices.systemmodel.UserService#add(org.marketcetera.core.security.dao.User)}.

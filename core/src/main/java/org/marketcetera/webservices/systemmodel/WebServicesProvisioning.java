@@ -8,14 +8,12 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.api.systemmodel.Role;
 import org.marketcetera.core.security.AssignToRole;
 import org.marketcetera.core.security.MutableProvisioning;
 import org.marketcetera.core.security.Provisioning;
 import org.marketcetera.core.security.User;
-import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */
 
@@ -29,7 +27,6 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 @XmlRootElement(name="provisioning")
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={ "permissions", "users", "roles", "assignments" })
-@JsonRootName(value="provisioning")
 public class WebServicesProvisioning
         implements MutableProvisioning, Serializable
 {
@@ -46,26 +43,12 @@ public class WebServicesProvisioning
     {
         copyAttributes(inData);
     }
-    /**
-     * Create a new WebServicesProvisioning instance.
-     *
-     * @param inData a <code>String</code> value
-     */
-    public WebServicesProvisioning(String inData)
-    {
-        copyAttributes((Provisioning)JsonMarshallingProvider.getInstance().getService().unmarshal(inData,
-                                                                                                  WebServicesProvisioning.class));
-    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        if(JsonMarshallingProvider.getInstance() != null &&
-           JsonMarshallingProvider.getInstance().getService() != null) {
-            return JsonMarshallingProvider.getInstance().getService().marshal(this);
-        }
         StringBuilder builder = new StringBuilder();
         builder.append("WebServicesProvisioning [users=").append(users).append(", roles=").append(roles)
                 .append(", permissions=").append(permissions).append(", assignments=").append(assignments).append("]");

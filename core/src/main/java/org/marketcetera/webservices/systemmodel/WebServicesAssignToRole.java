@@ -5,12 +5,10 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.api.systemmodel.Role;
 import org.marketcetera.core.security.AssignToRole;
 import org.marketcetera.core.security.MutableAssignToRole;
-import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */
 
@@ -23,7 +21,6 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
  */
 @XmlRootElement(name="assignToRole")
 @XmlAccessorType(XmlAccessType.NONE)
-@JsonRootName(value="assignToRole")
 public class WebServicesAssignToRole
         implements MutableAssignToRole, Serializable
 {
@@ -40,26 +37,12 @@ public class WebServicesAssignToRole
     {
         copyAttributes(inData);
     }
-    /**
-     * Create a new WebServicesAssignToRole instance.
-     *
-     * @param inData a <code>String</code> value
-     */
-    public WebServicesAssignToRole(String inData)
-    {
-        copyAttributes((AssignToRole)JsonMarshallingProvider.getInstance().getService().unmarshal(inData,
-                                                                                                  WebServicesAssignToRole.class));
-    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        if(JsonMarshallingProvider.getInstance() != null &&
-           JsonMarshallingProvider.getInstance().getService() != null) {
-            return JsonMarshallingProvider.getInstance().getService().marshal(this);
-        }
         StringBuilder builder = new StringBuilder();
         builder.append("WebServicesAssignToRole [role=").append(role).append(", users=").append(users)
                 .append(", permissions=").append(permissions).append("]");

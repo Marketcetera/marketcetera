@@ -5,14 +5,10 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.*;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.marketcetera.api.systemmodel.MutableRole;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.api.systemmodel.Role;
 import org.marketcetera.core.security.User;
-import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */
 
@@ -24,7 +20,6 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
  */
 @XmlRootElement(name="role")
 @XmlAccessorType(XmlAccessType.NONE)
-@JsonRootName(value="role")
 public class WebServicesRole
         extends WebServicesNamedObject
         implements MutableRole
@@ -42,26 +37,12 @@ public class WebServicesRole
     {
         copyAttributes(inRole);
     }
-    /**
-     * Create a new WebServicesRole instance.
-     *
-     * @param inStringRepresentation a <code>String</code> valu
-     */
-    public WebServicesRole(String inStringRepresentation)
-    {
-        copyAttributes(JsonMarshallingProvider.getInstance().getService().unmarshal(inStringRepresentation,
-                                                                                    WebServicesRole.class));
-    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        if(JsonMarshallingProvider.getInstance() != null &&
-                JsonMarshallingProvider.getInstance().getService() != null) {
-            return JsonMarshallingProvider.getInstance().getService().marshal(this);
-        }
         StringBuilder builder = new StringBuilder();
         builder.append("WebServicesRole [users=").append(users).append(", permissions=").append(permissions)
                 .append("]");
@@ -87,8 +68,6 @@ public class WebServicesRole
      * @see org.marketcetera.api.dao.Role#getUsers()
      */
     @Override
-    @JsonProperty
-    @JsonDeserialize(contentAs=WebServicesUser.class)
     public Set<User> getUsers()
     {
         return users;
@@ -97,8 +76,6 @@ public class WebServicesRole
      * @see org.marketcetera.api.dao.Role#getPermissions()
      */
     @Override
-    @JsonProperty
-    @JsonDeserialize(contentAs=WebServicesPermission.class)
     public Set<Permission> getPermissions()
     {
         return permissions;

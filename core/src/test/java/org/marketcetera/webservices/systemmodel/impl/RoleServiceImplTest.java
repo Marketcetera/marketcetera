@@ -21,7 +21,6 @@ import org.marketcetera.api.systemmodel.MutableRole;
 import org.marketcetera.api.systemmodel.Role;
 import org.marketcetera.api.systemmodel.RoleFactory;
 import org.marketcetera.core.util.except.ExpectedFailure;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.RoleDao;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.RoleService;
@@ -77,21 +76,6 @@ public class RoleServiceImplTest
                                          }
                                      });
         super.setup();
-    }
-    @Test
-    public void testMarshalling()
-            throws Exception
-    {
-        WebServicesRole role = generateRole();
-        String marshalledValue = JsonMarshallingProvider.getInstance().getService().marshal(role);
-        SLF4JLoggerProxy.debug(this,
-                               "Marshalled value is {}",
-                               marshalledValue);
-        WebServicesRole newRole = JsonMarshallingProvider.getInstance().getService().unmarshal(marshalledValue,
-                                                                                               WebServicesRole.class);
-        SLF4JLoggerProxy.debug(this,
-                               "Unmarshalled value is {}",
-                               newRole);
     }
     /**
      * Tests {@link org.marketcetera.webservices.systemmodel.RoleService#add(org.marketcetera.api.systemmodel.Role)}.

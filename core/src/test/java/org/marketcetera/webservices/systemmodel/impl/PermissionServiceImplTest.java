@@ -21,7 +21,6 @@ import org.marketcetera.api.systemmodel.MutablePermission;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.api.systemmodel.PermissionFactory;
 import org.marketcetera.core.util.except.ExpectedFailure;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.webservices.WebServicesTestBase;
 import org.marketcetera.webservices.systemmodel.PermissionService;
@@ -77,21 +76,6 @@ public class PermissionServiceImplTest
                                          }
                                      });
         super.setup();
-    }
-    @Test
-    public void testMarshalling()
-            throws Exception
-    {
-        WebServicesPermission permission = generatePermission();
-        String marshalledValue = JsonMarshallingProvider.getInstance().getService().marshal(permission);
-        SLF4JLoggerProxy.debug(this,
-                               "Marshalled value is {}",
-                               marshalledValue);
-        WebServicesPermission newPermission = JsonMarshallingProvider.getInstance().getService().unmarshal(marshalledValue,
-                                                                                                               WebServicesPermission.class);
-        SLF4JLoggerProxy.debug(this,
-                               "Unmarshalled value is {}",
-                               newPermission);
     }
     /**
      * Tests {@link org.marketcetera.webservices.systemmodel.PermissionService#add(org.marketcetera.api.systemmodel.Permission)}.
