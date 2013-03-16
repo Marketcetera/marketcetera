@@ -2,7 +2,7 @@ package org.marketcetera.webservices.systemmodel.impl;
 
 import javax.ws.rs.core.Response;
 
-import org.marketcetera.api.security.ProvisioningManager;
+import org.marketcetera.core.security.ProvisioningManager;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.webservices.systemmodel.ProvisioningService;
 import org.marketcetera.webservices.systemmodel.WebServicesProvisioning;

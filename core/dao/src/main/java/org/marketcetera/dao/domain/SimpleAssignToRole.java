@@ -3,7 +3,7 @@ package org.marketcetera.dao.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.marketcetera.api.security.MutableAssignToRole;
+import org.marketcetera.core.security.MutableAssignToRole;
 
 /* $License$ */
 

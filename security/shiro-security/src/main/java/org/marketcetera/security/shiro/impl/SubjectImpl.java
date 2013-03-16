@@ -5,9 +5,9 @@ import java.util.Set;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.session.UnknownSessionException;
-import org.marketcetera.api.security.AuthenticationToken;
-import org.marketcetera.api.security.Session;
-import org.marketcetera.api.security.Subject;
+import org.marketcetera.core.security.AuthenticationToken;
+import org.marketcetera.core.security.Session;
+import org.marketcetera.core.security.Subject;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /**

@@ -7,10 +7,10 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.MutableRole;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.api.systemmodel.Role;
+import org.marketcetera.core.security.User;
 
 /* $License$ */
 

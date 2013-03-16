@@ -10,7 +10,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.marketcetera.api.security.User;
+import org.marketcetera.core.security.User;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.UserDao;
 

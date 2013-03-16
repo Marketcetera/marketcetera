@@ -1,4 +1,4 @@
-package org.marketcetera.api.security;
+package org.marketcetera.core.security;
 
 import java.io.Serializable;
 

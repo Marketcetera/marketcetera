@@ -1,4 +1,4 @@
-package org.marketcetera.api.security;
+package org.marketcetera.core.security;
 
 /**
  * Provides facilities for a client to manage authentication and authorization of a user or process in a protected system.

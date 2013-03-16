@@ -6,8 +6,8 @@ import java.util.WeakHashMap;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.realm.Realm;
-import org.marketcetera.api.security.SecurityService;
-import org.marketcetera.api.security.Subject;
+import org.marketcetera.core.security.SecurityService;
+import org.marketcetera.core.security.Subject;
 import org.marketcetera.dao.UserDao;
 
 /**

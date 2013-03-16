@@ -1,7 +1,7 @@
 package org.marketcetera.dao.domain;
 
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.UserFactory;
+import org.marketcetera.core.security.User;
 
 /* $License$ */
 

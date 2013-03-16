@@ -2,12 +2,12 @@ package org.marketcetera.api.systemmodel;
 
 import java.util.Set;
 
-import org.marketcetera.api.security.User;
+import org.marketcetera.core.security.User;
 
 /* $License$ */
 
 /**
- * Represents a grouping of {@link org.marketcetera.api.security.User} and {@link Permission} objects.
+ * Represents a grouping of {@link org.marketcetera.core.security.User} and {@link Permission} objects.
  *
  * @version $Id$
  * @since $Release$

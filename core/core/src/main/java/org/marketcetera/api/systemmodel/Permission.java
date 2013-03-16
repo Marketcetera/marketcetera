@@ -6,7 +6,7 @@ import java.util.Set;
 /* $License$ */
 
 /**
- * Represents a role granted to a {@link org.marketcetera.api.security.User}.
+ * Represents a role granted to a {@link org.marketcetera.core.security.User}.
  *
  * @version $Id$
  * @since $Release$

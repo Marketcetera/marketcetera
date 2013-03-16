@@ -3,7 +3,7 @@ package org.marketcetera.security.shiro.impl;
 import java.io.Serializable;
 
 import org.apache.shiro.session.UnknownSessionException;
-import org.marketcetera.api.security.Session;
+import org.marketcetera.core.security.Session;
 
 /**
  * @version $Id$

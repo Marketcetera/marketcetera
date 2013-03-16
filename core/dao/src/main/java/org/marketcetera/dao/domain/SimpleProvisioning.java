@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.marketcetera.api.security.AssignToRole;
-import org.marketcetera.api.security.MutableProvisioning;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.Permission;
 import org.marketcetera.api.systemmodel.Role;
+import org.marketcetera.core.security.AssignToRole;
+import org.marketcetera.core.security.MutableProvisioning;
+import org.marketcetera.core.security.User;
 
 /* $License$ */
 

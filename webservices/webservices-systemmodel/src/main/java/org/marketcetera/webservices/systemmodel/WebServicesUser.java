@@ -9,8 +9,8 @@ import org.apache.commons.lang.Validate;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.MutableUser;
+import org.marketcetera.core.security.User;
 import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 
 /* $License$ */

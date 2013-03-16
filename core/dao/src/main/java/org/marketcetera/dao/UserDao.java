@@ -3,8 +3,8 @@ package org.marketcetera.dao;
 import java.util.List;
 
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.MutableUser;
+import org.marketcetera.core.security.User;
 
 /* $License$ */
 

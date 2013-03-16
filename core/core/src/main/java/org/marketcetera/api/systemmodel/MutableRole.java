@@ -2,7 +2,7 @@ package org.marketcetera.api.systemmodel;
 
 import java.util.Set;
 
-import org.marketcetera.api.security.User;
+import org.marketcetera.core.security.User;
 
 /* $License$ */
 

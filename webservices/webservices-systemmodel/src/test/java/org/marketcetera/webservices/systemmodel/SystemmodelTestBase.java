@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.*;
+import org.marketcetera.core.security.User;
 import org.marketcetera.core.util.log.LoggerConfiguration;
 import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.dao.RoleDao;

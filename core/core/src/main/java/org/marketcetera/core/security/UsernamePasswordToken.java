@@ -1,4 +1,4 @@
-package org.marketcetera.api.security;
+package org.marketcetera.core.security;
 
 /**
  * @version $Id$

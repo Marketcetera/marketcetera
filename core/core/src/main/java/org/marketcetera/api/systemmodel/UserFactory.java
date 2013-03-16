@@ -1,6 +1,6 @@
 package org.marketcetera.api.systemmodel;
 
-import org.marketcetera.api.security.User;
+import org.marketcetera.core.security.User;
 
 /* $License$ */
 

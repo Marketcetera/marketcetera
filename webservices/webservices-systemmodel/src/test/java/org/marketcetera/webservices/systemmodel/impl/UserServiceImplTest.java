@@ -16,9 +16,9 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.MutableUser;
 import org.marketcetera.api.systemmodel.UserFactory;
+import org.marketcetera.core.security.User;
 import org.marketcetera.core.util.except.ExpectedFailure;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.UserDao;
@@ -82,7 +82,7 @@ public class UserServiceImplTest
                                newUser);
     }
     /**
-     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#add(org.marketcetera.api.dao.User)}.
+     * Tests {@link org.marketcetera.webservices.systemmodel.UserService#add(org.marketcetera.core.security.dao.User)}.
      *
      * @throws Exception if an unexpected error occurs
      */

@@ -7,11 +7,11 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.NoResultException;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.api.security.AssignToRole;
-import org.marketcetera.api.security.Provisioning;
-import org.marketcetera.api.security.ProvisioningManager;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.*;
+import org.marketcetera.core.security.AssignToRole;
+import org.marketcetera.core.security.Provisioning;
+import org.marketcetera.core.security.ProvisioningManager;
+import org.marketcetera.core.security.User;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.dao.RoleDao;

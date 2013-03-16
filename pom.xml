@@ -493,7 +493,6 @@
     </pluginRepositories>
 
     <modules>
-        <module>api</module>
         <module>core</module>
         <module>datasource</module>
         <module>fork</module>

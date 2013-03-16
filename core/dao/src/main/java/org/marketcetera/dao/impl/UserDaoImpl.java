@@ -9,9 +9,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.apache.cxf.jaxrs.ext.search.jpa.JPATypedQueryVisitor;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.MutableUser;
 import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.core.security.User;
 import org.marketcetera.dao.UserDao;
 import org.marketcetera.dao.domain.PersistentUser;
 

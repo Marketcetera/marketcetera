@@ -6,9 +6,9 @@ import java.util.List;
 import javax.persistence.NoResultException;
 import javax.security.sasl.AuthenticationException;
 
-import org.marketcetera.api.security.SecurityService;
-import org.marketcetera.api.security.User;
 import org.marketcetera.api.systemmodel.Permission;
+import org.marketcetera.core.security.SecurityService;
+import org.marketcetera.core.security.User;
 import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 import org.marketcetera.dao.PermissionDao;
 import org.marketcetera.dao.UserDao;

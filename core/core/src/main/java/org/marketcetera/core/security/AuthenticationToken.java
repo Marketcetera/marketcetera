@@ -1,4 +1,4 @@
-package org.marketcetera.api.security;
+package org.marketcetera.core.security;
 
 /**
  * <p>An <tt>AuthenticationToken</tt> is a consolidation of an account's principals and supporting
