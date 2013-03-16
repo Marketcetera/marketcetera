@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.marketcetera.jpa</groupId>
+    <artifactId>features</artifactId>
+    <version>1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.marketcetera.jpa</groupId>
+  <artifactId>openjpa</artifactId>
+  <version>3.0.1</version>
+  <packaging>bundle</packaging>
+  <licenses>
+    <license>
+      <name>GNU General Public License (GPL)v2</name>
+      <url>http://www.fsf.org/licensing/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+  <name>OpenJPA Feature</name>
+  <dependencies>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>

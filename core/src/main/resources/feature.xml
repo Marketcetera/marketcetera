@@ -13,6 +13,6 @@
         <bundle>mvn:commons-beanutils/commons-beanutils/1.8.3</bundle>
         <bundle>mvn:commons-io/commons-io/2.4</bundle>
         <bundle>wrap:mvn:org.ow2.sirocco/sirocco-text-table-formatter/1.0</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.quickfix/1.5.3_1</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.quickfix/1.5.2_1</bundle>
     </feature>
 </features>

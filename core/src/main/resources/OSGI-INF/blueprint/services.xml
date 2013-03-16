@@ -30,26 +30,25 @@
             <ref component-id="searchContextProvider"/>
         </jaxrs:providers>
     </jaxrs:server>
-
     <bean id="permissionManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.PermissionServiceImpl">
-        <property name="permissionDao" ref="permissionDao"/>
-        <property name="permissionFactory" ref="permissionFactory"/>
+        <property name="permissionDao" ref="permissionDaoBean"/>
+        <property name="permissionFactory" ref="permissionFactoryBean"/>
     </bean>
     <bean id="roleManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.RoleServiceImpl">
-        <property name="roleDao" ref="roleDao"/>
-        <property name="roleFactory" ref="roleFactory"/>
+        <property name="roleDao" ref="roleDaoBean"/>
+        <property name="roleFactory" ref="roleFactoryBean"/>
     </bean>
     <bean id="userManagerWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.UserServiceImpl">
-        <property name="userDao" ref="userDao"/>
-        <property name="userFactory" ref="userFactory"/>
+        <property name="userDao" ref="userDaoBean"/>
+        <property name="userFactory" ref="userFactoryBean"/>
     </bean>
     <bean id="authenticationWebServiceBean" class="org.marketcetera.webservices.security.impl.AuthenticationServiceImpl">
         <property name="securityService" ref="securityService"/>
-        <property name="permissionDao" ref="permissionDao"/>
-        <property name="userDao" ref="userDao"/>
+        <property name="permissionDao" ref="permissionDaoBean"/>
+        <property name="userDao" ref="userDaoBean"/>
     </bean>
     <bean id="provisioningWebServiceBean" class="org.marketcetera.webservices.systemmodel.impl.ProvisioningServiceImpl">
-        <property name="provisioningManager" ref="provisioningManager"/>
+        <property name="provisioningManager" ref="provisioningManagerBean"/>
     </bean>
 
     <service ref="provisioningManagerBean" interface="org.marketcetera.core.security.ProvisioningManager"/>
