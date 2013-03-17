@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.*;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.marketcetera.api.systemmodel.MutablePermission;
 import org.marketcetera.api.systemmodel.Permission;
@@ -24,7 +25,7 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 @JsonRootName(value="permission")
 public class WebServicesPermission
         extends WebServicesNamedObject
-        implements MutablePermission
+        implements MutablePermission, Comparable<WebServicesPermission>
 {
     /**
      * Create a new WebServicesPermission instance.
@@ -97,6 +98,14 @@ public class WebServicesPermission
         StringBuilder builder = new StringBuilder();
         builder.append("WebServicesPermission [method=").append(method).append(" permission=").append(permission).append("]");
         return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(WebServicesPermission inOther)
+    {
+        return new CompareToBuilder().append(getName(),inOther.getName()).append(getId(),inOther.getId()).toComparison();
     }
     /**
      * Copies the attributes from the given object to this one.

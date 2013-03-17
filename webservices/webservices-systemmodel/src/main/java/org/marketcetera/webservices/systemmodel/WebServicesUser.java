@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
@@ -27,7 +28,7 @@ import org.marketcetera.webservices.systemmodel.impl.JsonMarshallingProvider;
 @JsonIgnoreProperties(value={ "accountNonExpired","name" })
 public class WebServicesUser
         extends WebServicesNamedObject
-        implements MutableUser
+        implements MutableUser,Comparable<WebServicesUser>
 {
     /**
      * Create a new WebServicesUser instance.
@@ -170,6 +171,14 @@ public class WebServicesUser
                 .append(", locked=").append(locked).append(", credentialsExpired=").append(credentialsExpired)
                 .append("]");
         return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(WebServicesUser inUser)
+    {
+        return new CompareToBuilder().append(getUsername(),inUser.getUsername()).append(getId(),inUser.getId()).toComparison();
     }
     /**
      * Copies attributes from the given object to this object.

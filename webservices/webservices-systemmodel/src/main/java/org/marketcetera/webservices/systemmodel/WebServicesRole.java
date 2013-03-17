@@ -2,6 +2,7 @@ package org.marketcetera.webservices.systemmodel;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.xml.bind.annotation.*;
 
@@ -103,6 +104,14 @@ public class WebServicesRole
     {
         return permissions;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.systemmodel.Role#getMutableView()
+     */
+    @Override
+    public MutableRole getMutableView()
+    {
+        return this;
+    }
     /**
      * Copies the attributes from the given <code>Role</code> object to this object.
      *
@@ -141,12 +150,12 @@ public class WebServicesRole
      */
     @XmlElementWrapper(name="users")
     @XmlElement(name="user",type=WebServicesUser.class)
-    private Set<User> users = new HashSet<User>();
+    private Set<User> users = new TreeSet<User>();
     /**
      * permissions value
      */
     @XmlElementWrapper(name="permissions")
     @XmlElement(name="permission",type=WebServicesPermission.class)
-    private Set<Permission> permissions = new HashSet<Permission>();
+    private Set<Permission> permissions = new TreeSet<Permission>();
     private static final long serialVersionUID = 1L;
 }

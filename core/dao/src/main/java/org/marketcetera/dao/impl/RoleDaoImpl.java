@@ -1,12 +1,7 @@
 package org.marketcetera.dao.impl;
 
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.marketcetera.api.systemmodel.MutableRole;
 import org.marketcetera.api.systemmodel.Role;
+import org.marketcetera.dao.AbstractNamedDao;
 import org.marketcetera.dao.RoleDao;
 import org.marketcetera.dao.domain.PersistentRole;
 
@@ -15,48 +10,40 @@ import org.marketcetera.dao.domain.PersistentRole;
  * @date 6/29/12 12:39 AM
  */
 
-public class RoleDaoImpl implements RoleDao {
-    private EntityManager entityManager;
-
-
+public class RoleDaoImpl
+        extends AbstractNamedDao<Role>
+        implements RoleDao
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.AbstractNamedDao#getByNameQuery()
+     */
     @Override
-    public MutableRole getByName(String inName) {
-        return (MutableRole)entityManager.createNamedQuery("PersistentRole.findByName").setParameter("name",
-                                                                                                     inName).getSingleResult();
+    protected String getByNameQuery()
+    {
+        return "Role.findByName";
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.AbstractDao#getCountQueryName()
+     */
     @Override
-    public void add(Role inData) {
-        entityManager.persist(inData);
-
+    protected String getCountQueryName()
+    {
+        return "Role.count";
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.AbstractDao#getAllQueryName()
+     */
     @Override
-    public void save(Role inData) {
-        entityManager.merge(inData);
-
+    protected String getAllQueryName()
+    {
+        return "Role.findAll";
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.dao.AbstractDao#getDataType()
+     */
     @Override
-    public MutableRole getById(long inId) {
-        return (MutableRole)entityManager.find(PersistentRole.class,
-                                               inId);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<MutableRole> getAll() {
-        return entityManager.createNamedQuery("PersistentRole.findAll").getResultList();
-    }
-
-    @Override
-    public void delete(Role inData) {
-        entityManager.remove(entityManager.merge(inData));
-
-    }
-
-    @PersistenceContext
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    protected Class<? extends Role> getDataType()
+    {
+        return PersistentRole.class;
     }
 }

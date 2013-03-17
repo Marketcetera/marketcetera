@@ -22,8 +22,10 @@ import org.marketcetera.api.systemmodel.Role;
  */
 @NotThreadSafe
 @Entity
-@NamedQueries( { @NamedQuery(name="PersistentRole.findByName",query="select s from PersistentRole s where s.name = :name"),
-                 @NamedQuery(name="PersistentRole.findAll",query="select s from PersistentRole s")})
+@NamedQueries({
+    @NamedQuery(name="Role.findAll",query="select s from PersistentRole s order by s.name"),
+    @NamedQuery(name="Role.findByName",query="select s from PersistentRole s where s.name = :name"),
+    @NamedQuery(name="Role.count",query="select count(s) from PersistentRole s") })
 @Table(name="roles", uniqueConstraints = { @UniqueConstraint(columnNames= { "name" } ) } )
 @Access(AccessType.FIELD)
 @XmlRootElement(name = "role")
@@ -46,8 +48,20 @@ public class PersistentRole
         super(inRole);
         setDescription(inRole.getDescription());
         setName(inRole.getName());
-        setPermissions(inRole.getPermissions());
-        setUsers(inRole.getUsers());
+        for(Permission permission : inRole.getPermissions()) {
+            if(permission instanceof PersistentPermission) {
+                getPermissions().add(permission);
+            } else {
+                getPermissions().add(new PersistentPermission(permission));
+            }
+        }
+        for(User user : inRole.getUsers()) {
+            if(user instanceof PersistentUser) {
+                getUsers().add(user);
+            } else {
+                getUsers().add(new PersistentUser(user));
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Role#getName()
@@ -121,6 +135,14 @@ public class PersistentRole
     public void setDescription(String inDescription)
     {
         description = inDescription;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.api.systemmodel.Role#getMutableView()
+     */
+    @Override
+    public MutableRole getMutableView()
+    {
+        return this;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

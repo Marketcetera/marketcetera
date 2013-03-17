@@ -6,6 +6,8 @@ import org.marketcetera.api.security.MutableAssignToRole;
 import org.marketcetera.api.security.MutableProvisioning;
 import org.marketcetera.api.security.ProvisioningManager;
 import org.marketcetera.api.systemmodel.*;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.dao.UserDao;
 import org.marketcetera.dao.domain.SimpleAssignToRole;
 import org.marketcetera.dao.domain.SimpleProvisioning;
 
@@ -61,47 +63,65 @@ public class StartupBean
      */
     public void activate()
     {
-        MutableProvisioning provisioning = new SimpleProvisioning();
-        MutableUser adminUser = (MutableUser)userFactory.create();
-        adminUser.setUsername("admin");
-        adminUser.setDescription("Administrative user");
-        adminUser.setIsAccountNonExpired(true);
-        adminUser.setIsAccountNonLocked(true);
-        adminUser.setIsCredentialsNonExpired(true);
-        adminUser.setIsEnabled(true);
-        adminUser.setPassword("admin");
-        provisioning.getUsers().add(adminUser);
-        MutablePermission userUiPermission = (MutablePermission)permissionFactory.create();
-        userUiPermission.setName("user ui admin");
-        userUiPermission.setDescription("Permission to perform UI administration tasks on users");
-        userUiPermission.setPermission("ui:user");
-        userUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
-        provisioning.getPermissions().add(userUiPermission);
-        MutablePermission permissionUiPermission = (MutablePermission)permissionFactory.create();
-        permissionUiPermission.setName("permission ui admin");
-        permissionUiPermission.setDescription("Permission to perform UI administration tasks on permissions");
-        permissionUiPermission.setPermission("ui:permission");
-        permissionUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
-        provisioning.getPermissions().add(permissionUiPermission);
-        MutablePermission roleUiPermission = (MutablePermission)permissionFactory.create();
-        roleUiPermission.setName("role ui admin");
-        roleUiPermission.setDescription("Permission to perform UI administration tasks on roles");
-        roleUiPermission.setPermission("ui:role");
-        roleUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
-        provisioning.getPermissions().add(roleUiPermission);
-        MutableRole adminRole = (MutableRole)roleFactory.create();
-        adminRole.setDescription("administration role");
-        adminRole.setName("admin");
-        provisioning.getRoles().add(adminRole);
-        MutableAssignToRole assignment = new SimpleAssignToRole();
-        assignment.setRole(adminRole.getName());
-        assignment.getPermissions().add(userUiPermission.getName());
-        assignment.getPermissions().add(permissionUiPermission.getName());
-        assignment.getPermissions().add(roleUiPermission.getName());
-        assignment.getUsers().add(adminUser.getName());
-        provisioning.getAssignments().add(assignment);
-        provisioningManager.provision(provisioning);
+        // check for existence of admin user: add if missing
+        if(userDao.getAll().isEmpty()) {
+            SLF4JLoggerProxy.info(this,
+                                  "No users defined, adding admin user");
+            MutableProvisioning provisioning = new SimpleProvisioning();
+            MutableUser adminUser = (MutableUser)userFactory.create();
+            adminUser.setUsername("admin");
+            adminUser.setDescription("Administrative user");
+            adminUser.setIsAccountNonExpired(true);
+            adminUser.setIsAccountNonLocked(true);
+            adminUser.setIsCredentialsNonExpired(true);
+            adminUser.setIsEnabled(true);
+            adminUser.setPassword("admin");
+            provisioning.getUsers().add(adminUser);
+            MutablePermission userUiPermission = (MutablePermission)permissionFactory.create();
+            userUiPermission.setName("user ui admin");
+            userUiPermission.setDescription("Permission to perform UI administration tasks on users");
+            userUiPermission.setPermission("ui:user");
+            userUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
+            provisioning.getPermissions().add(userUiPermission);
+            MutablePermission permissionUiPermission = (MutablePermission)permissionFactory.create();
+            permissionUiPermission.setName("permission ui admin");
+            permissionUiPermission.setDescription("Permission to perform UI administration tasks on permissions");
+            permissionUiPermission.setPermission("ui:permission");
+            permissionUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
+            provisioning.getPermissions().add(permissionUiPermission);
+            MutablePermission roleUiPermission = (MutablePermission)permissionFactory.create();
+            roleUiPermission.setName("role ui admin");
+            roleUiPermission.setDescription("Permission to perform UI administration tasks on roles");
+            roleUiPermission.setPermission("ui:role");
+            roleUiPermission.setMethod(EnumSet.allOf(PermissionAttribute.class));
+            provisioning.getPermissions().add(roleUiPermission);
+            MutableRole adminRole = (MutableRole)roleFactory.create();
+            adminRole.setDescription("administration role");
+            adminRole.setName("admin");
+            provisioning.getRoles().add(adminRole);
+            MutableAssignToRole assignment = new SimpleAssignToRole();
+            assignment.setRole(adminRole.getName());
+            assignment.getPermissions().add(userUiPermission.getName());
+            assignment.getPermissions().add(permissionUiPermission.getName());
+            assignment.getPermissions().add(roleUiPermission.getName());
+            assignment.getUsers().add(adminUser.getName());
+            provisioning.getAssignments().add(assignment);
+            provisioningManager.provision(provisioning);
+        }
     }
+    /**
+     * Sets the userDao value.
+     *
+     * @param inUserDao a <code>UserDao</code> value
+     */
+    public void setUserDao(UserDao inUserDao)
+    {
+        userDao = inUserDao;
+    }
+    /**
+     * manages access to user objects
+     */
+    private UserDao userDao;
     /**
      * creates user objects
      */

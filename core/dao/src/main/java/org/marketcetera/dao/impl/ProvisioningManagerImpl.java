@@ -116,7 +116,7 @@ public class ProvisioningManagerImpl
         for(Role role : inProvisioning.getRoles()) {
             String roleName = role.getName();
             try {
-                MutableRole dbRole = roleDao.getByName(roleName);
+                MutableRole dbRole = roleDao.getByName(roleName).getMutableView();
                 SLF4JLoggerProxy.debug(this,
                                        "Updating {} with {}",
                                        dbRole,
@@ -162,7 +162,7 @@ public class ProvisioningManagerImpl
             }
             MutableRole roleToModify;
             try {
-                roleToModify = roleDao.getByName(roleName);
+                roleToModify = roleDao.getByName(roleName).getMutableView();
             } catch (NoResultException e) {
                 SLF4JLoggerProxy.warn(this,
                                       "Cannot perform assignment {} because no role by that name exists, skipping", // TODO message catalog

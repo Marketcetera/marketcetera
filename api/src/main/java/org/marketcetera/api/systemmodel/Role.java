@@ -27,4 +27,10 @@ public interface Role
      * @return a <code>Set&lt;Permission&gt;</code> value
      */
     public Set<Permission> getPermissions();
+    /**
+     * Gets a mutable view of this object.
+     *
+     * @return a <code>MutableRole</code> value
+     */
+    public MutableRole getMutableView();
 }

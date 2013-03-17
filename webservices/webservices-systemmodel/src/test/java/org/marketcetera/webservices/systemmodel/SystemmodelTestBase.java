@@ -172,7 +172,6 @@ public class SystemmodelTestBase
                 return roleDataStore.getById((Long)inInvocation.getArguments()[0]);
             }
         });
-        when(roleDao.getAll()).thenReturn(new ArrayList<MutableRole>(roleDataStore.getAll()));
     }
     /**
      * Initializes the user objects. 

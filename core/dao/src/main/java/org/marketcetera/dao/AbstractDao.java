@@ -66,7 +66,7 @@ public abstract class AbstractDao<Clazz extends SystemObject>
     @Override
     public void add(Clazz inData)
     {
-        entityManager.persist(inData);
+        entityManager.merge(inData);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.api.dao.Dao#delete(java.lang.Object)
