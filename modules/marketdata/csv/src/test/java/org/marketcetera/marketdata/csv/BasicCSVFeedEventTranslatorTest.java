@@ -1946,7 +1946,7 @@ public class BasicCSVFeedEventTranslatorTest
      * option to use for testing
      */
     private final Option option = new Option("symbol",
-                                             "20120319",
+                                             "20200319",
                                              BigDecimal.ONE,
                                              OptionType.Call);
 }

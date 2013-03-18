@@ -38,7 +38,7 @@
 			<link href="http://help.eclipse.org/help31/nftopic/org.eclipse.platform.doc.isv/reference/api/"/>
 		</javadoc>
 	</target>
-	<property name="PHOTON_VERSION" value="0.4.2"/>
+	<property name="PHOTON_VERSION" value="2.2.1"/>
 	<property name="PHOTON_ZIP_BASE_NAME" value="photon-${PHOTON_VERSION}"/>
 	<target name="zip-exported-build">
 		  <zip destfile="${EXPORTS_DIR}/${PHOTON_ZIP_BASE_NAME}-linux-gtk-x86.zip" basedir="${EXPORTS_DIR}/linux.gtk.x86" includes="photon/**" />
