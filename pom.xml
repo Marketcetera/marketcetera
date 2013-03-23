@@ -48,7 +48,7 @@
     <properties>
         <mvn.javase.version>6</mvn.javase.version>
         <mvn.javaee.version>5</mvn.javaee.version>
-        <mvn.spring.version>2.5.2</mvn.spring.version>
+        <mvn.spring.version>3.2.2.RELEASE</mvn.spring.version>
         <mvn.cxf.version>2.1.2</mvn.cxf.version>
         <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
         <mvn.xjc.version>2.1.7</mvn.xjc.version>
@@ -151,11 +151,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http</artifactId>
                 <version>${mvn.cxf.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring</artifactId>
-                <version>${mvn.spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -325,20 +320,22 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-beans</artifactId>
                 <version>${mvn.spring.version}</version>
-                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${mvn.spring.version}</version>
-                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${mvn.spring.version}</version>
-                <scope>runtime</scope>
             </dependency>
+	    <dependency>
+	        <groupId>org.springframework</groupId>
+  	        <artifactId>spring-jms</artifactId>
+	        <version>${mvn.spring.version}</version>
+	    </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-web</artifactId>
