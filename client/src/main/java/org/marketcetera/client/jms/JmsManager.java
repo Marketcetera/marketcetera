@@ -37,14 +37,13 @@ public class JmsManager
      * @param exceptionListener The listener. It may be null.
      */
 
-    public JmsManager
-        (ConnectionFactory incomingCF,
-         ConnectionFactory outgoingCF,
-         ExceptionListener exceptionListener)
+    public JmsManager(ConnectionFactory incomingCF,
+                      ConnectionFactory outgoingCF,
+                      ExceptionListener exceptionListener)
     {
-        mIncomingJmsFactory=new IncomingJmsFactory
-            (incomingCF,exceptionListener);
-        mOutgoingJmsFactory=new OutgoingJmsFactory(outgoingCF);
+        mIncomingJmsFactory = new IncomingJmsFactory(incomingCF,
+                                                     exceptionListener);
+        mOutgoingJmsFactory = new OutgoingJmsFactory(outgoingCF);
     }
 
     /**
@@ -56,9 +55,8 @@ public class JmsManager
      * @param outgoingCF The outgoing factory.
      */
 
-    public JmsManager
-        (ConnectionFactory incomingCF,
-         ConnectionFactory outgoingCF)
+    public JmsManager(ConnectionFactory incomingCF,
+                      ConnectionFactory outgoingCF)
     {
         this(incomingCF,outgoingCF,null);
     }

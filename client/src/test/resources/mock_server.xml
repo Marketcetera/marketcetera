@@ -14,7 +14,7 @@
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation=
  "http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
   <!--
     - Sets Java system properties.
@@ -42,39 +42,21 @@
     - activemq/broker/BrokerService.html' for a complete list of options.
     -->
 
-  <bean
-   id="metc_jms_broker"
-   class="org.apache.activemq.broker.BrokerService"
-   init-method="start"
-   destroy-method="stop"
-   depends-on="metc_system_properties_setter">
-    <property
-     name="brokerName"
-     value="TEST_BROKER"/>
-    <property
-     name="persistent"
-     value="false"/>
-    <property
-     name="useShutdownHook"
-     value="false"/>
-    <property
-     name="useJmx"
-     value="true"/>
-    <property
-     name="transportConnectorURIs">
+  <bean id="metc_jms_broker" class="org.apache.activemq.broker.BrokerService" init-method="start" destroy-method="stop" depends-on="metc_system_properties_setter">
+    <property name="brokerName" value="TEST_BROKER"/>
+    <property name="persistent" value="false"/>
+    <property name="useShutdownHook" value="false"/>
+    <property name="useJmx" value="true"/>
+    <property name="transportConnectorURIs">
       <list>
         <value>tcp://localhost:61616?wireFormat.maxInactivityDurationInitalDelay=30000</value>
         <value>stomp://localhost:61613</value>
       </list>
     </property>
-    <property
-     name="plugins">
+    <property name="plugins">
       <list>
-        <bean
-         class="org.apache.activemq.security.JaasAuthenticationPlugin">
-          <property
-           name="configuration"
-           value="test-amq-domain"/>
+        <bean class="org.apache.activemq.security.JaasAuthenticationPlugin">
+          <property name="configuration" value="test-amq-domain"/>
         </bean>
       </list>
     </property>
@@ -90,19 +72,10 @@
     - of options.
     -->
 
-  <bean
-   id="metc_connection_factory_in"
-   class="org.apache.activemq.ActiveMQConnectionFactory"
-   depends-on="metc_jms_broker">
-    <property
-     name="brokerURL"
-     value="tcp://localhost:61616?wireFormat.maxInactivityDurationInitalDelay=30000"/>
-    <property
-     name="userName"
-     value="whatever"/>
-    <property
-     name="password"
-     value="whatever"/>
+  <bean id="metc_connection_factory_in" class="org.apache.activemq.ActiveMQConnectionFactory" depends-on="metc_jms_broker">
+    <property name="brokerURL" value="tcp://localhost:61616?wireFormat.maxInactivityDurationInitalDelay=30000"/>
+    <property name="userName" value="whatever"/>
+    <property name="password" value="whatever"/>
   </bean>
 
   <!--
@@ -113,11 +86,7 @@
     - of options.
     -->
 
-  <bean
-   id="metc_connection_factory_out"
-   class="org.apache.activemq.pool.PooledConnectionFactory">
-    <property
-     name="connectionFactory"
-     ref="metc_connection_factory_in"/>
+  <bean id="metc_connection_factory_out" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+    <property name="connectionFactory" ref="metc_connection_factory_in"/>
   </bean>
 </beans>
