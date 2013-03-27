@@ -9,174 +9,172 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
 
-    <modelVersion>4.0.0</modelVersion>
+  <groupId>org.marketcetera</groupId>
+  <artifactId>public-parent</artifactId>
+  <version>2.4.0</version>
 
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-    </parent>
+  <packaging>pom</packaging>
 
-    <groupId>org.marketcetera</groupId>
-    <artifactId>public-parent</artifactId>
-    <version>2.4.0</version>
+  <name>Marketcetera Public Sources Parent POM</name>
+  <description>The root of Marketcetera public sources.</description>
+  <url>http://www.marketcetera.org</url>
 
-    <packaging>pom</packaging>
+  <licenses>
+    <license>
+      <name>GNU General Public License (GPL)</name>
+      <url>http://www.gnu.org/licenses/gpl.html</url>
+    </license>
+  </licenses>
 
-    <name>Marketcetera Public Sources Parent POM</name>
-    <description>The root of Marketcetera public sources.</description>
-    <url>http://www.marketcetera.org</url>
+  <developers>
+    <developer>
+      <id>team</id>
+      <name>Marketcetera Team</name>
+      <roles>
+	<role>Owner</role>
+      </roles>
+    </developer>
+  </developers>
 
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPL)</name>
-            <url>http://www.gnu.org/licenses/gpl.html</url>
-        </license>
-    </licenses>
+  <properties>
+    <mvn.javase.version>6</mvn.javase.version>
+    <mvn.javaee.version>5</mvn.javaee.version>
+    <mvn.spring.version>3.2.2.RELEASE</mvn.spring.version>
+    <mvn.cxf.version>2.7.2</mvn.cxf.version>
+    <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
+    <mvn.xjc.version>2.7.7</mvn.xjc.version>
+    <mvn.eclipse.version>3.5</mvn.eclipse.version>
+    <!-- Build Number. -->
+    <mvn.build.number>Development Build</mvn.build.number>
+  </properties>
 
-    <developers>
-        <developer>
-            <id>team</id>
-            <name>Marketcetera Team</name>
-            <roles>
-                <role>Owner</role>
-            </roles>
-        </developer>
-    </developers>
-
-    <properties>
-        <mvn.javase.version>6</mvn.javase.version>
-        <mvn.javaee.version>5</mvn.javaee.version>
-        <mvn.spring.version>3.2.2.RELEASE</mvn.spring.version>
-        <mvn.cxf.version>2.1.2</mvn.cxf.version>
-        <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
-        <mvn.xjc.version>2.1.7</mvn.xjc.version>
-        <mvn.eclipse.version>3.5</mvn.eclipse.version>
-        <!-- Build Number. -->
-        <mvn.build.number>Development Build</mvn.build.number>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-
-            <!-- Compile: local modules. -->
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>client</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>core</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>marketdata-bogus</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>marketdata-yahoo</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>marketdata-csv</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>misc</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>strategy</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>util</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>cep-system</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>cep-esper</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>remote-receiver</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>remote-emitter</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>saclient</artifactId>
-                <version>2.4.0</version>
-            </dependency>
-
-            <!-- Compile: QuickFIX/J. -->
-            <dependency>
-                <groupId>quickfixj</groupId>
-                <artifactId>quickfixj-all</artifactId>
-                <version>1.5.2-bd</version>
-            </dependency>
-
-            <!-- Compile: other. -->
-            <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-rt-frontend-jaxws</artifactId>
-                <version>${mvn.cxf.version}</version>
-                <exclusions>
-                    <!-- Exclude jaxb-xjc: nonessential and confuses photon bundle. -->
-                    <exclusion>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-xjc</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.cxf</groupId>
-                <artifactId>cxf-rt-transports-http</artifactId>
-                <version>${mvn.cxf.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${mvn.spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.skife.kasparov</groupId>
-                <artifactId>csv</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>net.java.dev.glazedlists</groupId>
-                <artifactId>glazedlists_java15</artifactId>
-                <version>1.8.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.6.4</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.4</version>
-            </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Compile: local modules. -->
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>client</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>core</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>marketdata-bogus</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>marketdata-yahoo</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>marketdata-csv</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>misc</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>strategy</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>util</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>cep-system</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>cep-esper</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>remote-receiver</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>remote-emitter</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>saclient</artifactId>
+	<version>2.4.0</version>
+      </dependency>
+      <!-- Compile: QuickFIX/J. -->
+      <dependency>
+	<groupId>quickfixj</groupId>
+	<artifactId>quickfixj-all</artifactId>
+	<version>1.5.2-bd</version>
+      </dependency>
+      <!-- Compile: other. -->
+      <dependency>
+	<groupId>asm</groupId>
+	<artifactId>asm</artifactId>
+	<version>3.3.1</version>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.cxf</groupId>
+	<artifactId>cxf-rt-frontend-jaxws</artifactId>
+	<version>${mvn.cxf.version}</version>
+	<exclusions>
+	  <!-- CD 20130116: excluding this version of asm makes the compile dependency
+               more obvious: in fact, we want to pair our asm version with the one brought
+	       in by cxf (3.3.1 as of now). this is to allow a compile-time dependency on asm
+               without including cxf -->
+	  <exclusion>
+	    <groupId>asm</groupId>
+	    <artifactId>asm</artifactId>
+	  </exclusion>
+	</exclusions>
+      </dependency>
+      <dependency>
+	<groupId>org.apache.cxf</groupId>
+	<artifactId>cxf-rt-transports-http</artifactId>
+	<version>${mvn.cxf.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>org.skife.kasparov</groupId>
+	<artifactId>csv</artifactId>
+	<version>1.0</version>
+      </dependency>
+      <dependency>
+	<groupId>net.java.dev.glazedlists</groupId>
+	<artifactId>glazedlists_java15</artifactId>
+	<version>1.8.0</version>
+      </dependency>
+      <dependency>
+	<groupId>org.slf4j</groupId>
+	<artifactId>slf4j-api</artifactId>
+	<version>1.6.4</version>
+      </dependency>
+      <dependency>
+	<groupId>commons-io</groupId>
+	<artifactId>commons-io</artifactId>
+	<version>2.4</version>
+      </dependency>
             <dependency>
                 <groupId>commons-cli</groupId>
                 <artifactId>commons-cli</artifactId>
@@ -309,6 +307,12 @@
                 <artifactId>protobuf-java</artifactId>
                 <version>2.4.1</version>
             </dependency>
+	    <!-- Compile: Spring -->
+	    <dependency>
+	      <groupId>org.springframework</groupId>
+	      <artifactId>spring-webmvc</artifactId>
+	      <version>${mvn.spring.version}</version>
+	    </dependency>
             <!-- Runtime. -->
             <dependency>
                 <groupId>org.apache.activemq</groupId>

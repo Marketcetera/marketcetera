@@ -1,36 +1,41 @@
 package org.marketcetera.strategyagent;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.InvalidAttributeValueException;
+
+import org.hamcrest.Matchers;
+import org.junit.*;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ClientModuleFactory;
+import org.marketcetera.client.ClientParameters;
+import org.marketcetera.client.MockServer;
+import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.core.Util;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.saclient.*;
+import org.marketcetera.strategy.Language;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.file.Deleter;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.file.Deleter;
-import org.marketcetera.module.*;
-import org.marketcetera.client.MockServer;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ClientParameters;
-import org.marketcetera.client.ClientModuleFactory;
-import org.marketcetera.saclient.*;
-import org.marketcetera.strategy.Language;
-import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.core.Util;
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.*;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.math.BigDecimal;
 
 
 /* $License$ */
@@ -547,29 +552,36 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
         ModuleTestBase.assertModuleInfo(saClient.getModuleInfo(urn), urn,
                 ModuleState.CREATED, null, null,
                 false, false, true, true, true);
-        Map<String, Object> props = saClient.getProperties(urn);
+        Map<String,Object> props = saClient.getProperties(urn);
         assertNotNull(props);
         assertFalse(props.isEmpty());
         assertEquals(props.toString(), 5, props.size());
-        assertThat(props, allOf(hasEntry("Parameters", null),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, false),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
+        assertThat(props,
+                   allOf(hasEntry("Parameters",null),
+                         hasEntry("Name",(Object)"HelloWorld"),
+                         hasEntry("Language",(Object)Language.RUBY.toString()),
+                         hasEntry(STRAT_PROP_ROUTING_ORDERS,(Object)false),
+                         hasEntry("OutputDestination",(Object)RECEIVER_URN.parent().getValue())));
 
         //start the strategy
         saClient.start(urn);
+	// Sameer TODO begins
+	// this call fails, I think the strategy problem is a red herring (hides the real problem here)
+	// obviously, the strategy failing to compile is an issue: I'm working on that. try to figure out
+	// why this call is failing. it looks like it's throwing an NPE.
+	ModuleState state = saClient.getModuleInfo(urn).getState();
+	// Sameer TODO ends
         //verify properties and state
         assertEquals(ModuleState.STARTED, saClient.getModuleInfo(urn).getState());
         props = saClient.getProperties(urn);
         assertNotNull(props);
         assertEquals(props.toString(), 6, props.size());
         assertThat(props, allOf(hasEntry("Parameters", null),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, false),
-                hasEntry("Status", "RUNNING"),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
+                hasEntry("Name",(Object)"HelloWorld"),
+                hasEntry("Language",(Object)Language.RUBY.toString()),
+                hasEntry(STRAT_PROP_ROUTING_ORDERS,(Object)false),
+                hasEntry("Status",(Object)"RUNNING"),
+                hasEntry("OutputDestination",(Object)RECEIVER_URN.parent().getValue())));
 
         //stop the strategy
         saClient.stop(urn);
@@ -584,18 +596,19 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
         props = saClient.setProperties(urn, props);
         assertNotNull(props);
         assertEquals(props.toString(), 2, props.size());
-        assertThat(props, allOf(hasEntry("Parameters", (Object)paramValue),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, true)));
+        assertThat(props,
+                   allOf(hasEntry("Parameters", (Object)paramValue),
+                hasEntry(STRAT_PROP_ROUTING_ORDERS,(Object)true)));
         //verify that the property indeed changed by fetching them again
         props = saClient.getProperties(urn);
         assertNotNull(props);
         assertEquals(props.toString(), 6, props.size());
         assertThat(props, allOf(hasEntry("Parameters", (Object)paramValue),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, true),
-                hasEntry("Status", "STOPPED"),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
+                hasEntry("Name",(Object)"HelloWorld"),
+                hasEntry("Language",(Object)Language.RUBY.toString()),
+                hasEntry(STRAT_PROP_ROUTING_ORDERS,(Object)true),
+                hasEntry("Status",(Object)"STOPPED"),
+                hasEntry("OutputDestination",(Object)RECEIVER_URN.parent().getValue())));
 
         props.clear();
         props.put(STRAT_PROP_ROUTING_ORDERS, BigDecimal.ONE);

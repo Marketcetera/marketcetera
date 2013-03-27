@@ -51,6 +51,10 @@
       <artifactId>log4j</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+    </dependency>
 
     <!-- Runtime. -->
     <dependency>
