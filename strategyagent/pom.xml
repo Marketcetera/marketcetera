@@ -68,6 +68,11 @@
 
     <!-- Testing. -->
     <dependency>
+      <groupId>com.marketcetera.ramius</groupId>
+      <artifactId>ramius-strategy</artifactId>
+      <version>1.0-m3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>

@@ -13,10 +13,7 @@ import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.info.*;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.trade.FIXConverter;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -38,7 +35,7 @@ import quickfix.field.*;
 
 @ClassVersion("$Id$")
 public class QuickFIXApplication
-    implements Application
+    implements Application, OrderReceiver
 {
 
     // CLASS DATA
@@ -370,6 +367,57 @@ public class QuickFIXApplication
         messagesToProcess.add(new MessagePackage(msg,
                                                  MessageType.FROM_APP,
                                                  session));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.OrderReceiver#addReport(org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void addReport(ExecutionReport inReport)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Adding {}",
+                               inReport);
+        if(!(inReport instanceof FIXMessageSupport)) {
+            throw new UnsupportedOperationException(inReport + " must implement FIXMessageSupport");
+        }
+        Broker broker = getBrokers().getBroker(inReport.getBrokerID());
+        if(broker == null) {
+            throw new IllegalArgumentException("Unknown broker ID: " + inReport.getBrokerID());
+        }
+        SessionID sessionID = broker.getSessionID(); // TODO what if the broker is offline? no sessionID, I would think. if the sessionID is null, the package can't be translated to a broker (that's fixable)
+        Message msg = ((FIXMessageSupport)inReport).getMessage();
+        // need to modify message version of this message to match the broker's
+        BeginString fixVersion = new BeginString(broker.getFIXVersion().toString());
+        msg.getHeader().setField(fixVersion);
+        // recalculate checksum and length
+        String newMessageValue = msg.toString();
+        SLF4JLoggerProxy.debug(this,
+                               "Message converted to {}",
+                               newMessageValue);
+        // validate fix message with the broker's dictionary
+        try {
+            broker.getDataDictionary().validate(msg);
+        } catch (Exception e) {
+            SLF4JLoggerProxy.warn(this,
+                                  e,
+                                  "{} rejected",
+                                  inReport);
+            throw new RuntimeException(e);
+        }
+        messagesToProcess.add(new MessagePackage(msg,
+                                                 MessageType.FROM_APP,
+                                                 sessionID));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.OrderReceiver#deleteReport(org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void deleteReport(ExecutionReport inReport)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Deleting {}",
+                               inReport);
+        // TODO magic happens here
     }
     /**
      * Indicates the type of message.

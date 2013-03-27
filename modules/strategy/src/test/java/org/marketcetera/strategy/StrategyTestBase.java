@@ -1082,6 +1082,24 @@ public class StrategyTestBase
             }
             return result;
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
+         */
+        @Override
+        public void addReport(ExecutionReport inReport)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
+         */
+        @Override
+        public void deleteReport(ExecutionReport inReport)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
     }
     /**
      * Compares the sending times of two <code>ReportBase</code> values.

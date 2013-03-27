@@ -13,14 +13,14 @@
 #           parameters declared by the module factory as the
 #           parameter types needed to create a module instance.
 #
-createModule;metc:cep:system;metc:cep:system:myinstance
+#createModule;metc:cep:system;metc:cep:system:myinstance
 #
 # Start Module Command
 #
 # Syntax: startModule;module_instance_urn
 #
 #
-startModule;metc:mdata:bogus:single
+#startModule;metc:mdata:bogus:single
 #
 # Create Data Flow Command
 #
@@ -34,4 +34,6 @@ startModule;metc:mdata:bogus:single
 #           request_parameter: is the request parameter for requesting
 #           data from the module instance.
 #
-createDataFlow;metc:mdata:bogus:single;type=marketdata:symbols=AAPL^metc:sink:system
+createModule;metc:strategy:system;main1,MainStrategy,JAVA,../../m3_ui/strategy/src/test/java/com/marketcetera/ramius/strategy/MainStrategy.java,,true,metc:remote:receiver
+# Start the strategy (un-comment the next line to start the strategy automatically, otherwise, start it manually from Photon)
+startModule;metc:strategy:system:main1

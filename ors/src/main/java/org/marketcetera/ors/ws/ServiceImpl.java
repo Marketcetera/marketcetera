@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.jws.WebParam;
+
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
@@ -12,6 +14,7 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.OptionRootUnderlyingMap;
+import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
@@ -274,6 +277,64 @@ public class ServiceImpl
         SimpleUser user = new SingleSimpleUserQuery(inUsername).fetch();
         user.setUserData(inUserData);
         user.save();
+    }
+    /**
+     * 
+     *
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inUser a <code>UserID</code> value
+     * @throws PersistenceException 
+     */
+    private void addReport(ExecutionReport inReport,
+                           UserID inUser)
+            throws PersistenceException
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Received {} from {} to add", // TODO
+                              inReport,
+                              inUser);
+        // we need to rework this ER so that it looks correct. this means that we have to throw out some of its
+        //  attributes and substitute our own. this means that we need to recreate the Report, unfortunately
+        if(inReport instanceof FIXMessageSupport) {
+            try {
+                ExecutionReport newReport = Factory.getInstance().createExecutionReport(((FIXMessageSupport)inReport).getMessage(),
+                                                                                        inReport.getBrokerID(),
+                                                                                        Originator.User,
+                                                                                        inUser,
+                                                                                        inUser);
+                // the FIX message is still somewhat suspect, but the order receiver will reconcile that
+                OrderRoutingSystem.getInstance().getOrderReceiver().addReport(newReport);
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(this,
+                                      e,
+                                      "Unable to add {}",
+                                      inReport);
+                throw new RuntimeException("Unable to add report: " + e.getMessage(),
+                                           e);
+            }
+        } else {
+            throw new UnsupportedOperationException("Report must implement FIXMessageSupport");
+        }
+    }
+    /**
+     * 
+     *
+     *
+     * @param inReport
+     * @param inUser
+     * @throws PersistenceException
+     */
+    private void deleteReport(ExecutionReport inReport,
+                              UserID inUser)
+            throws PersistenceException
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Received {} from {} to delete", // TODO
+                              inReport,
+                              inUser);
+        // TODO tinker with the report
+        OrderRoutingSystem.getInstance().getOrderReceiver().deleteReport(inReport);
     }
     // Service.
 
@@ -617,6 +678,42 @@ public class ServiceImpl
             {
                 setUserDataImpl(getSessionManager().get(inContext.getSessionId()).getSession().getUser().getName(),
                                 inData);
+            }}).execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#addReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void addReport(final @WebParam(name="context")ClientContext inContext,
+                          final @WebParam(name="report")ExecutionReport inReport)
+            throws RemoteException
+    {
+        (new RemoteRunner<ClientSession>(getSessionManager()) {
+            @Override
+            protected void run(ClientContext context,
+                               SessionHolder<ClientSession> sessionHolder)
+                    throws PersistenceException
+            {
+                addReport(inReport,
+                          getSessionManager().get(inContext.getSessionId()).getSession().getUser().getUserID());
+            }}).execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#deleteReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void deleteReport(final @WebParam(name="context")ClientContext inContext,
+                             final @WebParam(name="report")ExecutionReport inReport)
+            throws RemoteException
+    {
+        (new RemoteRunner<ClientSession>(getSessionManager()) {
+            @Override
+            protected void run(ClientContext context,
+                               SessionHolder<ClientSession> sessionHolder)
+                    throws PersistenceException
+            {
+                deleteReport(inReport,
+                             getSessionManager().get(inContext.getSessionId()).getSession().getUser().getUserID());
             }}).execute(inContext);
     }
 }

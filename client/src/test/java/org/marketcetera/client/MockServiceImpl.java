@@ -478,4 +478,24 @@ public class MockServiceImpl
 		// TODO Auto-generated method stub
 		return null;
 	}
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#addReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void addReport(@WebParam(name = "context")ClientContext inContext,
+                          @WebParam(name = "report")ExecutionReport inReport)
+            throws RemoteException
+    {
+        throw new UnsupportedOperationException();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#deleteReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void deleteReport(@WebParam(name = "context")ClientContext inContext,
+                             @WebParam(name = "report")ExecutionReport inReport)
+            throws RemoteException
+    {
+        throw new UnsupportedOperationException();
+    }
 }
