@@ -1,24 +1,29 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
-import java.math.BigDecimal;
-
-import org.marketcetera.photon.Messages;
-
 import quickfix.Message;
-import quickfix.field.Price;
+import quickfix.StringField;
 
 /**
- * Price execution report field
+ * Custom execution report field. Both field name
+ * and value are user-defined.
  * 
  * @author milan
  *
  */
-public class PriceField extends ExecutionReportField 
-{
+public class CustomFixField extends ExecutionReportField 
+{	
+	/** Custom field number */
+	private final String fFieldName;
+	
+	public CustomFixField(String fieldName)
+	{
+		fFieldName = fieldName;
+	}
+		
 	@Override
 	public String getFieldName() 
 	{
-		return Messages.EXECUTION_REPORT_FIELD_PRICE.getText();
+		return fFieldName;
 	}
 
 	@Override
@@ -30,18 +35,17 @@ public class PriceField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new Price(new BigDecimal(fValue)));	
+		message.setField(new StringField(Integer.parseInt(fFieldName),fValue));
+		
 	}
 
 	@Override
 	public boolean validateValue() {
 		if(!super.validateValue())
-		{
 			return false;
-		}
 		try
 		{
-			new BigDecimal(fValue);
+			Integer.parseInt(fFieldName);
 		}
 		catch(NumberFormatException nfe)
 		{
@@ -49,4 +53,7 @@ public class PriceField extends ExecutionReportField
 		}
 		return true;
 	}
+	
+	
+	
 }

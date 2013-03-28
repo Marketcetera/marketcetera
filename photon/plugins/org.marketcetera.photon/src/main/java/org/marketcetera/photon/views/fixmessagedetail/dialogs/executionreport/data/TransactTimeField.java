@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.marketcetera.photon.Messages;
-import org.marketcetera.photon.PhotonPlugin;
+
+import quickfix.Message;
+import quickfix.field.SendingTime;
 
 /**
  * Transaction time execution report field
@@ -16,19 +18,6 @@ import org.marketcetera.photon.PhotonPlugin;
 public class TransactTimeField extends ExecutionReportField 
 {
 	private static final String timeFormat = "dd-MMM-yyyy HH:mm:ss:SSS"; //$NON-NLS-1$
-
-	private int FIELD;
-	
-	public TransactTimeField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override	
-	public int getField() 
-	{
-		return FIELD;
-	}
 	
 	@Override
 	public String getFieldName() 
@@ -43,21 +32,31 @@ public class TransactTimeField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
+	public boolean validateValue() 
 	{
+		if(!super.validateValue())
+		{
+			return false;
+		}
 		try {
-			Calendar transactTime = Calendar.getInstance();
 			SimpleDateFormat transactTimeFormat = new SimpleDateFormat(timeFormat);
-			transactTime.setTime(transactTimeFormat.parse(fSelectedValue));
-			
-			
-			return transactTime.getTime();
+			transactTimeFormat.parse(fValue);			
+			return true;
 		} 
 		catch (ParseException e) 
-		{
-			PhotonPlugin.LOGGER.error("Time formatting", e);
-		}
+		{}
+		return false;	
+	}
 
-		return null;
+	@Override
+	public void insertField(Message message) {
+		try 
+		{
+			Calendar transactTime = Calendar.getInstance();
+			SimpleDateFormat transactTimeFormat = new SimpleDateFormat(timeFormat);
+			transactTime.setTime(transactTimeFormat.parse(fValue));
+			message.setField(new SendingTime(transactTime.getTime()));
+		} catch (ParseException e) {
+		}
 	}
 }

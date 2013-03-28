@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 
 import org.marketcetera.photon.Messages;
 
+import quickfix.Message;
+import quickfix.field.OrderQty;
+
 /**
  * Order quantity execution report field
  * 
@@ -12,19 +15,6 @@ import org.marketcetera.photon.Messages;
  */
 public class OrderQtyField extends ExecutionReportField 
 {
-	private int FIELD;
-	
-	public OrderQtyField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
-	
 	@Override
 	public String getFieldName() 
 	{
@@ -38,8 +28,25 @@ public class OrderQtyField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
+	public void insertField(Message message) 
 	{
-		return new BigDecimal(fSelectedValue);
+		message.setField(new OrderQty(new BigDecimal(fValue)));	
+	}
+
+	@Override
+	public boolean validateValue() {
+		if(!super.validateValue())
+		{
+			return false;
+		}
+		try
+		{
+			new BigDecimal(fValue);
+		}
+		catch(NumberFormatException nfe)
+		{
+			return false;
+		}
+		return true;
 	}
 }

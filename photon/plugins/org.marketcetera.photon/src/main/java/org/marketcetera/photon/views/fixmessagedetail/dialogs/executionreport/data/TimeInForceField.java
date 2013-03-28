@@ -6,6 +6,8 @@ import java.util.List;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.TimeInForce;
 
+import quickfix.Message;
+
 /**
  * Time in force execution report field
  * 
@@ -14,18 +16,6 @@ import org.marketcetera.trade.TimeInForce;
  */
 public class TimeInForceField extends ExecutionReportField 
 {
-	private int FIELD;
-	
-	public TimeInForceField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
 	
 	@Override
 	public String getFieldName() 
@@ -46,9 +36,8 @@ public class TimeInForceField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
-	{
-		TimeInForce timeInForce = TimeInForce.valueOf(fSelectedValue);
-		return new quickfix.field.TimeInForce(timeInForce.getFIXValue());
+	public void insertField(Message message) {
+		message.setField(new quickfix.field.TimeInForce(TimeInForce.valueOf(fValue).getFIXValue()));
+		
 	}
 }

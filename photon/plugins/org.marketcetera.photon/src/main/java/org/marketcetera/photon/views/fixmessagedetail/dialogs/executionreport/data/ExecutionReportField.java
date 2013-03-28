@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
+import quickfix.Message;
+
 
 /**
  * Execution report field class representing a single 
@@ -10,26 +12,34 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
  */
 public abstract class ExecutionReportField
 {
-	protected String fSelectedValue;
+	protected String fValue;
 	
 	public static final String[] NULL_VALUE = null;
-	
-	public abstract int getField();
+	public static final String EMPTY_STRING = "";
 	
 	public abstract String getFieldName();
 	
 	public abstract String[] getValues();
 	
-	abstract public Object getFieldValue();
+	public abstract void insertField(Message message);
+	
+	public boolean isFixField(){
+		return true;
+	}
+	
+	public boolean validateValue() 
+	{
+		return fValue != null && !fValue.equals(EMPTY_STRING);
+	}
 	
 	public void setSelectedValue(String selectedValue)
 	{
-		fSelectedValue = selectedValue;
+		fValue = selectedValue;
 	}
 	
 	public String getSelectedValue()
 	{
-		return fSelectedValue;
+		return fValue;
 	}
 	
 	@Override

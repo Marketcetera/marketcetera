@@ -6,6 +6,9 @@ import java.util.List;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.ExecutionType;
 
+import quickfix.Message;
+import quickfix.field.ExecType;
+
 /**
  * Execution type execution report field
  * 
@@ -14,18 +17,6 @@ import org.marketcetera.trade.ExecutionType;
  */
 public class ExecutionTypeField extends ExecutionReportField 
 {
-	private int FIELD;
-	
-	public ExecutionTypeField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
 	
 	@Override
 	public String getFieldName() 
@@ -46,9 +37,7 @@ public class ExecutionTypeField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
-	{
-		ExecutionType execType = ExecutionType.valueOf(fSelectedValue);
-		return new Character(execType.getFIXValue());
+	public void insertField(Message message) {
+		message.setField(new ExecType(ExecutionType.valueOf(fValue).getFIXValue()));
 	}
 }

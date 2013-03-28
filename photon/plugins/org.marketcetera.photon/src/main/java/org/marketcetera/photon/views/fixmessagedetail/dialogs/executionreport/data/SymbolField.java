@@ -1,22 +1,14 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
-import org.marketcetera.photon.Messages;
 
 import quickfix.Message;
-import quickfix.field.Text;
+import quickfix.field.Symbol;
 
-/**
- * Execution report text
- * 
- * @author Milos Djuric
- *
- */
-public class TextField extends ExecutionReportField {
-
+public class SymbolField extends ExecutionReportField {
 
 	@Override
 	public String getFieldName() 
 	{
-		return Messages.EXECUTION_REPORT_FIELD_TEXT.getText();
+		return "Symbol";
 	}
 
 	@Override
@@ -28,8 +20,7 @@ public class TextField extends ExecutionReportField {
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new Text("fValue"));
-		
+		message.setField(new Symbol(fValue));	
 	}
 
 }

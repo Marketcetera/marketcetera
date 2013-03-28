@@ -19,16 +19,18 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.CustomField;
+import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.CustomFixField;
+import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.CustomNoneFixField;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportContainer;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportField;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportFixFields;
+import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportNoneFixField;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldContentProvider;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldLabelProvider;
-import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.MessageCreationException;
 
 import quickfix.FieldNotFound;
+import quickfix.Message;
 
 /**
  * Creates Add Execution Report dialog
@@ -109,7 +111,7 @@ public class AddExecutionReportDialog extends ReportDialog
 		// Create field combo box
 		createFieldComboViewer(fValueComposite);
 
-		fValuesControl = new Combo(fValueComposite, SWT.READ_ONLY);
+		fValuesControl = new Text(fValueComposite, SWT.BORDER);
 		fValuesControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 				
 		fAddButton = new Button(buttonsComposite, SWT.PUSH);
@@ -226,10 +228,20 @@ public class AddExecutionReportDialog extends ReportDialog
 		// Skip special keys
 		if (event.keyCode != 0)
 		{
-			if(fValuesControl instanceof Combo)
-				((Combo) fValuesControl).setItems(new String[] {});
-			else
-				((Text) fValuesControl).setText("");
+        	if(fValuesControl instanceof Text)
+        	{
+        		((Text) fValuesControl).setText("");
+        		return;
+        	}
+        	else
+        	{
+        		fValuesControl.dispose();
+        		fValuesControl = new Text(fValueComposite, SWT.BORDER);
+        		fValuesControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        		((Text) fValuesControl).setText("");
+        		fValueComposite.layout();
+        		return;        		
+        	}
 		}
 		
 	}
@@ -257,6 +269,9 @@ public class AddExecutionReportDialog extends ReportDialog
 
 			// Add execution report field
 			reportField.setSelectedValue(selectedValue);
+			
+			if(!reportField.validateValue())
+				return;
 
 			fExecutionReportFields.addExecutionReportField(reportField);
 
@@ -267,6 +282,8 @@ public class AddExecutionReportDialog extends ReportDialog
 			fFieldCombo.getCombo().deselectAll();
 			if(fValuesControl instanceof Combo)
 				((Combo) fValuesControl).deselectAll();
+			else
+				((Text) fValuesControl).setText("");
 		}
 	}
 	
@@ -274,14 +291,20 @@ public class AddExecutionReportDialog extends ReportDialog
 	protected void okPressed() 
 	{
 		/**
-		 * TODO: Validate each field
+		 * TODO: Fields are validated when user press add button
 		 */
 		try 
 		{
-			ExecutionReport executionReport = fExecutionReportFields.createExecutionReport();
+			Message executionReport = fExecutionReportFields.createExecutionReport();
+			System.out.println(executionReport.toString());
+			/*BrokerID, BrokerOrderID, StrategyTag*/
+			ExecutionReportNoneFixField[] noneFixFields = fExecutionReportFields.getNoneFixFields();
 			/**
 			 * TODO: send execution report
 			 */
+			for(int i = 0; i < noneFixFields.length; i++){
+				System.out.println(noneFixFields[i].getFieldName() + " " + noneFixFields[i].getFieldValue());
+			}
 		} 
 		catch (MessageCreationException e) 
 		{
@@ -321,7 +344,15 @@ public class AddExecutionReportDialog extends ReportDialog
 			
 			if(!fieldName.equals(EMPTY_VALUE))
 			{
-				return new CustomField(fieldName);
+				try
+				{
+					Integer.parseInt(fieldName);
+					return new CustomFixField(fieldName);
+				}
+				catch(NumberFormatException nfe)
+				{
+					return new CustomNoneFixField(fieldName);					
+				}
 			}
 		} 
 		else

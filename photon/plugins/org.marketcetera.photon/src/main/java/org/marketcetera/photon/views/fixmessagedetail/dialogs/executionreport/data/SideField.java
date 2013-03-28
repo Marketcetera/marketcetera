@@ -6,6 +6,8 @@ import java.util.List;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.Side;
 
+import quickfix.Message;
+
 /**
  * Side execution report field
  * 
@@ -13,20 +15,7 @@ import org.marketcetera.trade.Side;
  *
  */
 public class SideField extends ExecutionReportField 
-{
-	private int FIELD;
-	
-	public SideField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
-	
+{	
 	@Override
 	public String getFieldName() 
 	{
@@ -46,9 +35,8 @@ public class SideField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
-	{
-		Side side = Side.valueOf(fSelectedValue);
-		return new Character(side.getFIXValue());
+	public void insertField(Message message) {
+		message.setField(new quickfix.field.Side(Side.valueOf(fValue).getFIXValue()));
+		
 	}
 }

@@ -1,7 +1,9 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
 import org.marketcetera.photon.Messages;
-import org.marketcetera.trade.OrderID;
+
+import quickfix.Message;
+import quickfix.field.OrderID;
 
 /**
  * Order ID execution report field
@@ -10,20 +12,7 @@ import org.marketcetera.trade.OrderID;
  *
  */
 public class OrderIDField extends ExecutionReportField 
-{
-	private int FIELD;
-	
-	public OrderIDField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
-	
+{	
 	@Override
 	public String getFieldName() 
 	{
@@ -37,8 +26,10 @@ public class OrderIDField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
+	public void insertField(Message message) 
 	{
-		return new OrderID(fSelectedValue);
+		message.setField(new OrderID(fValue));	
 	}
+
+
 }

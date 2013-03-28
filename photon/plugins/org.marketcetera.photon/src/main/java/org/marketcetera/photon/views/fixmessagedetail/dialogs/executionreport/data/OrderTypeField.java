@@ -6,6 +6,7 @@ import java.util.List;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.OrderType;
 
+import quickfix.Message;
 import quickfix.field.OrdType;
 
 /**
@@ -16,18 +17,6 @@ import quickfix.field.OrdType;
  */
 public class OrderTypeField extends ExecutionReportField 
 {
-	private int FIELD;
-	
-	public OrderTypeField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
 	
 	@Override
 	public String getFieldName() 
@@ -48,9 +37,8 @@ public class OrderTypeField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
-	{
-		OrderType ordType = OrderType.valueOf(fSelectedValue);
-		return new OrdType(ordType.getFIXValue());
+	public void insertField(Message message) {
+		message.setField(new OrdType(OrderType.valueOf(fValue).getFIXValue()));
+		
 	}
 }

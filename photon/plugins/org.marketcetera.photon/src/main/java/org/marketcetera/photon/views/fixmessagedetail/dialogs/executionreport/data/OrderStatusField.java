@@ -6,6 +6,9 @@ import java.util.List;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.OrderStatus;
 
+import quickfix.Message;
+import quickfix.field.OrdStatus;
+
 /**
  * Order status execution report field
  * 
@@ -14,19 +17,6 @@ import org.marketcetera.trade.OrderStatus;
  */
 public class OrderStatusField extends ExecutionReportField 
 {
-	private int FIELD;
-	
-	public OrderStatusField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
-
 	@Override
 	public String getFieldName() 
 	{
@@ -47,8 +37,7 @@ public class OrderStatusField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() {
-		OrderStatus ordStatus = OrderStatus.valueOf(fSelectedValue);
-		return new Character(ordStatus.getFIXValue());
+	public void insertField(Message message) {
+		message.setField(new OrdStatus(OrderStatus.valueOf(fValue).getFIXValue()));
 	}
 }

@@ -2,35 +2,25 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 
 import java.math.BigDecimal;
 
-import org.marketcetera.photon.Messages;
-
 import quickfix.Message;
-import quickfix.field.Price;
+import quickfix.field.StrikePrice;
 
-/**
- * Price execution report field
- * 
- * @author milan
- *
- */
-public class PriceField extends ExecutionReportField 
-{
+public class StrikePriceField extends ExecutionReportField {
+
 	@Override
-	public String getFieldName() 
-	{
-		return Messages.EXECUTION_REPORT_FIELD_PRICE.getText();
+	public String getFieldName() {
+		return "Strike price";
 	}
 
 	@Override
-	public String[] getValues() 
-	{
+	public String[] getValues() {
 		return NULL_VALUE;
 	}
 
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new Price(new BigDecimal(fValue)));	
+		message.setField(new StrikePrice(new BigDecimal(fValue)));	
 	}
 
 	@Override
@@ -49,4 +39,5 @@ public class PriceField extends ExecutionReportField
 		}
 		return true;
 	}
+
 }

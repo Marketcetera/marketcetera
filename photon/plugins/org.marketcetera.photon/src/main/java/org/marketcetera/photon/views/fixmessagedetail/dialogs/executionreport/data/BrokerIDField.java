@@ -9,7 +9,8 @@ import org.marketcetera.client.ConnectionException;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.trade.BrokerID;
+
+import quickfix.Message;
 
 /**
  * Broker ID execution report field
@@ -17,25 +18,14 @@ import org.marketcetera.trade.BrokerID;
  * @author milan
  *
  */
-public class BrokerIDField extends ExecutionReportField 
+public class BrokerIDField extends ExecutionReportNoneFixField 
 {
-	private int FIELD;
-	
-	public BrokerIDField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
+	public static final String BROKER_ID_FIELD_NAME = Messages.EXECUTION_REPORT_FIELD_BROKER_ID.getText();
 	
 	@Override
 	public String getFieldName() 
 	{
-		return Messages.EXECUTION_REPORT_FIELD_BROKER_ID.getText();
+		return BROKER_ID_FIELD_NAME;
 	}
 
 	@Override
@@ -57,8 +47,7 @@ public class BrokerIDField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
-	{
-		return new BrokerID(fSelectedValue);
+	public void insertField(Message message) {
+		System.out.println("Insert BrokerID into message");	
 	}
 }

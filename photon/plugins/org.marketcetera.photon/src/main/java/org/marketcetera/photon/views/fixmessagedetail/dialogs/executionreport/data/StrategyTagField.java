@@ -1,7 +1,8 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
 import org.marketcetera.photon.Messages;
-import org.marketcetera.quickfix.CustomField;
+
+import quickfix.Message;
 
 /**
  * Strategy tag execution report field
@@ -9,25 +10,15 @@ import org.marketcetera.quickfix.CustomField;
  * @author milan
  *
  */
-public class StrategyTagField extends ExecutionReportField 
-{
-	private int FIELD;
+public class StrategyTagField extends ExecutionReportNoneFixField 
+{	
 	
-	public StrategyTagField(int field)
-	{
-		FIELD = field;
-	}
-	
-	@Override
-	public int getField() 
-	{
-		return FIELD;
-	}
+	public static final String STRATEGY_TAG_FIELD_NAME = Messages.EXECUTION_REPORT_FIELD_STRATEGY_TAG.getText();
 	
 	@Override
 	public String getFieldName() 
 	{
-		return Messages.EXECUTION_REPORT_FIELD_STRATEGY_TAG.getText();
+		return STRATEGY_TAG_FIELD_NAME;
 	}
 
 	@Override
@@ -37,8 +28,8 @@ public class StrategyTagField extends ExecutionReportField
 	}
 
 	@Override
-	public Object getFieldValue() 
-	{
-		return new CustomField<String>(FIELD, fSelectedValue);
+	public void insertField(Message message) {
+		System.out.println("Insert StrategyTag into message");
+		
 	}
 }
