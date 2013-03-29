@@ -1,10 +1,10 @@
 require 'java'
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.Equity"
-include_class "java.lang.Long"
-include_class "java.lang.System"
-include_class "java.util.Arrays"
-include_class "java.math.BigDecimal"
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.trade.Equity
+java_import java.lang.Long
+java_import java.lang.System
+java_import java.util.Arrays
+java_import java.math.BigDecimal
 
 class WidthStrategy < Strategy
 

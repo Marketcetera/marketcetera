@@ -1,5 +1,5 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "java.lang.Long"
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import java.lang.Long
 class Part1 < Strategy
   def on_start
       callbackCounter = get_property("onCallback")

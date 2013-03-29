@@ -6,7 +6,7 @@
 # version: $Id$
 #
 #   
-include_class "org.marketcetera.strategy.ruby.Strategy"
+java_import org.marketcetera.strategy.ruby.Strategy
 
 #######################################
 # Strategy that prints a message      #

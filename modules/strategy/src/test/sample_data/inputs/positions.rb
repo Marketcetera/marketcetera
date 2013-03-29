@@ -1,9 +1,9 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.OptionType"
-include_class "java.lang.Long"
-include_class "java.lang.String"
-include_class "java.math.BigDecimal"
-include_class "java.util.Date"
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.trade.OptionType
+java_import java.lang.Long
+java_import java.lang.String
+java_import java.math.BigDecimal
+java_import java.util.Date
 
 ########################################
 # Tests Strategy API positions methods #
@@ -57,7 +57,7 @@ class Positions < Strategy
       if result.nil?
           resultString = nil
       else
-          resultString = result.to_s
+          resultString = result.toString
       end
       if duringStart
           set_property "positionAsOf", resultString
@@ -81,7 +81,7 @@ class Positions < Strategy
       if result.nil?
           resultString = nil
       else
-          resultString = result.to_s
+          resultString = result.toString
       end
       if duringStart
           set_property "currencyPositionAsOf", resultString
@@ -104,7 +104,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-            resultString = result.to_s
+            resultString = result.toString
         end
         if duringStart
             set_property "allPositionsAsOf", resultString
@@ -127,7 +127,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-            resultString = result.to_s
+            resultString = result.toString
         end
         if duringStart
             set_property "allCurrencyPositionsAsOf", resultString
@@ -161,7 +161,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-            resultString = result.to_s
+            resultString = result.toString
         end
         if duringStart
             set_property "optionPositionAsOf",resultString
@@ -182,7 +182,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-            resultString = result.to_s
+            resultString = result.toString
         end
         if duringStart
             set_property "allOptionPositionsAsOf",resultString
@@ -216,7 +216,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-           resultString = result.to_s
+           resultString = result.toString
         end
         if duringStart
             set_property "optionPositionsAsOf",resultString

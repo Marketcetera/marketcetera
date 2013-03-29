@@ -47,7 +47,7 @@ public abstract class AbstractStrategyEngineConnectionTestBase extends
         mTempScript = File.createTempFile("my_strategy", "rb");
         CopyCharsUtils
                 .copy(
-                        "include_class \"org.marketcetera.strategy.ruby.Strategy\"\nclass MyStrategy < Strategy\nend"
+                        "java_import org.marketcetera.strategy.ruby.Strategy\nclass MyStrategy < Strategy\nend"
                                 .toCharArray(), mTempScript.getAbsolutePath());
     }
 

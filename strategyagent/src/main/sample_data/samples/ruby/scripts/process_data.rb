@@ -7,8 +7,8 @@
 #
 #
 'require java'
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.marketdata.MarketDataRequestBuilder
 
 ##################################################
 # Strategy that processes market data via CEP    #
