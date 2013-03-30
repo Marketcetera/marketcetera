@@ -544,10 +544,12 @@ public interface Client {
      * 
      * <p><em>This will affect reported positions</em></p>.
      *
-     * @param inReport an <code>ExecutionReport</code> value
+     * @param inReport a <code>FIXMessageWrapper</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
      * @throws ConnectionException if an error occurs connecting to the server
      */
-    void addReport(ExecutionReport inReport)
+    void addReport(FIXMessageWrapper inReport,
+                   BrokerID inBrokerID)
             throws ConnectionException;
     /**
      * Removes the given report from the persistent report store.

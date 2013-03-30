@@ -382,11 +382,13 @@ public interface Service
      * <p><em>This will affect reported positions</em></p>.
      *
      * @param inContext a <code>ClientContent</code> value
-     * @param inReport an <code>ExecutionReport</code> value
+     * @param inReport a <code>FIXMessageWrapper</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
      * @throws RemoteException if an error occurs
      */
     void addReport(@WebParam(name="context")ClientContext inContext,
-                   @WebParam(name="report")ExecutionReport inReport)
+                   @WebParam(name="report")FIXMessageWrapper inReport,
+                   @WebParam(name="brokerID")BrokerID inBrokerID)
             throws RemoteException;
     /**
      * Removes the given report from the persistent report store.

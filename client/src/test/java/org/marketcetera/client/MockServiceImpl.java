@@ -13,11 +13,7 @@ import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.ClientContext;
-import org.marketcetera.util.ws.stateful.RemoteCaller;
-import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
-import org.marketcetera.util.ws.stateful.SessionHolder;
-import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.stateful.*;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
@@ -479,11 +475,12 @@ public class MockServiceImpl
 		return null;
 	}
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Service#addReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReport)
+     * @see org.marketcetera.client.Service#addReport(org.marketcetera.util.ws.stateful.ClientContext, quickfix.Message)
      */
     @Override
-    public void addReport(@WebParam(name = "context")ClientContext inContext,
-                          @WebParam(name = "report")ExecutionReport inReport)
+    public void addReport(ClientContext inContext,
+                          FIXMessageWrapper inReport,
+                          BrokerID inBrokerID)
             throws RemoteException
     {
         throw new UnsupportedOperationException();
@@ -492,8 +489,8 @@ public class MockServiceImpl
      * @see org.marketcetera.client.Service#deleteReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReport)
      */
     @Override
-    public void deleteReport(@WebParam(name = "context")ClientContext inContext,
-                             @WebParam(name = "report")ExecutionReport inReport)
+    public void deleteReport(ClientContext inContext,
+                             ExecutionReport inReport)
             throws RemoteException
     {
         throw new UnsupportedOperationException();

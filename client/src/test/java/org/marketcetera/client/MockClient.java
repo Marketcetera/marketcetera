@@ -364,7 +364,8 @@ public class MockClient
      * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
      */
     @Override
-    public void addReport(ExecutionReport inReport)
+    public void addReport(FIXMessageWrapper inReport,
+                          BrokerID inBrokerID)
             throws ConnectionException
     {
         throw new UnsupportedOperationException();

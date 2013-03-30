@@ -94,6 +94,8 @@ public interface Messages
         new I18NMessage1P(LOGGER,"qf_comp_id_reject"); //$NON-NLS-1$
     static final I18NMessage1P QF_COMP_ID_REJECT_FAILED=
         new I18NMessage1P(LOGGER,"qf_comp_id_reject_failed"); //$NON-NLS-1$
+    static final I18NMessage1P QF_UNKNOWN_BROKER_ID = new I18NMessage1P(LOGGER,"qf_unknown_broker_id"); //$NON-NLS-1$
+    static final I18NMessage1P QF_CANNOT_ADD_INVALID_REPORT = new I18NMessage1P(LOGGER,"qf_cannot_add_invalid_report"); //$NON-NLS-1$
 
     static final I18NMessage1P RH_REJ_CONVERSION_FAILED=
         new I18NMessage1P(LOGGER,"rh_rej_conversion_failed"); //$NON-NLS-1$

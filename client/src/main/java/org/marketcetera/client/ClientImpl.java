@@ -376,22 +376,22 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         return result;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
+     * @see org.marketcetera.client.Client#addReport(quickfix.Message)
      */
     @Override
-    public void addReport(ExecutionReport inReport)
+    public void addReport(FIXMessageWrapper inReport,
+                          BrokerID inBrokerID)
             throws ConnectionException
     {
         failIfClosed();
         failIfDisconnected();
         try {
             mService.addReport(getServiceContext(),
-                               inReport);
+                               inReport,
+                               inBrokerID);
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,
                                           Messages.ERROR_REMOTE_EXECUTION);
-        } catch (RuntimeException e) {
-            
         }
     }
     /* (non-Javadoc)

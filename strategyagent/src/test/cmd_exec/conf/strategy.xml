@@ -7,6 +7,12 @@
     <!-- set up Spring context scanning -->
     <context:component-scan base-package="com.marketcetera.ramius"/>
     <!-- define input file keyword-based modifications to apply to outgoing orders -->
+    <bean class="com.marketcetera.ramius.strategy.impl.KeywordSpec" id="metc-NumToShow">
+        <property name="broker" value="metc"/>
+        <property name="tag" value="58"/>
+        <property name="keyword" value="NumToShow"/>
+        <property name="appliesToMessageTypes" value="D,G"/>
+    </bean>
     <!-- Citibank FX -->
     <bean class="com.marketcetera.ramius.strategy.impl.KeywordSpec" id="citi-EndTime">
         <property name="broker" value="citifx"/>
@@ -193,6 +199,7 @@
     <bean class="com.marketcetera.ramius.strategy.impl.KeywordOrderModifier" id="keywordOrderModifier">
         <property name="keySpecs">
             <list>
+                <ref bean="metc-NumToShow"/>
                 <ref bean="citi-AlgoType"/>
                 <ref bean="citi-EndTime"/>
                 <ref bean="citi-StartTime"/>
@@ -236,7 +243,7 @@
     <bean id="ladderGenerator" class="com.marketcetera.ramius.strategy.impl.LadderGeneratorImpl"/>
     <bean id="notificationExecutor" class="com.marketcetera.ramius.strategy.impl.EmailNotificationExecutor">
         <!-- for multiple addresses, separate with ',' -->
-        <property name="recipient" value="bjones@ramius.com,lgibbs@ramius.com"/>
+        <property name="recipients" value="bjones@ramius.com,lgibbs@ramius.com"/>
     </bean>
     <bean id="timerExecutor" class="com.marketcetera.ramius.strategy.impl.DefaultTimerExecutor">
         <property name="name" value="Marketcetera Timer Executor"/>
@@ -247,10 +254,12 @@
     <bean class="com.marketcetera.ramius.strategy.impl.TradeManagerImpl" id="tradeManager">
         <property name="dataRecorder" ref="dataRecorder"/>
     </bean>
+    <!-- validators and converters -->
+    <bean class="com.marketcetera.ramius.validation.impl.BrokerIDValidator" id="brokerIDValidator"/>
     <!-- general definition beans -->
     <!-- directory into which to drop input files (required) -->
     <bean class="java.lang.String" id="inputDirectory">
-      <constructor-arg value="/tmp/input"/>
+      <constructor-arg value="/common/TradeManager"/>
     </bean>
     <!-- number of ms in advance of order start times to send orders to the broker (optional, default = 0) -->
     <bean class="java.lang.Long" id="presendInterval">

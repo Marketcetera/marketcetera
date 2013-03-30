@@ -223,7 +223,7 @@ public class OrderRoutingSystem
      *
      * @return an <code>OrderReceiver</code> value
      */
-    public OrderReceiver getOrderReceiver()
+    public ReportReceiver getOrderReceiver()
     {
         return mQFApp;
     }
