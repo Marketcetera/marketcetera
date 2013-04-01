@@ -47,15 +47,8 @@
     <!-- Compile: junit is used by main classes, not just test classes. -->
     <dependency>
       <groupId>junit</groupId>
-      <artifactId>junit-dep</artifactId>
+      <artifactId>junit</artifactId>
       <scope>compile</scope>
-    </dependency>
-
-    <!-- Testing. -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

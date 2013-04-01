@@ -162,7 +162,7 @@ public final class PositionMetricsCalculatorImpl implements PositionMetricsCalcu
         assert !mClosingPriceAvailable || mLastTradePrice == null
                 || totalPL.compareTo(positionPL.add(tradingPL)) == 0 : positionMetrics;
         if (SLF4JLoggerProxy.isDebugEnabled(this)) {
-            if (mLastTradePrice != null && totalPL.compareTo(positionPL.add(tradingPL)) != 0) {
+            if (mLastTradePrice != null && mClosingPriceAvailable && totalPL.compareTo(positionPL.add(tradingPL)) != 0) {
                 SLF4JLoggerProxy.debug(this, MessageFormat.format(
                         "There is a discrepancy in the total PL.\n{0}", positionMetrics)); //$NON-NLS-1$
             }

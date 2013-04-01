@@ -174,7 +174,7 @@
       <dependency>
 	<groupId>org.slf4j</groupId>
 	<artifactId>slf4j-api</artifactId>
-	<version>1.6.4</version>
+	<version>1.7.5</version>
       </dependency>
       <dependency>
 	<groupId>commons-io</groupId>
@@ -201,11 +201,13 @@
 	<artifactId>commons-collections</artifactId>
 	<version>3.2.1</version>
       </dependency>
+      <!-- custom versions that need to be removed -->
       <dependency>
 	<groupId>org.apache.commons</groupId>
 	<artifactId>commons-i18n</artifactId>
 	<version>20081024</version>
       </dependency>
+      <!-- custom versions that need to be removed -->
       <dependency>
 	<groupId>org.apache.commons</groupId>
 	<artifactId>commons-csv</artifactId>
@@ -287,9 +289,9 @@
 	<version>1.3.8</version>
       </dependency>
       <dependency>
-	<groupId>org.nocrala</groupId>
-	<artifactId>tools</artifactId>
-	<version>20091112</version>
+	<groupId>org.ow2.sirocco</groupId>
+	<artifactId>sirocco-text-table-formatter</artifactId>
+	<version>1.0</version>
       </dependency>
       <dependency>
 	<groupId>jparsec</groupId>
@@ -350,37 +352,25 @@
       <dependency>
 	<groupId>org.apache.activemq</groupId>
 	<artifactId>activemq-pool</artifactId>
-	<version>5.2.0</version>
+	<version>5.7.0</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
 	<groupId>org.slf4j</groupId>
 	<artifactId>slf4j-log4j12</artifactId>
-	<version>1.6.4</version>
+	<version>1.7.5</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
 	<groupId>log4j</groupId>
 	<artifactId>log4j</artifactId>
-	<version>1.2.16</version>
+	<version>1.2.17</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
 	<groupId>commons-pool</groupId>
 	<artifactId>commons-pool</artifactId>
-	<version>1.2</version>
-	<exclusions>
-	  <!-- Exclude xerces as it pulls in an older buggy version. -->
-	  <exclusion>
-	    <groupId>xerces</groupId>
-	    <artifactId>xerces</artifactId>
-	  </exclusion>
-	  <!-- Exclude xml-apis, standard JRE ones are preferable. -->
-	  <exclusion>
-	    <groupId>xml-apis</groupId>
-	    <artifactId>xml-apis</artifactId>
-	  </exclusion>
-	</exclusions>
+	<version>1.6</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
@@ -405,13 +395,13 @@
       <dependency>
 	<groupId>org.apache.xbean</groupId>
 	<artifactId>xbean-spring</artifactId>
-	<version>3.3</version>
+	<version>3.12</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
 	<groupId>mysql</groupId>
 	<artifactId>mysql-connector-java</artifactId>
-	<version>5.1.5</version>
+	<version>5.1.22</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
@@ -436,13 +426,13 @@
       <dependency>
 	<groupId>cglib</groupId>
 	<artifactId>cglib-nodep</artifactId>
-	<version>2.1_3</version>
+	<version>2.2.2</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
 	<groupId>c3p0</groupId>
 	<artifactId>c3p0</artifactId>
-	<version>0.9.1.1</version>
+	<version>0.9.1.2</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
@@ -457,10 +447,11 @@
 	<version>1.2.0</version>
 	<scope>runtime</scope>
       </dependency>
+      <!-- upgrade version to 2.0.7 quickfixj 1.5.2 requires 1.1.7 -->
       <dependency>
 	<groupId>org.apache.mina</groupId>
 	<artifactId>mina-core</artifactId>
-	<version>1.1.7</version>
+	<version>[1.1.7]</version>
 	<scope>runtime</scope>
       </dependency>
       <!-- Testing: Local -->
@@ -507,211 +498,186 @@
       </dependency>
       <dependency>
 	<groupId>junit</groupId>
-	<artifactId>junit-dep</artifactId>
-	<version>4.5</version>
+	<artifactId>junit</artifactId>
+	<version>4.11</version>
 	<scope>test</scope>
       </dependency>
       <dependency>
 	<groupId>org.easymock</groupId>
 	<artifactId>easymockclassextension</artifactId>
-	<version>2.3</version>
+	<version>3.1</version>
 	<scope>test</scope>
       </dependency>
       <dependency>
 	<groupId>org.mockito</groupId>
 	<artifactId>mockito-core</artifactId>
-	<version>1.9.0-rc1</version>
+	<version>1.9.5</version>
 	<scope>test</scope>
       </dependency>
       <dependency>
 	<groupId>org.objenesis</groupId>
 	<artifactId>objenesis</artifactId>
-	<version>1.0</version>
+	<version>1.2</version>
 	<scope>test</scope>
       </dependency>
       <dependency>
 	<groupId>org.hamcrest</groupId>
 	<artifactId>hamcrest-library</artifactId>
-	<version>1.1</version>
+	<version>1.3</version>
 	<scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-
-                <!-- jar generation. -->
-                <plugin>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.2</version>
-                </plugin>
-
-                <!-- source jar generation -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-		
-		<plugin>
-  		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-gpg-plugin</artifactId>
-		    <executions>
-		        <execution>
-		            <id>sign-artifacts</id>
-			    <phase>verify</phase>
-			    <goals>
-			      <goal>sign</goal>
-			    </goals>
-			</execution>
-		    </executions>
-		</plugin>
-
-                <!-- war generation. -->
-                <plugin>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>2.1-alpha-1</version>
-                </plugin>
-
-                <!-- bundle generation. -->
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.3.5</version>
-                </plugin>
-
-                <!-- mvn dependency:* -->
-                <plugin>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.0</version>
-                </plugin>
-
-                <!-- mvn eclipse:* -->
-                <plugin>
-                    <artifactId>maven-eclipse-plugin</artifactId>
-                    <version>20081024</version>
-                </plugin>
-
-                <!-- mvn clean -->
-                <plugin>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.3</version>
-                </plugin>
-
-                <!-- mvn antrun:* -->
-                <plugin>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.3</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.apache.ant</groupId>
-                            <artifactId>ant-junit</artifactId>
-                            <!--
-                            - Temporariy remove the brackets around the version
-                            - because the central repo metadata was missing this
-                            - version (http://jira.codehaus.org/browse/MANTRUN-113)
-                            - Removing the brackets will cause the JAR to ultimately
-                            - come from our internal repo.
-                            -->
-                            <version>1.7.1</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-
-                <!-- mvn exec:* -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.2.1</version>
-                </plugin>
-
-                <!-- mvn test -->
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.4.3</version>
-                    <configuration>
-                        <disableXmlReport>true</disableXmlReport>
-                        <forkMode>always</forkMode>
-                        <argLine>${mvn.test.options}</argLine>
-                    </configuration>
-                </plugin>
-
-                <!-- mvn compile -->
-                <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.0.2</version>
-                    <configuration>
-                        <source>1.${mvn.javase.version}</source>
-                        <target>1.${mvn.javase.version}</target>
-                    </configuration>
-                </plugin>
-
-                <!-- mvn javadoc:* -->
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.5</version>
-                </plugin>
-
-                <!-- Database schema generator. -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>hibernate3-maven-plugin</artifactId>
-                    <version>2.1</version>
-                </plugin>
-
-                <!-- mvn assembly:* -->
-                <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <!-- Version 2.2-beta-2 throws NPE under dependency management. -->
-                    <version>2.3</version>
-                    <configuration>
-                        <finalName>${project.artifactId}</finalName>
-                        <appendAssemblyId>false</appendAssemblyId>
-                    </configuration>
-                </plugin>
-
-                <!--
-                - Explicit dependencies are listed here because maven-jaxb2-plugin
-                - uses jaxb 2.1.5 by default, which is different than the xjc
-                - version included with jdk 1.6 (2.1.3 as of 1.6.0_07) and that
-                - required by orFg.apache.cxf.cxf-rt-frontend-jaxws (2.1.7 as of
-                - CXF 2.1.2). We match the CXF one because we use CXF at run-time.
-                -->
-                <plugin>
-                    <groupId>org.jvnet.jaxb2.maven2</groupId>
-                    <artifactId>maven-jaxb2-plugin</artifactId>
-                    <version>0.5</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>generate</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <dependencies>
-                        <dependency>
-                            <groupId>com.sun.xml.bind</groupId>
-                            <artifactId>jaxb-xjc</artifactId>
-                            <version>${mvn.xjc.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>com.sun.xml.bind</groupId>
-                            <artifactId>jaxb-impl</artifactId>
-                            <version>${mvn.xjc.version}</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+	<!-- jar generation. -->
+	<plugin>
+	  <artifactId>maven-jar-plugin</artifactId>
+	  <version>2.4</version>
+	</plugin>
+	<!-- source jar generation -->
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-source-plugin</artifactId>
+	  <executions>
+	    <execution>
+	      <id>attach-sources</id>
+	      <goals>
+		<goal>jar</goal>
+	      </goals>
+	    </execution>
+	  </executions>
+	</plugin>
+	<plugin>
+	  <groupId>org.apache.maven.plugins</groupId>
+	  <artifactId>maven-gpg-plugin</artifactId>
+	  <executions>
+	    <execution>
+	      <id>sign-artifacts</id>
+	      <phase>verify</phase>
+	      <goals>
+		<goal>sign</goal>
+	      </goals>
+	    </execution>
+	  </executions>
+	</plugin>
+	<!-- war generation. -->
+	<plugin>
+	  <artifactId>maven-war-plugin</artifactId>
+	  <version>2.3</version>
+	</plugin>
+	<!-- bundle generation. -->
+	<plugin>
+	  <groupId>org.apache.felix</groupId>
+	  <artifactId>maven-bundle-plugin</artifactId>
+	  <version>2.3.7</version>
+	</plugin>
+	<!-- mvn dependency:* -->
+	<plugin>
+	  <artifactId>maven-dependency-plugin</artifactId>
+	  <version>2.6</version>
+	</plugin>
+	<!-- mvn eclipse:* -->
+	<plugin>
+	  <artifactId>maven-eclipse-plugin</artifactId>
+	  <version>2.9</version>
+	</plugin>
+	<!-- mvn clean -->
+	<plugin>
+	  <artifactId>maven-clean-plugin</artifactId>
+	  <version>2.5</version>
+	</plugin>
+	<!-- mvn antrun:* -->
+	<plugin>
+	  <artifactId>maven-antrun-plugin</artifactId>
+	  <version>1.7</version>
+	  <dependencies>
+	    <dependency>
+	      <groupId>org.apache.ant</groupId>
+	      <artifactId>ant-junit</artifactId>
+	      <version>1.8.4</version>
+	    </dependency>
+	  </dependencies>
+	</plugin>
+	<!-- mvn exec:* -->
+	<plugin>
+	  <groupId>org.codehaus.mojo</groupId>
+	  <artifactId>exec-maven-plugin</artifactId>
+	  <version>1.2.1</version>
+	</plugin>
+	<!-- mvn test -->
+	<plugin>
+	  <artifactId>maven-surefire-plugin</artifactId>
+	  <version>2.13</version>
+	  <configuration>
+	    <disableXmlReport>true</disableXmlReport>
+	    <forkMode>always</forkMode>
+	    <argLine>${mvn.test.options}</argLine>
+	  </configuration>
+	</plugin>
+	<!-- mvn compile -->
+	<plugin>
+	  <artifactId>maven-compiler-plugin</artifactId>
+	  <version>3.0</version>
+	  <configuration>
+	    <source>1.${mvn.javase.version}</source>
+	    <target>1.${mvn.javase.version}</target>
+	  </configuration>
+	</plugin>
+	<!-- mvn javadoc:* -->
+	<plugin>
+	  <artifactId>maven-javadoc-plugin</artifactId>
+	  <version>2.9</version>
+	</plugin>
+	<!-- Database schema generator. -->
+	<plugin>
+	  <groupId>org.codehaus.mojo</groupId>
+	  <artifactId>hibernate3-maven-plugin</artifactId>
+	  <version>2.1</version> <!-- update version, causes NPE in Maven schema build -->
+	</plugin>
+	<!-- mvn assembly:* -->
+	<plugin>
+	  <artifactId>maven-assembly-plugin</artifactId>
+	  <version>2.4</version>
+	  <configuration>
+	    <finalName>${project.artifactId}</finalName>
+	    <appendAssemblyId>false</appendAssemblyId>
+	  </configuration>
+	</plugin>
+	<!--
+	    - Explicit dependencies are listed here because maven-jaxb2-plugin
+	    - uses jaxb 2.1.5 by default, which is different than the xjc
+	    - version included with jdk 1.6 (2.1.3 as of 1.6.0_07) and that
+	    - required by orFg.apache.cxf.cxf-rt-frontend-jaxws (2.1.7 as of
+	    - CXF 2.1.2). We match the CXF one because we use CXF at run-time.
+	-->
+	<plugin>
+	  <groupId>org.jvnet.jaxb2.maven2</groupId>
+	  <artifactId>maven-jaxb2-plugin</artifactId>
+	  <version>0.5</version>
+	  <executions>
+	    <execution>
+	      <goals>
+		<goal>generate</goal>
+	      </goals>
+	    </execution>
+	  </executions>
+	  <dependencies>
+	    <dependency>
+	      <groupId>com.sun.xml.bind</groupId>
+	      <artifactId>jaxb-xjc</artifactId>
+	      <version>${mvn.xjc.version}</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.sun.xml.bind</groupId>
+	      <artifactId>jaxb-impl</artifactId>
+	      <version>${mvn.xjc.version}</version>
+	    </dependency>
+	  </dependencies>
+	</plugin>
+      </plugins>
+    </pluginManagement>
 
         <plugins>
             <!-- source jar generation -->

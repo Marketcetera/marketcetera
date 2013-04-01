@@ -69,8 +69,8 @@
       <artifactId>jsr305</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nocrala</groupId>
-      <artifactId>tools</artifactId>
+      <groupId>org.ow2.sirocco</groupId>
+      <artifactId>sirocco-text-table-formatter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>

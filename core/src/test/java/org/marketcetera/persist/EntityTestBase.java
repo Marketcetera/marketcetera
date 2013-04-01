@@ -1,20 +1,21 @@
 package org.marketcetera.persist;
 
+import static org.junit.Assert.*;
+import static org.marketcetera.persist.Messages.DEFAULT_ENTITY_NAME;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import javax.persistence.TemporalType;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import static org.marketcetera.persist.Messages.DEFAULT_ENTITY_NAME;
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.Ignore;
-import static org.junit.Assert.*;
-
-import javax.persistence.*;
-import java.util.List;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.concurrent.Callable;
 
 /* $License$ */
 /**
