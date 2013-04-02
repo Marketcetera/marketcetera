@@ -22,7 +22,8 @@ public abstract class AbstractNamedDao<Clazz extends NamedObject>
     @Override
     public Clazz getByName(String inName)
     {
-        return (Clazz)getEntityManager().createNamedQuery(getByNameQuery()).getSingleResult();
+        return (Clazz)getEntityManager().createNamedQuery(getByNameQuery()).setParameter("name",
+                                                                                         inName).getSingleResult();
     }
     /**
      * Gets the name of the <code>getByName</code> query.
