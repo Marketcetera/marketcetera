@@ -54,4 +54,8 @@ public abstract class ExecutionReportField
 		
 		return false;
 	}
+
+	public String getValidateMessage() {
+		return "";
+	}
 }

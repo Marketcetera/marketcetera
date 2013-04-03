@@ -3,6 +3,7 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 import java.util.ArrayList;
 import java.util.List;
 
+import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.SecurityType;
 
 import quickfix.Message;
@@ -11,7 +12,7 @@ public class SecurityTypeField extends ExecutionReportField {
 
 	@Override
 	public String getFieldName() {
-		return "Security Type";
+		return Messages.EXECUTION_REPORT_FIELD_SECURITY_TYPE.getText();
 	}
 
 	@Override

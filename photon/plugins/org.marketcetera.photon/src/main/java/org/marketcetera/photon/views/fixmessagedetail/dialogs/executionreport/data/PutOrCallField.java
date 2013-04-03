@@ -3,6 +3,7 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 import java.util.ArrayList;
 import java.util.List;
 
+import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.OptionType;
 
 import quickfix.Message;
@@ -12,7 +13,7 @@ public class PutOrCallField extends ExecutionReportField {
 
 	@Override
 	public String getFieldName() {
-		return "Option type";
+		return Messages.EXECUTION_REPORT_FIELD_OPTION_TYPE.getText();
 	}
 
 	@Override

@@ -30,6 +30,4 @@ public class OrderIDField extends ExecutionReportField
 	{
 		message.setField(new OrderID(fValue));	
 	}
-
-
 }

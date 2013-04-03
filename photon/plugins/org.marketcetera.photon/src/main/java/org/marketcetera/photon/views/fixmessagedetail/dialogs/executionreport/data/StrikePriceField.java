@@ -2,6 +2,8 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 
 import java.math.BigDecimal;
 
+import org.marketcetera.photon.Messages;
+
 import quickfix.Message;
 import quickfix.field.StrikePrice;
 
@@ -9,7 +11,7 @@ public class StrikePriceField extends ExecutionReportField {
 
 	@Override
 	public String getFieldName() {
-		return "Strike price";
+		return Messages.EXECUTION_REPORT_FIELD_STRIKE_PRICE.getText();
 	}
 
 	@Override
@@ -40,4 +42,10 @@ public class StrikePriceField extends ExecutionReportField {
 		return true;
 	}
 
+	@Override
+	public String getValidateMessage() {
+		return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR.getText();
+	}
+	
+	
 }

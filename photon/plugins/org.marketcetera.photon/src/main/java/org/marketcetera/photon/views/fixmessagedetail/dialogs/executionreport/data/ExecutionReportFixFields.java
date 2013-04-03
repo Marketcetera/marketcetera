@@ -14,8 +14,6 @@ public class ExecutionReportFixFields
 {
 	private List<ExecutionReportField> fExecutionReportFields;
 	
-	public static final boolean WITH_OPTIONS_FIELDS = true;
-	
 	public ExecutionReportFixFields()
 	{
 		fExecutionReportFields = new ArrayList<ExecutionReportField>();
@@ -38,45 +36,16 @@ public class ExecutionReportFixFields
 		fExecutionReportFields.add(new OrderQtyField());
 		fExecutionReportFields.add(new PriceField());
 		fExecutionReportFields.add(new SymbolField());
-		if(WITH_OPTIONS_FIELDS)
-		{
-			fExecutionReportFields.add(new SecurityTypeField());
-		}
+		fExecutionReportFields.add(new SecurityTypeField());
 		fExecutionReportFields.add(new MaturityMonthYearField());
-		if(WITH_OPTIONS_FIELDS)
-		{
-			fExecutionReportFields.add(new PutOrCallField());
-			fExecutionReportFields.add(new StrikePriceField());
-		}
+		fExecutionReportFields.add(new PutOrCallField());
+		fExecutionReportFields.add(new StrikePriceField());
 		fExecutionReportFields.add(new TimeInForceField());
 		fExecutionReportFields.add(new TextField());
 		fExecutionReportFields.add(new TransactTimeField());
 		fExecutionReportFields.add(new BrokerOrderIDField());
-		fExecutionReportFields.add(new StrategyTagField());
+		//fExecutionReportFields.add(new StrategyTagField());
 	}
-	
-	/*|6|AvgPx|float| 
-	|na|BrokerID|yes|valid broker ID| 
-	|37|OrderID|yes|string| 
-	|14|CumQty|no|float| 
-	|17|ExecID|yes|string| 
-	|150|ExecType|yes|org.marketcetera.trade.ExecutionType.getFIXValue()| 
-	|32|LastShares|no|float| 
-	|31|LastPx|no|float| 
-	|151|LeavesQty|yes|float| 
-	|11|ClOrdID|yes|string| 
-	|39|OrdStatus|yes|org.marketcetera.trade.OrderStatus.getFIXValue()| 
-	|40|OrdType|no|org.marketcetera.trade.OrderType.getFIXValue()| 
-	|52|SendingTime*|yes|UTCTimestamp| 
-	|54|Side|yes|org.marketcetera.trade.Side.getFIXValue()| 
-	|55|Symbol|yes|string| 
-	|58|Text|no|string| 
-	|167|SecurityType|yes|org.marketcetera.trade.SecurityType.getFIXValue()| 
-	|200|MaturityMonthYear|no|month-year| 
-	|201|PutOrCall|no|org.marketcetera.trade.OptionType.getFIXValue()| 
-	|202|StrikePrice|no|float| 
-	|59|TimeInForce|no|org.marketcetera.trade.TimeInForce.getFIXValue()| 
-	|60|TransactTime|no|UTCTimestamp| */
 	
 	public void addExecutionReportField(ExecutionReportField field)
 	{

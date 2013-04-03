@@ -29,7 +29,6 @@ public class StrategyTagField extends ExecutionReportNoneFixField
 
 	@Override
 	public void insertField(Message message) {
-		System.out.println("Insert StrategyTag into message");
-		
+		//message.setField(new StringField(9999, fValue));
 	}
 }

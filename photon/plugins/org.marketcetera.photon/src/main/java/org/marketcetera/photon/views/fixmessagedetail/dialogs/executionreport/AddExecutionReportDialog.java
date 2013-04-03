@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport;
 
+import static org.marketcetera.photon.Messages.ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR;
+
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -15,10 +17,16 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ConnectionException;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.BrokerIDField;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.CustomFixField;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.CustomNoneFixField;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportContainer;
@@ -27,9 +35,7 @@ import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.da
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportNoneFixField;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldContentProvider;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldLabelProvider;
-import org.marketcetera.trade.MessageCreationException;
-
-import quickfix.FieldNotFound;
+import org.marketcetera.trade.FIXMessageWrapper;
 import quickfix.Message;
 
 /**
@@ -270,8 +276,14 @@ public class AddExecutionReportDialog extends ReportDialog
 			// Add execution report field
 			reportField.setSelectedValue(selectedValue);
 			
-			if(!reportField.validateValue())
+			//Field validation on add button pressed
+			if(!reportField.validateValue()){
+				MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
+				messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
+				messageBox.setMessage(reportField.getValidateMessage());
+				messageBox.open();
 				return;
+			}
 
 			fExecutionReportFields.addExecutionReportField(reportField);
 
@@ -290,31 +302,34 @@ public class AddExecutionReportDialog extends ReportDialog
 	@Override
 	protected void okPressed() 
 	{
-		/**
-		 * TODO: Fields are validated when user press add button
-		 */
-		try 
-		{
-			Message executionReport = fExecutionReportFields.createExecutionReport();
-			System.out.println(executionReport.toString());
-			/*BrokerID, BrokerOrderID, StrategyTag*/
-			ExecutionReportNoneFixField[] noneFixFields = fExecutionReportFields.getNoneFixFields();
-			/**
-			 * TODO: send execution report
-			 */
-			for(int i = 0; i < noneFixFields.length; i++){
-				System.out.println(noneFixFields[i].getFieldName() + " " + noneFixFields[i].getFieldValue());
+		Message executionReport = fExecutionReportFields.createExecutionReport();
+		/*BrokerID, BrokerOrderID, StrategyTag*/
+		String BrokerID = null;
+		ExecutionReportNoneFixField[] noneFixFields = fExecutionReportFields.getNoneFixFields();
+		for(int i = 0; i < noneFixFields.length; i++){
+			if(noneFixFields[i].getFieldName().equals(BrokerIDField.BROKER_ID_FIELD_NAME)){
+				BrokerID = noneFixFields[i].getFieldValue();
 			}
-		} 
-		catch (MessageCreationException e) 
-		{
-			PhotonPlugin.LOGGER.error("Create execution report", e);
 		}
-		catch (FieldNotFound e) 
-		{
-			PhotonPlugin.LOGGER.error("Message creation", e);
+		/*Missing brokerID validation*/
+		if(BrokerID == null){
+			MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
+			messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
+			messageBox.setMessage("Please add BrokerID field.");
+			messageBox.open();
+			return;
 		}
-
+		try {
+			ClientManager.getInstance().addReport(new FIXMessageWrapper(executionReport), new org.marketcetera.trade.BrokerID(BrokerID));
+		} catch (ConnectionException e) {
+			MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
+			messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
+			messageBox.setMessage(org.apache.commons.lang.exception.ExceptionUtils.getRootCauseMessage(e));
+			messageBox.open();
+			return;
+		} catch (ClientInitException e) {
+			PhotonPlugin.LOGGER.error("Client Init", e);
+		}			
 		super.okPressed();
 	}
 	

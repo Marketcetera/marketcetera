@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
+import org.marketcetera.photon.Messages;
+
 import quickfix.Message;
 import quickfix.StringField;
 
@@ -54,6 +56,8 @@ public class CustomFixField extends ExecutionReportField
 		return true;
 	}
 	
-	
-	
+	@Override
+	public String getValidateMessage() {
+		return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR_CUSTOM.getText();
+	}
 }

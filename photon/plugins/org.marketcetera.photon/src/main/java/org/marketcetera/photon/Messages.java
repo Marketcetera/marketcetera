@@ -489,6 +489,27 @@ public interface Messages
     		"execution_report_field_time_in_force"); //$NON-NLS-1$
     public static I18NMessage0P EXECUTION_REPORT_FIELD_TEXT = new I18NMessage0P(LOGGER,
     		"execution_report_field_text"); //$NON-NLS-1$
-    public static I18NMessage0P EXECUTION_REPORT_FIELD_LAST_SHARE = new I18NMessage0P(LOGGER,
-    		"execution_report_field_last_share"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_STRIKE_PRICE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_strike_price"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_SYMBOL = new I18NMessage0P(LOGGER,
+    		"execution_report_field_symbol"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_SECURITY_TYPE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_security_type"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_OPTION_TYPE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_option_type"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_EXPIRY = new I18NMessage0P(LOGGER,
+    		"execution_report_field_expiry"); //$NON-NLS-1$
+
+    public static I18NMessage0P ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR = new I18NMessage0P(LOGGER,
+    		"add_execution_report_mxbox_title_error"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_MXBOX_TITLE_WARNING = new I18NMessage0P(LOGGER,
+    		"add_execution_report_mxbox_title_warning"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_MXBOX_MESSAGE = new I18NMessage0P(LOGGER,
+    		"add_execution_report_mxbox_message"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR= new I18NMessage0P(LOGGER,
+    		"add_execution_report_number_format_error"); //$NON-NLS-1$   
+    public static I18NMessage0P ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR_CUSTOM= new I18NMessage0P(LOGGER,
+    		"add_execution_report_number_format_error_custom"); //$NON-NLS-1$    
+    public static I18NMessage1P ADD_EXECUTION_REPORT_DATE_FORMAT_ERROR= new I18NMessage1P(LOGGER,
+    		"add_execution_report_date_format_error"); //$NON-NLS-1$    
 }

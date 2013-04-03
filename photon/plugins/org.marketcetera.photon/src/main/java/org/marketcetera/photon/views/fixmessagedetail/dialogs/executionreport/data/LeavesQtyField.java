@@ -49,4 +49,10 @@ public class LeavesQtyField extends ExecutionReportField
 			return false;
 		}
 		return true;
-	}}
+	}
+	
+	@Override
+	public String getValidateMessage() {
+		return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR.getText();
+	}
+}

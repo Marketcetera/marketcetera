@@ -51,4 +51,8 @@ public class AvgPxField extends ExecutionReportField
 		return true;
 	}
 
+	@Override
+	public String getValidateMessage() {
+		return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR.getText();
+	}
 }

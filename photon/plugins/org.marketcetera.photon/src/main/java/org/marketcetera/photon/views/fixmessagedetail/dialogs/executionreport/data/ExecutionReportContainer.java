@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.MessageCreationException;
-
-import quickfix.FieldNotFound;
 import quickfix.Message;
 
 
@@ -63,7 +60,7 @@ public class ExecutionReportContainer
 		return (ExecutionReportField[]) fExecutionReportFields.toArray(new ExecutionReportField[fExecutionReportFields.size()]);
 	}
 	
-	public Message createExecutionReport() throws FieldNotFound, MessageCreationException
+	public Message createExecutionReport()
 	{
 		Message message = FIXVersion.FIX_SYSTEM
 				.getMessageFactory()

@@ -30,7 +30,6 @@ public class BrokerOrderIDField extends ExecutionReportNoneFixField
 	
 	@Override
 	public void insertField(Message message) {
-		System.out.println("Insert BrokerOrderID into message");	
 	}
 
 }
