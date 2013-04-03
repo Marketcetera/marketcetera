@@ -58,6 +58,8 @@ public abstract class AbstractDao<Clazz extends SystemObject>
     @Override
     public void save(Clazz inData)
     {
+        if(!entityManager.contains(inData)) {
+        }
         entityManager.merge(inData);
     }
     /* (non-Javadoc)

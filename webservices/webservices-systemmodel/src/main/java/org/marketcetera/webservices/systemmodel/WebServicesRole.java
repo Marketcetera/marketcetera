@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 import javax.xml.bind.annotation.*;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonRootName;
@@ -108,6 +109,7 @@ public class WebServicesRole
      * @see org.marketcetera.api.systemmodel.Role#getMutableView()
      */
     @Override
+    @JsonIgnore
     public MutableRole getMutableView()
     {
         return this;
