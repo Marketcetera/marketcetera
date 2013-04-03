@@ -8,6 +8,7 @@ import junit.framework.Test;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.ors.filters.OrderTagRecorderTest;
 
 import quickfix.Message;
 import quickfix.StringField;
@@ -18,17 +19,17 @@ import quickfix.field.ClOrdID;
  * @version $Id$
  */
 
-public class OrderTagRemapperMessageModifierTest extends OrderTagRecorderMessageModifierTest {
+public class OrderTagRemapperTest extends OrderTagRecorderTest {
 
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX44.getMessageFactory();
 
-    public OrderTagRemapperMessageModifierTest(String inName) {
+    public OrderTagRemapperTest(String inName) {
         super(inName);
     }
 
     public static Test suite() {
-        return new MarketceteraTestSuite(OrderTagRemapperMessageModifierTest.class);
+        return new MarketceteraTestSuite(OrderTagRemapperTest.class);
     }
 
 

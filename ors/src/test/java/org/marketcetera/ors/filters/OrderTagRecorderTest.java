@@ -19,7 +19,7 @@ import quickfix.field.ClOrdID;
  * @version $Id$
  */
 
-public class OrderTagRecorderMessageModifierTest extends TestCase {
+public class OrderTagRecorderTest extends TestCase {
 
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX44.getMessageFactory();
@@ -27,12 +27,12 @@ public class OrderTagRecorderMessageModifierTest extends TestCase {
     protected String testAccount = "testAccount";//$NON-NLS-1$
     protected String testSymbol = "testSymbol";//$NON-NLS-1$
 
-    public OrderTagRecorderMessageModifierTest(String inName) {
+    public OrderTagRecorderTest(String inName) {
         super(inName);
     }
 
     public static Test suite() {
-        return new MarketceteraTestSuite(OrderTagRecorderMessageModifierTest.class);
+        return new MarketceteraTestSuite(OrderTagRecorderTest.class);
     }
 
 
