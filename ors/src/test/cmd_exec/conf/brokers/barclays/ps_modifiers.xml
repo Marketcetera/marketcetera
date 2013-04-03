@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Primary broker configuration: pre-sending message modifiers.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.5.1
+  - Version: $Id: ps_modifiers.xml 16460 2013-01-21 21:55:10Z colin $
+  - $License$
+  -->
+
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  <bean id="barclays_ps_modifiers" class="org.marketcetera.ors.filters.MessageModifierManager">
+    <!-- The message modifiers. -->
+    <property name="messageModifiers">
+      <list>
+        <bean class="org.marketcetera.ors.filters.DefaultMessageModifier">
+          <!-- Modifications to the header fields. -->
+          <property name="headerFields">
+            <map>
+            </map>
+          </property>
+          <!-- Modifications to the body fields. -->
+          <property name="msgFields">
+            <map>
+              <entry key="58(app)" value="Test Text"/>
+            </map>
+          </property>
+          <!-- Modifications to the trailer fields. -->
+          <property name="trailerFields">
+            <map>
+            </map>
+          </property>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="847(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6070(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6071(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6072(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6075(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="59(*)"/>
+        </bean>
+      </list>
+    </property>
+  </bean>
+</beans>

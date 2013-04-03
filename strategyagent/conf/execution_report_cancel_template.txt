@@ -1,0 +1,1 @@
+Execution report ${ACTUAL_ORDER_ID} with execution type CANCELED was received at ${DATE} for ${ORDER_TYPE} order of ${TRADE_ID}

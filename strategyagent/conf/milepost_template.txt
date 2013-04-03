@@ -1,0 +1,3 @@
+Milepost ${MILEPOST} for ${ORDER_TYPE}(${ACTUAL_ORDER_ID}) for ${TRADE_ID} evaluation failed at ${DATE}.
+
+The actual value was ${VALUE}.

@@ -21,6 +21,7 @@
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
   <import resource="broker/main.xml"/>
+  <import resource="barclays/main.xml"/>
   <import
    resource="qsettings.xml"/>
   <import
@@ -30,14 +31,12 @@
    id="metc_brokers"
    class="org.marketcetera.ors.brokers.SpringBrokers">
     <!-- The QuickFIX/J session settings. -->
-    <property
-     name="settings"
-     ref="metc_qsettings"/>
+    <property name="settings" ref="metc_qsettings"/>
     <!-- The brokers (order is not significant). -->
-    <property
-     name="brokers">
+    <property name="brokers">
       <list>
         <ref bean="metc_broker"/>
+        <ref bean="barclays_broker"/>
       </list>
     </property>
   </bean>
