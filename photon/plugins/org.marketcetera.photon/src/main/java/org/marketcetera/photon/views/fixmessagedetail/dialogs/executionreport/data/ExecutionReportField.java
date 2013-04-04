@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
+import org.marketcetera.photon.Messages;
+
 import quickfix.Message;
 
 
@@ -56,6 +58,6 @@ public abstract class ExecutionReportField
 	}
 
 	public String getValidateMessage() {
-		return "";
+		return Messages.ADD_EXECUTION_REPORT_STRING_FORMAT_ERROR.getText();
 	}
 }

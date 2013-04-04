@@ -266,18 +266,29 @@ public class AddExecutionReportDialog extends ReportDialog
 			String selectedValue;
 			
 			if(fValuesControl instanceof Combo)
+			{
 				selectedValue = getComboValue((Combo) fValuesControl);
+			}
 			else
+			{
 				selectedValue = ((Text) fValuesControl).getText();
+			}
 						
 			if(selectedValue == null)
+			{
+				MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
+				messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
+				messageBox.setMessage(reportField.getValidateMessage());
+				messageBox.open();
 				return;
+			}
 
 			// Add execution report field
 			reportField.setSelectedValue(selectedValue);
 			
 			//Field validation on add button pressed
-			if(!reportField.validateValue()){
+			if(!reportField.validateValue())
+			{
 				MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
 				messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
 				messageBox.setMessage(reportField.getValidateMessage());
@@ -312,22 +323,27 @@ public class AddExecutionReportDialog extends ReportDialog
 			}
 		}
 		/*Missing brokerID validation*/
-		if(BrokerID == null){
+		if(BrokerID == null)
+		{
 			MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
 			messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
 			messageBox.setMessage("Please add BrokerID field.");
 			messageBox.open();
 			return;
 		}
-		try {
+		try 
+		{
 			ClientManager.getInstance().addReport(new FIXMessageWrapper(executionReport), new org.marketcetera.trade.BrokerID(BrokerID));
-		} catch (ConnectionException e) {
+		} catch (ConnectionException e) 
+		{
 			MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
 			messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());
 			messageBox.setMessage(org.apache.commons.lang.exception.ExceptionUtils.getRootCauseMessage(e));
 			messageBox.open();
 			return;
-		} catch (ClientInitException e) {
+		} 
+		catch (ClientInitException e) 
+		{
 			PhotonPlugin.LOGGER.error("Client Init", e);
 		}			
 		super.okPressed();

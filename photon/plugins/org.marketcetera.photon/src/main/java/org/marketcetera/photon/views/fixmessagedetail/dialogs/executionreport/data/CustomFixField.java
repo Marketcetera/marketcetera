@@ -38,13 +38,14 @@ public class CustomFixField extends ExecutionReportField
 	public void insertField(Message message) 
 	{
 		message.setField(new StringField(Integer.parseInt(fFieldName),fValue));
-		
 	}
 
 	@Override
 	public boolean validateValue() {
 		if(!super.validateValue())
+		{
 			return false;
+		}
 		try
 		{
 			Integer.parseInt(fFieldName);
@@ -58,6 +59,13 @@ public class CustomFixField extends ExecutionReportField
 	
 	@Override
 	public String getValidateMessage() {
-		return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR_CUSTOM.getText();
+		if(!super.validateValue())
+		{
+			return super.getValidateMessage();
+		}
+		else
+		{
+			return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR_CUSTOM.getText();
+		}
 	}
 }

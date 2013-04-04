@@ -511,5 +511,7 @@ public interface Messages
     public static I18NMessage0P ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR_CUSTOM= new I18NMessage0P(LOGGER,
     		"add_execution_report_number_format_error_custom"); //$NON-NLS-1$    
     public static I18NMessage1P ADD_EXECUTION_REPORT_DATE_FORMAT_ERROR= new I18NMessage1P(LOGGER,
-    		"add_execution_report_date_format_error"); //$NON-NLS-1$    
+    		"add_execution_report_date_format_error"); //$NON-NLS-1$ 
+    public static I18NMessage0P ADD_EXECUTION_REPORT_STRING_FORMAT_ERROR= new I18NMessage0P(LOGGER,
+    		"add_execution_report_string_format_error"); //$NON-NLS-1$    
 }

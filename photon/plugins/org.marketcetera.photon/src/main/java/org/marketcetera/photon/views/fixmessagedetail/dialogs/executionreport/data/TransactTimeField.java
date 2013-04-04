@@ -4,11 +4,9 @@ import java.util.Date;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
-import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.photon.Messages;
 
 import quickfix.Message;
-import quickfix.field.SendingTime;
 import quickfix.field.TransactTime;
 
 /**
