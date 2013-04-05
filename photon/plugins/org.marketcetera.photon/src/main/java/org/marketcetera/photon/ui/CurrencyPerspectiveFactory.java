@@ -46,8 +46,6 @@ public class CurrencyPerspectiveFactory
                                            IPageLayout.LEFT,
                                            0.45f,
                                            editorArea);
-        leftFolder.addPlaceholder(WebBrowserView.ID + SECONDARY_ID_WILDCARD);   
-        leftFolder.addView(WebBrowserView.ID);
         leftFolder.addView(MarketDataView.ID);
         leftFolder.addPlaceholder(FIXMessageDetailView.ID);
         leftFolder.addPlaceholder(MarketDataUI.MARKET_DEPTH_VIEW_ID + SECONDARY_ID_WILDCARD);
