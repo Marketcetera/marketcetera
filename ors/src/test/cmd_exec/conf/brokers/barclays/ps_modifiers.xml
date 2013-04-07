@@ -56,6 +56,13 @@
         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
           <constructor-arg value="59(*)"/>
         </bean>
+        <bean class="org.marketcetera.ors.filters.ConditionalMessageModifier">
+          <property name="comparisonTag" value="40"/>
+          <property name="operator" value="EQ"/>
+          <property name="comparisonValue" value="4"/>
+          <property name="tag" value="40"/>
+          <property name="value" value="2"/>
+        </bean>
       </list>
     </property>
   </bean>
