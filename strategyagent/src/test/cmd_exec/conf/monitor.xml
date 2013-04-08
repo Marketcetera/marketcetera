@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+    <!-- generators/executors -->
+    <bean id="notificationExecutor" class="com.marketcetera.ramius.strategy.impl.EmailNotificationExecutor">
+        <!-- for multiple addresses, separate with ',' -->
+        <property name="recipients" value="bjones@ramius.com,lgibbs@ramius.com"/>
+    </bean>
+    <!-- strategy monitor client -->
+    <bean class="com.marketcetera.ramius.strategy.monitor.MonitorClient" id="monitorClient">
+      <property name="address" value="127.0.0.1"/>
+      <property name="port" value="9002"/>
+      <property name="notificationExecutor" ref="notificationExecutor"/>
+      <!-- interval at which to monitor (ms) -->
+      <property name="interval" value="10000"/>
+      <!-- maximum ms to wait for a response from the monitor server -->
+      <property name="tolerance" value="10000"/>
+      <!-- maximum ms to allow downtime from the server -->
+      <property name="maxDowntime" value="30000"/>
+    </bean>
+</beans>

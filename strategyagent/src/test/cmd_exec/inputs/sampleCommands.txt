@@ -37,3 +37,7 @@
 createModule;metc:strategy:system;main1,MainStrategy,JAVA,../../m3_ui/strategy/src/test/java/com/marketcetera/ramius/strategy/MainStrategy.java,,true,metc:remote:receiver
 # Start the strategy (un-comment the next line to start the strategy automatically, otherwise, start it manually from Photon)
 startModule;metc:strategy:system:main1
+# Create the Monitor strategy
+createModule;metc:strategy:system;monitor,MonitorStrategy,JAVA,../../m3_ui/strategy/src/test/java/com/marketcetera/ramius/strategy/MonitorStrategy.java,,false,metc:remote:receiver
+# Start the strategy
+startModule;metc:strategy:system:monitor

@@ -34,6 +34,10 @@
     <bean class="com.marketcetera.ramius.validation.impl.BrokerIDValidator" id="brokerIDValidator">
         <property name="strictValidation" value="false"/>
     </bean>
+    <!-- strategy monitor gateway -->
+    <bean class="com.marketcetera.ramius.strategy.monitor.MonitorServer" id="monitorServer">
+      <property name="port" value="9002"/>
+    </bean>
     <!-- general definition beans -->
     <!-- directory into which to drop input files (required) -->
     <bean class="java.lang.String" id="inputDirectory">
