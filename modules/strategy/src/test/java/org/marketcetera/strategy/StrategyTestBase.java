@@ -620,7 +620,6 @@ public class StrategyTestBase
         @Override
         public void addBrokerStatusListener(BrokerStatusListener inArg0)
         {
-            throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#addServerStatusListener(org.marketcetera.client.ServerStatusListener)
@@ -1081,6 +1080,25 @@ public class StrategyTestBase
                 }
             }
             return result;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
+         */
+        @Override
+        public void addReport(FIXMessageWrapper inReport,
+                              BrokerID inBrokerID)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
+         */
+        @Override
+        public void deleteReport(ExecutionReport inReport)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
         }
     }
     /**

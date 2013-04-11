@@ -2,8 +2,12 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import com.sun.xml.bind.AnyTypeAdapter;
+
 import java.util.Date;
 import java.math.BigDecimal;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /* $License$ */
 /**
@@ -22,7 +26,8 @@ import java.math.BigDecimal;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@XmlJavaTypeAdapter(AnyTypeAdapter.class)
+@ClassVersion("$Id$")
 public interface ExecutionReport extends TradeMessage, ReportBase {
 
     /**

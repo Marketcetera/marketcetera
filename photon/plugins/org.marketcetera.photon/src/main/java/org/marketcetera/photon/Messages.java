@@ -426,4 +426,92 @@ public interface Messages
 	
     public static I18NMessage0P CLIENT_UNDERLYING_SYMBOL_SUPPORT_MAPPING_ERROR = new I18NMessage0P(
             LOGGER, "client_underlying_symbol_support_mapping_error"); //$NON-NLS-1$
+    
+    // Add execution report dialog
+    public static I18NMessage0P ADD_EXECUTION_REPORT_LABEL = new I18NMessage0P(LOGGER,
+    		"add_execution_report_label"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_TOOLTIPS = new I18NMessage0P(LOGGER,
+    		"add_execution_report_tooltips"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_DIALOG_DESCRIPTION = new I18NMessage0P(LOGGER,
+    		"add_execution_report_dialog_description"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_DIALOG_TABLE_COLUMN_FIELD = new I18NMessage0P(LOGGER,
+    		"add_execution_report_dialog_table_column_field"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_DIALOG_TABLE_COLUMN_VALUE = new I18NMessage0P(LOGGER,
+    		"add_execution_report_dialog_table_column_value"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_DIALOG_TABLE_CONTEXT_REMOVE = new I18NMessage0P(LOGGER,
+    		"add_execution_report_dialog_table_context_remove"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_DIALOG_BUTTON_ADD = new I18NMessage0P(LOGGER,
+    		"add_execution_report_dialog_button_add"); //$NON-NLS-1$
+
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_STRATEGY_TAG = new I18NMessage0P(LOGGER,
+    		"execution_report_field_strategy_tag"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_ORDER_ID = new I18NMessage0P(LOGGER,
+    		"execution_report_field_order_id"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_ORIGINAL_ORDER_ID = new I18NMessage0P(LOGGER,
+    		"execution_report_field_original_order_id"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_ORDER_STATUS = new I18NMessage0P(LOGGER,
+    		"execution_report_field_order_status"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_BROKER_ID = new I18NMessage0P(LOGGER,
+    		"execution_report_field_broker_id"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_SENDING_TIME = new I18NMessage0P(LOGGER,
+    		"execution_report_field_sending_time"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_BROKER_ORDER_ID = new I18NMessage0P(LOGGER,
+    		"execution_report_field_broker_order_id"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_TRANSACT_TIME = new I18NMessage0P(LOGGER,
+    		"execution_report_field_transact_time"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_SIDE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_side"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_EXECUTION_TYPE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_execution_type"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_LEAVES_QTY = new I18NMessage0P(LOGGER,
+    		"execution_report_field_leaves_qty"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_CUM_QTY = new I18NMessage0P(LOGGER,
+    		"execution_report_field_cum_qty"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_AVG_PX = new I18NMessage0P(LOGGER,
+    		"execution_report_field_avg_px"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_LAST_QTY = new I18NMessage0P(LOGGER,
+    		"execution_report_field_last_qty"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_LAST_PRICE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_last_price"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_ORDER_QTY = new I18NMessage0P(LOGGER,
+    		"execution_report_field_order_qty"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_PRICE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_price"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_INSTRUMENT = new I18NMessage0P(LOGGER,
+    		"execution_report_field_instrument"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_ACCOUNT = new I18NMessage0P(LOGGER,
+    		"execution_report_field_account"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_EXECUTION_ID = new I18NMessage0P(LOGGER,
+    		"execution_report_field_execution_id"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_ORDER_TYPE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_order_type"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_TIME_IN_FORCE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_time_in_force"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_TEXT = new I18NMessage0P(LOGGER,
+    		"execution_report_field_text"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_STRIKE_PRICE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_strike_price"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_SYMBOL = new I18NMessage0P(LOGGER,
+    		"execution_report_field_symbol"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_SECURITY_TYPE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_security_type"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_OPTION_TYPE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_option_type"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_EXPIRY = new I18NMessage0P(LOGGER,
+    		"execution_report_field_expiry"); //$NON-NLS-1$
+
+    public static I18NMessage0P ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR = new I18NMessage0P(LOGGER,
+    		"add_execution_report_mxbox_title_error"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_MXBOX_TITLE_WARNING = new I18NMessage0P(LOGGER,
+    		"add_execution_report_mxbox_title_warning"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_MXBOX_MESSAGE = new I18NMessage0P(LOGGER,
+    		"add_execution_report_mxbox_message"); //$NON-NLS-1$
+    public static I18NMessage0P ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR= new I18NMessage0P(LOGGER,
+    		"add_execution_report_number_format_error"); //$NON-NLS-1$   
+    public static I18NMessage0P ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR_CUSTOM= new I18NMessage0P(LOGGER,
+    		"add_execution_report_number_format_error_custom"); //$NON-NLS-1$    
+    public static I18NMessage1P ADD_EXECUTION_REPORT_DATE_FORMAT_ERROR= new I18NMessage1P(LOGGER,
+    		"add_execution_report_date_format_error"); //$NON-NLS-1$ 
+    public static I18NMessage0P ADD_EXECUTION_REPORT_STRING_FORMAT_ERROR= new I18NMessage0P(LOGGER,
+    		"add_execution_report_string_format_error"); //$NON-NLS-1$    
 }

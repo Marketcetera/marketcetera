@@ -12,7 +12,6 @@ import org.marketcetera.photon.views.FillsView;
 import org.marketcetera.photon.views.MarketDataView;
 import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.photon.views.StockOrderTicketView;
-import org.marketcetera.photon.views.WebBrowserView;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
 
 /**
@@ -73,8 +72,6 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.45f,
 				editorArea);
-		leftFolder.addPlaceholder(WebBrowserView.ID + SECONDARY_ID_WILDCARD);	
-		leftFolder.addView(WebBrowserView.ID);
 		leftFolder.addView(MarketDataView.ID);
 		leftFolder.addPlaceholder(FIXMessageDetailView.ID);
 		leftFolder.addPlaceholder(MarketDataUI.MARKET_DEPTH_VIEW_ID + SECONDARY_ID_WILDCARD);

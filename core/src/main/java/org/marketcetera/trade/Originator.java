@@ -19,5 +19,5 @@ public enum Originator {
     /**
      * Indicates that the report was originated by the FIX broker. 
      */
-    Broker
+    Broker;
 }

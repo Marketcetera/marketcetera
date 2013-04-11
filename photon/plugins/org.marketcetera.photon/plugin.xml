@@ -63,12 +63,6 @@
             name="Currency Order Ticket"
             allowMultiple="true"
             />
-      <view
-            category="org.marketcetera.photon.category"
-            class="org.marketcetera.photon.views.WebBrowserView"
-            icon="icons/silk/world_go.png"
-            id="org.marketcetera.photon.views.WebBrowserView"
-            name="Browser"/>
       <category
             id="org.marketcetera.photon.category"
             name="Photon"/>
@@ -221,12 +215,6 @@
             keySequence="M3+C"/>
       <command
             categoryId="org.marketcetera.photon.commands"
-            description="%command.lookup.description"
-            id="org.marketcetera.photon.lookup"
-            name="%command.lookup.name">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.commands"
             defaultHandler="org.marketcetera.photon.ui.marketdata.ReconnectMarketData"
             description="%command.reconnectMarketData.description"
             id="org.marketcetera.photon.reconnectMarketData"
@@ -269,17 +257,6 @@
          		id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
          		label="&amp;Replace order"/>
          </objectContribution>
-         <objectContribution
-         	adaptable="false"
-         	id="org.marketcetera.photon.actions.ViewSecurityActionDelegate"
-         	objectClass="org.marketcetera.messagehistory.ReportHolder">
-         	<action
-                class="org.marketcetera.photon.actions.ViewSecurityActionDelegate"
-                enablesFor="+"
-                icon="icons/silk/world_go.png"
-                id="org.marketcetera.photon.actions.ViewSecurityAction"
-                label="View Security"/>
-         </objectContribution>
    <objectContribution
          adaptable="false"
          id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
@@ -314,18 +291,6 @@
              <visibleWhen>
                 <reference
                       definitionId="org.marketcetera.photon.marketDataRowsSelected">
-                </reference>
-             </visibleWhen>
-          </command>
-          <command
-                commandId="org.marketcetera.photon.lookup"
-                icon="icons/silk/world_go.png"
-                label="%marketDataView.lookup.label"
-                mnemonic="%marketDataView.lookup.mnemonic"
-                style="push">
-             <visibleWhen>
-                <reference
-                      definitionId="org.marketcetera.photon.symbolProviderSelected">
                 </reference>
              </visibleWhen>
           </command>
@@ -459,15 +424,6 @@
                      value="org.marketcetera.photon.ui.commandLineTrimWidget">
                </equals>
             </with>
-         </activeWhen>
-      </handler>
-      <handler
-            class="org.marketcetera.photon.actions.GoogleFinanceLookupHandler"
-            commandId="org.marketcetera.photon.lookup">
-         <activeWhen>
-            <reference
-                  definitionId="org.marketcetera.photon.symbolProviderSelected">
-            </reference>
          </activeWhen>
       </handler>
       <handler

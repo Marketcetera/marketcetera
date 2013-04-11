@@ -1,10 +1,12 @@
 package org.marketcetera.ors;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.config.LogonAction;
@@ -13,10 +15,7 @@ import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.info.*;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.trade.FIXConverter;
-import org.marketcetera.trade.MessageCreationException;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.TradeMessage;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -38,7 +37,7 @@ import quickfix.field.*;
 
 @ClassVersion("$Id$")
 public class QuickFIXApplication
-    implements Application
+    implements Application, ReportReceiver
 {
 
     // CLASS DATA
@@ -370,6 +369,74 @@ public class QuickFIXApplication
         messagesToProcess.add(new MessagePackage(msg,
                                                  MessageType.FROM_APP,
                                                  session));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.OrderReceiver#addReport(org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void addReport(ExecutionReport inReport)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Manually adding {}", //$NON-NLS-1$
+                               inReport);
+        if(!(inReport instanceof FIXMessageSupport)) {
+            throw new UnsupportedOperationException();
+        }
+        Broker broker = getBrokers().getBroker(inReport.getBrokerID());
+        if(broker == null) {
+            throw new IllegalArgumentException(Messages.QF_UNKNOWN_BROKER_ID.getText(inReport.getBrokerID()));
+        }
+        SessionID sessionID = broker.getSessionID();
+        Message msg = ((FIXMessageSupport)inReport).getMessage();
+        try {
+            SessionSettings sessionSettings = broker.getSpringBroker().getDescriptor().getSettings().getQSettings();
+            // need to modify message version of this message to match the broker's
+            msg.getHeader().setField(new BeginString(broker.getFIXVersion().toString()));
+            // invert the target and sender because the message is supposed to have come *from* the target *to* the sender
+            msg.getHeader().setField(new SenderCompID(sessionSettings.getString(sessionID,
+                                                                                SessionSettings.TARGETCOMPID)));
+            msg.getHeader().setField(new TargetCompID(sessionSettings.getString(sessionID,
+                                                                                SessionSettings.SENDERCOMPID)));
+            // mark these messages as stinkers if there's ever any question about the data
+            msg.getHeader().setField(new MsgSeqNum(Integer.MIN_VALUE));
+            if(!msg.getHeader().isSetField(SendingTime.FIELD)) {
+                msg.getHeader().setField(new SendingTime(new Date()));
+            }
+            // recalculate checksum and length
+            String newMessageValue = msg.toString();
+            SLF4JLoggerProxy.debug(this,
+                                   "Message converted to {}", //$NON-NLS-1$
+                                   newMessageValue);
+            // validate fix message with the broker's dictionary
+            broker.getDataDictionary().validate(msg);
+        } catch (IncorrectTagValue e) {
+            throw new IllegalArgumentException(Messages.QF_CANNOT_ADD_INVALID_REPORT.getText(ExceptionUtils.getRootCauseMessage(e)));
+        } catch (FieldNotFound e) {
+            throw new IllegalArgumentException(Messages.QF_CANNOT_ADD_INVALID_REPORT.getText(ExceptionUtils.getRootCauseMessage(e)));
+        } catch (IncorrectDataFormat e) {
+            throw new IllegalArgumentException(Messages.QF_CANNOT_ADD_INVALID_REPORT.getText(ExceptionUtils.getRootCauseMessage(e)));
+        } catch (ConfigError e) {
+            throw new IllegalArgumentException(Messages.QF_CANNOT_ADD_INVALID_REPORT.getText(ExceptionUtils.getRootCauseMessage(e)));
+        } catch (FieldConvertError e) {
+            throw new IllegalArgumentException(Messages.QF_CANNOT_ADD_INVALID_REPORT.getText(ExceptionUtils.getRootCauseMessage(e)));
+        }
+        Messages.QF_FROM_APP.info(getCategory(msg),
+                                  msg,
+                                  broker);
+        messagesToProcess.add(new MessagePackage(msg,
+                                                 MessageType.FROM_APP,
+                                                 sessionID));
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.OrderReceiver#deleteReport(org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void deleteReport(ExecutionReport inReport)
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Deleting {}",
+                               inReport);
+        // TODO magic happens here
     }
     /**
      * Indicates the type of message.

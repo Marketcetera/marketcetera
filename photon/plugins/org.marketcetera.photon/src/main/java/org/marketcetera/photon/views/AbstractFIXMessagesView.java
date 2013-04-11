@@ -21,6 +21,7 @@ import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.actions.AddExecutionReportAction;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
 import org.marketcetera.photon.ui.BrokerSupportTableFormat;
@@ -195,6 +196,9 @@ public abstract class AbstractFIXMessagesView
             }
         });
         inTheToolBarManager.add(filterTextContributionItem);
+        
+        // Add execution report button
+        inTheToolBarManager.add(new AddExecutionReportAction());
     }
     /**
      * The FIXMessageTableFormat manages the addition/removal of columns. The

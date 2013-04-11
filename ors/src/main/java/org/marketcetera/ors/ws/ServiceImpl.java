@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.jws.WebParam;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.marketcetera.client.Service;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
@@ -12,6 +15,7 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.OptionRootUnderlyingMap;
+import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
@@ -25,6 +29,8 @@ import org.marketcetera.util.ws.stateful.*;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
+
+import quickfix.Message;
 
 /**
  * The implementation of the application's web services.
@@ -274,6 +280,63 @@ public class ServiceImpl
         SimpleUser user = new SingleSimpleUserQuery(inUsername).fetch();
         user.setUserData(inUserData);
         user.save();
+    }
+    /**
+     * Adds the given message to the system data bus.
+     *
+     * @param inReport a <code>Message</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inUser a <code>UserID</code> value
+     * @throws PersistenceException if the report could not be added
+     */
+    private void addReport(Message inReport,
+                           BrokerID inBrokerID,
+                           UserID inUser)
+            throws PersistenceException
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Received {} from user({}) for {} to add", //$NON-NLS-1$
+                               inReport,
+                               inUser,
+                               inBrokerID);
+        try {
+            ExecutionReport newReport = Factory.getInstance().createExecutionReport(inReport,
+                                                                                    inBrokerID,
+                                                                                    Originator.Broker,
+                                                                                    inUser,
+                                                                                    inUser);
+            OrderRoutingSystem.getInstance().getOrderReceiver().addReport(newReport);
+        } catch (Exception e) {
+            Messages.CANNOT_ADD_REPORT.warn(this,
+                                            inUser,
+                                            inBrokerID,
+                                            ExceptionUtils.getRootCauseMessage(e));
+            throw new PersistenceException(e);
+        }
+    }
+    /**
+     * Deletes the given report from the system persistence.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @param inUser a <code>UserID</code> value
+     * @throws PersistenceException if the report cannot be deleted 
+     */
+    private void deleteReport(ExecutionReport inReport,
+                              UserID inUser)
+            throws PersistenceException
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "Received {} from {} to delete", //$NON-NLS-1$
+                               inReport,
+                               inUser);
+        try {
+            OrderRoutingSystem.getInstance().getOrderReceiver().deleteReport(inReport);
+        } catch (Exception e) {
+            Messages.CANNOT_DELETE_REPORT.warn(this,
+                                               inUser,
+                                               ExceptionUtils.getRootCauseMessage(e));
+            throw new PersistenceException(e);
+        }
     }
     // Service.
 
@@ -617,6 +680,44 @@ public class ServiceImpl
             {
                 setUserDataImpl(getSessionManager().get(inContext.getSessionId()).getSession().getUser().getName(),
                                 inData);
+            }}).execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#addReport(org.marketcetera.util.ws.stateful.ClientContext, quickfix.Message)
+     */
+    @Override
+    public void addReport(final ClientContext inContext,
+                          final FIXMessageWrapper inReport,
+                          final BrokerID inBrokerID)
+            throws RemoteException
+    {
+        (new RemoteRunner<ClientSession>(getSessionManager()) {
+            @Override
+            protected void run(ClientContext context,
+                               SessionHolder<ClientSession> sessionHolder)
+                    throws PersistenceException
+            {
+                addReport(inReport.getMessage(),
+                          inBrokerID,
+                          getSessionManager().get(inContext.getSessionId()).getSession().getUser().getUserID());
+            }}).execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#deleteReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void deleteReport(final @WebParam(name="context")ClientContext inContext,
+                             final @WebParam(name="report")ExecutionReport inReport)
+            throws RemoteException
+    {
+        (new RemoteRunner<ClientSession>(getSessionManager()) {
+            @Override
+            protected void run(ClientContext context,
+                               SessionHolder<ClientSession> sessionHolder)
+                    throws PersistenceException
+            {
+                deleteReport(inReport,
+                             getSessionManager().get(inContext.getSessionId()).getSession().getUser().getUserID());
             }}).execute(inContext);
     }
 }
