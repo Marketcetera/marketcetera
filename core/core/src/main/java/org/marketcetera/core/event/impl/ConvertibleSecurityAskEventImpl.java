@@ -1,34 +1,34 @@
 package org.marketcetera.core.event.impl;
 
-import org.marketcetera.core.event.BidEvent;
-import org.marketcetera.core.event.ConvertibleBondEvent;
-import org.marketcetera.core.event.beans.ConvertibleBondBean;
+import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.core.event.ConvertibleSecurityEvent;
+import org.marketcetera.core.event.beans.ConvertibleSecurityBean;
 import org.marketcetera.core.event.beans.QuoteBean;
 import org.marketcetera.core.trade.*;
 
 /* $License$ */
 
 /**
- *
+ * Represents an ask event for a convertible security.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-class ConvertibleBondBidEventImpl
+class ConvertibleSecurityAskEventImpl
         extends AbstractQuoteEventImpl
-        implements ConvertibleBondEvent, BidEvent
+        implements ConvertibleSecurityEvent, AskEvent
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasEquity#getInstrument()
      */
     @Override
-    public ConvertibleBond getInstrument()
+    public ConvertibleSecurity getInstrument()
     {
-        return (ConvertibleBond)super.getInstrument();
+        return (ConvertibleSecurity)super.getInstrument();
     }
     /**
-     * Create a new ConvertibleBondBidEventImpl instance.
+     * Create a new ConvertibleSecurityAskEventImpl instance.
      *
      * @param inQuote a <code>QuoteBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
@@ -40,12 +40,12 @@ class ConvertibleBondBidEventImpl
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>Action</code> is <code>null</code>
      */
-    ConvertibleBondBidEventImpl(QuoteBean inQuote,
-                                ConvertibleBondBean inConvertibleBond)
+    ConvertibleSecurityAskEventImpl(QuoteBean inQuote,
+                                ConvertibleSecurityBean inConvertibleSecurity)
     {
         super(inQuote);
-        bond = ConvertibleBondBean.copy(inConvertibleBond);
-        bond.validate();
+        security = ConvertibleSecurityBean.copy(inConvertibleSecurity);
+        security.validate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractQuoteEventImpl#getDescription()
@@ -58,10 +58,10 @@ class ConvertibleBondBidEventImpl
     /**
      * provides a human-readable description of this event type (does not need to be localized)
      */
-    private static final String description = "Convertible Bond Bid"; //$NON-NLS-1$
+    private static final String description = "Convertible Security Ask"; //$NON-NLS-1$
     /**
-     * the convertible bond attributes 
+     * the convertible security attributes 
      */
-    private final ConvertibleBondBean bond;
+    private final ConvertibleSecurityBean security;
     private static final long serialVersionUID = 1L;
 }

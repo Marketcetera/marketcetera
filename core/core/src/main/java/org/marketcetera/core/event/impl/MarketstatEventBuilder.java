@@ -8,7 +8,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.Messages;
-import org.marketcetera.core.event.beans.ConvertibleBondBean;
+import org.marketcetera.core.event.beans.ConvertibleSecurityBean;
 import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.MarketstatBean;
 import org.marketcetera.core.event.beans.OptionBean;
@@ -51,7 +51,7 @@ public abstract class MarketstatEventBuilder
             return optionMarketstat().withInstrument(inInstrument);
         } else if(inInstrument instanceof Future) {
             return futureMarketstat().withInstrument(inInstrument);
-        } else if(inInstrument instanceof ConvertibleBond) {
+        } else if(inInstrument instanceof ConvertibleSecurity) {
             return convertibleBondMarketstat().withInstrument(inInstrument);
         } else {
             throw new UnsupportedOperationException();
@@ -129,7 +129,7 @@ public abstract class MarketstatEventBuilder
      * of type <code>ConvertibleBond</code>.
      *
      * @return a <code>MarketstatEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link ConvertibleBond}
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link ConvertibleSecurity}
      */
     public static MarketstatEventBuilder convertibleBondMarketstat()
     {
@@ -138,10 +138,10 @@ public abstract class MarketstatEventBuilder
             @Override
             public MarketstatEvent create()
             {
-                if(!(getMarketstat().getInstrument() instanceof ConvertibleBond)) {
+                if(!(getMarketstat().getInstrument() instanceof ConvertibleSecurity)) {
                     throw new IllegalArgumentException(Messages.VALIDATION_CONVERTIBLE_BOND_REQUIRED.getText());
                 }
-                return new ConvertibleBondMarketstatEventImpl(getMarketstat(),
+                return new ConvertibleSecurityMarketstatEventImpl(getMarketstat(),
                                                               getConvertibleBond());
             }
         };
@@ -203,8 +203,8 @@ public abstract class MarketstatEventBuilder
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
-        } else if(inInstrument instanceof ConvertibleBond) {
-            convertibleBond.setInstrument((ConvertibleBond)inInstrument);
+        } else if(inInstrument instanceof ConvertibleSecurity) {
+            convertibleBond.setInstrument((ConvertibleSecurity)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
@@ -566,7 +566,7 @@ public abstract class MarketstatEventBuilder
      *
      * @return a <code>ConvertibleBondBean</code> value
      */
-    protected final ConvertibleBondBean getConvertibleBond()
+    protected final ConvertibleSecurityBean getConvertibleBond()
     {
         return convertibleBond;
     }
@@ -603,7 +603,7 @@ public abstract class MarketstatEventBuilder
     /**
      * the convertible bond attributes
      */
-    private final ConvertibleBondBean convertibleBond = new ConvertibleBondBean();
+    private final ConvertibleSecurityBean convertibleBond = new ConvertibleSecurityBean();
     /**
      * the change in volume since the previous close, may be <code>null</code> 
      */

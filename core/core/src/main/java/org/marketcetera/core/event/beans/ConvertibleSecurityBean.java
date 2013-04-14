@@ -2,7 +2,7 @@ package org.marketcetera.core.event.beans;
 
 import java.io.Serializable;
 
-import org.marketcetera.core.event.ConvertibleBondEvent;
+import org.marketcetera.core.event.ConvertibleSecurityEvent;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.util.EventServices;
 import org.marketcetera.core.trade.Instrument;
@@ -10,39 +10,39 @@ import org.marketcetera.core.trade.Instrument;
 /* $License$ */
 
 /**
- *
+ * Contains the attributes of a convertible security.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class ConvertibleBondBean
+public class ConvertibleSecurityBean
         implements Serializable
 {
     /**
-     * Creates a shallow copy of the given <code>ConvertibleBondBean</code>.
+     * Creates a shallow copy of the given <code>ConvertibleSecurityBean</code>.
      *
-     * @param inBean a <code>ConvertibleBondBean</code> value
-     * @return a <code>ConvertibleBondBean</code> value
+     * @param inBean a <code>ConvertibleSecurityBean</code> value
+     * @return a <code>ConvertibleSecurityBean</code> value
      */
-    public static ConvertibleBondBean copy(ConvertibleBondBean inBean)
+    public static ConvertibleSecurityBean copy(ConvertibleSecurityBean inBean)
     {
-        ConvertibleBondBean newBean = new ConvertibleBondBean();
+        ConvertibleSecurityBean newBean = new ConvertibleSecurityBean();
         copyAttributes(inBean,
                        newBean);
         return newBean;
     }
     /**
-     * Builds a <code>ConvertibleBondBean</code> based on the values of
+     * Builds a <code>ConvertibleSecurityBean</code> based on the values of
      * the given event.
      *
-     * @param inConvertibleBondEvent a <code>ConvertibleBondEvent</code> value
-     * @return a <code>ConvertibleBondBean</code> value
+     * @param inConvertibleSecurityEvent a <code>ConvertibleSecurityEvent</code> value
+     * @return a <code>ConvertibleSecurityBean</code> value
      */
-    public static ConvertibleBondBean getConvertibleBondBeanFromEvent(ConvertibleBondEvent inConvertibleBondEvent)
+    public static ConvertibleSecurityBean getConvertibleSecurityBeanFromEvent(ConvertibleSecurityEvent inConvertibleSecurityEvent)
     {
-        ConvertibleBondBean bean = new ConvertibleBondBean();
-        bean.setInstrument(inConvertibleBondEvent.getInstrument());
+        ConvertibleSecurityBean bean = new ConvertibleSecurityBean();
+        bean.setInstrument(inConvertibleSecurityEvent.getInstrument());
         return bean;
     }
     /**
@@ -78,11 +78,11 @@ public class ConvertibleBondBean
     /**
      * Copies all member attributes from the donor to the recipient.
      *
-     * @param inDonor a <code>ConvertibleBondBean</code> value
-     * @param inRecipient a <code>ConvertibleBondBean</code> value
+     * @param inDonor a <code>ConvertibleSecurityBean</code> value
+     * @param inRecipient a <code>ConvertibleSecurityBean</code> value
      */
-    protected static void copyAttributes(ConvertibleBondBean inDonor,
-                                         ConvertibleBondBean inRecipient)
+    protected static void copyAttributes(ConvertibleSecurityBean inDonor,
+                                         ConvertibleSecurityBean inRecipient)
     {
         inRecipient.setInstrument(inDonor.getInstrument());
     }

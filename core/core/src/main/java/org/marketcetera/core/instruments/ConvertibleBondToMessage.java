@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.ConvertibleBond;
+import org.marketcetera.core.trade.ConvertibleSecurity;
 import org.marketcetera.core.trade.Instrument;
 
 import quickfix.DataDictionary;
@@ -20,14 +20,14 @@ import quickfix.field.Symbol;
  * @since $Release$
  */
 public class ConvertibleBondToMessage
-        extends InstrumentToMessage<ConvertibleBond>
+        extends InstrumentToMessage<ConvertibleSecurity>
 {
     /**
      * Create a new ConvertibleBondToMessage instance.
      */
     public ConvertibleBondToMessage()
     {
-        super(ConvertibleBond.class);
+        super(ConvertibleSecurity.class);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.InstrumentToMessage#set(org.marketcetera.trade.Instrument, java.lang.String, quickfix.Message)

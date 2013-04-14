@@ -19,7 +19,7 @@ import org.apache.commons.lang.Validate;
  */
 @ThreadSafe
 @XmlRootElement
-@XmlSeeAlso({ Equity.class, Option.class, Future.class, ConvertibleBond.class })
+@XmlSeeAlso({ Equity.class, Option.class, Future.class, ConvertibleSecurity.class })
 @XmlAccessorType(XmlAccessType.NONE)
 public abstract class Instrument
         implements Serializable, Comparable<Instrument>

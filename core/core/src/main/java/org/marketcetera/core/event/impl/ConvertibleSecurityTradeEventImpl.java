@@ -2,35 +2,35 @@ package org.marketcetera.core.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.core.event.ConvertibleBondEvent;
+import org.marketcetera.core.event.ConvertibleSecurityEvent;
 import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.core.event.beans.ConvertibleBondBean;
+import org.marketcetera.core.event.beans.ConvertibleSecurityBean;
 import org.marketcetera.core.event.beans.MarketDataBean;
 import org.marketcetera.core.trade.*;
 
 /* $License$ */
 
 /**
- * Provides a ConvertibleBond implementation of {@link TradeEvent}.
+ * Provides a ConvertibleSecurity implementation of {@link TradeEvent}.
  *
  * @version $Id$
  * @since 2.1.0
  */
 @ThreadSafe
-final class ConvertibleBondTradeEventImpl
+final class ConvertibleSecurityTradeEventImpl
         extends AbstractTradeEventImpl
-        implements ConvertibleBondEvent
+        implements ConvertibleSecurityEvent
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.event.HasConvertibleBond#getInstrument()
+     * @see org.marketcetera.event.HasConvertibleSecurity#getInstrument()
      */
     @Override
-    public ConvertibleBond getInstrument()
+    public ConvertibleSecurity getInstrument()
     {
-        return (ConvertibleBond)super.getInstrument();
+        return (ConvertibleSecurity)super.getInstrument();
     }
     /**
-     * Create a new ConvertibleBondTradeEventImpl instance.
+     * Create a new ConvertibleSecurityTradeEventImpl instance.
      *
      * @param inMarketData a <code>MarketDataBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
@@ -41,12 +41,12 @@ final class ConvertibleBondTradeEventImpl
      * @throws IllegalArgumentException if <code>Exchange</code> is <code>null</code> or empty
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
      */
-    ConvertibleBondTradeEventImpl(MarketDataBean inMarketData,
-                         ConvertibleBondBean inConvertibleBond)
+    ConvertibleSecurityTradeEventImpl(MarketDataBean inMarketData,
+                         ConvertibleSecurityBean inConvertibleSecurity)
     {
         super(inMarketData);
-        convertibleBond = inConvertibleBond;
-        convertibleBond.validate();
+        convertibleSecurity = inConvertibleSecurity;
+        convertibleSecurity.validate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractQuoteEventImpl#getDescription()
@@ -59,10 +59,10 @@ final class ConvertibleBondTradeEventImpl
     /**
      * provides a human-readable description of this event type (does not need to be localized)
      */
-    private static final String description = "Convertible Bond Trade"; //$NON-NLS-1$
+    private static final String description = "Convertible Security Trade"; //$NON-NLS-1$
     /**
-     * the convertible bond attributes 
+     * the convertible security attributes 
      */
-    private final ConvertibleBondBean convertibleBond;
+    private final ConvertibleSecurityBean convertibleSecurity;
     private static final long serialVersionUID = 1L;
 }

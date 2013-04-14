@@ -2,51 +2,51 @@ package org.marketcetera.core.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.core.event.ConvertibleBondEvent;
+import org.marketcetera.core.event.ConvertibleSecurityEvent;
 import org.marketcetera.core.event.MarketstatEvent;
-import org.marketcetera.core.event.beans.ConvertibleBondBean;
+import org.marketcetera.core.event.beans.ConvertibleSecurityBean;
 import org.marketcetera.core.event.beans.MarketstatBean;
 import org.marketcetera.core.trade.*;
 
 /* $License$ */
 
 /**
- * Provides a ConvertibleBond implementation of {@link MarketstatEvent}.
+ * Provides a ConvertibleSecurity implementation of {@link MarketstatEvent}.
  *
  * @version $Id$
  * @since 2.1.0
  */
 @ThreadSafe
-class ConvertibleBondMarketstatEventImpl
+class ConvertibleSecurityMarketstatEventImpl
         extends AbstractMarketstatEventImpl
-        implements ConvertibleBondEvent
+        implements ConvertibleSecurityEvent
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.event.HasConvertibleBond#getInstrument()
+     * @see org.marketcetera.event.HasConvertibleSecurity#getInstrument()
      */
     @Override
-    public ConvertibleBond getInstrument()
+    public ConvertibleSecurity getInstrument()
     {
-        return (ConvertibleBond)super.getInstrument();
+        return (ConvertibleSecurity)super.getInstrument();
     }
     /**
-     * Create a new ConvertibleBondMarketstatEventImpl instance.
+     * Create a new ConvertibleSecurityMarketstatEventImpl instance.
      *
      * @param inMarketstatBean a <code>MarketstatBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
      */
-    ConvertibleBondMarketstatEventImpl(MarketstatBean inMarketstat,
-                                       ConvertibleBondBean inConvertibleBond)
+    ConvertibleSecurityMarketstatEventImpl(MarketstatBean inMarketstat,
+                                       ConvertibleSecurityBean inConvertibleSecurity)
     {
         super(inMarketstat);
-        bond = inConvertibleBond;
-        bond.validate();
+        security = inConvertibleSecurity;
+        security.validate();
     }
     /**
-     * the bond attributes 
+     * the security attributes 
      */
-    private final ConvertibleBondBean bond;
+    private final ConvertibleSecurityBean security;
     private static final long serialVersionUID = 1L;
 }

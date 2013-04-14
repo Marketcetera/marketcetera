@@ -1,6 +1,6 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.core.trade.ConvertibleBond;
+import org.marketcetera.core.trade.ConvertibleSecurity;
 import org.marketcetera.core.trade.Instrument;
 
 import quickfix.FieldNotFound;
@@ -26,7 +26,7 @@ public class ConvertibleBondFromMessage
     public Instrument extract(Message inMessage)
     {
         String symbol = getSymbol(inMessage);
-        return symbol == null ? null : new ConvertibleBond(symbol);
+        return symbol == null ? null : new ConvertibleSecurity(symbol);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.instruments.DynamicInstrumentHandler#isHandled(java.lang.Object)

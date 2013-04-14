@@ -45,11 +45,11 @@ public class PositionKeyFactory {
      * @return a PositionKey&lt;ConvertibleBond&gt;</code> value
      * @throws IllegalArgumentException if one of the given parameters are invalid
      */
-    public static PositionKey<? extends ConvertibleBond> createConvertibleBondKey(String inSymbol,
+    public static PositionKey<? extends ConvertibleSecurity> createConvertibleBondKey(String inSymbol,
                                                                                   @Nullable String inAccount,
                                                                                   @Nullable String inTraderID)
     {
-        return createKey(new ConvertibleBond(inSymbol),
+        return createKey(new ConvertibleSecurity(inSymbol),
                          inAccount,
                          inTraderID);
     }

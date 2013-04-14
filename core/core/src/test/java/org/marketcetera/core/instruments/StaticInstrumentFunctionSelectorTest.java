@@ -49,7 +49,7 @@ public class StaticInstrumentFunctionSelectorTest {
                                                      FutureExpirationMonth.APRIL,
                                                      2012)),
                    instanceOf(FutureToMessage.class));
-        assertThat(selector.forInstrument(new ConvertibleBond("yellow")),
+        assertThat(selector.forInstrument(new ConvertibleSecurity("yellow")),
                    instanceOf(ConvertibleBondToMessage.class));
         new ExpectedFailure<IllegalArgumentException>(
                 Messages.NO_HANDLER_FOR_INSTRUMENT.getText(
@@ -85,7 +85,7 @@ public class StaticInstrumentFunctionSelectorTest {
         assertThat(handlers.get(Equity.class), instanceOf(EquityToMessage.class));
         assertThat(handlers.get(Option.class), instanceOf(OptionToMessage.class));
         assertThat(handlers.get(Future.class), instanceOf(FutureToMessage.class));
-        assertThat(handlers.get(ConvertibleBond.class),
+        assertThat(handlers.get(ConvertibleSecurity.class),
                    instanceOf(ConvertibleBondToMessage.class));
     }
 

@@ -9,7 +9,7 @@ package org.marketcetera.core.event;
  * @version $Id$
  * @since $Release$
  */
-public interface ConvertibleBondEvent
-        extends HasConvertibleBond,Event
+public interface ConvertibleSecurityEvent
+        extends HasConvertibleSecurity,Event
 {
 }

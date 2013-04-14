@@ -5,13 +5,13 @@
   <bean id="futureSymbolResolverBean" class="org.marketcetera.symbolresolver.FutureSymbolResolver"/>
   <bean id="osiOptionSymbolResolverBean" class="org.marketcetera.symbolresolver.FutureSymbolResolver"/>
   <bean id="equitySymbolResolverBean" class="org.marketcetera.symbolresolver.EquitySymbolResolver"/>
-  <bean id="convertibleBondSymbolResolverBean" class="org.marketcetera.symbolresolver.ConvertibleBondSymbolResolver"/>
+  <bean id="convertibleSecuritySymbolResolverBean" class="org.marketcetera.symbolresolver.ConvertibleSecuritySymbolResolver"/>
   <bean id="marketceteraSymbolResolverBean" class="org.marketcetera.symbolresolver.MarketceteraSymbolResolverManager">
     <property name="resolvers">
       <list>
         <ref component-id="futureSymbolResolverBean"/>
         <ref component-id="osiOptionSymbolResolverBean"/>
-        <ref component-id="convertibleBondSymbolResolverBean"/>
+        <ref component-id="convertibleSecuritySymbolResolverBean"/>
         <ref component-id="equitySymbolResolverBean"/>
       </list>
     </property>

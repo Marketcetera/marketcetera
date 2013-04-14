@@ -8,7 +8,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import org.marketcetera.core.event.EventType;
 import org.marketcetera.core.event.Messages;
 import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.core.event.beans.ConvertibleBondBean;
+import org.marketcetera.core.event.beans.ConvertibleSecurityBean;
 import org.marketcetera.core.event.beans.FutureBean;
 import org.marketcetera.core.event.beans.MarketDataBean;
 import org.marketcetera.core.event.beans.OptionBean;
@@ -30,7 +30,7 @@ import org.marketcetera.core.trade.*;
  */
 @NotThreadSafe
 public abstract class TradeEventBuilder<E extends TradeEvent>
-        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>, FutureEventBuilder<TradeEventBuilder<E>>, ConvertibleBondEventBuilder<TradeEventBuilder<E>>
+        implements EventBuilder<E>, OptionEventBuilder<TradeEventBuilder<E>>, FutureEventBuilder<TradeEventBuilder<E>>, ConvertibleSecurityEventBuilder<TradeEventBuilder<E>>
 {
     /**
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new <code>TradeEvent</code> object.
@@ -54,7 +54,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         if(inInstrument instanceof Future) {
             return futureTradeEvent().withInstrument(inInstrument);
         }
-        if(inInstrument instanceof ConvertibleBond) {
+        if(inInstrument instanceof ConvertibleSecurity) {
             return convertibleBondTradeEvent().withInstrument(inInstrument);
         }
         throw new UnsupportedOperationException();
@@ -128,7 +128,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      * Returns a <code>TradeEventBuilder</code> suitable for constructing a new ConvertibleBond <code>TradeEvent</code> object.
      *
      * @return a <code>TradeEventBuilder</code> value
-     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link ConvertibleBond}
+     * @throws IllegalArgumentException if the value passed to {@link #withInstrument(Instrument)} is not a {@link ConvertibleSecurity}
      */
     public static TradeEventBuilder<TradeEvent> convertibleBondTradeEvent()
     {
@@ -139,8 +139,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             @Override
             public TradeEvent create()
             {
-                if(getMarketData().getInstrument() instanceof ConvertibleBond) {
-                    return new ConvertibleBondTradeEventImpl(getMarketData(),
+                if(getMarketData().getInstrument() instanceof ConvertibleSecurity) {
+                    return new ConvertibleSecurityTradeEventImpl(getMarketData(),
                                                              getConvertibleBond());
                 }
                 throw new IllegalArgumentException(Messages.VALIDATION_CONVERTIBLE_BOND_REQUIRED.getText());
@@ -193,8 +193,8 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             option.setInstrument((Option)inInstrument);
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
-        } else if(inInstrument instanceof ConvertibleBond) {
-            convertibleBond.setInstrument((ConvertibleBond)inInstrument);
+        } else if(inInstrument instanceof ConvertibleSecurity) {
+            convertibleBond.setInstrument((ConvertibleSecurity)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
@@ -414,7 +414,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      *
      * @return a <code>ConvertibleBondBean</code> value
      */
-    protected final ConvertibleBondBean getConvertibleBond()
+    protected final ConvertibleSecurityBean getConvertibleBond()
     {
         return convertibleBond;
     }
@@ -433,5 +433,5 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     /**
      * the convertible bond attributes
      */
-    private final ConvertibleBondBean convertibleBond = new ConvertibleBondBean();
+    private final ConvertibleSecurityBean convertibleBond = new ConvertibleSecurityBean();
 }

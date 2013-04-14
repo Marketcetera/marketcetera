@@ -3,19 +3,19 @@ package org.marketcetera.symbolresolver;
 import javax.annotation.concurrent.Immutable;
 
 import org.marketcetera.core.symbolresolver.SymbolResolverElement;
-import org.marketcetera.core.trade.ConvertibleBond;
+import org.marketcetera.core.trade.ConvertibleSecurity;
 import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 
 /**
- * Attempts to convert symbols to {@link org.marketcetera.core.trade.ConvertibleBond} instruments.
+ * Attempts to convert symbols to {@link org.marketcetera.core.trade.ConvertibleSecurity} instruments.
  *
- * @version $Id: ConvertibleBondSymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
+ * @version $Id: ConvertibleSecuritySymbolResolver.java 82347 2012-05-03 19:30:54Z colin $
  * @since $Release$
  */
 @Immutable
-public class ConvertibleBondSymbolResolver
+public class ConvertibleSecuritySymbolResolver
         implements SymbolResolverElement
 {
     /* (non-Javadoc)
@@ -34,8 +34,8 @@ public class ConvertibleBondSymbolResolver
     public Instrument resolve(String inSymbol,
                               Object inContext)
     {
-        if(ConvertibleBond.isinPattern.matcher(inSymbol).matches()) {
-            return new ConvertibleBond(inSymbol);
+        if(ConvertibleSecurity.isinPattern.matcher(inSymbol).matches()) {
+            return new ConvertibleSecurity(inSymbol);
         }
         return null;
     }

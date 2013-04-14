@@ -13,24 +13,24 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /* $License$ */
 
 /**
- * Represents a Convertible Bond instrument.
+ * Represents a Convertible Security instrument.
  *
- * @version $Id: ConvertibleBondImpl.java 16327 2012-10-26 21:14:08Z colin $
+ * @version $Id: ConvertibleSecurityImpl.java 16327 2012-10-26 21:14:08Z colin $
  * @since $Release$
  */
 @ThreadSafe
-@XmlRootElement(name="convertibleBond")
+@XmlRootElement(name="convertibleSecurity")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ConvertibleBond
+public class ConvertibleSecurity
         extends Instrument
 {
     /**
-     * Create a new Convertible Bond instance.
+     * Create a new Convertible Security instance.
      *
      * @param inIsin a <code>String</code> value
      * @throws IllegalArgumentException if the given symbol is <code>null</code> or empty
      */
-    public ConvertibleBond(String inIsin)
+    public ConvertibleSecurity(String inIsin)
     {
         super(inIsin);
         if(!isinPattern.matcher(inIsin).matches()) {
@@ -89,10 +89,10 @@ public class ConvertibleBond
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof ConvertibleBond)) {
+        if (!(obj instanceof ConvertibleSecurity)) {
             return false;
         }
-        ConvertibleBond other = (ConvertibleBond) obj;
+        ConvertibleSecurity other = (ConvertibleSecurity) obj;
         if (getSymbol() == null) {
             if (other.getSymbol() != null) {
                 return false;
@@ -103,10 +103,10 @@ public class ConvertibleBond
         return true;
     }
     /**
-     * Create a new ConvertibleBondImpl instance.
+     * Create a new ConvertibleSecurityImpl instance.
      */
     @SuppressWarnings("unused")
-    private ConvertibleBond() {}
+    private ConvertibleSecurity() {}
     private static final long serialVersionUID = 1L;
     /**
      * isin regex
