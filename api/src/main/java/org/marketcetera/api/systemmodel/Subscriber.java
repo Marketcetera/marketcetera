@@ -12,7 +12,6 @@ package org.marketcetera.api.systemmodel;
  */
 public interface Subscriber
 {
-    
     /**
      * Receives an update from the <code>Publisher</code>.
      * 

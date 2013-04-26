@@ -1,9 +1,15 @@
 package org.marketcetera.core.position.impl;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.marketcetera.core.position.PositionKeyFactory.createConvertibleBondKey;
+import static org.marketcetera.core.position.PositionKeyFactory.createEquityKey;
+import static org.marketcetera.core.position.PositionKeyFactory.createOptionKey;
+
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
@@ -12,10 +18,7 @@ import org.marketcetera.core.trade.Equity;
 import org.marketcetera.core.trade.OptionType;
 import org.marketcetera.core.util.except.ExpectedFailure;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.marketcetera.core.position.PositionKeyFactory.*;
+import com.google.common.collect.ImmutableList;
 
 /* $License$ */
 
@@ -55,17 +58,17 @@ public class PositionKeyImplTest extends PositionKeyTestBase {
 
         createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Put,
                 null, null),
-        createConvertibleBondKey("ABC", null, null),
-        createConvertibleBondKey("ABC", "Account", null),
-        createConvertibleBondKey("IBM", null, null),
+        createConvertibleBondKey("US013817AT86", null, null),
+        createConvertibleBondKey("US013817AT86", "Account", null),
+        createConvertibleBondKey("US013817AT87", null, null),
         createEquityKey("ABC", null, "Me"),
 
         createEquityKey("ABC", "Account", "Me"),
 
         createOptionKey("ABC", "20090101", BigDecimal.ONE, OptionType.Call,
                 "Account", "Me"),
-        createConvertibleBondKey("ABC", null, "Me"),
-        createConvertibleBondKey("ABC", "Account", "Me"));
+        createConvertibleBondKey("US013817AT86", null, "Me"),
+        createConvertibleBondKey("US013817AT86", "Account", "Me"));
     }
 
     @Test

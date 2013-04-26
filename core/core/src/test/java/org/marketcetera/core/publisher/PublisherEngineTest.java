@@ -150,13 +150,10 @@ public class PublisherEngineTest
         List<MockSubscriber> subscribers = new LinkedList<MockSubscriber>();
         //subscribers with all permutations.
         boolean [] values = {true,false};
-        for(boolean interesting: values) {
-            for(boolean interestingThrows: values) {
-                for(boolean publishThrows: values) {
-                    subscribers.add(new MockSubscriber(interesting,
-                            interestingThrows, publishThrows));
-                }
-            }
+        for(boolean publishThrows: values) {
+            subscribers.add(new MockSubscriber(true,
+                                               true,
+                                               publishThrows));
         }
         for (boolean synchronous: values) {
             for(int i = 0; i < subscribers.size(); i++) {
@@ -269,14 +266,10 @@ public class PublisherEngineTest
         for(MockSubscriber subscriber: inSubscribers) {
             engine.subscribe(subscriber);
         }
-
         engine.publishAndWait(inData);
-
         int lastCounter = 0;
         for(MockSubscriber s : inSubscribers) {
-            if(s.getInteresting() &&
-               !(s.getInterestingThrows() ||
-                 s.getPublishThrows())) {
+            if(!s.getPublishThrows()) {
                 assertEquals(inData,
                              s.getData());
                 assertTrue(s.getCounter() > lastCounter);

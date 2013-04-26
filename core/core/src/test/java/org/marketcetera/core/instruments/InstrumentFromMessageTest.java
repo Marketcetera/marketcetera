@@ -90,9 +90,9 @@ public class InstrumentFromMessageTest {
         assertEquals(false, msg.isSetField(SecurityType.FIELD));
         assertNull(InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
         // security type set, symbol set
-        msg.setField(new Symbol("PQR"));
+        msg.setField(new Symbol("US013817AT86"));
         msg.setField(new SecurityType(SecurityType.CONVERTIBLE_BOND));
-        assertEquals(new ConvertibleSecurity("PQR"),
+        assertEquals(new ConvertibleSecurity("US013817AT86"),
                      InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
     @SuppressWarnings("unchecked")

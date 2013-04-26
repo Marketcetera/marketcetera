@@ -28,7 +28,7 @@ public class PositionRowUpdaterTest {
     private static final Instrument EQUITY = new Equity("METC");
     private static final Instrument OPTION = new Option("METC", "20091010",
             BigDecimal.TEN, OptionType.Put);
-    private static final Instrument CONVERTIBLE_BOND = new ConvertibleSecurity("METC");
+    private static final Instrument CONVERTIBLE_BOND = new ConvertibleSecurity("US013817AT86");
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
     private InstrumentMarketDataListener mListener;

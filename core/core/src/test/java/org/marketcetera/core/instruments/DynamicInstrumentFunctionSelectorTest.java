@@ -73,7 +73,7 @@ public class DynamicInstrumentFunctionSelectorTest {
         assertThat(selector.forValue(msg),
                    instanceOf(FutureFromMessage.class));
         // convertible bond
-        instrument = new ConvertibleSecurity("YBM");
+        instrument = new ConvertibleSecurity("US013817AT86");
         msg = createExecReport(instrument);
         assertThat(selector.forValue(msg),
                    instanceOf(ConvertibleBondFromMessage.class));

@@ -543,7 +543,7 @@ public class InstrumentToMessageTest {
 
     private final FIXVersion mCurrentVersion;
     private static final Equity TEST_EQUITY = new Equity("YBM");
-    private static final ConvertibleSecurity TEST_CONVERTIBLE_BOND = new ConvertibleSecurity("ZBM");
+    private static final ConvertibleSecurity TEST_CONVERTIBLE_BOND = new ConvertibleSecurity("US013817AT86");
     private static final Option [] TEST_OPTIONS = {
             new Option("LBZ", "20101010", BigDecimal.TEN, OptionType.Call),
             new Option("LBZ", "20101010", BigDecimal.ONE, OptionType.Put),

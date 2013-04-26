@@ -49,7 +49,7 @@ public class StaticInstrumentFunctionSelectorTest {
                                                      FutureExpirationMonth.APRIL,
                                                      2012)),
                    instanceOf(FutureToMessage.class));
-        assertThat(selector.forInstrument(new ConvertibleSecurity("yellow")),
+        assertThat(selector.forInstrument(new ConvertibleSecurity("US013817AT86")),
                    instanceOf(ConvertibleBondToMessage.class));
         new ExpectedFailure<IllegalArgumentException>(
                 Messages.NO_HANDLER_FOR_INSTRUMENT.getText(
