@@ -140,7 +140,12 @@ public class OrderSingleParser {
                             order.setQuantity(quantity);
                             if (price.equalsIgnoreCase("mkt")) { //$NON-NLS-1$
                                 order.setOrderType(OrderType.Market);
-                            } else {
+                            }else if (price.equalsIgnoreCase("moc")) { //$NON-NLS-1$
+                                order.setOrderType(OrderType.MOC);
+                            }else if (price.equalsIgnoreCase("mbf")) { //$NON-NLS-1$
+                                order.setOrderType(OrderType.MBF);
+                            }
+                            else {
                                 order.setOrderType(OrderType.Limit);
                                 try {
                                     order.setPrice(new BigDecimal(price));
