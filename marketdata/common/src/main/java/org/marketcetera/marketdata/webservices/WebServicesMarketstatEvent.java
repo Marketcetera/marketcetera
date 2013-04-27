@@ -14,7 +14,7 @@ import org.marketcetera.core.trade.Instrument;
 /* $License$ */
 
 /**
- *
+ * Provides a web-services capable implementation of a marketstat event.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -226,8 +226,7 @@ public class WebServicesMarketstatEvent
     /**
      * Create a new WebServicesMarketstatEvent instance.
      */
-    @SuppressWarnings("unused")
-    private WebServicesMarketstatEvent() {}
+    protected WebServicesMarketstatEvent() {}
     @XmlAttribute
     private BigDecimal open;
     @XmlAttribute

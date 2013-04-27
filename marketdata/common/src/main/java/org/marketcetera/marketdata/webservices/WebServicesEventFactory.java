@@ -4,11 +4,13 @@ import org.marketcetera.core.event.AskEvent;
 import org.marketcetera.core.event.Event;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.core.trade.ConvertibleSecurity;
+import org.marketcetera.core.trade.Instrument;
 
 /* $License$ */
 
 /**
- *
+ * Constructs <code>WebServicesEvent</code> objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -16,6 +18,12 @@ import org.marketcetera.core.event.TradeEvent;
  */
 public class WebServicesEventFactory
 {
+    /**
+     * Creates web services capable events from the given input event.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @return a <code>WebServicesEvent</code> value
+     */
     public WebServicesEvent create(Event inEvent)
     {
         if(inEvent instanceof AskEvent) {
@@ -23,7 +31,13 @@ public class WebServicesEventFactory
         } else if(inEvent instanceof TradeEvent) {
             return new WebServicesTradeEvent((TradeEvent)inEvent);
         } else if(inEvent instanceof MarketstatEvent) {
-            return new WebServicesMarketstatEvent((MarketstatEvent)inEvent);
+            MarketstatEvent event = (MarketstatEvent)inEvent;
+            Instrument instrument = event.getInstrument();
+            if(instrument instanceof ConvertibleSecurity) {
+                return new WebServicesConvertibleSecurityMarketstatEvent(event);
+            } else {
+                return new WebServicesMarketstatEvent(event);
+            }
         }
         return new WebServicesEvent(inEvent);
     }
