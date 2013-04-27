@@ -34,9 +34,10 @@ public class ConvertibleSecuritySymbolResolver
     public Instrument resolve(String inSymbol,
                               Object inContext)
     {
-        if(ConvertibleSecurity.isinPattern.matcher(inSymbol).matches()) {
+        try {
             return new ConvertibleSecurity(inSymbol);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
-        return null;
     }
 }

@@ -7,8 +7,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang.StringUtils;
 
 /* $License$ */
 
@@ -27,13 +26,18 @@ public class ConvertibleSecurity
     /**
      * Create a new Convertible Security instance.
      *
-     * @param inIsin a <code>String</code> value
-     * @throws IllegalArgumentException if the given symbol is <code>null</code> or empty
+     * @param inSymbol a <code>String</code> value
+     * @throws IllegalArgumentException if the given symbol is <code>null</code>, empty, or neither a valid CUSIP nor a valid ISIN
      */
-    public ConvertibleSecurity(String inIsin)
+    public ConvertibleSecurity(String inSymbol)
     {
-        super(inIsin);
-        if(!isinPattern.matcher(inIsin).matches()) {
+        super(inSymbol);
+        inSymbol = StringUtils.trimToNull(inSymbol);
+        if(isinPattern.matcher(inSymbol).matches()) {
+            cusip = getCusipFromIsin(inSymbol);
+        } else if(cusipPattern.matcher(inSymbol).matches()) {
+            cusip = inSymbol;
+        } else {
             throw new IllegalArgumentException();
         }
     }
@@ -44,10 +48,7 @@ public class ConvertibleSecurity
      */
     public String getCusip()
     {
-        // symbol is the ISIN
-        String isin = getSymbol();
-        // remove the first two letters and the last checksum
-        return isin.substring(2,isin.length()-1);
+        return cusip;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.trade.Instrument#getSecurityType()
@@ -62,9 +63,9 @@ public class ConvertibleSecurity
     @Override
     public String toString()
     {
-        return new ToStringBuilder(this,
-                                   ToStringStyle.SHORT_PREFIX_STYLE).append("isin",  //$NON-NLS-1$
-                                                                            getSymbol()).toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append("ConvertibleSecurity [").append(getSymbol()).append("]");
+        return builder.toString();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -103,13 +104,32 @@ public class ConvertibleSecurity
         return true;
     }
     /**
+     * Determines the CUSIP from the given ISIN.
+     *
+     * @param inIsin a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    private static String getCusipFromIsin(String inIsin)
+    {
+        // remove the first two letters and the last checksum
+        return inIsin.substring(2,inIsin.length()-1);
+    }
+    /**
      * Create a new ConvertibleSecurityImpl instance.
      */
     @SuppressWarnings("unused")
     private ConvertibleSecurity() {}
-    private static final long serialVersionUID = 1L;
+    /**
+     * cusip value
+     */
+    private String cusip;
     /**
      * isin regex
      */
-    public static final Pattern isinPattern = Pattern.compile("[A-Z]{2}([A-Z0-9]){9}[0-9]");
+    public static final Pattern isinPattern = Pattern.compile("^[A-Z]{2}([A-Z0-9]){9}[0-9]$");
+    /**
+     * cusip regex
+     */
+    public static final Pattern cusipPattern = Pattern.compile("^[0-9]{3}[A-Z0-9]{5}[0-9]$");
+    private static final long serialVersionUID = 7922788847017047191L;
 }
