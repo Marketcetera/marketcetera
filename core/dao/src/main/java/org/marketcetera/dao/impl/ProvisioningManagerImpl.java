@@ -64,7 +64,7 @@ public class ProvisioningManagerImpl
                                        "No permission named {} exists yet, adding it",
                                        permissionName);
                 try {
-                    permissionDao.add(permission);
+                    permissionDao.save(permission);
                 } catch (EntityExistsException ignored) {
                 } catch (RuntimeException e1) {
                     SLF4JLoggerProxy.warn(this,
@@ -103,7 +103,7 @@ public class ProvisioningManagerImpl
                                        "No user named {} exists yet, adding it",
                                        userName);
                 try {
-                    userDao.add(user);
+                    userDao.save(user);
                 } catch (EntityExistsException ignored) {
                 } catch (RuntimeException e1) {
                     SLF4JLoggerProxy.warn(this,
@@ -138,7 +138,7 @@ public class ProvisioningManagerImpl
                                        "No role named {} exists yet, adding it",
                                        roleName);
                 try {
-                    roleDao.add(role);
+                    roleDao.save(role);
                 } catch (EntityExistsException ignored) {
                 } catch (RuntimeException e1) {
                     SLF4JLoggerProxy.warn(this,
@@ -165,8 +165,9 @@ public class ProvisioningManagerImpl
                 roleToModify = roleDao.getByName(roleName).getMutableView();
             } catch (NoResultException e) {
                 SLF4JLoggerProxy.warn(this,
-                                      "Cannot perform assignment {} because no role by that name exists, skipping", // TODO message catalog
-                                      assignToRole);
+                                      "Cannot perform assignment {} because no role by the name {} exists, skipping", // TODO message catalog
+                                      assignToRole,
+                                      roleName);
                 continue;
             }
             // retrieve the permissions to add (note that this implementation consciously chooses to remove existing permissions/users in favor of the new list)

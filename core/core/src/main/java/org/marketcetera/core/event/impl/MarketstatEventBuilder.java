@@ -14,6 +14,7 @@ import org.marketcetera.core.event.beans.MarketstatBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
+import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -30,7 +31,7 @@ import org.marketcetera.core.trade.*;
  */
 @NotThreadSafe
 public abstract class MarketstatEventBuilder
-        implements EventBuilder<MarketstatEvent>, OptionEventBuilder<MarketstatEventBuilder>, FutureEventBuilder<MarketstatEventBuilder>
+        implements EventBuilder<MarketstatEvent>, OptionEventBuilder<MarketstatEventBuilder>, FutureEventBuilder<MarketstatEventBuilder>, ConvertibleSecurityEventBuilder<MarketstatEventBuilder>
 {
     /**
      * Returns a <code>MarketstatEventBuilder</code> suitable for constructing a new <code>MarketstatEvent</code> object.
@@ -142,7 +143,7 @@ public abstract class MarketstatEventBuilder
                     throw new IllegalArgumentException(Messages.VALIDATION_CONVERTIBLE_BOND_REQUIRED.getText());
                 }
                 return new ConvertibleSecurityMarketstatEventImpl(getMarketstat(),
-                                                              getConvertibleBond());
+                                                                  getConvertibleBond());
             }
         };
     }
@@ -487,6 +488,222 @@ public abstract class MarketstatEventBuilder
     public final MarketstatEventBuilder withContractSize(int inContractSize)
     {
         future.setContractSize(inContractSize);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withParity(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withParity(BigDecimal inParity)
+    {
+        convertibleBond.setParity(inParity);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withUnderlyingEquity(org.marketcetera.core.trade.Equity)
+     */
+    @Override
+    public MarketstatEventBuilder withUnderlyingEquity(Equity inEquity)
+    {
+        convertibleBond.setUnderlyingEquity(inEquity);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withMaturity(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withMaturity(String inMaturity)
+    {
+        convertibleBond.setMaturity(inMaturity);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withYield(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withYield(BigDecimal inYield)
+    {
+        convertibleBond.setYield(inYield);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withAmountOutstanding(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withAmountOutstanding(BigDecimal inAmountOutstanding)
+    {
+        convertibleBond.setAmountOutstanding(inAmountOutstanding);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withValueDate(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withValueDate(String inValueDate)
+    {
+        convertibleBond.setValueDate(inValueDate);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withTraceReportTime(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withTraceReportTime(String inTraceReportTime)
+    {
+        convertibleBond.setTraceReportTime(inTraceReportTime);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withConversionPrice(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withConversionPrice(BigDecimal inConversionPrice)
+    {
+        convertibleBond.setConversionPrice(inConversionPrice);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withConversionRatio(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withConversionRatio(BigDecimal inConversionRatio)
+    {
+        convertibleBond.setConversionRatio(inConversionRatio);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withAccruedInterest(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withAccruedInterest(BigDecimal inAccruedInterest)
+    {
+        convertibleBond.setAccruedInterest(inAccruedInterest);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withIssuePrice(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withIssuePrice(BigDecimal inIssuePrice)
+    {
+        convertibleBond.setIssuePrice(inIssuePrice);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withConversionPremium(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withConversionPremium(BigDecimal inConversionPremium)
+    {
+        convertibleBond.setConversionPremium(inConversionPremium);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withTheoreticalDelta(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withTheoreticalDelta(BigDecimal inTheoreticalDelta)
+    {
+        convertibleBond.setTheoreticalDelta(inTheoreticalDelta);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withIssueDate(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withIssueDate(String inIssueDate)
+    {
+        convertibleBond.setIssueDate(inIssueDate);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withIssuerDomicile(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withIssuerDomicile(String inIssuerDomicile)
+    {
+        convertibleBond.setIssuerDomicile(inIssuerDomicile);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withCurrency(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withCurrency(String inCurrency)
+    {
+        convertibleBond.setCurrency(inCurrency);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withBondCurrency(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withBondCurrency(String inBondCurrency)
+    {
+        convertibleBond.setBondCurrency(inBondCurrency);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withCouponRate(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withCouponRate(BigDecimal inCouponRate)
+    {
+        convertibleBond.setCouponRate(inCouponRate);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withPaymentFrequency(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withPaymentFrequency(String inPaymentFrequency)
+    {
+        convertibleBond.setPaymentFrequency(inPaymentFrequency);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withExchangeCode(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withExchangeCode(String inExchangeCode)
+    {
+        convertibleBond.setExchangeCode(inExchangeCode);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withCompanyName(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withCompanyName(String inCompanyName)
+    {
+        convertibleBond.setCompanyName(inCompanyName);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withRating(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withRating(String inRating)
+    {
+        convertibleBond.setRating(inRating);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withRatingID(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withRatingID(String inRatingID)
+    {
+        convertibleBond.setRatingID(inRatingID);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withParValue(java.math.BigDecimal)
+     */
+    @Override
+    public MarketstatEventBuilder withParValue(BigDecimal inParValue)
+    {
+        convertibleBond.setParValue(inParValue);
         return this;
     }
     /**

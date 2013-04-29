@@ -3,6 +3,7 @@ package org.marketcetera.core.event.util;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
+import org.marketcetera.core.event.ConvertibleSecurityEvent;
 import org.marketcetera.core.event.MarketstatEvent;
 import org.marketcetera.core.event.OptionMarketstatEvent;
 import org.marketcetera.core.event.impl.MarketstatEventBuilder;
@@ -62,6 +63,7 @@ public class MarketstatEventCache
         builder.withMessageId(inEvent.getMessageId());
         builder.withTimestamp(inEvent.getTimestamp());
         builder.withSource(inEvent.getSource());
+        builder.withEventType(inEvent.getEventType());
         // these values should be transferred only if non-null
         if(inEvent.getClose() != null) {
             builder.withClosePrice(inEvent.getClose());
@@ -132,6 +134,33 @@ public class MarketstatEventCache
             if(optionEvent.getInterestChange() != null) {
                 builder.withInterestChange(optionEvent.getInterestChange());
             }
+        }
+        if(inEvent instanceof ConvertibleSecurityEvent) {
+            ConvertibleSecurityEvent event = (ConvertibleSecurityEvent)inEvent;
+            builder.withAccruedInterest(event.getAccruedInterest());
+            builder.withAmountOutstanding(event.getAmountOutstanding());
+            builder.withBondCurrency(event.getBondCurrency());
+            builder.withCompanyName(event.getCompanyName());
+            builder.withConversionPremium(event.getConversionPremium());
+            builder.withConversionPrice(event.getConversionPrice());
+            builder.withConversionRatio(event.getConversionRatio());
+            builder.withCouponRate(event.getCouponRate());
+            builder.withCurrency(event.getCurrency());
+            builder.withExchangeCode(event.getExchangeCode());
+            builder.withIssueDate(event.getIssueDate());
+            builder.withIssuePrice(event.getIssuePrice());
+            builder.withIssuerDomicile(event.getIssuerDomicile());
+            builder.withMaturity(event.getMaturity());
+            builder.withParity(event.getParity());
+            builder.withParValue(event.getParValue());
+            builder.withPaymentFrequency(event.getPaymentFrequency());
+            builder.withRating(event.getRating());
+            builder.withRatingID(event.getRatingID());
+            builder.withTheoreticalDelta(event.getTheoreticalDelta());
+            builder.withTraceReportTime(event.getTraceReportTime());
+            builder.withUnderlyingEquity(event.getUnderlyingEquity());
+            builder.withValueDate(event.getValueDate());
+            builder.withYield(event.getYield());
         }
         return get();
     }

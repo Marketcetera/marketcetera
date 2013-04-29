@@ -223,6 +223,14 @@ class ConvertibleSecurityMarketstatEventImpl
     {
         return security.getParValue();
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return "ConvertibleSecurityMarketstatEventImpl [" + getMessageId() + " " + getEventType() + " " + security + "]";
+    }
     /**
      * Create a new ConvertibleSecurityMarketstatEventImpl instance.
      *
@@ -232,7 +240,7 @@ class ConvertibleSecurityMarketstatEventImpl
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
      */
     ConvertibleSecurityMarketstatEventImpl(MarketstatBean inMarketstat,
-                                       ConvertibleSecurityBean inConvertibleSecurity)
+                                           ConvertibleSecurityBean inConvertibleSecurity)
     {
         super(inMarketstat);
         security = inConvertibleSecurity;

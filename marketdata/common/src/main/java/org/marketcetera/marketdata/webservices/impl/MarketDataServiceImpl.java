@@ -68,23 +68,25 @@ public class MarketDataServiceImpl
     @Override
     public long request(WebServicesMarketDataRequest inRequest)
     {
-        long requestId = requestIdCounter.incrementAndGet();
+        long requestId = -1;
         synchronized(events) {
             final BlockingDeque<Event> eventQueue = new LinkedBlockingDeque<Event>();
-            events.put(requestId,
-                       eventQueue);
             Subscriber subscriber = new Subscriber() {
-                    @Override
-                    public void publishTo(Object inData)
-                    {
-                        if(inData instanceof Event) {
-                            eventQueue.add((Event)inData);
-                        }
+                @Override
+                public void publishTo(Object inData)
+                {
+                    if(inData instanceof Event) {
+                        eventQueue.add((Event)inData);
                     }
+                }
             };
             // TODO manage exceptions (and remove the newly added objects if an error occurs)
-            marketDataManager.requestMarketData(inRequest,
-                                                subscriber);
+            requestId = marketDataManager.requestMarketData(inRequest,
+                                                            subscriber);
+            if(requestId != -1) {
+                events.put(requestId,
+                           eventQueue);
+            }
         }
         return requestId;
     }
@@ -119,7 +121,7 @@ public class MarketDataServiceImpl
             WebServicesEvent eventToReturn = factory.create(event);
             eventsToReturn.add(eventToReturn);
         }
-        return eventsToReturn;
+        return eventsToReturn.isEmpty() ? null : eventsToReturn;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.webservices.MarketDataService#delete(long)

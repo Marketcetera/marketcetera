@@ -236,7 +236,7 @@ final class ConvertibleSecurityTradeEventImpl
      * @throws IllegalArgumentException if <code>ExchangeTimestamp</code> is <code>null</code> or empty
      */
     ConvertibleSecurityTradeEventImpl(MarketDataBean inMarketData,
-                         ConvertibleSecurityBean inConvertibleSecurity)
+                                      ConvertibleSecurityBean inConvertibleSecurity)
     {
         super(inMarketData);
         convertibleSecurity = inConvertibleSecurity;

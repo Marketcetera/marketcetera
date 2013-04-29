@@ -141,7 +141,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
             {
                 if(getMarketData().getInstrument() instanceof ConvertibleSecurity) {
                     return new ConvertibleSecurityTradeEventImpl(getMarketData(),
-                                                             getConvertibleBond());
+                                                                 getConvertibleBond());
                 }
                 throw new IllegalArgumentException(Messages.VALIDATION_CONVERTIBLE_BOND_REQUIRED.getText());
             }

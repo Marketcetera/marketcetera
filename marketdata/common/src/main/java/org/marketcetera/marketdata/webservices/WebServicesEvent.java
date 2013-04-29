@@ -11,7 +11,7 @@ import org.marketcetera.core.event.Event;
 /* $License$ */
 
 /**
- *
+ * Provides a web-services capable implementation of an <code>Event</code>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -19,7 +19,7 @@ import org.marketcetera.core.event.Event;
  */
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlSeeAlso({ WebServicesAskEvent.class, WebServicesTradeEvent.class, WebServicesMarketstatEvent.class })
+@XmlSeeAlso({ WebServicesAskEvent.class, WebServicesTradeEvent.class, WebServicesMarketstatEvent.class, WebServicesConvertibleSecurityMarketstatEvent.class })
 public class WebServicesEvent
         implements Event
 {

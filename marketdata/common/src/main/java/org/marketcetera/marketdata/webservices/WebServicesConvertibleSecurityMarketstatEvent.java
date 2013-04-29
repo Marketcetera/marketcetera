@@ -2,8 +2,7 @@ package org.marketcetera.marketdata.webservices;
 
 import java.math.BigDecimal;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.*;
 
 import org.marketcetera.core.event.ConvertibleSecurityEvent;
 import org.marketcetera.core.event.MarketstatEvent;
@@ -19,6 +18,8 @@ import org.marketcetera.core.trade.Equity;
  * @version $Id$
  * @since $Release$
  */
+@XmlRootElement(name="convertibleSecurityMarketstatEvent")
+@XmlAccessorType(XmlAccessType.NONE)
 public class WebServicesConvertibleSecurityMarketstatEvent
         extends WebServicesMarketstatEvent
         implements ConvertibleSecurityEvent
