@@ -40,4 +40,6 @@ public interface ConvertibleSecurityEvent
     public String getRating();
     public String getRatingID();
     public BigDecimal getParValue();
+    public String getIsin();
+    public String getCusip();
 }

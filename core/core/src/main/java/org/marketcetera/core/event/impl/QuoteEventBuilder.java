@@ -945,6 +945,24 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
         return this;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withIsin(java.lang.String)
+     */
+    @Override
+    public QuoteEventBuilder<E> withIsin(String inIsin)
+    {
+        convertibleSecurity.setIsin(inIsin);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withCusip(java.lang.String)
+     */
+    @Override
+    public QuoteEventBuilder<E> withCusip(String inCusip)
+    {
+        convertibleSecurity.setCusip(inCusip);
+        return this;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

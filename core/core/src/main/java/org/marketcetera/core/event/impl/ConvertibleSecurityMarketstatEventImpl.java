@@ -224,6 +224,22 @@ class ConvertibleSecurityMarketstatEventImpl
         return security.getParValue();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getIsin()
+     */
+    @Override
+    public String getIsin()
+    {
+        return security.getIsin();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getCusip()
+     */
+    @Override
+    public String getCusip()
+    {
+        return security.getCusip();
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

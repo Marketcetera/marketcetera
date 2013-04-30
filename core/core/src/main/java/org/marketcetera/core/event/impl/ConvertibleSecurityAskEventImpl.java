@@ -221,6 +221,22 @@ class ConvertibleSecurityAskEventImpl
     {
         return security.getParValue();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getIsin()
+     */
+    @Override
+    public String getIsin()
+    {
+        return security.getIsin();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getCusip()
+     */
+    @Override
+    public String getCusip()
+    {
+        return security.getCusip();
+    }
     /**
      * Create a new ConvertibleSecurityAskEventImpl instance.
      *
@@ -235,7 +251,7 @@ class ConvertibleSecurityAskEventImpl
      * @throws IllegalArgumentException if <code>Action</code> is <code>null</code>
      */
     ConvertibleSecurityAskEventImpl(QuoteBean inQuote,
-                                ConvertibleSecurityBean inConvertibleSecurity)
+                                    ConvertibleSecurityBean inConvertibleSecurity)
     {
         super(inQuote);
         security = ConvertibleSecurityBean.copy(inConvertibleSecurity);

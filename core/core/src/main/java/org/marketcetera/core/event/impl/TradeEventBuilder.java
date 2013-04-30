@@ -194,12 +194,12 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
         } else if(inInstrument instanceof ConvertibleSecurity) {
-            convertibleBond.setInstrument((ConvertibleSecurity)inInstrument);
+            convertibleSecurity.setInstrument((ConvertibleSecurity)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
-            convertibleBond.setInstrument(null);
+            convertibleSecurity.setInstrument(null);
         }
         return this;
     }
@@ -376,7 +376,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withParity(BigDecimal inParity)
     {
-        convertibleBond.setParity(inParity);
+        convertibleSecurity.setParity(inParity);
         return this;
     }
     /* (non-Javadoc)
@@ -385,7 +385,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withUnderlyingEquity(Equity inEquity)
     {
-        convertibleBond.setUnderlyingEquity(inEquity);
+        convertibleSecurity.setUnderlyingEquity(inEquity);
         return this;
     }
     /* (non-Javadoc)
@@ -394,7 +394,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withMaturity(String inMaturity)
     {
-        convertibleBond.setMaturity(inMaturity);
+        convertibleSecurity.setMaturity(inMaturity);
         return this;
     }
     /* (non-Javadoc)
@@ -403,7 +403,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withYield(BigDecimal inYield)
     {
-        convertibleBond.setYield(inYield);
+        convertibleSecurity.setYield(inYield);
         return this;
     }
     /* (non-Javadoc)
@@ -412,7 +412,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withAmountOutstanding(BigDecimal inAmountOutstanding)
     {
-        convertibleBond.setAmountOutstanding(inAmountOutstanding);
+        convertibleSecurity.setAmountOutstanding(inAmountOutstanding);
         return this;
     }
     /* (non-Javadoc)
@@ -421,7 +421,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withValueDate(String inValueDate)
     {
-        convertibleBond.setValueDate(inValueDate);
+        convertibleSecurity.setValueDate(inValueDate);
         return this;
     }
     /* (non-Javadoc)
@@ -430,7 +430,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withTraceReportTime(String inTraceReportTime)
     {
-        convertibleBond.setTraceReportTime(inTraceReportTime);
+        convertibleSecurity.setTraceReportTime(inTraceReportTime);
         return this;
     }
     /* (non-Javadoc)
@@ -439,7 +439,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withConversionPrice(BigDecimal inConversionPrice)
     {
-        convertibleBond.setConversionPrice(inConversionPrice);
+        convertibleSecurity.setConversionPrice(inConversionPrice);
         return this;
     }
     /* (non-Javadoc)
@@ -448,7 +448,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withConversionRatio(BigDecimal inConversionRatio)
     {
-        convertibleBond.setConversionRatio(inConversionRatio);
+        convertibleSecurity.setConversionRatio(inConversionRatio);
         return this;
     }
     /* (non-Javadoc)
@@ -457,7 +457,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withAccruedInterest(BigDecimal inAccruedInterest)
     {
-        convertibleBond.setAccruedInterest(inAccruedInterest);
+        convertibleSecurity.setAccruedInterest(inAccruedInterest);
         return this;
     }
     /* (non-Javadoc)
@@ -466,7 +466,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withIssuePrice(BigDecimal inIssuePrice)
     {
-        convertibleBond.setIssuePrice(inIssuePrice);
+        convertibleSecurity.setIssuePrice(inIssuePrice);
         return this;
     }
     /* (non-Javadoc)
@@ -475,7 +475,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withConversionPremium(BigDecimal inConversionPremium)
     {
-        convertibleBond.setConversionPremium(inConversionPremium);
+        convertibleSecurity.setConversionPremium(inConversionPremium);
         return this;
     }
     /* (non-Javadoc)
@@ -484,7 +484,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withTheoreticalDelta(BigDecimal inTheoreticalDelta)
     {
-        convertibleBond.setTheoreticalDelta(inTheoreticalDelta);
+        convertibleSecurity.setTheoreticalDelta(inTheoreticalDelta);
         return this;
     }
     /* (non-Javadoc)
@@ -493,7 +493,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withIssueDate(String inIssueDate)
     {
-        convertibleBond.setIssueDate(inIssueDate);
+        convertibleSecurity.setIssueDate(inIssueDate);
         return this;
     }
     /* (non-Javadoc)
@@ -502,7 +502,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withIssuerDomicile(String inIssuerDomicile)
     {
-        convertibleBond.setIssuerDomicile(inIssuerDomicile);
+        convertibleSecurity.setIssuerDomicile(inIssuerDomicile);
         return this;
     }
     /* (non-Javadoc)
@@ -511,7 +511,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withCurrency(String inCurrency)
     {
-        convertibleBond.setCurrency(inCurrency);
+        convertibleSecurity.setCurrency(inCurrency);
         return this;
     }
     /* (non-Javadoc)
@@ -520,7 +520,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withBondCurrency(String inBondCurrency)
     {
-        convertibleBond.setBondCurrency(inBondCurrency);
+        convertibleSecurity.setBondCurrency(inBondCurrency);
         return this;
     }
     /* (non-Javadoc)
@@ -529,7 +529,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withCouponRate(BigDecimal inCouponRate)
     {
-        convertibleBond.setCouponRate(inCouponRate);
+        convertibleSecurity.setCouponRate(inCouponRate);
         return this;
     }
     /* (non-Javadoc)
@@ -538,7 +538,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withPaymentFrequency(String inPaymentFrequency)
     {
-        convertibleBond.setPaymentFrequency(inPaymentFrequency);
+        convertibleSecurity.setPaymentFrequency(inPaymentFrequency);
         return this;
     }
     /* (non-Javadoc)
@@ -547,7 +547,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withExchangeCode(String inExchangeCode)
     {
-        convertibleBond.setExchangeCode(inExchangeCode);
+        convertibleSecurity.setExchangeCode(inExchangeCode);
         return this;
     }
     /* (non-Javadoc)
@@ -556,7 +556,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withCompanyName(String inCompanyName)
     {
-        convertibleBond.setCompanyName(inCompanyName);
+        convertibleSecurity.setCompanyName(inCompanyName);
         return this;
     }
     /* (non-Javadoc)
@@ -565,7 +565,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withRating(String inRating)
     {
-        convertibleBond.setRating(inRating);
+        convertibleSecurity.setRating(inRating);
         return this;
     }
     /* (non-Javadoc)
@@ -574,7 +574,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withRatingID(String inRatingID)
     {
-        convertibleBond.setRatingID(inRatingID);
+        convertibleSecurity.setRatingID(inRatingID);
         return this;
     }
     /* (non-Javadoc)
@@ -583,7 +583,25 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public TradeEventBuilder<E> withParValue(BigDecimal inParValue)
     {
-        convertibleBond.setParValue(inParValue);
+        convertibleSecurity.setParValue(inParValue);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withIsin(java.lang.String)
+     */
+    @Override
+    public TradeEventBuilder<E> withIsin(String inIsin)
+    {
+        convertibleSecurity.setIsin(inIsin);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withCusip(java.lang.String)
+     */
+    @Override
+    public TradeEventBuilder<E> withCusip(String inCusip)
+    {
+        convertibleSecurity.setCusip(inCusip);
         return this;
     }
     /* (non-Javadoc)
@@ -592,11 +610,11 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     @Override
     public String toString()
     {
-        return String.format("TradeEventBuilder [marketData=%s, option=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
+        return String.format("TradeEventBuilder [marketData=%s, option=%s, future=%s, convertibleSecurity=%s]", //$NON-NLS-1$
                              marketData,
                              option,
                              future,
-                             convertibleBond);
+                             convertibleSecurity);
     }
     /**
      * Get the marketData value.
@@ -632,7 +650,7 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
      */
     protected final ConvertibleSecurityBean getConvertibleBond()
     {
-        return convertibleBond;
+        return convertibleSecurity;
     }
     /**
      * the market data attributes 
@@ -649,5 +667,5 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
     /**
      * the convertible bond attributes
      */
-    private final ConvertibleSecurityBean convertibleBond = new ConvertibleSecurityBean();
+    private final ConvertibleSecurityBean convertibleSecurity = new ConvertibleSecurityBean();
 }

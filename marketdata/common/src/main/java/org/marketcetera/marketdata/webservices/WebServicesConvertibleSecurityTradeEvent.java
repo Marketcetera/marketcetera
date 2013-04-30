@@ -60,6 +60,8 @@ public class WebServicesConvertibleSecurityTradeEvent
         underlyingEquity = event.getUnderlyingEquity();
         valueDate = event.getValueDate();
         yield = event.getYield();
+        isin = event.getIsin();
+        cusip = event.getCusip();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.webservices.WebServicesMarketstatEvent#getInstrument()
@@ -262,25 +264,81 @@ public class WebServicesConvertibleSecurityTradeEvent
         return parValue;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getIsin()
+     */
+    @Override
+    public String getIsin()
+    {
+        return isin;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getCusip()
+     */
+    @Override
+    public String getCusip()
+    {
+        return cusip;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("WebServicesConvertibleSecurityTradeEvent [parity=").append(parity)
-                .append(", underlyingEquity=").append(underlyingEquity).append(", maturity=").append(maturity)
-                .append(", yield=").append(yield).append(", amountOutstanding=").append(amountOutstanding)
-                .append(", valueDate=").append(valueDate).append(", traceReportTime=").append(traceReportTime)
-                .append(", conversionPrice=").append(conversionPrice).append(", conversionRatio=")
-                .append(conversionRatio).append(", accruedInterest=").append(accruedInterest).append(", issuePrice=")
-                .append(issuePrice).append(", conversionPremium=").append(conversionPremium)
-                .append(", theoreticalDelta=").append(theoreticalDelta).append(", issueDate=").append(issueDate)
-                .append(", issuerDomicile=").append(issuerDomicile).append(", currency=").append(currency)
-                .append(", bondCurrency=").append(bondCurrency).append(", couponRate=").append(couponRate)
-                .append(", paymentFrequency=").append(paymentFrequency).append(", exchangeCode=").append(exchangeCode)
-                .append(", companyName=").append(companyName).append(", rating=").append(rating).append(", ratingID=")
-                .append(ratingID).append(", parValue=").append(parValue).append("]");
+        builder.append("WebServicesConvertibleSecurityTradeEvent [parity=");
+        builder.append(parity);
+        builder.append(", underlyingEquity=");
+        builder.append(underlyingEquity);
+        builder.append(", maturity=");
+        builder.append(maturity);
+        builder.append(", yield=");
+        builder.append(yield);
+        builder.append(", amountOutstanding=");
+        builder.append(amountOutstanding);
+        builder.append(", valueDate=");
+        builder.append(valueDate);
+        builder.append(", traceReportTime=");
+        builder.append(traceReportTime);
+        builder.append(", conversionPrice=");
+        builder.append(conversionPrice);
+        builder.append(", conversionRatio=");
+        builder.append(conversionRatio);
+        builder.append(", accruedInterest=");
+        builder.append(accruedInterest);
+        builder.append(", issuePrice=");
+        builder.append(issuePrice);
+        builder.append(", conversionPremium=");
+        builder.append(conversionPremium);
+        builder.append(", theoreticalDelta=");
+        builder.append(theoreticalDelta);
+        builder.append(", issueDate=");
+        builder.append(issueDate);
+        builder.append(", issuerDomicile=");
+        builder.append(issuerDomicile);
+        builder.append(", currency=");
+        builder.append(currency);
+        builder.append(", bondCurrency=");
+        builder.append(bondCurrency);
+        builder.append(", couponRate=");
+        builder.append(couponRate);
+        builder.append(", paymentFrequency=");
+        builder.append(paymentFrequency);
+        builder.append(", exchangeCode=");
+        builder.append(exchangeCode);
+        builder.append(", companyName=");
+        builder.append(companyName);
+        builder.append(", rating=");
+        builder.append(rating);
+        builder.append(", ratingID=");
+        builder.append(ratingID);
+        builder.append(", parValue=");
+        builder.append(parValue);
+        builder.append(", isin=");
+        builder.append(isin);
+        builder.append(", cusip=");
+        builder.append(cusip);
+        builder.append("]");
         return builder.toString();
     }
     @SuppressWarnings("unused")
@@ -333,5 +391,9 @@ public class WebServicesConvertibleSecurityTradeEvent
     private String ratingID;
     @XmlAttribute
     private BigDecimal parValue;
-    private static final long serialVersionUID = -7353396336010053865L;
+    @XmlAttribute
+    private String isin;
+    @XmlAttribute
+    private String cusip;
+    private static final long serialVersionUID = -6716244206348630249L;
 }

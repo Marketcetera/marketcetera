@@ -161,6 +161,8 @@ public class MarketstatEventCache
             builder.withUnderlyingEquity(event.getUnderlyingEquity());
             builder.withValueDate(event.getValueDate());
             builder.withYield(event.getYield());
+            builder.withIsin(event.getIsin());
+            builder.withCusip(event.getCusip());
         }
         return get();
     }

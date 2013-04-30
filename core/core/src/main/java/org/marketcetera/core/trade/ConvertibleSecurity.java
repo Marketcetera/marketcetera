@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 
 /* $License$ */
 
@@ -40,6 +41,7 @@ public class ConvertibleSecurity
         } else {
             throw new IllegalArgumentException();
         }
+        Validate.notNull(cusip);
     }
     /**
      * Gets the CUSIP value.
@@ -102,6 +104,45 @@ public class ConvertibleSecurity
             return false;
         }
         return true;
+    }
+    /**
+     * Gets the ISIN for this security using the given country code.
+     *
+     * @param inCountryCode a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    public String getIsin(String inCountryCode)
+    {
+        StringBuilder output = new StringBuilder();
+        output.append(inCountryCode).append(cusip);
+        int sum = 0;
+        int index = 0;
+        for(int i=cusip.length()-1;i>=0;i--) {
+            char c = cusip.charAt(i);
+            int asciiValue = (int)c;
+            if(Character.isLetter(c)) {
+                asciiValue = ((int)Character.toUpperCase(c)) - 55;
+            } else {
+                asciiValue -= 48;
+            }
+            if(index++ % 2 == 0) {
+                asciiValue *= 2;
+                String asciiValueAsString = String.valueOf(asciiValue);
+                for(char asciiValueChar : asciiValueAsString.toCharArray()) {
+                    int innerValue = (int)asciiValueChar - 48;
+                    sum += innerValue;
+                }
+            } else {
+                sum += asciiValue;
+            }
+        }
+        int subtrahend = sum;
+        while(subtrahend % 10 != 0) {
+            subtrahend += 1;
+        }
+        sum = subtrahend - sum;
+        output.append(sum);
+        return output.toString();
     }
     /**
      * Determines the CUSIP from the given ISIN.

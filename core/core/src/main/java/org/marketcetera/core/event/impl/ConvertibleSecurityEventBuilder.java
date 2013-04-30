@@ -46,4 +46,6 @@ public interface ConvertibleSecurityEventBuilder<Clazz>
     public Clazz withRating(String inRating);
     public Clazz withRatingID(String inRatingID);
     public Clazz withParValue(BigDecimal inParValue);
+    public Clazz withIsin(String inIsin);
+    public Clazz withCusip(String inCusip);
 }

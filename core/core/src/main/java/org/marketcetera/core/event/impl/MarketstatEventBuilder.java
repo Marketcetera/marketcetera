@@ -14,7 +14,6 @@ import org.marketcetera.core.event.beans.MarketstatBean;
 import org.marketcetera.core.event.beans.OptionBean;
 import org.marketcetera.core.options.ExpirationType;
 import org.marketcetera.core.trade.*;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -205,12 +204,12 @@ public abstract class MarketstatEventBuilder
         } else if(inInstrument instanceof Future) {
             future.setInstrument((Future)inInstrument);
         } else if(inInstrument instanceof ConvertibleSecurity) {
-            convertibleBond.setInstrument((ConvertibleSecurity)inInstrument);
+            convertibleSecurity.setInstrument((ConvertibleSecurity)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);
             future.setInstrument(null);
-            convertibleBond.setInstrument(null);
+            convertibleSecurity.setInstrument(null);
         }
         return this;
     }
@@ -496,7 +495,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withParity(BigDecimal inParity)
     {
-        convertibleBond.setParity(inParity);
+        convertibleSecurity.setParity(inParity);
         return this;
     }
     /* (non-Javadoc)
@@ -505,7 +504,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withUnderlyingEquity(Equity inEquity)
     {
-        convertibleBond.setUnderlyingEquity(inEquity);
+        convertibleSecurity.setUnderlyingEquity(inEquity);
         return this;
     }
     /* (non-Javadoc)
@@ -514,7 +513,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withMaturity(String inMaturity)
     {
-        convertibleBond.setMaturity(inMaturity);
+        convertibleSecurity.setMaturity(inMaturity);
         return this;
     }
     /* (non-Javadoc)
@@ -523,7 +522,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withYield(BigDecimal inYield)
     {
-        convertibleBond.setYield(inYield);
+        convertibleSecurity.setYield(inYield);
         return this;
     }
     /* (non-Javadoc)
@@ -532,7 +531,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withAmountOutstanding(BigDecimal inAmountOutstanding)
     {
-        convertibleBond.setAmountOutstanding(inAmountOutstanding);
+        convertibleSecurity.setAmountOutstanding(inAmountOutstanding);
         return this;
     }
     /* (non-Javadoc)
@@ -541,7 +540,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withValueDate(String inValueDate)
     {
-        convertibleBond.setValueDate(inValueDate);
+        convertibleSecurity.setValueDate(inValueDate);
         return this;
     }
     /* (non-Javadoc)
@@ -550,7 +549,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withTraceReportTime(String inTraceReportTime)
     {
-        convertibleBond.setTraceReportTime(inTraceReportTime);
+        convertibleSecurity.setTraceReportTime(inTraceReportTime);
         return this;
     }
     /* (non-Javadoc)
@@ -559,7 +558,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withConversionPrice(BigDecimal inConversionPrice)
     {
-        convertibleBond.setConversionPrice(inConversionPrice);
+        convertibleSecurity.setConversionPrice(inConversionPrice);
         return this;
     }
     /* (non-Javadoc)
@@ -568,7 +567,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withConversionRatio(BigDecimal inConversionRatio)
     {
-        convertibleBond.setConversionRatio(inConversionRatio);
+        convertibleSecurity.setConversionRatio(inConversionRatio);
         return this;
     }
     /* (non-Javadoc)
@@ -577,7 +576,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withAccruedInterest(BigDecimal inAccruedInterest)
     {
-        convertibleBond.setAccruedInterest(inAccruedInterest);
+        convertibleSecurity.setAccruedInterest(inAccruedInterest);
         return this;
     }
     /* (non-Javadoc)
@@ -586,7 +585,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withIssuePrice(BigDecimal inIssuePrice)
     {
-        convertibleBond.setIssuePrice(inIssuePrice);
+        convertibleSecurity.setIssuePrice(inIssuePrice);
         return this;
     }
     /* (non-Javadoc)
@@ -595,7 +594,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withConversionPremium(BigDecimal inConversionPremium)
     {
-        convertibleBond.setConversionPremium(inConversionPremium);
+        convertibleSecurity.setConversionPremium(inConversionPremium);
         return this;
     }
     /* (non-Javadoc)
@@ -604,7 +603,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withTheoreticalDelta(BigDecimal inTheoreticalDelta)
     {
-        convertibleBond.setTheoreticalDelta(inTheoreticalDelta);
+        convertibleSecurity.setTheoreticalDelta(inTheoreticalDelta);
         return this;
     }
     /* (non-Javadoc)
@@ -613,7 +612,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withIssueDate(String inIssueDate)
     {
-        convertibleBond.setIssueDate(inIssueDate);
+        convertibleSecurity.setIssueDate(inIssueDate);
         return this;
     }
     /* (non-Javadoc)
@@ -622,7 +621,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withIssuerDomicile(String inIssuerDomicile)
     {
-        convertibleBond.setIssuerDomicile(inIssuerDomicile);
+        convertibleSecurity.setIssuerDomicile(inIssuerDomicile);
         return this;
     }
     /* (non-Javadoc)
@@ -631,7 +630,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withCurrency(String inCurrency)
     {
-        convertibleBond.setCurrency(inCurrency);
+        convertibleSecurity.setCurrency(inCurrency);
         return this;
     }
     /* (non-Javadoc)
@@ -640,7 +639,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withBondCurrency(String inBondCurrency)
     {
-        convertibleBond.setBondCurrency(inBondCurrency);
+        convertibleSecurity.setBondCurrency(inBondCurrency);
         return this;
     }
     /* (non-Javadoc)
@@ -649,7 +648,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withCouponRate(BigDecimal inCouponRate)
     {
-        convertibleBond.setCouponRate(inCouponRate);
+        convertibleSecurity.setCouponRate(inCouponRate);
         return this;
     }
     /* (non-Javadoc)
@@ -658,7 +657,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withPaymentFrequency(String inPaymentFrequency)
     {
-        convertibleBond.setPaymentFrequency(inPaymentFrequency);
+        convertibleSecurity.setPaymentFrequency(inPaymentFrequency);
         return this;
     }
     /* (non-Javadoc)
@@ -667,7 +666,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withExchangeCode(String inExchangeCode)
     {
-        convertibleBond.setExchangeCode(inExchangeCode);
+        convertibleSecurity.setExchangeCode(inExchangeCode);
         return this;
     }
     /* (non-Javadoc)
@@ -676,7 +675,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withCompanyName(String inCompanyName)
     {
-        convertibleBond.setCompanyName(inCompanyName);
+        convertibleSecurity.setCompanyName(inCompanyName);
         return this;
     }
     /* (non-Javadoc)
@@ -685,7 +684,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withRating(String inRating)
     {
-        convertibleBond.setRating(inRating);
+        convertibleSecurity.setRating(inRating);
         return this;
     }
     /* (non-Javadoc)
@@ -694,7 +693,7 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withRatingID(String inRatingID)
     {
-        convertibleBond.setRatingID(inRatingID);
+        convertibleSecurity.setRatingID(inRatingID);
         return this;
     }
     /* (non-Javadoc)
@@ -703,7 +702,25 @@ public abstract class MarketstatEventBuilder
     @Override
     public MarketstatEventBuilder withParValue(BigDecimal inParValue)
     {
-        convertibleBond.setParValue(inParValue);
+        convertibleSecurity.setParValue(inParValue);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withIsin(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withIsin(String inIsin)
+    {
+        convertibleSecurity.setIsin(inIsin);
+        return this;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withCusip(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withCusip(String inCusip)
+    {
+        convertibleSecurity.setCusip(inCusip);
         return this;
     }
     /**
@@ -745,11 +762,11 @@ public abstract class MarketstatEventBuilder
     @Override
     public String toString()
     {
-        return String.format("MarketstatEventBuilder [marketstat=%s, option=%s, future=%s, convertibleBond=%s]", //$NON-NLS-1$
+        return String.format("MarketstatEventBuilder [marketstat=%s, option=%s, future=%s, convertibleSecurity=%s]", //$NON-NLS-1$
                              marketstat,
                              option,
                              future,
-                             convertibleBond);
+                             convertibleSecurity);
     }
     /**
      * Get the marketstat value.
@@ -785,7 +802,7 @@ public abstract class MarketstatEventBuilder
      */
     protected final ConvertibleSecurityBean getConvertibleBond()
     {
-        return convertibleBond;
+        return convertibleSecurity;
     }
     /**
      * Gets the volume change value.
@@ -820,7 +837,7 @@ public abstract class MarketstatEventBuilder
     /**
      * the convertible bond attributes
      */
-    private final ConvertibleSecurityBean convertibleBond = new ConvertibleSecurityBean();
+    private final ConvertibleSecurityBean convertibleSecurity = new ConvertibleSecurityBean();
     /**
      * the change in volume since the previous close, may be <code>null</code> 
      */

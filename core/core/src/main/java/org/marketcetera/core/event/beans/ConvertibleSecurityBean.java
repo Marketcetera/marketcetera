@@ -508,6 +508,42 @@ public class ConvertibleSecurityBean
             EventServices.error(Messages.VALIDATION_NULL_INSTRUMENT);
         }
     }
+    /**
+     * Get the isin value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getIsin()
+    {
+        return isin;
+    }
+    /**
+     * Sets the isin value.
+     *
+     * @param inIsin a <code>String</code> value
+     */
+    public void setIsin(String inIsin)
+    {
+        isin = inIsin;
+    }
+    /**
+     * Get the cusip value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getCusip()
+    {
+        return cusip;
+    }
+    /**
+     * Sets the cusip value.
+     *
+     * @param inCusip a <code>String</code> value
+     */
+    public void setCusip(String inCusip)
+    {
+        cusip = inCusip;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -515,19 +551,61 @@ public class ConvertibleSecurityBean
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("ConvertibleSecurityBean [instrument=").append(instrument).append(", parity=").append(parity)
-                .append(", underlyingEquity=").append(underlyingEquity).append(", maturity=").append(maturity)
-                .append(", yield=").append(yield).append(", amountOutstanding=").append(amountOutstanding)
-                .append(", valueDate=").append(valueDate).append(", traceReportTime=").append(traceReportTime)
-                .append(", conversionPrice=").append(conversionPrice).append(", conversionRatio=")
-                .append(conversionRatio).append(", accruedInterest=").append(accruedInterest).append(", issuePrice=")
-                .append(issuePrice).append(", conversionPremium=").append(conversionPremium)
-                .append(", theoreticalDelta=").append(theoreticalDelta).append(", issueDate=").append(issueDate)
-                .append(", issuerDomicile=").append(issuerDomicile).append(", currency=").append(currency)
-                .append(", bondCurrency=").append(bondCurrency).append(", couponRate=").append(couponRate)
-                .append(", paymentFrequency=").append(paymentFrequency).append(", exchangeCode=").append(exchangeCode)
-                .append(", companyName=").append(companyName).append(", rating=").append(rating).append(", ratingID=")
-                .append(ratingID).append(", parValue=").append(parValue).append("]");
+        builder.append("ConvertibleSecurityBean [instrument=");
+        builder.append(instrument);
+        builder.append(", parity=");
+        builder.append(parity);
+        builder.append(", underlyingEquity=");
+        builder.append(underlyingEquity);
+        builder.append(", maturity=");
+        builder.append(maturity);
+        builder.append(", yield=");
+        builder.append(yield);
+        builder.append(", amountOutstanding=");
+        builder.append(amountOutstanding);
+        builder.append(", valueDate=");
+        builder.append(valueDate);
+        builder.append(", traceReportTime=");
+        builder.append(traceReportTime);
+        builder.append(", conversionPrice=");
+        builder.append(conversionPrice);
+        builder.append(", conversionRatio=");
+        builder.append(conversionRatio);
+        builder.append(", accruedInterest=");
+        builder.append(accruedInterest);
+        builder.append(", issuePrice=");
+        builder.append(issuePrice);
+        builder.append(", conversionPremium=");
+        builder.append(conversionPremium);
+        builder.append(", theoreticalDelta=");
+        builder.append(theoreticalDelta);
+        builder.append(", issueDate=");
+        builder.append(issueDate);
+        builder.append(", issuerDomicile=");
+        builder.append(issuerDomicile);
+        builder.append(", currency=");
+        builder.append(currency);
+        builder.append(", bondCurrency=");
+        builder.append(bondCurrency);
+        builder.append(", couponRate=");
+        builder.append(couponRate);
+        builder.append(", paymentFrequency=");
+        builder.append(paymentFrequency);
+        builder.append(", exchangeCode=");
+        builder.append(exchangeCode);
+        builder.append(", companyName=");
+        builder.append(companyName);
+        builder.append(", rating=");
+        builder.append(rating);
+        builder.append(", ratingID=");
+        builder.append(ratingID);
+        builder.append(", parValue=");
+        builder.append(parValue);
+        builder.append(", isin=");
+        builder.append(isin);
+        builder.append(", cusip=");
+        builder.append(cusip);
+        builder.append("]");
         return builder.toString();
     }
     /**
@@ -564,6 +642,8 @@ public class ConvertibleSecurityBean
         inRecipient.setUnderlyingEquity(inDonor.getUnderlyingEquity());
         inRecipient.setValueDate(inDonor.getValueDate());
         inRecipient.setYield(inDonor.getYield());
+        inRecipient.setIsin(inDonor.getIsin());
+        inRecipient.setCusip(inDonor.getCusip());
     }
     /**
      * the instrument value
@@ -665,5 +745,13 @@ public class ConvertibleSecurityBean
      * par value
      */
     private BigDecimal parValue;
-    private static final long serialVersionUID = 7945320226235832452L;
+    /**
+     * isin value
+     */
+    private String isin;
+    /**
+     * cusip value
+     */
+    private String cusip;
+    private static final long serialVersionUID = -5218198105173604486L;
 }

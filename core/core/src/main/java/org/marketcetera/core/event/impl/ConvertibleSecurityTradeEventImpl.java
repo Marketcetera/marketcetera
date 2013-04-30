@@ -223,6 +223,22 @@ final class ConvertibleSecurityTradeEventImpl
     {
         return convertibleSecurity.getParValue();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getIsin()
+     */
+    @Override
+    public String getIsin()
+    {
+        return convertibleSecurity.getIsin();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getCusip()
+     */
+    @Override
+    public String getCusip()
+    {
+        return convertibleSecurity.getCusip();
+    }
     /**
      * Create a new ConvertibleSecurityTradeEventImpl instance.
      *
