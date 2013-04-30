@@ -29,7 +29,13 @@ public class WebServicesEventFactory
         if(inEvent instanceof AskEvent) {
             return new WebServicesAskEvent((AskEvent)inEvent);
         } else if(inEvent instanceof TradeEvent) {
-            return new WebServicesTradeEvent((TradeEvent)inEvent);
+            TradeEvent event = (TradeEvent)inEvent;
+            Instrument instrument = event.getInstrument();
+            if(instrument instanceof ConvertibleSecurity) {
+                return new WebServicesConvertibleSecurityTradeEvent(event);
+            } else {
+                return new WebServicesTradeEvent((TradeEvent)inEvent);
+            }
         } else if(inEvent instanceof MarketstatEvent) {
             MarketstatEvent event = (MarketstatEvent)inEvent;
             Instrument instrument = event.getInstrument();

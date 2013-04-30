@@ -120,8 +120,7 @@ public class WebServicesTradeEvent
     /**
      * Create a new WebServicesTradeEvent instance.
      */
-    @SuppressWarnings("unused")
-    private WebServicesTradeEvent() {}
+    protected WebServicesTradeEvent() {}
     /**
      * instrument value
      */

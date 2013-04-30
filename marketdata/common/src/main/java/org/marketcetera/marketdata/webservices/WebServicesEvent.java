@@ -19,7 +19,7 @@ import org.marketcetera.core.event.Event;
  */
 @XmlRootElement(name="event")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlSeeAlso({ WebServicesAskEvent.class, WebServicesTradeEvent.class, WebServicesMarketstatEvent.class, WebServicesConvertibleSecurityMarketstatEvent.class })
+@XmlSeeAlso({ WebServicesAskEvent.class,WebServicesTradeEvent.class,WebServicesMarketstatEvent.class,WebServicesConvertibleSecurityMarketstatEvent.class,WebServicesConvertibleSecurityTradeEvent.class })
 public class WebServicesEvent
         implements Event
 {
