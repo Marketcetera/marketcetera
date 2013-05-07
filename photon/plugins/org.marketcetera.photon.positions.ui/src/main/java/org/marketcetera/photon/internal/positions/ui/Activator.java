@@ -65,7 +65,7 @@ public class Activator extends AbstractUIPlugin {
 		String filter = "(objectclass=" + PositionEngine.class.getName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 		try {
 			context.addServiceListener(sl, filter);
-			ServiceReference[] srl = context.getServiceReferences(null, filter);
+			ServiceReference[] srl = context.getServiceReferences((String)null, filter);
 			for (int i = 0; srl != null && i < srl.length; i++) {
 				sl.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, srl[i]));
 			}

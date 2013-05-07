@@ -11,7 +11,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.ui.menus.WorkbenchWindowControlContribution;
-import org.eclipse.update.internal.ui.parts.ImageOverlayIcon;
+import org.eclipse.pde.internal.ui.util.ImageOverlayIcon;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonImages;
 import org.marketcetera.photon.PhotonPlugin;
@@ -37,6 +37,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *          will $
  * @since 1.0.0
  */
+@SuppressWarnings("restriction")
 @ClassVersion("$Id$")//$NON-NLS-1$
 public abstract class StatusIndicatorContributionItem extends
 		WorkbenchWindowControlContribution implements IExecutableExtension {

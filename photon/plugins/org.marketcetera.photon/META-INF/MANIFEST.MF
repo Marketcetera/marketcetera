@@ -14,7 +14,6 @@ Require-Bundle: org.marketcetera.core,
  org.eclipse.ui.forms;visibility:=reexport,
  org.eclipse.ui.console;visibility:=reexport,
  org.eclipse.core.resources;visibility:=reexport,
- org.eclipse.update.ui;visibility:=reexport,
  org.eclipse.ui.ide;visibility:=reexport,
  org.rubypeople.rdt.core;resolution:=optional,
  org.eclipse.jface.databinding;visibility:=reexport,
@@ -46,3 +45,4 @@ Export-Package: org.marketcetera.photon,
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-ExtensibleAPI: true
+Import-Package: org.eclipse.pde.internal.ui.util

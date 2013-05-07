@@ -42,6 +42,7 @@ import org.osgi.framework.Bundle;
  * @version $Id$
  * @since 1.0.0
  */
+@SuppressWarnings("restriction")
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
 	@Override
@@ -95,7 +96,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
                              * sometimes leaves UI artifacts. This seems to work
                              * around it.
                              */
-							((WorkbenchPage) page).getActivePerspective().refreshEditorAreaVisibility();
+//							((WorkbenchPage) page).getActivePerspective().refreshEditorAreaVisibility();
 						}
 					}
 				});

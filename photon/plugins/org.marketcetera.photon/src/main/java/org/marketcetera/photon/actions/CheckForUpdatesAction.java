@@ -4,8 +4,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.update.ui.UpdateJob;
-import org.eclipse.update.ui.UpdateManagerUI;
 import org.marketcetera.photon.Messages;
 
 
@@ -42,11 +40,11 @@ public class CheckForUpdatesAction
                                        public void run() {
                                                final boolean automatic = false;
                                                final boolean download = false;
-                                               UpdateJob job = new UpdateJob(CHECK_FOR_UPDATES_JOB_ACTION.getText(),
-                                                                             automatic,
-                                                                             download);
-
-                                               UpdateManagerUI.openInstaller(window.getShell(), job);
+//                                               UpdateJob job = new UpdateJob(CHECK_FOR_UPDATES_JOB_ACTION.getText(),
+//                                                                             automatic,
+//                                                                             download);
+//
+//                                               UpdateManagerUI.openInstaller(window.getShell(), job);
                                        }
                });
        }

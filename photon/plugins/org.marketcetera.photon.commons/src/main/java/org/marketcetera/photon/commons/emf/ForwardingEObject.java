@@ -1,13 +1,12 @@
 package org.marketcetera.photon.commons.emf;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -131,5 +130,16 @@ public class ForwardingEObject extends ForwardingObject implements EObject {
     @Override
     public void eSetDeliver(boolean deliver) {
         delegate().eSetDeliver(deliver);
+    }
+    /* (non-Javadoc)
+     * @see org.eclipse.emf.ecore.EObject#eInvoke(org.eclipse.emf.ecore.EOperation, org.eclipse.emf.common.util.EList)
+     */
+    @Override
+    public Object eInvoke(EOperation inArg0,
+                          EList<?> inArg1)
+            throws InvocationTargetException
+    {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 }

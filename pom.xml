@@ -50,7 +50,7 @@
     <mvn.cxf.version>2.7.3</mvn.cxf.version>
     <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
     <mvn.xjc.version>2.7.7</mvn.xjc.version>
-    <mvn.eclipse.version>3.5</mvn.eclipse.version>
+    <mvn.eclipse.version>4.2.2</mvn.eclipse.version>
     <!-- Build Number. -->
     <mvn.build.number>Development Build</mvn.build.number>
   </properties>
@@ -591,12 +591,19 @@
 	<!-- mvn antrun:* -->
 	<plugin>
 	  <artifactId>maven-antrun-plugin</artifactId>
-	  <version>1.7</version>
+	  <version>1.3</version>
 	  <dependencies>
 	    <dependency>
 	      <groupId>org.apache.ant</groupId>
 	      <artifactId>ant-junit</artifactId>
-	      <version>1.8.4</version>
+	      <!--
+		  - Temporariy remove the brackets around the version
+		  - because the central repo metadata was missing this
+		  - version (http://jira.codehaus.org/browse/MANTRUN-113)
+		  - Removing the brackets will cause the JAR to ultimately
+		  - come from our internal repo.
+	      -->
+	      <version>1.7.1</version>
 	    </dependency>
 	  </dependencies>
 	</plugin>

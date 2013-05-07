@@ -9,6 +9,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationUpdater;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
@@ -140,13 +142,11 @@ public class DataBindingUtils {
      * @param updater
      *            controls the appearance of the {@link ControlDecoration}
      */
-    @SuppressWarnings("restriction")
     public static void initControlDecorationSupportFor(
             ValidationStatusProvider provider,
             int position,
-            org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater updater) {
-        org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationSupport
-                .create(provider, position, null, updater);
+            ControlDecorationUpdater updater) {
+        ControlDecorationSupport.create(provider, position, null, updater);
     }
 
     /**
@@ -166,10 +166,8 @@ public class DataBindingUtils {
      * Captures the control decoration and attaches it to the control.
      */
     @ClassVersion("$Id$")
-    @SuppressWarnings("restriction")
     static class CaptureUpdater
-            extends
-            org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater {
+            extends ControlDecorationUpdater {
 
         @Override
         protected void update(ControlDecoration decoration, IStatus status) {
