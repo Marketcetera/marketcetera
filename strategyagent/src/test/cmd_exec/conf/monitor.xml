@@ -11,7 +11,7 @@
     <!-- strategy monitor client -->
     <bean class="com.marketcetera.ramius.strategy.monitor.MonitorClient" id="monitorClient">
       <property name="address" value="127.0.0.1"/>
-      <property name="port" value="9002"/>
+      <property name="port" value="9003"/>
       <property name="notificationExecutor" ref="notificationExecutor"/>
       <!-- interval at which to monitor (ms) -->
       <property name="interval" value="10000"/>

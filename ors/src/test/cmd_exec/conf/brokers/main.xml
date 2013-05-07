@@ -22,14 +22,13 @@
 
   <import resource="broker/main.xml"/>
   <import resource="barclays/main.xml"/>
-  <import
-   resource="qsettings.xml"/>
-  <import
-   resource="selector.xml"/>
+  <import resource="citifx/main.xml"/>
+  <import resource="csfx/main.xml"/>
+  <import resource="dbfut/main.xml"/>
+  <import resource="qsettings.xml"/>
+  <import resource="selector.xml"/>
 
-  <bean
-   id="metc_brokers"
-   class="org.marketcetera.ors.brokers.SpringBrokers">
+  <bean id="metc_brokers" class="org.marketcetera.ors.brokers.SpringBrokers">
     <!-- The QuickFIX/J session settings. -->
     <property name="settings" ref="metc_qsettings"/>
     <!-- The brokers (order is not significant). -->
@@ -37,6 +36,9 @@
       <list>
         <ref bean="metc_broker"/>
         <ref bean="barclays_broker"/>
+        <ref bean="dbfut_broker"/>
+        <ref bean="csfx_broker"/>
+        <ref bean="citifx_broker"/>
       </list>
     </property>
   </bean>

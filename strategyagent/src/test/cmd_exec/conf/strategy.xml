@@ -2,8 +2,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.2.xsd">
     <!-- set up Spring context scanning -->
     <context:component-scan base-package="com.marketcetera.ramius"/>
     <bean class="com.marketcetera.ramius.strategy.impl.TargetedOrderModifier" id="targetedOrderModifier"/>
@@ -26,6 +30,17 @@
     </bean>
     <bean id="templateGenerator" class="com.marketcetera.ramius.strategy.impl.FileTemplateExecutor"/>
     <bean id="dataRecorder" class="com.marketcetera.strategy.DataRecorder"/>
+    <bean id="symbolResolver" class="com.marketcetera.ramius.tools.impl.SymbolResolverImpl"/>
+    <bean id="pnlExecutor" class="com.marketcetera.ramius.strategy.impl.FilePnlExecutor">
+      <property name="outputDirectory" value="/common/TMPriceDrop"/>
+      <property name="tickSecurities" value="ZN,ZF,ZB,ZT"/>
+      <property name="priceDisplayMultipliers">
+        <map>
+          <entry key="RB" value="100.0"/>
+          <entry key="HO" value="100.0"/>
+        </map>
+      </property>
+    </bean>
     <!-- main object tied-in with application context -->
     <bean class="com.marketcetera.ramius.strategy.impl.TradeManagerImpl" id="tradeManager">
         <property name="dataRecorder" ref="dataRecorder"/>
@@ -36,7 +51,7 @@
     </bean>
     <!-- strategy monitor gateway -->
     <bean class="com.marketcetera.ramius.strategy.monitor.MonitorServer" id="monitorServer">
-      <property name="port" value="9002"/>
+      <property name="port" value="9003"/>
     </bean>
     <!-- general definition beans -->
     <!-- directory into which to drop input files (required) -->
@@ -50,5 +65,54 @@
     <!-- interval in ms at which to poll input directory (optional, default = 250) -->
     <bean class="java.lang.Long" id="pollInterval">
       <constructor-arg value="250"/>
+    </bean>
+    <!--  entries related to persistence -->
+    <!-- set up Spring context scanning -->
+    <context:component-scan base-package="com.marketcetera.ramius.strategy"/>
+    <!-- bean post-processor for JPA annotations -->
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"/>
+    <!-- JDBC Setup -->
+    <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="metc"/></bean>
+    <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="pw4metc"/></bean>
+    <!-- mysql -->
+    <bean name="mysqlURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/metc?logSlowQueries=true"/></bean>
+    <bean name="mysqlDriver" class="java.lang.String"><constructor-arg value="com.mysql.jdbc.Driver"/></bean>
+    <!-- derby -->
+    <bean name="derbyURL" class="java.lang.String"><constructor-arg value="jdbc:derby:metc;create=true"/></bean>
+    <bean name="derbyDriver" class="java.lang.String"><constructor-arg value="org.apache.derby.jdbc.EmbeddedDriver"/></bean>
+    <!-- postgresql -->
+    <bean name="psqlURL" class="java.lang.String"><constructor-arg value="jdbc:postgresql:metc"/></bean>
+    <bean name="psqlDriver" class="java.lang.String"><constructor-arg value="org.postgresql.Driver"/></bean>
+    <!-- Properties for configuring the c3p0 connection pool. See http://www.mchange.com/projects/c3p0/index.html#configuration_properties for a complete list of options that can be specified here -->
+    <bean id="poolDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="org.postgresql.Driver"/>
+        <property name="jdbcUrl" value="jdbc:postgresql:metc"/>
+        <property name="user" value="metc"/>
+        <property name="password" value="pw4metc"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="preferredTestQuery" value="select 1"/> <!-- use this for mysql, postgres, and others -->
+        <!-- property name="preferredTestQuery" value="VALUES 1"/--> <!-- use this for derby -->
+        <property name="testConnectionOnCheckout" value="true"/>
+    </bean>
+    <bean id="hibernateJpaAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+        <property name="showSql" value="true" />
+    </bean>
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="poolDataSource"/>
+        <property name="persistenceUnitName" value="ramius"/>
+        <property name="jpaVendorAdapter" ref="hibernateJpaAdapter"/>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+    <bean id="metc_db_vendor" class="org.marketcetera.persist.MySQLDBVendor"/>
+    <!-- The Java persistence vendor. -->
+    <bean id="metc_jpa_vendor" class="org.marketcetera.persist.HibernateVendor" depends-on="metc_db_vendor"/>
+    <bean id="metc_emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="metc_jpa_vendor">
+      <property name="dataSource" ref="poolDataSource"/>
+      <property name="persistenceUnitName" value="ramius"/>
+    </bean>
+    <bean id="metc_ers" class="org.marketcetera.persist.EntityRemoteServer">
+      <constructor-arg ref="metc_emf"/>
     </bean>
 </beans>

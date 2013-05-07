@@ -5,7 +5,7 @@
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.5.1
-  - Version: $Id: ps_modifiers.xml 16460 2013-01-21 21:55:10Z colin $
+  - Version: $Id$
   - $License$
   -->
 
@@ -16,7 +16,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-  <bean id="barclays_ps_modifiers" class="org.marketcetera.ors.filters.MessageModifierManager">
+  <bean id="csfx_ps_modifiers" class="org.marketcetera.ors.filters.MessageModifierManager">
     <!-- The message modifiers. -->
     <property name="messageModifiers">
       <list>

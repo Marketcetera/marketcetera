@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Primary broker configuration: QuickFIX/J session descriptor.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<!--
+  - See '../../README.html' for detailed documentation.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  <!--
+    - See
+    - http://www.quickfixj.org/quickfixj/usermanual/usage/configuration.html
+    - for a complete list of standard options.
+    -->
+  <bean id="dbfut_qdescriptor" class="org.marketcetera.util.quickfix.SpringSessionDescriptor">
+    <property
+     name="dictionary">
+      <map>
+        <entry key="BeginString" value="${dbfut.broker.qf.begin.string}"/>
+        <!--
+          - An acceptable value for this option is
+          - 'dbfut.DefaultDataDictionary', which will choose the standard
+          - QuickFIX/J dictionary for the FIX version deduced from the
+          - 'BeginString' option.
+          -->
+        <entry key="DataDictionary" value="${dbfut.broker.qf.data.dictionary}"/>
+        <entry key="SenderCompID" value="${dbfut.broker.qf.sender.comp.id}"/>
+        <entry key="TargetCompID" value="${dbfut.broker.qf.target.comp.id}"/>
+        <entry key="FileStorePath" value="${dbfut.broker.qf.store}"/>
+        <entry key="SocketConnectHost" value="${dbfut.broker.qf.host}"/>
+        <entry key="SocketConnectPort" value="${dbfut.broker.qf.port}"/>
+      </map>
+    </property>
+  </bean>
+</beans>
