@@ -46,6 +46,7 @@ class FactoryImpl extends Factory {
             order.setBrokerID(inLatestReport.getBrokerID());
             order.setBrokerOrderID(inLatestReport.getBrokerOrderID());
             order.setQuantity(inLatestReport.getOrderQuantity());
+            order.setDisplayQuantity(inLatestReport.getOrderDisplayQuantity());
             order.setSide(inLatestReport.getSide());
             order.setInstrument(inLatestReport.getInstrument());
             order.setText(inLatestReport.getText());
@@ -69,6 +70,7 @@ class FactoryImpl extends Factory {
             order.setOrderType(inLatestReport.getOrderType());
             order.setPrice(inLatestReport.getPrice());
             order.setQuantity(inLatestReport.getOrderQuantity());
+            order.setDisplayQuantity(inLatestReport.getOrderDisplayQuantity());
             order.setSide(inLatestReport.getSide());
             order.setInstrument(inLatestReport.getInstrument());
             order.setTimeInForce(inLatestReport.getTimeInForce());
@@ -184,6 +186,7 @@ class FactoryImpl extends Factory {
         order.setOrderType(FIXUtil.getOrderType(inMessage));
         order.setPrice(FIXUtil.getPrice(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
+        order.setDisplayQuantity(FIXUtil.getOrderDisplayQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
         order.setInstrument(FIXUtil.getInstrument(inMessage));
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));
@@ -211,6 +214,7 @@ class FactoryImpl extends Factory {
         order.setOrderID(FIXUtil.getOrderID(inMessage));
         order.setOriginalOrderID(FIXUtil.getOriginalOrderID(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
+        order.setDisplayQuantity(FIXUtil.getOrderDisplayQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
         order.setInstrument(FIXUtil.getInstrument(inMessage));
         order.setText(FIXUtil.getText(inMessage));
@@ -238,6 +242,7 @@ class FactoryImpl extends Factory {
         order.setOriginalOrderID(FIXUtil.getOriginalOrderID(inMessage));
         order.setPrice(FIXUtil.getPrice(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
+        order.setDisplayQuantity(FIXUtil.getOrderDisplayQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
         order.setInstrument(FIXUtil.getInstrument(inMessage));
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));

@@ -76,6 +76,16 @@ public class OrderBaseImpl implements OrderBase {
     }
 
     @Override
+    public BigDecimal getDisplayQuantity() {
+        return mDisplayQuantity;
+    }
+
+    @Override
+    public void setDisplayQuantity(BigDecimal inDisplayQuantity) {
+    	mDisplayQuantity = inDisplayQuantity;
+    }
+
+    @Override
     public Map<String, String> getCustomFields() {
         return mCustomFields == null
                 ? null
@@ -132,6 +142,7 @@ public class OrderBaseImpl implements OrderBase {
     private OrderID mOrderID;
     private Side mSide;
     private BigDecimal mQuantity;
+    private BigDecimal mDisplayQuantity;
     private Map<String,String> mCustomFields;
     private BrokerID mBrokerID;
     private String mAccount;

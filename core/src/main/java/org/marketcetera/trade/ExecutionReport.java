@@ -93,6 +93,13 @@ public interface ExecutionReport extends TradeMessage, ReportBase {
      * @return number of shares ordered.
      */
     public BigDecimal getOrderQuantity();
+    
+    /**
+     * Number of shares displayed on order.
+     *
+     * @return number of shares ordered.
+     */
+    public BigDecimal getOrderDisplayQuantity();
 
     /**
      * The quantity open for further execution.

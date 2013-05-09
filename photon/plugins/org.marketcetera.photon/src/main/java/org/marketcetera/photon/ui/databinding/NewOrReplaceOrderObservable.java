@@ -81,6 +81,17 @@ public class NewOrReplaceOrderObservable extends
     public ITypedObservableValue<BigDecimal> observeQuantity() {
         return observeDetail("quantity", BigDecimal.class); //$NON-NLS-1$
     }
+    
+    /**
+     * Provides a detail observable value for the display quantity field on the
+     * underlying order. The created observable will be disposed with this
+     * object.
+     * 
+     * @return an observable that tracks the order quantity
+     */
+    public ITypedObservableValue<BigDecimal> observeDisplayQuantity() {
+        return observeDetail("displayQuantity", BigDecimal.class); //$NON-NLS-1$
+    }
 
     /**
      * Provides a detail observable value for the instrument field on the
