@@ -80,6 +80,9 @@
         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
           <constructor-arg value="7871(*)"/>
         </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="10000(*)"/>
+        </bean>
         <bean class="org.marketcetera.ors.filters.ConditionalMessageModifier">
           <property name="comparisonTag" value="40"/>
           <property name="operator" value="EQ"/>

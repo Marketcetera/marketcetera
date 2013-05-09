@@ -20,7 +20,9 @@
         </property>
     </bean>
     <bean class="com.marketcetera.ramius.strategy.impl.DefaultMilepostExecutor" id="milepostExecutor"/>
-    <bean id="ladderGenerator" class="com.marketcetera.ramius.strategy.impl.LadderGeneratorImpl"/>
+    <bean id="ladderGenerator" class="com.marketcetera.ramius.strategy.impl.LadderGeneratorImpl">
+      <property name="renameStopContracts" value="true"/>
+    </bean>
     <bean id="notificationExecutor" class="com.marketcetera.ramius.strategy.impl.EmailNotificationExecutor">
         <!-- for multiple addresses, separate with ',' -->
         <property name="recipients" value="bjones@ramius.com,lgibbs@ramius.com"/>
