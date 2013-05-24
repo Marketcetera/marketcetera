@@ -15,12 +15,15 @@ import org.eclipse.core.databinding.observable.map.CompositeMap;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.runtime.AssertionFailedException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -44,6 +47,13 @@ import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.field.*;
@@ -505,6 +515,85 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			return null;
 		}
 	}
+	
+	
+	@ClassVersion("$Id$")
+	public static final class BuyCommandHandler extends OrderCommandHandler
+			implements IHandler {
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			super.setSide(Side.Buy);
+			return super.execute(event);
+		}
+	}
+	
+	@ClassVersion("$Id$")
+	public static final class SellCommandHandler extends OrderCommandHandler
+			implements IHandler {
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			super.setSide(Side.Sell);
+			return super.execute(event);
+		}
+	}
+	
+	/**
+	 * Handles the buy order command for this view.
+	 * 
+	 */
+	@ClassVersion("$Id$")
+	public static class OrderCommandHandler extends AbstractHandler
+			implements IHandler {
+		private Side side;
+		
+		public void setSide(Side side) {
+			this.side = side;
+		}
+
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+			ISelection selection = HandlerUtil
+					.getCurrentSelectionChecked(event);
+			if (part instanceof MarketDataView
+					&& selection instanceof IStructuredSelection) {
+				final MarketDataView view = (MarketDataView) part;
+				final IStructuredSelection sselection = (IStructuredSelection) selection;
+				view.busyRun(new Runnable() {
+					public void run() {
+						for (Object obj : sselection.toArray()) {
+							if (obj instanceof MarketDataViewItem) {
+								MarketDataViewItem mdi = (MarketDataViewItem) obj;
+					            Instrument instrument = new Equity(mdi.getSymbol());
+					            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
+					            newOrder.setInstrument(instrument);
+					            newOrder.setOrderType(OrderType.Limit);
+					            newOrder.setSide(side);
+					            if(side == Side.Buy) {
+					            	newOrder.setQuantity(mdi.getTopOfBook().getAskSize());
+					            	newOrder.setPrice(mdi.getTopOfBook().getAskPrice());
+					            }else {
+					            	newOrder.setQuantity(mdi.getTopOfBook().getBidSize());
+					            	newOrder.setPrice(mdi.getTopOfBook().getBidPrice());
+					            }
+					            newOrder.setTimeInForce(TimeInForce.Day);
+					            try {
+					                PhotonPlugin.getDefault().showOrderInTicket(newOrder);
+					            } catch (WorkbenchException e) {
+					                SLF4JLoggerProxy.error(this, e);
+					                ErrorDialog.openError(null, null, null,
+					                        new Status(IStatus.ERROR, PhotonPlugin.ID, e
+					                                .getLocalizedMessage()));
+					            }
+							}
+						}
+					}
+				});
+			}			
+			return null;
+		}
+	}
+	
 
 	/**
 	 * Handles the copy command for this view
