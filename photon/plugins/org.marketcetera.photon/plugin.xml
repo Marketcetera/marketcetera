@@ -234,6 +234,20 @@
             id="org.marketcetera.photon.createEquityOrderFromQuote"
             name="%commands.createEquityOrderFromQuote.name">
       </command>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            defaultHandler="org.marketcetera.photon.views.MarketDataView$BuyCommandHandler"
+            description="%commands.createEquityBuyOrderFromMarketData.description"
+            id="org.marketcetera.photon.createEquityBuyOrderFromMarketData"
+            name="%commands.createEquityBuyOrderFromMarketData.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            defaultHandler="org.marketcetera.photon.views.MarketDataView$SellCommandHandler"
+            description="%commands.createEquitySellOrderFromMarketData.description"
+            id="org.marketcetera.photon.createEquitySellOrderFromMarketData"
+            name="%commands.createEquitySellOrderFromMarketData.name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -287,6 +301,26 @@
           </command>
           <command
                 commandId="org.eclipse.ui.edit.copy"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.marketDataRowsSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <command
+                commandId="org.marketcetera.photon.createEquityBuyOrderFromMarketData"
+                label="%marketDataView.buy.label"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.marketDataRowsSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <command
+                commandId="org.marketcetera.photon.createEquitySellOrderFromMarketData"
+                label="%marketDataView.sell.label"
                 style="push">
              <visibleWhen>
                 <reference
