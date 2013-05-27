@@ -389,8 +389,8 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         /*
          * Display Quantity
          */
-        bindRequiredDecimal(ticket.getDisplayQuantityText(), model.getDisplayQuantity(),
-                Messages.ORDER_TICKET_VIEW_DISPLAYQUANTITY__LABEL.getText());
+        bindText(ticket.getDisplayQuantityText(), model.getDisplayQuantity());
+        
 
         /*
          * Symbol
