@@ -33,10 +33,6 @@
       <artifactId>util</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.skife.kasparov</groupId>
       <artifactId>csv</artifactId>
     </dependency>
@@ -75,6 +71,10 @@
     <dependency>
       <groupId>org.nocrala</groupId>
       <artifactId>tools</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jms</artifactId>
     </dependency>
 
     <!-- Testing. -->
