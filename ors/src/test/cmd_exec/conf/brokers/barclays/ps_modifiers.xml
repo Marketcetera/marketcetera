@@ -62,15 +62,24 @@
         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
           <constructor-arg value="126(F)"/>
         </bean>
-        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
-          <constructor-arg value="10000(*)"/>
-        </bean>
         <bean class="org.marketcetera.ors.filters.ConditionalMessageModifier">
           <property name="comparisonTag" value="40"/>
           <property name="operator" value="EQ"/>
           <property name="comparisonValue" value="4"/>
           <property name="tag" value="40"/>
           <property name="value" value="2"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.OrderTagRecorder">
+          <property name="tagsToWatch">
+            <set>
+              <value>10000</value>
+            </set>
+          </property>
+          <property name="tagsToRemove">
+            <set>
+              <value>10000</value>
+            </set>
+          </property>
         </bean>
       </list>
     </property>

@@ -10,8 +10,31 @@
                            http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.2.xsd">
     <!-- set up Spring context scanning -->
     <context:component-scan base-package="com.marketcetera.ramius"/>
-    <bean class="com.marketcetera.ramius.strategy.impl.TargetedOrderModifier" id="targetedOrderModifier"/>
+    <!-- converters and factories -->
+    <bean class="com.marketcetera.ramius.conversion.impl.OrderConverter" id="orderConverter"/>
+    <bean class="com.marketcetera.ramius.strategy.impl.TradeFactoryImpl" id="tradeFactory"/>
+    <bean class="com.marketcetera.ramius.inputs.impl.OrderFactoryImpl" id="orderFactory"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.InputTypeConverter" id="inputTypeConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.TimeConverter" id="timeConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.MilepostsConverter" id="milepostsConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.StrategyTagConverter" id="strategyTagConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.ExecutionTypeConverter" id="executionTypeConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.OrderIDConverter" id="orderIDConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.SecurityConverter" id="securityConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.TradeIDConverter" id="tradeIDConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.LadderConverter" id="ladderConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.BrokerIDConverter" id="brokerIDConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.OrderStatusConverter" id="orderStatusConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.SideConverter" id="sideConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.OrderTypeConverter" id="orderTypeConverter"/>
+    <bean class="com.marketcetera.ramius.conversion.impl.TimeInForceConverter" id="timeInForceConverter"/>
+    <bean class="com.marketcetera.ramius.inputs.impl.MilepostFactoryImpl" id="milepostFactory"/>
+    <bean class="com.marketcetera.ramius.inputs.impl.LadderFactoryImpl" id="ladderFactory"/>
+    <bean class="com.marketcetera.ramius.inputs.impl.TimeFactoryImpl" id="timeFactory"/>
+    <bean class="com.marketcetera.ramius.inputs.impl.TradeIDFactoryImpl" id="tradeIDFactory"/>
+    <bean class="com.marketcetera.ramius.inputs.impl.TradeInputFactoryImpl" id="tradeInputFactory"/>
     <!-- generators/executors -->
+    <bean class="com.marketcetera.ramius.strategy.impl.TargetedOrderModifier" id="targetedOrderModifier"/>
     <bean class="com.marketcetera.ramius.strategy.impl.MarketceteraOrderGenerator" id="orderGenerator">
         <property name="orderModifiers">
             <list>
@@ -25,7 +48,7 @@
     </bean>
     <bean id="notificationExecutor" class="com.marketcetera.ramius.strategy.impl.EmailNotificationExecutor">
         <!-- for multiple addresses, separate with ',' -->
-        <property name="recipients" value="bjones@ramius.com,lgibbs@ramius.com"/>
+        <property name="recipients" value="colin@marketcetera.com"/>
     </bean>
     <bean id="timerExecutor" class="com.marketcetera.ramius.strategy.impl.DefaultTimerExecutor">
         <property name="name" value="Marketcetera Timer Executor"/>
@@ -44,8 +67,9 @@
       </property>
     </bean>
     <!-- main object tied-in with application context -->
-    <bean class="com.marketcetera.ramius.strategy.impl.TradeManagerImpl" id="tradeManager">
+    <bean class="com.marketcetera.ramius.strategy.impl.TradeManagerImpl" id="tradeManager" depends-on="metc_ers" >
         <property name="dataRecorder" ref="dataRecorder"/>
+        <property name="historyThreshold" value="30d"/>
     </bean>
     <!-- validators and converters -->
     <bean class="com.marketcetera.ramius.validation.impl.BrokerIDValidator" id="brokerIDValidator">
@@ -87,13 +111,13 @@
     <bean name="psqlDriver" class="java.lang.String"><constructor-arg value="org.postgresql.Driver"/></bean>
     <!-- Properties for configuring the c3p0 connection pool. See http://www.mchange.com/projects/c3p0/index.html#configuration_properties for a complete list of options that can be specified here -->
     <bean id="poolDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="driverClass" value="org.postgresql.Driver"/>
-        <property name="jdbcUrl" value="jdbc:postgresql:metc"/>
+        <property name="driverClass" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+        <property name="jdbcUrl" value="jdbc:derby:data/metc;create=true"/>
         <property name="user" value="metc"/>
         <property name="password" value="pw4metc"/>
         <property name="maxPoolSize" value="10"/>
-        <property name="preferredTestQuery" value="select 1"/> <!-- use this for mysql, postgres, and others -->
-        <!-- property name="preferredTestQuery" value="VALUES 1"/--> <!-- use this for derby -->
+        <!-- property name="preferredTestQuery" value="select 1"/--> <!-- use this for mysql, postgres, and others -->
+        <property name="preferredTestQuery" value="VALUES 1"/> <!-- use this for derby -->
         <property name="testConnectionOnCheckout" value="true"/>
     </bean>
     <bean id="hibernateJpaAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">

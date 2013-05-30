@@ -42,6 +42,24 @@
           <constructor-arg value="847(*)"/>
         </bean>
         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6061(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6062(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6063(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6064(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6065(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="6066(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
           <constructor-arg value="6070(*)"/>
         </bean>
         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">

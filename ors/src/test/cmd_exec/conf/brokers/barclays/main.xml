@@ -13,43 +13,23 @@
   - See '../../README.html' for detailed documentation.
   -->
 
-<beans
- xmlns="http://www.springframework.org/schema/beans"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-
-  <import
-   resource="qdescriptor.xml"/>
-  <import
-   resource="modifiers.xml"/>
-  <import
-   resource="routes.xml"/>
-  <import
-   resource="ps_modifiers.xml"/>
-  <import
-   resource="resp_modifiers.xml"/>
-
-  <bean
-   id="barclays_broker"
-   class="org.marketcetera.ors.brokers.SpringBroker">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+  <import resource="qdescriptor.xml"/>
+  <import resource="modifiers.xml"/>
+  <import resource="routes.xml"/>
+  <import resource="ps_modifiers.xml"/>
+  <import resource="resp_modifiers.xml"/>
+  <bean id="barclays_broker" class="org.marketcetera.ors.brokers.SpringBroker">
     <!-- The broker name (an arbitrary string). -->
-    <property
-     name="name"
-     value="${barclays.broker.name}"/>
+    <property name="name" value="${barclays.broker.name}"/>
     <!-- The broker ID (an arbitrary string, but a short one is best). -->
-    <property
-     name="id"
-     value="${barclays.broker.id}"/>
+    <property name="id" value="${barclays.broker.id}"/>
     <!-- Indicates if the broker requires a FIX Logout message on disconnect -->
-    <property
-     name="fixLogoutRequired"
-     value="${barclays.broker.fixlogoutrequired}"/>
+    <property name="fixLogoutRequired" value="${barclays.broker.fixlogoutrequired}"/>
     <!-- The QuickFIX/J session descriptor. -->
-    <property
-     name="descriptor"
-     ref="barclays_qdescriptor"/>
+    <property name="descriptor" ref="barclays_qdescriptor"/>
     <!-- The message modifiers. -->
     <!--
     <property
@@ -63,14 +43,8 @@ name="routes"
      ref="barclays_routes"/>
     -->
     <!-- The pre-sending message modifiers. -->
-
     <property name="preSendModifiers" ref="barclays_ps_modifiers"/>
-
     <!-- The response message modifiers. -->
-    <!--
-    <property
-     name="responseModifiers"
-     ref="barclays_resp_modifiers"/>
-    -->
+    <property name="responseModifiers" ref="barclays_resp_modifiers"/>
   </bean>
 </beans>

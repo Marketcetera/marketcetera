@@ -751,6 +751,7 @@
         <field name="RatioQty" required="N"/>
         <field name="AlgoSide" required="N"/>
         <field name="UnderlyingCurrency" required="N"/>
+        <field name="StrategyTag" required="N"/>
       </group>
     </message>
     <message name="SecurityStatusRequest" msgtype="e" msgcat="app">
@@ -1074,6 +1075,7 @@
       <field name="StopPrice" required="N"/>
       <field name="TrailingActivationPrice" required="N"/>
       <field name="TrailingTicks" required="N"/>
+      <field name="StrategyTag" required="N"/>
     </message>
     <message name="DontKnowTrade" msgtype="Q" msgcat="app">
       <field name="OrderID" required="Y"/>
@@ -1213,6 +1215,7 @@
       <field name="StopPrice" required="N"/>
       <field name="TrailingActivationPrice" required="N"/>
       <field name="TrailingTicks" required="N"/>
+      <field name="StrategyTag" required="N"/>
     </message>
     <message name="OrderCancelRequest" msgtype="F" msgcat="app">
       <field name="OrigClOrdID" required="Y"/>
@@ -1251,6 +1254,7 @@
       <field name="EncodedTextLen" required="N"/>
       <field name="EncodedText" required="N"/>
       <field name="MaturityMonthYear2" required="N"/>
+      <field name="StrategyTag" required="N"/>
     </message>
     <message name="OrderCancelReject" msgtype="9" msgcat="app">
       <field name="OrderID" required="Y"/>
@@ -1268,6 +1272,7 @@
       <field name="Text" required="N"/>
       <field name="EncodedTextLen" required="N"/>
       <field name="EncodedText" required="N"/>
+      <field name="StrategyTag" required="N"/>
     </message>
     <message name="OrderStatusRequest" msgtype="H" msgcat="app">
       <field name="OrderID" required="N"/>
