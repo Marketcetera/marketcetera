@@ -552,20 +552,17 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		}
 		
 		public void setDefaultOrderSize() {
+			defaultOrderSize = null;
 			for (Object customFieldObject : PhotonPlugin.getDefault().getStockOrderTicketModel().getCustomFieldsList()) {
                 CustomField customField = (CustomField) customFieldObject;
                 if(OrderQty.FIELD == Integer.parseInt(customField.getKeyString())) {
                 	defaultOrderSize = new BigDecimal(customField.getValueString());				                    	
                 }             
         	}
-			if(defaultOrderSize == null){
-				defaultOrderSize = new BigDecimal(-1);
-			}
 		}
 		
 		@Override
 		public Object execute(ExecutionEvent event) throws ExecutionException {
-			setDefaultOrderSize();
 			IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
 			ISelection selection = HandlerUtil
 					.getCurrentSelectionChecked(event);
@@ -577,26 +574,31 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					public void run() {
 						for (Object obj : sselection.toArray()) {
 							if (obj instanceof MarketDataViewItem) {
+								setDefaultOrderSize();
 								MarketDataViewItem mdi = (MarketDataViewItem) obj;
 					            Instrument instrument = new Equity(mdi.getSymbol());					     
 					            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
 					            newOrder.setInstrument(instrument);
 					            newOrder.setOrderType(OrderType.Limit);
 					            newOrder.setSide(side);
-					            if(side == Side.Buy) {					
-					            	if(defaultOrderSize.compareTo(mdi.getTopOfBook().getAskSize()) == -1){
+					            if(side == Side.Buy && mdi.getTopOfBook().getAskSize() != null) {					
+					            	if(defaultOrderSize != null && mdi.getTopOfBook().getAskSize().compareTo(defaultOrderSize) == 1){
 					            		newOrder.setQuantity(defaultOrderSize);
 					            	} else {
 					            		newOrder.setQuantity(mdi.getTopOfBook().getAskSize());
-					            	}					            		
-					            	newOrder.setPrice(mdi.getTopOfBook().getAskPrice());
-					            }else {
-					            	if(defaultOrderSize.compareTo(mdi.getTopOfBook().getBidSize()) == -1){
+					            	} 
+					            	if(mdi.getTopOfBook().getAskPrice() != null ) {
+					            		newOrder.setPrice(mdi.getTopOfBook().getAskPrice());
+					            	}
+					            }else if(mdi.getTopOfBook().getBidSize() != null){
+					            	if(defaultOrderSize != null && mdi.getTopOfBook().getBidSize().compareTo(defaultOrderSize) == 1){
 					            		newOrder.setQuantity(defaultOrderSize);
 					            	} else {
 					            		newOrder.setQuantity(mdi.getTopOfBook().getBidSize());
 					            	}	
-					            	newOrder.setPrice(mdi.getTopOfBook().getBidPrice());
+					            	if(mdi.getTopOfBook().getBidPrice() != null) {
+					            		newOrder.setPrice(mdi.getTopOfBook().getBidPrice());
+					            	}
 					            }
 					            newOrder.setTimeInForce(TimeInForce.Day);
 					            try {

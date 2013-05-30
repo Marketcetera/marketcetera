@@ -141,9 +141,9 @@ public class OrderSingleParser {
                             if (price.equalsIgnoreCase("mkt")) { //$NON-NLS-1$
                                 order.setOrderType(OrderType.Market);
                             }else if (price.equalsIgnoreCase("moc")) { //$NON-NLS-1$
-                                order.setOrderType(OrderType.MOC);
+                                order.setOrderType(OrderType.MarketOnClose);
                             }else if (price.equalsIgnoreCase("mbf")) { //$NON-NLS-1$
-                                order.setOrderType(OrderType.MBF);
+                                order.setOrderType(OrderType.MustBeFilled);
                             }
                             else {
                                 order.setOrderType(OrderType.Limit);
