@@ -3,7 +3,7 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 import org.marketcetera.photon.Messages;
 
 import quickfix.Message;
-import quickfix.field.OrderID;
+import quickfix.field.ClOrdID;;
 
 /**
  * Order ID execution report field
@@ -28,6 +28,6 @@ public class OrderIDField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new OrderID(fValue));	
+		message.setField(new ClOrdID(fValue));	
 	}
 }

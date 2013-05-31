@@ -461,6 +461,8 @@ public interface Messages
     		"execution_report_field_transact_time"); //$NON-NLS-1$
     public static I18NMessage0P EXECUTION_REPORT_FIELD_SIDE = new I18NMessage0P(LOGGER,
     		"execution_report_field_side"); //$NON-NLS-1$
+    public static I18NMessage0P EXECUTION_REPORT_FIELD_EXEC_TRANS_TYPE = new I18NMessage0P(LOGGER,
+    		"execution_report_field_exec_trans_type"); //$NON-NLS-1$
     public static I18NMessage0P EXECUTION_REPORT_FIELD_EXECUTION_TYPE = new I18NMessage0P(LOGGER,
     		"execution_report_field_execution_type"); //$NON-NLS-1$
     public static I18NMessage0P EXECUTION_REPORT_FIELD_LEAVES_QTY = new I18NMessage0P(LOGGER,

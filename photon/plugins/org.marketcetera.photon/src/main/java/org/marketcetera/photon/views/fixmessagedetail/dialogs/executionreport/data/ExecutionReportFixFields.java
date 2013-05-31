@@ -22,9 +22,11 @@ public class ExecutionReportFixFields
 		fExecutionReportFields.add(new AccountField());
 		fExecutionReportFields.add(new AvgPxField());
 		fExecutionReportFields.add(new OrderIDField());
+		fExecutionReportFields.add(new BrokerOrderIDField());
 		fExecutionReportFields.add(new CumQtyField());
 		fExecutionReportFields.add(new ExecutionIDField());
 		fExecutionReportFields.add(new ExecutionTypeField());
+		fExecutionReportFields.add(new ExecTransTypeField());
 		fExecutionReportFields.add(new LastQtyField());
 		fExecutionReportFields.add(new LastPriceField());
 		fExecutionReportFields.add(new LeavesQtyField());
@@ -43,7 +45,6 @@ public class ExecutionReportFixFields
 		fExecutionReportFields.add(new TimeInForceField());
 		fExecutionReportFields.add(new TextField());
 		fExecutionReportFields.add(new TransactTimeField());
-		fExecutionReportFields.add(new BrokerOrderIDField());
 		//fExecutionReportFields.add(new StrategyTagField());
 	}
 	
