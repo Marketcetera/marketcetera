@@ -41,6 +41,6 @@
     </property>
     -->
     <!-- Default broker. -->
-    <property name="defaultBroker" ref="metc_broker"/>
+    <property name="defaultBroker" ref="barclays_broker"/>
   </bean>
 </beans>
