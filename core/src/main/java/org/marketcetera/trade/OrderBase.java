@@ -75,20 +75,6 @@ public interface OrderBase extends Order {
      * @param inQuantity the quantity.
      */
     void setQuantity(BigDecimal inQuantity);
-    
-    /**
-     * Gets the display quantity for the Order.
-     *
-     * @return the display quantity.
-     */
-    BigDecimal getDisplayQuantity();
-
-    /**
-     * Sets the display quantity for the Order.
-     *
-     * @param inDisplayQuantity the display quantity.
-     */
-    void setDisplayQuantity(BigDecimal inDisplayQuantity);
 
     /**
      * Gets the custom fields specified along with this order. Custom

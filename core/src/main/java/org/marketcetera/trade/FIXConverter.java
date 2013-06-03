@@ -649,7 +649,6 @@ public final class FIXConverter
         addInstrument(o.getInstrument(),fixDictionary,msgType,msg,true);
         addSide(o.getSide(),fixDictionary,msgType,msg,true);
         addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
-        addDisplayQuantity(o.getDisplayQuantity(),fixDictionary,msgType,msg,false);
         addBrokerOrderID(o.getBrokerOrderID(),fixDictionary,msgType,msg,false);
         addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
         addText(o.getText(),fixDictionary,msgType,msg,false);

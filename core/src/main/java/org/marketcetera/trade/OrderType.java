@@ -27,11 +27,11 @@ public enum OrderType {
     /**
      * A Market on Close order.
      */
-    MOC(quickfix.field.OrdType.MARKET_ON_CLOSE),
+    MarketOnClose(quickfix.field.OrdType.MARKET_ON_CLOSE),
     /**
      * A Must be filled order.
      */
-    MBF('X'),
+    MustBeFilled('X'),
     /**
      * Sentinel value for Order Types that the system is not currently
      * aware of.

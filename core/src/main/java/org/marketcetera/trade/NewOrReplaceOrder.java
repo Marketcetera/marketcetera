@@ -91,4 +91,18 @@ public interface NewOrReplaceOrder extends OrderBase, Serializable {
      * @param inPositionEffect the position effect value.
      */
     void setPositionEffect(PositionEffect inPositionEffect);
+    
+    /**
+     * Gets the display quantity for the Order.
+     *
+     * @return the display quantity.
+     */
+    BigDecimal getDisplayQuantity();
+
+    /**
+     * Sets the display quantity for the Order.
+     *
+     * @param inDisplayQuantity the display quantity.
+     */
+    void setDisplayQuantity(BigDecimal inDisplayQuantity);
 }
