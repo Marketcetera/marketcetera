@@ -28,6 +28,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.options.OptionUtils;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
@@ -192,6 +193,13 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         if(inSymbol == null) {
             throw new NullPointerException();
         }
+        try {
+            return Future.fromString(inSymbol);
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            return OptionUtils.getOsiOptionFromString(inSymbol);
+        } catch (IllegalArgumentException ignored) {}
+        // TODO insert something similar for Currency
         return new Equity(inSymbol);
     }
 
