@@ -8,6 +8,7 @@ import java.lang.management.ManagementFactory;
 import java.util.Date;
 import java.util.logging.LogManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -178,6 +179,20 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
                 optionOrderTicketModel);
         futureOrderTicketController = new FutureOrderTicketController(futureOrderTicketModel);
         currencyOrderTicketController = new CurrencyOrderTicketController(currencyOrderTicketModel);
+    }
+    /**
+     * Resolves the given symbol to an instrument.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value
+     */
+    public Instrument resolveSymbol(String inSymbol)
+    {
+        inSymbol = StringUtils.trimToNull(inSymbol);
+        if(inSymbol == null) {
+            throw new NullPointerException();
+        }
+        return new Equity(inSymbol);
     }
 
     private void initPhotonController() {
