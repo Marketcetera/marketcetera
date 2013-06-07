@@ -46,7 +46,6 @@ import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnPro
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.Instrument;
@@ -76,7 +75,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	 */
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
 
-	private Map<Equity, MarketDataViewItem> mItemMap = new HashMap<Equity, MarketDataViewItem>();
+	private Map<Instrument, MarketDataViewItem> mItemMap = new HashMap<Instrument, MarketDataViewItem>();
 
 	private TextContributionItem mSymbolEntryText;
 
@@ -258,13 +257,13 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	@Override
-	public boolean isListeningSymbol(Equity symbol) {
+	public boolean isListeningSymbol(Instrument instrument) {
 		return false;
 	}
 
 	@Override
-	public void onAssertSymbol(Equity symbol) {
-		addSymbol(symbol);
+	public void onAssertSymbol(Instrument instrument) {
+		addSymbol(instrument);
 	}
 
 	/**
@@ -274,17 +273,17 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	 * @param symbol
 	 *            symbol to add to view
 	 */
-	public void addSymbol(final Equity symbol) {
-		if (mItemMap.containsKey(symbol)) {
+	public void addSymbol(final Instrument instrument) {
+		if (mItemMap.containsKey(instrument)) {
 			PhotonPlugin.getMainConsoleLogger().warn(
-					DUPLICATE_SYMBOL.getText(symbol));
+					DUPLICATE_SYMBOL.getText(instrument));
 		} else {
 			busyRun(new Runnable() {
 				@Override
 				public void run() {
 					MarketDataViewItem item = new MarketDataViewItem(mMarketDataManager
-							.getMarketData(), symbol);
-					mItemMap.put(symbol, item);
+							.getMarketData(), instrument);
+					mItemMap.put(instrument, item);
 					mItems.add(item);
 				}
 			});
@@ -296,7 +295,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	private void remove(final MarketDataViewItem item) {
-		mItemMap.remove(item.getEquity());
+		mItemMap.remove(item.getInstrument());
 		mItems.remove(item);
 		item.dispose();
 	}
@@ -352,8 +351,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			int compare;
 			switch (mIndex) {
 			case 0:
-				String symbol1 = item1.getEquity().getSymbol();
-				String symbol2 = item2.getEquity().getSymbol();
+				String symbol1 = item1.getInstrument().getSymbol();
+				String symbol2 = item2.getInstrument().getSymbol();
 				compare = compareNulls(symbol1, symbol2);
 				if (compare == 0) {
 					compare = symbol1.compareTo(symbol2);
@@ -446,28 +445,30 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			if (StringUtils.isBlank(value.toString()))
 				return;
 			final MarketDataViewItem item = (MarketDataViewItem) element;
-			final Equity equity = item.getEquity();
-			if (equity.getSymbol().equals(value))
+			final Instrument instrument = item.getInstrument();
+			if (instrument.getSymbol().equals(value))
 				return;
-			final Equity newEquity = new Equity(value.toString());
-			if (mItemMap.containsKey(newEquity)) {
+			
+		
+			final Instrument newInstrument = PhotonPlugin.getDefault().resolveSymbol(value.toString());			
+			if (mItemMap.containsKey(newInstrument)) {
 				PhotonPlugin.getMainConsoleLogger().warn(
-						DUPLICATE_SYMBOL.getText(newEquity.getSymbol()));
+						DUPLICATE_SYMBOL.getText(newInstrument.getSymbol()));
 				return;
 			}
 			busyRun(new Runnable() {
 				@Override
 				public void run() {
-					mItemMap.remove(equity);
-					item.setEquity(newEquity);
-					mItemMap.put(newEquity, item);
+					mItemMap.remove(instrument);
+					item.setEquity(newInstrument);
+					mItemMap.put(newInstrument, item);
 				}
 			});
 		}
 
 		@Override
 		protected Object getValue(Object element) {
-			return ((MarketDataViewItem) element).getEquity().getSymbol();
+			return ((MarketDataViewItem) element).getInstrument().getSymbol();
 		}
 
 		@Override
@@ -576,7 +577,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 							if (obj instanceof MarketDataViewItem) {
 								setDefaultOrderSize();
 								MarketDataViewItem mdi = (MarketDataViewItem) obj;
-					            Instrument instrument = new Equity(mdi.getSymbol());					     
+								Instrument instrument = mdi.getInstrument();
 					            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
 					            newOrder.setInstrument(instrument);
 					            newOrder.setOrderType(OrderType.Limit);

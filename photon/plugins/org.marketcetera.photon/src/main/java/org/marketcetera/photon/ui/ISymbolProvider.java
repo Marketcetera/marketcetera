@@ -1,12 +1,12 @@
 package org.marketcetera.photon.ui;
 
-import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Interface for objects that provide an {@link Equity} symbol.
+ * Interface for objects that provide an {@link Instrument} symbol.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -18,6 +18,6 @@ public interface ISymbolProvider {
 	/**
 	 * @return an equity, should not be null
 	 */
-	Equity getEquity();
-
+	Instrument getInstrument();
+	
 }

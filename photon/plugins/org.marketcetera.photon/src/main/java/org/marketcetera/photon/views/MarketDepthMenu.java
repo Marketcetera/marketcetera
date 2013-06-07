@@ -18,7 +18,7 @@ import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.ui.MarketDataUI;
 import org.marketcetera.photon.ui.ISymbolProvider;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ImmutableMap;
@@ -43,7 +43,7 @@ public class MarketDepthMenu extends CompoundContributionItem {
 			IStructuredSelection structured = (IStructuredSelection) selection;
 			Object selected = structured.getFirstElement();
 			if (selected instanceof ISymbolProvider) {
-				Equity symbol = ((ISymbolProvider) selected).getEquity();
+				Instrument symbol = ((ISymbolProvider) selected).getInstrument();
 				Set<Capability> capabilities = PhotonPlugin.getDefault().getMarketDataManager()
 						.getActiveFeedCapabilities();
 				List<IContributionItem> items = new ArrayList<IContributionItem>(3);
