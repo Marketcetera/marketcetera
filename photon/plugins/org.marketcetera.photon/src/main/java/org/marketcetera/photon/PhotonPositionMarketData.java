@@ -19,9 +19,10 @@ import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDPackage;
-import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
+import org.marketcetera.trade.SecurityType;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.HashMultimap;
@@ -59,7 +60,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 			.newHashMap();
     /*
      * These caches allow easy implementation of getLastTradePrice,
-     * getClosingPrice, and getOptionMultiplier. They also allow notification to
+     * getClosingPrice, getOptionMultiplier and getFutureMultiplier. They also allow notification to
      * be fired only when the values change to avoid unnecessary notifications,
      * which is especially important with closing price and option multiplier
      * that rarely change.
@@ -67,6 +68,7 @@ public class PhotonPositionMarketData implements MarketDataSupport {
     private final ConcurrentMap<Instrument, BigDecimal> mLatestTickCache = new ConcurrentHashMap<Instrument, BigDecimal>();
     private final ConcurrentMap<Instrument, BigDecimal> mClosingPriceCache = new ConcurrentHashMap<Instrument, BigDecimal>();
     private final ConcurrentMap<Instrument, BigDecimal> mOptionMultiplierCache = new ConcurrentHashMap<Instrument, BigDecimal>();
+    private final ConcurrentMap<Instrument, BigDecimal> mFutureMultiplierCache = new ConcurrentHashMap<Instrument, BigDecimal>();
 
 	/*
 	 * Marks null price for the ConcurrentMap caches which don't allow null. This is better than
@@ -110,6 +112,14 @@ public class PhotonPositionMarketData implements MarketDataSupport {
         // implementation choice to only return the multiplier if it's already known
         // not worth it to set up a new data flow
         return getCachedValue(mOptionMultiplierCache, option);
+	}
+	
+	@Override
+	public BigDecimal getFutureMultiplier(Future future) {
+	    Validate.notNull(future);
+        // implementation choice to only return the multiplier if it's already known
+        // not worth it to set up a new data flow
+        return getCachedValue(mFutureMultiplierCache, future);
 	}
 
 	private BigDecimal getCachedValue(final ConcurrentMap<Instrument, BigDecimal> cache,
@@ -206,14 +216,27 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	private void fireMultiplierChanged(final MDLatestTick item) {
 	    Instrument instrument = item.getInstrument();
         BigDecimal newValue = item.getMultiplier();
-        if (updateCache(instrument, newValue, mOptionMultiplierCache)) {
-            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
-            synchronized (mListeners) {
-                if (mDisposed.get()) return;
-                for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
-                   listener.optionMultiplierChanged(event);
-                }
-            }
+        if(item.getInstrument().getSecurityType()==SecurityType.Option){
+	        if (updateCache(instrument, newValue, mOptionMultiplierCache)) {
+	            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
+	            synchronized (mListeners) {
+	                if (mDisposed.get()) return;
+	                for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+	                   listener.optionMultiplierChanged(event);
+	                }
+	            }
+	        }
+        }
+        if(item.getInstrument().getSecurityType()==SecurityType.Future){
+	        if (updateCache(instrument, newValue, mFutureMultiplierCache)) {
+	            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(this, newValue);
+	            synchronized (mListeners) {
+	                if (mDisposed.get()) return;
+	                for (InstrumentMarketDataListener listener : mListeners.get(instrument)) {
+	                   listener.futureMultiplierChanged(event);
+	                }
+	            }
+	        }
         }
     }
 	

@@ -29,6 +29,8 @@ import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 
@@ -44,16 +46,21 @@ import org.marketcetera.trade.OptionType;
 public class PhotonPositionMarketDataTest {
     private static final Equity IBM = new Equity("IBM");
     private static final Option METC = new Option("METC", "201210", BigDecimal.TEN, OptionType.Call);
+    private static final Future METC_FUT = new Future("METC", FutureExpirationMonth.DECEMBER,2014);
 	private PhotonPositionMarketData mFixture;
 	private IMarketData mMockMarketData;
 	private MDLatestTick mIBMTick;
 	private IMarketDataReference<MDLatestTick> mMockIBMReference;
 	private MDLatestTick mMETCTick;
 	private IMarketDataReference<MDLatestTick> mMockMETCReference;
+	private MDLatestTick mMETC_FUTTick;
+	private IMarketDataReference<MDLatestTick> mMockMETC_FUTReference;
 	private MDMarketstat mIBMStat;
 	private MDMarketstat mMETCStat;
+	private MDMarketstat mMETCFUTStat;
 	private IMarketDataReference<MDMarketstat> mMockIBMStatReference;
 	private IMarketDataReference<MDMarketstat> mMockMETCStatReference;
+	private IMarketDataReference<MDMarketstat> mMockMETCFUTStatReference;
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -65,23 +72,33 @@ public class PhotonPositionMarketDataTest {
 		mIBMTick.eSet(MDPackage.Literals.MD_ITEM__INSTRUMENT, IBM);
 		mMETCTick = MDFactory.eINSTANCE.createMDLatestTick();
 		mMETCTick.eSet(MDPackage.Literals.MD_ITEM__INSTRUMENT, METC);
+		mMETC_FUTTick = MDFactory.eINSTANCE.createMDLatestTick();
+		mMETC_FUTTick.eSet(MDPackage.Literals.MD_ITEM__INSTRUMENT, METC_FUT);
 		mMockIBMReference = mock(IMarketDataReference.class);
 		mMockMETCReference = mock(IMarketDataReference.class);
+		mMockMETC_FUTReference = mock(IMarketDataReference.class);
 		when(mMockIBMReference.get()).thenReturn(mIBMTick);
 		when(mMockMETCReference.get()).thenReturn(mMETCTick);
+		when(mMockMETC_FUTReference.get()).thenReturn(mMETC_FUTTick);
 		when(mMockMarketData.getLatestTick(IBM)).thenReturn(mMockIBMReference);
 		when(mMockMarketData.getLatestTick(METC)).thenReturn(mMockMETCReference);
+		when(mMockMarketData.getLatestTick(METC_FUT)).thenReturn(mMockMETC_FUTReference);
 		// statistic stubbing
 		mIBMStat = MDFactory.eINSTANCE.createMDMarketstat();
 		mIBMStat.eSet(MDPackage.Literals.MD_ITEM__INSTRUMENT, IBM);
 		mMETCStat = MDFactory.eINSTANCE.createMDMarketstat();
 		mMETCStat.eSet(MDPackage.Literals.MD_ITEM__INSTRUMENT, METC);
+		mMETCFUTStat = MDFactory.eINSTANCE.createMDMarketstat();
+		mMETCFUTStat.eSet(MDPackage.Literals.MD_ITEM__INSTRUMENT, METC_FUT);
 		mMockIBMStatReference = mock(IMarketDataReference.class);
 		mMockMETCStatReference = mock(IMarketDataReference.class);
+		mMockMETCFUTStatReference = mock(IMarketDataReference.class);
 		when(mMockIBMStatReference.get()).thenReturn(mIBMStat);
 		when(mMockMETCStatReference.get()).thenReturn(mMETCStat);
+		when(mMockMETCFUTStatReference.get()).thenReturn(mMETCFUTStat);
 		when(mMockMarketData.getMarketstat(IBM)).thenReturn(mMockIBMStatReference);
 		when(mMockMarketData.getMarketstat(METC)).thenReturn(mMockMETCStatReference);
+		when(mMockMarketData.getMarketstat(METC_FUT)).thenReturn(mMockMETCFUTStatReference);
 	}
 
 	@Test
@@ -145,6 +162,17 @@ public class PhotonPositionMarketDataTest {
 		verify(mockListener).symbolTraded(argThat(hasNewAmount(5)));
 		changeMultiplier(mMETCTick, 8);
 		verify(mockListener).optionMultiplierChanged(argThat(hasNewAmount(8)));
+		
+	}
+	
+	@Test
+	public void testFutureNotificationGeneratesEvent() throws Exception {
+		InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+		mFixture.addInstrumentMarketDataListener(METC_FUT, mockListener);
+		changeLatestTick(mMETC_FUTTick, 5);
+		verify(mockListener).symbolTraded(argThat(hasNewAmount(5)));
+		changeMultiplier(mMETC_FUTTick, 10);
+		verify(mockListener).futureMultiplierChanged(argThat(hasNewAmount(10)));
 		
 	}
 
@@ -229,6 +257,15 @@ public class PhotonPositionMarketDataTest {
         mFixture.addInstrumentMarketDataListener(METC, mockListener);
         changeMultiplier(mMETCTick, 1000);
         assertThat(mFixture.getOptionMultiplier(METC), comparesEqualTo(1000));
+    }
+    
+    @Test
+    public void testGetFutureMultiplier() throws Exception {
+        InstrumentMarketDataListener mockListener = mock(InstrumentMarketDataListener.class);
+        mFixture.addInstrumentMarketDataListener(METC_FUT, mockListener);
+        changeMultiplier(mMETC_FUTTick, 1000);
+        assertThat(mFixture.getFutureMultiplier(METC_FUT), comparesEqualTo(1000));
+
     }
 	
 	@Test

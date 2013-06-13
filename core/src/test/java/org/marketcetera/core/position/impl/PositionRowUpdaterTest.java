@@ -15,6 +15,8 @@ import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEven
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -35,6 +37,7 @@ public class PositionRowUpdaterTest {
     private static final Instrument EQUITY = new Equity("METC");
     private static final Instrument OPTION = new Option("METC", "20091010",
             BigDecimal.TEN, OptionType.Put);
+    private static final Instrument FUTURE = new Future("METC", FutureExpirationMonth.DECEMBER,2014);
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
     private InstrumentMarketDataListener mListener;
@@ -174,9 +177,47 @@ public class PositionRowUpdaterTest {
         assertPosition(mFixture.getPosition(), OPTION, "0", null, null, null,
                 null, null);
     }
+    
+    @Test
+    public void testFutureMultiplier() throws Exception {
+        mFixture = new PositionRowUpdater(new PositionRowImpl(FUTURE, "METC",
+                ACCOUNT, TRADER, new BigDecimal(100)), mTrades, new MockMarketData(
+                FUTURE));
+        assertPosition(mFixture.getPosition(), FUTURE, "100", null, null, null,
+                null, null);
+        mTrades.add(createFutureTrade("-100", "5"));
+        assertPosition(mFixture.getPosition(), FUTURE, "0", null, null, null,
+                null, null);
+        tick("5");
+        setClosePrice("4");
+        Thread.sleep(1000);
+        assertPosition(mFixture.getPosition(), FUTURE, "0", null, null, null,
+                null, null);
+        setFutureMultiplier(BigDecimal.TEN);
+        Thread.sleep(1000);
+        assertPosition(mFixture.getPosition(), FUTURE, "0", "1000", "0",
+                "1000", "0", "1000");
+        /*
+         * Not likely that multiplier will change, but test since the API allows
+         * it.
+         */
+        setFutureMultiplier(BigDecimal.ONE);
+        Thread.sleep(1000);
+        assertPosition(mFixture.getPosition(), FUTURE, "0", "100", "0", "100",
+                "0", "100");
+        setFutureMultiplier(null);
+        Thread.sleep(1000);
+        assertPosition(mFixture.getPosition(), FUTURE, "0", null, null, null,
+                null, null);
+    }
 
     private void setMultiplier(BigDecimal multiplier) {
         mListener.optionMultiplierChanged(new InstrumentMarketDataEvent(this,
+                multiplier));
+    }
+    
+    private void setFutureMultiplier(BigDecimal multiplier) {
+        mListener.futureMultiplierChanged(new InstrumentMarketDataEvent(this,
                 multiplier));
     }
 
@@ -187,6 +228,10 @@ public class PositionRowUpdaterTest {
 
     private Trade<?> createOptionTrade(String quantity, String price) {
         return MockTrade.createTrade(OPTION, ACCOUNT, TRADER, quantity, price);
+    }
+    
+    private Trade<?> createFutureTrade(String quantity, String price) {
+        return MockTrade.createTrade(FUTURE, ACCOUNT, TRADER, quantity, price);
     }
 
     private void assertPosition(PositionRow row, Instrument instrument,
@@ -229,6 +274,11 @@ public class PositionRowUpdaterTest {
         public BigDecimal getOptionMultiplier(Option option) {
             return null;
         }
+        
+		@Override
+		public BigDecimal getFutureMultiplier(Future future) {
+			return null;
+		}
 
         @Override
         public void removeInstrumentMarketDataListener(Instrument instrument,

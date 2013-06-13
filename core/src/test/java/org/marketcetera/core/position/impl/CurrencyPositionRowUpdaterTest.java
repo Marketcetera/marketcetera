@@ -15,6 +15,7 @@ import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEven
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 
@@ -183,6 +184,11 @@ public class CurrencyPositionRowUpdaterTest {
         public BigDecimal getOptionMultiplier(Option option) {
             return null;
         }
+        
+		@Override
+		public BigDecimal getFutureMultiplier(Future future) {
+			return null;
+		}
 
         @Override
         public void removeInstrumentMarketDataListener(Instrument instrument,

@@ -18,6 +18,8 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.model.marketdata.impl.MDTopOfBookImpl;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 
@@ -52,6 +54,11 @@ public class TopOfBookManagerTest extends
     @Override
     protected TopOfBookKey createKey3() {
         return new TopOfBookKey(new Equity("GIB"));
+    }
+    
+    @Override
+    protected TopOfBookKey createKey4() {
+        return new TopOfBookKey(new Future("YHOO", FutureExpirationMonth.DECEMBER, 2014));
     }
 
     @Override

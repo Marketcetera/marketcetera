@@ -3,6 +3,7 @@ package org.marketcetera.core.position;
 import java.math.BigDecimal;
 import java.util.EventObject;
 
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
@@ -53,6 +54,15 @@ public interface MarketDataSupport {
      * @return the option multiplier, or null if unknown
      */
     BigDecimal getOptionMultiplier(Option option);
+    
+    /**
+     * Returns the future multiplier for the given future.
+     * 
+     * @param future
+     *            the future in question, will not be null
+     * @return the future multiplier, or null if unknown
+     */
+    BigDecimal getFutureMultiplier(Future future);
 
     /**
      * Adds a listener to be notified when the market data for a given
@@ -114,6 +124,14 @@ public interface MarketDataSupport {
          *            event describing the change
          */
         void optionMultiplierChanged(InstrumentMarketDataEvent event);
+        
+        /**
+         * Callback for receiving the future multiplier.
+         * 
+         * @param event
+         *            event describing the change
+         */
+        void futureMultiplierChanged(InstrumentMarketDataEvent event);
     }
 
     /**
@@ -134,6 +152,10 @@ public interface MarketDataSupport {
 
         @Override
         public void optionMultiplierChanged(InstrumentMarketDataEvent event) {
+        }
+        
+        @Override
+        public void futureMultiplierChanged(InstrumentMarketDataEvent event) {
         }
     }
 

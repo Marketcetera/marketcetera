@@ -22,6 +22,8 @@ import org.marketcetera.options.ExpirationType;
 import org.marketcetera.photon.model.marketdata.MDMarketstat;
 import org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -59,6 +61,11 @@ public class MarketstatManagerTest extends DataFlowManagerTestBase<MDMarketstat,
 	@Override
 	protected MarketstatKey createKey3() {
 		return new MarketstatKey(new Equity("GIB"));
+	}
+	
+	@Override
+	protected MarketstatKey createKey4() {
+		return new MarketstatKey(new Future("YHOO", FutureExpirationMonth.DECEMBER, 2014));
 	}
 
 	@Override
