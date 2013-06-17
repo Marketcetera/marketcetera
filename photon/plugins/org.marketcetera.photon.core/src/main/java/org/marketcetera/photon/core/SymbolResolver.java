@@ -1,9 +1,5 @@
 package org.marketcetera.photon.core;
 
-import org.apache.commons.lang.StringUtils;
-import org.marketcetera.options.OptionUtils;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -26,17 +22,10 @@ public class SymbolResolver
     @Override
     public Instrument resolveSymbol(String inSymbol)
     {
-        inSymbol = StringUtils.trimToNull(inSymbol);
-        if(inSymbol == null) {
-            throw new NullPointerException();
-        }
-        try {
-            return Future.fromString(inSymbol);
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            return OptionUtils.getOsiOptionFromString(inSymbol);
-        } catch (IllegalArgumentException ignored) {}
-        // TODO insert something similar for Currency
-        return new Equity(inSymbol);
+        return symbolResolver.resolveSymbol(inSymbol);
     }
+    /**
+     * delegate symbol resolver from core product
+     */
+    private org.marketcetera.trade.utils.SymbolResolver symbolResolver = new org.marketcetera.trade.utils.SymbolResolver();
 }

@@ -30,12 +30,12 @@ import org.marketcetera.marketdata.Content;
 import org.marketcetera.photon.commons.ui.table.ColumnConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableConfiguration;
 import org.marketcetera.photon.commons.ui.table.TableSupport;
+import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.model.marketdata.MDQuote;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ObjectArrays;
@@ -79,6 +79,7 @@ public class MarketDepthView extends ViewPart {
 	public static final String PARAMETER_DELIMITER = ","; //$NON-NLS-1$
 
 	private final IMarketData mMarketData;
+	private final ISymbolResolver mSymbolResolver;
 	private TableSupport mBidsTable;
 	private TableSupport mAsksTable;
 	private String mSymbol;
@@ -90,6 +91,7 @@ public class MarketDepthView extends ViewPart {
 	 */
 	public MarketDepthView() {
 		mMarketData = Activator.getMarketDataManager().getMarketData();
+		mSymbolResolver = Activator.getSymbolResolver();
 	}
 
 	@Override
@@ -136,7 +138,7 @@ public class MarketDepthView extends ViewPart {
 	    /*
 	     * Note that we are assuming equity here.
 	     */
-		mDataItem = mMarketData.getDepthOfBook(new Equity(mSymbol), mProduct);
+		mDataItem = mMarketData.getDepthOfBook(mSymbolResolver.resolveSymbol(mSymbol), mProduct);
 		ObservableListContentProvider bids = new ObservableListContentProvider();
 		mBidsTable.getTableViewer().setContentProvider(bids);
 		mBidsTable.getTableViewer().setLabelProvider(

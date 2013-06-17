@@ -1,4 +1,4 @@
-package org.marketcetera.photon.core;
+package org.marketcetera.trade.utils;
 
 import org.marketcetera.util.misc.ClassVersion;
 

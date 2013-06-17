@@ -1,6 +1,7 @@
 package org.marketcetera.photon.core;
 
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.utils.UnresolvableSymbol;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
