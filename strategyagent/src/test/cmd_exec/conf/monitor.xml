@@ -6,7 +6,7 @@
     <!-- generators/executors -->
     <bean id="notificationExecutor" class="com.marketcetera.ramius.strategy.impl.EmailNotificationExecutor">
         <!-- for multiple addresses, separate with ',' -->
-        <property name="recipients" value="bjones@ramius.com,lgibbs@ramius.com"/>
+        <property name="recipients" value="colin@marketcetera.com"/>
     </bean>
     <!-- strategy monitor client -->
     <bean class="com.marketcetera.ramius.strategy.monitor.MonitorClient" id="monitorClient">

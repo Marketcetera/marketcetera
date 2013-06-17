@@ -86,7 +86,7 @@
     </bean>
     <!-- number of ms in advance of order start times to send orders to the broker (optional, default = 0) -->
     <bean class="java.lang.Long" id="presendInterval">
-      <constructor-arg value="1000"/>
+      <constructor-arg value="5000"/>
     </bean>
     <!-- interval in ms at which to poll input directory (optional, default = 250) -->
     <bean class="java.lang.Long" id="pollInterval">
