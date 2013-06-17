@@ -8,7 +8,6 @@ import java.lang.management.ManagementFactory;
 import java.util.Date;
 import java.util.logging.LogManager;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -28,9 +27,9 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.options.OptionUtils;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
+import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.*;
@@ -116,6 +115,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     private ServiceTracker mLogoutServiceTracker;
     
     private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new ClientUnderlyingSymbolSupport();
+    private ServiceTracker mSymbolResolverServiceTracker;
 
     /**
      * The constructor.
@@ -165,10 +165,13 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         mLogoutServiceTracker = new ServiceTracker(context,
                 ILogoutService.class.getName(), null);
         mLogoutServiceTracker.open();
+        mSymbolResolverServiceTracker = new ServiceTracker(context,
+                                                           ISymbolResolver.class.getName(),
+                                                           null);
+        mSymbolResolverServiceTracker.open();
         context.registerService(UnderlyingSymbolSupport.class.getName(),
                 mUnderlyingSymbolSupport, null);
     }
-
     public void initOrderTickets() {
         stockOrderTicketModel = new StockOrderTicketModel();
         optionOrderTicketModel = new OptionOrderTicketModel();
@@ -180,27 +183,6 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
                 optionOrderTicketModel);
         futureOrderTicketController = new FutureOrderTicketController(futureOrderTicketModel);
         currencyOrderTicketController = new CurrencyOrderTicketController(currencyOrderTicketModel);
-    }
-    /**
-     * Resolves the given symbol to an instrument.
-     *
-     * @param inSymbol a <code>String</code> value
-     * @return an <code>Instrument</code> value
-     */
-    public Instrument resolveSymbol(String inSymbol)
-    {
-        inSymbol = StringUtils.trimToNull(inSymbol);
-        if(inSymbol == null) {
-            throw new NullPointerException();
-        }
-        try {
-            return Future.fromString(inSymbol);
-        } catch (IllegalArgumentException ignored) {}
-        try {
-            return OptionUtils.getOsiOptionFromString(inSymbol);
-        } catch (IllegalArgumentException ignored) {}
-        // TODO insert something similar for Currency
-        return new Equity(inSymbol);
     }
 
     private void initPhotonController() {
@@ -221,7 +203,15 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     public UnderlyingSymbolSupport getUnderlyingSymbolSupport() {
         return mUnderlyingSymbolSupport;
     }
-
+    /**
+     * Gets the symbol resolver value.
+     *
+     * @return an <code>ISymbolResolver</code> value
+     */
+    public ISymbolResolver getSymbolResolver()
+    {
+        return (ISymbolResolver)mSymbolResolverServiceTracker.getService();
+    }
     /**
      * This method is called when the plug-in is stopped
      */

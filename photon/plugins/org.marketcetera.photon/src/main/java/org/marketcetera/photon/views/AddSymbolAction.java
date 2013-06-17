@@ -52,7 +52,7 @@ public class AddSymbolAction
 			for (String string : symbols) {
 				String trimmed = StringUtils.trimToNull(string);
 				if (trimmed != null) {
-					listener.onAssertSymbol(PhotonPlugin.getDefault().resolveSymbol(trimmed));
+					listener.onAssertSymbol(PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(trimmed));
 				}
 			}
 		}

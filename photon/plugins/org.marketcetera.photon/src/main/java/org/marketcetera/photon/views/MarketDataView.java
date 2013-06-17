@@ -450,7 +450,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 				return;
 			
 		
-			final Instrument newInstrument = PhotonPlugin.getDefault().resolveSymbol(value.toString());			
+			final Instrument newInstrument = PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(value.toString());
 			if (mItemMap.containsKey(newInstrument)) {
 				PhotonPlugin.getMainConsoleLogger().warn(
 						DUPLICATE_SYMBOL.getText(newInstrument.getSymbol()));
