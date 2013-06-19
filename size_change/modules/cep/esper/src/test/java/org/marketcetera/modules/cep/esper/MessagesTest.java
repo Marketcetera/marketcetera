@@ -1,0 +1,18 @@
+package org.marketcetera.modules.cep.esper;
+
+import org.marketcetera.core.util.l10n.MessageComparator;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+
+/* $License$ */
+/**
+ * Verifies that all the messages are correctly specified.
+ *
+ */
+public class MessagesTest {
+    @Test
+    public void messagesMatch() throws Exception {
+        MessageComparator comparator=new MessageComparator(Messages.class);
+        assertTrue(comparator.getDifferences(),comparator.isMatch());
+    }
+}

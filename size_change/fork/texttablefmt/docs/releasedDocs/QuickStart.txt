@@ -1,0 +1,67 @@
+Text Table Formatter Quick Start
+--------------------------------
+
+This quick start guide shows how to use the library Text Table Formatter. 
+
+For a quick view of what results you can expect take a look at the example 
+screen shots in the directory "docs/screenshots".
+
+The basic example (file examples/Basic.java) generates a simple table with three 
+columns using the default format. The code to be ran is:
+
+    Table t = new Table(3);
+    t.addCell("Artist");
+    t.addCell("Album");
+    t.addCell("Year");
+    t.addCell("Jamiroquai");
+    t.addCell("Emergency on Planet Earth");
+    t.addCell("1993");
+    t.addCell("Jamiroquai");
+    t.addCell("The Return of the Space Cowboy");
+    t.addCell("1994");
+    System.out.println(t.render());
+    
+To run it using Ant you need J2SE 1.5 and Ant 1.6.5 or newer. Go to the 
+"some-examples" dir and type:
+
+    ant
+    
+The program will be compiled and ran:
+
+    Buildfile: build.xml
+
+    run:
+        [javac] Compiling 4 source files
+         [java] +----------+------------------------------+----+
+         [java] |Artist    |Album                         |Year|
+         [java] +----------+------------------------------+----+
+         [java] |Jamiroquai|Emergency on Planet Earth     |1993|
+         [java] |Jamiroquai|The Return of the Space Cowboy|1994|
+         [java] +----------+------------------------------+----+
+ 
+    BUILD SUCCESSFUL
+
+The execution shows the generated table. This table is rendered as a String in the program
+and, in this particular example, is directly displayed to the screen. Use the same approach
+to run the other example programs provided in the "some-examples" directory. Screen shots 
+of the expected results are available in the docs/screenshots directory.
+
+The main class here is Table. For bigger tables consider StreamingTable and also
+take a look at the other examples to find out how to add the formatting that suits your 
+needs. Javadocs are included at docs/javadocs and they describe in detail the classes used 
+in these examples.
+
+Log4j library is required when using Text Table Formatter, as well as a simple log4j.properties 
+file, like the one used to run the examples. Put the library in your classpath and the
+log4j.properties file in the root dir of your classes.
+
+[--- End of Quick Start ---]
+
+
+
+
+
+
+
+         
+
