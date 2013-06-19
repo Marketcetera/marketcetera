@@ -605,6 +605,15 @@ public abstract class TradeEventBuilder<E extends TradeEvent>
         return this;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withEstimatedSizeInd(java.lang.String)
+     */
+    @Override
+    public TradeEventBuilder<E> withEstimatedSizeInd(String inEstimatedSizeInd)
+    {
+        convertibleSecurity.setEstimatedSizeInd(inEstimatedSizeInd);
+        return this;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

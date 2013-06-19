@@ -42,4 +42,5 @@ public interface ConvertibleSecurityEvent
     public BigDecimal getParValue();
     public String getIsin();
     public String getCusip();
+    public String getEstimatedSizeInd();
 }

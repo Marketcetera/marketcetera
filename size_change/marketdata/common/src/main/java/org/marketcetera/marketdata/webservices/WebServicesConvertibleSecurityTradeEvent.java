@@ -62,6 +62,7 @@ public class WebServicesConvertibleSecurityTradeEvent
         yield = event.getYield();
         isin = event.getIsin();
         cusip = event.getCusip();
+        estimatedSizeInd = event.getEstimatedSizeInd();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.webservices.WebServicesMarketstatEvent#getInstrument()
@@ -280,6 +281,14 @@ public class WebServicesConvertibleSecurityTradeEvent
         return cusip;
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getEstimatedSizeInd()
+     */
+	@Override
+	public String getEstimatedSizeInd() 
+	{
+		return estimatedSizeInd;
+	}
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -338,6 +347,8 @@ public class WebServicesConvertibleSecurityTradeEvent
         builder.append(isin);
         builder.append(", cusip=");
         builder.append(cusip);
+        builder.append(", estimatedSizeInd=");
+        builder.append(estimatedSizeInd);
         builder.append("]");
         return builder.toString();
     }
@@ -395,5 +406,7 @@ public class WebServicesConvertibleSecurityTradeEvent
     private String isin;
     @XmlAttribute
     private String cusip;
+    @XmlAttribute
+    private String estimatedSizeInd;
     private static final long serialVersionUID = -6716244206348630249L;
 }

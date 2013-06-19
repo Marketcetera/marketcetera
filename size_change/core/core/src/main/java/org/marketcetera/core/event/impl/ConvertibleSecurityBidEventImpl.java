@@ -237,6 +237,14 @@ class ConvertibleSecurityBidEventImpl
     {
         return security.getCusip();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getEstimatedSizeInd()
+     */
+	@Override
+	public String getEstimatedSizeInd() 
+	{
+		return security.getEstimatedSizeInd();
+	}
     /**
      * Create a new ConvertibleSecurityBidEventImpl instance.
      *
