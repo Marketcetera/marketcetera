@@ -42,6 +42,9 @@
           <constructor-arg value="847(*)"/>
         </bean>
         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
+          <constructor-arg value="848(*)"/>
+        </bean>
+        <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
           <constructor-arg value="6070(*)"/>
         </bean>
         <bean class="org.marketcetera.ors.filters.FieldRemoverMessageModifier">
