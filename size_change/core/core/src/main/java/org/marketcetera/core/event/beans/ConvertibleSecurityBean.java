@@ -21,7 +21,7 @@ import org.marketcetera.core.trade.Instrument;
 public class ConvertibleSecurityBean
         implements Serializable
 {
-    /**
+ 	/**
      * Creates a shallow copy of the given <code>ConvertibleSecurityBean</code>.
      *
      * @param inBean a <code>ConvertibleSecurityBean</code> value
@@ -778,6 +778,5 @@ public class ConvertibleSecurityBean
      * Estimated trade size Indicator
      */
     private String estimatedSizeInd;
-    
-    private static final long serialVersionUID = -5218198105173604486L;
+    private static final long serialVersionUID = -6504290148975073754L;    
 }

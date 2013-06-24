@@ -24,7 +24,7 @@ public class WebServicesConvertibleSecurityMarketstatEvent
         extends WebServicesMarketstatEvent
         implements ConvertibleSecurityEvent
 {
-    /**
+	/**
      * Create a new WebServicesConvertibleSecurityMarketstatEvent instance.
      *
      * @param inEvent a <code>MarketstatEvent</code> value
@@ -408,6 +408,5 @@ public class WebServicesConvertibleSecurityMarketstatEvent
     private String cusip;
     @XmlAttribute
     private String estimatedSizeInd;
-    private static final long serialVersionUID = 1544218578371211958L;
-
+	private static final long serialVersionUID = -7530066859700731364L;
 }

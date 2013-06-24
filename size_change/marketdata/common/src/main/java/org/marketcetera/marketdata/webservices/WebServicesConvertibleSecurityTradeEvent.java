@@ -24,7 +24,7 @@ public class WebServicesConvertibleSecurityTradeEvent
         extends WebServicesTradeEvent
         implements ConvertibleSecurityEvent
 {
-    /**
+	/**
      * Create a new WebServicesConvertibleSecurityTradeEvent instance.
      *
      * @param inEvent a <code>TradeEvent</code> value
@@ -408,5 +408,5 @@ public class WebServicesConvertibleSecurityTradeEvent
     private String cusip;
     @XmlAttribute
     private String estimatedSizeInd;
-    private static final long serialVersionUID = -6716244206348630249L;
+	private static final long serialVersionUID = -7461336219360844179L;
 }
