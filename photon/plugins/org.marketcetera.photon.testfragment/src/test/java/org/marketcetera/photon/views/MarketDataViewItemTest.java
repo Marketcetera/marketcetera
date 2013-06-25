@@ -114,14 +114,14 @@ public class MarketDataViewItemTest {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                mFixture.setEquity(null);
+                mFixture.setInstrument(null);
             }
         };
     }
 
     @Test
     public void testSetEquity() {
-        mFixture.setEquity(equity2);
+        mFixture.setInstrument(equity2);
         assertEquals(equity2, mFixture.getInstrument());
         verify(mMockTick1Reference).dispose();
         verify(mMockTOB1Reference).dispose();

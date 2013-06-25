@@ -49,6 +49,7 @@ public class FixUtilTest extends FIXVersionedTestCase{
                 new BigDecimal(300), new BigDecimal(55), new BigDecimal(190), new BigDecimal(55),
                 new BigDecimal(300), new BigDecimal(55), new Equity("IBM"),
                 "account", "text");
+        assertEquals(null, FIXUtil.getOrderDisplayQuantity(message3));  
         message3.setField(new MaxFloor(30));
         
         execType = FIXUtil.getExecOrExecTransType(message3);

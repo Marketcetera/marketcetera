@@ -105,7 +105,9 @@ public class LatestTickManager extends
                         if (data instanceof FutureEvent) {
                         	FutureEvent futureData = (FutureEvent) data;
                             BigDecimal multiplier = new BigDecimal(futureData.getContractSize());
-                            if (multiplier != null) {
+                            if(BigDecimal.ZERO.compareTo(multiplier) == 0) {
+                            	  multiplier = BigDecimal.ONE;
+                            } else {
                                 item.setMultiplier(multiplier);
                             }
                         }

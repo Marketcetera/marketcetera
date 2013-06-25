@@ -460,7 +460,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 				@Override
 				public void run() {
 					mItemMap.remove(instrument);
-					item.setEquity(newInstrument);
+					item.setInstrument(newInstrument);
 					mItemMap.put(newInstrument, item);
 				}
 			});

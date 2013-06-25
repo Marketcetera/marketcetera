@@ -148,7 +148,7 @@ public class PositionRowUpdaterConcurrencyTest {
             synchronized (mSimulatedDataFlowLock) {
                 InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
                         this, new BigDecimal(mGenerator.nextInt(5)));
-                int type = mGenerator.nextInt(3);
+                int type = mGenerator.nextInt(4);
                 for (InstrumentMarketDataListener listener : mListeners) {
                     switch (type) {
                     case 0:
@@ -162,6 +162,7 @@ public class PositionRowUpdaterConcurrencyTest {
                         break;
                     case 3:
                         listener.futureMultiplierChanged(event);
+                        break;
                     default:
                         throw new AssertionError();
                     }

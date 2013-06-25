@@ -229,10 +229,10 @@
       </command>
       <command
             categoryId="org.marketcetera.photon.commands"
-            defaultHandler="org.marketcetera.photon.commands.CreateEquityOrderFromQuote"
-            description="%commands.createEquityOrderFromQuote.description"
-            id="org.marketcetera.photon.createEquityOrderFromQuote"
-            name="%commands.createEquityOrderFromQuote.name">
+            defaultHandler="org.marketcetera.photon.commands.CreateOrderFromQuote"
+            description="%commands.createOrderFromQuote.description"
+            id="org.marketcetera.photon.createOrderFromQuote"
+            name="%commands.createOrderFromQuote.name">
       </command>
       <command
             categoryId="org.marketcetera.photon.commands"
@@ -311,6 +311,7 @@
           <command
                 commandId="org.marketcetera.photon.createEquityBuyOrderFromMarketData"
                 label="%marketDataView.buy.label"
+                mnemonic="%marketDataView.buy.mnemonic"
                 style="push">
              <visibleWhen>
                 <reference
@@ -321,6 +322,7 @@
           <command
                 commandId="org.marketcetera.photon.createEquitySellOrderFromMarketData"
                 label="%marketDataView.sell.label"
+                mnemonic="%marketDataView.sell.mnemonic"
                 style="push">
              <visibleWhen>
                 <reference
@@ -378,7 +380,7 @@
        <menuContribution
              locationURI="popup:org.marketcetera.photon.marketdata.MarketDepthView.bidsPopup">
           <command
-                commandId="org.marketcetera.photon.createEquityOrderFromQuote"
+                commandId="org.marketcetera.photon.createOrderFromQuote"
                 label="%marketDepthView.bidsPopup.sell.label"
                 style="push">
              <visibleWhen
@@ -395,7 +397,7 @@
        <menuContribution
              locationURI="popup:org.marketcetera.photon.marketdata.MarketDepthView.asksPopup">
           <command
-                commandId="org.marketcetera.photon.createEquityOrderFromQuote"
+                commandId="org.marketcetera.photon.createOrderFromQuote"
                 label="%marketDepthView.asksPopup.buy.label"
                 style="push">
              <visibleWhen

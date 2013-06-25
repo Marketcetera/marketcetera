@@ -50,6 +50,7 @@ public class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderRepl
                 String.valueOf(getPositionEffect()),
                 String.valueOf(getPrice()),
                 String.valueOf(getQuantity()),
+                String.valueOf(getDisplayQuantity()),
                 String.valueOf(getSecurityType()),
                 String.valueOf(getSide()),
                 String.valueOf(getInstrument()),

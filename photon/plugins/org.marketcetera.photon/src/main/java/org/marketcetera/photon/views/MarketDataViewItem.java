@@ -5,17 +5,12 @@ import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.options.OptionUtils;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.ui.ISymbolProvider;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.SecurityType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -60,12 +55,7 @@ public class MarketDataViewItem implements ISymbolProvider {
 	}
 
     public String getSymbol() {
-    	if(SecurityType.Future.equals(mInstrument.getSecurityType())){
-    		return ((Future)mInstrument).getFullSymbol();
-    	} else if(SecurityType.Option.equals(mInstrument.getSecurityType())){
-    		return OptionUtils.getOsiSymbolFromOption((Option)mInstrument);
-    	}
-    	return mInstrument.getSymbol();
+    	return mInstrument.getFullSymbol();
     }
 
 	public MDLatestTick getLatestTick() {
@@ -77,12 +67,12 @@ public class MarketDataViewItem implements ISymbolProvider {
 	}
 
 	/**
-	 * Changes the underlying equity of this item. All data will be reset if the equity changes.
+	 * Changes the underlying instrument of this item. All data will be reset if the instrument changes.
 	 * 
 	 * @param instrument
-	 *            the new equity, cannot be null
+	 *            the new instrument, cannot be null
 	 */
-	public void setEquity(Instrument instrument) {
+	public void setInstrument(Instrument instrument) {
 		Validate.notNull(instrument);
 		String oldSymbol = getSymbol();
 		if (!mInstrument.equals(instrument)) {
