@@ -240,6 +240,14 @@ class ConvertibleSecurityMarketstatEventImpl
         return security.getCusip();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getCusip()
+     */
+    @Override
+    public String getEstimatedSizeInd()
+    {
+        return security.getEstimatedSizeInd();
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override

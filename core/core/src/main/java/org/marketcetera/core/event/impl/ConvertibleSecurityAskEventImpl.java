@@ -237,6 +237,15 @@ class ConvertibleSecurityAskEventImpl
     {
         return security.getCusip();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getEstimatedSizeInd()
+     */
+	@Override
+	public String getEstimatedSizeInd() 
+	{
+		return security.getEstimatedSizeInd();
+	}
+    
     /**
      * Create a new ConvertibleSecurityAskEventImpl instance.
      *
@@ -274,4 +283,5 @@ class ConvertibleSecurityAskEventImpl
      */
     private final ConvertibleSecurityBean security;
     private static final long serialVersionUID = 1L;
+
 }

@@ -723,6 +723,15 @@ public abstract class MarketstatEventBuilder
         convertibleSecurity.setCusip(inCusip);
         return this;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.impl.ConvertibleSecurityEventBuilder#withEstimatedSizeInd(java.lang.String)
+     */
+    @Override
+    public MarketstatEventBuilder withEstimatedSizeInd(String inEstimatedSizeInd)
+    {
+        convertibleSecurity.setEstimatedSizeInd(inEstimatedSizeInd);
+        return this;
+    }
     /**
      * Sets the change in volume.
      *

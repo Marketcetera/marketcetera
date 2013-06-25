@@ -239,6 +239,14 @@ final class ConvertibleSecurityTradeEventImpl
     {
         return convertibleSecurity.getCusip();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.event.ConvertibleSecurityEvent#getEstimatedSizeInd()
+     */
+    @Override
+    public String getEstimatedSizeInd()
+    {
+        return convertibleSecurity.getEstimatedSizeInd();
+    }
     /**
      * Create a new ConvertibleSecurityTradeEventImpl instance.
      *

@@ -21,4 +21,4 @@ public interface HasConvertibleSecurity
      */
     @Override
     public ConvertibleSecurity getInstrument();
-}
+	}

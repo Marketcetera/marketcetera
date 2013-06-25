@@ -21,7 +21,7 @@ import org.marketcetera.core.trade.Instrument;
 public class ConvertibleSecurityBean
         implements Serializable
 {
-    /**
+ 	/**
      * Creates a shallow copy of the given <code>ConvertibleSecurityBean</code>.
      *
      * @param inBean a <code>ConvertibleSecurityBean</code> value
@@ -544,6 +544,24 @@ public class ConvertibleSecurityBean
     {
         cusip = inCusip;
     }
+    /**
+     * Get the estimatedSizeInd value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getEstimatedSizeInd()
+    {
+        return estimatedSizeInd;
+    }
+    /**
+     * Sets the estimatedSizeInd value.
+     *
+     * @param inEstimatedSizeInd a <code>String</code> value
+     */
+    public void setEstimatedSizeInd(String inEstimatedSizeInd)
+    {
+    	estimatedSizeInd = inEstimatedSizeInd;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -605,6 +623,8 @@ public class ConvertibleSecurityBean
         builder.append(isin);
         builder.append(", cusip=");
         builder.append(cusip);
+        builder.append(", estimatedSizeInd=");
+        builder.append(estimatedSizeInd);
         builder.append("]");
         return builder.toString();
     }
@@ -644,6 +664,7 @@ public class ConvertibleSecurityBean
         inRecipient.setYield(inDonor.getYield());
         inRecipient.setIsin(inDonor.getIsin());
         inRecipient.setCusip(inDonor.getCusip());
+        inRecipient.setEstimatedSizeInd(inDonor.getEstimatedSizeInd());
     }
     /**
      * the instrument value
@@ -753,5 +774,9 @@ public class ConvertibleSecurityBean
      * cusip value
      */
     private String cusip;
-    private static final long serialVersionUID = -5218198105173604486L;
+    /**
+     * Estimated trade size Indicator
+     */
+    private String estimatedSizeInd;
+    private static final long serialVersionUID = -6504290148975073754L;    
 }
