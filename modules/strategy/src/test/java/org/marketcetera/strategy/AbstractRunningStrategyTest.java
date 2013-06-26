@@ -6,6 +6,7 @@ import static org.marketcetera.strategy.Messages.*;
 import java.math.BigDecimal;
 import java.util.*;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -19,6 +20,7 @@ import org.marketcetera.event.*;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.StrategyTestBase.MockClient;
@@ -65,12 +67,22 @@ public class AbstractRunningStrategyTest
     public void before()
             throws Exception
     {
+        MockClient.addBrokerStatusListenerFails = false;
         strategy = new MockRunningStrategy();
         strategy.start();
         strategy.setStrategy(new MockStrategy());
         servicesProvider = new MockServicesProvider();
         factory = Factory.getInstance();
         reset();
+    }
+    /**
+     * Run after each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @After
+    public void after() {
+    	strategy.stop();
     }
     /**
      * Tests {@link AbstractRunningStrategy#send(Object)}. 
@@ -494,6 +506,68 @@ public class AbstractRunningStrategyTest
                      strategy.getOrderStatus(report5.getOrderID()));
     }
     /**
+     * Tests that a strategy fails to start when {@link Client#addBrokerStatusListener(BrokerStatusListener)} fails.
+     * @throws Exception 
+     */
+    @Test
+    public void testStrategyFailsToStart() throws Exception {
+    	
+    	new ExpectedFailure<RuntimeException>(){
+            protected void run() throws Exception {
+            	MockClient.addBrokerStatusListenerFails = true;
+            	AbstractRunningStrategy strategy = new MockRunningStrategy();
+                strategy.start();
+            }
+        }; 
+    }
+    /**
+     * Tests {@link AbstractRunningStrategy#onReceiveBrokerStatus(BrokerStatus)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testOnReceiveBrokerStatus() throws Exception {
+    	//Create broker status and send it to the client listeners
+    	BrokerStatus status = createRandomBrokerStatus();
+    	sendBrokerStatus(status);
+
+    	//Verify the statregy got it.
+    	assertTrue(strategy.brokerStatuses.contains(status));
+    	
+        //Verify strategy logs a warning message when broker status event process fails
+        strategy.onReceiveBrokerStatusFails = true;
+        sendBrokerStatus(status);
+        verifyLoggedEvents(new String[] { BROKER_STATUS_PROCESS_FAILED.getText(String.valueOf(strategy), String.valueOf(status)) });
+
+    	//Now remove the strategy from client's broker status listeners.
+        removeBrokerStatusListener(strategy);
+    	strategy.brokerStatuses.clear();
+
+    	//Send another status
+    	sendBrokerStatus(createRandomBrokerStatus());
+
+    	//Verify that the strategy didn't get it
+    	assertTrue(strategy.brokerStatuses.size() == 0);       
+    }
+    
+    private BrokerStatus createRandomBrokerStatus() {
+    	return new BrokerStatus("status-" + System.nanoTime(),new BrokerID("id-" + System.nanoTime()),true);
+    }
+    
+    private void sendBrokerStatus (BrokerStatus brokerStatus) throws ClientInitException {
+    	Client client = ClientManager.getInstance();
+    	
+    	//Verify client is instance of MockClient (needed to send broker status to listeners manually)
+    	assertTrue(client instanceof MockClient);
+    	
+    	((MockClient)client).sendToListeners(brokerStatus);
+    }
+    
+    private void removeBrokerStatusListener (BrokerStatusListener brokerStatusListener) throws ClientInitException {
+    	ClientManager.getInstance().removeBrokerStatusListener(brokerStatusListener);
+    }
+    
+    /**
      * Resets the test objects as necessary.
      *
      * @throws Exception if an unexpected error occurs
@@ -503,6 +577,7 @@ public class AbstractRunningStrategyTest
     {
         servicesProvider.reset();
         strategy.initializeReportHistoryManager();
+    	strategy.brokerStatuses.clear();
     }
     /**
      * Verifies that the actual objects sent match the given expected objects.
@@ -1024,6 +1099,18 @@ public class AbstractRunningStrategyTest
             rejects.add(inCancelReject);
         }
         /* (non-Javadoc)
+         * @see org.marketcetera.strategy.RunningStrategy#onCancelReject(org.marketcetera.trade.OrderCancelReject)
+         */
+        @Override
+        public void onReceiveBrokerStatus(BrokerStatus inStatus)
+        {
+        	if(onReceiveBrokerStatusFails) {
+        		throw new RuntimeException("This is a expected Exception");
+        	}
+        	
+            brokerStatuses.add(inStatus);
+        }
+        /* (non-Javadoc)
          * @see org.marketcetera.strategy.RunningStrategy#onOther(java.lang.Object)
          */
         @Override
@@ -1056,6 +1143,10 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /**
+         * indicates whether calls to {@link #onReceiveBrokerStatus(BrokerStatus} should fail automatically
+         */
+        private boolean onReceiveBrokerStatusFails = false; 
+        /**
          * stores the reports received
          */
         private final List<ExecutionReport> reports = new ArrayList<ExecutionReport>();
@@ -1063,6 +1154,11 @@ public class AbstractRunningStrategyTest
          * stores the rejects received
          */
         private final List<OrderCancelReject> rejects = new ArrayList<OrderCancelReject>();
+        /**
+         * stores the broker statuses received
+         */
+        private final List<BrokerStatus> brokerStatuses = new ArrayList<BrokerStatus>();
+
     }
     /**
      * test services provider

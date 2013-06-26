@@ -598,6 +598,16 @@ public class StrategyTestBase
          * indicates whether calls to {@link #getEquityPositionAsOf(Date, Equity)} should fail automatically
          */
         public static boolean getPositionFails = false;
+        /**
+         * Broker status listeners
+         */
+        private final Deque<BrokerStatusListener> mBrokerStatusListeners=
+            new LinkedList<BrokerStatusListener>();
+        /**
+         * indicates whether calls to {@link #addBrokerStatusListener(BrokerStatusListener)} should fail automatically
+         */
+        public static boolean addBrokerStatusListenerFails = false;
+        
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#addExceptionListener(java.beans.ExceptionListener)
          */
@@ -618,8 +628,15 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#addBrokerStatusListener(org.marketcetera.client.BrokerStatusListener)
          */
         @Override
-        public void addBrokerStatusListener(BrokerStatusListener inArg0)
+        public void addBrokerStatusListener (BrokerStatusListener listener)
         {
+        	if (addBrokerStatusListenerFails) {
+        		throw new RuntimeException("This exception is expected");
+        	}
+        	
+            synchronized (mBrokerStatusListeners) {
+                mBrokerStatusListeners.addFirst(listener);
+        }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#addServerStatusListener(org.marketcetera.client.ServerStatusListener)
@@ -927,9 +944,11 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#removeBrokerStatusListener(org.marketcetera.client.BrokerStatusListener)
          */
         @Override
-        public void removeBrokerStatusListener(BrokerStatusListener inArg0)
+        public void removeBrokerStatusListener (BrokerStatusListener listener)
         {
-            throw new UnsupportedOperationException();
+            synchronized (mBrokerStatusListeners) {
+                mBrokerStatusListeners.removeFirstOccurrence(listener);
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#removeServerStatusListener(org.marketcetera.client.ServerStatusListener)
@@ -1099,6 +1118,18 @@ public class StrategyTestBase
                 throws ConnectionException
         {
             throw new UnsupportedOperationException();
+        }
+        
+        /**
+         * Sends the given <code>BrokerStatus</code> to registered broker status listeners.
+         *
+         * @param inBrokerStatus a <code>BrokerStatus</code> value
+         */
+        public void sendToListeners(BrokerStatus inBrokerStatus)
+        {
+            for(BrokerStatusListener brokerStatusListener : mBrokerStatusListeners) {
+            	brokerStatusListener.receiveBrokerStatus(inBrokerStatus);
+    		}
         }
     }
     /**
@@ -1555,6 +1586,7 @@ public class StrategyTestBase
         brokers = generateBrokersStatus();
         MockClient.getBrokersFails = false;
         MockClient.getPositionFails = false;
+        MockClient.addBrokerStatusListenerFails = false;
         executionReportMultiplicity = 1;
         MockRecorderModule.shouldSendExecutionReports = true;
         MockRecorderModule.shouldFullyFillOrders = true;

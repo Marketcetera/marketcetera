@@ -90,6 +90,14 @@ public class Strategy
         on_cancel_reject(inCancel);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.RunningStrategy#onreceiveBrokerStatus(org.marketcetera.brokers.BrokerStatus)
+     */
+    @Override
+    public void onReceiveBrokerStatus(BrokerStatus inStatus)
+    {
+        on_receive_status(inStatus);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.IStrategy#onTrade(org.marketcetera.event.TradeEvent)
      */
     @Override
@@ -168,6 +176,14 @@ public class Strategy
      * @param inCancelReject an <code>OrderCancelReject</code> value
      */
     protected void on_cancel_reject(OrderCancelReject inCancelReject)
+    {
+    }
+    /**
+     * Invoked when the <code>Strategy</code> receives a {@link BrokerStatus}.
+     * 
+     * @param inStatus a <code>BrokerStatus</code> value
+     */
+    protected void  on_receive_status(BrokerStatus inStatus)
     {
     }
     /**

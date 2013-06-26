@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -91,6 +92,9 @@ public abstract class AbstractRunningStrategy
             }
         }
         openOrders = orderHistoryManager.getOpenOrders();
+        
+        // Add the strategy as a broker status listener
+        ClientManager.getInstance().addBrokerStatusListener(this);
     }
     /**
      * Indicates to the <code>AbstractRunningStrategy</code> that it should stop running now.
@@ -101,6 +105,13 @@ public abstract class AbstractRunningStrategy
         callbackService.shutdown();
         // terminate existing callbacks, best effort
         callbackService.shutdownNow();
+        
+        // Delete the strategy as a broker status listener
+        try {
+        	ClientManager.getInstance().removeBrokerStatusListener(this);
+        } catch(ClientInitException e) {
+        	throw new RuntimeException(e);
+        }
     }
     /**
      * Provides a non-overridable route for {@link ExecutionReport} data to
@@ -127,6 +138,22 @@ public abstract class AbstractRunningStrategy
         orderHistoryManager.add(inCancelReject);
         // now notify the strategy
         onCancelReject(inCancelReject);
+    }
+    /**
+     * Supplies a broker status to the strategy.
+     *
+     * @param inStatus The status.
+     */
+    public void receiveBrokerStatus(BrokerStatus inStatus) 
+    {
+    	try {
+    		// notify the strategy
+    		onReceiveBrokerStatus(inStatus);
+    	} catch (Exception e) {
+    		StrategyModule.log(LogEventBuilder.warn().withMessage(BROKER_STATUS_PROCESS_FAILED,
+    				String.valueOf(strategy), String.valueOf(inStatus)).create(),
+    				strategy);
+    	}
     }
     /**
      * Returns the list of open orders created during this session in the order they

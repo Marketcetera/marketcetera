@@ -88,6 +88,15 @@ public class __TEMPLATE_CLASS_NAME__ extends Strategy
     @Override
     public void onCancelReject(OrderCancelReject cancel) {
     }
+    
+    /**
+     * Indicates a <code>BrokerStatus</code> has been received.
+     *
+     * @param inStatus a <code>BrokerStatus</code> value
+     */
+    @Override
+    public void onReceiveBrokerStatus(BrokerStatus inStatus) {
+    }
 
     /**
      * Indicates a <code>TradeEvent</code> has been received.

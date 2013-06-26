@@ -251,4 +251,7 @@ public interface Messages
                                                                "null_report"); //$NON-NLS-1$
     static final I18NMessage1P USING_ORDER_HISTORY_ORIGIN = new I18NMessage1P(LOGGER,
                                                                               "using_order_history_origin"); //$NON-NLS-1$
+    
+    static final I18NMessage2P BROKER_STATUS_PROCESS_FAILED = new I18NMessage2P(LOGGER,
+    																		  "broker_status_process_failed"); //$NON-NLS-1$
 }
