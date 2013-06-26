@@ -13,6 +13,7 @@ import org.marketcetera.core.position.Trade;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListenerBase;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.NamedThreadFactory;
@@ -96,7 +97,12 @@ public final class PositionRowUpdater {
 
             @Override
             public void optionMultiplierChanged(InstrumentMarketDataEvent event) {
-                PositionRowUpdater.this.optionMultiplierChanged(event.getNewAmount());
+                PositionRowUpdater.this.instrumentMultiplierChanged(event.getNewAmount());
+            }
+            
+            @Override
+            public void futureMultiplierChanged(InstrumentMarketDataEvent event) {
+                PositionRowUpdater.this.instrumentMultiplierChanged(event.getNewAmount());
             }
         };
         mMarketDataSupport.addInstrumentMarketDataListener(
@@ -189,7 +195,7 @@ public final class PositionRowUpdater {
         }
     }
 
-    private void optionMultiplierChanged(BigDecimal multiplier) {
+    private void instrumentMultiplierChanged(BigDecimal multiplier) {
         BigDecimal oldMultiplier = mMultiplier;
         /*
          * Only process if necessary.
@@ -240,7 +246,9 @@ public final class PositionRowUpdater {
         // TODO: instrument specific functionality should be abstracted
         if (mPositionRow.getInstrument() instanceof Option) {
             mCalculator = new MultiplierCalculator(calculator, mMultiplier);
-        } else {
+        } else if (mPositionRow.getInstrument() instanceof Future) {
+            mCalculator = new MultiplierCalculator(calculator, mMultiplier);
+        }else {
             mCalculator = calculator;
         }
         PositionMetrics metrics = mCalculator.tick(mLastTradePrice);

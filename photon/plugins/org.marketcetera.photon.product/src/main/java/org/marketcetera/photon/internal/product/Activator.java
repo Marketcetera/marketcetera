@@ -8,11 +8,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
-import org.marketcetera.photon.core.Credentials;
-import org.marketcetera.photon.core.ICredentials;
-import org.marketcetera.photon.core.ICredentialsService;
-import org.marketcetera.photon.core.ILogoutService;
-import org.marketcetera.photon.core.LogoutService;
+import org.marketcetera.photon.core.*;
 import org.marketcetera.photon.positions.ui.IPositionLabelProvider;
 import org.marketcetera.photon.ui.LoginDialog;
 import org.marketcetera.util.misc.ClassVersion;
@@ -88,6 +84,7 @@ public class Activator implements BundleActivator {
 
     private LoginCredentialsService mCredentialsService;
     private LogoutService mLogoutService;
+    private SymbolResolver mSymbolResolver;
     private static Activator sInstance;
 
     @Override
@@ -103,8 +100,12 @@ public class Activator implements BundleActivator {
                 mCredentialsService.invalidate();
             }
         };
+        mSymbolResolver = new SymbolResolver();
         context.registerService(ILogoutService.class.getName(), mLogoutService,
                 null);
+        context.registerService(ISymbolResolver.class.getName(),
+                                mSymbolResolver,
+                                null);
         sInstance = this;
     }
 

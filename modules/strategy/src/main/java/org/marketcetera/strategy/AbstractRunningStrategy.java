@@ -804,6 +804,7 @@ public abstract class AbstractRunningStrategy
         //  not OK to send an invalid BrokerOrderID.
         replaceOrder.setBrokerOrderID(null);
         replaceOrder.setQuantity(inNewOrder.getQuantity());
+        replaceOrder.setDisplayQuantity(inNewOrder.getDisplayQuantity());
         // special case: when replacing a market order, it is absolutely verbotten to specify a price
         if(OrderType.Market.equals(executionReport.getOrderType())) {
             replaceOrder.setPrice(null);

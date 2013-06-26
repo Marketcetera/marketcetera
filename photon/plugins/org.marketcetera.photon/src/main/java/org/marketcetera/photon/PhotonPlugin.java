@@ -29,6 +29,7 @@ import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
+import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.*;
@@ -114,6 +115,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     private ServiceTracker mLogoutServiceTracker;
     
     private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new ClientUnderlyingSymbolSupport();
+    private ServiceTracker mSymbolResolverServiceTracker;
 
     /**
      * The constructor.
@@ -163,10 +165,13 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         mLogoutServiceTracker = new ServiceTracker(context,
                 ILogoutService.class.getName(), null);
         mLogoutServiceTracker.open();
+        mSymbolResolverServiceTracker = new ServiceTracker(context,
+                                                           ISymbolResolver.class.getName(),
+                                                           null);
+        mSymbolResolverServiceTracker.open();
         context.registerService(UnderlyingSymbolSupport.class.getName(),
                 mUnderlyingSymbolSupport, null);
     }
-
     public void initOrderTickets() {
         stockOrderTicketModel = new StockOrderTicketModel();
         optionOrderTicketModel = new OptionOrderTicketModel();
@@ -198,7 +203,15 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     public UnderlyingSymbolSupport getUnderlyingSymbolSupport() {
         return mUnderlyingSymbolSupport;
     }
-
+    /**
+     * Gets the symbol resolver value.
+     *
+     * @return an <code>ISymbolResolver</code> value
+     */
+    public ISymbolResolver getSymbolResolver()
+    {
+        return (ISymbolResolver)mSymbolResolverServiceTracker.getService();
+    }
     /**
      * This method is called when the plug-in is stopped
      */

@@ -25,6 +25,8 @@ import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
 import org.marketcetera.photon.model.marketdata.MDQuote;
 import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -65,6 +67,10 @@ public class DepthOfBookManagerTest extends
         return new DepthOfBookKey(new Equity("JAVA"), Content.TOTAL_VIEW);
     }
 
+    @Override
+	protected DepthOfBookKey createKey4() {
+		return new DepthOfBookKey(new Future("YHOO", FutureExpirationMonth.DECEMBER, 2014), Content.OPEN_BOOK);
+	}
     @Override
     protected EnumSet<Capability> getSupportedCapabilities() {
         return EnumSet.of(Capability.LEVEL_2, Capability.OPEN_BOOK,

@@ -75,6 +75,7 @@ public class OrderBaseImpl implements OrderBase {
         mQuantity = inQuantity;
     }
 
+
     @Override
     public Map<String, String> getCustomFields() {
         return mCustomFields == null

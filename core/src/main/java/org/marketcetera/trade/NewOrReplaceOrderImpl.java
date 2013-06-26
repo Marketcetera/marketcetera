@@ -64,11 +64,22 @@ class NewOrReplaceOrderImpl extends OrderBaseImpl
     public void setPositionEffect(PositionEffect inPositionEffect) {
         mPositionEffect = inPositionEffect;
     }
+    
+    @Override
+    public BigDecimal getDisplayQuantity() {
+        return mDisplayQuantity;
+    }
+
+    @Override
+    public void setDisplayQuantity(BigDecimal inDisplayQuantity) {
+    	mDisplayQuantity = inDisplayQuantity;
+    }
 
     private OrderCapacity mOrderCapacity;
     private PositionEffect mPositionEffect;
     private OrderType mOrderType;
     private TimeInForce mTimeInForce;
     private BigDecimal mPrice;
+    private BigDecimal mDisplayQuantity;
     private static final long serialVersionUID = 1L;
 }

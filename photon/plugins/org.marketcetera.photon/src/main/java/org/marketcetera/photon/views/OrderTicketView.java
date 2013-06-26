@@ -242,6 +242,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         selectOnFocus(ticket.getSymbolText());
         selectOnFocus(ticket.getPriceText());
         selectOnFocus(ticket.getAccountText());
+        selectOnFocus(ticket.getDisplayQuantityText());
 
         /*
          * If the ticket has no errors, enter on these fields will trigger a
@@ -249,6 +250,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         addSendOrderListener(ticket.getSideCombo());
         addSendOrderListener(ticket.getQuantityText());
+        addSendOrderListener(ticket.getDisplayQuantityText());
         addSendOrderListener(ticket.getSymbolText());
         addSendOrderListener(ticket.getOrderTypeCombo());
         addSendOrderListener(ticket.getPriceText());
@@ -382,6 +384,13 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         bindRequiredDecimal(ticket.getQuantityText(), model.getQuantity(),
                 Messages.ORDER_TICKET_VIEW_QUANTITY__LABEL.getText());
+        
+        
+        /*
+         * Display Quantity
+         */
+        bindText(ticket.getDisplayQuantityText(), model.getDisplayQuantity());
+        
 
         /*
          * Symbol

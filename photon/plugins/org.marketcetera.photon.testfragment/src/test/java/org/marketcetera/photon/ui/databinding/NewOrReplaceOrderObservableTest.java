@@ -185,6 +185,30 @@ public class NewOrReplaceOrderObservableTest {
             }
         };
     }
+    
+    @Test
+    @UI
+    public void testObserveDisplayQuantity() throws Exception {
+        new TestTemplate<BigDecimal>(new BigDecimal("456"), new BigDecimal(
+                "654"), new BigDecimal("7.8")) {
+            @Override
+            protected void set(NewOrReplaceOrder order, BigDecimal value) {
+                order.setDisplayQuantity(value);
+            }
+
+            @Override
+            protected ITypedObservableValue<BigDecimal> observeDetail(
+                    NewOrReplaceOrderObservable master) {
+                return master.observeDisplayQuantity();
+            }
+
+            @Override
+            protected BigDecimal get(NewOrReplaceOrder order) {
+                return order.getDisplayQuantity();
+            }
+        };
+    }
+    
 
     @Test
     @UI

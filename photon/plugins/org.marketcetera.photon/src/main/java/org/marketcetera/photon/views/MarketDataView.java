@@ -15,12 +15,15 @@ import org.eclipse.core.databinding.observable.map.CompositeMap;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.set.IObservableSet;
 import org.eclipse.core.runtime.AssertionFailedException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.databinding.EMFObservables;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -43,7 +46,13 @@ import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnPro
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.field.*;
@@ -66,7 +75,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	 */
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
 
-	private Map<Equity, MarketDataViewItem> mItemMap = new HashMap<Equity, MarketDataViewItem>();
+	private Map<Instrument, MarketDataViewItem> mItemMap = new HashMap<Instrument, MarketDataViewItem>();
 
 	private TextContributionItem mSymbolEntryText;
 
@@ -248,13 +257,13 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	@Override
-	public boolean isListeningSymbol(Equity symbol) {
+	public boolean isListeningSymbol(Instrument instrument) {
 		return false;
 	}
 
 	@Override
-	public void onAssertSymbol(Equity symbol) {
-		addSymbol(symbol);
+	public void onAssertSymbol(Instrument instrument) {
+		addSymbol(instrument);
 	}
 
 	/**
@@ -264,17 +273,17 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	 * @param symbol
 	 *            symbol to add to view
 	 */
-	public void addSymbol(final Equity symbol) {
-		if (mItemMap.containsKey(symbol)) {
+	public void addSymbol(final Instrument instrument) {
+		if (mItemMap.containsKey(instrument)) {
 			PhotonPlugin.getMainConsoleLogger().warn(
-					DUPLICATE_SYMBOL.getText(symbol));
+					DUPLICATE_SYMBOL.getText(instrument));
 		} else {
 			busyRun(new Runnable() {
 				@Override
 				public void run() {
 					MarketDataViewItem item = new MarketDataViewItem(mMarketDataManager
-							.getMarketData(), symbol);
-					mItemMap.put(symbol, item);
+							.getMarketData(), instrument);
+					mItemMap.put(instrument, item);
 					mItems.add(item);
 				}
 			});
@@ -286,7 +295,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	private void remove(final MarketDataViewItem item) {
-		mItemMap.remove(item.getEquity());
+		mItemMap.remove(item.getInstrument());
 		mItems.remove(item);
 		item.dispose();
 	}
@@ -342,8 +351,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			int compare;
 			switch (mIndex) {
 			case 0:
-				String symbol1 = item1.getEquity().getSymbol();
-				String symbol2 = item2.getEquity().getSymbol();
+				String symbol1 = item1.getInstrument().getSymbol();
+				String symbol2 = item2.getInstrument().getSymbol();
 				compare = compareNulls(symbol1, symbol2);
 				if (compare == 0) {
 					compare = symbol1.compareTo(symbol2);
@@ -436,28 +445,30 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			if (StringUtils.isBlank(value.toString()))
 				return;
 			final MarketDataViewItem item = (MarketDataViewItem) element;
-			final Equity equity = item.getEquity();
-			if (equity.getSymbol().equals(value))
+			final Instrument instrument = item.getInstrument();
+			if (instrument.getSymbol().equals(value))
 				return;
-			final Equity newEquity = new Equity(value.toString());
-			if (mItemMap.containsKey(newEquity)) {
+			
+		
+			final Instrument newInstrument = PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(value.toString());
+			if (mItemMap.containsKey(newInstrument)) {
 				PhotonPlugin.getMainConsoleLogger().warn(
-						DUPLICATE_SYMBOL.getText(newEquity.getSymbol()));
+						DUPLICATE_SYMBOL.getText(newInstrument.getSymbol()));
 				return;
 			}
 			busyRun(new Runnable() {
 				@Override
 				public void run() {
-					mItemMap.remove(equity);
-					item.setEquity(newEquity);
-					mItemMap.put(newEquity, item);
+					mItemMap.remove(instrument);
+					item.setInstrument(newInstrument);
+					mItemMap.put(newInstrument, item);
 				}
 			});
 		}
 
 		@Override
 		protected Object getValue(Object element) {
-			return ((MarketDataViewItem) element).getEquity().getSymbol();
+			return ((MarketDataViewItem) element).getInstrument().getSymbol();
 		}
 
 		@Override
@@ -505,6 +516,109 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			return null;
 		}
 	}
+	
+	
+	@ClassVersion("$Id$")
+	public static final class BuyCommandHandler extends OrderCommandHandler
+			implements IHandler {
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			super.setSide(Side.Buy);
+			return super.execute(event);
+		}
+	}
+	
+	@ClassVersion("$Id$")
+	public static final class SellCommandHandler extends OrderCommandHandler
+			implements IHandler {
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			super.setSide(Side.Sell);
+			return super.execute(event);
+		}
+	}
+	
+	/**
+	 * Handles the send order command for this view.
+	 * 
+	 */
+	@ClassVersion("$Id$")
+	public static class OrderCommandHandler extends AbstractHandler
+			implements IHandler {
+		private Side side;
+		private BigDecimal defaultOrderSize;
+		
+		public void setSide(Side side) {
+			this.side = side;
+		}
+		
+		public void setDefaultOrderSize() {
+			defaultOrderSize = null;
+			for (Object customFieldObject : PhotonPlugin.getDefault().getStockOrderTicketModel().getCustomFieldsList()) {
+                CustomField customField = (CustomField) customFieldObject;
+                if(OrderQty.FIELD == Integer.parseInt(customField.getKeyString())) {
+                	defaultOrderSize = new BigDecimal(customField.getValueString());				                    	
+                }             
+        	}
+		}
+		
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+			ISelection selection = HandlerUtil
+					.getCurrentSelectionChecked(event);
+			if (part instanceof MarketDataView
+					&& selection instanceof IStructuredSelection) {
+				final MarketDataView view = (MarketDataView) part;
+				final IStructuredSelection sselection = (IStructuredSelection) selection;
+				view.busyRun(new Runnable() {
+					public void run() {
+						for (Object obj : sselection.toArray()) {
+							if (obj instanceof MarketDataViewItem) {
+								setDefaultOrderSize();
+								MarketDataViewItem mdi = (MarketDataViewItem) obj;
+								Instrument instrument = mdi.getInstrument();
+					            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
+					            newOrder.setInstrument(instrument);
+					            newOrder.setOrderType(OrderType.Limit);
+					            newOrder.setSide(side);
+					            if(side == Side.Buy && mdi.getTopOfBook().getAskSize() != null) {					
+					            	if(defaultOrderSize != null && mdi.getTopOfBook().getAskSize().compareTo(defaultOrderSize) == 1){
+					            		newOrder.setQuantity(defaultOrderSize);
+					            	} else {
+					            		newOrder.setQuantity(mdi.getTopOfBook().getAskSize());
+					            	} 
+					            	if(mdi.getTopOfBook().getAskPrice() != null ) {
+					            		newOrder.setPrice(mdi.getTopOfBook().getAskPrice());
+					            	}
+					            }else if(mdi.getTopOfBook().getBidSize() != null){
+					            	if(defaultOrderSize != null && mdi.getTopOfBook().getBidSize().compareTo(defaultOrderSize) == 1){
+					            		newOrder.setQuantity(defaultOrderSize);
+					            	} else {
+					            		newOrder.setQuantity(mdi.getTopOfBook().getBidSize());
+					            	}	
+					            	if(mdi.getTopOfBook().getBidPrice() != null) {
+					            		newOrder.setPrice(mdi.getTopOfBook().getBidPrice());
+					            	}
+					            }
+					            newOrder.setTimeInForce(TimeInForce.Day);
+					            try {
+					                PhotonPlugin.getDefault().showOrderInTicket(newOrder);
+					            } catch (WorkbenchException e) {
+					                SLF4JLoggerProxy.error(this, e);
+					                ErrorDialog.openError(null, null, null,
+					                        new Status(IStatus.ERROR, PhotonPlugin.ID, e
+					                                .getLocalizedMessage()));
+					            }
+							}
+						}
+					}
+				});
+			}			
+			return null;
+		}
+	}
+	
 
 	/**
 	 * Handles the copy command for this view

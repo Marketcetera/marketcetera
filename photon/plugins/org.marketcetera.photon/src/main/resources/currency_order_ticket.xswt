@@ -109,7 +109,7 @@
                     <button x:id="ClearButton" x:style="PUSH" text="Clear"/>
                 </composite>
                 <section x:id="OtherExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Other" expanded="true" client="_other_composite">
-                    <layoutData x:class="gridData" horizontalSpan="3"
+                    <layoutData x:class="gridData" horizontalSpan="2"
                          verticalAlignment="BEGINNING" horizontalAlignment="FILL"/>
                     <composite x:id="_other_composite">
                         <layoutData x:class="gridData" verticalAlignment="BEGINNING"
@@ -122,8 +122,21 @@
                         </text>
                     </composite>
                 </section>
+                <section x:id="StrategyExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Iceberg" expanded="true" client="_strategy_composite">
+					<layoutData x:class="gridData" horizontalSpan="2"
+					     verticalAlignment="BEGINNING" horizontalAlignment="FILL" heightHint="200"/>
+					<composite x:id="_strategy_composite">
+						<layoutData x:class="gridData" horizontalSpan="2" verticalAlignment="BEGINNING"
+							horizontalAlignment="FILL"/>
+						<layout x:class="rowLayout" x:style="HORIZONTAL"/>
+						<label text="Display:"/>
+						<text x:style="BORDER" x:id="DisplayQuantityText" text="">
+							<layoutData x:class="rowData" />
+						</text>
+					</composite>
+				</section>
                 <section x:id="CustomExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Custom fields" expanded="true" client="_custom_composite">
-                    <layoutData x:class="gridData" horizontalSpan="4" grabExcessHorizontalSpace="true"
+                    <layoutData x:class="gridData" horizontalSpan="3" grabExcessHorizontalSpace="true"
                           grabExcessVerticalSpace="true" verticalAlignment="FILL" horizontalAlignment="FILL" heightHint="200"/>
                     <composite x:id="_custom_composite">
                         <layout x:class="gridLayout" numColumns="2" marginWidth="1"

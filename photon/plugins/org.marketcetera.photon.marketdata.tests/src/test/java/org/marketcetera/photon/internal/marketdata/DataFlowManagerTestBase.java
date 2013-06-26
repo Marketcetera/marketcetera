@@ -70,6 +70,11 @@ public abstract class DataFlowManagerTestBase<T, K extends Key> extends
      * @return a third key
      */
     protected abstract K createKey3();
+    
+    /**
+     * @return a fourth key
+     */
+    protected abstract K createKey4();
 
     /**
      * Verify item for given key was initialized properly
@@ -113,6 +118,8 @@ public abstract class DataFlowManagerTestBase<T, K extends Key> extends
     protected T mItem2;
     protected MockMarketDataModule mMockMarketDataModule;
     protected K mKey3;
+    protected K mKey4;
+    protected T mItem4;
     protected AtomicInteger mMessageIds = new AtomicInteger();
     protected IMarketDataFeed mMockModuleFeed;
 
@@ -136,6 +143,9 @@ public abstract class DataFlowManagerTestBase<T, K extends Key> extends
         mKey2 = createKey2();
         mItem2 = mFixture.getItem(mKey2);
         validateInitialConditions(mItem2, mKey2);
+        mKey4 = createKey4();
+        mItem4 = mFixture.getItem(mKey4);
+        validateInitialConditions(mItem4, mKey4);
         mKey3 = createKey3();
         setLevel(mFixture.getClass().getName(), Level.ALL);
     }

@@ -67,6 +67,11 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
     public synchronized BigDecimal getOrderQuantity() {
         return FIXUtil.getOrderQuantity(getMessage());
     }
+    
+    @Override
+    public synchronized BigDecimal getOrderDisplayQuantity() {
+        return FIXUtil.getOrderDisplayQuantity(getMessage());
+    }
 
     @Override
     public synchronized BigDecimal getLeavesQuantity() {

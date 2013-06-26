@@ -136,6 +136,44 @@ public final class FIXConverter
             msg.setField(new OrderQty(quantity));
         }
     }
+    
+    /**
+     * Adds the given display quantity to the given QuickFIX/J message (of the
+     * given FIX dictionary).
+     *
+     * @param display quantity The quantity. It may be null.
+     * @param fixDictionary The FIX dictionary. 
+     * @param msgType The FIX message type
+     * @param msg The QuickFIX/J message.
+     * @param required True if the display quantity is required but is not set.
+     *
+     * @throws I18NException Thrown if the display quantity is required but is
+     * not set.
+     */
+
+    private static void addDisplayQuantity
+        (BigDecimal displayQuantity,
+         DataDictionary fixDictionary,
+         String msgType,
+         Message msg,
+         boolean required)
+        throws I18NException
+    {
+        boolean supported=
+            (fixDictionary.isMsgField(msgType,MaxFloor.FIELD));
+        if (displayQuantity==null) {
+            if (supported && required) {
+                throw new I18NException(Messages.NO_DISPLAY_QUANTITY);
+            }
+        } else{
+            if (!supported) {
+                throw new I18NException(Messages.UNSUPPORTED_DISPLAY_QUANTITY);
+            }
+            msg.setField(new MaxFloor(displayQuantity));
+        }
+    }
+    
+    
 
     /**
      * Adds the given account to the given QuickFIX/J message (of the
@@ -570,6 +608,7 @@ public final class FIXConverter
         addSide(o.getSide(),fixDictionary,msgType,msg,true);
         addOrderType(o.getOrderType(),fixDictionary,msgType,msg,true);
         addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
+        addDisplayQuantity(o.getDisplayQuantity(),fixDictionary,msgType,msg,false);
         addTimeInForce(o.getTimeInForce(),fixDictionary,msgType,msg,false);
         addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
         addText(o.getText(),fixDictionary,msgType,msg,false);
@@ -646,6 +685,7 @@ public final class FIXConverter
         addSide(o.getSide(),fixDictionary,msgType,msg,true);
         addOrderType(o.getOrderType(),fixDictionary,msgType,msg,true);
         addQuantity(o.getQuantity(),fixDictionary,msgType,msg,false);
+        addDisplayQuantity(o.getDisplayQuantity(),fixDictionary,msgType,msg,false);
         addAccount(o.getAccount(),fixDictionary,msgType,msg,false);
         addText(o.getText(),fixDictionary,msgType,msg,false);
         addPrice(o.getPrice(),fixDictionary,msgType,msg,false);

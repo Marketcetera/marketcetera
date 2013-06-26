@@ -27,17 +27,17 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Initializes an equity order ticket from the selection quote. Currently this
+ * Initializes order ticket from the selection quote. Currently this
  * assumes the quote is an {@link MDQuote} child of a {@link MDDepthOfBook}
  * object.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: CreateEquityOrderFromQuote.java 10808 2009-10-12 21:33:18Z
+ * @version $Id: CreateOrderFromQuote.java 10808 2009-10-12 21:33:18Z
  *          anshul $
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class CreateEquityOrderFromQuote extends AbstractHandler {
+public class CreateOrderFromQuote extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {

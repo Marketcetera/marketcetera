@@ -30,6 +30,7 @@ import org.marketcetera.photon.internal.positions.ui.PositionsView;
 import org.marketcetera.photon.test.AbstractUIRunner;
 import org.marketcetera.photon.test.OSGITestUtil;
 import org.marketcetera.photon.test.AbstractUIRunner.ThrowableRunnable;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.osgi.framework.ServiceRegistration;
@@ -208,6 +209,11 @@ public class PositionsViewFixture {
             BigDecimal newMultiplier) {
         mMarketDataSupport.fireOptionMultiplier(instrument, newMultiplier);
     }
+    
+    public void fireFutureMultiplier(Instrument instrument,
+            BigDecimal newMultiplier) {
+        mMarketDataSupport.fireFutureMultiplier(instrument, newMultiplier);
+    }
 
     public void filter(final String string) throws Exception {
         AbstractUIRunner.syncRun(new ThrowableRunnable() {
@@ -256,6 +262,11 @@ public class PositionsViewFixture {
             return null;
         }
 
+		@Override
+		public BigDecimal getFutureMultiplier(Future future) {
+			return null;
+		}
+
         @Override
         public void addInstrumentMarketDataListener(Instrument instrument,
                 InstrumentMarketDataListener listener) {
@@ -293,6 +304,16 @@ public class PositionsViewFixture {
             for (InstrumentMarketDataListener listener : mListeners
                     .get(instrument)) {
                 listener.optionMultiplierChanged(event);
+            }
+        }
+        
+        public void fireFutureMultiplier(Instrument instrument,
+                BigDecimal newMultiplier) {
+            InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
+                    this, newMultiplier);
+            for (InstrumentMarketDataListener listener : mListeners
+                    .get(instrument)) {
+                listener.futureMultiplierChanged(event);
             }
         }
 
