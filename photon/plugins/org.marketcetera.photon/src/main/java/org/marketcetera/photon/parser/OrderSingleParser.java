@@ -142,10 +142,7 @@ public class OrderSingleParser {
                                 order.setOrderType(OrderType.Market);
                             }else if (price.equalsIgnoreCase("moc")) { //$NON-NLS-1$
                                 order.setOrderType(OrderType.MarketOnClose);
-                            }else if (price.equalsIgnoreCase("mbf")) { //$NON-NLS-1$
-                                order.setOrderType(OrderType.MustBeFilled);
-                            }
-                            else {
+                            }else {
                                 order.setOrderType(OrderType.Limit);
                                 try {
                                     order.setPrice(new BigDecimal(price));

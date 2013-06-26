@@ -29,10 +29,6 @@ public enum OrderType {
      */
     MarketOnClose(quickfix.field.OrdType.MARKET_ON_CLOSE),
     /**
-     * A Must be filled order.
-     */
-    MustBeFilled('X'),
-    /**
      * Sentinel value for Order Types that the system is not currently
      * aware of.
      */
