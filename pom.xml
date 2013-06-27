@@ -59,6 +59,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>datasources-core</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
         <version>2.4.0</version>
       </dependency>
