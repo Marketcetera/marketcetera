@@ -17,5 +17,6 @@
   </properties>
   <modules>
     <module>datasources-mysql</module>
+    <module>datasources-derby</module>
   </modules>
 </project>

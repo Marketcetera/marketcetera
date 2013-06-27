@@ -389,6 +389,12 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
+	<groupId>org.apache.derby</groupId>
+	<artifactId>derby</artifactId>
+	<version>10.9.1.0</version>
+	<scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>1.8.0.10</version>
@@ -454,6 +460,12 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>datasources-mysql</artifactId>
+        <version>2.4.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>datasources-derby</artifactId>
         <version>2.4.0</version>
         <scope>test</scope>
       </dependency>
