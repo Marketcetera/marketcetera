@@ -37,7 +37,7 @@
       <artifactId>client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
+      <groupId>org.marketcetera.fork</groupId>
       <artifactId>commons-csv</artifactId>
     </dependency>
 
