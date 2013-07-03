@@ -100,7 +100,7 @@ public class PersistentReportTest extends ReportsTestBase {
     	String messageString = "8=FIX.4.29=14135=86=011=1171508063701-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1039=044=1054=155=R58=INVALID_CHECKSUM_TEST60=20070215-02:54:27150=0151=1010=7";
     	TradeReportsHistory history = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory(), new MockUnderlyingSymbolSupport());
         Message aMessage = new Message(messageString,false);
-        aMessage.setInt(10, 1);
+        aMessage.getTrailer().setInt(10, 1);
         history.addIncomingMessage(TradeReportsHistoryTest.createServerReport(aMessage));
         ExecutionReport execReport = history.getLatestExecutionReport(new OrderID("1171508063701-server02/127.0.0.1"));
         PersistentReport pers = new PersistentReport(execReport);

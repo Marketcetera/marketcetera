@@ -5,9 +5,7 @@ import static java.math.BigDecimal.ZERO;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Set;
 
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.core.instruments.InstrumentToMessage;
@@ -97,13 +95,11 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                                     execReport);
                             continue;
                         }
-                        
-                        if(!EXECTYPE_STATUSES.contains(execType)){
+                        if(execType == null || !execType.isFill()){
                             SLF4JLoggerProxy.debug(AveragePriceReportList.class,
-                                    "Skipping {} because its execution type {} is not in {}", //$NON-NLS-1$
+                                    "Skipping {} because its execution type {} is not a fill", //$NON-NLS-1$
                                     execReport,
-                                    execReport.getExecutionType(),
-                                    EXECTYPE_STATUSES);
+                                    execReport.getExecutionType());
                             continue;
                         }
                         
@@ -220,9 +216,4 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
     @Override
     public void dispose() {
     }
-    /**
-     * exec type status values to include in the average price list view
-     */
-    private static final Set<ExecutionType> EXECTYPE_STATUSES = EnumSet.of(ExecutionType.Fill, ExecutionType.PartialFill);
-    
 }

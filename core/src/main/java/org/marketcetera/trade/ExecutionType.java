@@ -1,10 +1,8 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
+import java.util.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.field.ExecType;
 
@@ -65,7 +63,15 @@ public enum ExecutionType {
                 ? Unknown
                 : type;
     }
-
+    /**
+     * Indicates if this execution type is related to a fill.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isFill()
+    {
+        return FILLS.contains(this);
+    }
     /**
      * Creates an instance.
      *
@@ -74,7 +80,17 @@ public enum ExecutionType {
     private ExecutionType(char inFIXValue) {
         mFIXValue = inFIXValue;
     }
+    /**
+     * underlying FIX value
+     */
     private final char mFIXValue;
+    /**
+     * values that indicate the execution is related to a trade fill
+     */
+    private static final Set<ExecutionType> FILLS = EnumSet.of(Fill,Trade,PartialFill,Restated,TradeCorrect);
+    /**
+     * all values by FIX value
+     */
     private static final Map<Character, ExecutionType> mFIXValueMap;
     static {
         //Initialize the lookup table.

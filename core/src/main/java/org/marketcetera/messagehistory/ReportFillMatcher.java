@@ -48,16 +48,12 @@ public final class ReportFillMatcher implements Matcher<ReportHolder> {
                 //  make this report be skipped, which is fine
                 isFill = ORD_STATUS_FILLS.contains(orderStatus);
             } else {
-                isFill = EXEC_TYPE_FILLS.contains(execType);
+                isFill = execType.isFill();
             }
             return isFill;
         }
         return false;
     }
-    /**
-     * execution type status values that indicate a fill
-     */
-    private static final Set<ExecutionType> EXEC_TYPE_FILLS = EnumSet.of(ExecutionType.Fill,ExecutionType.PartialFill);
     /**
      * order status values that indicate a fill
      */
