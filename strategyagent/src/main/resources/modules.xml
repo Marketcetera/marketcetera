@@ -3,7 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
        http://www.springframework.org/schema/util
        http://www.springframework.org/schema/util/spring-util-2.5.xsd">
   <!--
@@ -14,10 +14,9 @@
     <constructor-arg value="org.marketcetera.strategyagent.JarClassLoader"/>
   </bean>
   <!-- The current classloader -->
-  <bean id="currentLoader"
-        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+  <bean id="currentLoader" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="class"/>
-    <property name="propertyPath" value="classLoader"/>
+    <property name="targetMethod" value="getClassLoader"/>
   </bean>
   <!-- The jar class loader to use for loading modules & their configurations -->
   <bean id="moduleLoader" class="org.marketcetera.strategyagent.JarClassLoader">

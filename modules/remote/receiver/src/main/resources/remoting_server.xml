@@ -11,12 +11,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
   <!-- Configure the broker -->
   <bean id="broker" class="org.apache.activemq.broker.BrokerService"
         init-method="start" destroy-method="stop">
-    <property name="brokerName" value="REMOTING_BROKER"/>
+    <property name="brokerName" value="REMOTING-BROKER"/>
     <property name="useJmx" value="true"/>
     <property name="useShutdownHook" value="false"/>
     <property name="persistent" value="false"/>
@@ -43,7 +43,7 @@
   <bean id="connectionFactory"
         class="org.apache.activemq.ActiveMQConnectionFactory"
         depends-on="broker">
-    <property name="brokerURL" value="vm://REMOTING_BROKER?create=false"/>
+    <property name="brokerURL" value="vm://REMOTING-BROKER?create=false"/>
     <property name="userName" ref="userName"/>
     <property name="password" ref="password"/>
   </bean>

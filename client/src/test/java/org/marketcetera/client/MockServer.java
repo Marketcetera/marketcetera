@@ -82,6 +82,7 @@ public class MockServer {
             mOrderEnvelopeListener = jmsMgr.getIncomingJmsFactory().
                 registerHandlerOEX
                 (mHandler,Service.REQUEST_QUEUE,false);
+	    mOrderEnvelopeListener.start();
         } catch (JAXBException ex) {
             throw new IllegalStateException
                 ("Cannot initialize request queue listener",ex);

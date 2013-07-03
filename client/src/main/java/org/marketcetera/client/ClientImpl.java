@@ -1047,9 +1047,11 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             mJmsMgr.getIncomingJmsFactory().registerHandlerTMX
             (new TradeMessageReceiver(),
              JmsUtils.getReplyTopicName(getSessionId()),true);
+	mTradeMessageListener.start();
         mBrokerStatusListener =
             mJmsMgr.getIncomingJmsFactory().registerHandlerBSX
             (new BrokerStatusReceiver(),Service.BROKER_STATUS_TOPIC,true);
+	mBrokerStatusListener.start();
         mToServer=mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX
             (Service.REQUEST_QUEUE,false);
    }
