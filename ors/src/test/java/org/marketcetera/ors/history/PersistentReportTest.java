@@ -1,10 +1,17 @@
 package org.marketcetera.ors.history;
 
+import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
+import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.messagehistory.TradeReportsHistoryTest;
 import org.marketcetera.ors.Principals;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
+
+import quickfix.Message;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -84,6 +91,23 @@ public class PersistentReportTest extends ReportsTestBase {
         assertEquals(sViewerID,report.getViewerID());
     }
 
+    /*
+     * Verify that invalid checksum message is processed.
+     */
+    
+    @Test
+    public void testInvalidChecksum() throws Exception {    	
+    	String messageString = "8=FIX.4.29=14135=86=011=1171508063701-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1039=044=1054=155=R58=INVALID_CHECKSUM_TEST60=20070215-02:54:27150=0151=1010=7";
+    	TradeReportsHistory history = new TradeReportsHistory(FIXVersion.FIX_SYSTEM.getMessageFactory(), new MockUnderlyingSymbolSupport());
+        Message aMessage = new Message(messageString,false);
+        aMessage.setInt(10, 1);
+        history.addIncomingMessage(TradeReportsHistoryTest.createServerReport(aMessage));
+        ExecutionReport execReport = history.getLatestExecutionReport(new OrderID("1171508063701-server02/127.0.0.1"));
+        PersistentReport pers = new PersistentReport(execReport);
+        ReportBase reportBase = pers.toReport();
+        assertEquals("INVALID_CHECKSUM_TEST",reportBase.getText());
+    }
+ 
     /**
      * Verify that the cancel reject report is saved and retrieved correctly.
      *
