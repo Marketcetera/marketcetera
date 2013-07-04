@@ -50,7 +50,7 @@
    depends-on="metc_system_properties_setter">
     <property
      name="brokerName"
-     value="TEST_BROKER"/>
+     value="TEST-BROKER"/>
     <property
      name="persistent"
      value="false"/>

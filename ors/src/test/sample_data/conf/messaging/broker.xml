@@ -54,7 +54,7 @@
    depends-on="metc_system_properties_setter,metc_ers">
     <property
      name="brokerName"
-     value="ORS_BROKER"/>
+     value="ORS-BROKER"/>
     <property
      name="persistent"
      value="false"/>
