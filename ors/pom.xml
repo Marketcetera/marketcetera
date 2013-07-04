@@ -77,6 +77,10 @@
       <groupId>org.apache.mina</groupId>
       <artifactId>mina-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
 
     <!-- Testing. -->
     <dependency>
@@ -99,7 +103,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
