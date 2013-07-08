@@ -1,5 +1,6 @@
 package org.marketcetera.photon.internal.marketdata.ui;
 
+import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.util.misc.ClassVersion;
 import org.osgi.framework.BundleActivator;
@@ -27,6 +28,10 @@ public class Activator implements BundleActivator {
 	 * Tracks the {@link IMarketDataManager} service 
 	 */
 	private ServiceTracker mMarketDataManagerTracker;
+	/**
+	 * Tracks the {@link ISymbolResolver} service
+	 */
+    private ServiceTracker mSymbolResolverServiceTracker;
 
 	@Override
 	public void start(BundleContext context) throws Exception {
@@ -34,6 +39,10 @@ public class Activator implements BundleActivator {
 			mMarketDataManagerTracker = new ServiceTracker(context, IMarketDataManager.class
 					.getName(), null);
 			mMarketDataManagerTracker.open();
+			mSymbolResolverServiceTracker = new ServiceTracker(context,
+			                                                   ISymbolResolver.class.getName(),
+			                                                   null);
+			mSymbolResolverServiceTracker.open();
 			sInstance = this;
 		}
 	}
@@ -48,7 +57,21 @@ public class Activator implements BundleActivator {
 			}
 		}
 	}
-	
+	/**
+	 * Returns the symbol resolver service for the singleton instance of this plug-in.
+	 *
+	 * @return an <code>ISymbolResolver</code> value
+	 */
+	public static ISymbolResolver getSymbolResolver()
+	{
+        synchronized (Activator.class) {
+            if (sInstance != null) {
+                return (ISymbolResolver)sInstance.mSymbolResolverServiceTracker.getService();
+            } else {
+                return null;
+            }
+        }
+	}
 	/**
 	 * Returns the market data manager for the singleton instance of this plug-in.
 	 * 

@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The model for a currency order ticket.
  *
  */
-@ClassVersion("$Id")
+@ClassVersion("$Id$")
 public class CurrencyOrderTicketModel
         extends OrderTicketModel
 {
@@ -25,6 +25,8 @@ public class CurrencyOrderTicketModel
         mSymbol = currencyObservable.observeSymbol();
         mNearTenor = currencyObservable.observeNearTenor();
         mFarTenor = currencyObservable.observeFarTenor();
+        mLeftCCY = currencyObservable.observeLeftCCY();
+        mRightCCY = currencyObservable.observeRightCCY();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketModel#getSymbol()
@@ -42,6 +44,12 @@ public class CurrencyOrderTicketModel
 	public ITypedObservableValue<String> getFarTenor() {
 		return mFarTenor;
 	}
+	public ITypedObservableValue<Boolean> getLeftCCY() {
+		return mLeftCCY;
+	}
+	public ITypedObservableValue<Boolean> getRightCCY() {
+		return mRightCCY;
+	}
 
 	/**
      * the symbol of the current order
@@ -55,4 +63,14 @@ public class CurrencyOrderTicketModel
      * the far tenor of the current order
      */  
     private final ITypedObservableValue<String> mFarTenor;
+    
+    /**
+     * left currency of the current order
+     */  
+    private final ITypedObservableValue<Boolean> mLeftCCY;
+    
+    /**
+     * right currency of the current order
+     */  
+    private final ITypedObservableValue<Boolean> mRightCCY;
 }

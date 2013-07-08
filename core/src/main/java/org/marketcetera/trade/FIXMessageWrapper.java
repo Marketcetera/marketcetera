@@ -23,8 +23,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @since 1.0.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@ClassVersion("$Id$") //$NON-NLS-1$
-class FIXMessageWrapper implements FIXMessageSupport {
+@ClassVersion("$Id$")
+public class FIXMessageWrapper implements FIXMessageSupport {
     /**
      * Creates an instance.
      *

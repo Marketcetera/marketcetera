@@ -10,6 +10,7 @@ import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.Message;
 import quickfix.field.LeavesQty;
+import quickfix.field.MaxFloor;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
 
@@ -48,10 +49,12 @@ public class FixUtilTest extends FIXVersionedTestCase{
                 new BigDecimal(300), new BigDecimal(55), new BigDecimal(190), new BigDecimal(55),
                 new BigDecimal(300), new BigDecimal(55), new Equity("IBM"),
                 "account", "text");
+        assertEquals(null, FIXUtil.getOrderDisplayQuantity(message3));  
+        message3.setField(new MaxFloor(30));
         
         execType = FIXUtil.getExecOrExecTransType(message3);
         assertEquals(ExecutionType.Fill, execType);
-        
+        assertEquals(new BigDecimal(30), FIXUtil.getOrderDisplayQuantity(message3));        
     }
    
 }

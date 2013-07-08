@@ -10,7 +10,7 @@ import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.MDTopOfBook;
 import org.marketcetera.photon.ui.ISymbolProvider;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -28,7 +28,7 @@ public class MarketDataViewItem implements ISymbolProvider {
 	private static final MessageFormat FORMAT = new MessageFormat(
 			"{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}"); //$NON-NLS-1$
 
-	private Equity mEquity;
+	private Instrument mInstrument;
 	private IMarketDataReference<MDLatestTick> mLatestTick;
 	private IMarketDataReference<MDTopOfBook> mTopOfBook;
 
@@ -39,23 +39,23 @@ public class MarketDataViewItem implements ISymbolProvider {
 	/**
 	 * Constructor. Will throw an exception if symbol is null.
 	 * 
-	 * @param equity
+	 * @param instrument
 	 *            equity for item, cannot be null
 	 */
-	public MarketDataViewItem(IMarketData marketData, Equity equity) {
-		Validate.noNullElements(new Object[] { marketData, equity });
-		mEquity = equity;
+	public MarketDataViewItem(IMarketData marketData, Instrument instrument) {
+		Validate.noNullElements(new Object[] { marketData, instrument });
+		mInstrument = instrument;
 		mMarketData = marketData;
 		init();
 	}
 
 	@Override
-	public Equity getEquity() {
-		return mEquity;
+	public Instrument getInstrument() {
+		return mInstrument;
 	}
 
     public String getSymbol() {
-        return mEquity.getSymbol();
+    	return mInstrument.getFullSymbol();
     }
 
 	public MDLatestTick getLatestTick() {
@@ -67,19 +67,19 @@ public class MarketDataViewItem implements ISymbolProvider {
 	}
 
 	/**
-	 * Changes the underlying equity of this item. All data will be reset if the equity changes.
+	 * Changes the underlying instrument of this item. All data will be reset if the instrument changes.
 	 * 
-	 * @param equity
-	 *            the new equity, cannot be null
+	 * @param instrument
+	 *            the new instrument, cannot be null
 	 */
-	public void setEquity(Equity equity) {
-		Validate.notNull(equity);
+	public void setInstrument(Instrument instrument) {
+		Validate.notNull(instrument);
 		String oldSymbol = getSymbol();
-		if (!mEquity.equals(equity)) {
+		if (!mInstrument.equals(instrument)) {
 			MDLatestTick oldLatestTick = getLatestTick();
 			MDTopOfBook oldTopOfBook = getTopOfBook();
 			dispose();
-			mEquity = equity;
+			mInstrument = instrument;
 			init();
 			propertyChangeSupport.firePropertyChange("symbol", oldSymbol, getSymbol()); //$NON-NLS-1$
 			propertyChangeSupport.firePropertyChange("latestTick", oldLatestTick, getLatestTick()); //$NON-NLS-1$
@@ -93,8 +93,8 @@ public class MarketDataViewItem implements ISymbolProvider {
 	}
 
 	private void init() {
-		mLatestTick = mMarketData.getLatestTick(mEquity);
-		mTopOfBook = mMarketData.getTopOfBook(mEquity);
+		mLatestTick = mMarketData.getLatestTick(mInstrument);
+		mTopOfBook = mMarketData.getTopOfBook(mInstrument);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class MarketDataViewItem implements ISymbolProvider {
 	 */
 	@Override
 	public String toString() {
-		return FORMAT.format(new Object[] { getEquity(), getLatestTick().getPrice(),
+		return FORMAT.format(new Object[] { getInstrument(), getLatestTick().getPrice(),
 				getLatestTick().getSize(), getTopOfBook().getBidSize(),
 				getTopOfBook().getBidPrice(), getTopOfBook().getAskPrice(),
 				getTopOfBook().getAskSize() });

@@ -41,4 +41,17 @@ public interface ICurrencyOrderTicket
      */
 	Button getSelectFarTenorButton();
     
+    /**
+     * Gets the CCY1 radio button widget.
+     *
+     * @return a <code>Button</code> value
+     */
+	Button getRadioButtonCCY1();
+	
+    /**
+     * Gets the CCY2 radio button widget.
+     *
+     * @return a <code>Button</code> value
+     */
+	Button getRadioButtonCCY2();
 }

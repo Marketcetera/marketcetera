@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-class CFICodeUtils {
+public class CFICodeUtils {
     /**
      * Returns true if the specified CFI code string specifies an Option
      * instrument.
@@ -120,21 +120,28 @@ class CFICodeUtils {
         return code.toString();
     }
     /**
-     * 
+     * Returns the currency CFI code for the supplied currency instrument type
      *
+     * @param inInstrument the instrument.
      *
-     * @param inInstrument
-     * @return
+     * @return the currency CFI code.
      */
     static String getCFICode(Currency inInstrument)
     {
-        StringBuffer code = new StringBuffer();			//ToDo set appropriate code for Currency
-        code.append("M"); // indicates Other //$NON-NLS-1$
-        code.append("X"); // financial or commodity //$NON-NLS-1$
-        code.append("X"); // underlying asset type //$NON-NLS-1$
-        code.append("X"); // delivery //$NON-NLS-1$
-        code.append("X"); // standard/non-standard //$NON-NLS-1$
-        code.append("X"); // not used //$NON-NLS-1$
+        StringBuffer code = new StringBuffer();
+        code.append("F"); // for futures-settling  //$NON-NLS-1$
+        code.append("F"); // for financial instrument //$NON-NLS-1$
+        code.append("C"); // for currencies //$NON-NLS-1$
+        code.append("P"); // for physically-delivered //$NON-NLS-1$
+        code.append("N"); // for non-standard //$NON-NLS-1$
+        if(inInstrument.isSwap())
+        {
+        	code.append("W"); // for Swap //$NON-NLS-1$
+        }
+        else
+        {
+        	code.append("O"); // for outright
+        }
         return code.toString();
     }
     
@@ -145,7 +152,7 @@ class CFICodeUtils {
      * @param inInstrument
      * @return
      */
-    static String getCFICode(Instrument inInstrument)
+    public static String getCFICode(Instrument inInstrument)
     {
         if(inInstrument instanceof Option) {
             return getCFICode((Option)inInstrument);

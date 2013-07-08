@@ -8,7 +8,6 @@ import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.trade.Equity;
 
 public class AddSymbolAction
     extends Action
@@ -53,7 +52,7 @@ public class AddSymbolAction
 			for (String string : symbols) {
 				String trimmed = StringUtils.trimToNull(string);
 				if (trimmed != null) {
-					listener.onAssertSymbol(new Equity(trimmed));
+					listener.onAssertSymbol(PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(trimmed));
 				}
 			}
 		}

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.concurrent.Executor;
 
+import org.marketcetera.event.FutureEvent;
 import org.marketcetera.event.OptionEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.Capability;
@@ -100,6 +101,15 @@ public class LatestTickManager extends
                         BigDecimal size = data.getSize();
                         if (size != null) {
                             item.setSize(size);
+                        }
+                        if (data instanceof FutureEvent) {
+                        	FutureEvent futureData = (FutureEvent) data;
+                            BigDecimal multiplier = new BigDecimal(futureData.getContractSize());
+                            if(BigDecimal.ZERO.compareTo(multiplier) == 0) {
+                            	  multiplier = BigDecimal.ONE;
+                            } else {
+                                item.setMultiplier(multiplier);
+                            }
                         }
                         if (data instanceof OptionEvent) {
                             OptionEvent optionData = (OptionEvent) data;

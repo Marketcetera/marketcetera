@@ -100,8 +100,14 @@ public class Option extends Instrument {
     public String getSymbol() {
         return mSymbol;
     }
-    
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Instrument#getFullSymbol()
+     */
+    @Override
+    public String getFullSymbol()
+    {
+        return OptionUtils.getOsiSymbolFromOption(this);
+    }
     /**
      * Always returns {@link SecurityType#Option}.
      *

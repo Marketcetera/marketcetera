@@ -27,6 +27,8 @@ public interface IOrderTicket {
 	Text getPriceText();
 
 	Text getQuantityText();
+	
+	Text getDisplayQuantityText();
 
 	Combo getSideCombo();
 

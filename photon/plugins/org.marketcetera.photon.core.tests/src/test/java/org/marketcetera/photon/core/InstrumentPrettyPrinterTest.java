@@ -7,11 +7,7 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 import org.marketcetera.photon.commons.ValidateTest.ExpectedNullArgumentFailure;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.SecurityType;
+import org.marketcetera.trade.*;
 
 /* $License$ */
 
@@ -34,6 +30,8 @@ public class InstrumentPrettyPrinterTest {
                 "Jan 09 IBM Call 1.00");
         test(new Option("IBM", "200901", new BigDecimal("1234.556"),
                 OptionType.Put), "Jan 09 IBM Put 1234.56");
+        test(new Currency("USD", "GBP", "20121227","20130131"),"USD/GBP 27-Dec-12 , 31-Jan-13");
+        test(new Currency("USD/GBP"),"USD/GBP");
         test(new Instrument() {
             @Override
             public String getSymbol() {
@@ -74,7 +72,13 @@ public class InstrumentPrettyPrinterTest {
         new ExpectedNullArgumentFailure("option") {
             @Override
             protected void run() throws Exception {
-                testExpiry(null, "");
+                testExpiry((Option)null, "");
+            }
+        };
+        new ExpectedNullArgumentFailure("currency") {
+            @Override
+            protected void run() throws Exception {
+                testExpiry((Currency)null, "");
             }
         };
         /*
@@ -87,11 +91,18 @@ public class InstrumentPrettyPrinterTest {
                 "Jan 10");
         testExpiry(new Option("IBM", "20090230", BigDecimal.ONE,
                 OptionType.Call), "Mar 02 09");
+        testExpiry(new Currency("USD", "GBP", "20121227","20130131"),"27-Dec-12 , 31-Jan-13");
+        testExpiry(new Currency("USD/GBP"),"");
 
     }
 
     private void testExpiry(Option instrument, String expected) {
         assertThat(InstrumentPrettyPrinter.printOptionExpiry(instrument),
+                is(expected));
+    }
+    
+    private void testExpiry(Currency instrument, String expected) {
+        assertThat(InstrumentPrettyPrinter.printCurrencyExpiry(instrument),
                 is(expected));
     }
 }

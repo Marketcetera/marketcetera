@@ -87,4 +87,11 @@ class __TEMPLATE_CLASS_NAME__ < Strategy
     def on_cancel_reject(reject)
       
     end
+    
+    ##############################################################
+    # Executed when the strategy receives a broker status event  #
+    ##############################################################
+    def on_receive_status(status)
+    
+    end
 end

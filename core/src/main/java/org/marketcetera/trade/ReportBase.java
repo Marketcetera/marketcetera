@@ -1,9 +1,14 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.marketcetera.util.misc.ClassVersion;
+
+import com.sun.xml.bind.AnyTypeAdapter;
+
 
 /* $License$ */
 /**
@@ -14,7 +19,8 @@ import java.util.Date;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
+@XmlJavaTypeAdapter(AnyTypeAdapter.class)
 public interface ReportBase extends Serializable {
     /**
      * The client assigned orderID of the order that generated this report.

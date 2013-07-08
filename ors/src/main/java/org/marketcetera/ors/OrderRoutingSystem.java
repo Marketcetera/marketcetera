@@ -3,7 +3,6 @@ package org.marketcetera.ors;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -48,7 +47,10 @@ import quickfix.DefaultMessageFactory;
 import quickfix.Message;
 import quickfix.SessionNotFound;
 import quickfix.SocketInitiator;
-import quickfix.field.*;
+import quickfix.field.MsgType;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.TargetCompID;
 
 /**
  * The main application. See {@link SpringConfig} for configuration
@@ -68,16 +70,13 @@ public class OrderRoutingSystem
 
     // CLASS DATA.
 
-    private static final Class<?> LOGGER_CATEGORY=
-        OrderRoutingSystem.class;
-    private static final String APP_CONTEXT_CFG_BASE=
-        "file:"+CONF_DIR+ //$NON-NLS-1$
-        "properties.xml"; //$NON-NLS-1$
-    private static final String TRADE_RECORDER_QUEUE=
-        "trade-recorder"; //$NON-NLS-1$
-    private static final String JMX_NAME=
-        "org.marketcetera.ors.mbean:type=ORSAdmin"; //$NON-NLS-1$
-
+    private static final Class<?> LOGGER_CATEGORY = OrderRoutingSystem.class;
+    private static final String APP_CONTEXT_CFG_BASE = "file:" + CONF_DIR + "properties.xml"; //$NON-NLS-1$ //$NON-NLS-2$
+    private static final String JMX_NAME = "org.marketcetera.ors.mbean:type=ORSAdmin"; //$NON-NLS-1$
+    /**
+     * singleton instance reference
+     */
+    private static OrderRoutingSystem instance;
 
     // INSTANCE DATA.
 
@@ -102,12 +101,11 @@ public class OrderRoutingSystem
      * @throws Exception Thrown if construction fails.
      */
 
-    public OrderRoutingSystem
-        (String[] args)
+    public OrderRoutingSystem(String[] args)
         throws Exception
     {
         // Obtain authorization credentials.
-
+        instance = this;
         mAuth=new StandardAuthentication(APP_CONTEXT_CFG_BASE,args);
         if (!getAuth().setValues()) {
             printUsage(Messages.APP_MISSING_CREDENTIALS);
@@ -202,25 +200,35 @@ public class OrderRoutingSystem
                                        null); // CD 20101202 - Removed as I don't think this is used any more and just consumes memory
 
         // Initiate broker connections.
-
         SpringSessionSettings settings=getBrokers().getSettings();
-        mInitiator=new SocketInitiator
-            (mQFApp,settings.getQMessageStoreFactory(),
-             settings.getQSettings(),settings.getQLogFactory(),
-             new DefaultMessageFactory());
+        mInitiator = new SocketInitiator(mQFApp,
+                                         settings.getQMessageStoreFactory(),
+                                         settings.getQSettings(),
+                                         settings.getQLogFactory(),
+                                         new DefaultMessageFactory());
         mInitiator.start();
-
         // Initiate JMX (for QuickFIX/J and application MBeans).
 
         MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
         (new JmxExporter(mbeanServer)).export(mInitiator);
-        mbeanServer.registerMBean
-            (new ORSAdmin(getBrokers(),qSender,localIdFactory,userManager),
-             new ObjectName(JMX_NAME));
+        mbeanServer.registerMBean(new ORSAdmin(getBrokers(),
+                                               qSender,
+                                               localIdFactory,
+                                               userManager),
+                                  new ObjectName(JMX_NAME));
     }
 
     // INSTANCE METHODS.
 
+    /**
+     * Gets the <code>OrderReceiver</code> value.
+     *
+     * @return an <code>OrderReceiver</code> value
+     */
+    public ReportReceiver getOrderReceiver()
+    {
+        return mQFApp;
+    }
     /**
      * Prints the given message alongside usage information on the
      * standard error stream, and throws an exception.
@@ -248,7 +256,6 @@ public class OrderRoutingSystem
      *
      * @return The context.
      */
-    private static final AtomicInteger counter = new AtomicInteger(0);
     synchronized void stop()
     {
         Brokers brokers = getBrokers();
@@ -317,10 +324,16 @@ public class OrderRoutingSystem
     {
         return mBrokers;
     }
-
-
     // CLASS METHODS.
-
+    /**
+     * Gets the <code>OrderRoutingSystem</code> value.
+     *
+     * @return an <code>OrderRoutingSystem</code> value
+     */
+    public static OrderRoutingSystem getInstance()
+    {
+        return instance;
+    }
     /**
      * Main program.
      *

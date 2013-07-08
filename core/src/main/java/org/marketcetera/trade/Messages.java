@@ -72,8 +72,12 @@ public interface Messages {
         new I18NMessage0P(LOGGER,"unsupported_price"); //$NON-NLS-1$
     static final I18NMessage0P NO_QUANTITY=
         new I18NMessage0P(LOGGER,"no_quantity"); //$NON-NLS-1$
+    static final I18NMessage0P NO_DISPLAY_QUANTITY=
+            new I18NMessage0P(LOGGER,"no_display_quantity"); //$NON-NLS-1$
     static final I18NMessage0P UNSUPPORTED_QUANTITY=
         new I18NMessage0P(LOGGER,"unsupported_quantity"); //$NON-NLS-1$
+    static final I18NMessage0P UNSUPPORTED_DISPLAY_QUANTITY=
+            new I18NMessage0P(LOGGER,"unsupported_display_quantity"); //$NON-NLS-1$
     static final I18NMessage0P NO_ACCOUNT=
         new I18NMessage0P(LOGGER,"no_account"); //$NON-NLS-1$
     static final I18NMessage0P UNSUPPORTED_ACCOUNT=

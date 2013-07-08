@@ -75,8 +75,8 @@
       <artifactId>geronimo-jta_1.1_spec</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.collections</groupId>
-      <artifactId>google-collections</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -95,8 +95,8 @@
       <artifactId>tools</artifactId>
     </dependency>
     <dependency>
-      <groupId>joda-primatives</groupId>
-      <artifactId>joda-primatives</artifactId>
+      <groupId>org.joda</groupId>
+      <artifactId>joda-primitives</artifactId>
     </dependency>
     <dependency>
       <groupId>jparsec</groupId>

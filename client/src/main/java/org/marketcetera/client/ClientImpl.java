@@ -375,7 +375,42 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
         return result;
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#addReport(quickfix.Message)
+     */
+    @Override
+    public void addReport(FIXMessageWrapper inReport,
+                          BrokerID inBrokerID)
+            throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            mService.addReport(getServiceContext(),
+                               inReport,
+                               inBrokerID);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void deleteReport(ExecutionReport inReport)
+            throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            mService.deleteReport(getServiceContext(),
+                                  inReport);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
     @Override
     public synchronized void close() {
         internalClose();
@@ -1012,9 +1047,11 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             mJmsMgr.getIncomingJmsFactory().registerHandlerTMX
             (new TradeMessageReceiver(),
              JmsUtils.getReplyTopicName(getSessionId()),true);
+	mTradeMessageListener.start();
         mBrokerStatusListener =
             mJmsMgr.getIncomingJmsFactory().registerHandlerBSX
             (new BrokerStatusReceiver(),Service.BROKER_STATUS_TOPIC,true);
+	mBrokerStatusListener.start();
         mToServer=mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX
             (Service.REQUEST_QUEUE,false);
    }

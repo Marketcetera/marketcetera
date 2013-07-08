@@ -38,4 +38,13 @@ public abstract class Instrument implements Serializable {
 	 * @return the security type.
 	 */
 	public abstract SecurityType getSecurityType();
+	/**
+	 * Returns a symbol that describes sufficient of the instrument attributes that it can be used to recreate the instrument.
+	 *
+	 * @return a <code>String</code>
+	 */
+	public String getFullSymbol()
+	{
+	    return getSymbol();
+	}
 }

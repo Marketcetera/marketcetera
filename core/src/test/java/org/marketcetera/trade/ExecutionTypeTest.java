@@ -1,11 +1,15 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
+import static org.junit.Assert.assertEquals;
 import static org.marketcetera.trade.ExecutionType.*;
-import org.marketcetera.core.Pair;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+
+import org.junit.Test;
+import org.marketcetera.core.Pair;
 
 import quickfix.field.ExecType;
 
@@ -17,8 +21,21 @@ import quickfix.field.ExecType;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 public class ExecutionTypeTest extends FIXCharEnumTestBase<ExecutionType> {
+    /**
+     * Tests {@link ExecutionType#isFill()}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testIsFill()
+            throws Exception
+    {
+        Set<ExecutionType> expectedFills = EnumSet.of(Fill,Trade,PartialFill,Restated,TradeCorrect);
+        for(ExecutionType type : values()) {
+            assertEquals(expectedFills.contains(type),type.isFill());
+        }
+    }
     @Override
     protected ExecutionType getInstanceForFIXValue(Character inFIXValue) {
         return ExecutionType.getInstanceForFIXValue(inFIXValue);

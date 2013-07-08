@@ -67,7 +67,7 @@ public class MarketDataViewItemTest {
         when(mMockMarketData.getTopOfBook(equity1)).thenReturn(mMockTOB1Reference);
         when(mMockMarketData.getTopOfBook(equity2)).thenReturn(mMockTOB2Reference);
         mFixture = new MarketDataViewItem(mMockMarketData, equity1);
-        assertEquals(equity1, mFixture.getEquity());
+        assertEquals(equity1, mFixture.getInstrument());
         mMockListener = mock(PropertyChangeListener.class);
         mFixture.addPropertyChangeListener("symbol", mMockListener);
         mFixture.addPropertyChangeListener("latestTick", mMockListener);
@@ -114,15 +114,15 @@ public class MarketDataViewItemTest {
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                mFixture.setEquity(null);
+                mFixture.setInstrument(null);
             }
         };
     }
 
     @Test
     public void testSetEquity() {
-        mFixture.setEquity(equity2);
-        assertEquals(equity2, mFixture.getEquity());
+        mFixture.setInstrument(equity2);
+        assertEquals(equity2, mFixture.getInstrument());
         verify(mMockTick1Reference).dispose();
         verify(mMockTOB1Reference).dispose();
         verify(mMockListener).propertyChange(argThat(isPropertyChange("symbol", is(equity1.getSymbol()), is(equity2.getSymbol()))));

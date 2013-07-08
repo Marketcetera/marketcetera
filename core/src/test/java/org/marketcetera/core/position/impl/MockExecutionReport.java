@@ -166,6 +166,11 @@ public class MockExecutionReport implements ExecutionReport {
 	public BigDecimal getOrderQuantity() {
 		return null;
 	}
+	
+	@Override
+	public BigDecimal getOrderDisplayQuantity() {
+		return null;
+	}
 
 	@Override
 	public OrderType getOrderType() {

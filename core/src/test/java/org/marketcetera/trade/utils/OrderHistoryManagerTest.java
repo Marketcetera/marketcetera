@@ -569,7 +569,7 @@ public class OrderHistoryManagerTest
         };
     }
     /**
-     * Tests that {@link OrderHistoryManager#getReportHistoryFor(OrderID)} is populated when the initial value is empty.
+     * Tests that {@link OrderHistoryManager#getReportHistoryFor(OrderID)} is not populated when the initial value is empty.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -585,10 +585,48 @@ public class OrderHistoryManagerTest
                                                                              null,
                                                                              OrderStatus.New);
         orderManager.add(report1);
+        assertTrue(reportHistory.isEmpty());
+        reportHistory = orderManager.getReportHistoryFor(orderID);
         assertEquals(1,
                      reportHistory.size());
         assertEquals(report1,
                      reportHistory.getFirst());
+    }
+    /**
+     * Tests that pre-searching for an order doesn't affect later order processing.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testPreSearchOrderChain()
+            throws Exception
+    {
+        OrderHistoryManager orderManager = new OrderHistoryManager();
+        // create original order
+        OrderID orderID = new OrderID("myorder-" + System.nanoTime());
+        ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport(orderID.getValue(),
+                                                                             null,
+                                                                             OrderStatus.New);
+        orderManager.add(report1);
+        assertEquals(orderManager.getLatestReportFor(orderID).getOrderStatus(),
+                     OrderStatus.New);
+        // create replacement order with a different status and pre-search for it
+        OrderID replacementOrderID = new OrderID("myorder-" + System.nanoTime());
+        assertFalse(orderID.equals(replacementOrderID));
+        ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport(replacementOrderID.getValue(),
+                                                                             orderID.getValue(),
+                                                                             OrderStatus.Canceled);
+        orderManager.add(report2);
+        Deque<ReportBase> originalReportHistory = orderManager.getReportHistoryFor(orderID);
+        Deque<ReportBase> replacementReportHistory = orderManager.getReportHistoryFor(replacementOrderID);
+        assertEquals(OrderStatus.Canceled,
+                     orderManager.getLatestReportFor(orderID).getOrderStatus());
+        assertEquals(OrderStatus.Canceled,
+                     orderManager.getLatestReportFor(replacementOrderID).getOrderStatus());
+        assertEquals(orderManager.getLatestReportFor(orderID),
+                     orderManager.getLatestReportFor(replacementOrderID));
+        assertEquals(originalReportHistory.size(),
+                     replacementReportHistory.size());
     }
     /**
      * Verifies that the given <code>OrderHistoryManager</code> contains the given <code>ReportBase</code> objects.
@@ -718,6 +756,8 @@ public class OrderHistoryManagerTest
                     msg.setField(new OrdType(OrdType.LIMIT));
                     msg.setField(new Price(EventTestBase.generateDecimalValue()));
                     break;
+                default:
+                    throw new UnsupportedOperationException();
             }
         }
         msg.setField(new Symbol("colin-rocks"));

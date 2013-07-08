@@ -40,7 +40,6 @@ public class UserInfo
     private final boolean mSuperuser;
     private final Properties mUserData;
 
-
     // CONSTRUCTORS.
 
     /**
@@ -52,6 +51,7 @@ public class UserInfo
      * @param active The active flag.
      * @param superuser The superuser flag.
      * @param userdata The user data
+     * @param systemdata The system data
      */
 
     public UserInfo

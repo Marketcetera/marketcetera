@@ -5,6 +5,7 @@ import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.ImmutableList;
 
@@ -15,6 +16,7 @@ import com.google.common.collect.ImmutableList;
  * currency components.
  *
  */
+@ClassVersion("$Id$")
 public class CurrencyObservable
         extends CompoundObservableManager<ITypedObservableValue<Instrument>>
 {
@@ -29,7 +31,9 @@ public class CurrencyObservable
         mSymbol = TypedObservableValueDecorator.create(String.class);
         mNearTenor = TypedObservableValueDecorator.create(String.class);
         mFarTenor = TypedObservableValueDecorator.create(String.class);
-        init(ImmutableList.of(mSymbol,mNearTenor,mFarTenor));
+        mLeftCCY = TypedObservableValueDecorator.create(Boolean.class);
+        mRightCCY = TypedObservableValueDecorator.create(Boolean.class);
+        init(ImmutableList.of(mSymbol,mNearTenor,mFarTenor,mLeftCCY,mRightCCY));
     }
     /**
      * Observes the currency symbol.
@@ -58,6 +62,26 @@ public class CurrencyObservable
     {
         return mFarTenor;
     }
+    /**
+     * Observes the left currency.
+     * 
+     * @return an <code>ITypedObservableValue&lt;Boolean&gt;</code> value
+     */
+    public ITypedObservableValue<Boolean> observeLeftCCY()
+    {
+        return mLeftCCY;
+    }
+    
+    /**
+     * Observes the right currency.
+     * 
+     * @return an <code>ITypedObservableValue&lt;Boolean&gt;</code> value
+     */
+    public ITypedObservableValue<Boolean> observeRightCCY()
+    {
+        return mRightCCY;
+    }
+    
     /* (non-Javadoc)
      * @see org.marketcetera.photon.ui.databinding.CompoundObservableManager#updateParent()
      */
@@ -75,9 +99,16 @@ public class CurrencyObservable
         Currency newValue = null;
         if(currencyPair!=null && currencyPair.length==2 && StringUtils.isNotBlank(currencyPair[0]) 
         		&& StringUtils.isNotBlank(currencyPair[1]))
-        {
+        {        	
+        	boolean baseCCYSelector = mLeftCCY.getTypedValue();
             try {
-                    newValue = new Currency(currencyPair[0],currencyPair[1],nearTenor,farTenor);
+            		String baseCCY;
+            		if(baseCCYSelector){
+            			baseCCY = currencyPair[0];
+            		}else{
+            			baseCCY = currencyPair[1];
+            		}	
+                    newValue = new Currency(currencyPair[0],currencyPair[1],nearTenor,farTenor,baseCCY);
             } catch (Exception ignored) {
             }
         }
@@ -97,6 +128,9 @@ public class CurrencyObservable
             setIfChanged(mSymbol,currency.getSymbol());
             setIfChanged(mNearTenor,currency.getNearTenor());
             setIfChanged(mFarTenor,currency.getFarTenor());
+            boolean baseCCY = currency.getLeftCCY().equals(currency.getTradedCCY());
+            setIfChanged(mLeftCCY,baseCCY);
+            setIfChanged(mRightCCY,!baseCCY);
         } else {
             setIfChanged(mSymbol,
                          null);
@@ -104,6 +138,10 @@ public class CurrencyObservable
                          null);
             setIfChanged(mFarTenor,
                          null);
+            setIfChanged(mLeftCCY, 
+            			true);
+            setIfChanged(mRightCCY,
+            			false);
         }
     }
     /**
@@ -118,4 +156,13 @@ public class CurrencyObservable
      * observes the currency far tenor
      */
     private final ITypedObservableValue<String> mFarTenor;
+    
+    /**
+     * observes the left currency
+     */
+    private final ITypedObservableValue<Boolean> mLeftCCY;
+    /**
+     * observes the right currency
+     */
+    private final ITypedObservableValue<Boolean> mRightCCY;
 }

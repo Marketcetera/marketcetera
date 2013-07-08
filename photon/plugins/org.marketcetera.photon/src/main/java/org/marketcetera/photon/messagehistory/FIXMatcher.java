@@ -28,7 +28,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @version $Id$
  * @since 0.7.0
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id$")
 public abstract class FIXMatcher<T>
         implements Matcher<ReportHolder>
 {

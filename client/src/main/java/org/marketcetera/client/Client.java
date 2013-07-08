@@ -10,16 +10,7 @@ import java.util.Properties;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.ReportBase;
-import org.marketcetera.trade.UserID;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -543,5 +534,34 @@ public interface Client {
      * @throws ConnectionException if an error occurs connecting to the server
      */
     Properties getUserData()
+            throws ConnectionException;
+    /**
+     * Adds the given report to the system data flow.
+     * 
+     * <p>Reports added this way will be added to the system data bus. Reports will be
+     * persisted and become part of the system record. All clients will receive this
+     * report.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inReport a <code>FIXMessageWrapper</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
+     */
+    void addReport(FIXMessageWrapper inReport,
+                   BrokerID inBrokerID)
+            throws ConnectionException;
+    /**
+     * Removes the given report from the persistent report store.
+     * 
+     * <p>Reports removed this way will not be added to the system data bus and no clients
+     * will receive this report.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inReport an <code>ExecutionReport</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
+     */
+    void deleteReport(ExecutionReport inReport)
             throws ConnectionException;
 }

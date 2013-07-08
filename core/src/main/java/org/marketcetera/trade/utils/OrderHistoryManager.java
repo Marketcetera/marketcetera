@@ -45,15 +45,20 @@ public class OrderHistoryManager
      */
     public ReportBase getLatestReportFor(OrderID inOrderID)
     {
-        SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+        SLF4JLoggerProxy.debug(this,
                                "Searching order tracker for {}", //$NON-NLS-1$
                                inOrderID);
         synchronized(orders) {
             OrderHistory history = orders.get(inOrderID);
             if(history != null) {
-                return history.getLatestReport();
+                ReportBase report = history.getLatestReport();
+                SLF4JLoggerProxy.debug(this,
+                                       "Retrieved {} for {}",
+                                       report,
+                                       inOrderID);
+                return report;
             }
-            SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+            SLF4JLoggerProxy.debug(this,
                                    "No history for {}", //$NON-NLS-1$
                                    inOrderID);
             return null;
@@ -68,10 +73,13 @@ public class OrderHistoryManager
     {
         if(inReport.getOrderStatus() == null ||
            inReport.getOrderID() == null) {
-            Messages.SKIPPNG_MALFORMED_REPORT.warn(OrderHistoryManager.class,
+            Messages.SKIPPNG_MALFORMED_REPORT.warn(this,
                                                    inReport);
             return;
         }
+        SLF4JLoggerProxy.debug(this,
+                               "Adding {} to order history",
+                               inReport);
         synchronized(orders) {
             OrderID actualOrderID = inReport.getOrderID();
             OrderID originalOrderID = inReport.getOriginalOrderID();
@@ -89,19 +97,39 @@ public class OrderHistoryManager
                     // index the new history using the actual order ID
                     orders.put(actualOrderID,
                                history);
+                    SLF4JLoggerProxy.debug(this,
+                                           "Created new {} for actual order ID: {} because there was no order history for this actual order ID nor the original order ID: {}",
+                                           history,
+                                           actualOrderID,
+                                           originalOrderID);
                 } else {
                     // case #2 from above: add an index reference for the new actual order ID
                     orders.put(actualOrderID,
                                history);
+                    SLF4JLoggerProxy.debug(this,
+                                           "Using existing {} for actual order ID: {} because there was already history for original order ID: {}",
+                                           history,
+                                           actualOrderID,
+                                           originalOrderID);
                 }
+            } else {
+                SLF4JLoggerProxy.debug(this,
+                                       "Selected order history {} based on actual orderID: {} from {}",
+                                       history,
+                                       actualOrderID,
+                                       orders);
             }
             // add the report to the order history
             history.add(inReport);
+            SLF4JLoggerProxy.debug(this,
+                                   "Added {} to {}",
+                                   inReport,
+                                   history);
             // check to see if the report represents an open order
             if(inReport.getOrderStatus().isCancellable()) {
                 // if a report is cancellable, at least by our current understanding, the report has to be an ExecutionReport (not an OrderCancelReject)
                 if(inReport instanceof ExecutionReport) {
-                    SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+                    SLF4JLoggerProxy.debug(this,
                                            "{} represents an open order ({}), updating live order list for {}", //$NON-NLS-1$
                                            inReport.getOrderID(),
                                            inReport.getOrderStatus(),
@@ -110,7 +138,7 @@ public class OrderHistoryManager
                                    (ExecutionReport)inReport);
                 }
             } else {
-                SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+                SLF4JLoggerProxy.debug(this,
                                        "{} represents a closed order ({}) updating live order list for {}", //$NON-NLS-1$
                                        inReport.getOrderID(),
                                        inReport.getOrderStatus(),
@@ -118,11 +146,15 @@ public class OrderHistoryManager
                 openOrders.remove(inReport.getOrderID());
             }
             if(inReport.getOriginalOrderID() != null) {
-                SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+                SLF4JLoggerProxy.debug(this,
                                        "{} replaces {}, updating live order list", //$NON-NLS-1$
                                        inReport.getOrderID(),
                                        inReport.getOriginalOrderID());
                 openOrders.remove(inReport.getOriginalOrderID());
+            }
+            if(SLF4JLoggerProxy.isTraceEnabled(this)) {
+                SLF4JLoggerProxy.trace(this,
+                                       display());
             }
         }
         synchronized(this) {
@@ -178,7 +210,8 @@ public class OrderHistoryManager
             Set<OrderID> handledOrders = new HashSet<OrderID>();
             for(OrderHistory order : orders.values()) {
                 ReportBase report = order.getLatestReport();
-                if(!handledOrders.contains(report.getOrderID())) {
+                if(report != null &&
+                   !handledOrders.contains(report.getOrderID())) {
                     latestReportTable.addCell(order.getLatestReport().getOrderID().getValue());
                     latestReportTable.addCell(order.getLatestReport().getOrderStatus().name());
                     latestReportTable.addCell(DateUtils.dateToString(order.getLatestReport().getSendingTime()));
@@ -251,7 +284,7 @@ public class OrderHistoryManager
      * 
      * <p>The <code>ReportBase</code> collection returned is sorted from newest to oldest.
      * 
-     * <p>The returned <code>Deque</code> reflects changes to the underlying order history. 
+     * <p>The returned <code>Deque</code> does not change and will not reflect future changes.
      * 
      * <p>The given <code>OrderID</code> may be either an order ID or an original order ID. The reports
      * returned will be the same in either case. If no history exists for the given <code>OrderID<code>,
@@ -270,9 +303,7 @@ public class OrderHistoryManager
         synchronized(orders) {
             OrderHistory history = orders.get(inOrderId);
             if(history == null) {
-                history = new OrderHistory();
-                orders.put(inOrderId,
-                           history);
+                return NO_ORDER_HISTORY;
             }
             return history.getOrderHistory();
         }
@@ -332,7 +363,7 @@ public class OrderHistoryManager
             OrderHistory history = orders.get(inOrderId);
             if(history != null) {
                 for(OrderID orderID : history.getOrderIdChain()) {
-                    SLF4JLoggerProxy.debug(OrderHistoryManager.class,
+                    SLF4JLoggerProxy.debug(this,
                                            "Clearing history for {}", //$NON-NLS-1$
                                            orderID);
                     orders.remove(orderID);
@@ -489,6 +520,10 @@ public class OrderHistoryManager
      * sentinel collection used to indicate there is no order chain for a given order ID
      */
     private static final Set<OrderID> NO_ORDER_CHAIN = Collections.emptySet();
+    /**
+     * sentinel collection used to indicate there is no order history for a given order ID
+     */
+    private static final Deque<ReportBase> NO_ORDER_HISTORY = new UnmodifiableDeque<ReportBase>(new LinkedList<ReportBase>());
     /**
      * constant used to separate lines in status display
      */

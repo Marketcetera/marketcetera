@@ -17,6 +17,7 @@
             id="org.marketcetera.photon.strategy">
       </category>
       <view
+            category="org.marketcetera.photon.strategy"
             class="org.eclipse.ui.navigator.CommonNavigator"
             icon="icons/resource_persp.gif"
             id="org.marketcetera.photon.strategy.ProjectExplorer"

@@ -161,9 +161,7 @@ public class PositionEngineFactory {
             if(item instanceof ExecutionReport) {
                 ExecutionReport er = (ExecutionReport)item;
                 ExecutionType executionType = er.getExecutionType();
-                return originator == Originator.Broker &&
-                       (executionType == ExecutionType.Fill || executionType == ExecutionType.PartialFill) &&
-                       isValid(er);
+                return originator == Originator.Broker && executionType != null && executionType.isFill() && isValid(er);
             } else {
                 return false;
             }

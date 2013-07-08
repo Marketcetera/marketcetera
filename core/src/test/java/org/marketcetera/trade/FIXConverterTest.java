@@ -151,7 +151,8 @@ public class FIXConverterTest
          boolean timeInForce,
          boolean positionEffect,
          boolean orderCapacity,
-         boolean price)
+         boolean price,
+         boolean displayQuantity)
     {
         if (orderType) {
             o.setOrderType(OrderType.Limit);
@@ -181,6 +182,12 @@ public class FIXConverterTest
             o.setPrice(BigDecimal.ZERO);
             msg.setField
                 (new quickfix.field.Price
+                 (BigDecimal.ZERO));
+        }
+        if (displayQuantity) {
+            o.setDisplayQuantity(BigDecimal.ZERO);
+            msg.setField
+                (new quickfix.field.MaxFloor
                  (BigDecimal.ZERO));
         }
     }
@@ -224,6 +231,7 @@ public class FIXConverterTest
          boolean side,
          boolean orderType,
          boolean quantity,
+         boolean displayQuantity,
          boolean timeInForce,
          boolean account,
          boolean positionEffect,
@@ -258,7 +266,7 @@ public class FIXConverterTest
         if (o instanceof NewOrReplaceOrder) {
             addNewOrReplaceOrderFields
                 ((NewOrReplaceOrder)o,expectedMsg,orderType,timeInForce,
-                 positionEffect,orderCapacity,price);
+                 positionEffect,orderCapacity,price,displayQuantity);
         }
         if (o instanceof RelatedOrder) {
             addRelatedOrderFields
@@ -311,6 +319,7 @@ public class FIXConverterTest
          boolean side,
          boolean orderType,
          boolean quantity,
+         boolean displayQuantity,
          boolean timeInForce,
          boolean account,
          boolean positionEffect,
@@ -322,7 +331,7 @@ public class FIXConverterTest
         testOrder
             (OrderClass.OrderSingle,dataDictionary,orderID,
              false,false,instrument,side,
-             orderType,quantity,timeInForce,account,
+             orderType,quantity,displayQuantity,timeInForce,account,
              positionEffect,orderCapacity,price,customFields,
              expectedExceptionMsg);
     }
@@ -338,6 +347,7 @@ public class FIXConverterTest
          boolean side,
          boolean orderType,
          boolean quantity,
+         boolean displayQuantity,
          boolean timeInForce,
          boolean account,
          boolean positionEffect,
@@ -348,7 +358,7 @@ public class FIXConverterTest
     {
         testOrderSingle
             (getSystemMessageDictionary().getDictionary(),orderID,
-             instrument,side,orderType,quantity,timeInForce,account,
+             instrument,side,orderType,quantity,displayQuantity,timeInForce,account,
              positionEffect,orderCapacity,price,customFields,
              expectedExceptionMsg);
     }
@@ -364,6 +374,7 @@ public class FIXConverterTest
          boolean side,
          boolean orderType,
          boolean quantity,
+         boolean displayQuantity,
          boolean timeInForce,
          boolean account,
          boolean positionEffect,
@@ -374,7 +385,7 @@ public class FIXConverterTest
     {
         testOrderSingle
             (SymbolOnlyDictionary.INSTANCE,orderID,
-             instrument,side,orderType,quantity,timeInForce,account,
+             instrument,side,orderType,quantity,displayQuantity,timeInForce,account,
              positionEffect,orderCapacity,price,customFields,
              expectedExceptionMsg);
     }
@@ -391,6 +402,7 @@ public class FIXConverterTest
          boolean instrument,
          boolean side,
          boolean quantity,
+         boolean displayQuantity,
          boolean account,
          boolean customFields,
          I18NBoundMessage expectedExceptionMsg)
@@ -398,7 +410,7 @@ public class FIXConverterTest
         testOrder
             (OrderClass.OrderCancel,dataDictionary,orderID,
              originalOrderID,brokerOrderID,instrument,side,
-             false,quantity,false,account,
+             false,quantity,displayQuantity,false,account,
              false,false,false,customFields,
              expectedExceptionMsg);
     }
@@ -415,6 +427,7 @@ public class FIXConverterTest
          boolean instrument,
          boolean side,
          boolean quantity,
+         boolean displayQuantity,
          boolean account,
          boolean customFields,
          I18NBoundMessage expectedExceptionMsg)
@@ -422,7 +435,7 @@ public class FIXConverterTest
         testOrderCancel
             (getSystemMessageDictionary().getDictionary(),orderID,
              originalOrderID,brokerOrderID,instrument,side,
-             quantity,account,customFields,
+             quantity,displayQuantity,account,customFields,
              expectedExceptionMsg);
     }
 
@@ -438,6 +451,7 @@ public class FIXConverterTest
          boolean instrument,
          boolean side,
          boolean quantity,
+         boolean displayQuantity,
          boolean account,
          boolean customFields,
          I18NBoundMessage expectedExceptionMsg)
@@ -445,7 +459,7 @@ public class FIXConverterTest
         testOrderCancel
             (SymbolOnlyDictionary.INSTANCE,orderID,
              originalOrderID,brokerOrderID,instrument,side,
-             quantity,account,customFields,
+             quantity,displayQuantity,account,customFields,
              expectedExceptionMsg);
     }
 
@@ -462,6 +476,7 @@ public class FIXConverterTest
          boolean side,
          boolean orderType,
          boolean quantity,
+         boolean displayQuantity,
          boolean timeInForce,
          boolean account,
          boolean positionEffect,
@@ -473,7 +488,7 @@ public class FIXConverterTest
         testOrder
             (OrderClass.OrderReplace,dataDictionary,orderID,
              originalOrderID,brokerOrderID,instrument,side,
-             orderType,quantity,timeInForce,account,
+             orderType,quantity,displayQuantity,timeInForce,account,
              positionEffect,orderCapacity,price,customFields,
              expectedExceptionMsg);
     }
@@ -491,6 +506,7 @@ public class FIXConverterTest
          boolean side,
          boolean orderType,
          boolean quantity,
+         boolean displayQuantity,
          boolean timeInForce,
          boolean account,
          boolean positionEffect,
@@ -502,7 +518,7 @@ public class FIXConverterTest
         testOrderReplace
             (getSystemMessageDictionary().getDictionary(),orderID,
              originalOrderID,brokerOrderID,instrument,side,
-             orderType,quantity,timeInForce,account,
+             orderType,quantity,displayQuantity,timeInForce,account,
              positionEffect,orderCapacity,price,customFields,
              expectedExceptionMsg);
     }
@@ -520,6 +536,7 @@ public class FIXConverterTest
          boolean side,
          boolean orderType,
          boolean quantity,
+         boolean displayQuantity,
          boolean timeInForce,
          boolean account,
          boolean positionEffect,
@@ -531,7 +548,7 @@ public class FIXConverterTest
         testOrderReplace
             (SymbolOnlyDictionary.INSTANCE,orderID,
              originalOrderID,brokerOrderID,instrument,side,
-             orderType,quantity,timeInForce,account,
+             orderType,quantity,displayQuantity,timeInForce,account,
              positionEffect,orderCapacity,price,customFields,
              expectedExceptionMsg);
     }
@@ -584,53 +601,56 @@ public class FIXConverterTest
         throws Exception
     {
         testOrderSingleSupported
-            (true,true,true,true,true,true,true,true,true,true,true,
+            (true,true,true,true,true,true,true,true,true,true,true,true,
              null);
         testOrderSingleSupported
-            (false,true,true,true,true,true,true,true,true,true,true,
+            (false,true,true,true,true,true,true,true,true,true,true,true,
              Messages.NO_ORDER_ID);
         testOrderSingleSupported
-            (true,false,true,true,true,true,true,true,true,true,true,
+            (true,false,true,true,true,true,true,true,true,true,true,true,
              new I18NBoundMessage1P(Messages.NO_INSTRUMENT,null));
         testOrderSingleSupported
-            (true,true,false,true,true,true,true,true,true,true,true,
+            (true,true,false,true,true,true,true,true,true,true,true,true,
              new I18NBoundMessage1P(Messages.NO_SIDE,null));
         testOrderSingleSupported
-            (true,true,true,false,true,true,true,true,true,true,true,
+            (true,true,true,false,true,true,true,true,true,true,true,true,
              new I18NBoundMessage1P(Messages.NO_ORDER_TYPE,null));
         testOrderSingleSupported
-            (true,true,true,true,true,true,true,true,true,false,true,
+            (true,true,true,true,true,true,true,true,true,true,false,true,
              Messages.NO_PRICE);
         testOrderSingleSupported
-            (true,true,true,true,false,false,false,false,false,true,false,
+            (true,true,true,true,false,false,false,false,false,false,true,false,
              null);
 
         testOrderSingleUnsupported
-            (true,false,false,false,false,false,false,false,false,false,false,
+            (true,false,false,false,false,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_ORDER_ID);
         testOrderSingle
-            (EmptyDictionary.INSTANCE,false,true,false,false,false,false,false,false,false,false,false,
+            (EmptyDictionary.INSTANCE,false,true,false,false,false,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_INSTRUMENT);
         testOrderSingleUnsupported
-            (false,true,true,false,false,false,false,false,false,false,false,
+            (false,true,true,false,false,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_SIDE);
         testOrderSingleUnsupported
-            (false,true,false,true,false,false,false,false,false,false,false,
+            (false,true,false,true,false,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_ORDER_TYPE);
         testOrderSingleUnsupported
-            (false,true,false,false,true,false,false,false,false,false,false,
+            (false,true,false,false,true,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_QUANTITY);
         testOrderSingleUnsupported
-            (false,true,false,false,false,true,false,false,false,false,false,
+        	(false,true,false,false,false,true,false,false,false,false,false,false,
+        			Messages.UNSUPPORTED_DISPLAY_QUANTITY);
+        testOrderSingleUnsupported
+            (false,true,false,false,false,false,true,false,false,false,false,false,
              Messages.UNSUPPORTED_TIME_IN_FORCE);
         testOrderSingleUnsupported
-            (false,true,false,false,false,false,true,false,false,false,false,
+            (false,true,false,false,false,false,false,true,false,false,false,false,
              Messages.UNSUPPORTED_ACCOUNT);
         testOrderSingleUnsupported
-            (false,true,false,false,false,false,false,true,false,false,false,
+            (false,true,false,false,false,false,false,false,true,false,false,false,
              Messages.UNSUPPORTED_POSITION_EFFECT);
         testOrderSingleUnsupported
-            (false,true,false,false,false,false,false,false,true,false,false,
+            (false,true,false,false,false,false,false,false,false,true,false,false,
              Messages.UNSUPPORTED_ORDER_CAPACITY);
     }
 
@@ -639,44 +659,44 @@ public class FIXConverterTest
         throws Exception
     {
         testOrderCancelSupported
-            (true,true,true,true,true,true,true,true,
+            (true,true,true,true,true,true,true,true,true,
              null);
         testOrderCancelSupported
-            (false,true,true,true,true,true,true,true,
+            (false,true,true,true,true,true,true,true,true,
              Messages.NO_ORDER_ID);
         testOrderCancelSupported
-            (true,false,true,true,true,true,true,true,
+            (true,false,true,true,true,true,true,true,true,
              Messages.NO_ORIGINAL_ORDER_ID);
         testOrderCancelSupported
-            (true,true,true,false,true,true,true,true,
+            (true,true,true,false,true,true,true,true,true,
              new I18NBoundMessage1P(Messages.NO_INSTRUMENT,null));
         testOrderCancelSupported
-            (true,true,true,true,false,true,true,true,
+            (true,true,true,true,false,true,true,true,true,
              new I18NBoundMessage1P(Messages.NO_SIDE,null));
         testOrderCancelSupported
-            (true,true,false,true,true,false,false,false,
+            (true,true,false,true,true,false,false,false,false,
              null);
 
         testOrderCancelUnsupported
-            (true,false,false,false,false,false,false,false,
+            (true,false,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_ORDER_ID);
         testOrderCancelUnsupported
-            (false,true,false,false,false,false,false,false,
+            (false,true,false,false,false,false,false,false,false,
              Messages.UNSUPPORTED_ORIGINAL_ORDER_ID);
         testOrderCancelUnsupported
-            (false,false,true,true,false,false,false,false,
+            (false,false,true,true,false,false,false,false,false,
              Messages.UNSUPPORTED_BROKER_ORDER_ID);
         testOrderCancel
-            (EmptyDictionary.INSTANCE,false,false,false,true,false,false,false,false,
+            (EmptyDictionary.INSTANCE,false,false,false,true,false,false,false,false,false,
              Messages.UNSUPPORTED_INSTRUMENT);
         testOrderCancelUnsupported
-            (false,false,false,true,true,false,false,false,
+            (false,false,false,true,true,false,false,false,false,
              Messages.UNSUPPORTED_SIDE);
         testOrderCancelUnsupported
-            (false,false,false,true,false,true,false,false,
+            (false,false,false,true,false,true,false,false,false,
              Messages.UNSUPPORTED_QUANTITY);
         testOrderCancelUnsupported
-            (false,false,false,true,false,false,true,false,
+            (false,false,false,true,false,false,false,true,false,
              Messages.UNSUPPORTED_ACCOUNT);
     }
 
@@ -685,70 +705,74 @@ public class FIXConverterTest
         throws Exception
     {
         testOrderReplaceSupported
-            (true,true,true,true,true,true,true,true,true,true,true,true,true,
+            (true,true,true,true,true,true,true,true,true,true,true,true,true,true,
              null);
         testOrderReplaceSupported
-            (false,true,true,true,true,true,true,true,true,true,true,true,true,
+            (false,true,true,true,true,true,true,true,true,true,true,true,true,true,
              Messages.NO_ORDER_ID);
         testOrderReplaceSupported
-            (true,false,true,true,true,true,true,true,true,true,true,true,true,
+            (true,false,true,true,true,true,true,true,true,true,true,true,true,true,
              Messages.NO_ORIGINAL_ORDER_ID);
         testOrderReplaceSupported
-            (true,true,true,false,true,true,true,true,true,true,true,true,true,
+            (true,true,true,false,true,true,true,true,true,true,true,true,true,true,
              new I18NBoundMessage1P(Messages.NO_INSTRUMENT,null));
         testOrderReplaceSupported
-            (true,true,true,true,false,true,true,true,true,true,true,true,true,
+            (true,true,true,true,false,true,true,true,true,true,true,true,true,true,
              new I18NBoundMessage1P(Messages.NO_SIDE,null));
         testOrderReplaceSupported
-            (true,true,true,true,true,false,true,true,true,true,true,true,true,
+            (true,true,true,true,true,false,true,true,true,true,true,true,true,true,
              new I18NBoundMessage1P(Messages.NO_ORDER_TYPE,null));
         testOrderReplaceSupported
-            (true,true,false,true,true,true,false,false,false,false,false,
+            (true,true,false,true,true,true,false,false,false,false,false,false,
              false,false,
              null);
 
         testOrderReplaceUnsupported
-            (true,false,false,false,false,false,false,false,false,false,false,
+            (true,false,false,false,false,false,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_ORDER_ID);
         testOrderReplaceUnsupported
-            (false,true,false,false,false,false,false,false,false,false,false,
+            (false,true,false,false,false,false,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_ORIGINAL_ORDER_ID);
         testOrderReplaceUnsupported
-            (false,false,true,true,false,false,false,false,false,false,false,
+            (false,false,true,true,false,false,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_BROKER_ORDER_ID);
         testOrderReplace
-            (EmptyDictionary.INSTANCE,false,false,false,true,false,false,false,false,false,false,false,
+            (EmptyDictionary.INSTANCE,false,false,false,true,true,false,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_INSTRUMENT);
         testOrderReplaceUnsupported
-            (false,false,false,true,true,false,false,false,false,false,false,
+            (false,false,false,true,true,true,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_SIDE);
         testOrderReplaceUnsupported
-            (false,false,false,true,false,true,false,false,false,false,false,
+            (false,false,false,true,false,true,false,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_ORDER_TYPE);
         testOrderReplaceUnsupported
-            (false,false,false,true,false,false,true,false,false,false,false,
+            (false,false,false,true,false,false,true,false,false,false,false,false,
              false,false,
              Messages.UNSUPPORTED_QUANTITY);
         testOrderReplaceUnsupported
-            (false,false,false,true,false,false,false,true,false,false,false,
+        	(false,false,false,true,false,false,false,true,false,false,false,false,
+        	false,false,
+         Messages.UNSUPPORTED_DISPLAY_QUANTITY);
+        testOrderReplaceUnsupported
+            (false,false,false,true,false,false,false,false,true,false,false,false,
              false,false,
              Messages.UNSUPPORTED_TIME_IN_FORCE);
         testOrderReplaceUnsupported
-            (false,false,false,true,false,false,false,false,true,false,false,
+            (false,false,false,true,false,false,false,false,false,true,false,false,
              false,false,
              Messages.UNSUPPORTED_ACCOUNT);
         testOrderReplaceUnsupported
-            (false,false,false,true,false,false,false,false,false,true,false,
+            (false,false,false,true,false,false,false,false,false,false,true,false,
              false,false,
              Messages.UNSUPPORTED_POSITION_EFFECT);
         testOrderReplaceUnsupported
-            (false,false,false,true,false,false,false,false,false,false,true,
+            (false,false,false,true,false,false,false,false,false,false,false,true,
              false,false,
              Messages.UNSUPPORTED_ORDER_CAPACITY);
     }

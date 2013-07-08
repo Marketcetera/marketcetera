@@ -6,6 +6,7 @@ import org.marketcetera.ors.security.SingleSimpleUserQuery;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
@@ -142,7 +143,13 @@ class PersistentReport extends EntityBase {
         String fixMsgString = null;
         try {
             fixMsgString = getFixMessage();
-            Message fixMessage = new Message(fixMsgString);
+            Message fixMessage;
+            try {
+            	fixMessage = new Message(fixMsgString);
+			} catch (InvalidMessage e) {
+				fixMessage =  new Message(fixMsgString,false); // log the validation exception and create message without validation.
+				SLF4JLoggerProxy.warn(PersistentReport.class, e);    
+			}
             switch(mReportType) {
                 case ExecutionReport:
                     returnValue =  Factory.getInstance().createExecutionReport(

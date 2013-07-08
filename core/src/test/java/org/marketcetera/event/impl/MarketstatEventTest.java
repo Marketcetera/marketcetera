@@ -64,6 +64,11 @@ public class MarketstatEventTest
        verify(setDefaults(getBuilder()));
        useInstrument = true;
        verify(setDefaults(getBuilder()));
+       instrument = currency;
+       useInstrument = false;
+       verify(setDefaults(getBuilder()));
+       useInstrument = true;
+       verify(setDefaults(getBuilder()));
        // create a new kind of instrument
        new ExpectedFailure<UnsupportedOperationException>() {
            @Override
@@ -119,6 +124,19 @@ public class MarketstatEventTest
         };
         futureBuilder.withInstrument(future);
         assertNotNull(futureBuilder.create());
+        
+        final MarketstatEventBuilder currencyBuilder = setDefaults(MarketstatEventBuilder.currencyMarketstat());
+        currencyBuilder.withInstrument(equity);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+            	currencyBuilder.create();
+            }
+        };
+        currencyBuilder.withInstrument(currency);
+        assertNotNull(currencyBuilder.create());
     }
     /**
      * Tests {@link MarketstatEventBuilder#withMessageId(long)}.
@@ -941,6 +959,27 @@ public class MarketstatEventTest
                 futureBuilder.create();
             }
         };
+        
+        final MarketstatEventBuilder currencyBuilder = MarketstatEventBuilder.currencyMarketstat();
+        instrument = currency;
+        setDefaults(currencyBuilder).withInstrument(null);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+            	currencyBuilder.create();
+            }
+        };
+        setDefaults(currencyBuilder).withInstrument(equity);
+        new ExpectedFailure<IllegalArgumentException>(VALIDATION_CURRENCY_REQUIRED.getText()) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+            	currencyBuilder.create();
+            }
+        };
     }
     /**
      * Verifies that the given builder can produce an event of the
@@ -1116,6 +1155,8 @@ public class MarketstatEventTest
                 return MarketstatEventBuilder.optionMarketstat();
             } else if(instrument instanceof Future) {
                 return MarketstatEventBuilder.futureMarketstat();
+            } else if(instrument instanceof Currency) {
+                return MarketstatEventBuilder.currencyMarketstat();
             }
         }
         throw new UnsupportedOperationException();
@@ -1145,6 +1186,10 @@ public class MarketstatEventTest
     private final Future future = new Future("AAPL",
                                              FutureExpirationMonth.APRIL,
                                              12);
+    /**
+     * test currency
+     */
+    private final Currency currency = new Currency("USD/INR");
     /**
      * counter used to guarantee unique events
      */

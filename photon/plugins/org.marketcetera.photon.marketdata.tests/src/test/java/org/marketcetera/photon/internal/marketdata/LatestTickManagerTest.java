@@ -21,6 +21,8 @@ import org.marketcetera.options.ExpirationType;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -54,6 +56,11 @@ public class LatestTickManagerTest extends
                 OptionType.Put));
     }
 
+    @Override
+    protected LatestTickKey createKey4() {
+        return new LatestTickKey(new Future("IBM", FutureExpirationMonth.DECEMBER, 2014));
+    }
+    
     @Override
     protected LatestTickKey createKey3() {
         return new LatestTickKey(new Equity("JAVA"));
@@ -120,6 +127,19 @@ public class LatestTickManagerTest extends
         }
         return builder.create();
     }
+    
+    private Object createFutureEvent(Instrument instrument, int price, int size, int multiplier) {
+        TradeEventBuilder<TradeEvent> builder = TradeEventBuilder.tradeEvent(
+                instrument).withExchange("Q").withTradeDate("bogus").withPrice(
+                new BigDecimal(price)).withSize(new BigDecimal(size));
+        if (instrument instanceof Future) {
+            builder = builder.withUnderlyingInstrument(
+                    new Equity(instrument.getSymbol())).withExpirationType(
+                    ExpirationType.AMERICAN).withMultiplier(
+                    new BigDecimal(multiplier));
+        }
+        return builder.create();
+    }
 
     @Override
     protected void validateRequest(LatestTickKey key, MarketDataRequest request) {
@@ -144,6 +164,25 @@ public class LatestTickManagerTest extends
         assertThat(mItem2.getPrice(), comparesEqualTo(4));
         assertThat(mItem2.getSize(), comparesEqualTo(5));
         assertThat(mItem2.getMultiplier(), comparesEqualTo(6));
+        // finish
+        mFixture.stopFlow(mKey2);
+    }
+    
+    @Test
+    public void futureMultiplier() throws Exception {
+        // start flow
+        mFixture.startFlow(mKey4);
+        // emit event with multiplier
+        emit(createFutureEvent(mKey4.getInstrument(), 1, 2, 3));
+        // item should have changed
+        assertThat(mItem4.getPrice(), comparesEqualTo(1));
+        assertThat(mItem4.getSize(), comparesEqualTo(2));
+        assertThat(mItem4.getMultiplier(), comparesEqualTo(3));
+        // emit another event
+        emit(createFutureEvent(mKey2.getInstrument(), 4, 5, 6));
+        assertThat(mItem4.getPrice(), comparesEqualTo(4));
+        assertThat(mItem4.getSize(), comparesEqualTo(5));
+        assertThat(mItem4.getMultiplier(), comparesEqualTo(6));
         // finish
         mFixture.stopFlow(mKey2);
     }

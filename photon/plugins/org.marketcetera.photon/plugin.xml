@@ -63,12 +63,6 @@
             name="Currency Order Ticket"
             allowMultiple="true"
             />
-      <view
-            category="org.marketcetera.photon.category"
-            class="org.marketcetera.photon.views.WebBrowserView"
-            icon="icons/silk/world_go.png"
-            id="org.marketcetera.photon.views.WebBrowserView"
-            name="Browser"/>
       <category
             id="org.marketcetera.photon.category"
             name="Photon"/>
@@ -101,7 +95,7 @@
             id="org.marketcetera.photon.views.AveragePriceView"
             name="Average Price"/>
       <view
-            category="org.marketcetera.photon.category"
+            category="org.marketcetera.photon.marketdata.MarketDataViewCategory"
             class="org.marketcetera.photon.views.MarketDataView"
             icon="icons/silk/chart_curve.png"
             id="org.marketcetera.photon.views.MarketDataView"
@@ -200,7 +194,7 @@
          </property>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0A;&#x0A;Version: 2.4.0&#x0A;Build: metc.build.number&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2012.  All rights reserved.&#x0A;Visit http://www.marketcetera.org">
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 2.4.0&#x0A;Build: metc.build.number&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2013.  All rights reserved.&#x0A;Visit http://www.marketcetera.org">
          </property>
       </product>
    </extension>
@@ -221,12 +215,6 @@
             keySequence="M3+C"/>
       <command
             categoryId="org.marketcetera.photon.commands"
-            description="%command.lookup.description"
-            id="org.marketcetera.photon.lookup"
-            name="%command.lookup.name">
-      </command>
-      <command
-            categoryId="org.marketcetera.photon.commands"
             defaultHandler="org.marketcetera.photon.ui.marketdata.ReconnectMarketData"
             description="%command.reconnectMarketData.description"
             id="org.marketcetera.photon.reconnectMarketData"
@@ -241,10 +229,24 @@
       </command>
       <command
             categoryId="org.marketcetera.photon.commands"
-            defaultHandler="org.marketcetera.photon.commands.CreateEquityOrderFromQuote"
-            description="%commands.createEquityOrderFromQuote.description"
-            id="org.marketcetera.photon.createEquityOrderFromQuote"
-            name="%commands.createEquityOrderFromQuote.name">
+            defaultHandler="org.marketcetera.photon.commands.CreateOrderFromQuote"
+            description="%commands.createOrderFromQuote.description"
+            id="org.marketcetera.photon.createOrderFromQuote"
+            name="%commands.createOrderFromQuote.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            defaultHandler="org.marketcetera.photon.views.MarketDataView$BuyCommandHandler"
+            description="%commands.createEquityBuyOrderFromMarketData.description"
+            id="org.marketcetera.photon.createEquityBuyOrderFromMarketData"
+            name="%commands.createEquityBuyOrderFromMarketData.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            defaultHandler="org.marketcetera.photon.views.MarketDataView$SellCommandHandler"
+            description="%commands.createEquitySellOrderFromMarketData.description"
+            id="org.marketcetera.photon.createEquitySellOrderFromMarketData"
+            name="%commands.createEquitySellOrderFromMarketData.name">
       </command>
    </extension>
    <extension
@@ -268,17 +270,6 @@
          		icon="icons/silk/pencil.png"
          		id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
          		label="&amp;Replace order"/>
-         </objectContribution>
-         <objectContribution
-         	adaptable="false"
-         	id="org.marketcetera.photon.actions.ViewSecurityActionDelegate"
-         	objectClass="org.marketcetera.messagehistory.ReportHolder">
-         	<action
-                class="org.marketcetera.photon.actions.ViewSecurityActionDelegate"
-                enablesFor="+"
-                icon="icons/silk/world_go.png"
-                id="org.marketcetera.photon.actions.ViewSecurityAction"
-                label="View Security"/>
          </objectContribution>
    <objectContribution
          adaptable="false"
@@ -318,14 +309,24 @@
              </visibleWhen>
           </command>
           <command
-                commandId="org.marketcetera.photon.lookup"
-                icon="icons/silk/world_go.png"
-                label="%marketDataView.lookup.label"
-                mnemonic="%marketDataView.lookup.mnemonic"
+                commandId="org.marketcetera.photon.createEquityBuyOrderFromMarketData"
+                label="%marketDataView.buy.label"
+                mnemonic="%marketDataView.buy.mnemonic"
                 style="push">
              <visibleWhen>
                 <reference
-                      definitionId="org.marketcetera.photon.symbolProviderSelected">
+                      definitionId="org.marketcetera.photon.marketDataRowsSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <command
+                commandId="org.marketcetera.photon.createEquitySellOrderFromMarketData"
+                label="%marketDataView.sell.label"
+                mnemonic="%marketDataView.sell.mnemonic"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.marketDataRowsSelected">
                 </reference>
              </visibleWhen>
           </command>
@@ -379,7 +380,7 @@
        <menuContribution
              locationURI="popup:org.marketcetera.photon.marketdata.MarketDepthView.bidsPopup">
           <command
-                commandId="org.marketcetera.photon.createEquityOrderFromQuote"
+                commandId="org.marketcetera.photon.createOrderFromQuote"
                 label="%marketDepthView.bidsPopup.sell.label"
                 style="push">
              <visibleWhen
@@ -396,7 +397,7 @@
        <menuContribution
              locationURI="popup:org.marketcetera.photon.marketdata.MarketDepthView.asksPopup">
           <command
-                commandId="org.marketcetera.photon.createEquityOrderFromQuote"
+                commandId="org.marketcetera.photon.createOrderFromQuote"
                 label="%marketDepthView.asksPopup.buy.label"
                 style="push">
              <visibleWhen
@@ -459,15 +460,6 @@
                      value="org.marketcetera.photon.ui.commandLineTrimWidget">
                </equals>
             </with>
-         </activeWhen>
-      </handler>
-      <handler
-            class="org.marketcetera.photon.actions.GoogleFinanceLookupHandler"
-            commandId="org.marketcetera.photon.lookup">
-         <activeWhen>
-            <reference
-                  definitionId="org.marketcetera.photon.symbolProviderSelected">
-            </reference>
          </activeWhen>
       </handler>
       <handler

@@ -25,6 +25,10 @@ public enum OrderType {
      */
     Limit(quickfix.field.OrdType.LIMIT),
     /**
+     * A Market on Close order.
+     */
+    MarketOnClose(quickfix.field.OrdType.MARKET_ON_CLOSE),
+    /**
      * Sentinel value for Order Types that the system is not currently
      * aware of.
      */

@@ -43,6 +43,7 @@ public abstract class OrderTicketModel {
     private final ITypedObservableValue<BrokerID> mBrokerId;
     private final ITypedObservableValue<Side> mSide;
     private final ITypedObservableValue<BigDecimal> mQuantity;
+    private final ITypedObservableValue<BigDecimal> mDisplayQuantity;
     private final ITypedObservableValue<BigDecimal> mPrice;
     private final ITypedObservableValue<TimeInForce> mTimeInForce;
     private final ITypedObservableValue<String> mAccount;
@@ -56,6 +57,7 @@ public abstract class OrderTicketModel {
     public OrderTicketModel() {
         mSide = mOrderObservable.observeSide();
         mQuantity = mOrderObservable.observeQuantity();
+        mDisplayQuantity = mOrderObservable.observeDisplayQuantity();
         mOrderType = mOrderObservable.observeOrderType();
         mPrice = mOrderObservable.observePrice();
         mTimeInForce = mOrderObservable.observeTimeInForce();
@@ -114,6 +116,15 @@ public abstract class OrderTicketModel {
      */
     public final ITypedObservableValue<BigDecimal> getQuantity() {
         return mQuantity;
+    }
+    
+    /**
+     * Returns an observable that tracks the display quantity of the current order.
+     * 
+     * @return the quantity observable
+     */
+    public final ITypedObservableValue<BigDecimal> getDisplayQuantity() {
+        return mDisplayQuantity;
     }
 
     /**

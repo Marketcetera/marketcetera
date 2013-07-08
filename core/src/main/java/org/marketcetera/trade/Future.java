@@ -134,6 +134,7 @@ public class Future
      *
      * @return a <code>String</code> value
      */
+    @Override
     public String getFullSymbol()
     {
         String symbol = getSymbol();

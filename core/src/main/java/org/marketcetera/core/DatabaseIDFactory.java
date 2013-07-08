@@ -1,11 +1,9 @@
 package org.marketcetera.core;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import javax.sql.DataSource;
+import java.sql.*;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class DatabaseIDFactory extends DBBackedIDFactory {
@@ -54,7 +52,7 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
 
     /**
      * Helper function intended to be overwritten by subclasses.
-     * This is where the real request for IDs happens
+     * Thsi is where the real requiest for IDs happens
      */
     protected void performIDRequest() throws Exception {
         Connection dbConnection = null;

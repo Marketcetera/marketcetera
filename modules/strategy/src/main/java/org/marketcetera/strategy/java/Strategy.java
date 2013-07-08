@@ -1,5 +1,6 @@
 package org.marketcetera.strategy.java;
 
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.event.AskEvent;
@@ -80,6 +81,13 @@ public class Strategy
      */
     @Override
     public void onCancelReject(OrderCancelReject inCancel)
+    {
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.RunningStrategy#onreceiveBrokerStatus(org.marketcetera.brokers.BrokerStatus)
+     */
+    @Override
+    public void onReceiveBrokerStatus(BrokerStatus inStatus)
     {
     }
     /*

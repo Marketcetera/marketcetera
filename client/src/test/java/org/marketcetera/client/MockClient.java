@@ -360,6 +360,25 @@ public class MockClient
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void addReport(FIXMessageWrapper inReport,
+                          BrokerID inBrokerID)
+            throws ConnectionException
+    {
+        throw new UnsupportedOperationException();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
+     */
+    @Override
+    public void deleteReport(ExecutionReport inReport)
+            throws ConnectionException
+    {
+        throw new UnsupportedOperationException();
+    }
     /**
      * Gets the <code>ClientParameters</code> value used to initialize the client.
      *

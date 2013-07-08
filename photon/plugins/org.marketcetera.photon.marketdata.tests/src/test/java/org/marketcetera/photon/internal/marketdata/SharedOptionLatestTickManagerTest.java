@@ -22,6 +22,8 @@ import org.marketcetera.options.ExpirationType;
 import org.marketcetera.photon.model.marketdata.MDLatestTick;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
@@ -45,6 +47,8 @@ public class SharedOptionLatestTickManagerTest
             new Equity("METC"));
     private final SharedOptionLatestTickKey mKey3 = new SharedOptionLatestTickKey(
             new Equity("JAVA"));
+    private final SharedOptionLatestTickKey mKey4 = new SharedOptionLatestTickKey(
+            new Equity("YHOO"));
     private final Option mOption1a = new Option("IBM", "200901",
             BigDecimal.TEN, OptionType.Put);
     private final Option mOption1b = new Option("IBM", "200901",
@@ -57,6 +61,7 @@ public class SharedOptionLatestTickManagerTest
             BigDecimal.TEN, OptionType.Put);
     private final Option mOption3b = new Option("JAVA", "200901",
             BigDecimal.TEN, OptionType.Call);
+    private final Future mFuture4 = new Future("YHOO", FutureExpirationMonth.DECEMBER,2014);
 
     @Override
     protected IDataFlowManager<Map<Option, MDLatestTickImpl>, SharedOptionLatestTickKey> createFixture(
@@ -89,6 +94,11 @@ public class SharedOptionLatestTickManagerTest
     @Override
     protected SharedOptionLatestTickKey createKey3() {
         return mKey3;
+    }
+    
+    @Override
+    protected SharedOptionLatestTickKey createKey4() {
+        return mKey4;
     }
 
     @Override

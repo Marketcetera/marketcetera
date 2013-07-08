@@ -269,4 +269,10 @@ public class SharedOptionMarketstatManagerTest
         // finish
         mFixture.stopFlow(mKey1);
     }
+
+	@Override
+	protected SharedOptionMarketstatKey createKey4() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

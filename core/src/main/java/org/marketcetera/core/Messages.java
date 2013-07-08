@@ -78,6 +78,8 @@ public interface Messages
         new I18NMessage0P(LOGGER,"error_in_memory_id_factory_overrun"); //$NON-NLS-1$
     static final I18NMessage0P ERROR_NULL_ID = 
         new I18NMessage0P(LOGGER,"error_null_id"); //$NON-NLS-1$
+    static final I18NMessage1P ERROR_CURRENCY_FROM_MESSAGE = 
+            new I18NMessage1P(LOGGER,"error_currency_from_message"); //$NON-NLS-1$
 
     // FIX errors
     static final I18NMessage1P ERROR_FIX_UNEXPECTED_MSGTYPE = 

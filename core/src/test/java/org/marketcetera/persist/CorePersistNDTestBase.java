@@ -1,7 +1,14 @@
 package org.marketcetera.persist;
 
-import org.junit.BeforeClass;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import static org.marketcetera.persist.Messages.*;
+import org.junit.Test;
+import org.junit.BeforeClass;
+import static org.junit.Assert.*;
+
+import java.util.List;
 
 /* $License$ */
 /**

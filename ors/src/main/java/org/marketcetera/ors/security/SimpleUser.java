@@ -85,7 +85,7 @@ public class SimpleUser extends NDEntityBase {
      *
      * @return a <code>String</code> value or <code>null</code>
      */
-    @Column(nullable = true,columnDefinition="text")
+    @Column(nullable=true,length=8096)
     public String getUserData()
     {
         return userData;

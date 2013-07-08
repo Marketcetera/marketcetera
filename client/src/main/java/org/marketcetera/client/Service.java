@@ -372,4 +372,37 @@ public interface Service
     void setUserData(@WebParam(name= "context")ClientContext inContext,
                      @WebParam(name = "userData")String inData)
             throws RemoteException;
+    /**
+     * Adds the given report to the system data flow.
+     * 
+     * <p>Reports added this way will be added to the system data bus. Reports will be
+     * persisted and become part of the system record. All clients will receive this
+     * report.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inContext a <code>ClientContent</code> value
+     * @param inReport a <code>FIXMessageWrapper</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @throws RemoteException if an error occurs
+     */
+    void addReport(@WebParam(name="context")ClientContext inContext,
+                   @WebParam(name="report")FIXMessageWrapper inReport,
+                   @WebParam(name="brokerID")BrokerID inBrokerID)
+            throws RemoteException;
+    /**
+     * Removes the given report from the persistent report store.
+     * 
+     * <p>Reports removed this way will not be added to the system data bus and no clients
+     * will receive this report.
+     * 
+     * <p><em>This will affect reported positions</em></p>.
+     *
+     * @param inContext a <code>ClientContent</code> value
+     * @param inReport an <code>ExecutionReport</code> value
+     * @throws RemoteException if an error occurs
+     */
+    void deleteReport(@WebParam(name="context")ClientContext inContext,
+                      @WebParam(name="report")ExecutionReport inReport)
+            throws RemoteException;
 }

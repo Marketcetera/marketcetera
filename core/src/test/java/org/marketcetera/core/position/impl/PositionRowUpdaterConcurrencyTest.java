@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.marketcetera.core.position.MarketDataSupport;
 import org.marketcetera.core.position.Trade;
 import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -147,7 +148,7 @@ public class PositionRowUpdaterConcurrencyTest {
             synchronized (mSimulatedDataFlowLock) {
                 InstrumentMarketDataEvent event = new InstrumentMarketDataEvent(
                         this, new BigDecimal(mGenerator.nextInt(5)));
-                int type = mGenerator.nextInt(2);
+                int type = mGenerator.nextInt(4);
                 for (InstrumentMarketDataListener listener : mListeners) {
                     switch (type) {
                     case 0:
@@ -158,6 +159,10 @@ public class PositionRowUpdaterConcurrencyTest {
                         break;
                     case 2:
                         listener.optionMultiplierChanged(event);
+                        break;
+                    case 3:
+                        listener.futureMultiplierChanged(event);
+                        break;
                     default:
                         throw new AssertionError();
                     }
@@ -180,6 +185,11 @@ public class PositionRowUpdaterConcurrencyTest {
             return null;
         }
 
+		@Override
+		public BigDecimal getFutureMultiplier(Future future) {
+			return null;
+		}
+		
         @Override
         public void removeInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
             synchronized (mSimulatedDataFlowLock) {

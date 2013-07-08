@@ -94,6 +94,16 @@ class FIXUtil {
         }
         return null;
     }
+    static BigDecimal getOrderDisplayQuantity(Message inMessage) {
+        if (inMessage.isSetField(MaxFloor.FIELD)) {
+            try {
+                return inMessage.getDecimal(MaxFloor.FIELD);
+            } catch (FieldNotFound ignore) {
+            }
+        }
+        return null;
+    }
+    
     static Side getSide(Message inMessage) {
         if (inMessage.isSetField(quickfix.field.Side.FIELD)) {
             try {

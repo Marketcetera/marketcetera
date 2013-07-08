@@ -145,15 +145,6 @@ public class LoginDialog
 				false);
 		gridData.widthHint = convertHeightInCharsToPixels(20);
 		userIdText.setLayoutData(gridData);
-		userIdText.addListener(SWT.Modify, new Listener() {
-			public void handleEvent(Event event) {
-				ConnectionDetails d = (ConnectionDetails) savedDetails
-						.get(userIdText.getText());
-				if (d != null) {
-					passwordText.setText(d.getPassword());
-				}
-			}
-		});
 
 		Label passwordLabel = new Label(composite, SWT.NONE);
 		passwordLabel.setText(MENU_PASSWORD_LABEL.getText());
@@ -230,7 +221,7 @@ public class LoginDialog
 		String userId = userIdText.getText();
 		String password = passwordText.getText();
 		connectionDetails = new ConnectionDetails(userId, password);
-		savedDetails.put(userId, connectionDetails);
+		savedDetails.put(userId, new ConnectionDetails(userId, null));
 		if (buttonId == IDialogConstants.OK_ID
 				|| buttonId == IDialogConstants.CANCEL_ID)
 			saveDescriptors();
@@ -241,14 +232,6 @@ public class LoginDialog
 		Preferences preferences = new ConfigurationScope()
 				.getNode(PhotonPlugin.ID);
 		preferences.put(LAST_USER, connectionDetails.getUserId());
-		Preferences connections = preferences.node(SAVED);
-		for (Iterator<String> it = savedDetails.keySet().iterator(); it.hasNext();) {
-			String name = it.next();
-			ConnectionDetails d = (ConnectionDetails) savedDetails.get(name);
-			Preferences connection = connections.node(name);
-			connection.put(PASSWORD_LABEL.getText(),
-			               d.getPassword());
-		}
 		try {
 			preferences.flush();
 		} catch (BackingStoreException e) {
@@ -265,11 +248,8 @@ public class LoginDialog
 			String[] userNames = connections.childrenNames();
 			for (int i = 0; i < userNames.length; i++) {
 				String userName = userNames[i];
-				Preferences node = connections.node(userName);
 				savedDetails.put(userName,
-				                 new ConnectionDetails(userName,
-				                                       node.get(PASSWORD_LABEL.getText(),
-				                                                ""))); //$NON-NLS-1$
+				                 new ConnectionDetails(userName,null));
 			}
 			connectionDetails = (ConnectionDetails) savedDetails
 					.get(preferences.get(LAST_USER, "")); //$NON-NLS-1$

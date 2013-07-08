@@ -1,5 +1,7 @@
 package org.marketcetera.strategy;
 
+import org.marketcetera.client.BrokerStatusListener;
+import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -19,7 +21,7 @@ import org.marketcetera.trade.OrderCancelReject;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public interface RunningStrategy
+public interface RunningStrategy extends BrokerStatusListener
 {
     /**
      * Indicates a <code>TradeEvent</code> has been received.
@@ -63,6 +65,12 @@ public interface RunningStrategy
      * @param inCancelReject an <code>OrderCancelReject</code> value
      */
     public void onCancelReject(OrderCancelReject inCancelReject);
+    /**
+     * Indicates a <code>BrokerStatus</code> has been received.
+     *
+     * @param inStatus a <code>BrokerStatus</code> value
+     */
+    public void onReceiveBrokerStatus(BrokerStatus inStatus);
     /**
      * Indicates an object has been sent that does not fit any of the other callbacks.
      * 

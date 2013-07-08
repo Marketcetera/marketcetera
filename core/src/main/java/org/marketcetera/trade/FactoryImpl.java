@@ -69,6 +69,7 @@ class FactoryImpl extends Factory {
             order.setOrderType(inLatestReport.getOrderType());
             order.setPrice(inLatestReport.getPrice());
             order.setQuantity(inLatestReport.getOrderQuantity());
+            order.setDisplayQuantity(inLatestReport.getOrderDisplayQuantity());
             order.setSide(inLatestReport.getSide());
             order.setInstrument(inLatestReport.getInstrument());
             order.setTimeInForce(inLatestReport.getTimeInForce());
@@ -184,6 +185,7 @@ class FactoryImpl extends Factory {
         order.setOrderType(FIXUtil.getOrderType(inMessage));
         order.setPrice(FIXUtil.getPrice(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
+        order.setDisplayQuantity(FIXUtil.getOrderDisplayQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
         order.setInstrument(FIXUtil.getInstrument(inMessage));
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));
@@ -238,6 +240,7 @@ class FactoryImpl extends Factory {
         order.setOriginalOrderID(FIXUtil.getOriginalOrderID(inMessage));
         order.setPrice(FIXUtil.getPrice(inMessage));
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
+        order.setDisplayQuantity(FIXUtil.getOrderDisplayQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
         order.setInstrument(FIXUtil.getInstrument(inMessage));
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));

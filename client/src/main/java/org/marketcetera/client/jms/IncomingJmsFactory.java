@@ -117,6 +117,7 @@ public class IncomingJmsFactory
             container.setExceptionListener(getExceptionListener());
         }
         container.afterPropertiesSet();
+	container.start();
         return container;
     }
 

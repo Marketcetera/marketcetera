@@ -12,27 +12,15 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.WorkbenchException;
+import org.eclipse.ui.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
@@ -41,30 +29,13 @@ import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
+import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.preferences.PhotonPage;
-import org.marketcetera.photon.views.CurrencyOrderTicketController;
-import org.marketcetera.photon.views.CurrencyOrderTicketModel;
-import org.marketcetera.photon.views.FutureOrderTicketController;
-import org.marketcetera.photon.views.FutureOrderTicketModel;
-import org.marketcetera.photon.views.IOrderTicketController;
-import org.marketcetera.photon.views.OptionOrderTicketController;
-import org.marketcetera.photon.views.OptionOrderTicketModel;
-import org.marketcetera.photon.views.SecondaryIDCreator;
-import org.marketcetera.photon.views.StockOrderTicketController;
-import org.marketcetera.photon.views.StockOrderTicketModel;
-import org.marketcetera.quickfix.CurrentFIXDataDictionary;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.photon.views.*;
+import org.marketcetera.quickfix.*;
 import org.marketcetera.strategy.Strategy;
-import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.NewOrReplaceOrder;
-import org.marketcetera.trade.Option;
+import org.marketcetera.trade.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -144,6 +115,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     private ServiceTracker mLogoutServiceTracker;
     
     private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new ClientUnderlyingSymbolSupport();
+    private ServiceTracker mSymbolResolverServiceTracker;
 
     /**
      * The constructor.
@@ -193,10 +165,13 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         mLogoutServiceTracker = new ServiceTracker(context,
                 ILogoutService.class.getName(), null);
         mLogoutServiceTracker.open();
+        mSymbolResolverServiceTracker = new ServiceTracker(context,
+                                                           ISymbolResolver.class.getName(),
+                                                           null);
+        mSymbolResolverServiceTracker.open();
         context.registerService(UnderlyingSymbolSupport.class.getName(),
                 mUnderlyingSymbolSupport, null);
     }
-
     public void initOrderTickets() {
         stockOrderTicketModel = new StockOrderTicketModel();
         optionOrderTicketModel = new OptionOrderTicketModel();
@@ -228,7 +203,15 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     public UnderlyingSymbolSupport getUnderlyingSymbolSupport() {
         return mUnderlyingSymbolSupport;
     }
-
+    /**
+     * Gets the symbol resolver value.
+     *
+     * @return an <code>ISymbolResolver</code> value
+     */
+    public ISymbolResolver getSymbolResolver()
+    {
+        return (ISymbolResolver)mSymbolResolverServiceTracker.getService();
+    }
     /**
      * This method is called when the plug-in is stopped
      */
@@ -442,10 +425,10 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     }
 
     public CurrencyOrderTicketModel getCurrencyOrderTicketModel() {
-		return currencyOrderTicketModel;
-	}
+        return currencyOrderTicketModel;
+    }
 
-	public StockOrderTicketController getStockOrderTicketController() {
+    public StockOrderTicketController getStockOrderTicketController() {
         return stockOrderTicketController;
     }
 
@@ -459,10 +442,10 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     }
     
     public CurrencyOrderTicketController getCurrencyOrderTicketController() {
-		return currencyOrderTicketController;
-	}
+        return currencyOrderTicketController;
+    }
 
-	/**
+    /**
      * Returns the order ticket appropriate for the given order.
      * 
      * @param order
