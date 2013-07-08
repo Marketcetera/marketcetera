@@ -1,14 +1,19 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-import static org.marketcetera.persist.Messages.*;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage2P;
+import static org.marketcetera.persist.Messages.NAME_ATTRIBUTE_INVALID;
+import static org.marketcetera.persist.Messages.NAME_ATTRIBUTE_TOO_LONG;
+import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 
+import java.util.regex.Pattern;
+
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import java.util.regex.Pattern;
+
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Base class for entities that have a name and description.
@@ -43,6 +48,7 @@ public abstract class NDEntityBase extends EntityBase
      * The name of this entity
      * @return the name of this entity
      */
+    @Column(name="name",nullable=false)
     public String getName() {
         return name;
     }
@@ -59,6 +65,7 @@ public abstract class NDEntityBase extends EntityBase
      * The description of this entity.
      * @return The description.
      */
+    @Column(name="description",nullable=true)
     public String getDescription() {
         return description;
     }

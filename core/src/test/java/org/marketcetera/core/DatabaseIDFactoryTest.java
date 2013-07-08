@@ -32,7 +32,7 @@ public class DatabaseIDFactoryTest {
         new File("junit").deleteOnExit(); //$NON-NLS-1$
         if(mDataSource == null) {
             mDataSource = (DataSource) PersistTestBase.springSetup(
-                    new String[]{"persist.xml"}).getBean("mysqlpool", //$NON-NLS-1$ //$NON-NLS-2$
+                    new String[]{"persist.xml"}).getBean("metcpool", //$NON-NLS-1$ //$NON-NLS-2$
                     DataSource.class);
         }
     }
