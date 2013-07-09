@@ -82,8 +82,10 @@ CREATE TABLE execreports (
      REFERENCES reports(id)
 );
 
-CREATE TABLE id_repository (
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    nextAllowedID BIGINT NOT NULL DEFAULT 0,
-    PRIMARY KEY (id)
+create table id_repository (
+    id bigint not null AUTO_INCREMENT,
+    lastUpdated timestamp,
+    updateCount integer not null,
+    next_id bigint NOT NULL DEFAULT 0,
+    primary key (id)
 );

@@ -83,13 +83,8 @@
      name="outgoingConnectionFactory"
      ref="metc_connection_factory_out"/>
     <!-- The ID generation factory. -->
-    <property
-     name="IDFactory">
-      <bean
-       class="org.marketcetera.core.DatabaseIDFactory">
-        <constructor-arg
-         ref="metc_sql_pool"/>
-      </bean>
+    <property name="IDFactory">
+      <bean class="org.marketcetera.core.DatabaseIDFactory"/>
     </property>
   <!-- The report history services provider. -->
     <property

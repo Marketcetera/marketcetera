@@ -53,5 +53,4 @@
     <bean id="ers" class="org.marketcetera.persist.EntityRemoteServer" scope="singleton">
         <constructor-arg ref="emf"/>
     </bean>
-
 </beans>
