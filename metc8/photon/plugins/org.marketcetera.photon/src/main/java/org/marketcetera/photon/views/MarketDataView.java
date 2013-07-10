@@ -234,7 +234,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__OPEN_PRICE), //$NON-NLS-1$
 				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__HIGH_PRICE), //$NON-NLS-1$
 				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__LOW_PRICE), //$NON-NLS-1$				
-				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__VOLUME) //$NON-NLS-1$
+				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__VOLUME_TRADED) //$NON-NLS-1$
 		};
 	
 		mViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
