@@ -1,0 +1,122 @@
+ul.currencies  {
+  list-style-type: none;
+  margin:0px;
+  padding:0px;
+}
+ul.currencies li.selected { background-color: #ffb; }
+li.currency {
+  list-style-type: none;
+  display:block;
+  margin:0;
+  padding:2px;
+  height:32px;
+}
+li.currency div.alpha_code {
+  font-weight:bold;
+  font-size:12px;
+  line-height:1.2em;
+}
+li.currency div.description {
+  font-size:10px;
+  color:#888;
+}
+
+
+
+/************************************************
+Table stuff
+************************************************/
+
+table {
+	border-spacing:1px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	font-size:10px;
+	background-color:#E7E7E7;
+	color: #666666;
+}
+
+caption {
+	font-weight: bold;
+	border-bottom:2px solid #1975d7;
+	color: #FFF;
+	text-transform:uppercase;
+	padding:10px;
+}
+
+td, th {
+	padding: 4px;
+}
+
+thead th {
+	text-align: center;
+	background: #F5F5F5;
+	color: #666;
+	border: 1px solid #FFF;
+	text-transform:uppercase;
+}
+
+tbody th {
+	font-weight: bold;
+}
+
+tbody tr		{
+	background-color:#FFF; 
+	text-align:left;
+	}
+tbody tr.odd 	{
+	background: #f9f9f9;
+	border-top:1px solid #FFF;
+}
+
+tbody th a:link, tbody th a:visited{
+	color:#96D030;
+	padding:3px 0px 0px 18px;
+	}
+tbody th a:hover{
+	color:#FF8601;
+	}
+
+tbody tr td { 
+	height:10px;
+	background: #FFF;
+	border: 1px solid #FFF;
+	}
+
+tbody tr.odd td{ 
+	background: #f9f9f9;
+	border-top:1px solid #FFF;
+	}
+
+table td a:link, table td a:visited {
+	color: #1975D7;
+	text-decoration: none;
+}
+
+table td a:hover {
+	color: #50ADEA;
+	border-bottom:2px solid #8FD5FF;
+	text-decoration: none ;
+}
+tbody td a[href="http://www.infectedfx.net"] {
+	margin: 0 auto;
+	height: 15px;
+	background: url(http://infectedfx.net/css/tables/ok.gif) no-repeat;
+	border-bottom: 0;
+	padding:3px 0px 0px 18px;
+	font-weight:bold;
+	color:#FF8601;
+}
+
+table a[title^="Download"] { 
+	background: url(http://infectedfx.net/css/tables/down.gif) no-repeat center;
+	padding:20px 0px 0px 15px;
+}
+
+tfoot th, tfoot td {
+	background-color:#E7E7E7; padding:10px;
+	text-align:center; 
+	font-family:Georgia, "Times New Roman", Times, serif;
+	font-size:22px; font-weight:bold; font-style:italic;
+	border-bottom:3px solid #CCC;
+	border-top:1px solid #DFDFDF;
+}

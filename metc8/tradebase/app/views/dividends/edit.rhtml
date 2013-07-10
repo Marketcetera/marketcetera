@@ -1,0 +1,9 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Dividends", :action_name => "Edit Dividend", :top_level_controller => @controller.controller_name } %>
+<h1>Edit Dividend</h1>
+
+<% form_tag :action => 'update', :id => @dividend do -%>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Update', :class => "submit floatright" %>
+<% end -%>
+<%= button_to 'Cancel', {:action => 'show', :id => @dividend}, {:class => "reset floatright"} %>
