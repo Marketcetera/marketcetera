@@ -74,5 +74,48 @@ public interface MDMarketstat extends MDItem {
      * @generated
      */
     String getPreviousCloseDate();
+    
+    /**
+     * Returns the value of the '<em><b>High Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>High Price</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_HighPrice()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    BigDecimal getHighPrice();
+    
+    /**
+     * Returns the value of the '<em><b>Low Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Low Price</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_LowPrice()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    BigDecimal getLowPrice();
 
+    /**
+     * Returns the value of the '<em><b>Volume traded</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Volume Traded</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_VolumeTraded()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    BigDecimal getVolumeTraded();
+    
+    /**
+     * Returns the value of the '<em><b>Open Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Open Price</em>' attribute.
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_getOpenPricee()
+     * @model suppressedSetVisibility="true"
+     * @generated
+     */
+    BigDecimal getOpenPrice();
 } // MDMarketstat

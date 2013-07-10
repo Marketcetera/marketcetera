@@ -68,6 +68,10 @@ public class MarketstatManager extends
             item.setClosePrice(null);
             item.setPreviousCloseDate(null);
             item.setPreviousClosePrice(null);
+            item.setOpenPrice(null);
+            item.setHighPrice(null);
+            item.setLowPrice(null);
+            item.setVolumeTraded(null);            
         }
     }
 
@@ -109,6 +113,22 @@ public class MarketstatManager extends
                         String previousCloseDate = data.getPreviousCloseDate();
                         if (previousCloseDate != null) {
                             item.setPreviousCloseDate(previousCloseDate);
+                        }
+                        BigDecimal previousOpenPrice = data.getOpen();
+                        if (previousOpenPrice != null) {
+                            item.setOpenPrice(previousOpenPrice);
+                        }
+                        BigDecimal previousHighPrice = data.getHigh();
+                        if (previousHighPrice != null) {
+                            item.setHighPrice(previousHighPrice);
+                        }
+                        BigDecimal previousLowPrice = data.getLow();
+                        if (previousLowPrice != null) {
+                            item.setLowPrice(previousLowPrice);
+                        }
+                        BigDecimal previousVolume = data.getVolume();
+                        if (previousVolume != null) {
+                            item.setVolumeTraded(previousVolume);
                         }
                     } else {
                         reportUnexpectedData(inData);

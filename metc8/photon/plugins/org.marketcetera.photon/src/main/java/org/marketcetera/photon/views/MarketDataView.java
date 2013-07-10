@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -46,7 +47,11 @@ import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnPro
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
+import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderSingle;
@@ -88,6 +93,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	private IMemento mViewState;
 
 	private Clipboard mClipboard;
+	
+	private final String INSTRUMENT_LIST = "Instrument_List";
 
 	/**
 	 * Constructor.
@@ -98,7 +105,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site);
-		mViewState = memento;
+		mViewState = memento;		
 	}
 
 	/**
@@ -181,7 +188,22 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		createColumn(table, FIXFieldLocalizer
 				.getLocalizedFIXFieldName(OfferSize.class.getSimpleName()),
 				SWT.RIGHT, listener);
-
+			createColumn(table, FIXFieldLocalizer
+					.getLocalizedFIXFieldName(PrevClosePx.class.getSimpleName()),					
+					SWT.RIGHT, listener);
+			createColumn(table, FIXFieldLocalizer.
+					getLocalizedFIXFieldName(OpenClose.class.getSimpleName()),					
+					SWT.RIGHT, listener);
+			createColumn(table, FIXFieldLocalizer
+					.getLocalizedFIXFieldName(HighPx.class.getSimpleName()),
+					SWT.RIGHT, listener);
+			createColumn(table, FIXFieldLocalizer
+					.getLocalizedFIXFieldName(LowPx.class.getSimpleName()),
+					SWT.RIGHT, listener);
+		   createColumn(table, FIXFieldLocalizer
+					.getLocalizedFIXFieldName(TradeVolume.class.getSimpleName()),
+					SWT.RIGHT, listener);
+		  // mViewState.
 		// restore table state if it exists
 		if (mViewState != null) {
 			ColumnState.restore(table, mViewState);
@@ -189,7 +211,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 				if (column.getWidth() == 0) {
 					column.setResizable(false);
 				}
-			}
+			}			
 		}
 
 		registerContextMenu();
@@ -207,12 +229,24 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 						"topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_PRICE), //$NON-NLS-1$
 				createCompositeMap(domain,
 						"topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__ASK_PRICE), //$NON-NLS-1$
-				createCompositeMap(domain, "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__ASK_SIZE) //$NON-NLS-1$
+				createCompositeMap(domain, "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__ASK_SIZE), //$NON-NLS-1$
+				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE), //$NON-NLS-1$							
+				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__OPEN_PRICE), //$NON-NLS-1$
+				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__HIGH_PRICE), //$NON-NLS-1$
+				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__LOW_PRICE), //$NON-NLS-1$				
+				createCompositeMap(domain, "marketStat", MDPackage.Literals.MD_MARKETSTAT__VOLUME) //$NON-NLS-1$
 		};
+	
 		mViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
 		mViewer.setUseHashlookup(true);
 		mItems = WritableList.withElementType(MarketDataViewItem.class);
 		mViewer.setInput(mItems);
+		if( mViewState.getChild(INSTRUMENT_LIST) != null ){
+			IMemento [] symbList = mViewState.getChildren(INSTRUMENT_LIST);
+			for ( int n = 0; n < symbList.length; n++)		{				
+				addSymbol(InstrumentFromMemento.restore(symbList[n]));
+			}
+		}
 	}
 
 	private IObservableMap createCompositeMap(IObservableSet domain, String property,
@@ -247,7 +281,19 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	@Override
 	public void saveState(IMemento memento) {
-		ColumnState.save(getColumnWidget(), memento);
+		ColumnState.save(getColumnWidget(), memento);	
+		for (Instrument instr: mItemMap.keySet() ){
+			IMemento smyb = memento.createChild(INSTRUMENT_LIST);			
+			if ( instr instanceof Equity){
+				EquityToMemento.save(instr, smyb);
+			}else if ( instr instanceof Option){ 
+				OptionToMemento.save(instr, smyb);
+			}else if ( instr instanceof Future){ 
+				FutureToMemento.save(instr, smyb);
+			}else if ( instr instanceof Currency){ 
+				CurrencyToMemento.save(instr, smyb);
+			}
+		}
 	}
 
 	@Override
@@ -406,12 +452,52 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					compare = askSize1.compareTo(askSize2);
 				}
 				break;
+			case 7:
+				BigDecimal closeSize1 = item1.getMarketStat().getPreviousClosePrice();
+				BigDecimal closeSize2 = item2.getMarketStat().getPreviousClosePrice();
+				compare = compareNulls(closeSize1, closeSize2);
+				if (compare == 0) {
+					compare = closeSize1.compareTo(closeSize2);
+				}
+				break;
+			case 8:
+				BigDecimal openSize1 = item1.getMarketStat().getOpenPrice();
+				BigDecimal openSize2 = item2.getMarketStat().getOpenPrice();
+				compare = compareNulls(openSize1, openSize2);
+				if (compare == 0) {
+					compare = openSize1.compareTo(openSize2);
+				}
+				break;
+			case 9:
+				BigDecimal highSize1 = item1.getMarketStat().getHighPrice();
+				BigDecimal highSize2 = item2.getMarketStat().getHighPrice();
+				compare = compareNulls(highSize1, highSize2);
+				if (compare == 0) {
+					compare = highSize1.compareTo(highSize2);
+				}
+				break;	
+			case 10:
+				BigDecimal lowSize1 = item1.getMarketStat().getLowPrice();
+				BigDecimal lowSize2 = item2.getMarketStat().getLowPrice();
+				compare = compareNulls(lowSize1, lowSize2);
+				if (compare == 0) {
+					compare = lowSize1.compareTo(lowSize2);
+				}
+				break;
+			case 11:
+				BigDecimal volumeSize1 = item1.getMarketStat().getVolumeTraded();
+				BigDecimal volumeSize2 = item2.getMarketStat().getVolumeTraded();
+				compare = compareNulls(volumeSize1, volumeSize2);
+				if (compare == 0) {
+					compare = volumeSize1.compareTo(volumeSize2);
+				}
+				break;
 			default:
 				throw new AssertionFailedException("Invalid column index"); //$NON-NLS-1$
 			}
 			return mDirection * compare;
 		}
-
+	
 		private int compareNulls(Object o1, Object o2) {
 			if (o1 == null) {
 				return (o2 == null) ? 0 : -1;
