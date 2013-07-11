@@ -665,6 +665,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         IObservableValue target = SWTObservables.observeText(text, SWT.Modify);
         NumberFormat numberFormat = NumberFormat.getInstance();
         numberFormat.setGroupingUsed(false);
+        numberFormat.setMaximumFractionDigits(6);
         return dbc.bindValue(target, model, UpdateStrategyFactory
                 .withConvertErrorMessage(new UpdateValueStrategy(),
                         Messages.ORDER_TICKET_VIEW_NOT_DECIMAL_ERROR
