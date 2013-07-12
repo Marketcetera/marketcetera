@@ -301,6 +301,24 @@ public class MDPackageImpl
         return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(1);
     }
 
+    @Override
+   	public EAttribute getMDMarketstat_OpenPrice() {
+   		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(4);		
+   	}
+   	@Override
+   	public EAttribute getMDMarketstat_HighPrice() {
+   		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(5);
+   	}
+
+   	@Override
+   	public EAttribute getMDMarketstat_LowPrice() {
+   		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(6);
+   	}
+   	
+   	@Override
+   	public EAttribute getMDMarketstat_VolumeTraded() {
+   		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(7);
+   	}
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -691,5 +709,5 @@ public class MDPackageImpl
         // Create resource
         createResource(eNS_URI);
     }
-
+             
 } //MDPackageImpl
