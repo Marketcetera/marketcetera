@@ -1,17 +1,16 @@
 package org.marketcetera.core;
 
 import java.sql.SQLException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * @author toli
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
-public abstract class DBBackedIDFactory extends ExternalIDFactory {
-
+@ClassVersion("$Id$")
+public abstract class DBBackedIDFactory
+        extends ExternalIDFactory
+{
     protected DBBackedIDFactory(String prefix) {
         super(prefix);
     }

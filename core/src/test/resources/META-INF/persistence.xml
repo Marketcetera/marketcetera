@@ -4,6 +4,7 @@
    version="1.0">
    <persistence-unit name="unit-testing" transaction-type="RESOURCE_LOCAL">
       <provider>org.hibernate.ejb.HibernatePersistence</provider>
+      <class>org.marketcetera.core.PersistentDatabaseID</class>
        <!--
        Properties to configure hibernate. See
        http://www.hibernate.org/hib_docs/reference/en/html/session-configuration.html

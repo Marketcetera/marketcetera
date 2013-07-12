@@ -4,6 +4,8 @@
    version="1.0">
    <persistence-unit name="ors" transaction-type="RESOURCE_LOCAL">
       <provider>org.hibernate.ejb.HibernatePersistence</provider>
+      <!-- explicitly include entities outside of this JAR, ones inside the jar are found automatically -->
+      <class>org.marketcetera.core.PersistentDatabaseID</class>
        <!--
        Properties to configure hibernate. See
        http://www.hibernate.org/hib_docs/reference/en/html/session-configuration.html
