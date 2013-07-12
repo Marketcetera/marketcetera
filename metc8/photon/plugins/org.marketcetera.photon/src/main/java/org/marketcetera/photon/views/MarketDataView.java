@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,8 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 import quickfix.field.*;
 
