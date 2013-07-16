@@ -97,7 +97,7 @@ public class OrderSendingTest
         msg=getNextExchangeMessage();
         assertEquals("ID1",msg.getString(ClOrdID.FIELD));
         // Test message modifiers.
-        assertEquals(MessageEncoding.UTF_8,
+        assertEquals("UTF-8",
                      msg.getHeader().getString(MessageEncoding.FIELD));
         // Test sending message modifiers.
         assertEquals("Test Text",
@@ -137,7 +137,7 @@ public class OrderSendingTest
         msg=getNextExchangeMessage();
         assertEquals("ID2",msg.getString(ClOrdID.FIELD));
         // Test message modifiers.
-        assertEquals(MessageEncoding.UTF_8,
+        assertEquals("UTF-8",
                      msg.getHeader().getString(MessageEncoding.FIELD));
         // Test sending message modifiers.
         assertEquals("Test Text",
@@ -176,7 +176,7 @@ public class OrderSendingTest
         msg=getNextExchangeMessage();
         assertEquals("ID3",msg.getString(ClOrdID.FIELD));
         // Test message modifiers.
-        assertEquals(MessageEncoding.UTF_8,
+        assertEquals("UTF-8",
                      msg.getHeader().getString(MessageEncoding.FIELD));
         // Test sending message modifiers.
         assertEquals("Test Text",
