@@ -62,7 +62,6 @@ import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-
 import edu.emory.mathcs.backport.java.util.Collections;
 
 import quickfix.field.*;
@@ -80,6 +79,34 @@ import quickfix.field.*;
 public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		IColumnProvider, Messages {
 
+    private final static String INSTRUMENT_LIST = "Instrument_List"; //$NON-NLS-1$
+
+    public static enum MD_TABLE_COLUMNS {
+        MD_SYMBOL, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
+    }
+
+    // Default Equity size - logic will be for
+    // px = field(10020) - EQUITY_ORDER_SIZE = for up to 20 use this
+    static final int DEFAULT_ORD_SIZE_RANGE = 1000;
+    static final int DEFAULT_EQUITY_ORDER_SIZE_FIELD = 11000;
+    // Equity increments
+    static final Double EQUITY_PX_LADDER_INC = new Double(0.1);
+    // default Future size
+    static final int DEFAULT_FUTURE_ORDER_SIZE_FIELD = DEFAULT_EQUITY_ORDER_SIZE_FIELD
+            + DEFAULT_ORD_SIZE_RANGE;
+    // Future increment
+    static final Double FUTURE_PX_LADDER_INC = new Double(1);
+    // default option size
+    static final int DEFAULT_OPTION_ORDER_SIZE_FIELD = DEFAULT_FUTURE_ORDER_SIZE_FIELD
+            + DEFAULT_ORD_SIZE_RANGE;
+    // Option increment
+    static final Double OPTION_PX_LADDER_INC = new Double(0.01);
+    // default FX *100 size
+    static final int DEFAULT_CURRENCY_ORDER_SIZE_FIELD = DEFAULT_OPTION_ORDER_SIZE_FIELD
+            + DEFAULT_ORD_SIZE_RANGE;
+    static final Double CURRENCY_PX_LADDER_INC = new Double(1000);
+
+    // default FX *100 size
 	/**
 	 * The view ID.
 	 */
@@ -89,12 +116,41 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	private TextContributionItem mSymbolEntryText;
 
-	private final IMarketDataManager mMarketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+    private final IMarketDataManager mMarketDataManager = PhotonPlugin
+            .getDefault().getMarketDataManager();
 	
 	private TableViewer mViewer;
 
-	private WritableList mItems;
 
+    private final static String INSTRUMENT_LIST = "Instrument_List"; //$NON-NLS-1$
+
+    public static enum MD_TABLE_COLUMNS {
+        MD_SYMBOL, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
+    }
+
+    // Default Equity size - logic will be for
+    // px = field(10020) - EQUITY_ORDER_SIZE = for up to 20 use this
+    static final int DEFAULT_ORD_SIZE_RANGE = 1000;
+    static final int DEFAULT_EQUITY_ORDER_SIZE_FIELD = 11000;
+    // Equity increments
+    static final Double EQUITY_PX_LADDER_INC = new Double(0.1);
+    // default Future size
+    static final int DEFAULT_FUTURE_ORDER_SIZE_FIELD = DEFAULT_EQUITY_ORDER_SIZE_FIELD
+            + DEFAULT_ORD_SIZE_RANGE;
+    // Future increment
+    static final Double FUTURE_PX_LADDER_INC = new Double(1);
+    // default option size
+    static final int DEFAULT_OPTION_ORDER_SIZE_FIELD = DEFAULT_FUTURE_ORDER_SIZE_FIELD
+            + DEFAULT_ORD_SIZE_RANGE;
+    // Option increment
+    static final Double OPTION_PX_LADDER_INC = new Double(0.01);
+    // default FX *100 size
+    static final int DEFAULT_CURRENCY_ORDER_SIZE_FIELD = DEFAULT_OPTION_ORDER_SIZE_FIELD
+            + DEFAULT_ORD_SIZE_RANGE;
+    static final Double CURRENCY_PX_LADDER_INC = new Double(1000);
+
+    // default FX *100 size
+	/**
 	private IMemento mViewState;
 
 	private Clipboard mClipboard;
@@ -146,7 +202,6 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 		final MarketDataItemComparator comparator = new MarketDataItemComparator();
 		mViewer.setComparator(comparator);
-
 		SelectionListener listener = new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -332,8 +387,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			busyRun(new Runnable() {
 				@Override
 				public void run() {
-					MarketDataViewItem item = new MarketDataViewItem(mMarketDataManager
-							.getMarketData(), instrument);
+                    MarketDataViewItem item = new MarketDataViewItem(
+                            mMarketDataManager.getMarketData(), instrument);
 					mItemMap.put(instrument, item);
 					mItems.add(item);
 				}
@@ -342,7 +397,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 	}
 
 	private void busyRun(Runnable runnable) {
-		BusyIndicator.showWhile(getViewSite().getShell().getDisplay(), runnable);
+        BusyIndicator
+                .showWhile(getViewSite().getShell().getDisplay(), runnable);
 	}
 
 	private void remove(final MarketDataViewItem item) {
@@ -400,8 +456,9 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			MarketDataViewItem item1 = (MarketDataViewItem) e1;
 			MarketDataViewItem item2 = (MarketDataViewItem) e2;
 			int compare;
-			switch (mIndex) {
-			case 0:
+            MD_TABLE_COLUMNS enum_col = MD_TABLE_COLUMNS.values()[mIndex];
+            switch (enum_col) {
+            case MD_SYMBOL:
 				String symbol1 = item1.getInstrument().getSymbol();
 				String symbol2 = item2.getInstrument().getSymbol();
 				compare = compareNulls(symbol1, symbol2);
@@ -409,7 +466,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					compare = symbol1.compareTo(symbol2);
 				}
 				break;
-			case 1:
+            case LAST_PX:
 				BigDecimal tradePrice1 = item1.getLatestTick().getPrice();
 				BigDecimal tradePrice2 = item2.getLatestTick().getPrice();
 				compare = compareNulls(tradePrice1, tradePrice2);
@@ -417,7 +474,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					compare = tradePrice1.compareTo(tradePrice2);
 				}
 				break;
-			case 2:
+            case LAST_SZ:
 				BigDecimal tradeSize1 = item1.getLatestTick().getSize();
 				BigDecimal tradeSize2 = item2.getLatestTick().getSize();
 				compare = compareNulls(tradeSize1, tradeSize2);
@@ -425,7 +482,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					compare = tradeSize1.compareTo(tradeSize2);
 				}
 				break;
-			case 3:
+            case BID_SZ:
 				BigDecimal bidSize1 = item1.getTopOfBook().getBidSize();
 				BigDecimal bidSize2 = item2.getTopOfBook().getBidSize();
 				compare = compareNulls(bidSize1, bidSize2);
@@ -433,7 +490,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					compare = bidSize1.compareTo(bidSize2);
 				}
 				break;
-			case 4:
+            case BID_PX:
 				BigDecimal bidPrice1 = item1.getTopOfBook().getBidPrice();
 				BigDecimal bidPrice2 = item2.getTopOfBook().getBidPrice();
 				compare = compareNulls(bidPrice1, bidPrice2);
@@ -441,7 +498,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					compare = bidPrice1.compareTo(bidPrice2);
 				}
 				break;
-			case 5:
+            case OFFER_PX:
 				BigDecimal askPrice1 = item1.getTopOfBook().getAskPrice();
 				BigDecimal askPrice2 = item2.getTopOfBook().getAskPrice();
 				compare = compareNulls(askPrice1, askPrice2);
@@ -449,7 +506,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					compare = askPrice1.compareTo(askPrice2);
 				}
 				break;
-			case 6:
+            case OFFER_SZ:
 				BigDecimal askSize1 = item1.getTopOfBook().getAskSize();
 				BigDecimal askSize2 = item2.getTopOfBook().getAskSize();
 				compare = compareNulls(askSize1, askSize2);
@@ -497,6 +554,96 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					compare = volumeSize1.compareTo(volumeSize2);
 				}
 				break;
+            case PREV_CLOSE:
+                BigDecimal closeSize1 = item1.getMarketStat()
+                        .getPreviousClosePrice();
+                BigDecimal closeSize2 = item2.getMarketStat()
+                        .getPreviousClosePrice();
+                compare = compareNulls(closeSize1, closeSize2);
+                if (compare == 0) {
+                    compare = closeSize1.compareTo(closeSize2);
+
+                }
+                break;
+            case OPEN_PX:
+                BigDecimal openSize1 = item1.getMarketStat().getOpenPrice();
+                BigDecimal openSize2 = item2.getMarketStat().getOpenPrice();
+                compare = compareNulls(openSize1, openSize2);
+                if (compare == 0) {
+                    compare = openSize1.compareTo(openSize2);
+                }
+                break;
+            case HIGH_PX:
+                BigDecimal highSize1 = item1.getMarketStat().getHighPrice();
+                BigDecimal highSize2 = item2.getMarketStat().getHighPrice();
+                compare = compareNulls(highSize1, highSize2);
+                if (compare == 0) {
+                    compare = highSize1.compareTo(highSize2);
+                }
+                break;
+            case LOW_PX:
+                BigDecimal lowSize1 = item1.getMarketStat().getLowPrice();
+                BigDecimal lowSize2 = item2.getMarketStat().getLowPrice();
+                compare = compareNulls(lowSize1, lowSize2);
+                if (compare == 0) {
+                    compare = lowSize1.compareTo(lowSize2);
+                }
+                break;
+            case TRD_VOLUME:
+                BigDecimal volumeSize1 = item1.getMarketStat()
+                        .getVolumeTraded();
+                BigDecimal volumeSize2 = item2.getMarketStat()
+                        .getVolumeTraded();
+                compare = compareNulls(volumeSize1, volumeSize2);
+                if (compare == 0) {
+                    compare = volumeSize1.compareTo(volumeSize2);
+				}
+				break;
+            case PREV_CLOSE:
+                BigDecimal closeSize1 = item1.getMarketStat()
+                        .getPreviousClosePrice();
+                BigDecimal closeSize2 = item2.getMarketStat()
+                        .getPreviousClosePrice();
+                compare = compareNulls(closeSize1, closeSize2);
+                if (compare == 0) {
+                    compare = closeSize1.compareTo(closeSize2);
+
+                }
+                break;
+            case OPEN_PX:
+                BigDecimal openSize1 = item1.getMarketStat().getOpenPrice();
+                BigDecimal openSize2 = item2.getMarketStat().getOpenPrice();
+                compare = compareNulls(openSize1, openSize2);
+                if (compare == 0) {
+                    compare = openSize1.compareTo(openSize2);
+                }
+                break;
+            case HIGH_PX:
+                BigDecimal highSize1 = item1.getMarketStat().getHighPrice();
+                BigDecimal highSize2 = item2.getMarketStat().getHighPrice();
+                compare = compareNulls(highSize1, highSize2);
+                if (compare == 0) {
+                    compare = highSize1.compareTo(highSize2);
+                }
+                break;
+            case LOW_PX:
+                BigDecimal lowSize1 = item1.getMarketStat().getLowPrice();
+                BigDecimal lowSize2 = item2.getMarketStat().getLowPrice();
+                compare = compareNulls(lowSize1, lowSize2);
+                if (compare == 0) {
+                    compare = lowSize1.compareTo(lowSize2);
+                }
+                break;
+            case TRD_VOLUME:
+                BigDecimal volumeSize1 = item1.getMarketStat()
+                        .getVolumeTraded();
+                BigDecimal volumeSize2 = item2.getMarketStat()
+                        .getVolumeTraded();
+                compare = compareNulls(volumeSize1, volumeSize2);
+                if (compare == 0) {
+                    compare = volumeSize1.compareTo(volumeSize2);
+                }
+                break;
 			default:
 				throw new AssertionFailedException("Invalid column index"); //$NON-NLS-1$
 			}
@@ -540,8 +687,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 			if (instrument.getSymbol().equals(value))
 				return;
 			
-		
-			final Instrument newInstrument = PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(value.toString());
+            final Instrument newInstrument = PhotonPlugin.getDefault()
+                    .getSymbolResolver().resolveSymbol(value.toString());
 			if (mItemMap.containsKey(newInstrument)) {
 				PhotonPlugin.getMainConsoleLogger().warn(
 						DUPLICATE_SYMBOL.getText(newInstrument.getSymbol()));
@@ -608,7 +755,6 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		}
 	}
 	
-	
 	@ClassVersion("$Id$")
 	public static final class BuyCommandHandler extends OrderCommandHandler
 			implements IHandler {
@@ -629,28 +775,90 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		}
 	}
 	
+    public static BigDecimal getDefaultOrderSize(Instrument instr, BigDecimal Px) {
+        BigDecimal defaultOrderSize = null;
+        Double DEFAULT_SIZE = new Double(0);
+        if (Px == null)
+            return defaultOrderSize;
+        HashMap<Double, BigDecimal> ord_sz = new HashMap<Double, BigDecimal>();
+        int cur_field;
+        double multiplier = 1;
+        double diff;
+        org.eclipse.core.databinding.observable.list.WritableList cust_fields = null;
+        int px_ladder = 10000; // default to Equity
+        if (instr instanceof Equity) {
+            px_ladder = DEFAULT_EQUITY_ORDER_SIZE_FIELD;
+            multiplier = EQUITY_PX_LADDER_INC;
+            cust_fields = PhotonPlugin.getDefault().getStockOrderTicketModel()
+                    .getCustomFieldsList();
+            defaultOrderSize = new BigDecimal(100);
+        } else if (instr instanceof Future) {
+            px_ladder = DEFAULT_FUTURE_ORDER_SIZE_FIELD;
+            multiplier = FUTURE_PX_LADDER_INC;
+            cust_fields = PhotonPlugin.getDefault().getFutureOrderTicketModel()
+                    .getCustomFieldsList();
+            defaultOrderSize = new BigDecimal(1);
+        } else if (instr instanceof Option) {
+            px_ladder = DEFAULT_OPTION_ORDER_SIZE_FIELD;
+            multiplier = OPTION_PX_LADDER_INC;
+            cust_fields = PhotonPlugin.getDefault().getOptionOrderTicketModel()
+                    .getCustomFieldsList();
+            defaultOrderSize = new BigDecimal(1);
+        } else if (instr instanceof org.marketcetera.trade.Currency) {
+            px_ladder = DEFAULT_CURRENCY_ORDER_SIZE_FIELD;
+            multiplier = CURRENCY_PX_LADDER_INC;
+            cust_fields = PhotonPlugin.getDefault()
+                    .getCurrencyOrderTicketModel().getCustomFieldsList();
+            defaultOrderSize = new BigDecimal(1);
+        }
+        if (cust_fields != null)
+            for (Object customFieldObject : cust_fields) {
+                CustomField customField = (CustomField) customFieldObject;
+                cur_field = Integer.parseInt(customField.getKeyString());
+                diff = cur_field - px_ladder;
+                if (diff >= 0 && diff < DEFAULT_ORD_SIZE_RANGE) {
+                    ord_sz.put(new Double(diff * multiplier), new BigDecimal(
+                            Integer.parseInt(customField.getValueString())));
+                }
+                // clear any of these fields that might be set
+                if (DEFAULT_EQUITY_ORDER_SIZE_FIELD <= cur_field
+                        && (DEFAULT_CURRENCY_ORDER_SIZE_FIELD + DEFAULT_ORD_SIZE_RANGE) >= cur_field
+                        && customField.isEnabled()) {
+                    customField.setEnabled(false);
+                }
+            }
+
+        if (!ord_sz.isEmpty()) {
+            //Double[] sorted_keys = ord_sz.keySet().toArray(new Double[0]);
+            java.util.List<Double> sorted_keys = new ArrayList<Double>(ord_sz.keySet());
+            Collections.sort(sorted_keys);
+            Collections.reverse(sorted_keys);
+            // User overrrided default size
+            if (ord_sz.containsKey(DEFAULT_SIZE))
+                defaultOrderSize= ord_sz.get(DEFAULT_SIZE);
+            for (Double px : sorted_keys) {
+                if (px >= Px.doubleValue()) {
+                    defaultOrderSize = ord_sz.get(px);
+                } else                                       
+                    return defaultOrderSize;                
+            }
+            return defaultOrderSize;
+        } else
+            return defaultOrderSize;
+    }
+
 	/**
 	 * Handles the send order command for this view.
 	 * 
 	 */
 	@ClassVersion("$Id$")
-	public static class OrderCommandHandler extends AbstractHandler
-			implements IHandler {
+    public static class OrderCommandHandler extends AbstractHandler implements
+            IHandler {
 		private Side side;
 		private BigDecimal defaultOrderSize;
 		
 		public void setSide(Side side) {
 			this.side = side;
-		}
-		
-		public void setDefaultOrderSize() {
-			defaultOrderSize = null;
-			for (Object customFieldObject : PhotonPlugin.getDefault().getStockOrderTicketModel().getCustomFieldsList()) {
-                CustomField customField = (CustomField) customFieldObject;
-                if(OrderQty.FIELD == Integer.parseInt(customField.getKeyString())) {
-                	defaultOrderSize = new BigDecimal(customField.getValueString());				                    	
-                }             
-        	}
 		}
 		
 		@Override
@@ -666,40 +874,61 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					public void run() {
 						for (Object obj : sselection.toArray()) {
 							if (obj instanceof MarketDataViewItem) {
-								setDefaultOrderSize();
 								MarketDataViewItem mdi = (MarketDataViewItem) obj;
 								Instrument instrument = mdi.getInstrument();
-					            OrderSingle newOrder = Factory.getInstance().createOrderSingle();
+                                OrderSingle newOrder = Factory.getInstance()
+                                        .createOrderSingle();
 					            newOrder.setInstrument(instrument);
 					            newOrder.setOrderType(OrderType.Limit);
 					            newOrder.setSide(side);
-					            if(side == Side.Buy && mdi.getTopOfBook().getAskSize() != null) {					
-					            	if(defaultOrderSize != null && mdi.getTopOfBook().getAskSize().compareTo(defaultOrderSize) == 1){
+                                BigDecimal order_px = side == Side.Buy ? mdi
+                                        .getTopOfBook().getAskPrice() : mdi
+                                        .getTopOfBook().getBidSize();
+                                defaultOrderSize = getDefaultOrderSize(
+                                        instrument, order_px);
+                                if (side == Side.Buy
+                                        && mdi.getTopOfBook().getAskSize() != null) {
+                                    if (defaultOrderSize != null
+                                            && mdi.getTopOfBook()
+                                                    .getAskSize()
+                                                    .compareTo(defaultOrderSize) == 1) {
 					            		newOrder.setQuantity(defaultOrderSize);
 					            	} else {
-					            		newOrder.setQuantity(mdi.getTopOfBook().getAskSize());
+                                        newOrder.setQuantity(mdi.getTopOfBook()
+                                                .getAskSize());
 					            	} 
-					            	if(mdi.getTopOfBook().getAskPrice() != null ) {
-					            		newOrder.setPrice(mdi.getTopOfBook().getAskPrice());
+                                    if (order_px != null) {
+                                        newOrder.setPrice(mdi.getTopOfBook()
+                                                .getAskPrice());
 					            	}
 					            }else if(mdi.getTopOfBook().getBidSize() != null){
-					            	if(defaultOrderSize != null && mdi.getTopOfBook().getBidSize().compareTo(defaultOrderSize) == 1){
+                                    if (defaultOrderSize != null
+                                            && mdi.getTopOfBook()
+                                                    .getBidSize()
+                                                    .compareTo(defaultOrderSize) == 1) {
 					            		newOrder.setQuantity(defaultOrderSize);
 					            	} else {
-					            		newOrder.setQuantity(mdi.getTopOfBook().getBidSize());
+                                        newOrder.setQuantity(mdi.getTopOfBook()
+                                                .getBidSize());
 					            	}	
-					            	if(mdi.getTopOfBook().getBidPrice() != null) {
-					            		newOrder.setPrice(mdi.getTopOfBook().getBidPrice());
+                                    if (order_px != null) {
+                                        newOrder.setPrice(mdi.getTopOfBook()
+                                                .getBidPrice());
 					            	}
 					            }
 					            newOrder.setTimeInForce(TimeInForce.Day);
 					            try {
-					                PhotonPlugin.getDefault().showOrderInTicket(newOrder);
+                                    PhotonPlugin.getDefault()
+                                            .showOrderInTicket(newOrder);
 					            } catch (WorkbenchException e) {
 					                SLF4JLoggerProxy.error(this, e);
-					                ErrorDialog.openError(null, null, null,
-					                        new Status(IStatus.ERROR, PhotonPlugin.ID, e
-					                                .getLocalizedMessage()));
+                                    ErrorDialog.openError(
+                                            null,
+                                            null,
+                                            null,
+                                            new Status(IStatus.ERROR,
+                                                    PhotonPlugin.ID,
+                                                    e.getLocalizedMessage()));
 					            }
 							}
 						}
@@ -710,7 +939,6 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		}
 	}
 	
-
 	/**
 	 * Handles the copy command for this view
 	 * 

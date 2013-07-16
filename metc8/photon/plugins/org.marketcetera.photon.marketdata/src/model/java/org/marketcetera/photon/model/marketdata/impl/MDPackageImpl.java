@@ -32,13 +32,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * An implementation of the model <b>Package</b>.
  * <!-- end-user-doc -->
  * @generated
- * @since 2.1.0
+ * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public class MDPackageImpl
-        extends EPackageImpl
-        implements MDPackage
-{
+public class MDPackageImpl extends EPackageImpl implements MDPackage {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -110,10 +107,8 @@ public class MDPackageImpl
      * @see #init()
      * @generated
      */
-    private MDPackageImpl()
-    {
-        super(eNS_URI,
-              MDFactory.eINSTANCE);
+    private MDPackageImpl() {
+        super(eNS_URI, MDFactory.eINSTANCE);
     }
 
     /**
@@ -135,14 +130,16 @@ public class MDPackageImpl
      * @see #initializePackageContents()
      * @generated
      */
-    public static MDPackage init()
-    {
+    public static MDPackage init() {
         if (isInited)
-            return (MDPackage) EPackage.Registry.INSTANCE.getEPackage(MDPackage.eNS_URI);
+            return (MDPackage) EPackage.Registry.INSTANCE
+                    .getEPackage(MDPackage.eNS_URI);
 
         // Obtain or create and register package
-        MDPackageImpl theMDPackage = (MDPackageImpl) (EPackage.Registry.INSTANCE.get(eNS_URI) instanceof MDPackageImpl ? EPackage.Registry.INSTANCE
-                .get(eNS_URI) : new MDPackageImpl());
+        MDPackageImpl theMDPackage = (MDPackageImpl) (EPackage.Registry.INSTANCE
+                .get(eNS_URI) instanceof MDPackageImpl ? EPackage.Registry.INSTANCE
+                .get(eNS_URI)
+                : new MDPackageImpl());
 
         isInited = true;
 
@@ -156,8 +153,7 @@ public class MDPackageImpl
         theMDPackage.freeze();
 
         // Update the registry and return the package
-        EPackage.Registry.INSTANCE.put(MDPackage.eNS_URI,
-                                       theMDPackage);
+        EPackage.Registry.INSTANCE.put(MDPackage.eNS_URI, theMDPackage);
         return theMDPackage;
     }
 
@@ -166,8 +162,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getMDItem()
-    {
+    public EClass getMDItem() {
         return mdItemEClass;
     }
 
@@ -176,8 +171,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDItem_Instrument()
-    {
+    public EAttribute getMDItem_Instrument() {
         return (EAttribute) mdItemEClass.getEStructuralFeatures().get(0);
     }
 
@@ -186,8 +180,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getMDLatestTick()
-    {
+    public EClass getMDLatestTick() {
         return mdLatestTickEClass;
     }
 
@@ -196,8 +189,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDLatestTick_Price()
-    {
+    public EAttribute getMDLatestTick_Price() {
         return (EAttribute) mdLatestTickEClass.getEStructuralFeatures().get(0);
     }
 
@@ -206,8 +198,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDLatestTick_Size()
-    {
+    public EAttribute getMDLatestTick_Size() {
         return (EAttribute) mdLatestTickEClass.getEStructuralFeatures().get(1);
     }
 
@@ -216,8 +207,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDLatestTick_Multiplier()
-    {
+    public EAttribute getMDLatestTick_Multiplier() {
         return (EAttribute) mdLatestTickEClass.getEStructuralFeatures().get(2);
     }
 
@@ -226,8 +216,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getMDTopOfBook()
-    {
+    public EClass getMDTopOfBook() {
         return mdTopOfBookEClass;
     }
 
@@ -236,8 +225,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDTopOfBook_BidSize()
-    {
+    public EAttribute getMDTopOfBook_BidSize() {
         return (EAttribute) mdTopOfBookEClass.getEStructuralFeatures().get(0);
     }
 
@@ -246,8 +234,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDTopOfBook_BidPrice()
-    {
+    public EAttribute getMDTopOfBook_BidPrice() {
         return (EAttribute) mdTopOfBookEClass.getEStructuralFeatures().get(1);
     }
 
@@ -256,8 +243,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDTopOfBook_AskSize()
-    {
+    public EAttribute getMDTopOfBook_AskSize() {
         return (EAttribute) mdTopOfBookEClass.getEStructuralFeatures().get(2);
     }
 
@@ -266,8 +252,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDTopOfBook_AskPrice()
-    {
+    public EAttribute getMDTopOfBook_AskPrice() {
         return (EAttribute) mdTopOfBookEClass.getEStructuralFeatures().get(3);
     }
 
@@ -276,8 +261,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getMDMarketstat()
-    {
+    public EClass getMDMarketstat() {
         return mdMarketstatEClass;
     }
 
@@ -286,8 +270,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDMarketstat_ClosePrice()
-    {
+    public EAttribute getMDMarketstat_ClosePrice() {
         return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(0);
     }
 
@@ -296,9 +279,26 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDMarketstat_CloseDate()
-    {
+    public EAttribute getMDMarketstat_CloseDate() {
         return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getMDMarketstat_PreviousClosePrice() {
+        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getMDMarketstat_PreviousCloseDate() {
+        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(3);
     }
 
     @Override
@@ -324,52 +324,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDMarketstat_PreviousClosePrice()
-    {
-        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(2);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EAttribute getMDMarketstat_PreviousCloseDate()
-    {
-        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(3);
-    }
-
-    @Override
-    public EAttribute getMDMarketstat_OpenPrice()
-    {
-        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(4);
-    }
-
-    @Override
-    public EAttribute getMDMarketstat_HighPrice()
-    {
-        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(5);
-    }
-
-    @Override
-    public EAttribute getMDMarketstat_LowPrice()
-    {
-        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(6);
-    }
-
-    @Override
-    public EAttribute getMDMarketstat_VolumeTraded()
-    {
-        return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(7);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EClass getMDDepthOfBook()
-    {
+    public EClass getMDDepthOfBook() {
         return mdDepthOfBookEClass;
     }
 
@@ -378,8 +333,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDDepthOfBook_Product()
-    {
+    public EAttribute getMDDepthOfBook_Product() {
         return (EAttribute) mdDepthOfBookEClass.getEStructuralFeatures().get(0);
     }
 
@@ -388,8 +342,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getMDDepthOfBook_Bids()
-    {
+    public EReference getMDDepthOfBook_Bids() {
         return (EReference) mdDepthOfBookEClass.getEStructuralFeatures().get(1);
     }
 
@@ -398,8 +351,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getMDDepthOfBook_Asks()
-    {
+    public EReference getMDDepthOfBook_Asks() {
         return (EReference) mdDepthOfBookEClass.getEStructuralFeatures().get(2);
     }
 
@@ -408,8 +360,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getMDQuote()
-    {
+    public EClass getMDQuote() {
         return mdQuoteEClass;
     }
 
@@ -418,8 +369,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDQuote_Price()
-    {
+    public EAttribute getMDQuote_Price() {
         return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(0);
     }
 
@@ -428,8 +378,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDQuote_Size()
-    {
+    public EAttribute getMDQuote_Size() {
         return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(1);
     }
 
@@ -438,8 +387,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDQuote_Source()
-    {
+    public EAttribute getMDQuote_Source() {
         return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(2);
     }
 
@@ -448,8 +396,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getMDQuote_Time()
-    {
+    public EAttribute getMDQuote_Time() {
         return (EAttribute) mdQuoteEClass.getEStructuralFeatures().get(3);
     }
 
@@ -458,8 +405,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EDataType getDepthOfBookProduct()
-    {
+    public EDataType getDepthOfBookProduct() {
         return depthOfBookProductEDataType;
     }
 
@@ -468,8 +414,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public EDataType getInstrument()
-    {
+    public EDataType getInstrument() {
         return instrumentEDataType;
     }
 
@@ -478,8 +423,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDFactory getMDFactory()
-    {
+    public MDFactory getMDFactory() {
         return (MDFactory) getEFactoryInstance();
     }
 
@@ -497,70 +441,47 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public void createPackageContents()
-    {
+    public void createPackageContents() {
         if (isCreated)
             return;
         isCreated = true;
 
         // Create classes and their features
         mdItemEClass = createEClass(MD_ITEM);
-        createEAttribute(mdItemEClass,
-                         MD_ITEM__INSTRUMENT);
+        createEAttribute(mdItemEClass, MD_ITEM__INSTRUMENT);
 
         mdLatestTickEClass = createEClass(MD_LATEST_TICK);
-        createEAttribute(mdLatestTickEClass,
-                         MD_LATEST_TICK__PRICE);
-        createEAttribute(mdLatestTickEClass,
-                         MD_LATEST_TICK__SIZE);
-        createEAttribute(mdLatestTickEClass,
-                         MD_LATEST_TICK__MULTIPLIER);
+        createEAttribute(mdLatestTickEClass, MD_LATEST_TICK__PRICE);
+        createEAttribute(mdLatestTickEClass, MD_LATEST_TICK__SIZE);
+        createEAttribute(mdLatestTickEClass, MD_LATEST_TICK__MULTIPLIER);
 
         mdTopOfBookEClass = createEClass(MD_TOP_OF_BOOK);
-        createEAttribute(mdTopOfBookEClass,
-                         MD_TOP_OF_BOOK__BID_SIZE);
-        createEAttribute(mdTopOfBookEClass,
-                         MD_TOP_OF_BOOK__BID_PRICE);
-        createEAttribute(mdTopOfBookEClass,
-                         MD_TOP_OF_BOOK__ASK_SIZE);
-        createEAttribute(mdTopOfBookEClass,
-                         MD_TOP_OF_BOOK__ASK_PRICE);
+        createEAttribute(mdTopOfBookEClass, MD_TOP_OF_BOOK__BID_SIZE);
+        createEAttribute(mdTopOfBookEClass, MD_TOP_OF_BOOK__BID_PRICE);
+        createEAttribute(mdTopOfBookEClass, MD_TOP_OF_BOOK__ASK_SIZE);
+        createEAttribute(mdTopOfBookEClass, MD_TOP_OF_BOOK__ASK_PRICE);
 
         mdMarketstatEClass = createEClass(MD_MARKETSTAT);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__CLOSE_PRICE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__CLOSE_DATE);
         createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__CLOSE_PRICE);
-        createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__CLOSE_DATE);
-        createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE);
-        createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__PREVIOUS_CLOSE_DATE);
-        createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__HIGH_PRICE);
-        createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__LOW_PRICE);
-        createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__VOLUME_TRADED);
-        createEAttribute(mdMarketstatEClass,
-                         MD_MARKETSTAT__OPEN_PRICE);
-
+                MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__PREVIOUS_CLOSE_DATE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__OPEN_PRICE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__HIGH_PRICE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__LOW_PRICE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__VOLUME);
+        
         mdDepthOfBookEClass = createEClass(MD_DEPTH_OF_BOOK);
-        createEAttribute(mdDepthOfBookEClass,
-                         MD_DEPTH_OF_BOOK__PRODUCT);
-        createEReference(mdDepthOfBookEClass,
-                         MD_DEPTH_OF_BOOK__BIDS);
-        createEReference(mdDepthOfBookEClass,
-                         MD_DEPTH_OF_BOOK__ASKS);
+        createEAttribute(mdDepthOfBookEClass, MD_DEPTH_OF_BOOK__PRODUCT);
+        createEReference(mdDepthOfBookEClass, MD_DEPTH_OF_BOOK__BIDS);
+        createEReference(mdDepthOfBookEClass, MD_DEPTH_OF_BOOK__ASKS);
 
         mdQuoteEClass = createEClass(MD_QUOTE);
-        createEAttribute(mdQuoteEClass,
-                         MD_QUOTE__PRICE);
-        createEAttribute(mdQuoteEClass,
-                         MD_QUOTE__SIZE);
-        createEAttribute(mdQuoteEClass,
-                         MD_QUOTE__SOURCE);
-        createEAttribute(mdQuoteEClass,
-                         MD_QUOTE__TIME);
+        createEAttribute(mdQuoteEClass, MD_QUOTE__PRICE);
+        createEAttribute(mdQuoteEClass, MD_QUOTE__SIZE);
+        createEAttribute(mdQuoteEClass, MD_QUOTE__SOURCE);
+        createEAttribute(mdQuoteEClass, MD_QUOTE__TIME);
 
         // Create data types
         depthOfBookProductEDataType = createEDataType(DEPTH_OF_BOOK_PRODUCT);
@@ -581,8 +502,7 @@ public class MDPackageImpl
      * <!-- end-user-doc -->
      * @generated
      */
-    public void initializePackageContents()
-    {
+    public void initializePackageContents() {
         if (isInitialized)
             return;
         isInitialized = true;
@@ -603,111 +523,140 @@ public class MDPackageImpl
         mdDepthOfBookEClass.getESuperTypes().add(this.getMDItem());
 
         // Initialize classes and features; add operations and parameters
-        initEClass(mdItemEClass,
-                   MDItem.class,
-                   "MDItem", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-        initEAttribute(getMDItem_Instrument(),
-                       this.getInstrument(),
-                       "instrument", null, 1, 1, MDItem.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEClass(
+                mdItemEClass,
+                MDItem.class,
+                "MDItem", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEAttribute(
+                getMDItem_Instrument(),
+                this.getInstrument(),
+                "instrument", null, 1, 1, MDItem.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
-        initEClass(mdLatestTickEClass,
-                   MDLatestTick.class,
-                   "MDLatestTick", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-        initEAttribute(getMDLatestTick_Price(),
-                       ecorePackage.getEBigDecimal(),
-                       "price", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDLatestTick_Size(),
-                       ecorePackage.getEBigDecimal(),
-                       "size", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDLatestTick_Multiplier(),
-                       ecorePackage.getEBigDecimal(),
-                       "multiplier", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEClass(
+                mdLatestTickEClass,
+                MDLatestTick.class,
+                "MDLatestTick", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEAttribute(
+                getMDLatestTick_Price(),
+                ecorePackage.getEBigDecimal(),
+                "price", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDLatestTick_Size(),
+                ecorePackage.getEBigDecimal(),
+                "size", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDLatestTick_Multiplier(),
+                ecorePackage.getEBigDecimal(),
+                "multiplier", null, 0, 1, MDLatestTick.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
-        initEClass(mdTopOfBookEClass,
-                   MDTopOfBook.class,
-                   "MDTopOfBook", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-        initEAttribute(getMDTopOfBook_BidSize(),
-                       ecorePackage.getEBigDecimal(),
-                       "bidSize", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDTopOfBook_BidPrice(),
-                       ecorePackage.getEBigDecimal(),
-                       "bidPrice", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDTopOfBook_AskSize(),
-                       ecorePackage.getEBigDecimal(),
-                       "askSize", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDTopOfBook_AskPrice(),
-                       ecorePackage.getEBigDecimal(),
-                       "askPrice", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEClass(
+                mdTopOfBookEClass,
+                MDTopOfBook.class,
+                "MDTopOfBook", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEAttribute(
+                getMDTopOfBook_BidSize(),
+                ecorePackage.getEBigDecimal(),
+                "bidSize", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDTopOfBook_BidPrice(),
+                ecorePackage.getEBigDecimal(),
+                "bidPrice", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDTopOfBook_AskSize(),
+                ecorePackage.getEBigDecimal(),
+                "askSize", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDTopOfBook_AskPrice(),
+                ecorePackage.getEBigDecimal(),
+                "askPrice", null, 0, 1, MDTopOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
-        initEClass(mdMarketstatEClass,
-                   MDMarketstat.class,
-                   "MDMarketstat", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_ClosePrice(),
-                       ecorePackage.getEBigDecimal(),
-                       "closePrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_CloseDate(),
-                       ecorePackage.getEString(),
-                       "closeDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_PreviousClosePrice(),
-                       ecorePackage.getEBigDecimal(),
-                       "previousClosePrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_PreviousCloseDate(),
-                       ecorePackage.getEString(),
-                       "previousCloseDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_HighPrice(),
-                       ecorePackage.getEBigDecimal(),
-                       "highPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_LowPrice(),
-                       ecorePackage.getEBigDecimal(),
-                       "lowPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_VolumeTraded(),
-                       ecorePackage.getEBigDecimal(),
-                       "volumeTraded", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDMarketstat_OpenPrice(),
-                       ecorePackage.getEBigDecimal(),
-                       "openPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEClass(
+                mdMarketstatEClass,
+                MDMarketstat.class,
+                "MDMarketstat", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_ClosePrice(),
+                ecorePackage.getEBigDecimal(),
+                "closePrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_CloseDate(),
+                ecorePackage.getEString(),
+                "closeDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_PreviousClosePrice(),
+                ecorePackage.getEBigDecimal(),
+                "previousClosePrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_PreviousCloseDate(),
+                ecorePackage.getEString(),
+                "previousCloseDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_OpenPrice(),
+                ecorePackage.getEString(),
+                "openPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_HighPrice(),
+                ecorePackage.getEString(),
+                "highPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_LowPrice(),
+                ecorePackage.getEString(),
+                "lowPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$       
+        initEAttribute(
+                getMDMarketstat_VolumeTraded(),
+                ecorePackage.getEString(),
+                "volume", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$        
+        initEClass(
+                mdDepthOfBookEClass,
+                MDDepthOfBook.class,
+                "MDDepthOfBook", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEAttribute(
+                getMDDepthOfBook_Product(),
+                this.getDepthOfBookProduct(),
+                "product", null, 0, 1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEReference(
+                getMDDepthOfBook_Bids(),
+                this.getMDQuote(),
+                null,
+                "bids", null, 0, -1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEReference(
+                getMDDepthOfBook_Asks(),
+                this.getMDQuote(),
+                null,
+                "asks", null, 0, -1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
-        initEClass(mdDepthOfBookEClass,
-                   MDDepthOfBook.class,
-                   "MDDepthOfBook", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-        initEAttribute(getMDDepthOfBook_Product(),
-                       this.getDepthOfBookProduct(),
-                       "product", null, 0, 1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEReference(getMDDepthOfBook_Bids(),
-                       this.getMDQuote(),
-                       null,
-                       "bids", null, 0, -1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEReference(getMDDepthOfBook_Asks(),
-                       this.getMDQuote(),
-                       null,
-                       "asks", null, 0, -1, MDDepthOfBook.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-
-        initEClass(mdQuoteEClass,
-                   MDQuote.class,
-                   "MDQuote", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-        initEAttribute(getMDQuote_Price(),
-                       ecorePackage.getEBigDecimal(),
-                       "price", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDQuote_Size(),
-                       ecorePackage.getEBigDecimal(),
-                       "size", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDQuote_Source(),
-                       ecorePackage.getEString(),
-                       "source", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-        initEAttribute(getMDQuote_Time(),
-                       ecorePackage.getELong(),
-                       "time", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEClass(
+                mdQuoteEClass,
+                MDQuote.class,
+                "MDQuote", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEAttribute(
+                getMDQuote_Price(),
+                ecorePackage.getEBigDecimal(),
+                "price", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDQuote_Size(),
+                ecorePackage.getEBigDecimal(),
+                "size", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDQuote_Source(),
+                ecorePackage.getEString(),
+                "source", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDQuote_Time(),
+                ecorePackage.getELong(),
+                "time", null, 0, 1, MDQuote.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
 
         // Initialize data types
-        initEDataType(depthOfBookProductEDataType,
-                      Content.class,
-                      "DepthOfBookProduct", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
-        initEDataType(instrumentEDataType,
-                      Instrument.class,
-                      "Instrument", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEDataType(
+                depthOfBookProductEDataType,
+                Content.class,
+                "DepthOfBookProduct", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
+        initEDataType(instrumentEDataType, Instrument.class,
+                "Instrument", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS); //$NON-NLS-1$
 
         // Create resource
         createResource(eNS_URI);
     }
              
 } //MDPackageImpl
+

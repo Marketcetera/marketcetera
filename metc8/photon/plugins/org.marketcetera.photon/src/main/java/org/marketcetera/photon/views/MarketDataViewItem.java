@@ -71,9 +71,14 @@ public class MarketDataViewItem implements ISymbolProvider {
 	public MDMarketstat getMarketStat(){
 		return mMarketStat.get();
 	}
-	
+
+    public MDMarketstat getMarketStat() {
+        return mMarketStat.get();
+    }
+
 	/**
-	 * Changes the underlying instrument of this item. All data will be reset if the instrument changes.
+     * Changes the underlying instrument of this item. All data will be reset if
+     * the instrument changes.
 	 * 
 	 * @param instrument
 	 *            the new instrument, cannot be null
