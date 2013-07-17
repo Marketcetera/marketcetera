@@ -1,9 +1,10 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.quickfix.FIXVersion"
-include_class "org.marketcetera.trade.BrokerID"
-include_class "java.lang.Long"
-include_class "java.util.Date"
-include_class "quickfix.field.TransactTime"
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.quickfix.FIXVersion
+java_import org.marketcetera.trade.BrokerID
+java_import java.lang.Long
+java_import java.util.Date
+java_import 'quickfix.field.TransactTime'
 
 class SendMessage < Strategy
     def on_start

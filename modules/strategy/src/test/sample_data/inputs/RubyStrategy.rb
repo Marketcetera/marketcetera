@@ -1,13 +1,14 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.marketdata.MarketDataRequestBuilder"
-include_class "org.marketcetera.trade.Factory"
-include_class "org.marketcetera.trade.Equity"
-include_class 'org.marketcetera.util.test.UnicodeData'
-include_class "java.math.BigDecimal"
-include_class "java.lang.System"
-include_class "java.lang.Long"
-include_class "java.util.Date"
-include_class 'java.lang.InterruptedException'
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.marketdata.MarketDataRequestBuilder
+java_import org.marketcetera.trade.Factory
+java_import org.marketcetera.trade.Equity
+java_import org.marketcetera.util.test.UnicodeData
+java_import java.math.BigDecimal
+java_import java.lang.System
+java_import java.lang.Long
+java_import java.util.Date
+java_import java.lang.InterruptedException
 
 class RubyStrategy < Strategy
   def on_start

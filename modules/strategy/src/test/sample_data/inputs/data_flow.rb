@@ -1,8 +1,9 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.strategy.OutputType"
-include_class "org.marketcetera.module.DataFlowID"
-include_class "org.marketcetera.module.DataRequest"
-include_class "org.marketcetera.module.ModuleURN"
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.strategy.OutputType
+java_import org.marketcetera.module.DataFlowID
+java_import org.marketcetera.module.DataRequest
+java_import org.marketcetera.module.ModuleURN
 
 ###########################################################
 # Test the ability of a strategy to manipulate data flows #

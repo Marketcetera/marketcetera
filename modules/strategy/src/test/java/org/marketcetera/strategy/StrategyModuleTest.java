@@ -104,13 +104,15 @@ public class StrategyModuleTest
         throws Exception
     {
         // create a strategy written to a file that does not compile
-        String badStrategy = "include_class \"org.marketcetera.strategy.ruby.Strategy\"\n" +
-                             "include_class \"java.math.BigDecimal\"\n" +
+        String badStrategy = "require 'java'\n" +
+                             "java_import org.marketcetera.strategy.ruby.Strategy\n" +
+                             "java_import java.math.BigDecimal\n" +
                              "class MyStrategy < Strategy\n" +
-                             "  TEST = BigDecimal.new(1)\n" +
+                             "  this just won't compile\n" +
                              "end\n";
-        String goodStrategy = "include_class \"org.marketcetera.strategy.ruby.Strategy\"\n" +
-                              "include_class \"java.math.BigDecimal\"\n" +
+        String goodStrategy = "require 'java'\n" + 
+                              "java_import org.marketcetera.strategy.ruby.Strategy\n" +
+                              "java_import java.math.BigDecimal\n" +
                               "class MyStrategy < Strategy\n" +
                               "  TEST = BigDecimal.new(\"1\")\n" +
                               "end\n";

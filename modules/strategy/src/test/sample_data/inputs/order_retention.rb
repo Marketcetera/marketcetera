@@ -1,12 +1,13 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.Factory"
-include_class "org.marketcetera.trade.Equity"
-include_class "org.marketcetera.trade.OrderType"
-include_class "org.marketcetera.trade.Side"
-include_class "org.marketcetera.trade.TimeInForce"
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.trade.Factory
+java_import org.marketcetera.trade.Equity
+java_import org.marketcetera.trade.OrderType
+java_import org.marketcetera.trade.Side
+java_import org.marketcetera.trade.TimeInForce
 
-include_class "java.lang.Long"
-include_class "java.math.BigDecimal"
+java_import java.lang.Long
+java_import java.math.BigDecimal
 
 ###############################
 # Sample strategy template    #

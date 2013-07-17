@@ -1,4 +1,5 @@
-include_class "org.marketcetera.photon.scripting.Strategy"
+require 'java'
+java_import org.marketcetera.photon.scripting.Strategy
 
 module Subdir
 	class TestScript < Strategy

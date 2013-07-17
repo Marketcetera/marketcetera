@@ -1,4 +1,5 @@
-include_class "org.marketcetera.photon.scripting.Strategy"
+require 'java'
+java_import org.marketcetera.photon.scripting.Strategy
 
 class TestScript < Strategy
   def on_market_data_message(message)
