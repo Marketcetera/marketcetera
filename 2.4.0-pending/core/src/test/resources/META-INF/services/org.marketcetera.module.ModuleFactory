@@ -1,0 +1,14 @@
+#Module factories for testing.
+org.marketcetera.module.SingleModuleFactory
+org.marketcetera.module.MultipleModuleFactory
+org.marketcetera.module.ComplexModuleFactory
+org.marketcetera.module.JMXTestModuleFactory
+org.marketcetera.module.ConfigurationProviderTestFactory
+org.marketcetera.module.ProcessorModuleFactory
+org.marketcetera.module.EmitterModuleFactory
+org.marketcetera.module.FlowRequesterModuleFactory
+org.marketcetera.module.SingleParmModuleFactory
+org.marketcetera.module.CopierModuleFactory
+org.marketcetera.module.ConcurrentTestFactory
+org.marketcetera.module.DynamicBeanModuleFactory
+org.marketcetera.marketdata.MockMarketDataFeedModuleFactory
