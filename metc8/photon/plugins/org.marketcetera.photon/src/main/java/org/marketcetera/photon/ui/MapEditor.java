@@ -414,6 +414,7 @@ public abstract class MapEditor extends FieldEditor implements Messages
                 }
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public Object getValue(Object element, String property) {
                 if (property == VALUE_LABEL.getText()) {
