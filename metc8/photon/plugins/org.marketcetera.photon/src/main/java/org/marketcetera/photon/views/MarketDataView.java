@@ -61,7 +61,7 @@ import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 import quickfix.field.*;
 
@@ -330,6 +330,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
                                 newOrder(mdi, Side.Sell, mdi.getTopOfBook()
                                         .getAskPrice(), null);
                                 break;
+                           default:
+                        	   break;
                             }
                     }
                 }
