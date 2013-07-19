@@ -69,7 +69,6 @@ public class OrderSendingTest
         order.setInstrument(instrument);
         order.setPrice(BigDecimal.TEN);
         c.getClient().sendOrder(order);
-
         // Consume and test ORS ack.
         ExecutionReport er=(ExecutionReport)(c.getReportListener().getNext());
         assertExecReportValues(er,
@@ -90,8 +89,6 @@ public class OrderSendingTest
                                null,
                                true);
         Message msg=((HasFIXMessage)er).getMessage();
-        // Test sending message modifiers.
-        assertFalse(msg.isSetField(Text.FIELD));
 
         // Consume and test exchange's receipt of order.
         msg=getNextExchangeMessage();
