@@ -120,7 +120,28 @@ public class ReplyPersister
             return;
         }
     }
-
+    /**
+     * 
+     *
+     *
+     * @param inMessage
+     */
+    public void deleteMessage(TradeMessage inMessage)
+    {
+        if(!(inMessage instanceof ReportBase)) {
+            return;
+        }
+        if(inMessage instanceof ExecutionReport) {
+            ReportCache.INSTANCE.clear((ExecutionReport)inMessage);
+        }
+        try {
+            getHistoryServices().delete((ReportBase)inMessage);
+        } catch (PersistenceException e) {
+            Messages.RP_PERSIST_ERROR.error(this,
+                                            e,
+                                            inMessage);
+        }
+    }
     /**
      * Adds the given outgoing order message, with the given actorID,
      * to the receiver's cache, and returns the new cache entry.

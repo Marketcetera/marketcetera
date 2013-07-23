@@ -69,22 +69,32 @@ public abstract class EntityBase implements SummaryEntityBase {
             }
         }
     }
-
     /**
-     * This method is invoked by a client facing API to delete the entity.
-     * Invoking this method will marshall this object to the server-side
-     * and invoke {@link #deleteLocal(EntityManager, PersistContext)} on it.
      * 
-     * @param context the persist context if needed.
      *
-     * @throws PersistenceException if there was an error deleting
-     * the entity
+     *
+     * @param inContext
+     * @throws PersistenceException
      */
-    protected void deleteRemote(PersistContext context) throws PersistenceException {
-        applyRemote(EntityRemoteServices.getInstance().
-            delete(this, context));
+    protected void deleteRemote(PersistContext inContext)
+            throws PersistenceException
+    {
+        SaveResult curState = createSaveResult();
+        boolean opSucceeded = false;
+        try {
+            applyRemote(EntityRemoteServices.getInstance().delete(this,
+                                                                  inContext));
+            opSucceeded = true;
+        } finally {
+            //Undo any dirty changes made to the object if it
+            //was saved locally. Do note that this operation is
+            //not needed when the entity is saved remotely as
+            //dirty changes to entity remain at the server-side
+            if(!opSucceeded) {
+                applyRemote(curState);
+            }
+        }
     }
-
     /**
      * Applies the save result contents to this instance. This method is
      * invoked on the client-side, to apply state changes caused by

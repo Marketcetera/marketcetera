@@ -436,7 +436,7 @@ public class QuickFIXApplication
         SLF4JLoggerProxy.debug(this,
                                "Deleting {}",
                                inReport);
-        // TODO magic happens here
+        getPersister().deleteMessage(inReport);
     }
     /**
      * Indicates the type of message.

@@ -283,7 +283,15 @@ public interface ReportHistoryServices {
      */
     public void save(ReportBase report)
         throws PersistenceException;
-
+    /**
+     * 
+     *
+     *
+     * @param inReport
+     * @throws PersistenceException
+     */
+    public void delete(ReportBase inReport)
+            throws PersistenceException;
     /**
      * Returns the principals associated with the report with given
      * order ID.

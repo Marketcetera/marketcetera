@@ -50,6 +50,18 @@ public enum ReportCache
         }
     }
     /**
+     * 
+     *
+     *
+     * @param inReport
+     */
+    public void clear(ExecutionReport inReport)
+    {
+        if(inReport != null && inReport.getOrderID() != null) {
+            latestReports.remove(inReport.getOrderID().getValue());
+        }
+    }
+    /**
      * Clears the <code>ExecutionReport</code> cache.
      */
     public void clear()

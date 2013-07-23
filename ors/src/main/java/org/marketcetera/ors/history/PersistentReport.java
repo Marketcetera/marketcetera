@@ -49,7 +49,19 @@ class PersistentReport extends EntityBase {
         PersistentReport report = new PersistentReport(inReport);
         report.saveRemote(null);
     }
-
+    /**
+     * 
+     *
+     *
+     * @param inReport
+     * @throws PersistenceException
+     */
+    static void delete(ReportBase inReport)
+            throws PersistenceException
+    {
+        PersistentReport report = new PersistentReport(inReport);
+        report.deleteRemote(null);
+    }
     /**
      * Returns the principals associated with the report with given
      * order ID.

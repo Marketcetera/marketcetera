@@ -188,7 +188,15 @@ public class BasicReportHistoryServices
             invokeListener(report,success);
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.history.ReportHistoryServices#delete(org.marketcetera.trade.ReportBase)
+     */
+    @Override
+    public void delete(ReportBase inReport)
+            throws PersistenceException
+    {
+        PersistentReport.delete(inReport);
+    }
     @Override
     public Principals getPrincipals
         (OrderID orderID)
