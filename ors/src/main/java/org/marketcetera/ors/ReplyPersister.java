@@ -121,10 +121,9 @@ public class ReplyPersister
         }
     }
     /**
-     * 
+     * Deletes the given message.
      *
-     *
-     * @param inMessage
+     * @param inMessage a <code>TradeMessage</code> value
      */
     public void deleteMessage(TradeMessage inMessage)
     {

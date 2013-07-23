@@ -405,4 +405,15 @@ public interface Service
     void deleteReport(@WebParam(name="context")ClientContext inContext,
                       @WebParam(name="report")ExecutionReport inReport)
             throws RemoteException;
+    /**
+     * Resolves the given symbol to an instrument.
+     *
+     * @param inContext a <code>ClientContext</code> value
+     * @param inSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value
+     * @throws RemoteException if an error occurs
+     */
+    Instrument resolveSymbol(@WebParam(name="context")ClientContext inContext,
+                             @WebParam(name="symbol")String inSymbol)
+            throws RemoteException;
 }

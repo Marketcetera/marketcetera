@@ -564,4 +564,13 @@ public interface Client {
      */
     void deleteReport(ExecutionReport inReport)
             throws ConnectionException;
+    /**
+     * Resolves the given symbol to an <code>Instrument</code>.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
+     */
+    Instrument resolveSymbol(String inSymbol)
+            throws ConnectionException;
 }

@@ -284,11 +284,10 @@ public interface ReportHistoryServices {
     public void save(ReportBase report)
         throws PersistenceException;
     /**
-     * 
+     * Deletes the supplied report from the database.
      *
-     *
-     * @param inReport
-     * @throws PersistenceException
+     * @param inReport a <code>ReportBase</code> value
+     * @throws PersistenceException if there were errors deleting the report
      */
     public void delete(ReportBase inReport)
             throws PersistenceException;

@@ -361,6 +361,15 @@ public class MockClient
         throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#resolveSymbol(java.lang.String)
+     */
+    @Override
+    public Instrument resolveSymbol(String inSymbol)
+            throws ConnectionException
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
      */
     @Override

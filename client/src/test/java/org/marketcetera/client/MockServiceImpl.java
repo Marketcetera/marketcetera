@@ -495,4 +495,16 @@ public class MockServiceImpl
     {
         throw new UnsupportedOperationException();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#resolveSymbol(org.marketcetera.util.ws.stateful.ClientContext, java.lang.String)
+     */
+    @Override
+    public Instrument resolveSymbol(@WebParam(name = "context")
+                                    ClientContext inContext,
+                                    @WebParam(name = "symbol")
+                                    String inSymbol)
+            throws RemoteException
+    {
+        throw new UnsupportedOperationException();
+    }
 }

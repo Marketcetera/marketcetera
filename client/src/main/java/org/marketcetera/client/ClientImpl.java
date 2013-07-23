@@ -514,6 +514,23 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                                           Messages.ERROR_REMOTE_EXECUTION);
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#resolveSymbol(java.lang.String)
+     */
+    @Override
+    public Instrument resolveSymbol(String inSymbol)
+            throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.resolveSymbol(getServiceContext(),
+                                          inSymbol);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
     /**
      * Creates an instance given the parameters and connects to the server.
      *

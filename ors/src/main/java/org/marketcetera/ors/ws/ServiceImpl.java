@@ -266,6 +266,10 @@ public class ServiceImpl
     {
         return new SingleSimpleUserQuery(inUsername).fetch().getUserData();
     }
+    private Instrument resolveSymbol(String inSymbol)
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
     /**
      * Sets the user data associated with the given username.
      *
@@ -719,5 +723,23 @@ public class ServiceImpl
                 deleteReport(inReport,
                              getSessionManager().get(inContext.getSessionId()).getSession().getUser().getUserID());
             }}).execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#resolveSymbol(org.marketcetera.util.ws.stateful.ClientContext, java.lang.String)
+     */
+    @Override
+    public Instrument resolveSymbol(@WebParam(name = "context")ClientContext inContext,
+                                    final @WebParam(name = "symbol")String inSymbol)
+            throws RemoteException
+    {
+        Instrument userData = (new RemoteCaller<ClientSession,Instrument>(getSessionManager()) {
+            @Override
+            protected Instrument call(ClientContext context,
+                                  SessionHolder<ClientSession> sessionHolder)
+                    throws PersistenceException
+            {
+                return resolveSymbol(inSymbol);
+        }}).execute(inContext);
+        return userData;
     }
 }

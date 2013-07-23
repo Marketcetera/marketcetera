@@ -1119,7 +1119,6 @@ public class StrategyTestBase
         {
             throw new UnsupportedOperationException();
         }
-        
         /**
          * Sends the given <code>BrokerStatus</code> to registered broker status listeners.
          *
@@ -1130,6 +1129,15 @@ public class StrategyTestBase
             for(BrokerStatusListener brokerStatusListener : mBrokerStatusListeners) {
             	brokerStatusListener.receiveBrokerStatus(inBrokerStatus);
     		}
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#resolveSymbol(java.lang.String)
+         */
+        @Override
+        public Instrument resolveSymbol(String inSymbol)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
         }
     }
     /**
