@@ -212,7 +212,7 @@ public class ExecTest
     {
         return Exec.run
             (directory,disposition,getJava(),"-classpath",
-             (new File(DIR_TEST_CLASSES)).getAbsolutePath(),
+             new File(DIR_TEST_CLASSES).getAbsolutePath() + File.pathSeparator + System.getProperty("java.class.path"),
              ExecTest.class.getName()+"$"+subclass);
     }
 
@@ -224,7 +224,7 @@ public class ExecTest
     {
         return Exec.run
             (directory,disposition,getJava(),"-classpath",
-             (new File(DIR_TEST_CLASSES)).getAbsolutePath(),
+             new File(DIR_TEST_CLASSES).getAbsolutePath() + File.pathSeparator + System.getProperty("java.class.path"),
              ExecTest.class.getName()+"$"+subclass);
     }
 
