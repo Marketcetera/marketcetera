@@ -1,7 +1,6 @@
 package org.marketcetera.ors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.marketcetera.trade.TypesTestBase.assertExecReportValues;
 
 import java.math.BigDecimal;
@@ -14,17 +13,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.marketcetera.core.instruments.InstrumentFromMessage;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.ExecutionType;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
+import org.marketcetera.trade.*;
 
 import quickfix.Message;
 import quickfix.field.ClOrdID;
@@ -100,9 +89,6 @@ public class OrderCurrencySendingTest
                                null,
                                true);
         Message msg=((HasFIXMessage)er).getMessage();
-        // Test sending message modifiers.
-        assertFalse(msg.isSetField(Text.FIELD));
-
         // Consume and test exchange's receipt of order.
         msg=getNextExchangeMessage();
         assertEquals("ID1",msg.getString(ClOrdID.FIELD));

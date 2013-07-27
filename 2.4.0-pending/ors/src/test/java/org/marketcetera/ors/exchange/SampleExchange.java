@@ -7,7 +7,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.marketcetera.ors.ReportCache;
-import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -119,10 +118,12 @@ public class SampleExchange
             throw new RuntimeException(e);
         } catch (SessionNotFound e) {
             throw new RuntimeException(e);
+        } catch (ConfigError e) {
+            throw new RuntimeException(e);
         }
     }
     private Message createExecutionReport(Message inMessage)
-            throws FieldNotFound
+            throws FieldNotFound, ConfigError
     {
         // Choose status that matches that of the incoming message.
         char ordStatus;
@@ -146,10 +147,10 @@ public class SampleExchange
             return null;
         }
         // Create execution report.
-        FIXMessageFactory messageFactory = getBestMsgFactory(null);
+        FIXMessageFactory messageFactory = getBestMsgFactory(inMessage);
         Message qMsgReply= messageFactory.newExecutionReportEmpty();
         String msgType = MsgType.EXECUTION_REPORT;
-        DataDictionary dict=getBestDataDictionary(null);
+        DataDictionary dict=getBestDataDictionary(inMessage);
         String clOrderId = null;
         if(inMessage.isSetField(OrigClOrdID.FIELD)) {
             OrigClOrdID clOrdId = new OrigClOrdID();
@@ -242,10 +243,13 @@ public class SampleExchange
                 qMsgReply.setField(brokerOrderID);
             }
         }
+        if(dict.isMsgField(msgType,ExecTransType.FIELD)) {
+            qMsgReply.setField(new ExecTransType(ExecTransType.NEW));
+        }
         // Add all the fields of the incoming message.
         FIXMessageUtil.fillFieldsFromExistingMessage(qMsgReply,
                                                      inMessage,
-                                                     getBestDataDictionary(null),
+                                                     getBestDataDictionary(inMessage),
                                                      false);
         messageFactory.getMsgAugmentor().executionReportAugment(qMsgReply);
         // Add required header/trailer fields.
@@ -263,12 +267,14 @@ public class SampleExchange
             return null;
         }
     }
-    private DataDictionary getBestDataDictionary(Broker b)
+    private DataDictionary getBestDataDictionary(Message inMessage)
+            throws FieldNotFound, ConfigError
     {
-        if (b==null) {
+        if(inMessage == null) {
             return getDataDictionary();
         }
-        return b.getDataDictionary();
+        FIXVersion version = FIXVersion.getFIXVersion(inMessage);
+        return new DataDictionary(version.getDataDictionaryURL());
     }
     public DataDictionary getDataDictionary()
     {
@@ -335,12 +341,13 @@ public class SampleExchange
     {
         Session.sendToTarget(message,sessionID);
     }
-    private FIXMessageFactory getBestMsgFactory(Broker b)
+    private FIXMessageFactory getBestMsgFactory(Message inMessage)
+            throws FieldNotFound
     {
-        if (b==null) {
+        if(inMessage == null) {
             return getMsgFactory();
         }
-        return b.getFIXMessageFactory();
+        return FIXVersion.getFIXVersion(inMessage).getMessageFactory();
     }
     public FIXMessageFactory getMsgFactory()
     {
