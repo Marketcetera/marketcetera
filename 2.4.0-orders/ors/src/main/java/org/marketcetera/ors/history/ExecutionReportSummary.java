@@ -34,7 +34,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @NamedQueries({
     @NamedQuery(name="rootIDForOrderID",query="select e.rootID from ExecutionReportSummary e where e.orderID = :orderID"),
     @NamedQuery(name="openOrders",query="select e from ExecutionReportSummary e where e.isOpen=true"),
-    @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.isOpen=false where e.rootID = :rootID and e.orderID != :orderID") })
+    @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.isOpen = false where e.rootID = :rootID and e.id != :Id") })
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "positionForSymbol",
             columns = {@ColumnResult(name = "position")}),
@@ -804,7 +804,7 @@ class ExecutionReportSummary extends EntityBase {
         // mark all other orders of this family as closed
         Query query = inEntityManager.createNamedQuery("setIsOpen"); //$NON-NLS-1$
         ExecutionReportSummary summaryReport = (ExecutionReportSummary)inMerged;
-        query.setParameter("orderID",summaryReport.getOrderID()).setParameter("rootID",summaryReport.getRootID()).executeUpdate();
+        query.setParameter("Id",summaryReport.getId()).setParameter("rootID",summaryReport.getRootID()).executeUpdate();
     }
     @OneToOne(optional = false)
     PersistentReport getReport() {
