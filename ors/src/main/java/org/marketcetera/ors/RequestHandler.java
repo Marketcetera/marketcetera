@@ -25,9 +25,7 @@ import org.marketcetera.quickfix.IQuickFIXSender;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.quickfix.AnalyzedMessage;
 
 import quickfix.*;
 import quickfix.field.*;
@@ -479,7 +477,6 @@ public class RequestHandler
         Broker b=null;
         Message qMsg=null;
         Message qMsgToSend=null;
-        Message qMsgReply=null;
         boolean responseExpected=false;
         OrderInfo orderInfo=null;
         try {
@@ -634,80 +631,13 @@ public class RequestHandler
             responseExpected=true;
             ThreadedMetric.event
                 ("requestHandler.orderSent"); //$NON-NLS-1$
-
-            // Compose ACK execution report (with pending status).
-
-            try {
-                qMsgReply=createExecutionReport(b,qMsg);
-                if (qMsgReply==null) {
-                    Messages.RH_ACK_FAILED_WARN.warn
-                        (this,msg,qMsg,b.toString());
-                }
-            } catch (FieldNotFound ex) {
-                throw new I18NException(ex,Messages.RH_ACK_FAILED);
-            } catch (CoreException ex) {
-                throw new I18NException(ex,Messages.RH_ACK_FAILED);
-            }
         } catch (I18NException ex) {
-            Messages.RH_MESSAGE_PROCESSING_FAILED.error
-                (this,ex,msg,qMsg,qMsgToSend,
-                 ObjectUtils.toString(b,ObjectUtils.toString(bID)));
-            qMsgReply=createRejection(ex,b,msg);
+            Messages.RH_MESSAGE_PROCESSING_FAILED.error(this,ex,msg,qMsg,qMsgToSend,ObjectUtils.toString(b,ObjectUtils.toString(bID)));
         } finally {
             if (orderInfo!=null) {
                 orderInfo.setResponseExpected(responseExpected);
             }
         }
-        ThreadedMetric.event
-            ("requestHandler.replyComposed"); //$NON-NLS-1$
-
-        boolean msgAckExpected=false;
-        Principals principals;
-        try {
-
-        // If the reply could not be created, we are done (a
-        // warning/error has already been reported).
-
-        if (qMsgReply==null) {
-            return;
-        }
-        if (SLF4JLoggerProxy.isDebugEnabled(this)) {
-            Messages.RH_ANALYZED_MESSAGE.debug
-                (this,new AnalyzedMessage
-                 (getBestDataDictionary(b),qMsgReply).toString());
-        }
-
-        // Convert reply to FIX Agnostic messsage.
-
-            principals=getPersister().getPrincipals(qMsgReply,true);
-            msgAckExpected=true;
-            ThreadedMetric.event
-                ("requestHandler.principalsFetched"); //$NON-NLS-1$
-        } finally {
-            if (orderInfo!=null) {
-                orderInfo.setAckExpected(msgAckExpected);
-            }
-        }
-
-        TradeMessage reply;
-        try {
-            reply=FIXConverter.fromQMessage
-                (qMsgReply,Originator.Server,bID,
-                 principals.getActorID(),principals.getViewerID());
-        } catch (MessageCreationException ex) {
-            Messages.RH_REPORT_FAILED.error(this,ex,qMsgReply);
-            return;
-        }
-        ThreadedMetric.event
-            ("requestHandler.replyConverted"); //$NON-NLS-1$
-
-        // Persist and send reply.
-        
-        getPersister().persistReply(reply);
-        Messages.RH_SENDING_REPLY.info(this,reply);
-        ThreadedMetric.event
-            ("requestHandler.replyPersisted"); //$NON-NLS-1$
-        getUserManager().convertAndSend(reply);
         ThreadedMetric.end(METRIC_CONDITION_RH);
 	}
 }
