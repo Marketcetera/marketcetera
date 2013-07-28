@@ -507,4 +507,14 @@ public class MockServiceImpl
     {
         throw new UnsupportedOperationException();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#getOpenOrders(org.marketcetera.util.ws.stateful.ClientContext)
+     */
+    @Override
+    public List<ReportBase> getOpenOrders(@WebParam(name = "context")
+    ClientContext inContext)
+            throws RemoteException
+    {
+        throw new UnsupportedOperationException();
+    }
 }

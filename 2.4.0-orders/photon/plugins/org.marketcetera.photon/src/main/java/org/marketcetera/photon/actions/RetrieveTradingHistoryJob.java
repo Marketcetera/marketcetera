@@ -1,8 +1,7 @@
 package org.marketcetera.photon.actions;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +21,7 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.*;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -69,16 +69,35 @@ public class RetrieveTradingHistoryJob extends Job {
 								client = ClientManager.getInstance();
 							} catch (ClientInitException e) {
 								// no longer connected
-								SLF4JLoggerProxy
-										.debug(this,
-												"Aborting history retrieval since server connection is not available"); //$NON-NLS-1$
+								SLF4JLoggerProxy.debug(this,
+								                       "Aborting history retrieval since server connection is not available"); //$NON-NLS-1$
 								return new ReportBase[0];
 							}
 							try {
-								return client.getReportsSince(lastOccurrence);
+							    ReportBase[] oldReports = client.getReportsSince(lastOccurrence);
+							    List<ReportBase> newReports = client.getOpenOrders();
+							    Set<OrderID> newReportIds = new HashSet<OrderID>();
+							    Set<OrderID> oldReportIds = new HashSet<OrderID>();
+							    if(oldReports != null) {
+	                                for(ReportBase report : oldReports) {
+	                                    oldReportIds.add(report.getOrderID());
+	                                }
+							    }
+							    if(newReports != null){
+                                    for(ReportBase report : newReports) {
+                                        newReportIds.add(report.getOrderID());
+                                    }
+							    }
+							    System.out.println(lastOccurrence + " in RetrieveTradingHistoryJob.run, got " + oldReportIds + " and " + newReportIds);
+//								return client.getReportsSince(lastOccurrence);
+								return newReports == null ? new ReportBase[0] : newReports.toArray(new ReportBase[0]);
 							} catch (ConnectionException e) {
+                                e.printStackTrace();
 								Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this, e);
 								return new ReportBase[0];
+							} catch (Exception e) {
+							    e.printStackTrace();
+                                return new ReportBase[0];
 							}
 						}
 					});

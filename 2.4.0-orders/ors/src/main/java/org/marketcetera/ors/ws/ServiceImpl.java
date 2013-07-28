@@ -3,6 +3,7 @@ package org.marketcetera.ors.ws;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.jws.WebParam;
 
@@ -269,6 +270,18 @@ public class ServiceImpl
     private Instrument resolveSymbol(String inSymbol)
     {
         throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+     * Returns the open orders visible to the given user.
+     *
+     * @param inSession a <code>ClientSession</code> value
+     * @return a <code>List&lt;ReportBase&gt;</code> value
+     * @throws PersistenceException if an error occurs retrieving the order data
+     */
+    private List<ReportBase> getOpenOrders(ClientSession inSession)
+            throws PersistenceException
+    {
+        return getHistoryServices().getOpenOrders(inSession.getUser());
     }
     /**
      * Sets the user data associated with the given username.
@@ -732,7 +745,7 @@ public class ServiceImpl
                                     final @WebParam(name = "symbol")String inSymbol)
             throws RemoteException
     {
-        Instrument userData = (new RemoteCaller<ClientSession,Instrument>(getSessionManager()) {
+        return (new RemoteCaller<ClientSession,Instrument>(getSessionManager()) {
             @Override
             protected Instrument call(ClientContext context,
                                   SessionHolder<ClientSession> sessionHolder)
@@ -740,6 +753,21 @@ public class ServiceImpl
             {
                 return resolveSymbol(inSymbol);
         }}).execute(inContext);
-        return userData;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#getOpenOrders(org.marketcetera.util.ws.stateful.ClientContext)
+     */
+    @Override
+    public List<ReportBase> getOpenOrders(@WebParam(name = "context")ClientContext inContext)
+            throws RemoteException
+    {
+        return (new RemoteCaller<ClientSession,List<ReportBase>>(getSessionManager()) {
+            @Override
+            protected List<ReportBase> call(ClientContext context,
+                                            SessionHolder<ClientSession> sessionHolder)
+                    throws PersistenceException
+            {
+                return getOpenOrders(sessionHolder.getSession());
+        }}).execute(inContext);
     }
 }

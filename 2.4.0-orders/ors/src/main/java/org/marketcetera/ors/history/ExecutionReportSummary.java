@@ -3,6 +3,7 @@ package org.marketcetera.ors.history;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+
 import org.marketcetera.trade.Currency;
 
 import javax.persistence.*;
@@ -33,7 +34,6 @@ import org.marketcetera.util.misc.ClassVersion;
 @Table(name="execreports")
 @NamedQueries({
     @NamedQuery(name="rootIDForOrderID",query="select e.rootID from ExecutionReportSummary e where e.orderID = :orderID"),
-    @NamedQuery(name="openOrders",query="select e from ExecutionReportSummary e where e.isOpen=true"),
     @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.isOpen = false where e.rootID = :rootID and e.id != :Id") })
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "positionForSymbol",
@@ -177,7 +177,8 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.id = " +
             "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
-            resultSetMapping = "optAllPositions")
+            resultSetMapping = "optAllPositions"),
+    @NamedNativeQuery(name="openOrders",query="select * from execreports e where e.isOpen=true and (:allViewers=true or e.viewer_id=:viewerID)",resultClass=ExecutionReportSummary.class),
         })
 
 class ExecutionReportSummary extends EntityBase {
@@ -274,7 +275,6 @@ class ExecutionReportSummary extends EntityBase {
         return position == null? BigDecimal.ZERO: position;
 
     }
-    
     /**
      * Returns the aggregate position of each (equity,account,actor)
      * tuple based on all reports received for each tuple on or before
@@ -698,7 +698,31 @@ class ExecutionReportSummary extends EntityBase {
         }, null);
 
     }
-
+    /**
+     * Returns all open orders visible to the given user.
+     *
+     * @param inUser a <code>SimplUser</code> value
+     * @return a <code>List&lt;ExecutionReportSummary&gt;</code> value
+     * @throws PersistenceException if an error occurs retrieving the orders
+     */
+    static List<ExecutionReportSummary> getOpenOrders(final SimpleUser inUser)
+            throws PersistenceException
+    {
+        return executeRemote(new Transaction<List<ExecutionReportSummary>>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public List<ExecutionReportSummary> execute(EntityManager inEntityManager,
+                                                        PersistContext inContext)
+                    throws PersistenceException
+            {
+                Query query = inEntityManager.createNamedQuery("openOrders");  //$NON-NLS-1$
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+                return query.getResultList();
+            }
+            private static final long serialVersionUID = 1L;
+        },null);
+    }
     /**
      * Creates an instance.
      *

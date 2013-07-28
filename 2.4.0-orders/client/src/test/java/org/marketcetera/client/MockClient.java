@@ -388,6 +388,15 @@ public class MockClient
     {
         throw new UnsupportedOperationException();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getOpenOrders()
+     */
+    @Override
+    public List<ReportBase> getOpenOrders()
+            throws ConnectionException
+    {
+        throw new UnsupportedOperationException();
+    }
     /**
      * Gets the <code>ClientParameters</code> value used to initialize the client.
      *
