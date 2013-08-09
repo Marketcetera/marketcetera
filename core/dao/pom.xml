@@ -9,8 +9,8 @@
   </parent>
   <groupId>org.marketcetera.core</groupId>
   <artifactId>dao</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
-  <packaging>bundle</packaging>
+  <version>3.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
   <licenses>
     <license>
       <name>GNU General Public License (GPL)v2</name>
@@ -25,7 +25,7 @@
     <dependency>
       <groupId>org.marketcetera</groupId>
       <artifactId>api</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.marketcetera.core</groupId>
       <artifactId>util</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.cxf</groupId>
@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.marketcetera.core</groupId>
       <artifactId>core</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>

@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>datasource</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.1-SNAPSHOT</version>
     <description>Datasource for persistence</description>
 
     <licenses>
@@ -22,7 +22,7 @@
 
     <name>Marketcetera Datasources</name>
 
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>

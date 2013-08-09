@@ -4,16 +4,16 @@
   <parent>
     <groupId>org.marketcetera.fork</groupId>
     <artifactId>fork-parent</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.marketcetera.fork</groupId>
   <artifactId>commons-csv</artifactId>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.0.1-SNAPSHOT</version>
   <name>Commons CSV (Sandbox)</name>
   <url>http://commons.apache.org/sandbox/csv/</url>
 
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
 
   <licenses>
     <license>
