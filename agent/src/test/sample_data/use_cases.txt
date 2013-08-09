@@ -1,0 +1,41 @@
+1) Single node click-trading:
+ - Start up application, starts order management service
+ - Starts web UI profile using in-process order management service
+ - Agent context specifies Services
+ - How will web find order management?
+ -- Option 1: remote channel
+ -- Option 2: direct channel
+ - Web UI profile will want to find a Service that meets the requirement of order management
+2) Multiple node click-trading:
+ - Start up application, starts order management profile
+ - Start
+3) Create Services via context (order management for broker 1, e.g., risk management for all orders)
+- How will Services link into a Flow?
+-- Explicitly create a Flow which links services together?
+-- Discovery and self-assembly of Flows would be nice, but probably not too onerous to require manual, explicit construction of Flows.
+-- Order of Services in a Flow indicates routing
+-- Allow routing of data to multiple Services
+-- Rename Service to Module and it's very similar to what we have now
+
+Module1 -> Module2 -> Module3
+
+Each "->" is a "Route" or "DataConnector"
+The purpose of a "DataRoute" is to take data from a Module and deliver it to another Module (or Modules)
+A DataRoute could, for instance, conditionally route data from one Module to one of several others (fail-over solution)
+
+- DataFlow must allow Services to be HA/FO-capable
+- DataFlow must support local (fast) flows
+- DataFlow must support remote (HA/FO) flows
+- DataFlow interaction with load balancing? not sure
+- How will multiple agents work together to balance load? DataFlow starts with a job picker on a number of agents and ends with a (redundant) job queue on others
+
+- How does use-case 1 above work with DataFlows? Flow #1 is the UI Service, either all-in-one in a WAR or the UI Service
+ is a Jetty-based Service. Either way the DataFlow defined in the context allows data to flow from the UI Service
+ to the ORS.
+ 
+ - How does market data work in this scenario? Market data would be a Service started in the context. Where does data flow?
+  Data flows to a market data repository. This suggests a different type of artifact - a Repository, perhaps. There is
+  a Service, which participates in DataFlows, there must also be Repositories accessible somehow. Repositories collect
+  data and respond to queries (poll). They may also push data to subscribers. Subscribers and querents may be local or
+  remote. Repositories may be local or remote. Repositories need a locator.
+
