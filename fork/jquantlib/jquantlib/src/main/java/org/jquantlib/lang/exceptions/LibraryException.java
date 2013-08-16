@@ -95,7 +95,8 @@ public class LibraryException extends RuntimeException {
 
     @Override
     public synchronized Throwable fillInStackTrace() {
-        return super.fillInStackTrace();
+	  // Disable stderr printout
+        return null;
     }
 
     @Override
