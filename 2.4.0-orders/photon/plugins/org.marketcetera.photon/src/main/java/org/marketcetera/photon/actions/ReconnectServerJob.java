@@ -61,7 +61,6 @@ public class ReconnectServerJob extends UIJob {
         setUser(true);
         // don't visualize progress for this job since it's modal
         setSystem(true);
-        System.out.println("ReconnectServierJob constructed");
     }
 
     @Override
@@ -87,7 +86,6 @@ public class ReconnectServerJob extends UIJob {
 
     @Override
     public IStatus runInUIThread(IProgressMonitor monitor) {
-        System.out.println("ReconnectServierJob.runInUIThread called");
         try {
             // load connection properties
             ScopedPreferenceStore prefs = PhotonPlugin.getDefault().getPreferenceStore();
@@ -169,7 +167,7 @@ public class ReconnectServerJob extends UIJob {
                     };
                     try {
                         new ProgressMonitorDialog(getDisplay().getActiveShell()).run(true, false, op);
-//                        System.out.println("ReconnectServerJob.runInUIThread - calling RetrieveTradingHistoryJob");
+                        // CD 20130820 commented out in lieu of replacing the call below in receiveServerStatus (one or the other, not both)
 //                        new RetrieveTradingHistoryJob().schedule();
                         return true;
                     } catch (InterruptedException e) {
@@ -255,14 +253,9 @@ public class ReconnectServerJob extends UIJob {
     static final class ServerNotificationListener
             implements ServerStatusListener
     {
-        public ServerNotificationListener()
-        {
-            System.out.println("ServerNotificationListener constructed");
-        }
         @Override
         public void receiveServerStatus(boolean status)
         {
-            System.out.println("ServerNotificationListener.receiveServerStatus: " + status);
             try {
                 String text;
                 if (status) {
@@ -270,7 +263,7 @@ public class ReconnectServerJob extends UIJob {
                     text = Messages.SERVER_NOTIFICATION_SERVER_ALIVE.getText();
                     // CD 20120915 Fix rolled back due to performance problems for high
                     //  volume installations
-                    System.out.println("ReconnectServerJob.ServerNotificationListener.receiveServerStatus - calling RetrieveTradingHistoryJob");
+                    // CD 20130820 Replaced (still vulnerable to high-volume problems)
                     new RetrieveTradingHistoryJob().schedule();
                 } else {
                     ServerStatusIndicator.setDisconnected();

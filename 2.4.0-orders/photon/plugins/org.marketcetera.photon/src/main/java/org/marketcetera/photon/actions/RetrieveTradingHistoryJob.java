@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ConnectionException;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.ImmutablePositionSupport;
 import org.marketcetera.core.position.PositionEngine;
@@ -21,7 +20,6 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.*;
-import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -51,17 +49,14 @@ public class RetrieveTradingHistoryJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		String timeString = PhotonPlugin.getDefault().getPreferenceStore().getString(
-				PhotonPreferences.TRADING_HISTORY_START_TIME);
-		if (StringUtils.isNotEmpty(timeString)) {
+		String timeString = PhotonPlugin.getDefault().getPreferenceStore().getString(PhotonPreferences.TRADING_HISTORY_START_TIME);
+		if(StringUtils.isNotEmpty(timeString)) {
 			final TimeOfDay time = TimeOfDay.create(timeString);
-			if (time != null) {
-				TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault()
-						.getTradeReportsHistory();
+			if(time != null) {
+			    TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
 				final Date lastOccurrence = time.getLastOccurrence();
 				try {
 					tradeReportsHistory.resetMessages(new Callable<ReportBase[]>() {
-
 						@Override
 						public ReportBase[] call() {
 							Client client;
@@ -74,29 +69,25 @@ public class RetrieveTradingHistoryJob extends Job {
 								return new ReportBase[0];
 							}
 							try {
-							    ReportBase[] oldReports = client.getReportsSince(lastOccurrence);
-							    List<ReportBase> newReports = client.getOpenOrders();
-							    Set<OrderID> newReportIds = new HashSet<OrderID>();
-							    Set<OrderID> oldReportIds = new HashSet<OrderID>();
-							    if(oldReports != null) {
-	                                for(ReportBase report : oldReports) {
-	                                    oldReportIds.add(report.getOrderID());
-	                                }
+							    // this collection will hold the reports that we're going to return - the goal is to collect all reports
+							    //  since the lastOccurrence date plus any open orders that predate the lastOccurrence
+							    Set<ReportBase> allReports = new LinkedHashSet<ReportBase>();
+							    // this list of reports may be truncated by the lastOccurrence date
+							    ReportBase[] reports = client.getReportsSince(lastOccurrence);
+							    if(reports != null) {
+							        allReports.addAll(Arrays.asList(reports));
 							    }
-							    if(newReports != null){
-                                    for(ReportBase report : newReports) {
-                                        newReportIds.add(report.getOrderID());
-                                    }
+							    // allReports now contains the reports since the lastOccurrence - check for open orders
+							    List<ReportBase> openReports = client.getOpenOrders();
+							    // see if any of the openReports don't appear in the current list. if so, add them
+							    for(ReportBase openReport : openReports) {
+							        if(!allReports.contains(openReport)) {
+							            allReports.add(openReport);
+							        }
 							    }
-							    System.out.println(lastOccurrence + " in RetrieveTradingHistoryJob.run, got " + oldReportIds + " and " + newReportIds);
-//								return client.getReportsSince(lastOccurrence);
-								return newReports == null ? new ReportBase[0] : newReports.toArray(new ReportBase[0]);
-							} catch (ConnectionException e) {
-                                e.printStackTrace();
-								Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this, e);
-								return new ReportBase[0];
+								return allReports.toArray(new ReportBase[0]);
 							} catch (Exception e) {
-							    e.printStackTrace();
+                                Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this, e);
                                 return new ReportBase[0];
 							}
 						}
