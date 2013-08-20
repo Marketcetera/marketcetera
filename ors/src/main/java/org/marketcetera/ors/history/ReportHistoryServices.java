@@ -2,6 +2,7 @@ package org.marketcetera.ors.history;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.marketcetera.client.jms.JmsManager;
@@ -308,4 +309,13 @@ public interface ReportHistoryServices {
     public Principals getPrincipals
         (OrderID orderID)
         throws PersistenceException;
+    /**
+     * Returns the open orders visible to the given user.
+     *
+     * @param inUser a <code>SimpleUser</code> value
+     * @return a <code>List&lt;ReportBase</code> value
+     * @throws PersistenceException if there were errors retrieving the data
+     */
+    public List<ReportBase> getOpenOrders(SimpleUser inUser)
+            throws PersistenceException;
 }

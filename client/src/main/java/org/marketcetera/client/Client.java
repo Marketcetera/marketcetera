@@ -2,15 +2,13 @@ package org.marketcetera.client;
 
 import java.beans.ExceptionListener;
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -572,5 +570,13 @@ public interface Client {
      * @throws ConnectionException if an error occurs connecting to the server
      */
     Instrument resolveSymbol(String inSymbol)
+            throws ConnectionException;
+    /**
+     * Gets all open orders visible to the current user.
+     *
+     * @return a <code>List&lt;ReportBase&gt;</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
+     */
+    List<ReportBase> getOpenOrders()
             throws ConnectionException;
 }

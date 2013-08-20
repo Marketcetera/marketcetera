@@ -61,6 +61,7 @@ CREATE TABLE execreports (
     securityType INTEGER,
     symbol VARCHAR(255) NOT NULL,
     expiry VARCHAR(255),
+    isOpen BIT,
     strikePrice NUMERIC(17,7),
     optionType INTEGER,
     account VARCHAR(255),

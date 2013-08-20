@@ -2,7 +2,8 @@ package org.marketcetera.ors.history;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.persist.*;
-import static org.marketcetera.persist.JPQLConstants.FROM;
+import static org.marketcetera.persist.JPQLConstants.*;
+import static org.marketcetera.persist.JPQLConstants.WHERE;
 import static org.marketcetera.persist.JPQLConstants.S;
 
 import java.util.List;
@@ -32,7 +33,17 @@ class MultiExecReportSummary extends MultipleEntityQuery {
      */
     static MultiExecReportSummary all() {
         return new MultiExecReportSummary(FROM + S +
-                ExecutionReportSummary.ENTITY_NAME + S +  ENTITY_ALIAS, null);
+                ExecutionReportSummary.ENTITY_NAME + S + ENTITY_ALIAS, null);
+    }
+    /**
+     * Creates a query that returns all open orders.
+     *
+     * @return a <code>MultiExecReportSummary</code> value
+     */
+    static MultiExecReportSummary allOpen()
+    {
+        return new MultiExecReportSummary(FROM+S+ExecutionReportSummary.ENTITY_NAME+S+ENTITY_ALIAS,
+                                          WHERE+S+ENTITY_ALIAS+DOT+ExecutionReportSummary.ATTRIBUTE_IS_OPEN+EQUALS+"true");
     }
     /**
      * Fetches the instances matched by this query.

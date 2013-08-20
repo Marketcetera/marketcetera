@@ -1,9 +1,11 @@
 package org.marketcetera.ors.history;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
@@ -89,7 +91,24 @@ public class BasicReportHistoryServices
         return ExecutionReportSummary.getEquityPositionAsOf
             (inUser,inDate,inEquity);
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.history.ReportHistoryServices#getOpenOrders(org.marketcetera.ors.security.SimpleUser)
+     */
+    @Override
+    public List<ReportBase> getOpenOrders(SimpleUser inUser)
+            throws PersistenceException
+    {
+        List<ReportBase> reports = new ArrayList<ReportBase>();
+        List<ExecutionReportSummary> rawReports = ExecutionReportSummary.getOpenOrders(inUser);
+        try {
+            for(ExecutionReportSummary summary : rawReports) {
+                reports.add(summary.getReport().toReport());
+            }
+        } catch (ReportPersistenceException e) {
+            throw new PersistenceException(e);
+        }
+        return reports;
+    }
     @Override
     public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
         (SimpleUser inUser,

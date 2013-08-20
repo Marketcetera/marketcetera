@@ -1139,6 +1139,15 @@ public class StrategyTestBase
         {
             throw new UnsupportedOperationException();
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getOpenOrders()
+         */
+        @Override
+        public List<ReportBase> getOpenOrders()
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
     }
     /**
      * Compares the sending times of two <code>ReportBase</code> values.

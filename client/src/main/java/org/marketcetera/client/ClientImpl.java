@@ -531,6 +531,22 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                                           Messages.ERROR_REMOTE_EXECUTION);
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#getOpenOrders()
+     */
+    @Override
+    public List<ReportBase> getOpenOrders()
+            throws ConnectionException
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.getOpenOrders(getServiceContext());
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
     /**
      * Creates an instance given the parameters and connects to the server.
      *

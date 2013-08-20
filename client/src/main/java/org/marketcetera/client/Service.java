@@ -2,6 +2,7 @@ package org.marketcetera.client;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -415,5 +416,14 @@ public interface Service
      */
     Instrument resolveSymbol(@WebParam(name="context")ClientContext inContext,
                              @WebParam(name="symbol")String inSymbol)
+            throws RemoteException;
+    /**
+     * Gets the list of open orders visible to the current user.
+     *
+     * @param inContext a <code>ClientContext</code> value
+     * @return a <code>List&lt;ReportBase&gt;</code> value
+     * @throws RemoteException if an error occurs
+     */
+    List<ReportBase> getOpenOrders(@WebParam(name="context")ClientContext inContext)
             throws RemoteException;
 }

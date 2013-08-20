@@ -1,8 +1,7 @@
 package org.marketcetera.photon.actions;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.StringUtils;
@@ -11,9 +10,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.marketcetera.client.Client;
-import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ConnectionException;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.ImmutablePositionSupport;
 import org.marketcetera.core.position.PositionEngine;
@@ -23,7 +20,6 @@ import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.*;
 import org.marketcetera.trade.ReportBase;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -48,70 +44,76 @@ public class RetrieveTradingHistoryJob extends Job {
 	public RetrieveTradingHistoryJob() {
 		super(Messages.RETRIEVE_TRADING_HISTORY_JOB_NAME.getText());
 	}
-
-	@Override
-	protected IStatus run(IProgressMonitor monitor) {
-		String timeString = PhotonPlugin.getDefault().getPreferenceStore().getString(
-				PhotonPreferences.TRADING_HISTORY_START_TIME);
-		if (StringUtils.isNotEmpty(timeString)) {
-			final TimeOfDay time = TimeOfDay.create(timeString);
-			if (time != null) {
-				TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault()
-						.getTradeReportsHistory();
-				final Date lastOccurrence = time.getLastOccurrence();
-				try {
-					tradeReportsHistory.resetMessages(new Callable<ReportBase[]>() {
-
-						@Override
-						public ReportBase[] call() {
-							Client client;
-							try {
-								client = ClientManager.getInstance();
-							} catch (ClientInitException e) {
-								// no longer connected
-								SLF4JLoggerProxy
-										.debug(this,
-												"Aborting history retrieval since server connection is not available"); //$NON-NLS-1$
-								return new ReportBase[0];
-							}
-							try {
-								return client.getReportsSince(lastOccurrence);
-							} catch (ConnectionException e) {
-								Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this, e);
-								return new ReportBase[0];
-							}
-						}
-					});
-                    Map<PositionKey<?>, BigDecimal> positions = Maps
-                            .<PositionKey<?>, BigDecimal> newHashMap(ClientManager
-                                    .getInstance().getAllEquityPositionsAsOf(
-                                            lastOccurrence));
-                    positions.putAll(ClientManager.getInstance()
-                            .getAllOptionPositionsAsOf(lastOccurrence));
-                    positions.putAll(ClientManager.getInstance().getAllFuturePositionsAsOf(lastOccurrence));
-                    positions.putAll(ClientManager.getInstance().getAllCurrencyPositionsAsOf(lastOccurrence));
-                    EventList<ReportHolder> messages = tradeReportsHistory.getAllMessagesList();
-                    ImmutablePositionSupport positionSupport = new ImmutablePositionSupport(positions);
-                    PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(PhotonPlugin.getDefault().getMarketDataManager().getMarketData());
-                    UnderlyingSymbolSupport underlyingSymbolSupport = PhotonPlugin.getDefault().getUnderlyingSymbolSupport();
-                    PositionEngine engine = PositionEngineFactory.createFromReportHolders(messages,
-                                                                                          positionSupport,
-                                                                                          positionMarketData,
-                                                                                          underlyingSymbolSupport);
-					PhotonPlugin.getDefault().registerPositionEngine(engine);
-				} catch (Exception e) {
-					if (e instanceof RuntimeException) {
-						throw (RuntimeException) e;
-					} else {
-						// The callable above doesn't throw checked exceptions
-						assert false;
-						throw new RuntimeException(e);
-					}
-				}
-				PhotonPlugin.getDefault().setSessionStartTime(lastOccurrence);
-			}
-		}
-		return Status.OK_STATUS;
-	}
-
+    @Override
+    protected IStatus run(IProgressMonitor monitor)
+    {
+        try {
+            String timeString = PhotonPlugin.getDefault().getPreferenceStore().getString(PhotonPreferences.TRADING_HISTORY_START_TIME);
+            // this collection will hold the reports that we're going to return - the goal is to collect all reports
+            //  since the lastOccurrence date plus any open orders that predate the lastOccurrence
+            final Set<ReportBase> allReports = new LinkedHashSet<ReportBase>();
+            TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
+            Client client = ClientManager.getInstance();
+            List<ReportBase> openReports = client.getOpenOrders();
+            Date positionDate = null;
+            if(StringUtils.isNotEmpty(timeString)) {
+                TimeOfDay time = TimeOfDay.create(timeString);
+                if(time != null) {
+                    // trade history is enabled, fetch reports since last occurrence
+                    Date lastOccurrence = time.getLastOccurrence();
+                    ReportBase[] reports = client.getReportsSince(lastOccurrence);
+                    if(reports != null) {
+                        allReports.addAll(Arrays.asList(reports));
+                    }
+                    // see if any of the openReports don't appear in the current list. if so, add them
+                    if(openReports != null) {
+                        for(ReportBase openReport : openReports) {
+                            if(!allReports.contains(openReport)) {
+                                allReports.add(openReport);
+                            }
+                        }
+                    }
+                    PhotonPlugin.getDefault().setSessionStartTime(lastOccurrence);
+                    positionDate = lastOccurrence;
+                }
+            } else {
+                if(openReports != null) {
+                    // Photon trade history is disabled, but we still need open orders
+                    allReports.addAll(openReports);
+                }
+            }
+            tradeReportsHistory.resetMessages(new Callable<ReportBase[]>() {
+                @Override
+                public ReportBase[] call()
+                        throws Exception
+                {
+                    return allReports.toArray(new ReportBase[0]);
+                }
+            });
+            if(positionDate != null) {
+                Map<PositionKey<?>,BigDecimal> positions = Maps.<PositionKey<?>,BigDecimal> newHashMap(ClientManager.getInstance().getAllEquityPositionsAsOf(positionDate));
+                positions.putAll(ClientManager.getInstance().getAllOptionPositionsAsOf(positionDate));
+                positions.putAll(ClientManager.getInstance().getAllFuturePositionsAsOf(positionDate));
+                positions.putAll(ClientManager.getInstance().getAllCurrencyPositionsAsOf(positionDate));
+                EventList<ReportHolder> messages = tradeReportsHistory.getAllMessagesList();
+                ImmutablePositionSupport positionSupport = new ImmutablePositionSupport(positions);
+                PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(PhotonPlugin.getDefault().getMarketDataManager().getMarketData());
+                UnderlyingSymbolSupport underlyingSymbolSupport = PhotonPlugin.getDefault().getUnderlyingSymbolSupport();
+                PositionEngine engine = PositionEngineFactory.createFromReportHolders(messages,
+                                                                                      positionSupport,
+                                                                                      positionMarketData,
+                                                                                      underlyingSymbolSupport);
+                PhotonPlugin.getDefault().registerPositionEngine(engine);
+            }
+        } catch (Exception e) {
+            Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this, e);
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else {
+                // The callable above doesn't throw checked exceptions
+                throw new RuntimeException(e);
+            }
+        }
+        return Status.OK_STATUS;
+    }
 }

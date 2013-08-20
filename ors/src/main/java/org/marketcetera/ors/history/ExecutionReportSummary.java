@@ -3,6 +3,7 @@ package org.marketcetera.ors.history;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+
 import org.marketcetera.trade.Currency;
 
 import javax.persistence.*;
@@ -31,11 +32,9 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 @Entity
 @Table(name="execreports")
-
-@NamedQuery(name = "rootIDForOrderID",
-        query = "select e.rootID from ExecutionReportSummary e " +
-                "where e.orderID = :orderID")
-
+@NamedQueries({
+    @NamedQuery(name="rootIDForOrderID",query="select e.rootID from ExecutionReportSummary e where e.orderID = :orderID"),
+    @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.isOpen = false where e.rootID = :rootID and e.id != :Id") })
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "positionForSymbol",
             columns = {@ColumnResult(name = "position")}),
@@ -178,11 +177,11 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.id = " +
             "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
-            resultSetMapping = "optAllPositions")
+            resultSetMapping = "optAllPositions"),
+    @NamedNativeQuery(name="openOrders",query="select * from execreports e where e.isOpen=true and (:allViewers=true or e.viewer_id=:viewerID)",resultClass=ExecutionReportSummary.class),
         })
 
 class ExecutionReportSummary extends EntityBase {
-
     /**
      * Gets the current aggregate position for the equity based on
      * execution reports received on or before the supplied time, and which
@@ -276,7 +275,6 @@ class ExecutionReportSummary extends EntityBase {
         return position == null? BigDecimal.ZERO: position;
 
     }
-    
     /**
      * Returns the aggregate position of each (equity,account,actor)
      * tuple based on all reports received for each tuple on or before
@@ -700,7 +698,31 @@ class ExecutionReportSummary extends EntityBase {
         }, null);
 
     }
-
+    /**
+     * Returns all open orders visible to the given user.
+     *
+     * @param inUser a <code>SimplUser</code> value
+     * @return a <code>List&lt;ExecutionReportSummary&gt;</code> value
+     * @throws PersistenceException if an error occurs retrieving the orders
+     */
+    static List<ExecutionReportSummary> getOpenOrders(final SimpleUser inUser)
+            throws PersistenceException
+    {
+        return executeRemote(new Transaction<List<ExecutionReportSummary>>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public List<ExecutionReportSummary> execute(EntityManager inEntityManager,
+                                                        PersistContext inContext)
+                    throws PersistenceException
+            {
+                Query query = inEntityManager.createNamedQuery("openOrders");  //$NON-NLS-1$
+                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
+                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
+                return query.getResultList();
+            }
+            private static final long serialVersionUID = 1L;
+        },null);
+    }
     /**
      * Creates an instance.
      *
@@ -730,6 +752,7 @@ class ExecutionReportSummary extends EntityBase {
         mOrderStatus = inReport.getOrderStatus();
         mSendingTime = inReport.getSendingTime();
         mViewer = inSavedReport.getViewer();
+        mIsOpen = inReport.isCancelable();
     }
 
     /**
@@ -789,7 +812,24 @@ class ExecutionReportSummary extends EntityBase {
             setRootID(rootID);
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.persist.EntityBase#postSaveLocal(javax.persistence.EntityManager, org.marketcetera.persist.EntityBase, org.marketcetera.persist.PersistContext)
+     */
+    @Override
+    protected void postSaveLocal(EntityManager inEntityManager,
+                                 EntityBase inMerged,
+                                 PersistContext inContext)
+            throws PersistenceException
+    {
+        super.postSaveLocal(inEntityManager,
+                            inMerged,
+                            inContext);
+        // CD 27-Jul-2013 MATP-350
+        // mark all other orders of this family as closed
+        Query query = inEntityManager.createNamedQuery("setIsOpen"); //$NON-NLS-1$
+        ExecutionReportSummary summaryReport = (ExecutionReportSummary)inMerged;
+        query.setParameter("Id",summaryReport.getId()).setParameter("rootID",summaryReport.getRootID()).executeUpdate();
+    }
     @OneToOne(optional = false)
     PersistentReport getReport() {
         return mReport;
@@ -973,7 +1013,25 @@ class ExecutionReportSummary extends EntityBase {
     private void setViewer(SimpleUser inViewer) {
         mViewer = inViewer;
     }
-
+    /**
+     * Gets the is open value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    @Column
+    public boolean getIsOpen()
+    {
+        return mIsOpen;
+    }
+    /**
+     * Sets the is open value.
+     *
+     * @param a <code>boolean</code> value
+     */
+    public void setIsOpen(boolean inIsOpen)
+    {
+        mIsOpen = inIsOpen;
+    }
     @Transient
     UserID getViewerID() {
         if (getViewer()==null) {
@@ -1006,10 +1064,15 @@ class ExecutionReportSummary extends EntityBase {
     private Date mSendingTime;
     private SimpleUser mViewer; 
     private PersistentReport mReport;
+    private boolean mIsOpen;
     /**
      * The attribute viewer used in JPQL queries
      */
     static final String ATTRIBUTE_VIEWER = "viewer";  //$NON-NLS-1$
+    /**
+     * attribute isOpen used in JPQL queries
+     */
+    static final String ATTRIBUTE_IS_OPEN = "isOpen"; //$NON-NLS-1$
     /**
      * The entity name as is used in various JPQL Queries
      */
@@ -1022,5 +1085,5 @@ class ExecutionReportSummary extends EntityBase {
      * The precision used for storing all decimal values.
      */
     static final int DECIMAL_PRECISION = 17;
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6939295144839290006L;
 }
