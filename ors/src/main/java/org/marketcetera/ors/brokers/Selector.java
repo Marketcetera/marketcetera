@@ -2,9 +2,9 @@ package org.marketcetera.ors.brokers;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Order;
-import org.marketcetera.trade.SecurityType;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -118,19 +118,13 @@ public class Selector
         if (bID!=null) {
             return bID;
         }
-
-        // Search through entries (if any) for one that matches the
-        // order type (provided the order has a known type).
-
-        SecurityType orderType=order.getSecurityType();
-        if ((orderType!=null) && (orderType!=SecurityType.Unknown) &&
-            (getEntries()!=null)) {
-            for (SelectorEntry e:getEntries()) {
-                if (e.getSkipIfUnavailable() &&
-                    !getBrokers().getBroker(e.getBroker()).getLoggedOn()) {
+        // Search through entries (if any) for the first one that matches
+        if(getEntries()!=null) {
+            for(SelectorEntry e:getEntries()) {
+                if(e.getSkipIfUnavailable() && !getBrokers().getBroker(e.getBroker()).getLoggedOn()) {
                     continue;
                 }
-                if (e.getTargetType().equals(orderType)) {
+                if(e.routeToBroker(order)) {
                     return e.getBroker();
                 }
             }

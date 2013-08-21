@@ -1,9 +1,7 @@
 package org.marketcetera.ors.brokers;
 
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.SecurityType;
-import org.marketcetera.util.except.I18NRuntimeException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.trade.Order;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -23,7 +21,6 @@ public class SelectorEntry
     // INSTANCE DATA.
 
     private final SpringSelectorEntry mSpringSelectorEntry;
-    private final SecurityType mTargetType;
     private final BrokerID mBrokerID;
 
 
@@ -35,19 +32,9 @@ public class SelectorEntry
      * @param springSelectorEntry The configuration.
      */
 
-    public SelectorEntry
-        (SpringSelectorEntry springSelectorEntry)
+    public SelectorEntry(SpringSelectorEntry springSelectorEntry)
     {
         mSpringSelectorEntry=springSelectorEntry;
-        mTargetType=SecurityType.getInstanceForFIXValue
-            (getSpringSelectorEntry().getTargetType());
-        if (SecurityType.Unknown.equals(getTargetType())) {
-            throw new I18NRuntimeException
-                (new I18NBoundMessage1P
-                 (Messages.UNKNOWN_SECURITY_TYPE,
-                  getSpringSelectorEntry().getTargetType()));
-                                           
-        }
         mBrokerID=new BrokerID(getSpringSelectorEntry().getBroker().getId());
     }
 
@@ -64,18 +51,6 @@ public class SelectorEntry
     {
         return mSpringSelectorEntry;
     }
-
-    /**
-     * Returns the receiver's target type.
-     *
-     * @return The target type, which will guaranteed to be known.
-     */
-
-    public SecurityType getTargetType()
-    {
-        return mTargetType;
-    }
-
     /**
      * Returns the receiver's broker ID.
      *
@@ -96,5 +71,15 @@ public class SelectorEntry
     public boolean getSkipIfUnavailable()
     {
         return getSpringSelectorEntry().getSkipIfUnavailable();
+    }
+    /**
+     * Indicates if the given <code>Order</code> should be routed to the selector broker.
+     *
+     * @param inOrder an <code>Order</code> value
+     * @return a <code>boolean</code> value
+     */
+    public boolean routeToBroker(Order inOrder)
+    {
+        return getSpringSelectorEntry().routeToBroker(inOrder);
     }
 }

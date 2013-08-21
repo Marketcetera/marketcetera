@@ -37,7 +37,6 @@ import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.NamedThreadFactory;
-import org.marketcetera.util.test.UnicodeData;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -1487,11 +1486,6 @@ public abstract class LanguageTestBase
                         null,
                         MESSAGE_1P,
                         "Some statement");
-            verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(6).getData(),
-                        DEBUG,
-                        null,
-                        MESSAGE_1P,
-                        UnicodeData.HOUSE_AR);
             verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(7).getData(),
                         WARN,
                         null,
@@ -1507,11 +1501,6 @@ public abstract class LanguageTestBase
                         null,
                         MESSAGE_1P,
                         "Some statement");
-            verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(10).getData(),
-                        INFO,
-                        null,
-                        MESSAGE_1P,
-                        UnicodeData.HOUSE_AR);
             verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(11).getData(),
                         WARN,
                         null,
@@ -1527,11 +1516,6 @@ public abstract class LanguageTestBase
                         null,
                         MESSAGE_1P,
                         "Some statement");
-            verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(14).getData(),
-                        WARN,
-                        null,
-                        MESSAGE_1P,
-                        UnicodeData.HOUSE_AR);
             verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(15).getData(),
                         WARN,
                         null,
@@ -1547,11 +1531,6 @@ public abstract class LanguageTestBase
                         null,
                         MESSAGE_1P,
                         "Some statement");
-            verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(18).getData(),
-                        ERROR,
-                        null,
-                        MESSAGE_1P,
-                        UnicodeData.HOUSE_AR);
         } finally {
             Logger.getLogger(Strategy.STRATEGY_MESSAGES).setLevel(startingLevel);
             MockRecorderModule.shouldIgnoreLogMessages = true;

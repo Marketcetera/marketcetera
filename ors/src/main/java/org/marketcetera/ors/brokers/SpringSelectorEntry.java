@@ -1,13 +1,13 @@
 package org.marketcetera.ors.brokers;
 
-import org.marketcetera.util.except.I18NException;
+import org.marketcetera.trade.Order;
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * The Spring-based configuration of a selector entry.
  *
  * @author tlerios@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 1.0.0
  * @version $Id$
  */
@@ -15,101 +15,37 @@ import org.springframework.beans.factory.InitializingBean;
 /* $License$ */
 
 @ClassVersion("$Id$")
-public class SpringSelectorEntry
-    implements InitializingBean
+public interface SpringSelectorEntry
 {
-
-    // INSTANCE DATA.
-
-    private String mTargetType;
-    private SpringBroker mBroker;
-    private boolean mSkipIfUnavailable;
-
-
-    // INSTANCE METHODS.
-
     /**
-     * Sets the receiver's target type to the given string form value.
+     * Indicates if the given order should be routed to this broker.
      *
-     * @param targetType The target type.
+     * @param inOrder an <code>Order</code> value
+     * @return a <code>boolean</code> value
      */
-
-    public void setTargetType
-        (String targetType)
-    {
-        mTargetType=targetType;
-    }
-
+    public boolean routeToBroker(Order inOrder);
     /**
-     * Returns the receiver's target type, in string form.
+     * Sets the broker value.
      *
-     * @return The target type.
+     * @param inBroker a <code>SpringBroker</code> value
      */
-
-    public String getTargetType()
-    {
-        return mTargetType;
-    }
-
+    public void setBroker(SpringBroker inBroker);
     /**
-     * Sets the receiver's broker to the given one.
+     * Gets the broker value.
      *
-     * @param broker The broker.
+     * @return a <code>SpringBroker</code> value
      */
-
-    public void setBroker
-        (SpringBroker broker)
-    {
-        mBroker=broker;
-    }
-
+    public SpringBroker getBroker();
     /**
-     * Returns the receiver's broker.
+     * Indicates if this selector should be skipped if the broker is unavailable.
      *
-     * @return The broker.
+     * @param inSkipIfUnavailable a <code>boolean</code> value
      */
-
-    public SpringBroker getBroker()
-    {
-        return mBroker;
-    }
-
+    public void setSkipIfUnavailable(boolean inSkipIfUnavailable);
     /**
-     * Sets the receiver's skip-if-unavailable flag to the given
-     * value.
+     * Indicates if this selector should be skipped if the broker is unavailable.
      *
-     * @param skipIfUnavailable The flag.
+     * @return a <code>boolean</code> value
      */
-
-    public void setSkipIfUnavailable
-        (boolean skipIfUnavailable)
-    {
-        mSkipIfUnavailable=skipIfUnavailable;
-    }
-
-    /**
-     * Returns the receiver's skip-if-unavailable flag.
-     *
-     * @return The flag.
-     */
-
-    public boolean getSkipIfUnavailable()
-    {
-        return mSkipIfUnavailable;
-    }
-
-
-    // InitializingBean.
-
-    @Override
-    public void afterPropertiesSet()
-        throws I18NException
-    {
-        if (getTargetType()==null) {
-            throw new I18NException(Messages.NO_TARGET_TYPE);
-        }
-        if (getBroker()==null) {
-            throw new I18NException(Messages.NO_BROKER);
-        }
-    }
+    public boolean getSkipIfUnavailable();
 }

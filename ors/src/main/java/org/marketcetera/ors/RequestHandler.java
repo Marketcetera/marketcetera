@@ -1,6 +1,5 @@
 package org.marketcetera.ors;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
@@ -191,18 +190,6 @@ public class RequestHandler
     {
         return new ExecID(getIDFactory().getNext());
     }
-
-    private static String getOptFieldStr
-        (Message msg,
-         int field)
-    {
-        try {
-            return msg.getString(field);
-        } catch(FieldNotFound ex) {
-            return null;
-        }
-    }
-
     private static void addRequiredFields
         (Message msg)
     {
@@ -314,156 +301,6 @@ public class RequestHandler
         addRequiredFields(qMsgReply);
         return qMsgReply;
     }
-
-    /**
-     * Creates a QuickFIX/J ACK execution report (always of the system
-     * FIX version) for the given message, associated with the given
-     * broker.
-     *
-     * @param b The broker.
-     * @param qMsg The message, in QuickFIX/J form.
-     *
-     * @return The report. It may be null if a report cannot be
-     * generated for the given message type.
-     *
-     * @throws CoreException Thrown if there is a problem.
-     * @throws FieldNotFound Thrown if there is a QuickFIX/J problem.
-     */
-
-    private Message createExecutionReport(Broker b,
-                                          Message qMsg)
-            throws CoreException, FieldNotFound
-    {
-        // Choose status that matches that of the incoming message.
-        char ordStatus;
-        String orderID;
-        if (FIXMessageUtil.isOrderSingle(qMsg)) {
-            ordStatus=OrdStatus.PENDING_NEW;
-            orderID=SELF_ORDER_ID;
-        } else if (FIXMessageUtil.isCancelReplaceRequest(qMsg)) {
-            ordStatus=OrdStatus.PENDING_REPLACE;
-            orderID=getOptFieldStr(qMsg,OrderID.FIELD);
-            if(orderID==null) {
-                orderID=SELF_ORDER_ID;
-            }
-        } else if (FIXMessageUtil.isCancelRequest(qMsg)) {
-            ordStatus=OrdStatus.PENDING_CANCEL;
-            orderID=getOptFieldStr(qMsg,OrderID.FIELD);
-            if(orderID==null) {
-                orderID=SELF_ORDER_ID;
-            }
-        } else {
-            return null;
-        }
-        // Create execution report.
-        FIXMessageFactory messageFactory = getBestMsgFactory(b);
-        Message qMsgReply= messageFactory.newExecutionReportEmpty();
-        String msgType = MsgType.EXECUTION_REPORT;
-        DataDictionary dict=getBestDataDictionary(b);
-        String clOrderId = null;
-        if(qMsg.isSetField(OrigClOrdID.FIELD)) {
-            OrigClOrdID clOrdId = new OrigClOrdID();
-            qMsg.getField(clOrdId);
-            clOrderId = clOrdId.getValue();
-        }
-        ExecutionReport latestMessage = ReportCache.INSTANCE.getLatestReportFor(clOrderId);
-        if(dict.isMsgField(msgType,OrderID.FIELD)) {
-            qMsgReply.setField(new OrderID(orderID));
-        }
-        if(dict.isMsgField(msgType,ExecID.FIELD)) {
-            qMsgReply.setField(new ExecID(getNextExecId().getValue()));
-        }
-        if(dict.isMsgField(msgType,OrdStatus.FIELD)) {
-            qMsgReply.setField(new OrdStatus(ordStatus));
-        }
-        if(dict.isMsgField(msgType,
-                           LastShares.FIELD)) {
-            if(latestMessage != null &&
-               latestMessage.getLastQuantity() != null) {
-                LastShares lastShares = new LastShares(latestMessage.getLastQuantity());
-                qMsgReply.setField(lastShares);
-            } else {
-                qMsgReply.setField(new LastShares(BigDecimal.ZERO));
-            }
-        }
-        if(dict.isMsgField(msgType,
-                           LastPx.FIELD)) {
-            if(latestMessage != null &&
-               latestMessage.getLastPrice() != null) {
-                LastPx lastPx = new LastPx(latestMessage.getLastPrice());
-                qMsgReply.setField(lastPx);
-            } else {
-                qMsgReply.setField(new LastPx(BigDecimal.ZERO));
-            }
-        }
-        if(dict.isMsgField(msgType,
-                           CumQty.FIELD)) {
-            if(latestMessage != null &&
-               latestMessage.getCumulativeQuantity() != null) {
-                CumQty cumQty = new CumQty(latestMessage.getCumulativeQuantity());
-                qMsgReply.setField(cumQty);
-            } else {
-                qMsgReply.setField(new CumQty(BigDecimal.ZERO));
-            }
-        }
-        if(dict.isMsgField(msgType,
-                           AvgPx.FIELD)) {
-            if(latestMessage != null &&
-               latestMessage.getAveragePrice() != null) {
-                AvgPx price = new AvgPx(latestMessage.getAveragePrice());
-                qMsgReply.setField(price);
-            } else {
-                qMsgReply.setField(new AvgPx(BigDecimal.ZERO));
-            }
-        }
-        if(dict.isMsgField(msgType,
-                           LeavesQty.FIELD)) {
-            if(latestMessage != null &&
-               latestMessage.getLeavesQuantity() != null) {
-                LeavesQty leavesQty = new LeavesQty(latestMessage.getLeavesQuantity());
-                qMsgReply.setField(leavesQty);
-            } else {
-                qMsgReply.setField(new LeavesQty(BigDecimal.ZERO));
-            }
-        }
-        if(dict.isMsgField(msgType,
-                           OrdType.FIELD)) {
-            if(latestMessage != null &&
-               latestMessage.getOrderType() != null) {
-                OrdType ordType = new OrdType(latestMessage.getOrderType().getFIXValue());
-                qMsgReply.setField(ordType);
-            }
-        }
-        if(dict.isMsgField(msgType,
-                           Price.FIELD)) {
-            if(latestMessage != null &&
-               latestMessage.getPrice() != null) {
-                Price price = new Price(latestMessage.getPrice());
-                qMsgReply.setField(price);
-            } else {
-                qMsgReply.setField(new Price(BigDecimal.ZERO));
-            }
-        }
-        if(dict.isMsgField(msgType,
-                           OrderID.FIELD)) {
-            if(latestMessage != null &&
-               latestMessage.getBrokerOrderID() != null) {
-                OrderID brokerOrderID = new OrderID(latestMessage.getBrokerOrderID());
-                qMsgReply.setField(brokerOrderID);
-            }
-        }
-        // Add all the fields of the incoming message.
-        FIXMessageUtil.fillFieldsFromExistingMessage(qMsgReply,
-                                                     qMsg,
-                                                     getBestDataDictionary(b),
-                                                     false);
-        messageFactory.getMsgAugmentor().executionReportAugment(qMsgReply);
-        // Add required header/trailer fields.
-        addRequiredFields(qMsgReply);
-        return qMsgReply;
-    }
-
-
     // ReplyHandler.
 
     @Override
@@ -633,6 +470,27 @@ public class RequestHandler
                 ("requestHandler.orderSent"); //$NON-NLS-1$
         } catch (I18NException ex) {
             Messages.RH_MESSAGE_PROCESSING_FAILED.error(this,ex,msg,qMsg,qMsgToSend,ObjectUtils.toString(b,ObjectUtils.toString(bID)));
+            Message qMsgReply = createRejection(ex,
+                                                b,
+                                                msg);
+            Principals principals=getPersister().getPrincipals(qMsgReply,
+                                                               true);
+            TradeMessage reply;
+            try {
+                reply=FIXConverter.fromQMessage(qMsgReply,
+                                                Originator.Server,
+                                                bID,
+                                                principals.getActorID(),
+                                                principals.getViewerID());
+            } catch (MessageCreationException ex2) {
+                Messages.RH_REPORT_FAILED.error(this,
+                                                ex2,
+                                                qMsgReply);
+                return;
+            }
+            getPersister().persistReply(reply);
+            Messages.RH_SENDING_REPLY.info(this,
+                                           reply);
         } finally {
             if (orderInfo!=null) {
                 orderInfo.setResponseExpected(responseExpected);
