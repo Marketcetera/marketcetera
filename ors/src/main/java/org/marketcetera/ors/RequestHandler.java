@@ -17,6 +17,7 @@ import org.marketcetera.ors.filters.OrderFilter;
 import org.marketcetera.ors.info.RequestInfo;
 import org.marketcetera.ors.info.RequestInfoImpl;
 import org.marketcetera.ors.info.SessionInfo;
+import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -390,7 +391,11 @@ public class RequestHandler
             b.logMessage(qMsg);
             ThreadedMetric.event
                 ("requestHandler.orderConverted"); //$NON-NLS-1$
-
+            // Ensure broker is allowed for this user
+            SimpleUser actor = (SimpleUser)sessionInfo.getValue(SessionInfo.ACTOR);
+            if(!b.getSpringBroker().isUserAllowed(actor.getName())) {
+                throw new I18NException(Messages.RH_UNKNOWN_BROKER_ID);
+            }
             // Ensure broker is available.
 
             if (!b.getLoggedOn()) {
@@ -491,6 +496,7 @@ public class RequestHandler
             getPersister().persistReply(reply);
             Messages.RH_SENDING_REPLY.info(this,
                                            reply);
+            getUserManager().convertAndSend(reply);
         } finally {
             if (orderInfo!=null) {
                 orderInfo.setResponseExpected(responseExpected);

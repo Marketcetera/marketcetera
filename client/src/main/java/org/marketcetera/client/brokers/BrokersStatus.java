@@ -1,9 +1,12 @@
 package org.marketcetera.client.brokers;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -50,7 +53,7 @@ public class BrokersStatus
 
     protected BrokersStatus()
     {
-        mBrokers=null;
+        mBrokers = new ArrayList<BrokerStatus>();
     }
 
 
@@ -66,5 +69,15 @@ public class BrokersStatus
     public List<BrokerStatus> getBrokers()
     {
         return mBrokers;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("BrokersStatus [mBrokers=").append(mBrokers).append("]"); //$NON-NLS-1$ //$NON-NLS-2$
+        return builder.toString();
     }
 }

@@ -94,12 +94,13 @@ public class Brokers
      * @return The status.
      */
 
-    public BrokersStatus getStatus()
+    public BrokersStatus getStatus(String inUsername)
     {
-        List<BrokerStatus> list=
-            new ArrayList<BrokerStatus>(getBrokers().size());
-        for (Broker b:getBrokers()) {
-            list.add(b.getStatus());
+        List<BrokerStatus> list = new ArrayList<BrokerStatus>();
+        for(Broker b : getBrokers()) {
+            if(b.getSpringBroker().isUserAllowed(inUsername)) {
+                list.add(b.getStatus());
+            }
         }
         return new BrokersStatus(list);
     }

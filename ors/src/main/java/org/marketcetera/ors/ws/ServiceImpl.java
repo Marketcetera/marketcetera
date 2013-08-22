@@ -119,9 +119,9 @@ public class ServiceImpl
 
     // Service IMPLEMENTATIONS.
 
-    private BrokersStatus getBrokersStatusImpl()
+    private BrokersStatus getBrokersStatusImpl(String inUsername)
     {
-        return getBrokers().getStatus();
+        return getBrokers().getStatus(inUsername);
     }
 
     private UserInfo getUserInfoImpl
@@ -369,7 +369,7 @@ public class ServiceImpl
                 (ClientContext context,
                  SessionHolder<ClientSession> sessionHolder)
             {
-                return getBrokersStatusImpl();
+                return getBrokersStatusImpl(getSessionManager().get(context.getSessionId()).getUser());
             }}).execute(context);
     }
 

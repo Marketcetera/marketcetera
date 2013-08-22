@@ -2,6 +2,7 @@ package org.marketcetera.ors.brokers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 import org.marketcetera.ors.config.LogonAction;
 import org.marketcetera.ors.config.LogoutAction;
@@ -39,6 +40,8 @@ public class SpringBroker
     private MessageModifierManager mResponseModifiers;
     private Collection<LogonAction> logonActions = new ArrayList<LogonAction>();
     private Collection<LogoutAction> logoutActions = new ArrayList<LogoutAction>();
+    private Set<String> userWhitelist;
+    private Set<String> userBlacklist;
 
     // INSTANCE METHODS.
 
@@ -262,7 +265,55 @@ public class SpringBroker
     {
         logonActions = inLogonActions;
     }
-
+    /**
+     * Get the userWhitelist value.
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    public Set<String> getUserWhitelist()
+    {
+        return userWhitelist;
+    }
+    /**
+     * Sets the userWhitelist value.
+     *
+     * @param inUserWhitelist a <code>Set&lt;String&gt;</code> value
+     */
+    public void setUserWhitelist(Set<String> inUserWhitelist)
+    {
+        userWhitelist = inUserWhitelist;
+    }
+    /**
+     * Get the userBlacklist value.
+     *
+     * @return a <code>Set&lt;String&gt;</code> value
+     */
+    public Set<String> getUserBlacklist()
+    {
+        return userBlacklist;
+    }
+    /**
+     * Sets the userBlacklist value.
+     *
+     * @param inUserBlacklist a <code>Set&lt;String&gt;</code> value
+     */
+    public void setUserBlacklist(Set<String> inUserBlacklist)
+    {
+        userBlacklist = inUserBlacklist;
+    }
+    /**
+     * Indicates if the given user is allowed access to this broker or not.
+     *
+     * @param inUsername a <code>String</code> value
+     * @return a <code>boolean</code> value
+     */
+    public boolean isUserAllowed(String inUsername)
+    {
+        if(userBlacklist != null && userBlacklist.contains(inUsername)) {
+            return false;
+        }
+        return userWhitelist == null || userWhitelist.contains(inUsername);
+    }
     // InitializingBean.
 
 
