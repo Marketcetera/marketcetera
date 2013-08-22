@@ -285,6 +285,9 @@ public class SimulatedExchange
                            .withDeliveryType(DeliveryType.PHYSICAL)
                            .withStandardType(StandardType.STANDARD);
                 }
+                if(requestInstrument instanceof ConvertibleSecurity) {
+                    builder.withConversionRatio(new BigDecimal(random.nextInt(100)).add(new BigDecimal(random.nextDouble())));
+                }
                 results.add(builder.create());
             }
             return results;
@@ -1074,6 +1077,9 @@ public class SimulatedExchange
                                         .withDeliveryType(DeliveryType.PHYSICAL)
                                         .withStandardType(StandardType.STANDARD);
                         }
+                        if(bid.getInstrument() instanceof ConvertibleSecurity) {
+                            tradeBuilder.withConversionRatio(new BigDecimal(random.nextInt(100)).add(new BigDecimal(random.nextDouble())));
+                        }
                         TradeEvent trade = tradeBuilder.create();
                         // these events are used to modify the orders in the book
                         BidEvent bidCorrection;
@@ -1436,6 +1442,9 @@ public class SimulatedExchange
                 bidBuilder.withContractSize(100)
                           .withDeliveryType(DeliveryType.PHYSICAL)
                           .withStandardType(StandardType.STANDARD);
+            }
+            if(marketInstrument instanceof ConvertibleSecurity) {
+                bidBuilder.withConversionRatio(new BigDecimal(random.nextInt(100)).add(new BigDecimal(random.nextDouble())));
             }
             // create the events
             process(askBuilder.create());
