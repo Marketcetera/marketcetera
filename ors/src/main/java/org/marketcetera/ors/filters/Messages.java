@@ -1,10 +1,6 @@
 package org.marketcetera.ors.filters;
 
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessage3P;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.log.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -58,6 +54,8 @@ public interface Messages
         new I18NMessage3P(LOGGER,"min_price"); //$NON-NLS-1$
     static final I18NMessage3P MAX_PRICE= 
         new I18NMessage3P(LOGGER,"max_price"); //$NON-NLS-1$
+    static final I18NMessage2P ASSET_CLASS_RESTRICTED = new I18NMessage2P(LOGGER,"asset_class_restricted"); //$NON-NLS-1$
+    static final I18NMessage1P UNKNOWN_ASSET_CLASS = new I18NMessage1P(LOGGER,"unknown_asset_class"); //$NON-NLS-1$
     static final I18NMessage0P NO_SESSION_USERNAME = new I18NMessage0P(LOGGER,"no_session_username"); //$NON-NLS-1$
     static final I18NMessage1P NO_BROKER_USERNAME = new I18NMessage1P(LOGGER,"no_broker_username"); //$NON-NLS-1$
     static final I18NMessage0P NON_CONFORMING_FIELD_SPECIFICATION = new I18NMessage0P(LOGGER,

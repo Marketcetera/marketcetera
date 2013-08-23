@@ -13,51 +13,79 @@
   - See '../README.html' for detailed documentation.
   -->
 
-<beans
- xmlns="http://www.springframework.org/schema/beans"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
-
-  <bean
-   id="metc_allowed_orders"
-   class="org.marketcetera.ors.filters.OrderLimitFilter">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+  <bean id="metc_allowed_orders" class="org.marketcetera.ors.filters.OrderLimitFilter">
     <!--
       - If true, orders with type 'MARKET' are rejected. If omitted, false
       - is assumed.
       -->
-    <property
-     name="disallowMarketOrders"
-     value="false"/>
+    <property name="disallowMarketOrders" value="false"/>
     <!--
       - Minimum order price; it is checked only if a price is set.
       - If omitted, no minimum price check is performed.
       -->
-    <property
-     name="minPrice"
-     value="0"/>
+    <property name="minPrice" value="0"/>
     <!--
       - Maximum order price; it is checked only if a price is set.
       - If omitted, no maximum price check is performed.
       -->
-    <property
-     name="maxPrice"
-     value="100"/>
+    <property name="maxPrice" value="100"/>
     <!--
       - Maximum order quantity; it is checked only if a quantity is set.
       - If omitted, no maximum quantity check is performed.
       -->
-    <property
-     name="maxQuantityPerOrder"
-     value="10000"/>
+    <property name="maxQuantityPerOrder" value="10000"/>
     <!--
       - Maximum order notional (product of price and quantity); it is
       - checked only if both a price and a quantity are set. If omitted,
       - no maximum notional check is performed.
       -->
-    <property
-     name="maxNotionalPerOrder"
-     value="100000"/>
+    <property name="maxNotionalPerOrder" value="100000"/>
+  </bean>
+  <!-- indicates users allowed or disallowed to send orders of a particular asset class -->
+  <bean id="metc_restricted_users" class="org.marketcetera.ors.filters.AssetClassFilter">
+    <property name="userlists">
+        <map>
+          <entry key="CS"> <!-- restrictions for 'CS', i.e. equities -->
+            <bean class="org.marketcetera.ors.filters.UserList">
+                <!-- whitelist explicitly allows users - if specified, anyone not on the whitelist is not allowed -->
+                <property name="whitelist">
+                    <set>
+                        <value>bob</value>
+                        <value>alice</value>
+                    </set>
+                </property>
+                <!-- blacklist explicitly disallows users - if specified, anyone not on the blacklist is allowed -->
+                <property name="blacklist">
+                    <set>
+                        <value>evilbob</value>
+                        <value>evilalice</value>
+                    </set>
+                </property>
+            </bean>
+          </entry>
+          <entry key="FUT"> <!-- restrictions for 'FUT', i.e. futures -->
+            <bean class="org.marketcetera.ors.filters.UserList">
+                <!-- whitelist explicitly allows users - if specified, anyone not on the whitelist is not allowed -->
+                <property name="whitelist">
+                    <set>
+                        <value>bob</value>
+                        <value>alice</value>
+                    </set>
+                </property>
+                <!-- blacklist explicitly disallows users - if specified, anyone not on the blacklist is allowed -->
+                <property name="blacklist">
+                    <set>
+                        <value>evilbob</value>
+                        <value>evilalice</value>
+                    </set>
+                </property>
+            </bean>
+          </entry>
+          <!-- asset classes not included, like 'OPT' and 'CUR' have no restrictions -->
+        </map>
+    </property>
   </bean>
 </beans>

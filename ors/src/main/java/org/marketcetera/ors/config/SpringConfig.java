@@ -1,6 +1,9 @@
 package org.marketcetera.ors.config;
 
+import java.util.List;
+
 import javax.jms.ConnectionFactory;
+
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.ors.OrderInfoCache;
 import org.marketcetera.ors.brokers.SpringBrokers;
@@ -45,7 +48,7 @@ public class SpringConfig
     private SpringBrokers mBrokers;
     private SpringSelector mSelector;
     private MessageFilter mSupportedMessages;
-    private OrderFilter mAllowedOrders;
+    private List<OrderFilter> mOrderFilters;
     private String mServerHost;
     private int mServerPort;
     private long mServerSessionLife;
@@ -66,7 +69,6 @@ public class SpringConfig
     public SpringConfig()
     {
         mSupportedMessages=new MessageFilterNoop();
-        mAllowedOrders=new OrderFilterNoop();
         mServerHost=Node.DEFAULT_HOST;
         mServerPort=Node.DEFAULT_PORT;
         mServerSessionLife=SessionManager.INFINITE_SESSION_LIFESPAN;
@@ -96,7 +98,7 @@ public class SpringConfig
         (SpringBrokers brokers,
          SpringSelector selector,
          MessageFilter supportedMessages,
-         OrderFilter allowedOrders,
+         List<OrderFilter> allowedOrders,
          String serverHost,
          int serverPort,
          long serverSessionLife,
@@ -232,24 +234,23 @@ public class SpringConfig
      * If this method is not called during initialization, the filter
      * defaults to a {@link OrderFilterNoop}.
      *
-     * @param allowedOrders The filter.
+     * @param allowedOrders The filters.
      */
 
-    public void setAllowedOrders
-        (OrderFilter allowedOrders)
+    public void setAllowedOrders(List<OrderFilter> allowedOrders)
     {
-        mAllowedOrders=allowedOrders;
+        mOrderFilters=allowedOrders;
     }
 
     /**
      * Returns the receiver's filter of allowed orders.
      *
-     * @return The filter.
+     * @return The filters.
      */
 
-    public OrderFilter getAllowedOrders()
+    public List<OrderFilter> getAllowedOrders()
     {
-        return mAllowedOrders;
+        return mOrderFilters;
     }
 
     /**

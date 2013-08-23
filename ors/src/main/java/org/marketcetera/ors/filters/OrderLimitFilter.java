@@ -78,17 +78,18 @@ public class OrderLimitFilter
     {
         return mMaxPrice;
     }
-
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.filters.OrderFilter#isAccepted(org.marketcetera.ors.filters.OrderFilter.MessageInfo, quickfix.Message)
+     */
     @Override
-    public void assertAccepted
-        (Message msg)
-        throws CoreException
+    public boolean isAccepted(MessageInfo inMessageInfo,
+                              Message msg)
+            throws CoreException
     {
         if (!FIXMessageUtil.isOrderSingle(msg) &&
-            !FIXMessageUtil.isCancelReplaceRequest(msg)) {
-            return;
-        }
+                !FIXMessageUtil.isCancelReplaceRequest(msg)) {
+                return true;
+            }
         String symbol=null;
         try {
             symbol=msg.getString(Symbol.FIELD);
@@ -98,10 +99,10 @@ public class OrderLimitFilter
         }
         try {
             if (getDisallowMarketOrders() &&
-                (OrdType.MARKET==msg.getChar(OrdType.FIELD))) {
+                    (OrdType.MARKET==msg.getChar(OrdType.FIELD))) {
                 throw new CoreException
-                    (new I18NBoundMessage1P
-                     (Messages.MARKET_NOT_ALLOWED,symbol));
+                (new I18NBoundMessage1P
+                 (Messages.MARKET_NOT_ALLOWED,symbol));
             }
         } catch (FieldNotFound ex) {
             Messages.NO_ORDER_TYPE.warn(this,ex);
@@ -119,38 +120,39 @@ public class OrderLimitFilter
             Messages.NO_QUANTITY.warn(this,ex);
         }
         if ((p==null) && (q==null)) {
-            return;
+            return true;
         }
         if ((q!=null) &&
-            (getMaxQuantityPerOrder()!=null) &&
-            (getMaxQuantityPerOrder().compareTo(q)<0)) {
+                (getMaxQuantityPerOrder()!=null) &&
+                (getMaxQuantityPerOrder().compareTo(q)<0)) {
             throw new CoreException
-                (new I18NBoundMessage3P
-                 (Messages.MAX_QTY,q,getMaxQuantityPerOrder(),symbol));
+            (new I18NBoundMessage3P
+             (Messages.MAX_QTY,q,getMaxQuantityPerOrder(),symbol));
         }
         if ((p!=null) &&
-            (q!=null) &&
-            (getMaxNotionalPerOrder()!=null)) {
+                (q!=null) &&
+                (getMaxNotionalPerOrder()!=null)) {
             BigDecimal n=p.multiply(q);
             if (getMaxNotionalPerOrder().compareTo(n)<0) {
                 throw new CoreException
-                    (new I18NBoundMessage3P
-                     (Messages.MAX_NOTIONAL,n,getMaxNotionalPerOrder(),symbol));
+                (new I18NBoundMessage3P
+                 (Messages.MAX_NOTIONAL,n,getMaxNotionalPerOrder(),symbol));
             }
         }
         if ((p!=null) &&
-            (getMinPrice()!=null) &&
-            (getMinPrice().compareTo(p)>0)) {
+                (getMinPrice()!=null) &&
+                (getMinPrice().compareTo(p)>0)) {
             throw new CoreException
-                (new I18NBoundMessage3P
-                 (Messages.MIN_PRICE,p,getMinPrice(),symbol));
+            (new I18NBoundMessage3P
+             (Messages.MIN_PRICE,p,getMinPrice(),symbol));
         }
         if ((p!=null) &&
-            (getMaxPrice()!=null) &&
-            (getMaxPrice().compareTo(p)<0)) {
+                (getMaxPrice()!=null) &&
+                (getMaxPrice().compareTo(p)<0)) {
             throw new CoreException
-                (new I18NBoundMessage3P
-                 (Messages.MAX_PRICE,p,getMaxPrice(),symbol));
+            (new I18NBoundMessage3P
+             (Messages.MAX_PRICE,p,getMaxPrice(),symbol));
         }
+        return true;
     }
 }

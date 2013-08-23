@@ -1,6 +1,7 @@
 package org.marketcetera.ors;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -69,7 +70,7 @@ public class RequestHandler
 
     private final Brokers mBrokers;
     private final Selector mSelector;
-    private final OrderFilter mAllowedOrders;
+    private final List<OrderFilter> mAllowedOrders;
     private final ReplyPersister mPersister;
     private final IQuickFIXSender mSender;
     private final UserManager mUserManager;
@@ -82,7 +83,7 @@ public class RequestHandler
     public RequestHandler
         (Brokers brokers,
          Selector selector,
-         OrderFilter allowedOrders,
+         List<OrderFilter> allowedOrders,
          ReplyPersister persister,
          IQuickFIXSender sender,
          UserManager userManager,
@@ -113,7 +114,7 @@ public class RequestHandler
         return mSelector;
     }
 
-    public OrderFilter getAllowedOrders()
+    public List<OrderFilter> getAllowedOrders()
     {
         return mAllowedOrders;
     }
@@ -392,7 +393,7 @@ public class RequestHandler
             ThreadedMetric.event
                 ("requestHandler.orderConverted"); //$NON-NLS-1$
             // Ensure broker is allowed for this user
-            SimpleUser actor = (SimpleUser)sessionInfo.getValue(SessionInfo.ACTOR);
+            final SimpleUser actor = (SimpleUser)sessionInfo.getValue(SessionInfo.ACTOR);
             if(!b.getSpringBroker().isUserAllowed(actor.getName())) {
                 throw new I18NException(Messages.RH_UNKNOWN_BROKER_ID);
             }
@@ -403,11 +404,18 @@ public class RequestHandler
             }
 
             // Ensure the order is allowed.
-
-            try {
-                getAllowedOrders().assertAccepted(qMsg);
-            } catch (CoreException ex) {
-                throw new I18NException(ex,Messages.RH_ORDER_DISALLOWED);
+            if(getAllowedOrders() != null) {
+                for(OrderFilter orderFilter : getAllowedOrders()) {
+                    if(!orderFilter.isAccepted(new OrderFilter.MessageInfo() {
+                        @Override
+                        public SimpleUser getUser()
+                        {
+                            return actor;
+                        }
+                    },qMsg)) {
+                        throw new I18NException(Messages.RH_ORDER_DISALLOWED);
+                    }
+                }
             }
             ThreadedMetric.event
                 ("requestHandler.orderAllowed"); //$NON-NLS-1$

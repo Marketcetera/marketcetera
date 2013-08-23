@@ -16,7 +16,13 @@ import quickfix.Message;
 public class OrderFilterNoop
     implements OrderFilter
 {
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.filters.OrderFilter#isAccepted(org.marketcetera.ors.filters.OrderFilter.MessageInfo, quickfix.Message)
+     */
     @Override
-    public void assertAccepted
-        (Message message) {}
+    public boolean isAccepted(MessageInfo inMessageInfo,
+                              Message inMessage)
+    {
+        return true;
+    }
 }

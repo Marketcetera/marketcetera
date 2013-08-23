@@ -54,11 +54,12 @@
       - An 'OrderFilter' instance, applied to messages received from all
       - ORS Clients.
       -->
-    <!--
-    <property
-     name="allowedOrders"
-     ref="metc_allowed_orders"/>
-    -->
+    <!-- property name="allowedOrders">
+        <list>
+            <ref bean="metc_allowed_orders"/>
+            <ref bean="metc_restricted_users"/>
+        </list>
+    </property-->
     <!-- The WS hostname. -->
     <property
      name="serverHost"
