@@ -50,11 +50,10 @@ class PersistentReport extends EntityBase {
         report.saveRemote(null);
     }
     /**
-     * 
+     * Deletes the given report.
      *
-     *
-     * @param inReport
-     * @throws PersistenceException
+     * @param inReport a <code>ReportBase</code> value
+     * @throws PersistenceException if an error occurs deleting the report
      */
     static void delete(ReportBase inReport)
             throws PersistenceException

@@ -90,6 +90,16 @@
       <bean
        class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
     </property>
+    <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
+    <property name="symbolResolverServices">
+      <bean class="org.marketcetera.ors.symbol.IterativeSymbolResolver">
+        <property name="symbolResolvers">
+          <list>
+            <bean class="org.marketcetera.ors.symbol.PatternSymbolResolver"/>
+          </list>
+        </property>
+      </bean>
+    </property>
     <!-- The order information cache. -->
     <property
      name="orderInfoCache">

@@ -13,6 +13,7 @@ import org.marketcetera.ors.filters.MessageFilterNoop;
 import org.marketcetera.ors.filters.OrderFilter;
 import org.marketcetera.ors.filters.OrderFilterNoop;
 import org.marketcetera.ors.history.ReportHistoryServices;
+import org.marketcetera.ors.symbol.SymbolResolverServices;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.SessionManager;
@@ -57,7 +58,7 @@ public class SpringConfig
     private IDFactory mIDFactory;
     private ReportHistoryServices mReportHistoryServices;
     private OrderInfoCache mOrderInfoCache;
-
+    private SymbolResolverServices symbolResolverServices;
 
     // CONSTRUCTORS.
 
@@ -91,6 +92,7 @@ public class SpringConfig
      * @param outgoingCF The connection factory for outgoing connections.
      * @param idFactory The ID generation factory.
      * @param reportHistoryServices The report history services provider.
+     * @param inSymbolResolverServices a <code>SymbolResolverServices</code> value
      * @param orderInfoCache The order info cache.
      */
 
@@ -106,6 +108,7 @@ public class SpringConfig
          ConnectionFactory outgoingCF,
          IDFactory idFactory,
          ReportHistoryServices reportHistoryServices,
+         SymbolResolverServices inSymbolResolverServices,
          OrderInfoCache orderInfoCache)
         throws I18NException
     {
@@ -120,6 +123,7 @@ public class SpringConfig
         setOutgoingConnectionFactory(outgoingCF);
         setIDFactory(idFactory);
         setReportHistoryServices(reportHistoryServices);
+        setSymbolResolverServices(inSymbolResolverServices);
         setOrderInfoCache(orderInfoCache);
         afterPropertiesSet();
         setSingleton(this);
@@ -252,7 +256,24 @@ public class SpringConfig
     {
         return mOrderFilters;
     }
-
+    /**
+     * Get the symbolResolverServices value.
+     *
+     * @return a <code>SymbolResolverServices</code> value
+     */
+    public SymbolResolverServices getSymbolResolverServices()
+    {
+        return symbolResolverServices;
+    }
+    /**
+     * Sets the symbolResolverServices value.
+     *
+     * @param inSymbolResolverServices a <code>SymbolResolverServices</code> value
+     */
+    public void setSymbolResolverServices(SymbolResolverServices inSymbolResolverServices)
+    {
+        symbolResolverServices = inSymbolResolverServices;
+    }
     /**
      * Sets the receiver's host name for web services to the given
      * value. If this method is not called during initialization, the

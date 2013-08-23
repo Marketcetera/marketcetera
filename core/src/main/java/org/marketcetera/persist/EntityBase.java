@@ -70,11 +70,10 @@ public abstract class EntityBase implements SummaryEntityBase {
         }
     }
     /**
-     * 
+     * Deletes this report.
      *
-     *
-     * @param inContext
-     * @throws PersistenceException
+     * @param inContext a <code>PersistContext</code> value
+     * @throws PersistenceException if an error occurs
      */
     protected void deleteRemote(PersistContext inContext)
             throws PersistenceException

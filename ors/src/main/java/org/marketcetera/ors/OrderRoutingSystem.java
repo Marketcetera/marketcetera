@@ -176,10 +176,12 @@ public class OrderRoutingSystem
         Server<ClientSession> server=new Server<ClientSession>
             (cfg.getServerHost(),cfg.getServerPort(),
              new DBAuthenticator(),sessionManager);
-        server.publish
-            (new ServiceImpl(sessionManager,getBrokers(),
-                             cfg.getIDFactory(),historyServices),
-             Service.class);
+        server.publish(new ServiceImpl(sessionManager,
+                                       getBrokers(),
+                                       cfg.getIDFactory(),
+                                       historyServices,
+                                       cfg.getSymbolResolverServices()),
+                       Service.class);
 
         // Initiate JMS.
 

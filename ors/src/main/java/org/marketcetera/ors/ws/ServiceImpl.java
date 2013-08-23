@@ -22,6 +22,7 @@ import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.ors.symbol.SymbolResolverServices;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -54,7 +55,7 @@ public class ServiceImpl
     private final Brokers mBrokers;
     private final IDFactory mIDFactory;
     private final ReportHistoryServices mHistoryServices;
-
+    private final SymbolResolverServices symbolResolverServices;
 
     // CONSTRUCTORS.
 
@@ -66,21 +67,20 @@ public class ServiceImpl
      * @param brokers The brokers.
      * @param idFactory the ID factory.
      * @param historyServices The report history services provider.
-     */    
-
-    public ServiceImpl
-        (SessionManager<ClientSession> sessionManager,
-         Brokers brokers,
-         IDFactory idFactory,
-         ReportHistoryServices historyServices)
+     * @param inSymbolResolverServices a <code>SymbolResolverServices</code> value
+     */
+    public ServiceImpl(SessionManager<ClientSession> sessionManager,
+                       Brokers brokers,
+                       IDFactory idFactory,
+                       ReportHistoryServices historyServices,
+                       SymbolResolverServices inSymbolResolverServices)
     {
         super(sessionManager);
         mBrokers=brokers;
         mIDFactory=idFactory;
         mHistoryServices=historyServices;
+        symbolResolverServices = inSymbolResolverServices;
     }
-
-
     // INSTANCE METHODS.
 
     /**
@@ -267,9 +267,15 @@ public class ServiceImpl
     {
         return new SingleSimpleUserQuery(inUsername).fetch().getUserData();
     }
+    /**
+     * Resolves the given symbol to an <code>Instrument</code>.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value
+     */
     private Instrument resolveSymbol(String inSymbol)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return symbolResolverServices.resolveSymbol(inSymbol);
     }
     /**
      * Returns the open orders visible to the given user.
