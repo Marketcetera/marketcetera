@@ -60,6 +60,7 @@ public class MarketData implements IMarketData {
     private final IDepthOfBookManager mLevel2Manager;
     private final IDepthOfBookManager mTotalViewManager;
     private final IDepthOfBookManager mOpenBookManager;
+    private final IDepthOfBookManager mBbo10Manager;
     private final ISharedOptionLatestTickManager mSharedOptionLatestTickManager;
     private final ISharedOptionMarketstatManager mSharedOptionMarketstatManager;
     private final Map<Content, IDepthOfBookManager> mContentToDepthManager;
@@ -92,33 +93,30 @@ public class MarketData implements IMarketData {
      */
     @Inject
     public MarketData(final ILatestTickManager latestTickManager,
-            final ITopOfBookManager topOfBookManager,
-            final IMarketstatManager marketstatManager,
-            final IDepthOfBookManager.Factory depthOfBookManagerFactory,
-            final ISharedOptionLatestTickManager sharedOptionLatestTickManager,
-            final ISharedOptionMarketstatManager sharedOptionMarketstatManager,
-            final IMarketDataRequestSupport marketDataRequestAdapter,
-            final Provider<UnderlyingSymbolSupport> underlyingSymbolSupport) {
-        Validate.noNullElements(new Object[] { latestTickManager,
-                topOfBookManager, marketstatManager, depthOfBookManagerFactory,
-                sharedOptionLatestTickManager, sharedOptionMarketstatManager,
+                      final ITopOfBookManager topOfBookManager,
+                      final IMarketstatManager marketstatManager,
+                      final IDepthOfBookManager.Factory depthOfBookManagerFactory,
+                      final ISharedOptionLatestTickManager sharedOptionLatestTickManager,
+                      final ISharedOptionMarketstatManager sharedOptionMarketstatManager,
+                      final IMarketDataRequestSupport marketDataRequestAdapter,
+                      final Provider<UnderlyingSymbolSupport> underlyingSymbolSupport)
+    {
+        Validate.noNullElements(new Object[] { latestTickManager,topOfBookManager,marketstatManager,depthOfBookManagerFactory,sharedOptionLatestTickManager,sharedOptionMarketstatManager,
                 marketDataRequestAdapter, underlyingSymbolSupport });
         mLatestTickManager = latestTickManager;
         mTopOfBookManager = topOfBookManager;
         mMarketstatManager = marketstatManager;
-        mLevel2Manager = depthOfBookManagerFactory.create(EnumSet
-                .of(Capability.LEVEL_2));
-        mTotalViewManager = depthOfBookManagerFactory.create(EnumSet
-                .of(Capability.TOTAL_VIEW));
-        mOpenBookManager = depthOfBookManagerFactory.create(EnumSet
-                .of(Capability.OPEN_BOOK));
+        mLevel2Manager = depthOfBookManagerFactory.create(EnumSet.of(Capability.LEVEL_2));
+        mTotalViewManager = depthOfBookManagerFactory.create(EnumSet.of(Capability.TOTAL_VIEW));
+        mOpenBookManager = depthOfBookManagerFactory.create(EnumSet.of(Capability.OPEN_BOOK));
+        mBbo10Manager = depthOfBookManagerFactory.create(EnumSet.of(Capability.BBO10));
         mSharedOptionLatestTickManager = sharedOptionLatestTickManager;
         mSharedOptionMarketstatManager = sharedOptionMarketstatManager;
-        Validate.noNullElements(new Object[] { mLevel2Manager,
-                mTotalViewManager, mOpenBookManager });
-        mContentToDepthManager = ImmutableMap.of(Content.LEVEL_2,
-                mLevel2Manager, Content.TOTAL_VIEW, mTotalViewManager,
-                Content.OPEN_BOOK, mOpenBookManager);
+        Validate.noNullElements(new Object[] { mLevel2Manager,mTotalViewManager,mOpenBookManager });
+        mContentToDepthManager = ImmutableMap.of(Content.LEVEL_2,mLevel2Manager,
+                                                 Content.TOTAL_VIEW,mTotalViewManager,
+                                                 Content.OPEN_BOOK,mOpenBookManager,
+                                                 Content.BBO10,mBbo10Manager);
         mUseFineGrainedMarketDataForOptions = marketDataRequestAdapter
                 .useFineGrainedMarketDataForOptions();
         mUnderlyingSymbolSupport = underlyingSymbolSupport;
@@ -139,6 +137,7 @@ public class MarketData implements IMarketData {
         mLevel2Manager.setSourceFeed(feed);
         mTotalViewManager.setSourceFeed(feed);
         mOpenBookManager.setSourceFeed(feed);
+        mBbo10Manager.setSourceFeed(feed);
         mSharedOptionLatestTickManager.setSourceFeed(feed);
         mSharedOptionMarketstatManager.setSourceFeed(feed);
     }

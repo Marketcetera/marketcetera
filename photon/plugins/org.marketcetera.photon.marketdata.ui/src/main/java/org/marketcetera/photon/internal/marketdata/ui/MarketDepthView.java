@@ -228,6 +228,8 @@ public class MarketDepthView extends ViewPart {
 			return Messages.MARKET_DEPTH_VIEW_TOTAL_VIEW_LABEL.getText();
 		case OPEN_BOOK:
 			return Messages.MARKET_DEPTH_VIEW_OPEN_BOOK_LABEL.getText();
+		case BBO10:
+		    return Messages.MARKET_DEPTH_VIEW_BBO10_LABEL.getText();
 		default:
 			// new type needs new label
 			assert false : product;

@@ -62,6 +62,11 @@ public class MarketDepthMenu extends CompoundContributionItem {
 							Messages.MARKET_DEPTH_OPEN_BOOK_LABEL.getText(),
 							Messages.MARKET_DEPTH_OPEN_BOOK_MNEMONIC.getText()));
 				}
+                if (capabilities.contains(Capability.BBO10)) {
+                    items.add(createCommand(window, symbol.getFullSymbol(), Capability.BBO10,
+                            Messages.MARKET_DEPTH_BBO10_LABEL.getText(),
+                            Messages.MARKET_DEPTH_BBO10_MNEMONIC.getText()));
+                }
 				return items.toArray(new IContributionItem[items.size()]);
 
 			}

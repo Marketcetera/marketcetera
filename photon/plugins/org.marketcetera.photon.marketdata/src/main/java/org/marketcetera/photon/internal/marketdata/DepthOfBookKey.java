@@ -23,8 +23,7 @@ import com.google.common.collect.Sets;
 @ClassVersion("$Id$")
 public class DepthOfBookKey extends Key {
 
-	public static final Set<Content> VALID_PRODUCTS = Sets.immutableEnumSet(Content.LEVEL_2,
-			Content.TOTAL_VIEW, Content.OPEN_BOOK);
+	public static final Set<Content> VALID_PRODUCTS = Sets.immutableEnumSet(Content.LEVEL_2,Content.TOTAL_VIEW,Content.OPEN_BOOK,Content.BBO10);
 	private final Content mProduct;
 
 	/**

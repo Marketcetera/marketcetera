@@ -423,6 +423,8 @@ public interface Messages
 			"market_depth.open_book.label"); //$NON-NLS-1$
 	public static I18NMessage0P MARKET_DEPTH_OPEN_BOOK_MNEMONIC = new I18NMessage0P(LOGGER,
 			"market_depth.open_book.mnemonic"); //$NON-NLS-1$
+    public static I18NMessage0P MARKET_DEPTH_BBO10_LABEL = new I18NMessage0P(LOGGER,"market_depth.bbo10.label"); //$NON-NLS-1$
+    public static I18NMessage0P MARKET_DEPTH_BBO10_MNEMONIC = new I18NMessage0P(LOGGER,"market_depth.bbo10.mnemonic"); //$NON-NLS-1$
 	
     public static I18NMessage0P CLIENT_UNDERLYING_SYMBOL_SUPPORT_MAPPING_ERROR = new I18NMessage0P(
             LOGGER, "client_underlying_symbol_support_mapping_error"); //$NON-NLS-1$
