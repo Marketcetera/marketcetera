@@ -18,8 +18,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public final class ClientUnderlyingSymbolSupport implements
-        UnderlyingSymbolSupport {
+public final class ClientUnderlyingSymbolSupport
+        implements UnderlyingSymbolSupport
+{
     @Override
     public String getUnderlying(Instrument instrument) {
         /*
@@ -27,17 +28,14 @@ public final class ClientUnderlyingSymbolSupport implements
          * (since in some symbology option root symbol is not the symbol of the
          * underlying instrument).
          */
-        if (instrument instanceof Option) {
+        if(instrument instanceof Option) {
             try {
-                String underlying = ClientManager.getInstance().getUnderlying(
-                        instrument.getSymbol());
-                if (underlying != null) {
+                String underlying = ClientManager.getInstance().getUnderlying(instrument.getSymbol());
+                if(underlying != null) {
                     return underlying;
                 }
             } catch (Exception e) {
-                PhotonPlugin.getMainConsoleLogger().error(
-                        Messages.CLIENT_UNDERLYING_SYMBOL_SUPPORT_MAPPING_ERROR
-                                .getText(), e);
+                return ((Option)instrument).getSymbol();
             }
         } else if(instrument instanceof Future) {
             return ((Future)instrument).getSymbol();
