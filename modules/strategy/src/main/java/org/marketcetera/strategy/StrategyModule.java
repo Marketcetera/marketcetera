@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.Util;
@@ -966,25 +967,30 @@ final class StrategyModule
                                                                          inParameters[2].getClass().getName()));
             }
         }
-        // parameter 4 is the strategy source.  the parameter must be of type File, must be non-null, must exist, and must be readable
-        File source;
-        if(inParameters[3] == null) {
+        // parameter 4 is the strategy source. the parameter may be null. if non-null, must be a File which exists and is readable
+        File source = null;
+        if(type == Language.RUBY && inParameters[3] == null) {
             throw new ModuleCreationException(new I18NBoundMessage2P(NULL_PARAMETER_ERROR,
                                                                      4,
                                                                      File.class.getName()));
         }
-        if(inParameters[3] instanceof File) {
-            source = (File)inParameters[3];
-            if(!(source.exists() ||
-                    source.canRead())) {
-                throw new ModuleCreationException(new I18NBoundMessage1P(FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE,
-                                                                         source.getAbsolutePath()));
+        if(inParameters[3] != null) {
+            if(inParameters[3] instanceof File) {
+                source = (File)inParameters[3];
+                if(StringUtils.trimToNull(source.getName()) == null) {
+                    source = null;
+                } else {
+                    if(!(source.exists() || source.canRead())) {
+                        throw new ModuleCreationException(new I18NBoundMessage1P(FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE,
+                                                                                 source.getAbsolutePath()));
+                    }
+                }
+            } else {
+                throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
+                                                                         4,
+                                                                         File.class.getName(),
+                                                                         inParameters[3].getClass().getName()));
             }
-        } else {
-            throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
-                                                                     4,
-                                                                     File.class.getName(),
-                                                                     inParameters[3].getClass().getName()));
         }
         // parameter 5 is a Properties object.  The parameter may be null.  If non-null, these values are made available to the running strategy.
         Properties parameters = null;
@@ -1248,9 +1254,10 @@ final class StrategyModule
         assert(name != null);
         assert(!name.isEmpty());
         assert(type != null);
-        assert(source != null);
-        assert(source.exists());
-        assert(source.canRead());
+        if(source != null) {
+            assert(source.exists());
+            assert(source.canRead());
+        }
     }
     /**
      * Confirms that the object attributes are in the state they are expected to be in at the beginning of {@link #receiveData(DataFlowID, Object)}.

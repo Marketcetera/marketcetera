@@ -40,7 +40,12 @@ class JavaExecutor
     protected ExecutionEngine getExecutionEngine()
             throws StrategyException
     {
-        return new JavaCompilerExecutionEngine();
+        // need to decide whether to use JavaCompilerExecutionEngine or JavaClasspathExecutionEngine
+        if(getStrategy().getScript() == null) {
+            return new JavaClasspathExecutionEngine();
+        } else {
+            return new JavaCompilerExecutionEngine();
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Executor#interpretRuntimeException(java.lang.Exception)

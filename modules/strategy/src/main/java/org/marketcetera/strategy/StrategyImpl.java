@@ -301,7 +301,11 @@ class StrategyImpl
             parameters = new Properties(inParameters);
         }
         servicesProvider = inServicesProvider;
-        code = fileToString(getSource());
+        if(source == null) {
+            code = null;
+        } else {
+            code = fileToString(getSource());
+        }
         defaultNamespace = inNamespace;
     }
     /**
