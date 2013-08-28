@@ -745,6 +745,32 @@ class ExecutionReportSummary extends EntityBase {
         },null);
     }
     /**
+     * 
+     *
+     *
+     * @param inReports
+     * @throws PersistenceException
+     */
+    static void deleteReportsIn(final List<PersistentReport> inReports)
+            throws PersistenceException
+    {
+        executeRemote(new Transaction<Integer>() {
+            @Override
+            public Integer execute(EntityManager inEntityManager,
+                                   PersistContext inContext)
+            {
+                List<Long> ids = new ArrayList<Long>();
+                if(inReports != null) {
+                    for(PersistentReport report : inReports) {
+                        ids.add(report.getId());
+                    }
+                }
+                return inEntityManager.createNativeQuery("DELETE FROM execreports WHERE report_id IN (:ids)").setParameter("ids",ids).executeUpdate();
+            }
+            private static final long serialVersionUID = 1L;
+        },null);
+    }
+    /**
      * Creates an instance.
      *
      * @param inReport The original execution report message.

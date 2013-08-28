@@ -1,5 +1,6 @@
 package org.marketcetera.ors.history;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,11 +35,11 @@ import quickfix.Message;
 @ClassVersion("$Id$")
 @Entity
 @Table(name = "reports")
-
-@NamedQuery(name = "forOrderID",
-    query = "select e from PersistentReport e " +
-            "where e.orderID = :orderID")
-class PersistentReport extends EntityBase {
+@NamedQueries( { @NamedQuery(name="forOrderID",query="select e from PersistentReport e where e.orderID = :orderID"),
+                 @NamedQuery(name="since",query="select e from PersistentReport e where e.sendingTime < :target") })
+class PersistentReport
+        extends EntityBase
+{
     /**
      * Saves the supplied report to the database.
      *
@@ -77,6 +78,36 @@ class PersistentReport extends EntityBase {
                 ExecutionReportSummary.deleteReportsFor(report);
                 report.deleteRemote(null);
                 return report;
+            }
+            private static final long serialVersionUID = 1L;
+        },null);
+    }
+    static int deleteBefore(final Date inPurgeDate)
+            throws PersistenceException
+    {
+        return executeRemote(new Transaction<Integer>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Integer execute(EntityManager em,
+                                   PersistContext context)
+                    throws PersistenceException
+            {
+                Query query = em.createNamedQuery("since"); //$NON-NLS-1$
+                query.setParameter("target", //$NON-NLS-1$
+                                   inPurgeDate);
+                List<PersistentReport> list = query.getResultList();
+                if(list == null || list.isEmpty()) {
+                    return 0;
+                }
+                // delete the Exec reports first
+                ExecutionReportSummary.deleteReportsIn(list);
+                List<Long> ids = new ArrayList<Long>();
+                if(list != null) {
+                    for(PersistentReport report : list) {
+                        ids.add(report.getId());
+                    }
+                }
+                return em.createNativeQuery("DELETE FROM reports WHERE id IN (:ids)").setParameter("ids",ids).executeUpdate();
             }
             private static final long serialVersionUID = 1L;
         },null);

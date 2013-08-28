@@ -5,16 +5,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.time.TimeFactory;
+import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -27,7 +33,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class BasicReportHistoryServices
-    implements ReportHistoryServices
+        implements ReportHistoryServices
 {
 
     // INSTANCE DATA.
@@ -35,8 +41,31 @@ public class BasicReportHistoryServices
     private LongIDFactory mReportIDFactory;
     private JmsManager mJmsManager;
     private ReportSavedListener mReportSavedListener;
-
-
+    private DateTime mPurgeDate;
+    /**
+     * pattern used to identify a history threshold value expressed in seconds
+     */
+    private static final Pattern SECOND_INTERVAL = Pattern.compile("\\d{1,}[s|S]{1}");
+    /**
+     * pattern used to identify a history threshold value expressed in minutes
+     */
+    private static final Pattern MINUTE_INTERVAL = Pattern.compile("\\d{1,}[m|M]{1}");
+    /**
+     * pattern used to identify a history threshold value expressed in hours
+     */
+    private static final Pattern HOUR_INTERVAL = Pattern.compile("\\d{1,}[h|H]{1}");
+    /**
+     * pattern used to identify a history threshold value expressed in days
+     */
+    private static final Pattern DAY_INTERVAL = Pattern.compile("\\d{1,}[d|D]{1}");
+    /**
+     * pattern used to identify a history threshold value expressed in weeks
+     */
+    private static final Pattern WEEK_INTERVAL = Pattern.compile("\\d{1,}[w|W]{1}");
+    /**
+     * creates time values
+     */
+    private TimeFactory timeFactory = new TimeFactoryImpl();
     // CONSTRUCTORS.
 
     /**
@@ -49,15 +78,24 @@ public class BasicReportHistoryServices
     // ReportHistoryServices.
 
     @Override
-    public void init
-        (IDFactory idFactory,
-         JmsManager jmsManager,
-         ReportSavedListener reportSavedListener)
-        throws ReportPersistenceException
+    public void init(IDFactory idFactory,
+                     JmsManager jmsManager,
+                     ReportSavedListener reportSavedListener)
+            throws ReportPersistenceException, PersistenceException
     {
         mReportIDFactory=new LongIDFactory(idFactory);
         mJmsManager=jmsManager;
         mReportSavedListener=reportSavedListener;
+        // purge report history, if necessary
+        if(mPurgeDate != null) {
+            SLF4JLoggerProxy.info(this,
+                                  "Purging report history before {}",
+                                  mPurgeDate);
+            int count = PersistentReport.deleteBefore(mPurgeDate.toDate());
+            SLF4JLoggerProxy.info(this,
+                                  "{} history record(s) purged",
+                                  count);
+        }
     }
 
     @Override
@@ -223,9 +261,42 @@ public class BasicReportHistoryServices
     {
         return PersistentReport.getPrincipals(orderID);
     }
-
-
+    /**
+     * Get the purgeDate value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getPurgeDate()
+    {
+        return String.valueOf(mPurgeDate);
+    }
+    /**
+     * Sets the purgeDate value.
+     * 
+     * <p>Purge date describes a point in time UTC before which all report history
+     * should be truncated. May be described as an actual point in time:
+     * <ul>
+     *   <li>YYYYMMDD-HH:MM:SS</li>
+     *   <li>HH:MM:SS</li>
+     *   <li>HH:MM</li>
+     * </ul>
+     * May also be described as a relative point in time:
+     * <ul>
+     *   <li>4w</li>
+     *   <li>30d</li>
+     *   <li>3h</li>
+     *   <li>120m</li>
+     *   <li>10s</li>
+     * </ul>
+     *
+     * @param inPurgeDate a <code>String</code> value
+     */
+    public void setPurgeDate(String inPurgeDate)
+    {
+        mPurgeDate = translateHistoryValue(inPurgeDate);
+    }
     // INSTANCE METHODS.
+
 
     /**
      * Returns the receiver's report ID factory.
@@ -299,5 +370,39 @@ public class BasicReportHistoryServices
         if (getReportSavedListener()!=null) {
             getReportSavedListener().reportSaved(report,status);
         }
+    }
+    /**
+     * Translates the given literal value to a <code>DateTime</code> value.
+     *
+     * @param inHistoryValue a <code>String</code> value
+     * @return a <code>DateTime</code> value
+     */
+    private DateTime translateHistoryValue(String inHistoryValue)
+    {
+        inHistoryValue = StringUtils.trimToNull(inHistoryValue);
+        if(inHistoryValue == null) {
+            return new DateTime(0);
+        }
+        if(SECOND_INTERVAL.matcher(inHistoryValue).matches()) {
+            int seconds = Integer.parseInt(inHistoryValue.substring(0,inHistoryValue.length()-1));
+            return new DateTime().minusSeconds(seconds);
+        }
+        if(MINUTE_INTERVAL.matcher(inHistoryValue).matches()) {
+            int minutes = Integer.parseInt(inHistoryValue.substring(0,inHistoryValue.length()-1));
+            return new DateTime().minusMinutes(minutes);
+        }
+        if(HOUR_INTERVAL.matcher(inHistoryValue).matches()) {
+            int hours = Integer.parseInt(inHistoryValue.substring(0,inHistoryValue.length()-1));
+            return new DateTime().minusHours(hours);
+        }
+        if(DAY_INTERVAL.matcher(inHistoryValue).matches()) {
+            int days = Integer.parseInt(inHistoryValue.substring(0,inHistoryValue.length()-1));
+            return new DateTime().minusDays(days);
+        }
+        if(WEEK_INTERVAL.matcher(inHistoryValue).matches()) {
+            int weeks = Integer.parseInt(inHistoryValue.substring(0,inHistoryValue.length()-1));
+            return new DateTime().minusWeeks(weeks);
+        }
+        return timeFactory.create(inHistoryValue);
     }
 }

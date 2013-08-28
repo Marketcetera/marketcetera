@@ -60,11 +60,10 @@ public class AsyncSaveReportHistoryServices
     // ReportHistoryServices.
 
     @Override
-    public void init
-        (IDFactory idFactory,
-         JmsManager jmsManager,
-         ReportSavedListener reportSavedListener)
-        throws ReportPersistenceException
+    public void init(IDFactory idFactory,
+                     JmsManager jmsManager,
+                     ReportSavedListener reportSavedListener)
+            throws ReportPersistenceException, PersistenceException
     {
         super.init(idFactory,jmsManager,reportSavedListener);
         try {
