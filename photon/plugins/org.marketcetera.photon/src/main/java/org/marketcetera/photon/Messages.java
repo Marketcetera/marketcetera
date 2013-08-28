@@ -518,4 +518,7 @@ public interface Messages
     		"add_execution_report_date_format_error"); //$NON-NLS-1$ 
     public static I18NMessage0P ADD_EXECUTION_REPORT_STRING_FORMAT_ERROR= new I18NMessage0P(LOGGER,
     		"add_execution_report_string_format_error"); //$NON-NLS-1$    
+    public static I18NMessage0P DEL_EXECUTION_REPORT_MXBOX_TITLE_WARNING = new I18NMessage0P(LOGGER,"del_execution_report_mxbox_title_warning"); //$NON-NLS-1$
+    public static I18NMessage0P DEL_EXECUTION_REPORT_MXBOX_MESSAGE = new I18NMessage0P(LOGGER,"del_execution_report_mxbox_message"); //$NON-NLS-1$
+    public static I18NMessage0P DEL_EXECUTION_REPORT_ERROR = new I18NMessage0P(LOGGER,"del_execution_report_error"); //$NON-NLS-1$
 }

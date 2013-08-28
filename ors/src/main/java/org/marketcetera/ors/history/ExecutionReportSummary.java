@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
-import org.marketcetera.trade.Currency;
-
 import javax.persistence.*;
 
 import org.marketcetera.core.position.PositionKey;
@@ -16,6 +14,7 @@ import org.marketcetera.persist.PersistContext;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.persist.Transaction;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -179,6 +178,7 @@ import org.marketcetera.util.misc.ClassVersion;
             "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
             resultSetMapping = "optAllPositions"),
     @NamedNativeQuery(name="openOrders",query="select * from execreports e where e.isOpen=true and (:allViewers=true or e.viewer_id=:viewerID)",resultClass=ExecutionReportSummary.class),
+    @NamedNativeQuery(name="deleteReportsFor",query="delete from execreports where report_id=:id",resultClass=ExecutionReportSummary.class)
         })
 
 class ExecutionReportSummary extends EntityBase {
@@ -719,6 +719,27 @@ class ExecutionReportSummary extends EntityBase {
                 query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
                 query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
                 return query.getResultList();
+            }
+            private static final long serialVersionUID = 1L;
+        },null);
+    }
+    /**
+     * Deletes any <code>ExecutionReportSummary</code> objects related to the given <code>PersistentReport</code>.
+     *
+     * @param inReport a <code>PersistentReport</code> value
+     * @throws PersistenceException if an error occurs deleting the reports
+     */
+    static void deleteReportsFor(final PersistentReport inReport)
+            throws PersistenceException
+    {
+        executeRemote(new Transaction<Integer>() {
+            @Override
+            public Integer execute(EntityManager inEntityManager,
+                                   PersistContext inContext)
+            {
+                Query query = inEntityManager.createNamedQuery("deleteReportsFor");  //$NON-NLS-1$
+                query.setParameter("id",inReport.getId());  //$NON-NLS-1$
+                return query.executeUpdate();
             }
             private static final long serialVersionUID = 1L;
         },null);

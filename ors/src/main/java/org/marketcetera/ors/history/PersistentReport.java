@@ -1,23 +1,25 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.ors.Principals;
-import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
-
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.persist.*;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.*;
-import org.marketcetera.event.HasFIXMessage;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-import quickfix.Message;
+import javax.persistence.*;
+
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.ors.Principals;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.persist.EntityBase;
+import org.marketcetera.persist.PersistContext;
+import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.persist.Transaction;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.InvalidMessage;
+import quickfix.Message;
 
 /* $License$ */
 /**
@@ -55,11 +57,29 @@ class PersistentReport extends EntityBase {
      * @param inReport a <code>ReportBase</code> value
      * @throws PersistenceException if an error occurs deleting the report
      */
-    static void delete(ReportBase inReport)
+    static void delete(final ReportBase inReport)
             throws PersistenceException
     {
-        PersistentReport report = new PersistentReport(inReport);
-        report.deleteRemote(null);
+        executeRemote(new Transaction<PersistentReport>() {
+            @Override
+            public PersistentReport execute(EntityManager em,
+                                            PersistContext context)
+                    throws PersistenceException
+            {
+                Query query = em.createNamedQuery("forOrderID"); //$NON-NLS-1$
+                query.setParameter("orderID",
+                                   inReport.getOrderID()); //$NON-NLS-1$
+                List<?>list = query.getResultList();
+                if(list.isEmpty()) {
+                    return null;
+                }
+                PersistentReport report = (PersistentReport)list.get(0);
+                ExecutionReportSummary.deleteReportsFor(report);
+                report.deleteRemote(null);
+                return report;
+            }
+            private static final long serialVersionUID = 1L;
+        },null);
     }
     /**
      * Returns the principals associated with the report with given
@@ -271,6 +291,7 @@ class PersistentReport extends EntityBase {
                 ? null
                 : getBrokerID().toString();
     }
+    @SuppressWarnings("unused")
     private void setBrokerIDAsString(String inValue) {
         setBrokerID(inValue == null
                 ? null
@@ -289,6 +310,7 @@ class PersistentReport extends EntityBase {
     private long getReportIDAsLong() {
         return getReportID().longValue();
     }
+    @SuppressWarnings("unused")
     private void setReportIDAsLong(long inValue) {
         setReportID(new ReportID(inValue));
     }
@@ -317,6 +339,7 @@ class PersistentReport extends EntityBase {
         return mReportType;
     }
 
+    @SuppressWarnings("unused")
     private void setReportType(ReportType inReportType) {
         mReportType = inReportType;
     }

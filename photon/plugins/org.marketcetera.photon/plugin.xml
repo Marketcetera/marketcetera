@@ -249,40 +249,40 @@
             name="%commands.createEquitySellOrderFromMarketData.name">
       </command>
    </extension>
-   <extension
-         point="org.eclipse.ui.popupMenus">
-         <objectContribution
-         	adaptable="false"
-         	id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
-         	objectClass="org.marketcetera.messagehistory.ReportHolder">
-         	<action
-         		class="org.marketcetera.photon.actions.CancelOrderActionDelegate"
-         		icon="icons/silk/cancel.png"
-         		id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
-         		label="&amp;Cancel order"/>
-         </objectContribution>
-         <objectContribution
-         	adaptable="false"
-         	id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
-         	objectClass="org.marketcetera.messagehistory.ReportHolder">
-         	<action
-         		class="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
-         		icon="icons/silk/pencil.png"
-         		id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
-         		label="&amp;Replace order"/>
-         </objectContribution>
-   <objectContribution
-         adaptable="false"
-         id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
-         objectClass="org.marketcetera.messagehistory.ReportHolder">
-      <action
-            class="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
-            icon="icons/silk/table_go.png"
-            id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
-            label="View &amp;FIX message details"/>
-   </objectContribution> 
+   <extension point="org.eclipse.ui.popupMenus">
+      <objectContribution adaptable="false"
+                         id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
+                         objectClass="org.marketcetera.messagehistory.ReportHolder">
+       <action class="org.marketcetera.photon.actions.CancelOrderActionDelegate"
+               icon="icons/silk/cancel.png"
+               id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
+               label="&amp;Cancel order"/>
+     </objectContribution>
+     <objectContribution adaptable="false"
+                         id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
+                         objectClass="org.marketcetera.messagehistory.ReportHolder">
+       <action class="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
+               icon="icons/silk/pencil.png"
+               id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
+               label="&amp;Replace order"/>
+     </objectContribution>
+     <objectContribution adaptable="false"
+                         id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
+                         objectClass="org.marketcetera.messagehistory.ReportHolder">
+       <action class="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
+               icon="icons/silk/table_go.png"
+               id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
+               label="View &amp;FIX message details"/>
+     </objectContribution> 
+     <objectContribution adaptable="false"
+                         id="org.marketcetera.photon.actions.DeleteReportActionDelegate"
+                         objectClass="org.marketcetera.messagehistory.ReportHolder">
+       <action class="org.marketcetera.photon.actions.DeleteReportActionDelegate"
+               icon="icons/silk/table_go.png"
+               id="org.marketcetera.photon.actions.DeleteReportActionDelegate"
+               label="&amp;Delete report"/>
+     </objectContribution> 
    </extension>
-   
    <extension
          point="org.eclipse.ui.menus">
        <menuContribution
