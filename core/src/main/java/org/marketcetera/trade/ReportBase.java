@@ -1,10 +1,12 @@
 package org.marketcetera.trade;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.sun.xml.bind.AnyTypeAdapter;
@@ -100,4 +102,25 @@ public interface ReportBase extends Serializable {
      * @return the ID of the viewer user of this message.
      */
     UserID getViewerID();
+    /**
+     * Compares two <code>ReportBase</code> objects.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    public static enum ReportComparator
+            implements Comparator<ReportBase>
+    {
+        INSTANCE;
+        /* (non-Javadoc)
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare(ReportBase inLHS,
+                           ReportBase inRHS)
+        {
+            return new CompareToBuilder().append(inLHS.getSendingTime(),inRHS.getSendingTime()).append(inLHS.getReportID(),inRHS.getReportID()).toComparison();
+        }
+    }
 }

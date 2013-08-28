@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -412,6 +413,57 @@ public class LiveOrderHistoryManagerTest
                 return openOrders.isEmpty();
             }
         });
+    }
+    /**
+     * Tests open orders before the origin history date.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testOpenOrders()
+            throws Exception
+    {
+        Set<ReportBase> historicalReports = client.getReports();
+        List<ReportBase> setupOpenOrders = client.getOpenOrders();
+        assertTrue(historicalReports.isEmpty());
+        assertTrue(setupOpenOrders.isEmpty());
+        // generate a few open orders and a few non-open orders
+        ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                                             null,
+                                                                             OrderStatus.New);
+        Thread.sleep(250);
+        ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                                             null,
+                                                                             OrderStatus.Filled);
+        Thread.sleep(250);
+        ReportBase report3 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                                             null,
+                                                                             OrderStatus.Canceled);
+        Thread.sleep(250);
+        ReportBase report4 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                                             null,
+                                                                             OrderStatus.PartiallyFilled);
+        assertTrue(report1.getOrderStatus().isCancellable());
+        assertFalse(report2.getOrderStatus().isCancellable());
+        assertFalse(report3.getOrderStatus().isCancellable());
+        assertTrue(report4.getOrderStatus().isCancellable());
+        setupOpenOrders.add(report1);
+        setupOpenOrders.add(report4);
+        historicalReports.add(report2);
+        historicalReports.add(report3);
+        historicalReports.add(report4);
+        // set the origin time to 1ms before report3's time - this will make report1 an open order that precedes the origin
+        final LiveOrderHistoryManager manager = new LiveOrderHistoryManager(new Date(report3.getSendingTime().getTime()-1));
+        manager.start();
+        Map<OrderID,ExecutionReport> openOrders = manager.getOpenOrders();
+        assertEquals(2,
+                     openOrders.size());
+        assertEquals(3,
+                     manager.getOrderIds().size());
+        assertEquals(report1,
+                     openOrders.get(report1.getOrderID()));
+        assertEquals(report4,
+                     openOrders.get(report4.getOrderID()));
     }
     /**
      * Tests what happens if an error occurs connecting to the client.

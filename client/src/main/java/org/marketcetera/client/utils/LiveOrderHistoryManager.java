@@ -1,9 +1,6 @@
 package org.marketcetera.client.utils;
 
-import java.util.Date;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -25,7 +22,8 @@ import org.springframework.context.Lifecycle;
  * Provides a historically-aware {@link OrderHistoryManager} implementation.
  * 
  * <p>Instantiate this class with an origin date. The origin date establishes how far back
- * to look for order history.
+ * to look for order history. Open orders are always included in the history, regardless of the
+ * origin date.
  * 
  * <p>Note that there are significant performance and resource implications when using this class.
  * Depending on historical order volume, this class may be required to process thousands or millions
@@ -121,9 +119,17 @@ public class LiveOrderHistoryManager
             SLF4JLoggerProxy.debug(LiveOrderHistoryManager.class,
                                    "{} report(s) to process", //$NON-NLS-1$
                                    orderHistory.length);
+            final SortedSet<ReportBase> tempSnapshotReports = new TreeSet<ReportBase>(ReportBase.ReportComparator.INSTANCE);
             for(ReportBase report : orderHistory) {
-                snapshotReports.add(report);
+                tempSnapshotReports.add(report);
             }
+            List<ReportBase> openOrders = client.getOpenOrders();
+            for(ReportBase openOrder : openOrders) {
+                if(!tempSnapshotReports.contains(openOrder)) {
+                    tempSnapshotReports.add(openOrder);
+                }
+            }
+            snapshotReports.addAll(tempSnapshotReports);
         } catch (ConnectionException e) {
             throw new RuntimeException(e);
         }

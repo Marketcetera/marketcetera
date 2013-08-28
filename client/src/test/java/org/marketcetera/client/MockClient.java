@@ -395,7 +395,7 @@ public class MockClient
     public List<ReportBase> getOpenOrders()
             throws ConnectionException
     {
-        throw new UnsupportedOperationException();
+        return openOrders;
     }
     /**
      * Gets the <code>ClientParameters</code> value used to initialize the client.
@@ -541,6 +541,7 @@ public class MockClient
         orders.clear();
         replaces.clear();
         cancels.clear();
+        openOrders.clear();
         setGetReportsSinceException(null);
         setSendOrderSingleException(null);
         setSendOrderReplaceConnectionException(null);
@@ -594,6 +595,10 @@ public class MockClient
      * reports used to feed report-related calls
      */
     private final Set<ReportBase> reports = new TreeSet<ReportBase>(ReportSendingTimeComparator.INSTANCE);
+    /**
+     * open orders (in addition to existing reports to return)
+     */
+    private final List<ReportBase> openOrders = new ArrayList<ReportBase>();
     /**
      * orders sent since last {@link #reset()}
      */

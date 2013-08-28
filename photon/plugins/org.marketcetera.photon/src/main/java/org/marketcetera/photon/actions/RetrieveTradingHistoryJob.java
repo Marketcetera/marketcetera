@@ -55,7 +55,7 @@ public class RetrieveTradingHistoryJob extends Job {
             TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
             Client client = ClientManager.getInstance();
             List<ReportBase> openReports = client.getOpenOrders();
-            Date positionDate = null;
+            Date positionDate = new Date();
             if(StringUtils.isNotEmpty(timeString)) {
                 TimeOfDay time = TimeOfDay.create(timeString);
                 if(time != null) {
