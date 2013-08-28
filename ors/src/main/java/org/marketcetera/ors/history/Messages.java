@@ -43,4 +43,6 @@ public interface Messages {
         new I18NMessage1P(LOGGER,"rhs_persisted_reply"); //$NON-NLS-1$
     static final I18NMessage1P RHS_PERSIST_ERROR=
         new I18NMessage1P(LOGGER,"rhs_persist_error"); //$NON-NLS-1$
+    static final I18NMessage1P RHS_PURGING_RECORDS = new I18NMessage1P(LOGGER,"rhs_purging_records"); //$NON-NLS-1$
+    static final I18NMessage1P RHS_RECORDS_PURGED = new I18NMessage1P(LOGGER,"rhs_records_purged"); //$NON-NLS-1$
 }

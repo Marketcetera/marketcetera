@@ -20,7 +20,6 @@ import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -88,13 +87,9 @@ public class BasicReportHistoryServices
         mReportSavedListener=reportSavedListener;
         // purge report history, if necessary
         if(mPurgeDate != null) {
-            SLF4JLoggerProxy.info(this,
-                                  "Purging report history before {}",
-                                  mPurgeDate);
+            Messages.RHS_PURGING_RECORDS.info(this,mPurgeDate);
             int count = PersistentReport.deleteBefore(mPurgeDate.toDate());
-            SLF4JLoggerProxy.info(this,
-                                  "{} history record(s) purged",
-                                  count);
+            Messages.RHS_RECORDS_PURGED.info(this,count);
         }
     }
 

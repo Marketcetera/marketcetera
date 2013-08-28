@@ -479,11 +479,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     public void showOrderInTicket(NewOrReplaceOrder order)
             throws WorkbenchException {
         IOrderTicketController orderTicketController = getOrderTicketController(order);
-        String perspective = orderTicketController.getPerspectiveId();
         String view = orderTicketController.getViewId();
         orderTicketController.setOrderMessage(order);
-        PlatformUI.getWorkbench().showPerspective(perspective,
-                PlatformUI.getWorkbench().getActiveWorkbenchWindow());
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
                 .showView(view);
     }
