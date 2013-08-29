@@ -11,7 +11,7 @@
     http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-configuration-properties.html
     for a complete list of options that can be specified for connecting to msql.
     -->
-    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera?logSlowQueries=true"/></bean>
+    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera"/></bean>
 
   <!-- Initialize MySQL as DB Vendor Implementation -->
     <bean id="dbVendor" class="org.marketcetera.persist.MySQLDBVendor"
