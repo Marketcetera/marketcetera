@@ -14,8 +14,8 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.google.inject.Inject;
 
 /* $License$ */
@@ -67,15 +67,15 @@ public class SharedOptionLatestTickManager
     protected Map<Option, MDLatestTickImpl> createItem(
             final SharedOptionLatestTickKey key) {
         assert key != null;
-        return new MapMaker()
-                .makeComputingMap(new Function<Option, MDLatestTickImpl>() {
-                    @Override
-                    public MDLatestTickImpl apply(final Option from) {
-                        MDLatestTickImpl item = new MDLatestTickImpl();
-                        item.setInstrument(from);
-                        return item;
-                    }
-                });
+        return CacheBuilder.newBuilder().build(new CacheLoader<Option,MDLatestTickImpl>() {
+            @Override
+            public MDLatestTickImpl load(Option from)
+                    throws Exception
+            {
+                MDLatestTickImpl item = new MDLatestTickImpl();
+                item.setInstrument(from);
+                return item;
+            }}).asMap();
     }
 
     @Override

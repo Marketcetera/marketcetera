@@ -1146,7 +1146,7 @@ public class StrategyTestBase
         public List<ReportBase> getOpenOrders()
                 throws ConnectionException
         {
-            throw new UnsupportedOperationException();
+            return Collections.emptyList();
         }
     }
     /**

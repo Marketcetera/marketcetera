@@ -124,9 +124,11 @@ public class LiveOrderHistoryManager
                 tempSnapshotReports.add(report);
             }
             List<ReportBase> openOrders = client.getOpenOrders();
-            for(ReportBase openOrder : openOrders) {
-                if(!tempSnapshotReports.contains(openOrder)) {
-                    tempSnapshotReports.add(openOrder);
+            if(openOrders != null) {
+                for(ReportBase openOrder : openOrders) {
+                    if(!tempSnapshotReports.contains(openOrder)) {
+                        tempSnapshotReports.add(openOrder);
+                    }
                 }
             }
             snapshotReports.addAll(tempSnapshotReports);

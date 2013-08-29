@@ -1,6 +1,6 @@
 package org.marketcetera.photon.commons.ui;
 
-import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -11,8 +11,9 @@ import org.marketcetera.photon.commons.SimpleExecutorService;
 import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /* $License$ */
 
@@ -42,14 +43,13 @@ import com.google.common.collect.MapMaker;
 public final class DisplayThreadExecutor extends SimpleExecutorService
         implements GuiExecutor {
 
-    private static final Map<Display, DisplayThreadExecutor> sMap = new MapMaker()
-            .makeComputingMap(new Function<Display, DisplayThreadExecutor>() {
-                @Override
-                public DisplayThreadExecutor apply(Display from) {
-                    return new DisplayThreadExecutor(from);
-                }
-            });
-
+    private static final LoadingCache<Display,DisplayThreadExecutor> sMap = CacheBuilder.newBuilder().build(new CacheLoader<Display,DisplayThreadExecutor>() {
+        @Override
+        public DisplayThreadExecutor load(Display from)
+                throws Exception
+        {
+            return new DisplayThreadExecutor(from);
+        }});
     /**
      * Returns the singleton executor for the given SWT display.
      * 
@@ -61,7 +61,11 @@ public final class DisplayThreadExecutor extends SimpleExecutorService
      */
     public static ExecutorService getInstance(final Display display) {
         Validate.notNull(display, "display"); //$NON-NLS-1$
-        return sMap.get(display);
+        try {
+            return sMap.get(display);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private final Display mDisplay;

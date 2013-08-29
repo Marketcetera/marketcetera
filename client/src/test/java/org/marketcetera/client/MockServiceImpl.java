@@ -515,6 +515,6 @@ public class MockServiceImpl
     ClientContext inContext)
             throws RemoteException
     {
-        throw new UnsupportedOperationException();
+        return Collections.emptyList();
     }
 }

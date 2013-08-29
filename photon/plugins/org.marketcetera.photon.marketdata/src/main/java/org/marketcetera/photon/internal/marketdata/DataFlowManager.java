@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 import org.apache.commons.lang.Validate;
@@ -20,9 +21,10 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.base.Function;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.inject.BindingAnnotation;
 
@@ -62,14 +64,14 @@ abstract class DataFlowManager<T, K extends Key> implements
     }
 
     private final ModuleManager mModuleManager;
-    private final Map<K, ModuleURN> mSubscribers = new HashMap<K, ModuleURN>();
-    private final Map<K, T> mItems = new MapMaker()
-            .makeComputingMap(new Function<K, T>() {
-                @Override
-                public T apply(final K from) {
-                    return createItem(from);
-                }
-            });
+    private final Map<K,ModuleURN> mSubscribers = new HashMap<K, ModuleURN>();
+    private final LoadingCache<K,T> mItems = CacheBuilder.newBuilder().build(new CacheLoader<K,T>() {
+        @Override
+        public T load(K from)
+                throws Exception
+        {
+            return createItem(from);
+        }});
     private final ImmutableSet<Capability> mRequiredCapabilities;
     private final Executor mMarketDataExecutor;
     private final IMarketDataRequestSupport mMarketDataRequestSupport;
@@ -106,7 +108,11 @@ abstract class DataFlowManager<T, K extends Key> implements
     @Override
     public final T getItem(final K key) {
         Validate.notNull(key);
-        return mItems.get(key);
+        try {
+            return mItems.get(key);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -121,7 +127,7 @@ abstract class DataFlowManager<T, K extends Key> implements
                 stopModule(subscriber, false);
             }
         }
-        for (K key : mItems.keySet()) {
+        for (K key : mItems.asMap().keySet()) {
             resetItem(key);
         }
         mSourceModule = null;

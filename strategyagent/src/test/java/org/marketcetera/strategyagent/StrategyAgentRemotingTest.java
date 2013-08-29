@@ -1,36 +1,41 @@
 package org.marketcetera.strategyagent;
 
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.InvalidAttributeValueException;
+
+import org.hamcrest.Matchers;
+import org.junit.*;
+import org.marketcetera.client.ClientManager;
+import org.marketcetera.client.ClientModuleFactory;
+import org.marketcetera.client.ClientParameters;
+import org.marketcetera.client.MockServer;
+import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.core.Util;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.saclient.*;
+import org.marketcetera.strategy.Language;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.file.Deleter;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.file.Deleter;
-import org.marketcetera.module.*;
-import org.marketcetera.client.MockServer;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ClientParameters;
-import org.marketcetera.client.ClientModuleFactory;
-import org.marketcetera.saclient.*;
-import org.marketcetera.strategy.Language;
-import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.core.Util;
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.*;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.math.BigDecimal;
 
 
 /* $License$ */
@@ -524,6 +529,7 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
      * @throws Exception if there were unexpected errors.
      */
     @Test
+    @SuppressWarnings("unchecked")
     public void strategyLifecycle() throws Exception {
         final SAClient saClient = createClient();
         //create, start, stop, delete, get/set props, get createParms

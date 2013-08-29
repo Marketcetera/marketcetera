@@ -257,6 +257,8 @@ public class PositionEngineFactory {
                 case SellShort:
                 case SellShortExempt:
                     return lastQuantity.negate();
+                default:
+                    break;
                 }
             }
             return null;

@@ -2,11 +2,7 @@ package org.marketcetera.photon.internal.marketdata;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -22,11 +18,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.photon.internal.marketdata.IDepthOfBookManager.Factory;
 import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
-import org.marketcetera.photon.model.marketdata.MDDepthOfBook;
-import org.marketcetera.photon.model.marketdata.MDItem;
-import org.marketcetera.photon.model.marketdata.MDLatestTick;
-import org.marketcetera.photon.model.marketdata.MDMarketstat;
-import org.marketcetera.photon.model.marketdata.MDTopOfBook;
+import org.marketcetera.photon.model.marketdata.*;
 import org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDLatestTickImpl;
 import org.marketcetera.photon.model.marketdata.impl.MDMarketstatImpl;
@@ -36,9 +28,9 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 
-import com.google.common.base.Function;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.MapMaker;
 import com.google.inject.Provider;
 
 /* $License$ */
@@ -572,14 +564,22 @@ public class MarketDataTest {
                     "IBM");
             when(mUnderlyingSymbolSupport.getUnderlying(option2)).thenReturn(
                     "METC");
-            Function<Option, T> computer = new Function<Option, T>() {
+            Map<Option,T> map1 = CacheBuilder.newBuilder().build(new CacheLoader<Option,T>() {
                 @Override
-                public T apply(Option from) {
+                public T load(Option from)
+                        throws Exception
+                {
                     return createItem(from);
                 }
-            };
-            Map<Option, T> map1 = new MapMaker().makeComputingMap(computer);
-            Map<Option, T> map2 = new MapMaker().makeComputingMap(computer);
+            }).asMap();
+            Map<Option,T> map2 = CacheBuilder.newBuilder().build(new CacheLoader<Option,T>() {
+                @Override
+                public T load(Option from)
+                        throws Exception
+                {
+                    return createItem(from);
+                }
+            }).asMap();
             when(manager.getItem(ibmKey)).thenReturn(map1);
             when(manager.getItem(metcKey)).thenReturn(map2);
             // get a reference

@@ -19,6 +19,9 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.base.Function;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.MapMaker;
 import com.google.inject.Inject;
 
@@ -75,14 +78,13 @@ public class DepthOfBookManager extends
         }
     }
 
-    private final Map<MDDepthOfBookImpl, Map<Object, MDQuoteImpl>> mIdMap = new MapMaker()
-            .makeComputingMap(new Function<MDDepthOfBookImpl, Map<Object, MDQuoteImpl>>() {
+    private final LoadingCache<MDDepthOfBookImpl,Map<Object,MDQuoteImpl>> mIdMap = CacheBuilder.newBuilder().build(new CacheLoader<MDDepthOfBookImpl,Map<Object,MDQuoteImpl>>() {
                 @Override
-                public Map<Object, MDQuoteImpl> apply(
-                        final MDDepthOfBookImpl from) {
+                public Map<Object, MDQuoteImpl> load(MDDepthOfBookImpl inFrom)
+                        throws Exception
+                {
                     return new MapMaker().makeMap();
-                }
-            });
+                }});
     private final QuoteEventToMDQuote mFunction = new QuoteEventToMDQuote();
 
     /**
@@ -122,7 +124,7 @@ public class DepthOfBookManager extends
             final MDDepthOfBookImpl item) {
         assert key != null;
         assert item != null;
-        mIdMap.remove(item);
+        mIdMap.asMap().remove(item);
         final LockableEList<MDQuote> bidsList = item.getBids();
         bidsList.doWriteOperation(new Callable<Object>() {
             @Override

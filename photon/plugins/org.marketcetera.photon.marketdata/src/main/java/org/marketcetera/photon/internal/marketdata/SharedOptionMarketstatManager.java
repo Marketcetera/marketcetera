@@ -13,8 +13,8 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.google.inject.Inject;
 
 /* $License$ */
@@ -66,15 +66,17 @@ public class SharedOptionMarketstatManager
     protected Map<Option, MDMarketstatImpl> createItem(
             final SharedOptionMarketstatKey key) {
         assert key != null;
-        return new MapMaker()
-                .makeComputingMap(new Function<Option, MDMarketstatImpl>() {
-                    @Override
-                    public MDMarketstatImpl apply(final Option from) {
-                        MDMarketstatImpl item = new MDMarketstatImpl();
-                        item.setInstrument(from);
-                        return item;
-                    }
-                });
+        return CacheBuilder.newBuilder().build(new CacheLoader<Option,MDMarketstatImpl>() {
+
+            @Override
+            public MDMarketstatImpl load(Option from)
+                    throws Exception
+            {
+                MDMarketstatImpl item = new MDMarketstatImpl();
+                item.setInstrument(from);
+                return item;
+            }
+        }).asMap();
     }
 
     @Override
