@@ -29,6 +29,7 @@ import org.marketcetera.saclient.SAService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.unicode.UnicodeFileReader;
@@ -37,7 +38,9 @@ import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
 /* $License$ */
@@ -313,18 +316,37 @@ public class StrategyAgent
         SpringUtils.addStringBean(parentCtx,"modulesDir",   //$NON-NLS-1$
                 modulesDir.getAbsolutePath());
         parentCtx.refresh();
-        mContext = new ClassPathXmlApplicationContext(
-                new String[]{"modules.xml"},parentCtx);  //$NON-NLS-1$
+        mContext = new FileSystemXmlApplicationContext(new String[] {"file:"+CONF_DIR+"strategyagent.xml"}, //$NON-NLS-1$  //$NON-NLS-2$
+                                                       parentCtx);
         mContext.registerShutdownHook();
         mManager = (ModuleManager) mContext.getBean("moduleManager",  //$NON-NLS-1$
-                ModuleManager.class);
+                                                    ModuleManager.class);
         //Set the context classloader to the jar classloader so that
         //all modules have the thread context classloader set to the same
         //value as the classloader that loaded them.
         ClassLoader loader = (ClassLoader) mContext.getBean("moduleLoader",  //$NON-NLS-1$
                 ClassLoader.class);
         Thread.currentThread().setContextClassLoader(loader);
-
+        Authenticator authenticator;
+        try {
+            authenticator = mContext.getBean(Authenticator.class);
+            SLF4JLoggerProxy.debug(this,
+                                   "Using custom authenticator {}",
+                                   authenticator);
+        } catch (NoSuchBeanDefinitionException e) {
+            authenticator = new Authenticator() {
+                @Override
+                public boolean shouldAllow(StatelessClientContext context,
+                                           String user,
+                                           char[] password)
+                        throws I18NException
+                {
+                    return authenticate(context,
+                                        user,
+                                        password);
+                }
+            };
+        }
         //Setup the WS services after setting up the context class loader.
         String hostname = (String) mContext.getBean("wsServerHost");  //$NON-NLS-1$
         if (hostname != null && !hostname.trim().isEmpty()) {
@@ -333,19 +355,9 @@ public class StrategyAgent
                                                                                             SessionManager.INFINITE_SESSION_LIFESPAN);
             mServer = new Server<ClientSession>(hostname,
                                                 port,
-                                                new Authenticator() {
-                     @Override
-                     public boolean shouldAllow(StatelessClientContext context,
-                                                String user,
-                                                char[] password)
-                             throws I18NException
-                     {
-                         return authenticate(context,
-                                             user,
-                                             password);
-                     }
-                 },sessionManager,
-                   contextClasses);
+                                                authenticator,
+                                                sessionManager,
+                                                contextClasses);
             mRemoteService = mServer.publish(new SAServiceImpl(sessionManager,
                                                                mManager,
                                                                dataPublisher),
@@ -534,7 +546,7 @@ public class StrategyAgent
      * The handle to the remote web service.
      */
     private volatile ServiceInterface mRemoteService;
-    private volatile ClassPathXmlApplicationContext mContext;
+    private volatile AbstractApplicationContext mContext;
     private volatile Server<ClientSession> mServer;
     /**
      * used to publish data received to interested subscribers

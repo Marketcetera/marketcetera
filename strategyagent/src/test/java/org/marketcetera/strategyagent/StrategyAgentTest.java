@@ -1,19 +1,25 @@
 package org.marketcetera.strategyagent;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.*;
-import static org.marketcetera.strategyagent.JarClassLoaderTest.*;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
-import org.apache.log4j.Level;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.marketcetera.strategyagent.JarClassLoaderTest.createJar;
+
+import java.io.File;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Properties;
 
 import javax.management.JMX;
 import javax.management.ObjectName;
-import java.io.File;
-import java.util.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
+
+import org.apache.log4j.Level;
+import org.junit.Test;
+import org.marketcetera.module.*;
+import org.marketcetera.strategyagent.JarClassLoaderTest.JarContents;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -245,7 +251,7 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
         byte[] classBytes = generateSubclass(MyTestFactory.class,newSubclass);
         JarContents jc = new JarContents(transformName(newSubclass) + ".class",classBytes);
         //Create the factory file to load this factory via the service loader
-        File jar = createJar("provider.jar",new JarContents[]{
+        createJar("provider.jar",new JarContents[]{
                 jc,
                 new JarContents("META-INF/services/" +
                         ModuleFactory.class.getName(), newSubclass.getBytes())
