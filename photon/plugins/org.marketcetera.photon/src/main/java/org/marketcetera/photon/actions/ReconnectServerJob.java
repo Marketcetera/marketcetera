@@ -264,6 +264,7 @@ public class ReconnectServerJob extends UIJob {
                     // CD 20120915 Fix rolled back due to performance problems for high
                     //  volume installations
                     // CD 20130820 Replaced (still vulnerable to high-volume problems)
+                    PhotonPlugin.getDefault().disposePositionEngine();
                     new RetrieveTradingHistoryJob().schedule();
                 } else {
                     ServerStatusIndicator.setDisconnected();
