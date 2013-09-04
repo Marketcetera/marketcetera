@@ -1,0 +1,56 @@
+<body>
+
+<p>Multi-context gathering of credentials for authentication.</p>
+
+<p>A standard step in authentication is the gathering of user
+credentials. Credentials typically comprise a username and a password,
+but they can also include an authentication domain, certificates, or
+other information specific to the authentication algorithm. This
+package has no connection to authentication algorithms or even
+interfaces (such as JAAS); it concerns itself only with gathering
+credentials.</p>
+
+<p>Credentials may come from multiples sources. For example a GUI
+application may look for credentials in the following places:</p>
+
+<ul>
+
+<li>Configuration files.</li>
+
+<li>Command-line options, which can override the configuration
+files.</li>
+
+<li>A login dialog box, displayed only if credentials were not
+specified using either of the above methods.</li>
+
+</ul>
+
+<p>Each of the methods above seeks to gather credentials from a
+specific <i>context</i> (configuration file(s), command-line, dialog
+box). In this example, the command-line context is an <i>override</i>
+context, meaning that it always attempts to gather credentials and, if
+it does so successfully, the values it gathers override those provided
+by earlier contexts. The login dialog is a non-override context
+because it will only pop up and attempt to gather credentials if
+they have not been gathered yet.</p>
+
+<p>For the benefit of user convenience and uniformity, {@link
+org.marketcetera.util.auth.StandardAuthentication} provides a standard
+authentication system, aimed specifically at console applications. For
+developers who wish to create non-standard authentication systems,
+{@link org.marketcetera.util.auth.AuthenticationSystem} is a generic
+registry of contexts. Contexts extend {@link
+org.marketcetera.util.auth.Context}, and several subclasses are
+provided, such as command-line or Spring configuration. The package
+design can accomodate any number/type of credentials sought (not just
+a username and password), with some contexts capable of providing only
+some of them. A creative developer may also repurpose this package to
+retrieve any combination of application properties from multiple
+contexts, not just authentication credentials.</p>
+
+<p>All provided contexts treat null and "" (empty string) inputs as
+no-ops, i.e. gathered credentials that are null or "" are treated as
+if no credentials were supplied (and hence do not override values set
+by earlier contexts).</p>
+
+</body>
