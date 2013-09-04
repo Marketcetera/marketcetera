@@ -74,7 +74,7 @@ public class ReconnectServerJob extends UIJob {
         public void run() {
             if (sScheduled.compareAndSet(false, true)) {
                 try {
-                    ClientManager.getInstance().close();
+                    ClientManager.getManagerInstance().getInstance().close();
                 } catch (ClientInitException e) {
                     // ignore
                 } finally {
@@ -118,13 +118,13 @@ public class ReconnectServerJob extends UIJob {
                             try {
                                 Client client;
                                 // if already initialized, reconnect
-                                if(ClientManager.isInitialized()) {
-                                    ClientManager.getInstance().reconnect(parameters);
-                                    client = ClientManager.getInstance();
+                                if(ClientManager.getManagerInstance().isInitialized()) {
+                                    ClientManager.getManagerInstance().getInstance().reconnect(parameters);
+                                    client = ClientManager.getManagerInstance().getInstance();
                                 } else {
                                     // first time initialization
-                                    ClientManager.init(parameters);
-                                    client = ClientManager.getInstance();
+                                    ClientManager.getManagerInstance().init(parameters);
+                                    client = ClientManager.getManagerInstance().getInstance();
                                     // add listeners
                                     client.addExceptionListener(new ExceptionListener() {
                                         @Override

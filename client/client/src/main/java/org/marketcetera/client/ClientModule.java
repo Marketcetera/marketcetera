@@ -164,7 +164,7 @@ class ClientModule extends Module implements DataReceiver,
     }
 
     private Client getClient() throws ClientInitException {
-        return ClientManager.getInstance();
+        return ClientManager.getManagerInstance().getInstance();
     }
 
     private final Map<RequestID, ReportListener> mRequestTable =

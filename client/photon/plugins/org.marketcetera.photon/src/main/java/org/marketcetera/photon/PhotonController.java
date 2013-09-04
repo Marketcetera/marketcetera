@@ -229,9 +229,9 @@ public class PhotonController
 
 	public void sendOrder(Order inOrder) {
 		internalMainLogger.info(PHOTON_CONTROLLER_SENDING_MESSAGE.getText(inOrder.toString()));
-		if (ClientManager.isInitialized()){
+		if (ClientManager.getManagerInstance().isInitialized()){
 			try {
-				Client client = ClientManager.getInstance();
+				Client client = ClientManager.getManagerInstance().getInstance();
 				if(inOrder instanceof OrderSingle) {
 					client.sendOrder((OrderSingle) inOrder);
 				} else if(inOrder instanceof OrderReplace) {
@@ -259,7 +259,7 @@ public class PhotonController
         internalMainLogger.info(PHOTON_CONTROLLER_SENDING_MESSAGE
                 .getText(inOrder.toString()));
         try {
-            Client client = ClientManager.getInstance();
+            Client client = ClientManager.getManagerInstance().getInstance();
             if (inOrder instanceof OrderSingle) {
                 client.sendOrder((OrderSingle) inOrder);
             } else if (inOrder instanceof OrderReplace) {

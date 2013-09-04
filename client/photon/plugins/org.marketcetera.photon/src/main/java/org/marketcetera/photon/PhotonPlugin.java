@@ -23,6 +23,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.core.position.PositionEngine;
@@ -171,6 +172,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         mSymbolResolverServiceTracker.open();
         context.registerService(UnderlyingSymbolSupport.class.getName(),
                 mUnderlyingSymbolSupport, null);
+        new ClientManager();
     }
     public void initOrderTickets() {
         stockOrderTicketModel = new StockOrderTicketModel();

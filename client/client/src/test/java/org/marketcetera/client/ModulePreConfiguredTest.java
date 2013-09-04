@@ -24,7 +24,8 @@ public class ModulePreConfiguredTest extends ClientModuleTestBase {
         ClientParameters parameters = new ClientParameters(username,
                 username.toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT, IDPREFIX);
-        ClientManager.init(parameters);
+        new ClientManager();
+        ClientManager.getManagerInstance().init(parameters);
         mManager.init();
     }
 }

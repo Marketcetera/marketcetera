@@ -37,30 +37,17 @@ public class ClientParametersTest {
         assertCP(cpNull, null, null, null, null, -1, null, -1);
 
         EqualityAssert.assertEquality(cp,
-                new ClientParameters(user, password, url, hostname, port, idPrefix, heartbeatInterval),
-                cpNull,
-                new ClientParameters(user, "nopass".toCharArray(), url, hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters("unuser", password, url, hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, "urln", hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, "hoho", port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, hostname, 90, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, hostname, port, "wha", heartbeatInterval),
-
-                new ClientParameters(null, password, url, hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, null, url, hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, null, hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, null, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, hostname, -1, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, hostname, port, null, heartbeatInterval),
-
-                new ClientParameters(user + " ", password, url, hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, "pass ".toCharArray(), url, hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url + " ", hostname, port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, hostname + " ", port, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, hostname, port + 1, idPrefix, heartbeatInterval),
-                new ClientParameters(user, password, url, hostname, port , " ", heartbeatInterval),
-                new ClientParameters(user, password, url, hostname, port, idPrefix, heartbeatInterval+1)
-                );
+                                      new ClientParameters(user, password, url, hostname, port, idPrefix, heartbeatInterval),
+                                      cpNull,
+                                      new ClientParameters("unuser", password, url, hostname, port, idPrefix, heartbeatInterval),
+                                      new ClientParameters(user, password, "urln", hostname, port, idPrefix, heartbeatInterval),
+                                      new ClientParameters(user, password, url, "hoho", port, idPrefix, heartbeatInterval),
+                                      new ClientParameters(user, password, url, hostname, 90, idPrefix, heartbeatInterval),
+                                      new ClientParameters(null, password, url, hostname, port, idPrefix, heartbeatInterval),
+                                      new ClientParameters(user, password, null, hostname, port, idPrefix, heartbeatInterval),
+                                      new ClientParameters(user, password, url, null, port, idPrefix, heartbeatInterval),
+                                      new ClientParameters(user, password, url, hostname, -1, idPrefix, heartbeatInterval),
+                                      new ClientParameters(user, password, url, hostname, port + 1, idPrefix, heartbeatInterval));
         //Verify the other constructors
         cp = new ClientParameters(user, password, url, hostname, port, idPrefix);
         assertCP(cp, user, password, url, hostname, port, idPrefix, ClientParameters.DEFAULT_HEARTBEAT_INTERVAL);

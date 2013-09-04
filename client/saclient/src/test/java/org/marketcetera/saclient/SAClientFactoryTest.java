@@ -96,7 +96,7 @@ public class SAClientFactoryTest {
                             MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
                 }
             };
-            assertTrue(ClientManager.getInstance().isCredentialsMatch(creds, creds.toCharArray()));
+            assertTrue(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(creds, creds.toCharArray()));
             //Success
             SAClientFactory.getInstance().create(new SAClientParameters(creds,
                     creds.toCharArray(), MockStrategyAgent.DEFAULT_URL,

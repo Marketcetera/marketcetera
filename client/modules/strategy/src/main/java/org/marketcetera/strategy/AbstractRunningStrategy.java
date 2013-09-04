@@ -94,7 +94,7 @@ public abstract class AbstractRunningStrategy
         openOrders = orderHistoryManager.getOpenOrders();
         
         // Add the strategy as a broker status listener
-        ClientManager.getInstance().addBrokerStatusListener(this);
+        ClientManager.getManagerInstance().getInstance().addBrokerStatusListener(this);
     }
     /**
      * Indicates to the <code>AbstractRunningStrategy</code> that it should stop running now.
@@ -108,7 +108,7 @@ public abstract class AbstractRunningStrategy
         
         // Delete the strategy as a broker status listener
         try {
-        	ClientManager.getInstance().removeBrokerStatusListener(this);
+        	ClientManager.getManagerInstance().getInstance().removeBrokerStatusListener(this);
         } catch(ClientInitException e) {
         	throw new RuntimeException(e);
         }

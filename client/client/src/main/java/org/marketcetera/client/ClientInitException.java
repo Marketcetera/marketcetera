@@ -1,8 +1,8 @@
 package org.marketcetera.client;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -22,6 +22,15 @@ public class ClientInitException extends I18NException {
      */
     public ClientInitException(I18NBoundMessage message) {
         super(message);
+    }
+    /**
+     * Create a new ClientInitException instance.
+     *
+     * @param inCause a <code>Throwable</code> value
+     */
+    public ClientInitException(Throwable inCause)
+    {
+        super(inCause);
     }
 
     private static final long serialVersionUID = 1L;

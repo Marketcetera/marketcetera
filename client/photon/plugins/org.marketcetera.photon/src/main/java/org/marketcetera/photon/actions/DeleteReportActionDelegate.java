@@ -58,7 +58,7 @@ public class DeleteReportActionDelegate
                 messageBox.setText(Messages.DEL_EXECUTION_REPORT_MXBOX_TITLE_WARNING.getText());
                 messageBox.setMessage(Messages.DEL_EXECUTION_REPORT_MXBOX_MESSAGE.getText());
                 if(messageBox.open() == SWT.YES){       
-                    ClientManager.getInstance().deleteReport(((ExecutionReport)report));
+                    ClientManager.getManagerInstance().getInstance().deleteReport(((ExecutionReport)report));
                 }
             } catch (Exception anyException) {
                 PhotonPlugin.getMainConsoleLogger().error(Messages.DEL_EXECUTION_REPORT_ERROR.getText(), 

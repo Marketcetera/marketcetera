@@ -67,7 +67,7 @@ public class BrokerSupportTableFormat extends FIXMessageTableFormat<ReportHolder
 
 	private String getTrader(UserID id) {
 		try {
-			return ClientManager.getInstance().getUserInfo(id, true).getName();
+			return ClientManager.getManagerInstance().getInstance().getUserInfo(id, true).getName();
 		} catch (Exception e) {
 			Messages.BROKER_SUPPORT_TABLE_FORMAT_TRADER_NAME_ERROR.error(this, e, id);
 			return id.toString();

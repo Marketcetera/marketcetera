@@ -57,7 +57,7 @@ public class RemoteEmitterTestBase extends ModuleTestBase {
         //Create a MockServer first to ensure that client auth succeeds
         sServer = new MockServer();
         //Initialize the client connection.
-        ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+        ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT));
     }
@@ -69,8 +69,8 @@ public class RemoteEmitterTestBase extends ModuleTestBase {
      */
     @AfterClass
     public static void shutdownClientAndServer() throws Exception {
-        if (ClientManager.isInitialized()) {
-            ClientManager.getInstance().close();
+        if (ClientManager.getManagerInstance().isInitialized()) {
+            ClientManager.getManagerInstance().getInstance().close();
         }
         if(sServer != null) {
             sServer.close();

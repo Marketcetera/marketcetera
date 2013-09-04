@@ -44,7 +44,7 @@ import quickfix.field.OrderID;
 
 @ClassVersion("$Id$")
 public class RequestHandler 
-    implements ReceiveOnlyHandler<OrderEnvelope>
+        implements ReceiveOnlyHandler<OrderEnvelope>
 {
 
     // CLASS DATA.

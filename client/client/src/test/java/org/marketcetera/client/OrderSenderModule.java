@@ -55,7 +55,7 @@ public class OrderSenderModule extends Module implements DataEmitter {
             for (Object o : mOrders) {
                 if (Boolean.FALSE.equals(o)) {
                     //Help test client failure duing data flow
-                    ClientManager.getInstance().close();
+                    ClientManager.getManagerInstance().getInstance().close();
                 } else {
                     mSupport.send(o);
                 }

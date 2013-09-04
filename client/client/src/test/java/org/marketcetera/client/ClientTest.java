@@ -1,44 +1,45 @@
 package org.marketcetera.client;
 
-import org.apache.log4j.Level;
-
-import org.marketcetera.client.brokers.BrokerStatus;
-import org.marketcetera.client.users.UserInfo;
-import org.marketcetera.client.jms.OrderEnvelope;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.log.ActiveLocale;
-import org.marketcetera.util.test.TestCaseBase;
-import org.marketcetera.util.ws.stateless.Node;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.*;
-
-import static org.marketcetera.trade.TypesTestBase.*;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.core.Util;
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionKeyFactory;
-import org.junit.*;
-import static org.junit.Assert.*;
-
-import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.*;
+import static org.marketcetera.trade.TypesTestBase.*;
 
+import java.beans.ExceptionListener;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
-import java.math.BigDecimal;
-import java.beans.ExceptionListener;
-import java.lang.reflect.Method;
 
-import quickfix.field.OrdStatus;
-import quickfix.field.ClOrdID;
-import quickfix.field.OrigClOrdID;
+import org.apache.log4j.Level;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.Util;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.PositionKeyFactory;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.log.ActiveLocale;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.test.TestCaseBase;
+import org.marketcetera.util.ws.stateless.Node;
+
 import quickfix.field.BusinessRejectReason;
+import quickfix.field.ClOrdID;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrigClOrdID;
 
 /* $License$ */
 /**
@@ -94,7 +95,7 @@ public class ClientTest
     @Test
     public void connect() throws Exception {
         initClient();
-        assertNotNull(ClientManager.getInstance());
+        assertNotNull(ClientManager.getManagerInstance().getInstance());
     }
 
     @Test
@@ -103,7 +104,7 @@ public class ClientTest
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_URL){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters("you",
+                ClientManager.getManagerInstance().init(new ClientParameters("you",
                         "why".toCharArray(), null, Node.DEFAULT_HOST,
                         Node.DEFAULT_PORT));
             }
@@ -112,7 +113,7 @@ public class ClientTest
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_URL){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters("you",
+                ClientManager.getManagerInstance().init(new ClientParameters("you",
                         "why".toCharArray(), "  ", Node.DEFAULT_HOST,
                         Node.DEFAULT_PORT));
             }
@@ -121,7 +122,7 @@ public class ClientTest
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_USERNAME){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters(null,
+                ClientManager.getManagerInstance().init(new ClientParameters(null,
                         "why".toCharArray(), "tcp://whatever:404",
                         Node.DEFAULT_HOST, Node.DEFAULT_PORT));
             }
@@ -130,7 +131,7 @@ public class ClientTest
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_USERNAME){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters("   ",
+                ClientManager.getManagerInstance().init(new ClientParameters("   ",
                         "why".toCharArray(), "tcp://whatever:404",
                         Node.DEFAULT_HOST, Node.DEFAULT_PORT));
             }
@@ -139,7 +140,7 @@ public class ClientTest
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_HOSTNAME){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+                ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
                         DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                         null, Node.DEFAULT_PORT));
             }
@@ -148,7 +149,7 @@ public class ClientTest
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_NO_HOSTNAME){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+                ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
                         DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                         "  ", Node.DEFAULT_PORT));
             }
@@ -157,7 +158,7 @@ public class ClientTest
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_INVALID_PORT, -1){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+                ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
                         DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                         Node.DEFAULT_HOST, -1));
             }
@@ -166,7 +167,7 @@ public class ClientTest
         new ExpectedFailure<ConnectionException>(
                 Messages.CONNECT_ERROR_INVALID_PORT, 65536){
             protected void run() throws Exception {
-                ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+                ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
                         DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                         Node.DEFAULT_HOST, 65536));
             }
@@ -180,7 +181,7 @@ public class ClientTest
                 noServerAtPort.getUsername(), Node.DEFAULT_HOST,
                 Node.DEFAULT_PORT + 1){
             protected void run() throws Exception {
-                ClientManager.init(noServerAtPort);
+                ClientManager.getManagerInstance().init(noServerAtPort);
             }
         };
         //auth failure
@@ -191,7 +192,7 @@ public class ClientTest
                 Messages.ERROR_CONNECT_TO_SERVER, parameters.getURL(),
                 parameters.getUsername(),Node.DEFAULT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
-                ClientManager.init(parameters);
+                ClientManager.getManagerInstance().init(parameters);
             }
         };
         //Use the correct password but incorrect port number
@@ -202,7 +203,7 @@ public class ClientTest
                 Messages.ERROR_CONNECT_TO_SERVER, wrongPort.getURL(),
                 wrongPort.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
-                ClientManager.init(wrongPort);
+                ClientManager.getManagerInstance().init(wrongPort);
             }
         };
         //Make sure null & empty passwords are accepted
@@ -213,7 +214,7 @@ public class ClientTest
                 Messages.ERROR_CONNECT_TO_SERVER, nullPass.getURL(),
                 nullPass.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
-                ClientManager.init(nullPass);
+                ClientManager.getManagerInstance().init(nullPass);
             }
         };
         // Incompatible client and server versions.
@@ -226,7 +227,7 @@ public class ClientTest
                       ClientVersion.APP_ID,
                       MockAuthenticator.VERSION_MISMATCH_SERVER_VERSION){
             protected void run() throws Exception {
-                ClientManager.init(incompatVersions);
+                ClientManager.getManagerInstance().init(incompatVersions);
             }
         };
         final ClientParameters emptyPass = new ClientParameters(
@@ -236,7 +237,7 @@ public class ClientTest
                 Messages.ERROR_CONNECT_TO_SERVER, emptyPass.getURL(),
                 emptyPass.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
             protected void run() throws Exception {
-                ClientManager.init(emptyPass);
+                ClientManager.getManagerInstance().init(emptyPass);
             }
         };
     }
@@ -244,34 +245,34 @@ public class ClientTest
     @Test
     public void credentialsMatch() throws Exception {
         initClient();
-        assertFalse(ClientManager.getInstance().isCredentialsMatch(null, null));
-        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(null, null));
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
                 DEFAULT_CREDENTIAL, null));
-        assertFalse(ClientManager.getInstance().isCredentialsMatch(null,
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(null,
                 DEFAULT_CREDENTIAL.toCharArray()));
-        assertFalse(ClientManager.getInstance().isCredentialsMatch("",
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch("",
                 DEFAULT_CREDENTIAL.toCharArray()));
         String otherUser = "you";
-        assertFalse(ClientManager.getInstance().isCredentialsMatch(otherUser,
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(otherUser,
                 DEFAULT_CREDENTIAL.toCharArray()));
-        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
                 DEFAULT_CREDENTIAL, "".toCharArray()));
-        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
                 DEFAULT_CREDENTIAL, otherUser.toCharArray()));
-        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
                 otherUser, otherUser.toCharArray()));
-        assertTrue(ClientManager.getInstance().isCredentialsMatch(
+        assertTrue(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
                 DEFAULT_CREDENTIAL, DEFAULT_CREDENTIAL.toCharArray()));
         //reconnect with different credentials
         ClientParameters parms = new ClientParameters(otherUser,
                 otherUser.toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT);
-        ClientManager.getInstance().reconnect(parms);
+        ClientManager.getManagerInstance().getInstance().reconnect(parms);
         //verify that old credentials don't work
-        assertFalse(ClientManager.getInstance().isCredentialsMatch(
+        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
                 DEFAULT_CREDENTIAL, DEFAULT_CREDENTIAL.toCharArray()));
         //and the new ones do.
-        assertTrue(ClientManager.getInstance().isCredentialsMatch(
+        assertTrue(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
                 otherUser, otherUser.toCharArray()));
     }
 
@@ -794,7 +795,7 @@ public class ClientTest
     @Test
     public void closedBehavior() throws Exception {
         initClient();
-        final Client client = ClientManager.getInstance();
+        final Client client = ClientManager.getManagerInstance().getInstance();
         client.close();
         String expectedMsg = Messages.CLIENT_CLOSED.getText();
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -1051,19 +1052,26 @@ public class ClientTest
     @Test
     public void lifecycle() throws Exception {
         initClient();
-        assertTrue(ClientManager.isInitialized());
+        assertTrue(ClientManager.getManagerInstance().isInitialized());
         //Verify that attempt to re-init the client fails
         new ExpectedFailure<ClientInitException>(
                 Messages.CLIENT_ALREADY_INITIALIZED){
             protected void run() throws Exception {
-                initClient();
+                ClientManager.getManagerInstance().setClientFactory(new ClientFactory() {
+                    @Override
+                    public Client getClient(ClientParameters inClientParameters)
+                            throws ClientInitException, ConnectionException
+                    {
+                        return null;
+                    }
+                });
             }
         };
         //Close client and verify that we init it again
         closeClient();
-        assertFalse(ClientManager.isInitialized());
+        assertFalse(ClientManager.getManagerInstance().isInitialized());
         initClient();
-        assertTrue(ClientManager.isInitialized());
+        assertTrue(ClientManager.getManagerInstance().isInitialized());
         //Shutdown the server
         closeServer();
         //get reconnect to fail
@@ -1073,17 +1081,24 @@ public class ClientTest
                 getClient().reconnect();
             }
         };
-        assertTrue(ClientManager.isInitialized());
+        assertTrue(ClientManager.getManagerInstance().isInitialized());
         //Verify that we cannot init client
         new ExpectedFailure<ClientInitException>(
                 Messages.CLIENT_ALREADY_INITIALIZED){
             protected void run() throws Exception {
-                initClient();
+                ClientManager.getManagerInstance().setClientFactory(new ClientFactory() {
+                    @Override
+                    public Client getClient(ClientParameters inClientParameters)
+                            throws ClientInitException, ConnectionException
+                    {
+                        return null;
+                    }
+                });
             }
         };
         //Close the client
         closeClient();
-        assertFalse(ClientManager.isInitialized());
+        assertFalse(ClientManager.getManagerInstance().isInitialized());
         //Verify that we can now attempt to reconnect but it fails because
         //server is not up
         new ExpectedFailure<ConnectionException>(
@@ -1092,12 +1107,12 @@ public class ClientTest
                 initClient();
             }
         };
-        assertFalse(ClientManager.isInitialized());
+        assertFalse(ClientManager.getManagerInstance().isInitialized());
         //Restart the server
         initServer();
         //verify that we can init the client now
         initClient();
-        assertTrue(ClientManager.isInitialized());
+        assertTrue(ClientManager.getManagerInstance().isInitialized());
     }
 
     @Test
@@ -1137,7 +1152,7 @@ public class ClientTest
         //Verify that the time is unchanged
         assertEquals(connectTime,  getClient().getLastConnectTime());
         //Verify that the client is still initialized
-        assertTrue(ClientManager.isInitialized());
+        assertTrue(ClientManager.getManagerInstance().isInitialized());
         //Restart the server
         initServer();
         //Verify order still fails
@@ -1305,8 +1320,9 @@ public class ClientTest
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT,
                 null, heartbeatInterval);
-        ClientManager.init(parameters);
-        mClient = ClientManager.getInstance();
+        new ClientManager();
+        ClientManager.getManagerInstance().init(parameters);
+        mClient = ClientManager.getManagerInstance().getInstance();
         mClient.addExceptionListener(mListener);
         mClient.addReportListener(mReplies);
         mClient.addBrokerStatusListener(mBrokerStatusReplies);

@@ -25,7 +25,7 @@ public class UserNameService {
 	 */
 	public static String getUserName(UserID id) {
 		try {
-			return ClientManager.getInstance().getUserInfo(id, true).getName();
+			return ClientManager.getManagerInstance().getInstance().getUserInfo(id, true).getName();
 		} catch (Exception e) {
 			Messages.USER_NAME_SERVICE_LOOKUP_FAILED.error(UserNameService.class, e, id);
 			return id.toString();

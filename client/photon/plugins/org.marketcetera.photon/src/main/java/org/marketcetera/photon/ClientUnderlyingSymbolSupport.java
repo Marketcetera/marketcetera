@@ -30,7 +30,7 @@ public final class ClientUnderlyingSymbolSupport
          */
         if(instrument instanceof Option) {
             try {
-                String underlying = ClientManager.getInstance().getUnderlying(instrument.getSymbol());
+                String underlying = ClientManager.getManagerInstance().getInstance().getUnderlying(instrument.getSymbol());
                 if(underlying != null) {
                     return underlying;
                 }

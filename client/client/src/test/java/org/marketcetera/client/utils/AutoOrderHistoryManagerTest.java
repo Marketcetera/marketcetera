@@ -38,9 +38,10 @@ public class AutoOrderHistoryManagerTest
             throws Exception
     {
         LoggerConfiguration.logSetup();
-        ClientManager.setClientFactory(new MockClient.MockClientFactory());
-        ClientManager.init(null);
-        client = (MockClient)ClientManager.getInstance();
+        new ClientManager();
+        ClientManager.getManagerInstance().setClientFactory(new MockClient.MockClientFactory());
+        ClientManager.getManagerInstance().init(null);
+        client = (MockClient)ClientManager.getManagerInstance().getInstance();
         OrderHistoryManagerTest.once();
     }
     /**

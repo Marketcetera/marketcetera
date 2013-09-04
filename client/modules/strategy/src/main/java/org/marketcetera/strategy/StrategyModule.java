@@ -1462,7 +1462,7 @@ final class StrategyModule
         public Client getClient()
                 throws ClientInitException
         {
-            return ClientManager.getInstance();
+            return ClientManager.getManagerInstance().getInstance();
         }
     };
     /**

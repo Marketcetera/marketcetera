@@ -53,8 +53,8 @@ public class AbstractRunningStrategyTest
     {
         LoggerConfiguration.logSetup();
         try {
-            ClientManager.setClientFactory(new MockClient.MockClientFactory());
-            ClientManager.init(null);
+            ClientManager.getManagerInstance().setClientFactory(new MockClient.MockClientFactory());
+            ClientManager.getManagerInstance().init(null);
         } catch (ClientInitException ignored) {}
         OrderHistoryManagerTest.once();
     }
@@ -555,7 +555,7 @@ public class AbstractRunningStrategyTest
     }
     
     private void sendBrokerStatus (BrokerStatus brokerStatus) throws ClientInitException {
-    	Client client = ClientManager.getInstance();
+    	Client client = ClientManager.getManagerInstance().getInstance();
     	
     	//Verify client is instance of MockClient (needed to send broker status to listeners manually)
     	assertTrue(client instanceof MockClient);
@@ -564,7 +564,7 @@ public class AbstractRunningStrategyTest
     }
     
     private void removeBrokerStatusListener (BrokerStatusListener brokerStatusListener) throws ClientInitException {
-    	ClientManager.getInstance().removeBrokerStatusListener(brokerStatusListener);
+    	ClientManager.getManagerInstance().getInstance().removeBrokerStatusListener(brokerStatusListener);
     }
     
     /**

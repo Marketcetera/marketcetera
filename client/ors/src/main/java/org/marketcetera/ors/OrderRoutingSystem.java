@@ -87,6 +87,7 @@ public class OrderRoutingSystem
     private SimpleMessageListenerContainer mListener;
     private SocketInitiator mInitiator;
     private final QuickFIXSender qSender;
+    private final RequestHandler requestHandler;
 
     // CONSTRUCTORS.
 
@@ -188,12 +189,18 @@ public class OrderRoutingSystem
         qSender=new QuickFIXSender();
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
         localIdFactory.init();
-        RequestHandler handler=new RequestHandler
-            (getBrokers(),selector,cfg.getAllowedOrders(),
-             persister,qSender,userManager,localIdFactory);
-        mListener=jmsMgr.getIncomingJmsFactory().registerHandlerOEX
-            (handler,Service.REQUEST_QUEUE,false);
-        mQFApp=new QuickFIXApplication(systemInfo,getBrokers(),cfg.getSupportedMessages(),
+        requestHandler = new RequestHandler(getBrokers(),
+                                            selector,
+                                            cfg.getAllowedOrders(),
+                                            persister,
+                                            qSender,
+                                            userManager,
+                                            localIdFactory);
+        mListener = jmsMgr.getIncomingJmsFactory().registerHandlerOEX(requestHandler,
+                                                                      Service.REQUEST_QUEUE,
+                                                                      false);
+        mQFApp=new QuickFIXApplication(systemInfo,getBrokers(),
+                                       cfg.getSupportedMessages(),
                                        persister,
                                        qSender,
                                        userManager,
@@ -219,7 +226,6 @@ public class OrderRoutingSystem
                                                userManager),
                                   new ObjectName(JMX_NAME));
     }
-
     // INSTANCE METHODS.
 
     /**
@@ -230,6 +236,15 @@ public class OrderRoutingSystem
     public ReportReceiver getOrderReceiver()
     {
         return mQFApp;
+    }
+    /**
+     * Gets the <code>RequestHandler</code> value
+     *
+     * @return a <code>RequestHandler</code> value
+     */
+    public RequestHandler getRequestHandler()
+    {
+        return requestHandler;
     }
     /**
      * Prints the given message alongside usage information on the
@@ -322,7 +337,7 @@ public class OrderRoutingSystem
      * @return The brokers.
      */
 
-    Brokers getBrokers()
+    public Brokers getBrokers()
     {
         return mBrokers;
     }

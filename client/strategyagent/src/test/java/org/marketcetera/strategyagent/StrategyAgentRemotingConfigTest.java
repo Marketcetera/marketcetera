@@ -42,7 +42,8 @@ public class StrategyAgentRemotingConfigTest extends StrategyAgentTestBase {
     public static void createServerAndClient() throws Exception {
         setupConfiguration();
         sServer = new MockServer();
-        ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
+        new ClientManager();
+        ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT));
     }
@@ -54,8 +55,8 @@ public class StrategyAgentRemotingConfigTest extends StrategyAgentTestBase {
      */
     @AfterClass
     public static void stopServerAndClient() throws Exception {
-        if(ClientManager.isInitialized()) {
-            ClientManager.getInstance().close();
+        if(ClientManager.getManagerInstance().isInitialized()) {
+            ClientManager.getManagerInstance().getInstance().close();
         }
         if (sServer != null) {
             sServer.close();

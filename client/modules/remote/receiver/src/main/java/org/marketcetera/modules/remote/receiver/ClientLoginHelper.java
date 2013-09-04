@@ -125,7 +125,7 @@ abstract class ClientLoginHelper {
         protected boolean validateCredentials(String inUsername,
                                               char[] inPassword)
                 throws ClientInitException {
-            return ClientManager.getInstance().isCredentialsMatch(
+            return ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
                     inUsername, inPassword);
         }
     }

@@ -43,7 +43,7 @@ public class ModuleFailuresTest extends ModuleTestBase {
         MockServer mockServer = null;
         try {
             mockServer = new MockServer();
-            ClientManager.init(new ClientParameters(username, username.toCharArray(),
+            ClientManager.getManagerInstance().init(new ClientParameters(username, username.toCharArray(),
                     MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT));
             ModuleManager manager = new ModuleManager();
             manager.init();
@@ -54,7 +54,7 @@ public class ModuleFailuresTest extends ModuleTestBase {
                     ClientModuleFactory.INSTANCE_URN.toObjectName(),
                     ClientModuleMXBean.class);
             //Now close the client
-            ClientManager.getInstance().close();
+            ClientManager.getManagerInstance().getInstance().close();
             //Verify failures.
             new ExpectedFailure<RuntimeException>(Messages.
                     CLIENT_NOT_INITIALIZED.getText()){

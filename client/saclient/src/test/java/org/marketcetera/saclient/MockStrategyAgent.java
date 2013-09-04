@@ -121,7 +121,7 @@ class MockStrategyAgent {
         setupConfiguration();
         //Initialize Mock Server and client
         sMockServer = new MockServer();
-        ClientManager.init(new ClientParameters(USER_CREDS, USER_CREDS.toCharArray(),
+        ClientManager.getManagerInstance().init(new ClientParameters(USER_CREDS, USER_CREDS.toCharArray(),
                 MockServer.URL, Server.DEFAULT_HOST, Server.DEFAULT_PORT));
     }
 
@@ -132,8 +132,8 @@ class MockStrategyAgent {
      * @throws Exception if there were unexpected failures.
      */
     static void closeServerAndClient() throws Exception {
-        if (ClientManager.isInitialized()) {
-            ClientManager.getInstance().close();
+        if (ClientManager.getManagerInstance().isInitialized()) {
+            ClientManager.getManagerInstance().getInstance().close();
         }
         if (sMockServer != null) {
             sMockServer.close();

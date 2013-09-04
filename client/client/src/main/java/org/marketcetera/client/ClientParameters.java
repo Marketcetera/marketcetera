@@ -1,10 +1,9 @@
 package org.marketcetera.client;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.apache.commons.lang.ObjectUtils;
-
 import java.beans.ConstructorProperties;
-import java.util.Arrays;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -19,7 +18,7 @@ import java.util.Arrays;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ClientParameters {
     /**
      * Gets the user name to use when connecting to the server.
@@ -27,7 +26,7 @@ public class ClientParameters {
      * @return the user name.
      */
     public String getUsername() {
-        return mUsername;
+        return parametersSpec.getUsername();
     }
 
     /**
@@ -45,7 +44,7 @@ public class ClientParameters {
      * @return the URL of the server.
      */
     public String getURL() {
-        return mURL;
+        return parametersSpec.getUrl();
     }
 
     /**
@@ -54,7 +53,7 @@ public class ClientParameters {
      * @return the server port number.
      */
     public int getPort() {
-        return mPort;
+        return parametersSpec.getPort();
     }
 
     /**
@@ -63,7 +62,7 @@ public class ClientParameters {
      * @return the server hostname.
      */
     public String getHostname() {
-        return mHostname;
+        return parametersSpec.getHostname();
     }
 
     /**
@@ -88,27 +87,23 @@ public class ClientParameters {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ClientParameters that = (ClientParameters) o;
-
-        return Arrays.equals(mPassword, that.mPassword) &&
-                ObjectUtils.equals(mURL, that.mURL) &&
-                ObjectUtils.equals(mUsername, that.mUsername) &&
-                ObjectUtils.equals(mHostname, that.mHostname) &&
-                ObjectUtils.equals(mIDPrefix, that.mIDPrefix) &&
-                ObjectUtils.equals(mPort, that.mPort) &&
-                ObjectUtils.equals(mHeartbeatInterval, that.mHeartbeatInterval);
+        return ObjectUtils.equals(parametersSpec, that.parametersSpec);
     }
 
     @Override
     public int hashCode() {
-        return ObjectUtils.hashCode(mUsername) +
-                Arrays.hashCode(mPassword) +
-                ObjectUtils.hashCode(mHostname) +
-                ObjectUtils.hashCode(mPort) +
-                ObjectUtils.hashCode(mHeartbeatInterval) +
-                ObjectUtils.hashCode(mIDPrefix) +
-                ObjectUtils.hashCode(mURL);
+        return ObjectUtils.hashCode(parametersSpec);
+    }
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    public ClientParametersSpec getParametersSpec()
+    {
+        return parametersSpec;
     }
 
     /**
@@ -133,11 +128,11 @@ public class ClientParameters {
     public ClientParameters(String inUsername, char[] inPassword,
                             String inURL, String inHostname, int inPort,
                             String inIDPrefix, int inHeartbeatInterval) {
-        mUsername = inUsername;
+        parametersSpec = new ClientParametersSpec(inUsername,
+                                                  inHostname,
+                                                  inPort,
+                                                  inURL);
         mPassword = inPassword;
-        mURL = inURL;
-        mHostname = inHostname;
-        mPort = inPort;
         mIDPrefix = inIDPrefix;
         mHeartbeatInterval = inHeartbeatInterval;
     }
@@ -174,27 +169,20 @@ public class ClientParameters {
                             String inHostname, int inPort ) {
         this(inUsername, inPassword, inURL, inHostname, inPort,null);
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
-    public String toString() {
-        return "ClientParameters{" +  //$NON-NLS-1$
-                "Username='" + mUsername + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
-                ", Password='*****'" +  //$NON-NLS-1$
-                ", URL='" + mURL + '\'' +  //$NON-NLS-1$  $NON-NLS-2$
-                ", Hostname='" + mHostname + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
-                ", Port='" + mPort + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
-                ", IDPrefix='" + mIDPrefix + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
-                ", HeartbeatInterval='" + mHeartbeatInterval + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
-                '}';  //$NON-NLS-1$
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ClientParameters [parametersSpec=").append(parametersSpec).append(", mIDPrefix=")
+                .append(mIDPrefix).append(", mHeartbeatInterval=").append(mHeartbeatInterval).append("]");
+        return builder.toString();
     }
-
-    private String mUsername;
+    private ClientParametersSpec parametersSpec;
     private char[] mPassword;
-    private String mHostname;
-    private int mPort;
-    private String mURL;
     private String mIDPrefix;
     private int mHeartbeatInterval;
-
     public static final int DEFAULT_HEARTBEAT_INTERVAL = 5000;
 }

@@ -65,7 +65,7 @@ public class LiveOrderHistoryManager
         } else {
             reportHistoryOrigin = inReportHistoryOrigin;
         }
-        client = ClientManager.getInstance();
+        client = ClientManager.getManagerInstance().getInstance();
     }
     /**
      * Gets the open orders.

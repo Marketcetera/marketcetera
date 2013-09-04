@@ -133,14 +133,14 @@ public class ORSTestClient
     {
 
         // Create client.
-
-        ClientManager.init
+        new ClientManager();
+        ClientManager.getManagerInstance().init
             (new ClientParameters
              (user,password,
               ORSTestBase.BROKER_URL,
               SpringConfig.getSingleton().getServerHost(),
               SpringConfig.getSingleton().getServerPort()));
-        mClient=ClientManager.getInstance();
+        mClient=ClientManager.getManagerInstance().getInstance();
 
         // Create and register listeners.
 

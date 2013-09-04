@@ -34,7 +34,7 @@ public class BrokerIDField extends ExecutionReportNoneFixField
 		ArrayList<String> brokerIDs = new ArrayList<String>();
 		BrokersStatus bs;
 		try {
-			bs = ClientManager.getInstance().getBrokersStatus();
+			bs = ClientManager.getManagerInstance().getInstance().getBrokersStatus();
 			List<BrokerStatus> brokers = bs.getBrokers();
 			for (BrokerStatus broker : brokers) 
 			{

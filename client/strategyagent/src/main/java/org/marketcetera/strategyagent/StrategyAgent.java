@@ -405,7 +405,7 @@ public class StrategyAgent
                             clientVersion, serverVersion, user));
         }
         //Use client to carry out authentication.
-        return ClientManager.getInstance().isCredentialsMatch(user, password);
+        return ClientManager.getManagerInstance().getInstance().isCredentialsMatch(user, password);
     }
 
     /**

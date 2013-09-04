@@ -8,6 +8,7 @@ import javax.jms.JMSException;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.client.ClientSubscriptionManager.ServerStatus;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.config.SpringConfig;
@@ -87,17 +88,13 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     @Override
     public void addReportListener(ReportListener inListener) {
         failIfClosed();
-        synchronized (mReportListeners) {
-            mReportListeners.addFirst(inListener);
-        }
+        subscriptionManager.addReportListener(inListener);
     }
 
     @Override
     public void removeReportListener(ReportListener inListener) {
         failIfClosed();
-        synchronized (mReportListeners) {
-            mReportListeners.removeFirstOccurrence(inListener);
-        }
+        subscriptionManager.removeReportListener(inListener);
     }
 
     @Override
@@ -105,9 +102,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         (BrokerStatusListener listener)
     {
         failIfClosed();
-        synchronized (mBrokerStatusListeners) {
-            mBrokerStatusListeners.addFirst(listener);
-        }
+        subscriptionManager.addBrokerStatusListener(listener);
     }
 
     @Override
@@ -115,9 +110,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         (BrokerStatusListener listener)
     {
         failIfClosed();
-        synchronized (mBrokerStatusListeners) {
-            mBrokerStatusListeners.removeFirstOccurrence(listener);
-        }
+        subscriptionManager.removeBrokerStatusListener(listener);
     }
 
     @Override
@@ -125,9 +118,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         (ServerStatusListener listener)
     {
         failIfClosed();
-        synchronized (mServerStatusListeners) {
-            mServerStatusListeners.addFirst(listener);
-        }
+        subscriptionManager.addServerStatusListener(listener);
     }
 
     @Override
@@ -135,9 +126,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         (ServerStatusListener listener)
     {
         failIfClosed();
-        synchronized (mServerStatusListeners) {
-            mServerStatusListeners.removeFirstOccurrence(listener);
-        }
+        subscriptionManager.removeServerStatusListener(listener);
     }
 
     @Override
@@ -414,7 +403,6 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     @Override
     public synchronized void close() {
         internalClose();
-        ClientManager.reset();
         mClosed = true;
     }
 
@@ -439,17 +427,13 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     @Override
     public void addExceptionListener(ExceptionListener inListener) {
         failIfClosed();
-        synchronized (mExceptionListeners) {
-            mExceptionListeners.addFirst(inListener);
-        }
+        subscriptionManager.addExceptionListener(inListener);
     }
 
     @Override
     public void removeExceptionListener(ExceptionListener inListener) {
         failIfClosed();
-        synchronized (mExceptionListeners) {
-            mExceptionListeners.removeFirstOccurrence(inListener);
-        }
+        subscriptionManager.removeExceptionListener(inListener);
     }
 
     @Override
@@ -583,32 +567,12 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
 
     void notifyExecutionReport(ExecutionReport inReport) {
         SLF4JLoggerProxy.debug(TRAFFIC, "Received Exec Report:{}", inReport);  //$NON-NLS-1$
-        synchronized (mReportListeners) {
-            for(ReportListener listener: mReportListeners) {
-                try {
-                    listener.receiveExecutionReport(inReport);
-                } catch (Throwable t) {
-                    Messages.LOG_ERROR_RECEIVE_EXEC_REPORT.warn(this, t,
-                            ObjectUtils.toString(inReport));
-                    ExceptUtils.interrupt(t);
-                }
-            }
-        }
+        subscriptionManager.notify(inReport);
     }
 
     void notifyCancelReject(OrderCancelReject inReport) {
         SLF4JLoggerProxy.debug(TRAFFIC, "Received Cancel Reject:{}", inReport);  //$NON-NLS-1$
-        synchronized (mReportListeners) {
-            for(ReportListener listener: mReportListeners) {
-                try {
-                    listener.receiveCancelReject(inReport);
-                } catch (Throwable t) {
-                    Messages.LOG_ERROR_RECEIVE_CANCEL_REJECT.warn(this, t,
-                            ObjectUtils.toString(inReport));
-                    ExceptUtils.interrupt(t);
-                }
-            }
-        }
+        subscriptionManager.notify(inReport);
     }
 
     // ReceiveOnlyHandler<BrokerStatus>; public scope required by Spring.
@@ -627,35 +591,13 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     void notifyBrokerStatus(BrokerStatus status) {
         SLF4JLoggerProxy.debug
             (TRAFFIC,"Received Broker Status:{}",status); //$NON-NLS-1$
-        synchronized (mBrokerStatusListeners) {
-            for (BrokerStatusListener listener:
-                     mBrokerStatusListeners) {
-                try {
-                    listener.receiveBrokerStatus(status);
-                } catch (Throwable t) {
-                    Messages.LOG_ERROR_RECEIVE_BROKER_STATUS.warn(this, t,
-                            ObjectUtils.toString(status));
-                    ExceptUtils.interrupt(t);
-                }
-            }
-        }
+        subscriptionManager.notify(status);
     }
 
     void notifyServerStatus(boolean status) {
         SLF4JLoggerProxy.debug
             (TRAFFIC,"Received Server Status:{}",status); //$NON-NLS-1$
-        synchronized (mServerStatusListeners) {
-            for (ServerStatusListener listener:
-                     mServerStatusListeners) {
-                try {
-                    listener.receiveServerStatus(status);
-                } catch (Throwable t) {
-                    Messages.LOG_ERROR_RECEIVE_SERVER_STATUS.warn(this, t,
-                            status);
-                    ExceptUtils.interrupt(t);
-                }
-            }
-        }
+        subscriptionManager.notify(ServerStatus.getFor(status));
     }
 
     // javax.jms.ExceptionListener.
@@ -667,17 +609,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     void exceptionThrown(ConnectionException inException) {
-        synchronized (mExceptionListeners) {
-            for(ExceptionListener l: mExceptionListeners) {
-                try {
-                    l.exceptionThrown(inException);
-                } catch (Exception e) {
-                    Messages.LOG_ERROR_NOTIFY_EXCEPTION.warn(this, e,
-                            ObjectUtils.toString(inException));
-                    ExceptUtils.interrupt(e);
-                }
-            }
-        }
+        subscriptionManager.notify(inException);
     }
 
     /**
@@ -1123,20 +1055,13 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     private volatile ClientParameters mParameters;
     private volatile boolean mClosed = false;
     private volatile boolean mServerAlive = false;
-    private final Deque<ReportListener> mReportListeners =
-            new LinkedList<ReportListener>();
-    private final Deque<BrokerStatusListener> mBrokerStatusListeners=
-        new LinkedList<BrokerStatusListener>();
-    private final Deque<ServerStatusListener> mServerStatusListeners=
-        new LinkedList<ServerStatusListener>();
-    private final Deque<ExceptionListener> mExceptionListeners =
-            new LinkedList<ExceptionListener>();
     private Date mLastConnectTime;
     private final Map<UserID,UserInfo> mUserInfoCache=
         new HashMap<UserID,UserInfo>();
     private final Map<String,String> mUnderlyingToRootCache= new HashMap<String, String>();
     private final Map<String,Collection<String>> mRootToUnderlyingCache=
             new HashMap<String, Collection<String>>();
+    private final ClientSubscriptionManager subscriptionManager = new ClientSubscriptionManager();
 
     private static final long RECONNECT_WAIT_INTERVAL = 30000;
 

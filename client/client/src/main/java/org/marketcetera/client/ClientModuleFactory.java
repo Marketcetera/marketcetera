@@ -32,19 +32,19 @@ import org.marketcetera.module.ModuleCreationException;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class ClientModuleFactory extends ModuleFactory
         implements ClientModuleFactoryMXBean {
     @Override
     public Module create(Object[] inParameters) throws ModuleCreationException {
-        if(getURL() != null && !ClientManager.isInitialized()) {
+        if(getURL() != null && !ClientManager.getManagerInstance().isInitialized()) {
             ClientParameters parameters = new ClientParameters(getUsername(),
                     getPassword() == null
                     ? null
                     : getPassword().toCharArray(),getURL(),
                     getHostname(), getPort(), getIDPrefix());
             try {
-                ClientManager.init(parameters);
+                ClientManager.getManagerInstance().init(parameters);
             } catch (ConnectionException e) {
                 throw new ModuleCreationException(e,
                         Messages.CREATE_MODULE_ERROR);

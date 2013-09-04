@@ -118,7 +118,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	
 	private void stopClient() {
 		try {
-			ClientManager.getInstance().close();
+			ClientManager.getManagerInstance().getInstance().close();
 		} catch (ClientInitException e) {
 			// already closed
 		}

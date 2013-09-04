@@ -60,15 +60,15 @@ public class ClientModuleTestBase extends ModuleTestBase {
         ClientModuleMXBean instance = JMX.newMXBeanProxy(getMBeanServer(),
                 ClientModuleFactory.INSTANCE_URN.toObjectName(),
                 ClientModuleMXBean.class);
-        final Date lastTime = ClientManager.getInstance().getLastConnectTime();
+        final Date lastTime = ClientManager.getManagerInstance().getInstance().getLastConnectTime();
         assertEquals(lastTime,
                 instance.getLastConnectTime());
-        ClientTest.assertCPEquals(ClientManager.getInstance().getParameters(),
+        ClientTest.assertCPEquals(ClientManager.getManagerInstance().getInstance().getParameters(),
                 instance.getParameters());
         //Sleep so that we definitely get a different connect time.
         Thread.sleep(100);
         instance.reconnect();
-        assertEquals(ClientManager.getInstance().getLastConnectTime(),
+        assertEquals(ClientManager.getManagerInstance().getInstance().getLastConnectTime(),
                 instance.getLastConnectTime());
         assertTrue(instance.getLastConnectTime().compareTo(lastTime) > 0);
     }
@@ -169,7 +169,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 SinkModuleFactory.INSTANCE_URN, null);
         //Verify that the server got the orders
 
-        SessionId id = ((ClientImpl)(ClientManager.getInstance())).
+        SessionId id = ((ClientImpl)(ClientManager.getManagerInstance().getInstance())).
             getSessionId();
         assertEquals(4, sServer.getHandler().numReceived());
 
@@ -313,8 +313,8 @@ public class ClientModuleTestBase extends ModuleTestBase {
             mManager.stop();
         }
         mManager = null;
-        if (ClientManager.isInitialized()) {
-            ClientManager.getInstance().close();
+        if (ClientManager.getManagerInstance().isInitialized()) {
+            ClientManager.getManagerInstance().getInstance().close();
         }
     }
 

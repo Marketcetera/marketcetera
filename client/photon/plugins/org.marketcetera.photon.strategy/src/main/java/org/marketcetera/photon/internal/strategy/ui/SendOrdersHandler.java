@@ -35,7 +35,7 @@ public class SendOrdersHandler extends AbstractHandler {
 				.getCurrentSelectionChecked(event);
 		Shell shell = HandlerUtil.getActiveShellChecked(event);
 		try {
-			Client client = ClientManager.getInstance();
+			Client client = ClientManager.getManagerInstance().getInstance();
 			MultiStatus status = new MultiStatus(
 					StrategyUI.PLUGIN_ID,
 					IStatus.ERROR,

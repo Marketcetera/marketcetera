@@ -1,5 +1,9 @@
 package org.marketcetera.client;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import org.apache.commons.lang.Validate;
 import org.marketcetera.util.misc.ClassVersion;
 
 
@@ -12,37 +16,59 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public final class ClientManager {
-
+@ClassVersion("$Id$")
+public final class ClientManager
+{
     /**
-     * Initializes the connection to the server. The handle to communicate
-     * with the server can be obtained via {@link #getInstance()}.
-     *
-     * @param inParameter The parameters to connect the client. Cannot be null.
-     *
-     * @throws ConnectionException if there were errors connecting
-     * to the server.
-     * @throws ClientInitException if the client is already initialized.
+     * Create a new ClientManager instance.
      */
-    public static synchronized void init(ClientParameters inParameter)
-            throws ConnectionException, ClientInitException {
-        if (!isInitialized()) {
-            mClient = mClientFactory.getClient(inParameter);
-        } else {
-            throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
-        }
+    public ClientManager()
+    {
+        instance = this;
+    }
+    /**
+     * 
+     *
+     *
+     * @return a <code>ClientManager</code> value
+     * @throws IllegalArgumentException if the <code>ClientManager</code> has not yet been created
+     */
+    public synchronized static ClientManager getManagerInstance()
+    {
+        Validate.notNull(instance,
+                         Messages.CLIENT_NOT_INITIALIZED.getText());
+        return instance;
+    }
+    /**
+     * Initializes the connection to the server.
+     *
+     * @param inParameters a <code>ClientParameters</code> value
+     * @return a <code>Client</code> value used to connect to the server
+     * @throws ConnectionException if there were errors connecting to the server.
+     * @throws ClientInitException if an error occurred initializing the client
+     * @throws IllegalArgumentException if the <code>ClientFactory</code> has not been set
+     */
+    public Client init(ClientParameters inParameters)
+            throws ConnectionException, ClientInitException
+    {
+        Validate.notNull(mClientFactory,
+                         Messages.CLIENT_NOT_INITIALIZED.getText());
+        Client client = mClientFactory.getClient(inParameters);
+        clients.put(inParameters.getParametersSpec(),
+                    client);
+        lastClientInstance = client;
+        return client;
     }
     /**
      * Sets the <code>ClientFactory</code> to use to create the <code>Client</code>.
      *
      * @param inFactory a <code>ClientFactory</code> value
-     * @throws ClientInitException if the client is already initialized.
+     * @throws ClientInitException if the <code>ClientFactory</code> is already initialized.
      */
-    public static synchronized void setClientFactory(ClientFactory inFactory)
+    public void setClientFactory(ClientFactory inFactory)
             throws ClientInitException
     {
-        if(isInitialized()) {
+        if(mClientFactory != null) {
             throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
         }
         mClientFactory = inFactory;
@@ -54,42 +80,44 @@ public final class ClientManager {
      * @return the client instance to communicate with the server.
      *
      * @throws ClientInitException if the client is not initialized.
+     * @deprecated
      */
-    public static Client getInstance() throws ClientInitException {
-        if (isInitialized()) {
-            return mClient;
+    @Deprecated
+    public Client getInstance()
+            throws ClientInitException
+    {
+        if(isInitialized()) {
+            return lastClientInstance;
         } else {
             throw new ClientInitException(Messages.CLIENT_NOT_INITIALIZED);
         }
     }
-
+    /**
+     * Returns the <code>Client</code> instance, if any, identified by the given <code>ClientParametersSpec</code>
+     * after it has been initialized.
+     * 
+     * @param inParametersSpec a <code>ClientParametersSpec</code> value
+     * @return a <code>Client</code> value or <code>null</code> if the <code>Client</code> has not yet been initialized
+     */
+    public Client getInstance(ClientParametersSpec inParametersSpec)
+    {
+        return clients.get(inParametersSpec);
+    }
     /**
      * Returns true if the client is initialized, false if it's not.
      *
      * @return if the client is initialized.
+     * @deprecated
      */
-    public static boolean isInitialized() {
-        return mClient != null;
-    }
-
-    /**
-     * Resets the client to the uninitialized state. This method is invoked
-     * by the client implementation when it's {@link Client#close() closed}.
-     * This method is not meant to be used by clients. 
-     */
-    synchronized static void reset() {
-        mClient = null;
-    }
-
-    /**
-     * Do not allow any instances to be created.
-     */
-    private ClientManager() {
+    @Deprecated
+    public boolean isInitialized()
+    {
+        return lastClientInstance != null;
     }
     /**
-     * the <code>ClientFactory</code> to use to create the <code>Client</code> object 
+     * the default <code>ClientFactory</code> to use to create the <code>Client</code> object 
      */
-    private volatile static ClientFactory mClientFactory = new ClientFactory() {
+    private volatile ClientFactory mClientFactory = new ClientFactory() {
         @Override
         public Client getClient(ClientParameters inParameters)
                 throws ClientInitException, ConnectionException
@@ -98,7 +126,16 @@ public final class ClientManager {
         }
     };
     /**
-     * the <code>Client</code> object
+     * 
      */
-    private volatile static Client mClient;
+    private static ClientManager instance;
+    /**
+     * 
+     */
+    private final Map<ClientParametersSpec,Client> clients = new WeakHashMap<ClientParametersSpec,Client>();
+    /**
+     * 
+     */
+    @Deprecated
+    private Client lastClientInstance;
 }

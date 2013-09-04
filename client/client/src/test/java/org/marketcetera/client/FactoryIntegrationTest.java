@@ -82,8 +82,8 @@ public class FactoryIntegrationTest {
                 "name".toCharArray(), MockServer.URL,
                 Node.DEFAULT_HOST, Node.DEFAULT_PORT,
                 inOrderIDPrefix);
-        ClientManager.init(parameters);
-        mClient = ClientManager.getInstance();
+        ClientManager.getManagerInstance().init(parameters);
+        mClient = ClientManager.getManagerInstance().getInstance();
     }
 
     private static void initServer() {

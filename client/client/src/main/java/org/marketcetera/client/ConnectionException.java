@@ -23,7 +23,15 @@ public class ConnectionException extends I18NException {
     public ConnectionException(I18NBoundMessage message) {
         super(message);
     }
-
+    /**
+     * Create a new ConnectionException instance.
+     *
+     * @param inCause a <code>Throwable</code> value
+     */
+    public ConnectionException(Throwable inCause)
+    {
+        super(inCause);
+    }
     /**
      * Creates an instance.
      *

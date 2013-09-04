@@ -1506,10 +1506,11 @@ public class StrategyTestBase
     {
         LoggerConfiguration.logSetup();
         try {
-            ClientManager.setClientFactory(new MockClient.MockClientFactory());
-            ClientManager.init(null);
+            new ClientManager();
+            ClientManager.getManagerInstance().setClientFactory(new MockClient.MockClientFactory());
+            ClientManager.getManagerInstance().init(null);
         } catch (ClientInitException ignored) {}
-        client = (MockClient)ClientManager.getInstance();
+        client = (MockClient)ClientManager.getManagerInstance().getInstance();
         System.setProperty(org.marketcetera.strategy.Strategy.CLASSPATH_PROPERTYNAME,
                            StrategyTestBase.SAMPLE_STRATEGY_DIR.getCanonicalPath());
         List<Instrument> testInstruments = new ArrayList<Instrument>();

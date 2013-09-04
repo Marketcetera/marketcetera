@@ -53,7 +53,7 @@ public class RetrieveTradingHistoryJob extends Job {
             //  since the lastOccurrence date plus any open orders that predate the lastOccurrence
             final Set<ReportBase> allReports = new LinkedHashSet<ReportBase>();
             TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
-            Client client = ClientManager.getInstance();
+            Client client = ClientManager.getManagerInstance().getInstance();
             List<ReportBase> openReports = client.getOpenOrders();
             Date positionDate = new Date();
             if(StringUtils.isNotEmpty(timeString)) {
@@ -91,10 +91,10 @@ public class RetrieveTradingHistoryJob extends Job {
                 }
             });
             if(positionDate != null) {
-                Map<PositionKey<?>,BigDecimal> positions = Maps.<PositionKey<?>,BigDecimal> newHashMap(ClientManager.getInstance().getAllEquityPositionsAsOf(positionDate));
-                positions.putAll(ClientManager.getInstance().getAllOptionPositionsAsOf(positionDate));
-                positions.putAll(ClientManager.getInstance().getAllFuturePositionsAsOf(positionDate));
-                positions.putAll(ClientManager.getInstance().getAllCurrencyPositionsAsOf(positionDate));
+                Map<PositionKey<?>,BigDecimal> positions = Maps.<PositionKey<?>,BigDecimal> newHashMap(ClientManager.getManagerInstance().getInstance().getAllEquityPositionsAsOf(positionDate));
+                positions.putAll(ClientManager.getManagerInstance().getInstance().getAllOptionPositionsAsOf(positionDate));
+                positions.putAll(ClientManager.getManagerInstance().getInstance().getAllFuturePositionsAsOf(positionDate));
+                positions.putAll(ClientManager.getManagerInstance().getInstance().getAllCurrencyPositionsAsOf(positionDate));
                 EventList<ReportHolder> messages = tradeReportsHistory.getAllMessagesList();
                 ImmutablePositionSupport positionSupport = new ImmutablePositionSupport(positions);
                 PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(PhotonPlugin.getDefault().getMarketDataManager().getMarketData());

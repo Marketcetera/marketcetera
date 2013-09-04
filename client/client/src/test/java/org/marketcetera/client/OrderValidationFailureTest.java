@@ -31,7 +31,7 @@ public class OrderValidationFailureTest {
 
         OrderSingle order = ClientTest.createOrderSingle();
         //Verify we can send this order
-        ClientManager.getInstance().sendOrder(order);
+        ClientManager.getManagerInstance().getInstance().sendOrder(order);
         Validations.validate(order);
         
         //Verify various failures
@@ -68,7 +68,7 @@ public class OrderValidationFailureTest {
 
         OrderReplace order = ClientTest.createOrderReplace();
         //Verify we can send this order
-        ClientManager.getInstance().sendOrder(order);
+        ClientManager.getManagerInstance().getInstance().sendOrder(order);
         Validations.validate(order);
 
         //Verify various failures
@@ -109,7 +109,7 @@ public class OrderValidationFailureTest {
 
         OrderCancel order = ClientTest.createOrderCancel();
         //Verify we can send this order
-        ClientManager.getInstance().sendOrder(order);
+        ClientManager.getManagerInstance().getInstance().sendOrder(order);
         Validations.validate(order);
 
         //Verify various failures
@@ -190,13 +190,14 @@ public class OrderValidationFailureTest {
         LoggerConfiguration.logSetup();
         sServer = new MockServer();
         String u = "u";
-        ClientManager.init(new ClientParameters(u, u.toCharArray(),
+        new ClientManager();
+        ClientManager.getManagerInstance().init(new ClientParameters(u, u.toCharArray(),
                 MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT));
     }
     @AfterClass
     public static void cleanup() throws Exception {
-        if(ClientManager.isInitialized()) {
-            ClientManager.getInstance().close();
+        if(ClientManager.getManagerInstance().isInitialized()) {
+            ClientManager.getManagerInstance().getInstance().close();
         }
         if (sServer != null) {
             sServer.close();
@@ -216,7 +217,7 @@ public class OrderValidationFailureTest {
         new ExpectedFailure<OrderValidationException>(
                 inExpectedMessage){
             protected void run() throws Exception {
-                ClientManager.getInstance().sendOrder(inOrder);
+                ClientManager.getManagerInstance().getInstance().sendOrder(inOrder);
             }
         };
     }
@@ -232,7 +233,7 @@ public class OrderValidationFailureTest {
         new ExpectedFailure<OrderValidationException>(
                 inExpectedMessage){
             protected void run() throws Exception {
-                ClientManager.getInstance().sendOrder(inOrder);
+                ClientManager.getManagerInstance().getInstance().sendOrder(inOrder);
             }
         };
     }
@@ -248,7 +249,7 @@ public class OrderValidationFailureTest {
         new ExpectedFailure<OrderValidationException>(
                 inExpectedMessage){
             protected void run() throws Exception {
-                ClientManager.getInstance().sendOrder(inOrder);
+                ClientManager.getManagerInstance().getInstance().sendOrder(inOrder);
             }
         };
     }
@@ -264,7 +265,7 @@ public class OrderValidationFailureTest {
         new ExpectedFailure<OrderValidationException>(
                 inExpectedMessage){
             protected void run() throws Exception {
-                ClientManager.getInstance().sendOrderRaw(inOrder);
+                ClientManager.getManagerInstance().getInstance().sendOrderRaw(inOrder);
             }
         };
     }

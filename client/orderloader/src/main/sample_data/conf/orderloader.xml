@@ -15,16 +15,13 @@
   - 'orderloader_user.properties'.
   -->
 
-<beans
- xmlns="http://www.springframework.org/schema/beans"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xmlns:util="http://www.springframework.org/schema/util"
- xsi:schemaLocation=
- "http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-  http://www.springframework.org/schema/util
-  http://www.springframework.org/schema/util/spring-util-2.0.xsd">
-
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+  <!-- this bean controls how client objects are created -->
+  <bean id="clientManager" class="org.marketcetera.client.ClientManager"/>
   <util:list id="propertiesFiles">
     <value>file:${org.marketcetera.appDir}/conf/orderloader_default.properties</value>
     <value>file:${org.marketcetera.appDir}/conf/orderloader_user.properties</value>

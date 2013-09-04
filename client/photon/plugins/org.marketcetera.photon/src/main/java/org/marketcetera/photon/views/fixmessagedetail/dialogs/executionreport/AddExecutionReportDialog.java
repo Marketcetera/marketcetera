@@ -333,7 +333,7 @@ public class AddExecutionReportDialog extends ReportDialog
 		}
 		try 
 		{
-			ClientManager.getInstance().addReport(new FIXMessageWrapper(executionReport), new org.marketcetera.trade.BrokerID(BrokerID));
+			ClientManager.getManagerInstance().getInstance().addReport(new FIXMessageWrapper(executionReport), new org.marketcetera.trade.BrokerID(BrokerID));
 		} catch (ConnectionException e) 
 		{
 			MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);

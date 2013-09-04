@@ -7,6 +7,8 @@
   <!--
    This file initializes the module manager bean used by the Strategy Agent.
   -->
+  <!-- this bean controls how client objects are created -->
+  <bean id="clientManager" class="org.marketcetera.client.ClientManager"/>
   <!-- This bean is instantiated to get to the class loader instance -->
   <bean id="class" class="java.lang.Class" factory-method="forName">
     <constructor-arg value="org.marketcetera.strategyagent.JarClassLoader"/>
