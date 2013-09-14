@@ -4,7 +4,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.trade.*;
-import org.marketcetera.client.ClientTest;
+import org.marketcetera.client.ClientImplTest;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.client.brokers.BrokerStatus;
@@ -36,7 +36,7 @@ public class JMSXMLConverterTest {
     @Test
     public void verifyOrderSingle() throws Exception {
         for (Instrument instrument: sInstruments) {
-            OrderSingle i = ClientTest.createOrderSingle();
+            OrderSingle i = ClientImplTest.createOrderSingle();
             i.setInstrument(instrument);
             i.setCustomFields(generateCustomFields());
             OrderEnvelope o=(OrderEnvelope)roundTrip
@@ -50,7 +50,7 @@ public class JMSXMLConverterTest {
     @Test
     public void verifyOrderCancel() throws Exception {
         for (Instrument instrument: sInstruments) {
-            OrderCancel i = ClientTest.createOrderCancel();
+            OrderCancel i = ClientImplTest.createOrderCancel();
             i.setInstrument(instrument);
             i.setCustomFields(generateCustomFields());
             OrderEnvelope o=(OrderEnvelope)roundTrip
@@ -63,7 +63,7 @@ public class JMSXMLConverterTest {
     @Test
     public void verifyOrderReplace() throws Exception {
         for (Instrument instrument: sInstruments) {
-            OrderReplace i = ClientTest.createOrderReplace();
+            OrderReplace i = ClientImplTest.createOrderReplace();
             i.setInstrument(instrument);
             i.setCustomFields(generateCustomFields());
             OrderEnvelope o=(OrderEnvelope)roundTrip
@@ -75,7 +75,7 @@ public class JMSXMLConverterTest {
     }
     @Test
     public void verifyFIXOrder() throws Exception {
-        FIXOrder i = ClientTest.createOrderFIX();
+        FIXOrder i = ClientImplTest.createOrderFIX();
         OrderEnvelope o=(OrderEnvelope)roundTrip
             (new OrderEnvelope(i,SESSION_ID));
         assertEquals(SESSION_ID,o.getSessionId());
@@ -84,19 +84,19 @@ public class JMSXMLConverterTest {
     }
     @Test
     public void verifyExecReport() throws Exception {
-        ExecutionReport executionReport = ClientTest.createExecutionReport();
+        ExecutionReport executionReport = ClientImplTest.createExecutionReport();
         TypesTestBase.assertExecReportEquals(executionReport,
                 (ExecutionReport) roundTrip(executionReport));
     }
     @Test
     public void verifyCancelReject() throws Exception {
-        OrderCancelReject cancelReject = ClientTest.createCancelReject();
+        OrderCancelReject cancelReject = ClientImplTest.createCancelReject();
         TypesTestBase.assertCancelRejectEquals(cancelReject,
                 (OrderCancelReject) roundTrip(cancelReject));
     }
     @Test
     public void verifyFIXResponse() throws Exception {
-        FIXResponse fixResponse = ClientTest.createFIXResponse();
+        FIXResponse fixResponse = ClientImplTest.createFIXResponse();
         TypesTestBase.assertFIXResponseEquals(fixResponse,
                 (FIXResponse) roundTrip(fixResponse));
     }

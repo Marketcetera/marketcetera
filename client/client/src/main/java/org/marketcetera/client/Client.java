@@ -46,7 +46,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public interface Client {
+public interface Client
+{
     /**
      * Sends the supplied order to the server.
      *
@@ -446,7 +447,7 @@ public interface Client {
      * 
      * @throws ConnectionException if there were errors reconnecting.
      */
-    public void reconnect(ClientParameters inParameters) throws ConnectionException;
+//    public void reconnect(ClientParameters inParameters) throws ConnectionException;
 
     /**
      * Returns the parameters that client is using to connect to the server.

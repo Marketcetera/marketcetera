@@ -581,10 +581,11 @@ public class StrategyTestBase
                 implements org.marketcetera.client.ClientFactory
         {
             /* (non-Javadoc)
-             * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters)
+             * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters, org.marketcetera.client.ClientLifecycleManager)
              */
             @Override
-            public Client getClient(ClientParameters inClientParameters)
+            public Client getClient(ClientParameters inClientParameters,
+                                    ClientLifecycleManager inClientLifecycleManager)
                     throws ClientInitException, ConnectionException
             {
                 return new MockClient();
@@ -911,15 +912,6 @@ public class StrategyTestBase
          */
         @Override
         public void reconnect()
-                throws ConnectionException
-        {
-            throw new UnsupportedOperationException();
-        }
-        /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#reconnect(org.marketcetera.client.ClientParameters)
-         */
-        @Override
-        public void reconnect(ClientParameters inArg0)
                 throws ConnectionException
         {
             throw new UnsupportedOperationException();

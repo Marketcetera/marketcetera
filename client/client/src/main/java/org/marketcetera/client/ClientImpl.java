@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import javax.jms.JMSException;
-import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.ClientSubscriptionManager.ServerStatus;
@@ -44,8 +43,9 @@ import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 /* $License$ */
+
 /**
- * The implementation of Client that connects to the server.
+ * The implementation of Client that connects to the server using JMS.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -403,27 +403,20 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     @Override
     public synchronized void close() {
         internalClose();
+        lifecycleManager.release(this);
         mClosed = true;
     }
 
     @Override
-    public void reconnect() throws ConnectionException {
-        reconnect(null);
-    }
-
-    @Override
-    public synchronized void reconnect(ClientParameters inParameters)
-            throws ConnectionException {
+    public void reconnect()
+            throws ConnectionException
+    {
         failIfClosed();
         if(mContext != null) {
             internalClose();
         }
-        if(inParameters != null) {
-            setParameters(inParameters);
-        }
         connect();
     }
-
     @Override
     public void addExceptionListener(ExceptionListener inListener) {
         failIfClosed();
@@ -437,14 +430,15 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     }
 
     @Override
-    public ClientParameters getParameters() {
-        failIfClosed();
-        return new ClientParameters(
-                mParameters.getUsername(),
-                //hide the password value.
-                "*****".toCharArray(),   //$NON-NLS-1$
-                mParameters.getURL(), mParameters.getHostname(),
-                mParameters.getPort(), mParameters.getIDPrefix());
+    public ClientParameters getParameters()
+    {
+        return new ClientParameters(mParameters.getUsername(),
+                                    //hide the password value.
+                                    "*****".toCharArray(),   //$NON-NLS-1$
+                                    mParameters.getURL(),
+                                    mParameters.getHostname(),
+                                    mParameters.getPort(),
+                                    mParameters.getIDPrefix());
     }
 
     @Override
@@ -534,33 +528,34 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     /**
      * Creates an instance given the parameters and connects to the server.
      *
-     * @param inParameters the parameters to connect to the server, cannot
-     * be null.
+o     * @param inParameters a <code>ClientParameters</code> value containing the parameters to connect to the server
+     * @param inLifecycleManager a <code>ClientLifecycleManager</code> value
      *
-     * @throws ConnectionException if there were errors connecting
-     * to the server.
+     * @throws ConnectionException if there were errors connecting to the server.
      */
-    ClientImpl(ClientParameters inParameters) throws ConnectionException {
+    ClientImpl(ClientParameters inParameters,
+               ClientLifecycleManager inLifecycleManager)
+            throws ConnectionException
+    {
+        lifecycleManager = inLifecycleManager;
         setParameters(inParameters);
         connect();
     }
-
     // TradeMessage reception; public scope required by Spring.
 
     public class TradeMessageReceiver
-        implements ReceiveOnlyHandler<TradeMessage>
+            implements ReceiveOnlyHandler<TradeMessage>
     {
         @Override
-        public void receiveMessage
-            (TradeMessage inReport)
+        public void receiveMessage(TradeMessage inReport)
         {
             if (inReport instanceof ExecutionReport) {
                 notifyExecutionReport((ExecutionReport)inReport);
             } else if (inReport instanceof OrderCancelReject) {
                 notifyCancelReject((OrderCancelReject)inReport);
             } else {
-                Messages.LOG_RECEIVED_FIX_REPORT.warn
-                    (this,ObjectUtils.toString(inReport));
+                Messages.LOG_RECEIVED_FIX_REPORT.warn(this,
+                                                      ObjectUtils.toString(inReport));
             }
         }
     }
@@ -654,12 +649,12 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         @Override
         public void run()
         {
-            while (true) {
+            while(true) {
                 try {
                     Thread.sleep(mParameters.getHeartbeatInterval());
                 } catch (InterruptedException ex) {
-                    SLF4JLoggerProxy.debug
-                        (HEARTBEATS,"Stopped (interrupted)"); //$NON-NLS-1$
+                    SLF4JLoggerProxy.debug(HEARTBEATS,
+                                           "Stopped (interrupted)"); //$NON-NLS-1$
                     markExit();
                     setServerAlive(false);
                     return;
@@ -848,10 +843,10 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                                  mParameters.getPassword());
             mService = mServiceClient.getService(Service.class);
 
-            mJmsMgr=new JmsManager
-                (cfg.getIncomingConnectionFactory(),
-                 cfg.getOutgoingConnectionFactory(),this);
-            startJms();
+            mJmsMgr = new JmsManager(cfg.getIncomingConnectionFactory(),
+                                     cfg.getOutgoingConnectionFactory(),
+                                     this);
+            openServerConnection();
             mServerAlive=true;
             notifyServerStatus(true);
 
@@ -973,10 +968,14 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
         mParameters = inParameters;
     }
-
-    private void stopJms()
+    /**
+     * 
+     *
+     *
+     */
+    private void closeServerConnection()
     {
-        if (mToServer==null) {
+        if(mToServer==null) {
             return;
         }
         try {
@@ -1001,26 +1000,29 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             }
         }
     }
-
-    private void startJms()
-        throws JAXBException
+    /**
+     * 
+     *
+     *
+     * @throws Exception
+     */
+    private void openServerConnection()
+            throws Exception
     {
-        if (mToServer!=null) {
+        if(mToServer != null) {
             return;
         } 
-        mTradeMessageListener =
-            mJmsMgr.getIncomingJmsFactory().registerHandlerTMX
-            (new TradeMessageReceiver(),
-             JmsUtils.getReplyTopicName(getSessionId()),true);
-	mTradeMessageListener.start();
-        mBrokerStatusListener =
-            mJmsMgr.getIncomingJmsFactory().registerHandlerBSX
-            (new BrokerStatusReceiver(),Service.BROKER_STATUS_TOPIC,true);
-	mBrokerStatusListener.start();
-        mToServer=mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX
-            (Service.REQUEST_QUEUE,false);
-   }
-
+        mTradeMessageListener = mJmsMgr.getIncomingJmsFactory().registerHandlerTMX(new TradeMessageReceiver(),
+                                                                                   JmsUtils.getReplyTopicName(getSessionId()),
+                                                                                   true);
+        mTradeMessageListener.start();
+        mBrokerStatusListener = mJmsMgr.getIncomingJmsFactory().registerHandlerBSX(new BrokerStatusReceiver(),
+                                                                                   Service.BROKER_STATUS_TOPIC,
+                                                                                   true);
+        mBrokerStatusListener.start();
+        mToServer = mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.REQUEST_QUEUE,
+                                                                       false);
+    }
     /**
      * Sets the server connection status. If the status changed, the
      * registered callbacks are invoked.
@@ -1029,21 +1031,21 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
      */
     private void setServerAlive(boolean serverAlive)
     {
-        if (mServerAlive==serverAlive) {
+        if(mServerAlive == serverAlive){
             return;
         }
-        if (serverAlive) {
+        if(serverAlive) {
             try {
-                startJms();
-            } catch (JAXBException ex) {
-                exceptionThrown(new ConnectionException
-                                (ex,Messages.ERROR_CREATING_JMS_CONNECTION));
+                openServerConnection();
+            } catch(Exception ex) {
+                exceptionThrown(new ConnectionException(ex,
+                                                        Messages.ERROR_CREATING_JMS_CONNECTION));
                 return;
             }
         } else {
-            stopJms();
+            closeServerConnection();
         }
-        mServerAlive=serverAlive;
+        mServerAlive = serverAlive;
         notifyServerStatus(isServerAlive());
     }
 
@@ -1056,12 +1058,11 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     private volatile boolean mClosed = false;
     private volatile boolean mServerAlive = false;
     private Date mLastConnectTime;
-    private final Map<UserID,UserInfo> mUserInfoCache=
-        new HashMap<UserID,UserInfo>();
-    private final Map<String,String> mUnderlyingToRootCache= new HashMap<String, String>();
-    private final Map<String,Collection<String>> mRootToUnderlyingCache=
-            new HashMap<String, Collection<String>>();
+    private final Map<UserID,UserInfo> mUserInfoCache = new HashMap<UserID,UserInfo>();
+    private final Map<String,String> mUnderlyingToRootCache = new HashMap<String, String>();
+    private final Map<String,Collection<String>> mRootToUnderlyingCache = new HashMap<String,Collection<String>>();
     private final ClientSubscriptionManager subscriptionManager = new ClientSubscriptionManager();
+    private final ClientLifecycleManager lifecycleManager;
 
     private static final long RECONNECT_WAIT_INTERVAL = 30000;
 

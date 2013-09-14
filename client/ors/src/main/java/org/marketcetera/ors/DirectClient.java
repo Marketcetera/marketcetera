@@ -330,21 +330,6 @@ public class DirectClient
     public void reconnect()
             throws ConnectionException
     {
-        reconnect(parameters);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#reconnect(org.marketcetera.client.ClientParameters)
-     */
-    @Override
-    public void reconnect(ClientParameters inParameters)
-            throws ConnectionException
-    {
-        parameters = inParameters;
-        try {
-            refreshParameters();
-        } catch (PersistenceException e) {
-            throw new ConnectionException(e);
-        }
         connectTime = new Date();
     }
     /* (non-Javadoc)

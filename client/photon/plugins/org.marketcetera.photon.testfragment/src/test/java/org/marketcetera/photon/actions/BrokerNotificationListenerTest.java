@@ -43,7 +43,7 @@ public class BrokerNotificationListenerTest {
 		BrokerStatus status = new BrokerStatus("abc",
 				new BrokerID("abc"), true);
 		when(mockClient.getBrokersStatus()).thenReturn(new BrokersStatus(Collections.singletonList((status))));
-		BrokerNotificationListener fixture = new BrokerNotificationListener(mockClient);
+		BrokerNotificationListener fixture = new BrokerNotificationListener();
 		fixture.receiveBrokerStatus(status);
 
 		// have to wait since notifications happen in different thread

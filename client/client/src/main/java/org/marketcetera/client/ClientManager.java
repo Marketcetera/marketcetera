@@ -2,76 +2,115 @@ package org.marketcetera.client;
 
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.Validate;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
-
 /* $License$ */
+
 /**
  * Abstraction that manages the initialization of the Client and provides
  * an easy way to get to its singleton instance.
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */
+@ThreadSafe
 @ClassVersion("$Id$")
-public final class ClientManager
+public class ClientManager
 {
     /**
-     * Create a new ClientManager instance.
+     * Create a new <code>ClientManager</code> instance.
+     * 
+     * @throws IllegalArgumentException if an instance has already been created
      */
     public ClientManager()
     {
-        instance = this;
+        synchronized(ClientManager.class) {
+            Validate.isTrue(instance == null,
+                            Messages.CLIENT_ALREADY_INITIALIZED.getText());
+            instance = this;
+        }
     }
     /**
-     * 
-     *
+     * Gets the singleton <code>ClientManager</code> instance.
      *
      * @return a <code>ClientManager</code> value
      * @throws IllegalArgumentException if the <code>ClientManager</code> has not yet been created
      */
     public synchronized static ClientManager getManagerInstance()
     {
-        Validate.notNull(instance,
-                         Messages.CLIENT_NOT_INITIALIZED.getText());
-        return instance;
+        synchronized(ClientManager.class) {
+            Validate.notNull(instance,
+                             Messages.CLIENT_NOT_INITIALIZED.getText());
+            return instance;
+        }
     }
     /**
-     * Initializes the connection to the server.
+     * Initializes and opens a connection to the server.
+     * 
+     * <p>If the given parameters refer to an existing, open connection, the existing
+     * connection will be returned instead of creating a new one.
      *
      * @param inParameters a <code>ClientParameters</code> value
      * @return a <code>Client</code> value used to connect to the server
      * @throws ConnectionException if there were errors connecting to the server.
      * @throws ClientInitException if an error occurred initializing the client
-     * @throws IllegalArgumentException if the <code>ClientFactory</code> has not been set
      */
     public Client init(ClientParameters inParameters)
             throws ConnectionException, ClientInitException
     {
-        Validate.notNull(mClientFactory,
-                         Messages.CLIENT_NOT_INITIALIZED.getText());
-        Client client = mClientFactory.getClient(inParameters);
-        clients.put(inParameters.getParametersSpec(),
-                    client);
-        lastClientInstance = client;
-        return client;
+        Lock initLock = clientsLock.writeLock();
+        try {
+            initLock.lockInterruptibly();
+            Client client = inParameters == null ? null : clients.get(inParameters.getParametersSpec());
+            if(client != null) {
+                return client;
+            }
+            if(clientFactory == null) {
+                throw new ClientInitException(Messages.NO_CLIENT_FACTORY);
+            }
+            client = clientFactory.getClient(inParameters,
+                                             lifecycleManager);
+            if(inParameters != null) {
+                clients.put(inParameters.getParametersSpec(),
+                            client);
+            }
+            lastClientInstance = client;
+            return client;
+        } catch (InterruptedException e) {
+            throw new ClientInitException(e);
+        } finally {
+            initLock.unlock();
+        }
     }
     /**
      * Sets the <code>ClientFactory</code> to use to create the <code>Client</code>.
      *
      * @param inFactory a <code>ClientFactory</code> value
-     * @throws ClientInitException if the <code>ClientFactory</code> is already initialized.
+     * @throws ClientInitException if the client factory cannot be set
      */
     public void setClientFactory(ClientFactory inFactory)
             throws ClientInitException
     {
-        if(mClientFactory != null) {
-            throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
+        Lock setLock = clientsLock.writeLock();
+        try {
+            setLock.lockInterruptibly();
+            clientFactory = inFactory;
+        } catch (InterruptedException e) {
+            throw new ClientInitException(e);
+        } finally {
+            setLock.unlock();
         }
-        mClientFactory = inFactory;
     }
     /**
      * Returns the Client instance after it has been initialized via
@@ -101,7 +140,15 @@ public final class ClientManager
      */
     public Client getInstance(ClientParametersSpec inParametersSpec)
     {
-        return clients.get(inParametersSpec);
+        Lock getLock = clientsLock.readLock();
+        try {
+            getLock.lockInterruptibly();
+            return clients.get(inParametersSpec);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            getLock.unlock();
+        }
     }
     /**
      * Returns true if the client is initialized, false if it's not.
@@ -115,27 +162,47 @@ public final class ClientManager
         return lastClientInstance != null;
     }
     /**
-     * the default <code>ClientFactory</code> to use to create the <code>Client</code> object 
+     * allows client objects to notify the manager upon changes in their lifecycle
      */
-    private volatile ClientFactory mClientFactory = new ClientFactory() {
+    private final ClientLifecycleManager lifecycleManager = new ClientLifecycleManager()
+    {
         @Override
-        public Client getClient(ClientParameters inParameters)
-                throws ClientInitException, ConnectionException
+        public void release(final Client inClient)
         {
-            return new ClientImpl(inParameters);
+            Lock getLock = clientsLock.writeLock();
+            try {
+                getLock.lockInterruptibly();
+                clients.remove(inClient.getParameters().getParametersSpec());
+            } catch (InterruptedException e) {
+                SLF4JLoggerProxy.warn(ClientManager.class,
+                                      e);
+            } finally {
+                getLock.unlock();
+            }
         }
     };
     /**
-     * 
+     * the default <code>ClientFactory</code> to use to create the <code>Client</code> object 
      */
+    @GuardedBy("clientsLock")
+    private volatile ClientFactory clientFactory = new JmsClientFactory();
+    /**
+     * controls access to {@link #clientFactory}
+     */
+    private final ReadWriteLock clientsLock = new ReentrantReadWriteLock();
+    /**
+     * singleton instance
+     */
+    @GuardedBy("ClientManager")
     private static ClientManager instance;
     /**
-     * 
+     * tracks clients by parameter spec, which uniquely identifies the client
      */
+    @GuardedBy("clientsLock")
     private final Map<ClientParametersSpec,Client> clients = new WeakHashMap<ClientParametersSpec,Client>();
     /**
-     * 
+     * most recently initialized client instance
      */
     @Deprecated
-    private Client lastClientInstance;
+    private volatile Client lastClientInstance;
 }

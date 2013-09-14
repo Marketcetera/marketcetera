@@ -15,10 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Level;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.users.UserInfo;
@@ -50,9 +47,9 @@ import quickfix.field.OrigClOrdID;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class ClientTest
-    extends TestCaseBase
+@ClassVersion("$Id$")
+public class ClientImplTest
+        extends TestCaseBase
 {
     /*
      * This value can be set to a much higher value to assess
@@ -62,24 +59,55 @@ public class ClientTest
      * repeatedly carry out the round trips.
      */
     private static final int NUM_REPEAT = 5;
+    /**
+     * Runs once before all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @BeforeClass
-    public static void setup() throws Exception {
+    public static void once()
+            throws Exception
+    {
     	LoggerConfiguration.logSetup();
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
-                FIXVersion.FIX42.getDataDictionaryURL());
+                                            FIXVersion.FIX42.getDataDictionaryURL());
         initServer();
+        new ClientManager();
     }
-
+    /**
+     * Runs after all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @AfterClass
-    public static void closeServer() throws Exception {
-        if (sServer != null) {
+    public static void closeServer()
+            throws Exception
+    {
+        if(sServer != null) {
             sServer.close();
             sServer = null;
         }
     }
-
+    /**
+     * Runs before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void setup()
+            throws Exception
+    {
+        ClientManager.getManagerInstance().setClientFactory(new JmsClientFactory());
+    }
+    /**
+     * Runs after each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @After
-    public void closeClient() {
+    public void closeClient()
+            throws Exception
+    {
         if(mClient != null) {
             mClient.close();
         }
@@ -93,116 +121,167 @@ public class ClientTest
     }
     
     @Test
-    public void connect() throws Exception {
-        initClient();
-        assertNotNull(ClientManager.getManagerInstance().getInstance());
+    public void connect()
+            throws Exception
+    {
+        Client client = initClient();
+        assertNotNull(client);
     }
-
+    /**
+     * Tests various connection failure modes.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void connectFailure() throws Exception {
-        //Null URL
-        new ExpectedFailure<ConnectionException>(
-                Messages.CONNECT_ERROR_NO_URL){
-            protected void run() throws Exception {
+    public void connectFailure()
+            throws Exception
+    {
+        // Null URL
+        new ExpectedFailure<ConnectionException>(Messages.CONNECT_ERROR_NO_URL) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(new ClientParameters("you",
-                        "why".toCharArray(), null, Node.DEFAULT_HOST,
-                        Node.DEFAULT_PORT));
+                                                                             "why".toCharArray(),
+                                                                             null,
+                                                                             Node.DEFAULT_HOST,
+                                                                             Node.DEFAULT_PORT));
             }
         };
-        //Empty URL
-        new ExpectedFailure<ConnectionException>(
-                Messages.CONNECT_ERROR_NO_URL){
-            protected void run() throws Exception {
+        // Empty URL
+        new ExpectedFailure<ConnectionException>(Messages.CONNECT_ERROR_NO_URL) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(new ClientParameters("you",
-                        "why".toCharArray(), "  ", Node.DEFAULT_HOST,
-                        Node.DEFAULT_PORT));
+                                                                             "why".toCharArray(),
+                                                                             "  ",
+                                                                             Node.DEFAULT_HOST,
+                                                                             Node.DEFAULT_PORT));
             }
         };
-        //null user name
-        new ExpectedFailure<ConnectionException>(
-                Messages.CONNECT_ERROR_NO_USERNAME){
-            protected void run() throws Exception {
+        // null user name
+        new ExpectedFailure<ConnectionException>(Messages.CONNECT_ERROR_NO_USERNAME) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(new ClientParameters(null,
-                        "why".toCharArray(), "tcp://whatever:404",
-                        Node.DEFAULT_HOST, Node.DEFAULT_PORT));
+                                                                             "why".toCharArray(),
+                                                                             "tcp://whatever:404",
+                                                                             Node.DEFAULT_HOST,
+                                                                             Node.DEFAULT_PORT));
             }
         };
-        //empty user name
-        new ExpectedFailure<ConnectionException>(
-                Messages.CONNECT_ERROR_NO_USERNAME){
-            protected void run() throws Exception {
+        // empty user name
+        new ExpectedFailure<ConnectionException>(Messages.CONNECT_ERROR_NO_USERNAME) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(new ClientParameters("   ",
-                        "why".toCharArray(), "tcp://whatever:404",
-                        Node.DEFAULT_HOST, Node.DEFAULT_PORT));
+                                                                             "why".toCharArray(),
+                                                                             "tcp://whatever:404",
+                                                                             Node.DEFAULT_HOST,
+                                                                             Node.DEFAULT_PORT));
             }
         };
-        //null hostname
-        new ExpectedFailure<ConnectionException>(
-                Messages.CONNECT_ERROR_NO_HOSTNAME){
-            protected void run() throws Exception {
+        // null hostname
+        new ExpectedFailure<ConnectionException>(Messages.CONNECT_ERROR_NO_HOSTNAME) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
-                        DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                        null, Node.DEFAULT_PORT));
+                                                                             DEFAULT_CREDENTIAL.toCharArray(),
+                                                                             MockServer.URL,
+                                                                             null,
+                                                                             Node.DEFAULT_PORT));
             }
         };
-        //empty hostname
-        new ExpectedFailure<ConnectionException>(
-                Messages.CONNECT_ERROR_NO_HOSTNAME){
-            protected void run() throws Exception {
+        // empty hostname
+        new ExpectedFailure<ConnectionException>(Messages.CONNECT_ERROR_NO_HOSTNAME) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
-                        DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                        "  ", Node.DEFAULT_PORT));
+                                                                             DEFAULT_CREDENTIAL.toCharArray(),
+                                                                             MockServer.URL,
+                                                                             "  ",
+                                                                             Node.DEFAULT_PORT));
             }
         };
-        //invalid port number, lower bound
-        new ExpectedFailure<ConnectionException>(
-                Messages.CONNECT_ERROR_INVALID_PORT, -1){
-            protected void run() throws Exception {
+        // invalid port number, lower bound
+        new ExpectedFailure<ConnectionException>(Messages.CONNECT_ERROR_INVALID_PORT,
+                                                 -1) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
-                        DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                        Node.DEFAULT_HOST, -1));
+                                                                             DEFAULT_CREDENTIAL.toCharArray(),
+                                                                             MockServer.URL,
+                                                                             Node.DEFAULT_HOST,
+                                                                             -1));
             }
         };
-        //invalid port number, upper bound
-        new ExpectedFailure<ConnectionException>(
-                Messages.CONNECT_ERROR_INVALID_PORT, 65536){
-            protected void run() throws Exception {
+        // invalid port number, upper bound
+        new ExpectedFailure<ConnectionException>(Messages.CONNECT_ERROR_INVALID_PORT,
+                                                 65536) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(new ClientParameters(DEFAULT_CREDENTIAL,
-                        DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                        Node.DEFAULT_HOST, 65536));
+                                                                             DEFAULT_CREDENTIAL.toCharArray(),
+                                                                             MockServer.URL,
+                                                                             Node.DEFAULT_HOST,
+                                                                             65536));
             }
         };
-        //no server at port
+        // no server at port
         final ClientParameters noServerAtPort = new ClientParameters(DEFAULT_CREDENTIAL,
-                DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT + 1);
-        new ExpectedFailure<ConnectionException>(
-                Messages.ERROR_CONNECT_TO_SERVER, noServerAtPort.getURL(),
-                noServerAtPort.getUsername(), Node.DEFAULT_HOST,
-                Node.DEFAULT_PORT + 1){
-            protected void run() throws Exception {
+                                                                     DEFAULT_CREDENTIAL.toCharArray(),
+                                                                     MockServer.URL,
+                                                                     Node.DEFAULT_HOST,
+                                                                     Node.DEFAULT_PORT + 1);
+        new ExpectedFailure<ConnectionException>(Messages.ERROR_CONNECT_TO_SERVER,
+                                                 noServerAtPort.getURL(),
+                                                 noServerAtPort.getUsername(),
+                                                 Node.DEFAULT_HOST,
+                                                 Node.DEFAULT_PORT + 1) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(noServerAtPort);
             }
         };
-        //auth failure
-        final ClientParameters parameters = new ClientParameters(DEFAULT_CREDENTIAL,
-                "game".toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
-        new ExpectedFailure<ConnectionException>(
-                Messages.ERROR_CONNECT_TO_SERVER, parameters.getURL(),
-                parameters.getUsername(),Node.DEFAULT_HOST, Node.DEFAULT_PORT){
-            protected void run() throws Exception {
+        // auth failure
+        final ClientParameters parameters = new ClientParameters("some other user",
+                                                                 "game".toCharArray(),
+                                                                 MockServer.URL,
+                                                                 Node.DEFAULT_HOST,
+                                                                 Node.DEFAULT_PORT);
+        new ExpectedFailure<ConnectionException>(Messages.ERROR_CONNECT_TO_SERVER,
+                                                 parameters.getURL(),
+                                                 parameters.getUsername(),
+                                                 Node.DEFAULT_HOST,
+                                                 Node.DEFAULT_PORT) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(parameters);
             }
         };
         //Use the correct password but incorrect port number
-        final ClientParameters wrongPort = new ClientParameters(
-                parameters.getUsername(), DEFAULT_CREDENTIAL.toCharArray(),
-                "tcp://localhost:61617", Node.DEFAULT_HOST, Node.DEFAULT_PORT);
-        new ExpectedFailure<ConnectionException>(
-                Messages.ERROR_CONNECT_TO_SERVER, wrongPort.getURL(),
-                wrongPort.getUsername(), Node.DEFAULT_HOST, Node.DEFAULT_PORT){
-            protected void run() throws Exception {
+        final ClientParameters wrongPort = new ClientParameters(parameters.getUsername(),
+                                                                DEFAULT_CREDENTIAL.toCharArray(),
+                                                                "tcp://localhost:61617",
+                                                                Node.DEFAULT_HOST,
+                                                                Node.DEFAULT_PORT);
+        new ExpectedFailure<ConnectionException>(Messages.ERROR_CONNECT_TO_SERVER,
+                                                 wrongPort.getURL(),
+                                                 wrongPort.getUsername(),
+                                                 Node.DEFAULT_HOST,
+                                                 Node.DEFAULT_PORT) {
+            protected void run()
+                    throws Exception
+            {
                 ClientManager.getManagerInstance().init(wrongPort);
             }
         };
@@ -241,41 +320,38 @@ public class ClientTest
             }
         };
     }
-
+    /**
+     * Tests {@link ClientImpl#isCredentialsMatch(String, char[])}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void credentialsMatch() throws Exception {
-        initClient();
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(null, null));
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
-                DEFAULT_CREDENTIAL, null));
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(null,
-                DEFAULT_CREDENTIAL.toCharArray()));
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch("",
-                DEFAULT_CREDENTIAL.toCharArray()));
+    public void testCredentialsMatch()
+            throws Exception
+    {
+        Client client = initClient();
+        assertFalse(client.isCredentialsMatch(null,
+                                              null));
+        assertFalse(client.isCredentialsMatch(DEFAULT_CREDENTIAL,
+                                              null));
+        assertFalse(client.isCredentialsMatch(null,
+                                              DEFAULT_CREDENTIAL.toCharArray()));
+        assertFalse(client.isCredentialsMatch("",
+                                              DEFAULT_CREDENTIAL.toCharArray()));
         String otherUser = "you";
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(otherUser,
-                DEFAULT_CREDENTIAL.toCharArray()));
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
-                DEFAULT_CREDENTIAL, "".toCharArray()));
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
-                DEFAULT_CREDENTIAL, otherUser.toCharArray()));
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
-                otherUser, otherUser.toCharArray()));
-        assertTrue(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
-                DEFAULT_CREDENTIAL, DEFAULT_CREDENTIAL.toCharArray()));
-        //reconnect with different credentials
-        ClientParameters parms = new ClientParameters(otherUser,
-                otherUser.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
-        ClientManager.getManagerInstance().getInstance().reconnect(parms);
-        //verify that old credentials don't work
-        assertFalse(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
-                DEFAULT_CREDENTIAL, DEFAULT_CREDENTIAL.toCharArray()));
-        //and the new ones do.
-        assertTrue(ClientManager.getManagerInstance().getInstance().isCredentialsMatch(
-                otherUser, otherUser.toCharArray()));
+        assertFalse(client.isCredentialsMatch(otherUser,
+                                              DEFAULT_CREDENTIAL.toCharArray()));
+        assertFalse(client.isCredentialsMatch(DEFAULT_CREDENTIAL,
+                                              "".toCharArray()));
+        assertFalse(client.isCredentialsMatch(DEFAULT_CREDENTIAL,
+                                              otherUser.toCharArray()));
+        assertFalse(client.isCredentialsMatch(otherUser,
+                                              otherUser.toCharArray()));
+        assertTrue(client.isCredentialsMatch(DEFAULT_CREDENTIAL,
+                                             DEFAULT_CREDENTIAL.toCharArray()));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void webServices() throws Exception {
         initClient();
@@ -394,7 +470,7 @@ public class ClientTest
         Map<PositionKey<Option>, BigDecimal> positions = getClient().
                 getOptionPositionsAsOf(date, "XYZ", "PQR");
         assertEquals(2, positions.size());
-        assertThat(positions, allOf(hasEntry(
+        assertThat(positions,allOf(hasEntry(
                 PositionKeyFactory.createOptionKey("XYZ",
                         option.getExpiry(), option.getStrikePrice(),
                         option.getType(), "acc", "tra"), 
@@ -794,8 +870,7 @@ public class ClientTest
 
     @Test
     public void closedBehavior() throws Exception {
-        initClient();
-        final Client client = ClientManager.getManagerInstance().getInstance();
+        final Client client = initClient();
         client.close();
         String expectedMsg = Messages.CLIENT_CLOSED.getText();
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -821,11 +896,6 @@ public class ClientTest
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
                 client.getLastConnectTime();
-            }
-        };
-        new ExpectedFailure<IllegalStateException>(expectedMsg){
-            protected void run() throws Exception {
-                client.getParameters();
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
@@ -885,11 +955,6 @@ public class ClientTest
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
-                client.reconnect(null);
-            }
-        };
-        new ExpectedFailure<IllegalStateException>(expectedMsg){
-            protected void run() throws Exception {
                 client.removeExceptionListener(null);
             }
         };
@@ -928,6 +993,7 @@ public class ClientTest
                 client.sendOrderRaw(createOrderFIX());
             }
         };
+        assertNotNull(client.getParameters());
         //we can call close again
         client.close();
     }
@@ -1048,81 +1114,63 @@ public class ClientTest
      *
      * @throws Exception if there were errors
      */
-
     @Test
-    public void lifecycle() throws Exception {
+    public void lifecycle()
+            throws Exception
+    {
         initClient();
-        assertTrue(ClientManager.getManagerInstance().isInitialized());
-        //Verify that attempt to re-init the client fails
-        new ExpectedFailure<ClientInitException>(
-                Messages.CLIENT_ALREADY_INITIALIZED){
-            protected void run() throws Exception {
-                ClientManager.getManagerInstance().setClientFactory(new ClientFactory() {
-                    @Override
-                    public Client getClient(ClientParameters inClientParameters)
-                            throws ClientInitException, ConnectionException
-                    {
-                        return null;
-                    }
-                });
-            }
-        };
-        //Close client and verify that we init it again
+        assertTrue(mClient.isServerAlive());
+        // Close client and verify that we init it again
         closeClient();
-        assertFalse(ClientManager.getManagerInstance().isInitialized());
+        assertFalse(mClient.isServerAlive());
         initClient();
-        assertTrue(ClientManager.getManagerInstance().isInitialized());
-        //Shutdown the server
+        assertTrue(mClient.isServerAlive());
+        // Shutdown the server
         closeServer();
         //get reconnect to fail
-        new ExpectedFailure
-                <ConnectionException>(Messages.ERROR_CONNECT_TO_SERVER){
-            protected void run() throws Exception {
+        new ExpectedFailure<ConnectionException>(Messages.ERROR_CONNECT_TO_SERVER) {
+            protected void run()
+                    throws Exception
+            {
                 getClient().reconnect();
             }
         };
-        assertTrue(ClientManager.getManagerInstance().isInitialized());
-        //Verify that we cannot init client
-        new ExpectedFailure<ClientInitException>(
-                Messages.CLIENT_ALREADY_INITIALIZED){
-            protected void run() throws Exception {
-                ClientManager.getManagerInstance().setClientFactory(new ClientFactory() {
-                    @Override
-                    public Client getClient(ClientParameters inClientParameters)
-                            throws ClientInitException, ConnectionException
-                    {
-                        return null;
-                    }
-                });
-            }
-        };
-        //Close the client
+        assertFalse(mClient.isServerAlive());
+        // Close the client
         closeClient();
-        assertFalse(ClientManager.getManagerInstance().isInitialized());
+        assertFalse(mClient.isServerAlive());
         //Verify that we can now attempt to reconnect but it fails because
         //server is not up
-        new ExpectedFailure<ConnectionException>(
-                Messages.ERROR_CONNECT_TO_SERVER){
-            protected void run() throws Exception {
+        new ExpectedFailure<ConnectionException>(Messages.ERROR_CONNECT_TO_SERVER) {
+            protected void run()
+                    throws Exception
+            {
                 initClient();
             }
         };
-        assertFalse(ClientManager.getManagerInstance().isInitialized());
+        assertFalse(mClient.isServerAlive());
         //Restart the server
         initServer();
         //verify that we can init the client now
         initClient();
-        assertTrue(ClientManager.getManagerInstance().isInitialized());
+        assertTrue(mClient.isServerAlive());
     }
-
+    /**
+     * Tests client reconnections.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void reconnect() throws Exception {
+    public void testReconnect()
+            throws Exception
+    {
+        ClientManager.getManagerInstance().setClientFactory(new JmsClientFactory());
         initClient();
         Date connectTime = getClient().getLastConnectTime();
         //Test a round trip
         sendVanillaOrder();
         //Sleep to ensure we have different connect time
-        Thread.sleep(100);
+        Thread.sleep(250);
         //do a reconnect
         getClient().reconnect();
         assertTrue(getClient().getLastConnectTime().compareTo(connectTime) > 0);
@@ -1132,16 +1180,18 @@ public class ClientTest
         //Shutdownn the server
         closeServer();
         //Verify failure sending an order
-        ConnectionException exception = new ExpectedFailure
-                <ConnectionException>(Messages.ERROR_SEND_MESSAGE){
-            protected void run() throws Exception {
+        ConnectionException exception = new ExpectedFailure<ConnectionException>(Messages.ERROR_SEND_MESSAGE) {
+            protected void run()
+                    throws Exception
+            {
                 sendVanillaOrder();
             }
         }.getException();
         //Verify we got the exception
         assertNotNull(mListener.getException());
         assertEquals(exception, mListener.getException());
-        assertEquals(connectTime,  getClient().getLastConnectTime());
+        assertEquals(connectTime,
+                     getClient().getLastConnectTime());
         //Verify reconnect fails
         new ExpectedFailure
                 <ConnectionException>(Messages.ERROR_CONNECT_TO_SERVER){
@@ -1150,53 +1200,32 @@ public class ClientTest
             }
         };
         //Verify that the time is unchanged
-        assertEquals(connectTime,  getClient().getLastConnectTime());
-        //Verify that the client is still initialized
-        assertTrue(ClientManager.getManagerInstance().isInitialized());
+        assertEquals(connectTime,
+                     getClient().getLastConnectTime());
         //Restart the server
         initServer();
         //Verify order still fails
-        exception = new ExpectedFailure
-                <ConnectionException>(Messages.ERROR_SEND_MESSAGE) {
-            protected void run() throws Exception {
+        exception = new ExpectedFailure<ConnectionException>(Messages.ERROR_SEND_MESSAGE) {
+            protected void run()
+                    throws Exception
+            {
                 sendVanillaOrder();
             }
         }.getException();
         assertEquals(new ClientInitException(Messages.NOT_CONNECTED_TO_SERVER),
-                exception.getCause());
+                     exception.getCause());
         //Verify we got the exception
         assertNotNull(mListener.getException());
-        assertEquals(exception, mListener.getException());
+        assertEquals(exception,
+                     mListener.getException());
         //Sleep to ensure we have different connect time
-        Thread.sleep(100);
+        Thread.sleep(250);
         //Now reconnect
         getClient().reconnect();
         assertTrue(getClient().getLastConnectTime().compareTo(connectTime) > 0);
         //Verify order goes through
         sendVanillaOrder();
     }
-
-    @Test
-    public void reconnectParameters() throws Exception {
-        initClient();
-        Date connectTime = getClient().getLastConnectTime();
-        //Test a round trip
-        sendVanillaOrder();
-        ClientParameters oldParms = getClient().getParameters();
-        //Sleep to ensure we have different connect time
-        Thread.sleep(100);
-        //Now reconnect the client using a different parameters
-        ClientParameters parms = new ClientParameters("you",
-                "you".toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT);
-        getClient().reconnect(parms);
-        assertCPEquals(parms, getClient().getParameters());
-        assertFalse(oldParms.getUsername().equals(parms.getUsername()));
-        assertTrue(getClient().getLastConnectTime().compareTo(connectTime) > 0);
-        //Test a round trip
-        sendVanillaOrder();
-    }
-
     /**
      * Creates a sample execution report for the mock server to send back.
      *
@@ -1313,16 +1342,25 @@ public class ClientTest
         }
         return mClient;
     }
-    private void initClient(int heartbeatInterval)
-            throws ConnectionException, ClientInitException {
+    /**
+     * Creates and opens a <code>Client</code> connection with the given heartbeat interval.
+     *
+     * @param inHeartbeatInterval an <code>int</code> value
+     * @return a <code>Client</code> value
+     * @throws Exception if an error occurs
+     */
+    private Client initClient(int inHeartbeatInterval)
+            throws Exception
+    {
         Date currentTime = new Date();
-        ClientParameters parameters = new ClientParameters(DEFAULT_CREDENTIAL,
-                DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT,
-                null, heartbeatInterval);
-        new ClientManager();
-        ClientManager.getManagerInstance().init(parameters);
-        mClient = ClientManager.getManagerInstance().getInstance();
+        parameters = new ClientParameters(DEFAULT_CREDENTIAL,
+                                          DEFAULT_CREDENTIAL.toCharArray(),
+                                          MockServer.URL,
+                                          Node.DEFAULT_HOST,
+                                          Node.DEFAULT_PORT,
+                                          null,
+                                          inHeartbeatInterval);
+        mClient = ClientManager.getManagerInstance().init(parameters);
         mClient.addExceptionListener(mListener);
         mClient.addReportListener(mReplies);
         mClient.addBrokerStatusListener(mBrokerStatusReplies);
@@ -1330,10 +1368,18 @@ public class ClientTest
         assertCPEquals(parameters, mClient.getParameters());
         assertNotNull(mClient.getLastConnectTime());
         assertTrue(mClient.getLastConnectTime().compareTo(currentTime) >= 0);
+        return mClient;
     }
-    private void initClient()
-            throws ConnectionException, ClientInitException {
-        initClient(60000);
+    /**
+     * Creates and opens a <code>Client</code> connection with a default heartbeat interval.
+     *
+     * @return a <code>Client</code> value
+     * @throws Exception if an error occurs
+     */
+    private Client initClient()
+            throws Exception
+    {
+        return initClient(60000);
     }
 
     private static void initServer() {
@@ -1343,22 +1389,29 @@ public class ClientTest
     }
     private final ErrorListener mListener = new ErrorListener();
     private final ReplyListener mReplies = new ReplyListener();
-    private final BrokerStatusReplyListener mBrokerStatusReplies =
-        new BrokerStatusReplyListener();
-    private final ServerStatusReplyListener mServerStatusReplies =
-        new ServerStatusReplyListener();
+    private final BrokerStatusReplyListener mBrokerStatusReplies = new BrokerStatusReplyListener();
+    private final ServerStatusReplyListener mServerStatusReplies = new ServerStatusReplyListener();
     private static MockServer sServer;
     private Client mClient;
     private static final AtomicLong sCounter = new AtomicLong();
-    private static class ErrorListener implements ExceptionListener {
-        public void exceptionThrown(Exception e) {
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private static class ErrorListener
+            implements ExceptionListener
+    {
+        public void exceptionThrown(Exception e)
+        {
             SLF4JLoggerProxy.debug(this, e);
             mException = e;
             if (mFail) {
-                throw new IllegalArgumentException("Test Failure");
+                throw new IllegalArgumentException("This exception is excepted");
             }
         }
-
         public Exception getException() {
             return mException;
         }
@@ -1379,7 +1432,7 @@ public class ClientTest
             //Use add() instead of put() as these need to be non-blocking.
             mReports.add(inReport);
             if (mFail) {
-                throw new IllegalArgumentException("Test Failure");
+                throw new IllegalArgumentException("This exception is excepted");
             }
         }
 
@@ -1387,7 +1440,7 @@ public class ClientTest
             //Use add() instead of put() as these need to be non-blocking.
             mReports.add(inReport);
             if (mFail) {
-                throw new IllegalArgumentException("Test Failure");
+                throw new IllegalArgumentException("This exception is excepted");
             }
         }
 
@@ -1416,7 +1469,7 @@ public class ClientTest
             //Use add() instead of put() as these need to be non-blocking.
             mStatus.add(inStatus);
             if (mFail) {
-                throw new IllegalArgumentException("Test Failure");
+                throw new IllegalArgumentException("This exception is excepted");
             }
         }
 
@@ -1445,7 +1498,7 @@ public class ClientTest
             //Use add() instead of put() as these need to be non-blocking.
             mStatus.add(inStatus);
             if (mFail) {
-                throw new IllegalArgumentException("Test Failure");
+                throw new IllegalArgumentException("This exception is excepted");
             }
         }
 
@@ -1467,7 +1520,7 @@ public class ClientTest
         private BlockingQueue<Boolean> mStatus =
                 new LinkedBlockingQueue<Boolean>();
     }
-
+    private ClientParameters parameters;
     private static final String DEFAULT_CREDENTIAL = "name";
     private static final int SHORT_INTERVAL = 2000;
     private static final int LONG_INTERVAL = 60000;

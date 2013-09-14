@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Date;
 
 /* $License$ */
+
 /**
  * The module that sends orders to ORS and emits reports
  * received from ORS.
@@ -49,7 +50,7 @@ import java.util.Date;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 class ClientModule extends Module implements DataReceiver,
         DataEmitter, ClientModuleMXBean {
 

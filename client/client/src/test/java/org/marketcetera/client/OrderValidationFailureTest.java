@@ -29,7 +29,7 @@ public class OrderValidationFailureTest {
     public void orderSingle() throws Exception {
         verifySingle(null, NO_ORDER_SUPPLIED);
 
-        OrderSingle order = ClientTest.createOrderSingle();
+        OrderSingle order = ClientImplTest.createOrderSingle();
         //Verify we can send this order
         ClientManager.getManagerInstance().getInstance().sendOrder(order);
         Validations.validate(order);
@@ -38,27 +38,27 @@ public class OrderValidationFailureTest {
         order.setOrderID(null);
         verifySingle(order, VALIDATION_ORDERID);
 
-        order = ClientTest.createOrderSingle();
+        order = ClientImplTest.createOrderSingle();
         order.setOrderType(null);
         verifySingle(order, VALIDATION_ORDER_TYPE);
 
-        order = ClientTest.createOrderSingle();
+        order = ClientImplTest.createOrderSingle();
         order.setQuantity(null);
         verifySingle(order, VALIDATION_ORDER_QUANTITY);
 
-        order = ClientTest.createOrderSingle();
+        order = ClientImplTest.createOrderSingle();
         order.setSide(null);
         verifySingle(order, VALIDATION_ORDER_SIDE);
 
-        order = ClientTest.createOrderSingle();
+        order = ClientImplTest.createOrderSingle();
         order.setInstrument(null);
         verifySingle(order, VALIDATION_ORDER_INSTRUMENT);
 
-        order = ClientTest.createOrderSingle();
+        order = ClientImplTest.createOrderSingle();
         order.setInstrument(OPTION_INVALID_EXPIRY);
         verifySingle(order, EXPECTED_EXPIRY_FAIL_MESSAGE);
 
-        order = ClientTest.createOrderSingle();
+        order = ClientImplTest.createOrderSingle();
         order.setInstrument(UNKNOWN_INSTRUMENT);
         verifySingle(order, EXPECTED_UNKNOWN_INSTRUMENT_MESSAGE);
     }
@@ -66,7 +66,7 @@ public class OrderValidationFailureTest {
     public void orderReplace() throws Exception {
         verifyReplace(null, NO_ORDER_SUPPLIED);
 
-        OrderReplace order = ClientTest.createOrderReplace();
+        OrderReplace order = ClientImplTest.createOrderReplace();
         //Verify we can send this order
         ClientManager.getManagerInstance().getInstance().sendOrder(order);
         Validations.validate(order);
@@ -75,31 +75,31 @@ public class OrderValidationFailureTest {
         order.setOrderID(null);
         verifyReplace(order, VALIDATION_ORDERID);
 
-        order = ClientTest.createOrderReplace();
+        order = ClientImplTest.createOrderReplace();
         order.setOriginalOrderID(null);
         verifyReplace(order, VALIDATION_ORIG_ORDERID);
 
-        order = ClientTest.createOrderReplace();
+        order = ClientImplTest.createOrderReplace();
         order.setOrderType(null);
         verifyReplace(order, VALIDATION_ORDER_TYPE);
 
-        order = ClientTest.createOrderReplace();
+        order = ClientImplTest.createOrderReplace();
         order.setQuantity(null);
         verifyReplace(order, VALIDATION_ORDER_QUANTITY);
 
-        order = ClientTest.createOrderReplace();
+        order = ClientImplTest.createOrderReplace();
         order.setSide(null);
         verifyReplace(order, VALIDATION_ORDER_SIDE);
 
-        order = ClientTest.createOrderReplace();
+        order = ClientImplTest.createOrderReplace();
         order.setInstrument(null);
         verifyReplace(order, VALIDATION_ORDER_INSTRUMENT);
 
-        order = ClientTest.createOrderReplace();
+        order = ClientImplTest.createOrderReplace();
         order.setInstrument(OPTION_INVALID_EXPIRY);
         verifyReplace(order, EXPECTED_EXPIRY_FAIL_MESSAGE);
 
-        order = ClientTest.createOrderReplace();
+        order = ClientImplTest.createOrderReplace();
         order.setInstrument(UNKNOWN_INSTRUMENT);
         verifyReplace(order, EXPECTED_UNKNOWN_INSTRUMENT_MESSAGE);
     }
@@ -107,7 +107,7 @@ public class OrderValidationFailureTest {
     public void orderCancel() throws Exception {
         verifyCancel(null, NO_ORDER_SUPPLIED);
 
-        OrderCancel order = ClientTest.createOrderCancel();
+        OrderCancel order = ClientImplTest.createOrderCancel();
         //Verify we can send this order
         ClientManager.getManagerInstance().getInstance().sendOrder(order);
         Validations.validate(order);
@@ -116,34 +116,34 @@ public class OrderValidationFailureTest {
         order.setOrderID(null);
         verifyCancel(order, VALIDATION_ORDERID);
 
-        order = ClientTest.createOrderCancel();
+        order = ClientImplTest.createOrderCancel();
         order.setOriginalOrderID(null);
         verifyCancel(order, VALIDATION_ORIG_ORDERID);
 
-        order = ClientTest.createOrderCancel();
+        order = ClientImplTest.createOrderCancel();
         order.setQuantity(null);
         verifyCancel(order, VALIDATION_ORDER_QUANTITY);
 
-        order = ClientTest.createOrderCancel();
+        order = ClientImplTest.createOrderCancel();
         order.setSide(null);
         verifyCancel(order, VALIDATION_ORDER_SIDE);
 
-        order = ClientTest.createOrderCancel();
+        order = ClientImplTest.createOrderCancel();
         order.setInstrument(null);
         verifyCancel(order, VALIDATION_ORDER_INSTRUMENT);
 
-        order = ClientTest.createOrderCancel();
+        order = ClientImplTest.createOrderCancel();
         order.setInstrument(OPTION_INVALID_EXPIRY);
         verifyCancel(order, EXPECTED_EXPIRY_FAIL_MESSAGE);
 
-        order = ClientTest.createOrderCancel();
+        order = ClientImplTest.createOrderCancel();
         order.setInstrument(UNKNOWN_INSTRUMENT);
         verifyCancel(order, EXPECTED_UNKNOWN_INSTRUMENT_MESSAGE);
     }
     @Test
     public void orderFIX() throws Exception {
         verifyRaw(null, NO_ORDER_SUPPLIED);
-        Validations.validate(ClientTest.createOrderFIX());
+        Validations.validate(ClientImplTest.createOrderFIX());
     }
     @Test
     public void suggestions() throws Exception {
@@ -152,13 +152,13 @@ public class OrderValidationFailureTest {
         OrderSingleSuggestion suggest = Factory.getInstance().
                 createOrderSingleSuggestion();
         suggest.setIdentifier(null);
-        suggest.setOrder(ClientTest.createOrderSingle());
+        suggest.setOrder(ClientImplTest.createOrderSingle());
         suggest.setScore(BigDecimal.ONE);
         verifySuggestion(suggest, VALIDATION_SUGGEST_IDENTIFIER);
         suggest.setIdentifier("id");
         suggest.setOrder(null);
         verifySuggestion(suggest, VALIDATION_SUGGEST_ORDER);
-        suggest.setOrder(ClientTest.createOrderSingle());
+        suggest.setOrder(ClientImplTest.createOrderSingle());
         suggest.setScore(null);
         verifySuggestion(suggest, VALIDATION_SUGGEST_SCORE);
         //Verify validation passes

@@ -19,10 +19,11 @@ public class DirectClientFactory
         implements ClientFactory
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters)
+     * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters, org.marketcetera.client.ClientLifecycleManager)
      */
     @Override
-    public Client getClient(ClientParameters inClientParameters)
+    public Client getClient(ClientParameters inClientParameters,
+                            ClientLifecycleManager inClientLifecycleManager)
             throws ClientInitException, ConnectionException
     {
         return new DirectClient(inClientParameters,

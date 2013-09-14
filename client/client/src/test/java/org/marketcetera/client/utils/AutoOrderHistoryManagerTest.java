@@ -40,8 +40,7 @@ public class AutoOrderHistoryManagerTest
         LoggerConfiguration.logSetup();
         new ClientManager();
         ClientManager.getManagerInstance().setClientFactory(new MockClient.MockClientFactory());
-        ClientManager.getManagerInstance().init(null);
-        client = (MockClient)ClientManager.getManagerInstance().getInstance();
+        client = (MockClient)ClientManager.getManagerInstance().init(null);
         OrderHistoryManagerTest.once();
     }
     /**

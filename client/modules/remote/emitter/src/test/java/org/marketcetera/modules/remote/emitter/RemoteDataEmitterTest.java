@@ -21,7 +21,7 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.log4j.Level;
 import org.junit.Test;
-import org.marketcetera.client.ClientTest;
+import org.marketcetera.client.ClientImplTest;
 import org.marketcetera.core.Pair;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.module.CopierModuleFactory;
@@ -196,12 +196,12 @@ public class RemoteDataEmitterTest extends RemoteEmitterTestBase {
                 EventTestBase.generateEquityBidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
                 EventTestBase.generateEquityTradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
                 new NonSerializable(),
-                ClientTest.createOrderSingle(),
-                ClientTest.createOrderReplace(),
-                ClientTest.createOrderCancel(),
-                ClientTest.createOrderFIX(),
-                ClientTest.createCancelReject(),
-                ClientTest.createExecutionReport(),
+                ClientImplTest.createOrderSingle(),
+                ClientImplTest.createOrderReplace(),
+                ClientImplTest.createOrderCancel(),
+                ClientImplTest.createOrderFIX(),
+                ClientImplTest.createCancelReject(),
+                ClientImplTest.createExecutionReport(),
                 org.marketcetera.core.notifications.Notification.high(
                         "Subject", "body", "test.notification"),
                 BigInteger.ONE,

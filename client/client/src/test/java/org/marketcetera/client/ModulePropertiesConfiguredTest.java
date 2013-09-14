@@ -1,21 +1,32 @@
 package org.marketcetera.client;
 
-import org.marketcetera.util.misc.ClassVersion;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.marketcetera.module.ModuleManager;
 import org.marketcetera.util.ws.stateless.Node;
-import org.marketcetera.module.*;
-import org.junit.*;
-
 
 /* $License$ */
+
 /**
  * Tests the {@link org.marketcetera.client.ClientModule} module when
  * it's configured via the properties file as it would be in strategy agent.
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class ModulePropertiesConfiguredTest extends ClientModuleTestBase {
-
+public class ModulePropertiesConfiguredTest
+        extends ClientModuleTestBase
+{
+    /**
+     * Runs once before all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @BeforeClass
+    public static void once()
+            throws Exception
+    {
+        new ClientManager();
+    }
     @Before
     public void clientSetup() throws Exception {
         mManager = new ModuleManager();
@@ -27,6 +38,7 @@ public class ModulePropertiesConfiguredTest extends ClientModuleTestBase {
         CONFIG_PROVIDER.setPort(Node.DEFAULT_PORT);
         CONFIG_PROVIDER.setIDPrefix(IDPREFIX);
         mManager.init();
+        client = ClientManager.getManagerInstance().getInstance();
     }
 
     @Override

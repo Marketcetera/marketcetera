@@ -3,6 +3,11 @@ package org.marketcetera.photon.actions;
 import java.beans.ExceptionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.annotation.concurrent.GuardedBy;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -13,13 +18,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.eclipse.ui.progress.UIJob;
-import org.marketcetera.client.BrokerStatusListener;
-import org.marketcetera.client.Client;
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ClientParameters;
-import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.ServerStatusListener;
+import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
@@ -30,8 +29,8 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonPreferences;
 import org.marketcetera.photon.core.ICredentials;
 import org.marketcetera.photon.core.ICredentialsService;
-import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.core.ICredentialsService.IAuthenticationHelper;
+import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.ui.ServerStatusIndicator;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NMessage;
@@ -73,17 +72,22 @@ public class ReconnectServerJob extends UIJob {
         @Override
         public void run() {
             if (sScheduled.compareAndSet(false, true)) {
+                Lock closeLock = clientLock.writeLock();
                 try {
-                    ClientManager.getManagerInstance().getInstance().close();
-                } catch (ClientInitException e) {
+                    closeLock.lockInterruptibly();
+                    if(sClient != null) {
+                        sClient.close();
+                        sClient = null;
+                    }
+                } catch (Exception e) {
                     // ignore
                 } finally {
                     sScheduled.set(false);
+                    closeLock.unlock();
                 }
             }
         }
     };
-
     @Override
     public IStatus runInUIThread(IProgressMonitor monitor) {
         try {
@@ -99,7 +103,8 @@ public class ReconnectServerJob extends UIJob {
             logoutService.addLogoutRunnable(sClientCloser);
             boolean success = credentialsService.authenticateWithCredentials(new IAuthenticationHelper() {
                 @Override
-                public boolean authenticate(ICredentials credentials) {
+                public boolean authenticate(ICredentials credentials)
+                {
                     final ClientParameters parameters = new ClientParameters(credentials.getUsername(),
                                                                              credentials.getPassword() == null ? null : credentials.getPassword().toCharArray(),
                                                                              url,
@@ -109,24 +114,25 @@ public class ReconnectServerJob extends UIJob {
                     IRunnableWithProgress op = new IRunnableWithProgress() {
                         @Override
                         public void run(IProgressMonitor monitor)
-                                throws InvocationTargetException,InterruptedException {
+                                throws InvocationTargetException,InterruptedException
+                        {
                              // Invalidate position engine, it will be recreated if trading history is retrieved.
                             PhotonPlugin.getDefault().disposePositionEngine();
                             ServerStatusIndicator.setDisconnected();
                             PhotonPlugin.getDefault().setSessionStartTime(null);
                             // connect
+                            Lock reconnectLock = clientLock.writeLock();
                             try {
-                                Client client;
+                                reconnectLock.lockInterruptibly();
+                                sClient = ClientManager.getManagerInstance().getInstance(parameters.getParametersSpec());
                                 // if already initialized, reconnect
-                                if(ClientManager.getManagerInstance().isInitialized()) {
-                                    ClientManager.getManagerInstance().getInstance().reconnect(parameters);
-                                    client = ClientManager.getManagerInstance().getInstance();
+                                if(sClient != null) {
+                                    sClient.reconnect();
                                 } else {
                                     // first time initialization
-                                    ClientManager.getManagerInstance().init(parameters);
-                                    client = ClientManager.getManagerInstance().getInstance();
+                                    sClient = ClientManager.getManagerInstance().init(parameters);
                                     // add listeners
-                                    client.addExceptionListener(new ExceptionListener() {
+                                    sClient.addExceptionListener(new ExceptionListener() {
                                         @Override
                                         public void exceptionThrown(Exception e) {
                                             // When disconnected, client sends continual notifications, so we want to avoid cluttering the console.
@@ -148,13 +154,13 @@ public class ReconnectServerJob extends UIJob {
                                     ServerNotificationListener serverNotificationListener = new ServerNotificationListener();
                                     // Simulate initial connection notification that we missed because it was issued during initialization, above.
                                     serverNotificationListener.receiveServerStatus(true);
-                                    client.addServerStatusListener(serverNotificationListener);
-                                    client.addReportListener(PhotonPlugin.getDefault().getPhotonController());
-                                    client.addBrokerStatusListener(new BrokerNotificationListener(client));
+                                    sClient.addServerStatusListener(serverNotificationListener);
+                                    sClient.addReportListener(PhotonPlugin.getDefault().getPhotonController());
+                                    sClient.addBrokerStatusListener(new BrokerNotificationListener());
                                 }
                                 // Refresh Broker Status
                                 try {
-                                    asyncUpdateBrokers(client.getBrokersStatus());
+                                    asyncUpdateBrokers(sClient.getBrokersStatus());
                                 } catch (ConnectionException e) {
                                     throw new InvocationTargetException(e);
                                 }
@@ -162,6 +168,8 @@ public class ReconnectServerJob extends UIJob {
                                 throw new InvocationTargetException(e);
                             } catch (ClientInitException e) {
                                 throw new InvocationTargetException(e);
+                            } finally {
+                                reconnectLock.unlock();
                             }
                         }
                     };
@@ -203,26 +211,16 @@ public class ReconnectServerJob extends UIJob {
             }
         });
     }
-
     /**
      * Handles broker status updates.
      */
     @ClassVersion("$Id$")
-    static final class BrokerNotificationListener implements
-            BrokerStatusListener {
-
-        private final Client mClient;
-
-        /**
-         * @param client
-         *            Client instance to use to refresh brokers status
-         */
-        public BrokerNotificationListener(Client client) {
-            mClient = client;
-        }
-
+    static final class BrokerNotificationListener
+            implements BrokerStatusListener
+    {
         @Override
-        public void receiveBrokerStatus(final BrokerStatus status) {
+        public void receiveBrokerStatus(final BrokerStatus status)
+        {
             try {
                 I18NMessage0P subject;
                 I18NMessage1P details;
@@ -233,15 +231,21 @@ public class ReconnectServerJob extends UIJob {
                     subject = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE;
                     details = Messages.BROKER_NOTIFICATION_BROKER_UNAVAILABLE_DETAILS;
                 }
-                NotificationManager.getNotificationManager().publish(
-                        Notification.high(subject.getText(), details
-                                .getText(Messages.BROKER_LABEL_PATTERN.getText(
-                                        status.getName(), status.getId())),
-                                getClass().getName()));
-                asyncUpdateBrokers(mClient.getBrokersStatus());
+                NotificationManager.getNotificationManager().publish(Notification.high(subject.getText(),
+                                                                                       details.getText(Messages.BROKER_LABEL_PATTERN.getText(status.getName(),
+                                                                                                                                             status.getId())),
+                                                                                       getClass().getName()));
+                Lock subscribeLock = clientLock.readLock();
+                try {
+                    subscribeLock.lockInterruptibly();
+                    asyncUpdateBrokers(sClient.getBrokersStatus());
+                } finally {
+                    subscribeLock.unlock();
+                }
             } catch (Exception e) {
                 Messages.BROKER_NOTIFICATION_BROKER_ERROR_OCCURRED.error(this,
-                        e, status);
+                                                                         e,
+                                                                         status);
             }
         }
     }
@@ -283,4 +287,13 @@ public class ReconnectServerJob extends UIJob {
             }
         }
     }
+    /**
+     * client connect common to all reconnect server job instances, may be <code>null</code>
+     */
+    @GuardedBy("clientLock")
+    private static Client sClient;
+    /**
+     * guards access to the client object
+     */
+    private static final ReadWriteLock clientLock = new ReentrantReadWriteLock();
 }

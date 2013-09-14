@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import javax.management.JMX;
 
 /* $License$ */
+
 /**
  * ModuleFailuresTest
  *
@@ -17,11 +18,21 @@ import javax.management.JMX;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class ModuleFailuresTest extends ModuleTestBase {
+@ClassVersion("$Id$")
+public class ModuleFailuresTest
+        extends ModuleTestBase
+{
+    /**
+     * Runs once before all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @BeforeClass
-    public static void setup() {
+    public static void setup()
+            throws Exception
+    {
         LoggerConfiguration.logSetup();
+        new ClientManager();
     }
     @Test
     public void createModuleFailures() throws Exception {
@@ -43,8 +54,11 @@ public class ModuleFailuresTest extends ModuleTestBase {
         MockServer mockServer = null;
         try {
             mockServer = new MockServer();
-            ClientManager.getManagerInstance().init(new ClientParameters(username, username.toCharArray(),
-                    MockServer.URL, Node.DEFAULT_HOST, Node.DEFAULT_PORT));
+            Client client = ClientManager.getManagerInstance().init(new ClientParameters(username,
+                                                                                         username.toCharArray(),
+                                                                                         MockServer.URL,
+                                                                                         Node.DEFAULT_HOST,
+                                                                                         Node.DEFAULT_PORT));
             ModuleManager manager = new ModuleManager();
             manager.init();
             assertModuleInfo(manager, ClientModuleFactory.INSTANCE_URN,
@@ -54,23 +68,19 @@ public class ModuleFailuresTest extends ModuleTestBase {
                     ClientModuleFactory.INSTANCE_URN.toObjectName(),
                     ClientModuleMXBean.class);
             //Now close the client
-            ClientManager.getManagerInstance().getInstance().close();
+            client.close();
             //Verify failures.
-            new ExpectedFailure<RuntimeException>(Messages.
-                    CLIENT_NOT_INITIALIZED.getText()){
-                protected void run() throws Exception {
+            new ExpectedFailure<RuntimeException>(Messages.CLIENT_CLOSED.getText()) {
+                protected void run()
+                        throws Exception
+                {
                     instance.getLastConnectTime();
                 }
             };
-            new ExpectedFailure<RuntimeException>(Messages.
-                    CLIENT_NOT_INITIALIZED.getText()){
-                protected void run() throws Exception {
-                    instance.getParameters();
-                }
-            };
-            new ExpectedFailure<RuntimeException>(Messages.
-                    CLIENT_NOT_INITIALIZED.getText()){
-                protected void run() throws Exception {
+            new ExpectedFailure<RuntimeException>(Messages.CLIENT_CLOSED.getText()) {
+                protected void run()
+                        throws Exception
+                {
                     instance.reconnect();
                 }
             };

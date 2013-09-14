@@ -1,23 +1,23 @@
 package org.marketcetera.client;
 
-import org.marketcetera.client.jms.OrderEnvelope;
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.tags.SessionId;
-import org.marketcetera.module.*;
-import org.marketcetera.trade.*;
-
-import static org.marketcetera.trade.TypesTestBase.*;
-import org.marketcetera.quickfix.FIXVersion;
-import org.junit.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.apache.commons.lang.ObjectUtils;
+import static org.marketcetera.trade.TypesTestBase.*;
 
-import javax.management.JMX;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.math.BigDecimal;
+
+import javax.management.JMX;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.junit.*;
+import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.module.*;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.ws.tags.SessionId;
 
 /* $License$ */
 /**
@@ -27,7 +27,6 @@ import java.math.BigDecimal;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 @Ignore
 public class ClientModuleTestBase extends ModuleTestBase {
     /**
@@ -60,16 +59,16 @@ public class ClientModuleTestBase extends ModuleTestBase {
         ClientModuleMXBean instance = JMX.newMXBeanProxy(getMBeanServer(),
                 ClientModuleFactory.INSTANCE_URN.toObjectName(),
                 ClientModuleMXBean.class);
-        final Date lastTime = ClientManager.getManagerInstance().getInstance().getLastConnectTime();
+        final Date lastTime = client.getLastConnectTime();
         assertEquals(lastTime,
                 instance.getLastConnectTime());
-        ClientTest.assertCPEquals(ClientManager.getManagerInstance().getInstance().getParameters(),
-                instance.getParameters());
+        ClientImplTest.assertCPEquals(client.getParameters(),
+                                      instance.getParameters());
         //Sleep so that we definitely get a different connect time.
         Thread.sleep(100);
         instance.reconnect();
-        assertEquals(ClientManager.getManagerInstance().getInstance().getLastConnectTime(),
-                instance.getLastConnectTime());
+        assertEquals(client.getLastConnectTime(),
+                     instance.getLastConnectTime());
         assertTrue(instance.getLastConnectTime().compareTo(lastTime) > 0);
     }
 
@@ -96,9 +95,9 @@ public class ClientModuleTestBase extends ModuleTestBase {
     public void dataFlow() throws Exception {
         //Create all kinds of orders to send
         Order[] orders = new Order[]{
-                ClientTest.createOrderSingle(),
-                ClientTest.createOrderReplace(),
-                Factory.getInstance().createOrderCancel(ClientTest.createExecutionReport()),
+                ClientImplTest.createOrderSingle(),
+                ClientImplTest.createOrderReplace(),
+                Factory.getInstance().createOrderCancel(ClientImplTest.createExecutionReport()),
                 Factory.getInstance().createOrder(
                         FIXVersion.FIX44.getMessageFactory().newLimitOrder(
                                 "ord1", quickfix.field.Side.BUY,
@@ -108,10 +107,10 @@ public class ClientModuleTestBase extends ModuleTestBase {
         };
         //Initialize mock server with reports to return
         ReportBase[] reports = new ReportBase[] {
-                ClientTest.createExecutionReport(),
-                ClientTest.createExecutionReport(),
-                ClientTest.createCancelReject(),
-                ClientTest.createExecutionReport()};
+                ClientImplTest.createExecutionReport(),
+                ClientImplTest.createExecutionReport(),
+                ClientImplTest.createCancelReject(),
+                ClientImplTest.createExecutionReport()};
         sServer.getHandler().addToSend(reports[0]);
         sServer.getHandler().addToSend(reports[1]);
         sServer.getHandler().addToSend(reports[2]);
@@ -169,8 +168,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 SinkModuleFactory.INSTANCE_URN, null);
         //Verify that the server got the orders
 
-        SessionId id = ((ClientImpl)(ClientManager.getManagerInstance().getInstance())).
-            getSessionId();
+        SessionId id = ((ClientImpl)client).getSessionId();
         assertEquals(4, sServer.getHandler().numReceived());
 
         OrderEnvelope e=(OrderEnvelope)sServer.getHandler().removeReceived();
@@ -211,7 +209,7 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 OrderSenderModuleFactory.PROVIDER_URN, "unsupported",
                 new Object[]{
                         errorData,
-                        ClientTest.createOrderSingle()});
+                        ClientImplTest.createOrderSingle()});
         BlockingSinkDataListener sink = new BlockingSinkDataListener();
         mManager.addSinkListener(sink);
         DataFlowID flowID = mManager.createDataFlow(new DataRequest[]{
@@ -251,20 +249,31 @@ public class ClientModuleTestBase extends ModuleTestBase {
         mManager.stop(senderURN);
         mManager.deleteModule(senderURN);
     }
-
+    /**
+     * Tests behavior if the client is not initialized.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test(timeout = 60000)
-    public void dataFlowNotInitializedError() throws Exception {
-        OrderSingle order = ClientTest.createOrderSingle();
-        ModuleURN senderURN = mManager.createModule(
-                OrderSenderModuleFactory.PROVIDER_URN, "clientNotInit",
-                new Object[]{Boolean.FALSE, order});
-        DataFlowID flowID = mManager.createDataFlow(new DataRequest[]{
-                new DataRequest(senderURN, null),
-                new DataRequest(ClientModuleFactory.INSTANCE_URN, null)
-        });
-        assertFlowInfo(mManager.getDataFlowInfo(flowID), flowID, 3, true,
-                false, null, null);
-        //The data flow should terminate as the client is not initialized
+    public void dataFlowNotInitializedError()
+            throws Exception
+    {
+        OrderSingle order = ClientImplTest.createOrderSingle();
+        ModuleURN senderURN = mManager.createModule(OrderSenderModuleFactory.PROVIDER_URN,
+                                                    "clientNotInit",
+                                                    new Object[] { Boolean.FALSE, order } );
+        DataFlowID flowID = mManager.createDataFlow(new DataRequest[] { new DataRequest(senderURN,
+                                                                                        null),
+                                                                        new DataRequest(ClientModuleFactory.INSTANCE_URN,
+                                                                                        null) });
+        assertFlowInfo(mManager.getDataFlowInfo(flowID),
+                       flowID,
+                       3,
+                       true,
+                       false,
+                       null,
+                       null);
+        // The data flow should terminate as the client is not initialized
         while(!mManager.getDataFlows(true).isEmpty()) {
             Thread.sleep(1000);
         }
@@ -285,7 +294,6 @@ public class ClientModuleTestBase extends ModuleTestBase {
                 SinkModuleFactory.INSTANCE_URN, null);
         mManager.stop(senderURN);
         mManager.deleteModule(senderURN);
-
     }
 
     @BeforeClass
@@ -308,16 +316,19 @@ public class ClientModuleTestBase extends ModuleTestBase {
     }
 
     @After
-    public void clientCleanup() throws Exception {
+    public void clientCleanup()
+            throws Exception
+    {
         if (mManager != null) {
             mManager.stop();
         }
         mManager = null;
-        if (ClientManager.getManagerInstance().isInitialized()) {
-            ClientManager.getManagerInstance().getInstance().close();
-        }
+//        if(client != null) {
+//            client.close();
+//            client = null;
+//        }
     }
-
+    protected Client client;
     protected ModuleManager mManager;
     private static MockServer sServer;
     protected static final String IDPREFIX = "my";

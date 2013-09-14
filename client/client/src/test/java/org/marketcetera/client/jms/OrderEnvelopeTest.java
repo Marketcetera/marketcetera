@@ -1,7 +1,7 @@
 package org.marketcetera.client.jms;
 
 import org.junit.Test;
-import org.marketcetera.client.ClientTest;
+import org.marketcetera.client.ClientImplTest;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.TypesTestBase;
 import org.marketcetera.util.test.TestCaseBase;
@@ -23,7 +23,7 @@ public class OrderEnvelopeTest
     private static final SessionId TEST_SESSION_ID=
         SessionId.generate();
     private static final OrderSingle TEST_ORDER=
-        ClientTest.createOrderSingle();
+        ClientImplTest.createOrderSingle();
 
     @Test
     public void all()

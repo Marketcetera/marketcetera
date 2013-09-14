@@ -43,6 +43,7 @@ public interface Messages {
             new I18NMessage0P(LOGGER, "client_already_initialized");   //$NON-NLS-1$
     static final I18NMessage0P CLIENT_NOT_INITIALIZED =
             new I18NMessage0P(LOGGER, "client_not_initialized");   //$NON-NLS-1$
+    static final I18NMessage0P NO_CLIENT_FACTORY = new I18NMessage0P(LOGGER,"no_client_factory");   //$NON-NLS-1$
 
     static final I18NMessage1P ERROR_SEND_MESSAGE =
             new I18NMessage1P(LOGGER, "error_send_message");   //$NON-NLS-1$

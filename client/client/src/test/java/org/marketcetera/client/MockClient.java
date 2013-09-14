@@ -282,15 +282,6 @@ public class MockClient
         throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#reconnect(org.marketcetera.client.ClientParameters)
-     */
-    @Override
-    public void reconnect(ClientParameters inParameters)
-            throws ConnectionException
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.client.Client#getParameters()
      */
     @Override
@@ -561,10 +552,11 @@ public class MockClient
             implements ClientFactory
     {
         /* (non-Javadoc)
-         * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters)
+         * @see org.marketcetera.client.ClientFactory#getClient(org.marketcetera.client.ClientParameters, org.marketcetera.client.ClientLifecycleManager)
          */
         @Override
-        public Client getClient(ClientParameters inClientParameters)
+        public Client getClient(ClientParameters inClientParameters,
+                                ClientLifecycleManager inClientLifecycleManager)
                 throws ClientInitException, ConnectionException
         {
             return new MockClient(inClientParameters);

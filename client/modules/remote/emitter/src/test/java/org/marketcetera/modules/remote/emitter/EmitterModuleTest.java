@@ -18,7 +18,7 @@ import javax.management.Notification;
 import javax.management.NotificationListener;
 
 import org.junit.Test;
-import org.marketcetera.client.ClientTest;
+import org.marketcetera.client.ClientImplTest;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventLevel;
@@ -213,12 +213,12 @@ public class EmitterModuleTest extends RemoteEmitterTestBase {
                 EventTestBase.generateEquityAskEvent(1, 2, new Equity("asym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
                 EventTestBase.generateEquityBidEvent(3, 4, new Equity("bsym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
                 EventTestBase.generateEquityTradeEvent(5, 6, new Equity("csym"), "ex", BigDecimal.ONE, BigDecimal.TEN),
-                ClientTest.createOrderSingle(),
-                ClientTest.createOrderReplace(),
-                ClientTest.createOrderCancel(),
-                ClientTest.createOrderFIX(),
-                ClientTest.createCancelReject(),
-                ClientTest.createExecutionReport(),
+                ClientImplTest.createOrderSingle(),
+                ClientImplTest.createOrderReplace(),
+                ClientImplTest.createOrderCancel(),
+                ClientImplTest.createOrderFIX(),
+                ClientImplTest.createCancelReject(),
+                ClientImplTest.createExecutionReport(),
                 org.marketcetera.core.notifications.Notification.high(
                         "Subject", "body", "test.notification"),
                 BigInteger.ONE,
