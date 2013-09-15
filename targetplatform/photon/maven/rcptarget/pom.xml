@@ -84,6 +84,7 @@
                       <version>${mvn.eclipse.version}</version>
                       <classifier>win32</classifier>
                       <type>zip</type>
+		      <outputDirectory>photon-target/eclipse</outputDirectory>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.eclipse</groupId>

@@ -64,7 +64,7 @@ public abstract class AbstractStrategyEnginesSupportTestBase extends
         mMockRegistration = mock(ServiceRegistration.class);
         when(
                 mMockContext.registerService(eq(IStrategyEngines.class
-                        .getName()), anyObject(), (Dictionary<?, ?>) isNull()))
+                        .getName()), anyObject(), (Dictionary<String, ?>) isNull()))
                 .thenAnswer(new Answer<ServiceRegistration>() {
                     @Override
                     public ServiceRegistration answer(
