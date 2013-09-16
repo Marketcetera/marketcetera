@@ -1,0 +1,501 @@
+# Copyright (c) 2003 Object Factory Inc. All rights reserved.
+# RELAX NG schema for XSWT
+# XML Schema is automatically generated from xswt.rnc by trang.
+# Do not modify XML Schema by hand!
+
+start =		element xswt { control+ }
+
+control =	compound | single
+
+compound =	composite|group|canvas
+
+single =	button|label|progressBar|sash|scale|scrollable
+
+scrollable =
+			combo|tabFolder|table|tree|\list|\text
+			#|tableTree|toolBar|sashForm|ccombo|styledText|coolBar|cTabFolder|scrolledComposite
+
+## Only one of LEFT_TO_RIGHT RIGHT_TO_LEFT is allowed.
+controlStyles = 
+			"BORDER"
+			| ("LEFT_TO_RIGHT"|"RIGHT_TO_LEFT")
+
+widgetAttributes = attribute id {xsd:ID}?
+
+widgetElements =
+			element data {
+				attribute key {text}?,
+				attribute value {text}?
+			}
+
+controlAttributes =
+			(widgetAttributes,
+			attribute background {color}?,
+			attribute cursor {cursors}?,
+			attribute enabled {xsd:boolean}?,
+			attribute focus {xsd:boolean}?,
+			attribute foreground {color}?,
+			attribute location {list {xsd:int,xsd:int}}?,
+			attribute size {list {xsd:int,xsd:int}}?,
+			attribute toolTipText {text}?,
+			attribute visible {xsd:boolean}?)
+
+controlElements = widgetElements?, layoutData?, font?, menu?
+
+layoutData =
+			element formData {
+				attribute height {xsd:nonNegativeInteger}?,
+				attribute width {xsd:nonNegativeInteger}?,
+				(element bottom { attachmentContent }?
+				& element left   { attachmentContent }?
+				& element right  { attachmentContent }?
+				& element top    { attachmentContent }?)
+			}
+			| element gridData {
+				attribute style {
+					list {
+						( "VERTICAL_ALIGN_BEGINNING"
+						| "VERTICAL_ALIGN_CENTER"
+						| "VERTICAL_ALIGN_END"
+						| "VERTICAL_ALIGN_FILL"
+						| "HORIZONTAL_ALIGN_BEGINNING"
+						| "HORIZONTAL_ALIGN_CENTER"
+						| "HORIZONTAL_ALIGN_END"
+						| "HORIZONTAL_ALIGN_FILL"
+						| "GRAB_HORIZONTAL"
+						| "GRAB_VERTICAL"
+						| "FILL_VERTICAL"
+						| "FILL_HORIZONTAL"
+						| "FILL_BOTH")*
+					}
+				}?,
+				attribute horizontalAlignment { gridAlignment }?,
+				attribute verticalAlignment { gridAlignment }?,
+				attribute widthHint {xsd:nonNegativeInteger|"DEFAULT"}?,
+				attribute heightHint {xsd:nonNegativeInteger|"DEFAULT"}?,
+				attribute horizontalIndent {xsd:nonNegativeInteger}?,
+				attribute horizontalSpan {xsd:positiveInteger}?,
+				attribute verticalSpan {xsd:positiveInteger}?,
+				attribute grabExcessHorizontalSpace {xsd:boolean}?,
+				attribute grabExcessVerticalSpace {xsd:boolean}?
+			}
+			| element rowData {
+				attribute width {xsd:nonNegativeInteger}?,
+				attribute height {xsd:nonNegativeInteger}?
+			}
+
+attachmentContent =
+			attribute numerator {xsd:nonNegativeInteger}?,
+			attribute denominator {xsd:positiveInteger}?,
+			attribute offset {xsd:int}?,
+			# alignment is only used with control
+			(	attribute control {xsd:IDREF},
+				attribute alignment {
+					"TOP"|"BOTTOM"|"LEFT"|"RIGHT"|"CENTER"|"DEFAULT"
+				}?
+			)?
+
+gridAlignment = "BEGINNING"|"CENTER"|"END"|"FILL"
+
+## Placeholder FIXME
+menu =		element menu {
+				empty
+			}
+
+## In RELAX NG schema the attributes and fontData are mutually exclusive,
+## but XML Schema allows both, i.e., is the equivalent of
+## element font { fontDescription, fontData* }
+font =		element font { fontDescription | fontData+ }
+
+## Any missing attributes are assumed to refer to current control font
+fontDescription =
+			attribute name {text}?,
+			attribute height {xsd:nonNegativeInteger}?,
+			attribute style {list {("NORMAL"|"BOLD"|"ITALIC")*}}?
+
+fontData =	element fontData { fontDescription }
+			
+color =		list { colorpart, colorpart, colorpart }
+			| colorname
+
+colorpart = xsd:int { minInclusive="0" maxInclusive="255" }
+
+## color names are those supported in CSS by Internet Explorer and Navigator
+colorname =
+			"AliceBlue"|"AntiqueWhite"|"Aqua"|"Aquamarine"|"Azure"|"Beige"|"Bisque"|"Black"
+			|"BlanchedAlmond"|"Blue"|"BlueViolet"|"Brown"|"BurlyWood"|"CadetBlue"|"Chartreuse"
+			|"Chocolate"|"Coral"|"CornflowerBlue"|"Cornsilk"|"Crimson"|"Cyan"|"DarkBlue"
+			|"DarkCyan"|"DarkGoldenRod"|"DarkGray"|"DarkGreen"|"DarkKhaki"|"DarkMagenta"
+			|"DarkOliveGreen"|"Darkorange"|"DarkOrchid"|"DarkRed"|"DarkSalmon"|"DarkSeaGreen"
+			|"DarkSlateBlue"|"DarkSlateGray"|"DarkTurquoise"|"DarkViolet"|"DeepPink"|"DeepSkyBlue"
+			|"DimGray"|"DodgerBlue"|"Feldspar"|"FireBrick"|"FloralWhite"|"ForestGreen"|"Fuchsia"
+			|"Gainsboro"|"GhostWhite"|"Gold"|"GoldenRod"|"Gray"|"Green"|"GreenYellow"|"HoneyDew"
+			|"HotPink"|"IndianRed"|"Indigo"|"Ivory"|"Khaki"|"Lavender"|"LavenderBlush"|"LawnGreen"
+			|"LemonChiffon"|"LightBlue"|"LightCoral"|"LightCyan"|"LightGoldenRodYellow"
+			|"LightGrey"|"LightGreen"|"LightPink"|"LightSalmon"|"LightSeaGreen"|"LightSkyBlue"
+			|"LightSlateBlue"|"LightSlateGray"|"LightSteelBlue"|"LightYellow"|"Lime"|"LimeGreen"
+			|"Linen"|"Magenta"|"Maroon"|"MediumAquaMarine"|"MediumBlue"|"MediumOrchid"
+			|"MediumPurple"|"MediumSeaGreen"|"MediumSlateBlue"|"MediumSpringGreen"
+			|"MediumTurquoise"|"MediumVioletRed"|"MidnightBlue"|"MintCream"|"MistyRose"|"Moccasin"
+			|"NavajoWhite"|"Navy"|"OldLace"|"Olive"|"OliveDrab"|"Orange"|"OrangeRed"|"Orchid"
+			|"PaleGoldenRod"|"PaleGreen"|"PaleTurquoise"|"PaleVioletRed"|"PapayaWhip"|"PeachPuff"
+			|"Peru"|"Pink"|"Plum"|"PowderBlue"|"Purple"|"Red"|"RosyBrown"|"RoyalBlue"
+			|"SaddleBrown"|"Salmon"|"SandyBrown"|"SeaGreen"|"SeaShell"|"Sienna"|"Silver"|"SkyBlue"
+			|"SlateBlue"|"SlateGray"|"Snow"|"SpringGreen"|"SteelBlue"|"Tan"|"Teal"|"Thistle"
+			|"Tomato"|"Turquoise"|"Violet"|"VioletRed"|"Wheat"|"White"|"WhiteSmoke"|"Yellow"
+			|"YellowGreen"
+
+cursors =	"CURSOR_ARROW"|"CURSOR_WAIT"|"CURSOR_CROSS"|"CURSOR_APPSTARTING"
+			| "CURSOR_HELP"|"CURSOR_SIZEALL"|"CURSOR_SIZENESW"|"CURSOR_SIZENS"
+			| "CURSOR_SIZENWSE"|"CURSOR_SIZEWE"|"CURSOR_SIZEN"|"CURSOR_SIZES"
+			| "CURSOR_SIZEE"|"CURSOR_SIZEW"|"CURSOR_SIZENE"|"CURSOR_SIZESE"
+			| "CURSOR_SIZESW"|"CURSOR_SIZENW"|"CURSOR_UPARROW"|"CURSOR_IBEAM"
+			| "CURSOR_NO"|"CURSOR_HAND"
+
+## Only one of H_SCROLL or V_SCROLL is allowed.
+scrollableStyles =
+			controlStyles
+			| ("H_SCROLL"|"V_SCROLL")
+
+composite = element composite {
+				compositeAttributes,
+				controlElements,
+				compositeChildren
+			}
+
+compositeChildren = layout?, children?
+
+children =	element children { control+ }
+
+compositeAttributes =
+			baseCompositeAttributes,
+			attribute style { list {compositeStyles*}}?
+
+baseCompositeAttributes =
+			controlAttributes,
+			attribute tabList { xsd:IDREFS }?
+
+compositeStyles =
+			scrollableStyles
+			| "NO_BACKGROUND"
+			| "NO_FOCUS"
+			| "NO_MERGE_PAINTS"
+			| "NO_REDRAW_RESIZE"
+			| "NO_RADIO_GROUP"
+
+layout =	element fillLayout {
+				attribute type {"VERTICAL"|"HORIZONTAL"}?
+		 	}
+			| element gridLayout {
+	   			attribute horizontalSpacing {xsd:int}?,
+	   			attribute makeColumnsEqualWidth {xsd:boolean}?,
+	   			attribute marginHeight {xsd:int}?,
+	   			attribute marginWidth {xsd:int}?,
+	   			attribute numColumns {xsd:positiveInteger}?,
+	   			attribute verticalSpacing {xsd:int}?
+	     	}
+			| element rowLayout {
+	   			attribute fill|justify|pack|wrap {xsd:boolean}*,
+	   			attribute marginBottom|marginLeft|marginRight|marginTop {xsd:nonNegativeInteger}*,
+	   			attribute spacing {xsd:int}?,
+				attribute type {"VERTICAL"|"HORIZONTAL"}?
+	     	}
+	     	| element formLayout {
+	     		attribute marginHeight {xsd:int}?,
+	     		attribute marginWidth {xsd:int}?
+	     	}
+
+group =		element group {
+				groupAttributes,
+				controlElements,
+				compositeChildren
+			}
+
+groupAttributes =
+			baseCompositeAttributes,
+			attribute style {list {groupStyles*}}?,
+			attribute text {text}?
+
+## Only one of SHADOW_ETCHED_IN, SHADOW_ETCHED_OUT, SHADOW_IN, SHADOW_OUT, SHADOW_NONE is allowed.
+groupStyles =
+			compositeStyles
+			| ("SHADOW_ETCHED_IN"|"SHADOW_ETCHED_OUT"|"SHADOW_IN"|"SHADOW_OUT"|"SHADOW_NONE")
+
+canvas =	element canvas {
+				canvasAttributes,
+				controlElements,
+				compositeChildren
+			}
+
+canvasAttributes =
+			baseCompositeAttributes,
+			element style {list {compositeStyles*}}?
+			
+button =	element button {
+				buttonAttributes,
+				controlElements
+		 	}
+
+buttonAttributes =
+				controlAttributes,
+				( (attribute style {list {(controlStyles|arrowStyle)*}}?,
+				   attribute alignment {"LEFT"|"RIGHT"|"UP"|"DOWN"}?)
+				| (attribute style {list {(controlStyles|buttonStyles)*}}?,
+				   attribute alignment {"LEFT"|"RIGHT"|"CENTER"}?)),
+				attribute image {text}?,
+				attribute selection {xsd:boolean}?,
+				attribute text {text}?
+
+## UP and DOWN are only used with ARROW.
+## Only one of LEFT, RIGHT, UP, DOWN, CENTER is allowed.
+arrowStyle =
+			"ARROW"
+			| ("LEFT"|"RIGHT"|"UP"|"DOWN")
+
+## Only one of CHECK, PUSH, RADIO, TOGGLE is allowed.
+buttonStyles =
+			("CHECK"|"PUSH"|"RADIO"|"TOGGLE")
+			| "FLAT"
+			| ("LEFT"|"RIGHT"|"CENTER")
+
+label =		element label {
+				labelAttributes,
+				controlElements
+			}
+
+labelAttributes =
+				controlAttributes,
+				attribute style {list {labelStyles*}}?,
+				attribute alignment {"LEFT"|"RIGHT"|"CENTER"}?,
+				attribute image {text}?,
+				attribute text {text}?
+
+## HORIZONTAL and VERTICAL are only used with SEPARATOR.
+## Only one of HORIZONTAL or VERTICAL is allowed.
+## Only one of CENTER, LEFT or RIGHT is allowed.
+## Only one of SHADOW_IN, SHADOW_OUT or SHADOW_NONE is allowed.
+labelStyles =
+			controlStyles
+			| ("SEPARATOR"|("HORIZONTAL"|"VERTICAL"))
+			| ("CENTER"|"LEFT"|"RIGHT")
+			| "WRAP"
+			| ("SHADOW_IN"|"SHADOW_OUT"|"SHADOW_NONE")
+
+progressBar =
+			element progressBar {
+				progressBarAttributes,
+				controlElements
+			}
+
+progressBarAttributes =
+				controlAttributes,
+				attribute style {list {progressBarStyles*}}?,
+				attribute maximum {xsd:int}?,
+				attribute minimum {xsd:int}?,
+				attribute selection {xsd:boolean}?
+
+## Only one of HORIZONTAL or VERTICAL is allowed
+progressBarStyles =
+			controlStyles
+			| "SMOOTH"
+			| ("HORIZONTAL"|"VERTICAL")
+			| "INDETERMINATE"
+
+sash =		element sash {
+				sashAttributes,
+				controlElements
+			}
+
+sashAttributes =
+				controlAttributes,
+				attribute style {list {sashStyles*}}
+
+## Only one of HORIZONTAL or VERTICAL is allowed
+sashStyles =
+			controlStyles
+			| ("HORIZONTAL"|"VERTICAL")
+
+scale =		element scale {
+				scaleAttributes,
+				controlElements
+			}
+
+scaleAttributes =
+				controlAttributes,
+				attribute style {scaleStyles}?,
+				attribute increment {xsd:positiveInteger}?,
+				attribute maximum {xsd:nonNegativeInteger}?,
+				attribute minimum {xsd:nonNegativeInteger}?,
+				attribute pageIncrement {xsd:nonNegativeInteger}?,
+				attribute selection {xsd:nonNegativeInteger}?
+
+## Only one of HORIZONTAL or VERTICAL is allowed
+scaleStyles =
+			controlStyles
+			| ("HORIZONTAL" | "VERTICAL")
+
+## Composite attributes, styles and elements are not relevant to combo.
+combo =		element combo {
+				comboAttributes,
+				controlElements,
+				element items {
+					element item {
+						attribute value {text}
+					}*
+				}
+			}
+
+comboAttributes =
+			controlAttributes,
+			attribute style {list {comboStyles*}}?,
+			attribute selection {list {xsd:nonNegativeInteger, xsd:nonNegativeInteger}}?,
+			attribute text {text}?,
+			attribute textLimit {xsd:nonNegativeInteger}?
+
+## Only one of DROP_DOWN or SIMPLE is allowed.
+comboStyles =
+			controlStyles
+			| ("DROP_DOWN"|"SIMPLE")
+			| "READ_ONLY"
+
+tabFolder =	element tabFolder {
+				tabFolderAttributes,
+				controlElements,
+				element items {
+					element item {
+						# No styles are defined for TabItem
+						attribute image {text}?,
+						attribute text {text}?,
+						attribute toolTipText {text}?,
+						element control { control }
+					}*
+				}
+			}
+
+# Composite attributes, styles and elements are not relevant to tabFolder.
+tabFolderAttributes =
+			controlAttributes,
+			attribute style {list {controlStyles*}}?,
+			attribute selection {xsd:nonNegativeInteger}?
+
+table =	element table {
+				tableAttributes,
+				controlElements,
+				element columns {
+					element tableColumn {
+						attribute style {"LEFT"|"RIGHT"|"CENTER"}?,
+						attribute alignment {"LEFT"|"RIGHT"|"CENTER"}?,
+						attribute image {text}?,
+						attribute resizable {xsd:boolean}?,
+						attribute text {text}?,
+						attribute width {xsd:nonNegativeInteger}?
+					}*
+				}?,
+				element items {
+					element tableItem {
+						attribute background {color}?,
+						attribute checked {xsd:boolean}?,
+						attribute foreground {color}?,
+						attribute grayed {xsd:boolean}?,
+						attribute imageIndent {xsd:int}?,
+						element data {
+							attribute image {text}?,
+							attribute text {text}?
+						}*
+					}*
+				}?
+			}
+
+tableAttributes =
+			controlAttributes,
+			attribute style {list {tableStyles*}}?,
+			attribute headerVisible {xsd:boolean}?,
+			attribute linesVisible {xsd:boolean}?,
+			(attribute selection {xsd:nonNegativeInteger}
+			| attribute selection {list {xsd:nonNegativeInteger, xsd:nonNegativeInteger}})?,
+			attribute topIndex {xsd:nonNegativeInteger}?
+
+## Only one of SINGLE or MULTI is allowed.
+tableStyles =
+			controlStyles
+			| ("SINGLE"|"MULTI")
+			| "CHECK"
+			| "FULL_SELECTION"
+			| "HIDE_SELECTION"
+
+tree =		element tree {
+				treeAttributes,
+				controlElements,
+				treeItems
+			}
+
+treeItems =	element items { treeItem* }
+
+treeItem =	element treeItem {
+				attribute background {color}?,
+				attribute checked {xsd:boolean}?,
+				attribute expanded {xsd:boolean}?,
+				attribute foreground {color}?,
+				attribute grayed {xsd:boolean}?,
+				attribute image {text}?,
+				attribute text {text}?,
+				treeItem*
+			}
+
+treeAttributes =
+			controlAttributes,
+			attribute style {list {treeStyles*}}?
+
+## Only one of SINGLE or MULTI is allowed.
+treeStyles =
+			controlStyles
+			| ("SINGLE"|"MULTI")
+			| "CHECK"
+
+\list =		element list {
+				listAttributes,
+				controlElements,
+				element items {
+					element item {
+						attribute value {text}
+					}+
+				}?
+			}
+
+listAttributes =
+			controlAttributes,
+			attribute style {list {listStyles*}}?,
+			(attribute selection {xsd:int} | attribute selection {list {xsd:int,xsd:int}})?,
+			attribute topIndex {xsd:int}?
+
+## Only one of SINGLE or MULTI is allowed.
+listStyles =
+			controlStyles
+			| ("SINGLE"|"MULTI")
+
+\text =		element text {
+				textAttributes,
+				controlElements
+			}
+
+textAttributes =
+			controlAttributes,
+			attribute style {list {textStyles*}}?,
+			attribute doubleClickEnabled {xsd:boolean}?,
+			attribute echoChar {text}?,
+			attribute editable {xsd:boolean}?,
+			( attribute selection {xsd:nonNegativeInteger}
+			| attribute selection {list {xsd:nonNegativeInteger, xsd:nonNegativeInteger}})?,
+			attribute tabs {xsd:nonNegativeInteger}?,
+			attribute text {text}?,
+			attribute textLimit {xsd:positiveInteger}?,
+			attribute topIndex {xsd:nonNegativeInteger}?
+
+## Only one of CENTER, LEFT or RIGHT is allowed.
+## Only one of SINGLE or MULTI is allowed.
+textStyles =
+			controlStyles
+			| ("CENTER"|"LEFT"|"RIGHT")
+			| ("MULTI"|"SINGLE")
+			| "READ_ONLY"
+			| "WRAP"

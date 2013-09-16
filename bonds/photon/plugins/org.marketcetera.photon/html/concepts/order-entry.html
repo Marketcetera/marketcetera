@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Order Entry</title>
+<body>
+<div id="content">
+<h1>Order Entry</h1>
+<p>Order entry can be accomplished in two ways: using the <i>Stock Order Ticket</i> view, and by typing orders directly into the <i>Command Entry Area</i>.</p>
+<h2>Stock Order Ticket view</h2>
+<p>With the stock order ticket, you can use a combination of your keyboard and mouse to enter orders. To open the Stock Order Ticket view, if it's not already visible, 
+click on the Window menu and choose <i>Stock Order Ticket</i>.</p>
+<img src="../images/stock-order-ticket-blank.png" alt="Stock Order Ticket" />
+<p>The stock order ticket allows you to control the following properties of the order. (Currently only limit orders are supported)</p>
+<dl>
+	<dt>Side</dt>
+	<dd>The side of the order that you want to take.  Currently only buy, sell, sell short, and sell short exempt are available.</dd>
+	<dt>OrderQty</dt>
+	<dd>The share quantity for the order.  This value must be an integer.</dd>
+	<dt>Symbol</dt>
+	<dd>The symbol for the stock referenced by this order.</dd>
+	<dt>Price</dt>
+	<dd>The limit price of the order.  This value must be a number, either an integer or decimal number.  Fractions are not allowed.</dd>
+	<dt>TimeInForce</dt>
+	<dd>The time the order will be in force.  Currently supported are day, good till cancel, fill or kill, and immediate or cancel.</dd>
+	<dt>Account</dt>
+	<dd>The account into which to place the resulting position.  This field is optional.</dd>
+</dl>
+
+<p>When you have adjusted the order settings appropriately, click the send button to send the order to the order routing system.</p>
+<h2>Command Entry Area </h2>
+<p>The Command Entry Areay is labelled &quot;Command:&quot; at the bottom <i>Stock Order Ticket</i>. You can activate the command entry area by typing &lt;alt&gt;-c.</p>
+<p>Currently the following command types are supported</p>
+<dl>
+	<dt>New Order</dt>
+	<dd><pre class="commandsyntax">{ B | S | SS | SSE} <em class="replaceable">quantity</em> <em class="replaceable">symbol</em> <em class="replaceable">price</em> [<em class="replaceable">timeInForce</em> [<em class="replaceable">account</em>]]
+	</pre></dd>
+	<dd>This command starts with one of "B" (buy), "S" (sell), "SS" (sell short), "SSE" (sell short exempt). That
+	is followed by a quantity which must be an integer.  After the quantity comes a symbol.  A symbol can consist
+	of any string of non-whitespace characters. Next comes the price, which can be either numeric or integer format.
+	Finally two optional components, the time in force and the account.  Time in force can be one of "DAY" (day),
+	"GTC" (good 'til cancel), "FOK" (fill or kill), "CLO" (at the close), "OPG" (at the opening), "IOC" (immediate 
+	or cancel). The account can be any string of non-whitespace characters.  Note that if you have an account, you
+	must also have a time in force.</dd>
+	<dt>Cancel order</dt>
+	<dd>
+	  <pre class="commandsyntax">C {<em class="replaceable">clordid</em>}+</pre>
+	</dd>
+	<dd>This command starts with a "C" followed by a list of ClOrdId (client order id) values separated by whitespace.</dd>
+	<dt>Cancel/Replace Order</dt>
+	<dd>
+	  <pre class="commandsyntax">CXR <em class="replaceable">clordid</em> { P | Q } { <em class="replaceable">price</em> | <em class="replaceable">quantity</em> }</pre>
+	</dd>
+	<dd>This command starts with "CXR" followed by a ClOrdId (client order id) of an open order.  Next comes "P" or "Q", specifying replace of price or quantity
+	(replacement of both is not currently supported).  Finally comes the price or quantity depending on the previous token.<br />
+  </dd></dl>
+  <p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+</body>
+</head>
+
+<body>
+</body>
+</html>
