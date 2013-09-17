@@ -45,7 +45,6 @@ public class ExecutionReportFixFields
 		fExecutionReportFields.add(new TimeInForceField());
 		fExecutionReportFields.add(new TextField());
 		fExecutionReportFields.add(new TransactTimeField());
-		//fExecutionReportFields.add(new StrategyTagField());
 	}
 	
 	public void addExecutionReportField(ExecutionReportField field)

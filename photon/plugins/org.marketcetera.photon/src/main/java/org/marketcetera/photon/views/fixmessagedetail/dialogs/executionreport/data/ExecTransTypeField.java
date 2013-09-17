@@ -1,8 +1,13 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
-import org.marketcetera.photon.Messages;
-import org.marketcetera.trade.ExecutionType;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionTransType;
+
+import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ExecTransType;
 
@@ -22,55 +27,45 @@ public class ExecTransTypeField extends ExecutionReportField {
 	@Override
 	public String[] getValues() 
 	{
-		/*using package org.marketcetera.trade.FIXUtil
-		  line 240
-		  		if(inMessage.isSetField(ExecTransType.FIELD)) {
-         			char c = inMessage.getChar(ExecTransType.FIELD);
-         			switch(c) {
-                      case ExecTransType.NEW:
-                          return ExecutionType.New;
-                      case ExecTransType.CANCEL:
-                          return ExecutionType.TradeCancel;
-                      case ExecTransType.CORRECT:
-                          return ExecutionType.TradeCorrect;
-                      case ExecTransType.STATUS:
-                          return ExecutionType.OrderStatus;
-                      default:
-                          return ExecutionType.Unknown;
-              }
-       */
-		return new String[]{
-				ExecutionType.Unknown.name(),
-				ExecutionType.New.name(),
-				ExecutionType.TradeCancel.name(),
-				ExecutionType.TradeCorrect.name(),
-				ExecutionType.OrderStatus.name()
-		};
+		List<String> executionTransTypeValues = new ArrayList<String>();
+		for(ExecutionTransType executionTransType: ExecutionTransType.values())
+		{
+			executionTransTypeValues.add(executionTransType.name());
+		}
+	
+		return executionTransTypeValues.toArray(new String[executionTransTypeValues.size()]);
 	}
 
 	@Override
-	public void insertField(Message message) {
-		ExecutionType fixValue = ExecutionType.valueOf(fValue);
-		ExecutionType.New.getFIXValue();
-		switch (fixValue) {		
-			case Unknown:
-				message.setField(new ExecTransType(ExecutionType.Unknown.getFIXValue()));
-				break;
-			case New:
-				message.setField(new ExecTransType(ExecTransType.NEW));
-				break;
-			case TradeCancel:
-				message.setField(new ExecTransType(ExecTransType.CANCEL));
-				break;
-			case TradeCorrect:
-				message.setField(new ExecTransType(ExecTransType.CORRECT));
-				break;
-			case OrderStatus:
-				message.setField(new ExecTransType(ExecTransType.STATUS));
-				break;
-		default:
-			break;
+	public void insertField(Message message) 
+	{
+		if(fValue != null)
+		{
+			message.setField(new ExecTransType(ExecutionTransType.valueOf(fValue).getFIXValue()));
 		}
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		Message message = getMessageFromExecutionReport(executionReport);
 		
+		if(message != null && message.isSetField(ExecTransType.FIELD)) 
+		{
+			ExecTransType execTransType = new ExecTransType();
+			try 
+			{
+				fValue = ExecutionTransType.getInstanceForFIXValue(message.getField(execTransType).getValue()).name();
+			} 
+			catch (FieldNotFound e) 
+			{
+			}
+		}		
+	}
+
+	@Override
+	public int getFieldTag()
+	{
+		return ExecTransType.FIELD;
 	}
 }

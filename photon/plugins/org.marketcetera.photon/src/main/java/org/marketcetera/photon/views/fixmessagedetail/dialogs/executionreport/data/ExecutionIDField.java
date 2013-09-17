@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 
 import quickfix.Message;
 import quickfix.field.ExecID;
@@ -27,8 +28,20 @@ public class ExecutionIDField extends ExecutionReportField
 	}
 
 	@Override
-	public void insertField(Message message) {
+	public void insertField(Message message) 
+	{
 		message.setField(new ExecID(fValue));
-		
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		fValue = (executionReport.getExecutionID() == null) ? EMPTY_STRING : executionReport.getExecutionID();
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return ExecID.FIELD;
 	}
 }

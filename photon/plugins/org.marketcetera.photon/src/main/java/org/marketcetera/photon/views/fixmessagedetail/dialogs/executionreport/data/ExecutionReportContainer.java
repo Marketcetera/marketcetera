@@ -1,9 +1,18 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.ExecutionReport;
+
+import quickfix.Field;
 import quickfix.Message;
 
 
@@ -88,5 +97,50 @@ public class ExecutionReportContainer
 			}
 		}
 		return nonFixFields.toArray(new ExecutionReportNoneFixField[nonFixFields.size()]);
+	}
+
+	public void fillFromExecutionReport(ExecutionReport executionReport) 
+	{
+        Map<Integer, ExecutionReportField> executionReportFields = new HashMap<Integer, ExecutionReportField>();
+		
+		ExecutionReportFixFields fixFields = new ExecutionReportFixFields();
+		
+		ExecutionReportField[] presetReportFields = fixFields.getExecutionReportFields();
+		for(ExecutionReportField field: presetReportFields)
+		{
+			field.parseFromReport(executionReport);
+			executionReportFields.put(new Integer(field.getFieldTag()), field);
+		}
+		
+		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
+                                                      .getFIXDataDictionary();
+		
+		Message message = getMessageFromExecutionReport(executionReport);
+		
+		Iterator<Field<?>> fieldIterator = message.iterator();
+		while (fieldIterator.hasNext()) 
+		{
+			Field<?> field = (Field<?>) fieldIterator.next();
+			String fieldName = fixDictionary.getHumanFieldName(field.getField());
+			Integer fieldTag = new Integer(field.getTag());
+			
+			if(!executionReportFields.containsKey(fieldTag))
+			{
+				ExecutionReportField reportField = new CustomFixField(fieldName, field.getTag());
+				reportField.setSelectedValue(field.getObject().toString());
+				executionReportFields.put(fieldTag, reportField);
+			}
+		}
+		
+		for(Integer fieldTag: executionReportFields.keySet())
+		{
+			addExecutionReportField(executionReportFields.get(fieldTag));
+		}
+	}
+	
+	private Message getMessageFromExecutionReport(ExecutionReport executionReport)
+	{
+		HasFIXMessage hasFixMessage = (HasFIXMessage) executionReport;
+		return hasFixMessage.getMessage();
 	}
 }

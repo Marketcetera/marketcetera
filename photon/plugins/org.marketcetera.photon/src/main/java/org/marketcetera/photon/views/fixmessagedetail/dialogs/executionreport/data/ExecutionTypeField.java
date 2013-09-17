@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ExecType;
 
@@ -33,11 +35,39 @@ public class ExecutionTypeField extends ExecutionReportField
 			executionTypeValues.add(executionType.name());
 		}
 	
-		return (String[]) executionTypeValues.toArray(new String[executionTypeValues.size()]);
+		return executionTypeValues.toArray(new String[executionTypeValues.size()]);
 	}
 
 	@Override
-	public void insertField(Message message) {
-		message.setField(new ExecType(ExecutionType.valueOf(fValue).getFIXValue()));
+	public void insertField(Message message) 
+	{
+		if(fValue != null)
+		{
+			message.setField(new ExecType(ExecutionType.valueOf(fValue).getFIXValue()));
+		}
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		Message message = getMessageFromExecutionReport(executionReport);
+		
+		if(message != null && message.isSetField(ExecType.FIELD)) 
+		{
+			ExecType execType = new ExecType();
+			try 
+			{
+				fValue = ExecutionType.getInstanceForFIXValue(message.getField(execType).getValue()).name();
+			} 
+			catch (FieldNotFound e) 
+			{
+			}
+		}
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return ExecType.FIELD;
 	}
 }

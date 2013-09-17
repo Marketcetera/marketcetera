@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
+import org.marketcetera.trade.ExecutionReport;
+
 import quickfix.Message;
 import quickfix.StringField;
 
@@ -37,6 +39,17 @@ public class CustomNoneFixField extends ExecutionReportNoneFixField {
 		if(!super.validateValue())
 			return false;
 		return fFieldName != null && !fFieldName.equals(EMPTY_STRING);
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return -1;
 	}
 
 }

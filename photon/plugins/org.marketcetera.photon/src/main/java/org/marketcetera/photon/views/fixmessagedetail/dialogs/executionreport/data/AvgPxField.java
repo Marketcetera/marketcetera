@@ -3,6 +3,7 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 import java.math.BigDecimal;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 
 import quickfix.Message;
 import quickfix.field.AvgPx;
@@ -31,7 +32,10 @@ public class AvgPxField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new AvgPx(new BigDecimal(fValue)));	
+		if(fValue != null)
+		{
+			message.setField(new AvgPx(new BigDecimal(fValue)));
+		}
 	}
 
 	@Override
@@ -54,5 +58,17 @@ public class AvgPxField extends ExecutionReportField
 	@Override
 	public String getValidateMessage() {
 		return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR.getText();
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		fValue = (executionReport.getAveragePrice() == null) ? EMPTY_STRING : executionReport.getAveragePrice().toPlainString();
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return AvgPx.FIELD;
 	}
 }

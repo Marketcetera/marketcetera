@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.TimeInForce;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
 
 /**
@@ -36,8 +38,35 @@ public class TimeInForceField extends ExecutionReportField
 	}
 
 	@Override
-	public void insertField(Message message) {
-		message.setField(new quickfix.field.TimeInForce(TimeInForce.valueOf(fValue).getFIXValue()));
+	public void insertField(Message message) 
+	{
+		if(fValue != null)
+		{
+			message.setField(new quickfix.field.TimeInForce(TimeInForce.valueOf(fValue).getFIXValue()));
+		}
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		Message message = getMessageFromExecutionReport(executionReport);
 		
+		if(message != null && message.isSetField(quickfix.field.TimeInForce.FIELD)) 
+		{
+			quickfix.field.TimeInForce timeInForce = new quickfix.field.TimeInForce();
+			try 
+			{
+				fValue = TimeInForce.getInstanceForFIXValue(message.getField(timeInForce).getValue()).name();
+			} 
+			catch (FieldNotFound e) 
+			{
+			}
+		}	
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return quickfix.field.TimeInForce.FIELD;
 	}
 }

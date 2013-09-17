@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 
 import quickfix.Message;
 import quickfix.StringField;
@@ -16,15 +17,24 @@ public class CustomFixField extends ExecutionReportField
 {	
 	/** Custom field number */
 	private final String fFieldName;
-	
-	public CustomFixField(String fieldName)
+
+	/** Custom field tag */
+	private final int fFieldTag;
+
+	public CustomFixField(String fieldName, int fieldTag)
 	{
 		fFieldName = fieldName;
+		fFieldTag = fieldTag;
 	}
 		
 	@Override
 	public String getFieldName() 
 	{
+		if(fFieldName == null)
+		{
+			return String.valueOf(fFieldTag);
+		}
+		
 		return fFieldName;
 	}
 
@@ -37,7 +47,10 @@ public class CustomFixField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new StringField(Integer.parseInt(fFieldName),fValue));
+		if(fValue != null)
+		{
+			message.setField(new StringField(Integer.parseInt(getFieldName()), fValue));
+		}
 	}
 
 	@Override
@@ -67,5 +80,16 @@ public class CustomFixField extends ExecutionReportField
 		{
 			return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR_CUSTOM.getText();
 		}
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport)
+	{
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return fFieldTag;
 	}
 }

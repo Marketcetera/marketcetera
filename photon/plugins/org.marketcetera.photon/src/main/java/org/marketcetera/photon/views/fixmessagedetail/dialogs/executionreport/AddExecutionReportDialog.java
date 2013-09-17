@@ -35,7 +35,9 @@ import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.da
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data.ExecutionReportNoneFixField;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldContentProvider;
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldLabelProvider;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXMessageWrapper;
+
 import quickfix.Message;
 
 /**
@@ -358,6 +360,12 @@ public class AddExecutionReportDialog extends ReportDialog
 		fExecutionReportViewer.update();
 	}
 	
+	public void fillFromExecutionReport(ExecutionReport executionReport)
+	{
+		// Fill from an execution report
+		fExecutionReportFields.fillFromExecutionReport(executionReport);
+	}
+	
 	/**
 	 * Check selected combo element, skip selected if 
 	 * element has been typed-in. Skip empty values
@@ -377,8 +385,8 @@ public class AddExecutionReportDialog extends ReportDialog
 			{
 				try
 				{
-					Integer.parseInt(fieldName);
-					return new CustomFixField(fieldName);
+					int fieldTag = Integer.parseInt(fieldName);
+					return new CustomFixField(fieldName, fieldTag);
 				}
 				catch(NumberFormatException nfe)
 				{
@@ -419,6 +427,4 @@ public class AddExecutionReportDialog extends ReportDialog
 		
 		return selectedField;
 	}
-
-
 }	

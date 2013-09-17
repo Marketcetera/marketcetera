@@ -1,9 +1,10 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 
 import quickfix.Message;
-import quickfix.field.ClOrdID;
+import quickfix.field.OrigClOrdID;
 
 /**
  * Original order ID execution report field
@@ -26,7 +27,20 @@ public class OriginalOrderIDField extends ExecutionReportField
 	}
 
 	@Override
-	public void insertField(Message message) {
-		message.setField(new ClOrdID());		
+	public void insertField(Message message) 
+	{
+		message.setField(new OrigClOrdID(fValue));		
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		fValue = (executionReport.getOriginalOrderID() == null) ? EMPTY_STRING : executionReport.getOriginalOrderID().getValue();
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return OrigClOrdID.FIELD;
 	}
 }

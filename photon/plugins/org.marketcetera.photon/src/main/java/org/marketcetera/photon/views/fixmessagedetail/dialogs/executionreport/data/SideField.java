@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.Side;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
 
 /**
@@ -35,8 +37,35 @@ public class SideField extends ExecutionReportField
 	}
 
 	@Override
-	public void insertField(Message message) {
-		message.setField(new quickfix.field.Side(Side.valueOf(fValue).getFIXValue()));
+	public void insertField(Message message) 
+	{
+		if(fValue != null)
+		{
+			message.setField(new quickfix.field.Side(Side.valueOf(fValue).getFIXValue()));
+		}
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		Message message = getMessageFromExecutionReport(executionReport);
 		
+		if(message != null && message.isSetField(quickfix.field.Side.FIELD)) 
+		{
+			quickfix.field.Side side = new quickfix.field.Side();
+			try 
+			{
+				fValue = Side.getInstanceForFIXValue(message.getField(side).getValue()).name();
+			} 
+			catch (FieldNotFound e) 
+			{
+			}
+		}	
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return quickfix.field.Side.FIELD;
 	}
 }

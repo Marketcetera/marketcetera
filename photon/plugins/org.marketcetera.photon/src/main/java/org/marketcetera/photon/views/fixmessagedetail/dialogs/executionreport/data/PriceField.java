@@ -3,6 +3,7 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 import java.math.BigDecimal;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 
 import quickfix.Message;
 import quickfix.field.Price;
@@ -30,11 +31,15 @@ public class PriceField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new Price(new BigDecimal(fValue)));	
+		if(fValue != null)
+		{
+			message.setField(new Price(new BigDecimal(fValue)));
+		}
 	}
 
 	@Override
-	public boolean validateValue() {
+	public boolean validateValue() 
+	{
 		if(!super.validateValue())
 		{
 			return false;
@@ -51,7 +56,20 @@ public class PriceField extends ExecutionReportField
 	}
 	
 	@Override
-	public String getValidateMessage() {
+	public String getValidateMessage() 
+	{
 		return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR.getText();
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		fValue = (executionReport.getPrice() == null) ? EMPTY_STRING : executionReport.getPrice().toPlainString();
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return Price.FIELD;
 	}
 }

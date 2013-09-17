@@ -3,7 +3,9 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 import java.math.BigDecimal;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.StrikePrice;
 
@@ -22,11 +24,15 @@ public class StrikePriceField extends ExecutionReportField {
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new StrikePrice(new BigDecimal(fValue)));	
+		if(fValue != null)
+		{
+			message.setField(new StrikePrice(new BigDecimal(fValue)));
+		}
 	}
 
 	@Override
-	public boolean validateValue() {
+	public boolean validateValue() 
+	{
 		if(!super.validateValue())
 		{
 			return false;
@@ -43,9 +49,32 @@ public class StrikePriceField extends ExecutionReportField {
 	}
 
 	@Override
-	public String getValidateMessage() {
+	public String getValidateMessage() 
+	{
 		return Messages.ADD_EXECUTION_REPORT_NUMBER_FORMAT_ERROR.getText();
 	}
-	
-	
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		Message message = getMessageFromExecutionReport(executionReport);
+		
+		if(message != null && message.isSetField(StrikePrice.FIELD)) 
+		{
+			StrikePrice stringPrice = new StrikePrice();
+			try 
+			{
+				fValue = message.getField(stringPrice).getValue().toPlainString();
+			} 
+			catch (FieldNotFound e) 
+			{
+			}
+		}		
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return StrikePrice.FIELD;
+	}
 }

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderType;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.OrdType;
 
@@ -37,8 +39,35 @@ public class OrderTypeField extends ExecutionReportField
 	}
 
 	@Override
-	public void insertField(Message message) {
-		message.setField(new OrdType(OrderType.valueOf(fValue).getFIXValue()));
+	public void insertField(Message message) 
+	{
+		if(fValue != null)
+		{
+			message.setField(new OrdType(OrderType.valueOf(fValue).getFIXValue()));
+		}
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		Message message = getMessageFromExecutionReport(executionReport);
 		
+		if(message != null && message.isSetField(OrdType.FIELD)) 
+		{
+			OrdType orderType = new OrdType();
+			try 
+			{
+				fValue = OrderType.getInstanceForFIXValue(message.getField(orderType).getValue()).name();
+			} 
+			catch (FieldNotFound e) 
+			{
+			}
+		}
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return OrdType.FIELD;
 	}
 }

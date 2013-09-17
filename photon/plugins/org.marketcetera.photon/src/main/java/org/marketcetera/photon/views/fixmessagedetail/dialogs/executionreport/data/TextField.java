@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 
 import quickfix.Message;
 import quickfix.field.Text;
@@ -28,8 +29,18 @@ public class TextField extends ExecutionReportField {
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new Text("fValue"));
-		
+		message.setField(new Text(fValue));
 	}
 
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		fValue = (executionReport.getText() == null) ? EMPTY_STRING : executionReport.getText();
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return Text.FIELD;
+	}
 }

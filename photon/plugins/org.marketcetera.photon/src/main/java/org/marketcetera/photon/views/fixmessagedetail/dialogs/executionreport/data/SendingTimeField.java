@@ -2,9 +2,11 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.photon.Messages;
+import org.marketcetera.trade.ExecutionReport;
 
 import quickfix.Message;
 import quickfix.field.SendingTime;
@@ -75,7 +77,8 @@ public class SendingTimeField extends ExecutionReportField
 	}
 
 	@Override
-	public void insertField(Message message) {
+	public void insertField(Message message) 
+	{
 		try 
 		{
 			message.getHeader().setField(new SendingTime(new Date(utc1.parseDateTime(fValue).getMillis())));
@@ -87,7 +90,28 @@ public class SendingTimeField extends ExecutionReportField
 	}
 	
 	@Override
-	public String getValidateMessage() {
+	public String getValidateMessage() 
+	{
 		return Messages.ADD_EXECUTION_REPORT_DATE_FORMAT_ERROR.getText(allowedFormats);
+	}
+
+	@Override
+	public void parseFromReport(ExecutionReport executionReport) 
+	{
+		if(executionReport.getSendingTime() != null) 
+		{
+			DateTime dt = new DateTime(executionReport.getSendingTime());
+			fValue = utc2.print(dt);
+		} 
+		else
+		{
+			fValue = EMPTY_STRING;
+		}
+	}
+
+	@Override
+	public int getFieldTag() 
+	{
+		return SendingTime.FIELD;
 	}
 }

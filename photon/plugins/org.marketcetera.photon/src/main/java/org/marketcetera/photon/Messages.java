@@ -445,8 +445,6 @@ public interface Messages
     public static I18NMessage0P ADD_EXECUTION_REPORT_DIALOG_BUTTON_ADD = new I18NMessage0P(LOGGER,
     		"add_execution_report_dialog_button_add"); //$NON-NLS-1$
 
-    public static I18NMessage0P EXECUTION_REPORT_FIELD_STRATEGY_TAG = new I18NMessage0P(LOGGER,
-    		"execution_report_field_strategy_tag"); //$NON-NLS-1$
     public static I18NMessage0P EXECUTION_REPORT_FIELD_ORDER_ID = new I18NMessage0P(LOGGER,
     		"execution_report_field_order_id"); //$NON-NLS-1$
     public static I18NMessage0P EXECUTION_REPORT_FIELD_ORIGINAL_ORDER_ID = new I18NMessage0P(LOGGER,
