@@ -149,6 +149,6 @@ public abstract class InstrumentToMessage<I extends Instrument> extends Instrume
      * The factory that provides the handler instance for the specified
      * instrument. 
      */
-    public static final StaticInstrumentFunctionSelector<InstrumentToMessage> SELECTOR =
-            new StaticInstrumentFunctionSelector<InstrumentToMessage>(InstrumentToMessage.class);
+    @SuppressWarnings("rawtypes")
+    public static final StaticInstrumentFunctionSelector<InstrumentToMessage> SELECTOR = new StaticInstrumentFunctionSelector<InstrumentToMessage>(InstrumentToMessage.class);
 }

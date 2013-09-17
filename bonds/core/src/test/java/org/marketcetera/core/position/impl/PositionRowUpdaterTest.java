@@ -7,19 +7,12 @@ import java.math.BigDecimal;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.position.MarketDataSupport;
-import org.marketcetera.core.position.MockTrade;
-import org.marketcetera.core.position.PositionRow;
-import org.marketcetera.core.position.Trade;
+import org.marketcetera.core.position.*;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataEvent;
 import org.marketcetera.core.position.MarketDataSupport.InstrumentMarketDataListener;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
-import org.marketcetera.trade.FutureExpirationMonth;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.BasicEventList;
 
@@ -32,12 +25,15 @@ import ca.odell.glazedlists.BasicEventList;
  * @version $Id$
  * @since 1.5.0
  */
-public class PositionRowUpdaterTest {
+@ClassVersion("$Id$")
+public class PositionRowUpdaterTest
+{
 
     private static final Instrument EQUITY = new Equity("METC");
     private static final Instrument OPTION = new Option("METC", "20091010",
             BigDecimal.TEN, OptionType.Put);
     private static final Instrument FUTURE = new Future("METC", FutureExpirationMonth.DECEMBER,2014);
+    private static final Instrument CONVERTIBLE_BOND = new ConvertibleBond("US013817AT86");
     private static final String ACCOUNT = "A1";
     private static final String TRADER = "1";
     private InstrumentMarketDataListener mListener;
@@ -74,6 +70,33 @@ public class PositionRowUpdaterTest {
     public void testGetPosition() {
         assertPosition(mFixture.getPosition(), EQUITY, "100", null, null, null,
                 null, null);
+    }
+
+    /**
+     * Tests positions for convertible bonds.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testGetConvertibleBondPosition()
+            throws Exception
+    {
+        mRow = new PositionRowImpl(CONVERTIBLE_BOND,
+                                   "METC",
+                                   ACCOUNT,
+                                   TRADER,
+                                   new BigDecimal(100));
+        mFixture = new PositionRowUpdater(mRow,
+                                          mTrades,
+                                          new MockMarketData(CONVERTIBLE_BOND));
+        assertPosition(mFixture.getPosition(),
+                       CONVERTIBLE_BOND,
+                       "100",
+                       null,
+                       null,
+                       null,
+                       null,
+                       null);
     }
 
     @Test

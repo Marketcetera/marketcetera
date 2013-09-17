@@ -93,7 +93,25 @@ public class InstrumentFromMessageTest {
         msg.setField(new SecurityType(SecurityType.FOREIGN_EXCHANGE_CONTRACT));
         assertEquals(new Currency("GBP/USD"), InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
-
+    /**
+     * Tests creating <code>ConvertibleBond</code> instruments from <code>Message</code> objects.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void convertibleBond()
+            throws Exception
+    {
+        //no security type, no symbol
+        Message msg = FIX_VERSION.getMessageFactory().newBasicOrder();
+        assertEquals(false, msg.isSetField(SecurityType.FIELD));
+        assertNull(InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+        // security type set, symbol set
+        msg.setField(new Symbol("US013817AT86"));
+        msg.setField(new SecurityType(SecurityType.CONVERTIBLE_BOND));
+        assertEquals(new ConvertibleBond("US013817AT86"),
+                     InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+    }
     @SuppressWarnings("unchecked")
     @Test
     public void option() throws Exception {

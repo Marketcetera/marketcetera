@@ -34,9 +34,13 @@ public enum SecurityType {
      */
     Future(quickfix.field.SecurityType.FUTURE),
     /**
+     * Convertible bond
+     */
+    ConvertibleBond(quickfix.field.SecurityType.CONVERTIBLE_BOND),
+    /**
      * Currency, spot/outright/swap
      */
-    Currency(quickfix.field.SecurityType.FOREIGN_EXCHANGE_CONTRACT);    
+    Currency(quickfix.field.SecurityType.FOREIGN_EXCHANGE_CONTRACT);
     /**
      * The FIX text value for this instance.
      *

@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableMap;
  * @version $Id$
  * @since 2.0.0
  */
+@SuppressWarnings("rawtypes")
 @ClassVersion("$Id$")
 public final class StaticInstrumentFunctionSelector<T extends InstrumentFunctionHandler> {
     /**

@@ -1,26 +1,25 @@
 package org.marketcetera.core.instruments;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
-import org.junit.Test;
-import org.junit.BeforeClass;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.hamcrest.Matchers.instanceOf;
-import quickfix.Message;
-import quickfix.field.OrdStatus;
-import quickfix.field.Side;
-import quickfix.field.SecurityType;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.Message;
+import quickfix.field.OrdStatus;
+import quickfix.field.SecurityType;
+import quickfix.field.Side;
 
 /* $License$ */
 /**
@@ -69,7 +68,16 @@ public class DynamicInstrumentFunctionSelectorTest {
         instrument = new Option("YBM", "20101010", BigDecimal.TEN, OptionType.Call);
         msg = createExecReport(instrument);
         assertThat(selector.forValue(msg), instanceOf(OptionFromMessage.class));
-        
+        // currency
+        instrument = new Currency("USD","INR","","");
+        msg = createExecReport(instrument);
+        assertThat(selector.forValue(msg),
+                   instanceOf(CurrencyFromMessage.class));
+        // convertible bond
+        instrument = new ConvertibleBond("US013817AT86");
+        msg = createExecReport(instrument);
+        assertThat(selector.forValue(msg),
+                   instanceOf(ConvertibleBondFromMessage.class));
         //unknown type
         msg.setField(new SecurityType(SecurityType.BANK_NOTES));
         final Message message = msg;
@@ -91,6 +99,7 @@ public class DynamicInstrumentFunctionSelectorTest {
     @Test
     public void constructor() throws Exception {
         new ExpectedFailure<IllegalArgumentException>("class"){
+            @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
             protected void run() throws Exception {
                 new DynamicInstrumentFunctionSelector(null);
@@ -108,11 +117,12 @@ public class DynamicInstrumentFunctionSelectorTest {
         final DynamicInstrumentFunctionSelector<Message, InstrumentFromMessage> selector =
                 InstrumentFromMessage.SELECTOR;
         List<InstrumentFromMessage> handlers = selector.getHandlers();
-        assertEquals(4, handlers.size());
+        assertEquals(5, handlers.size());
         assertThat(handlers.get(0), instanceOf(CurrencyFromMessage.class));
         assertThat(handlers.get(1), instanceOf(EquityFromMessage.class));
         assertThat(handlers.get(2), instanceOf(OptionFromMessage.class));
         assertThat(handlers.get(3), instanceOf(FutureFromMessage.class));
+        assertThat(handlers.get(4), instanceOf(ConvertibleBondFromMessage.class));
     }
 
     /**

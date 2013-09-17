@@ -2,15 +2,11 @@ package org.marketcetera.core.instruments;
 
 import org.marketcetera.core.Messages;
 import org.marketcetera.trade.Currency;
-
 import org.marketcetera.trade.Instrument;
-
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-
 import quickfix.field.FutSettDate;
 import quickfix.field.FutSettDate2;
 import quickfix.field.SecurityType;
