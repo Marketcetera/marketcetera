@@ -30,7 +30,9 @@ public class ExecutionIDField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new ExecID(fValue));
+        if(fValue != null && fValue != EMPTY_STRING) {
+            message.setField(new ExecID(fValue));
+        }
 	}
 
 	@Override

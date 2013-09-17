@@ -33,8 +33,7 @@ public class SecurityTypeField extends ExecutionReportField {
 	@Override
 	public void insertField(Message message) 
 	{
-		if(fValue != null)
-		{
+        if(fValue != null && fValue != EMPTY_STRING) {
 			message.setField(new quickfix.field.SecurityType(SecurityType.valueOf(fValue).getFIXValue()));
 		}
 	}

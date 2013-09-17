@@ -41,8 +41,7 @@ public class ExecutionTypeField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		if(fValue != null)
-		{
+        if(fValue != null && fValue != EMPTY_STRING) {
 			message.setField(new ExecType(ExecutionType.valueOf(fValue).getFIXValue()));
 		}
 	}

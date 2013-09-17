@@ -79,14 +79,16 @@ public class SendingTimeField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		try 
-		{
-			message.getHeader().setField(new SendingTime(new Date(utc1.parseDateTime(fValue).getMillis())));
-		} 
-		catch (IllegalArgumentException e) 
-		{
-			message.getHeader().setField(new SendingTime(new Date(utc2.parseDateTime(fValue).getMillis())));
-		}
+        if(fValue != null && fValue != EMPTY_STRING) {
+            try 
+            {
+                message.getHeader().setField(new SendingTime(new Date(utc1.parseDateTime(fValue).getMillis())));
+            } 
+            catch (IllegalArgumentException e) 
+            {
+                message.getHeader().setField(new SendingTime(new Date(utc2.parseDateTime(fValue).getMillis())));
+            }
+        }
 	}
 	
 	@Override

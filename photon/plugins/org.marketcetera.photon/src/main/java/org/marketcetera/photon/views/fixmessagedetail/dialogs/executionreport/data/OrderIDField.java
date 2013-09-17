@@ -29,7 +29,9 @@ public class OrderIDField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new ClOrdID(fValue));	
+	    if(fValue != null && fValue != EMPTY_STRING) {
+	        message.setField(new ClOrdID(fValue));
+	    }
 	}
 
 	@Override

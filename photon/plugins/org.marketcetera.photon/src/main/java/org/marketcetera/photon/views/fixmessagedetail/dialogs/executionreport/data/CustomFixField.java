@@ -47,8 +47,7 @@ public class CustomFixField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		if(fValue != null)
-		{
+        if(fValue != null && fValue != EMPTY_STRING) {
 			message.setField(new StringField(Integer.parseInt(getFieldName()), fValue));
 		}
 	}

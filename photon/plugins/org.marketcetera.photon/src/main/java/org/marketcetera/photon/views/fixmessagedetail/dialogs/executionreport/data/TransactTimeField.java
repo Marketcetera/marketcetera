@@ -79,14 +79,16 @@ public class TransactTimeField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		try 
-		{
-			message.setField(new TransactTime(new Date(utc1.parseDateTime(fValue).getMillis())));
-		} 
-		catch (IllegalArgumentException e) 
-		{
-			message.setField(new TransactTime(new Date(utc2.parseDateTime(fValue).getMillis())));
-		}
+        if(fValue != null && fValue != EMPTY_STRING) {
+            try 
+            {
+                message.setField(new TransactTime(new Date(utc1.parseDateTime(fValue).getMillis())));
+            } 
+            catch (IllegalArgumentException e) 
+            {
+                message.setField(new TransactTime(new Date(utc2.parseDateTime(fValue).getMillis())));
+            }
+        }
 	}
 
 	@Override

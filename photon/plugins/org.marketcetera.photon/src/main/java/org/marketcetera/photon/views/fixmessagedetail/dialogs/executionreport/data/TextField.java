@@ -29,7 +29,9 @@ public class TextField extends ExecutionReportField {
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new Text(fValue));
+        if(fValue != null && fValue != EMPTY_STRING) {
+            message.setField(new Text(fValue));
+        }
 	}
 
 	@Override

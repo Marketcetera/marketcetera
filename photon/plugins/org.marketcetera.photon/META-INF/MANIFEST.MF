@@ -42,7 +42,8 @@ Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.ui.databinding,
  org.marketcetera.photon.ui.marketdata,
  org.marketcetera.photon.views,
- org.marketcetera.photon.views.fixmessagedetail
+ org.marketcetera.photon.views.fixmessagedetail,
+ org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-ExtensibleAPI: true

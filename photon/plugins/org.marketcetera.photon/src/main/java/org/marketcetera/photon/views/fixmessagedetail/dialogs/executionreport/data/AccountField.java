@@ -29,7 +29,9 @@ public class AccountField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new Account(fValue));
+	    if(fValue != null && fValue != EMPTY_STRING) {
+	        message.setField(new Account(fValue));
+	    }
 	}
 
 	@Override

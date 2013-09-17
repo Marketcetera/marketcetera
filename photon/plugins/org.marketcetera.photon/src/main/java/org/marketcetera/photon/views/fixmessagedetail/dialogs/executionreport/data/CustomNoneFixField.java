@@ -30,8 +30,9 @@ public class CustomNoneFixField extends ExecutionReportNoneFixField {
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new StringField(Integer.parseInt(fFieldName),fValue));
-		
+	    if(fValue != null && fValue != EMPTY_STRING) {
+	        message.setField(new StringField(Integer.parseInt(fFieldName),fValue));
+	    }
 	}
 
 	@Override

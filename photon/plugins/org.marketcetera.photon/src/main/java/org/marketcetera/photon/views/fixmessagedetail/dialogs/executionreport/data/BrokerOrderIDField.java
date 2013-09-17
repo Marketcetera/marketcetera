@@ -31,7 +31,9 @@ public class BrokerOrderIDField extends ExecutionReportField
 	@Override
 	public void insertField(Message message) 
 	{
-		message.setField(new OrderID(fValue));
+	    if(fValue != null && fValue != EMPTY_STRING) {
+	        message.setField(new OrderID(fValue));
+	    }
 	}
 
 	@Override
