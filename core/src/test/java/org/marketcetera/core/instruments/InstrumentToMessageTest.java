@@ -1,27 +1,33 @@
 package org.marketcetera.core.instruments;
 
-import static org.marketcetera.trade.FutureExpirationMonth.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.marketcetera.trade.FutureExpirationMonth.APRIL;
+import static org.marketcetera.trade.FutureExpirationMonth.FEBRUARY;
+import static org.marketcetera.trade.FutureExpirationMonth.JANUARY;
+import static org.marketcetera.trade.FutureExpirationMonth.MARCH;
 
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.misc.ClassVersion;
+import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.math.BigDecimal;
-
-import quickfix.Message;
 import quickfix.DataDictionary;
+import quickfix.Message;
 import quickfix.field.*;
 import quickfix.field.SecurityType;
 
@@ -173,7 +179,107 @@ public class InstrumentToMessageTest {
         assertEquals(TEST_CURRENCY, InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
     
-
+    /**
+     * Tests <code>ConvertibleBond</code> instrument handling without dictionary.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void convertibleBond()
+            throws Exception
+    {
+        final Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+        switch (mCurrentVersion) {
+            case FIX40:
+            case FIX41:
+                new ExpectedFailure<IllegalArgumentException>(Messages.CONVERTIBLE_BONDS_NOT_SUPPORTED_FOR_FIX_VERSION.getText(mCurrentVersion.toString())) {
+                    @Override
+                    protected void run()
+                            throws Exception
+                    {
+                        InstrumentToMessage.SELECTOR.forInstrument(TEST_CONVERTIBLE_BOND).set(TEST_CONVERTIBLE_BOND,
+                                                                                              mCurrentVersion.toString(),
+                                                                                              msg);
+                    }
+                };
+                return;
+            case FIX_SYSTEM:
+            case FIX42:
+            default:
+                InstrumentToMessage.SELECTOR.forInstrument(TEST_CONVERTIBLE_BOND).set(TEST_CONVERTIBLE_BOND,
+                                                                                      mCurrentVersion.toString(),
+                                                                                      msg);
+                // verify security type
+                assertEquals(true,
+                             msg.isSetField(SecurityType.FIELD));
+                assertEquals(TEST_CONVERTIBLE_BOND.getSecurityType().getFIXValue(),
+                             msg.getString(SecurityType.FIELD));
+                // verify symbol
+                assertEquals(true,
+                             msg.isSetField(Symbol.FIELD));
+                assertEquals(TEST_CONVERTIBLE_BOND.getSymbol(),
+                             msg.getString(Symbol.FIELD));
+                // test equivalence with InstrumentFromMessage
+                assertEquals(TEST_CONVERTIBLE_BOND,
+                             InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+        }
+    }
+    /**
+     * Tests <code>ConvertibleBond</code> instrument handling with dictionary.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @Test
+    public void convertibleBondDictionary()
+            throws Exception
+    {
+        final Message msg = mCurrentVersion.getMessageFactory().newBasicOrder();
+        switch (mCurrentVersion) {
+            case FIX40:
+            case FIX41:
+                new ExpectedFailure<IllegalArgumentException>(Messages.CONVERTIBLE_BONDS_NOT_SUPPORTED_FOR_FIX_VERSION.getText(mCurrentVersion.toString())) {
+                    @Override
+                    protected void run()
+                            throws Exception
+                    {
+                        InstrumentToMessage.SELECTOR.forInstrument(TEST_CONVERTIBLE_BOND).set(TEST_CONVERTIBLE_BOND,
+                                                                                              mCurrentVersion.toString(),
+                                                                                              msg);
+                    }
+                };
+                return;
+            case FIX_SYSTEM:
+            case FIX42:
+            default:
+                String msgType = msg.getHeader().getString(MsgType.FIELD);
+                DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(mCurrentVersion).getDictionary();
+                assertTrue(InstrumentToMessage.SELECTOR.forInstrument(TEST_CONVERTIBLE_BOND).isSupported(dictionary,
+                                                                                                         msgType));
+                InstrumentToMessage.SELECTOR.forInstrument(TEST_CONVERTIBLE_BOND).set(TEST_CONVERTIBLE_BOND,
+                                                                                      dictionary,
+                                                                                      msgType,
+                                                                                      msg);
+                // verify security type
+                if(isFieldPresent(dictionary,
+                                  msg,
+                                  msgType,
+                                  SecurityType.FIELD)) {
+                    assertEquals(TEST_CONVERTIBLE_BOND.getSecurityType().getFIXValue(),
+                                 msg.getString(SecurityType.FIELD));
+                }
+                // verify symbol
+                if(isFieldPresent(dictionary,
+                                  msg,
+                                  msgType,
+                                  Symbol.FIELD)) {
+                    assertEquals(TEST_CONVERTIBLE_BOND.getSymbol(),
+                                 msg.getString(Symbol.FIELD));
+                }
+                // Test equivalence with InstrumentFromMessage
+                assertEquals(TEST_CONVERTIBLE_BOND,
+                             InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
+        }
+    }
     /**
      * Tests option instrument handling without dictionary.
      *
@@ -512,4 +618,5 @@ public class InstrumentToMessageTest {
         Future.fromString("LBZ-201101"),
         Future.fromString("LBZ-20110130"),
     };
+    private static final ConvertibleBond TEST_CONVERTIBLE_BOND = new ConvertibleBond("US013817AT86");
 }

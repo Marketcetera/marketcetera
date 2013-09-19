@@ -2,3 +2,4 @@ org.marketcetera.core.instruments.CurrencyFromMessage
 org.marketcetera.core.instruments.EquityFromMessage
 org.marketcetera.core.instruments.OptionFromMessage
 org.marketcetera.core.instruments.FutureFromMessage
+org.marketcetera.core.instruments.ConvertibleBondFromMessage
