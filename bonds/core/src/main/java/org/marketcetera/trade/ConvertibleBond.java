@@ -1,5 +1,6 @@
 package org.marketcetera.trade;
 
+import java.math.BigDecimal;
 import java.util.regex.Pattern;
 
 import javax.annotation.concurrent.ThreadSafe;
@@ -9,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -19,8 +21,9 @@ import org.apache.commons.lang.Validate;
  * @since $Release$
  */
 @ThreadSafe
-@XmlRootElement(name="convertibleSecurity")
+@XmlRootElement(name="convertibleBond")
 @XmlAccessorType(XmlAccessType.NONE)
+@ClassVersion("$Id$")
 public class ConvertibleBond
         extends Instrument
 {
@@ -41,6 +44,23 @@ public class ConvertibleBond
             throw new IllegalArgumentException();
         }
         Validate.notNull(cusip);
+        symbol = cusip;
+    }
+    /**
+     * Create a new ConvertibleBond instance.
+     *
+     * @param inTicker a <code>String</code> value
+     * @param inCouponRate a <code>BigDecimal</code> value
+     * @param inMaturity a <code>String</code> value
+     */
+    public ConvertibleBond(String inTicker,
+                           BigDecimal inCouponRate,
+                           String inMaturity)
+    {
+        ticker = inTicker;
+        couponRate = inCouponRate;
+        maturity = inMaturity;
+        symbol = inTicker + " " + inCouponRate + "% " + inMaturity;
     }
     /**
      * Gets the CUSIP value.
@@ -64,7 +84,7 @@ public class ConvertibleBond
     @Override
     public String getSymbol()
     {
-        return cusip;
+        return symbol;
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -73,7 +93,7 @@ public class ConvertibleBond
     public String toString()
     {
         StringBuilder builder = new StringBuilder();
-        builder.append("ConvertibleSecurity [").append(getSymbol()).append("]");
+        builder.append("ConvertibleBond [").append(getSymbol()).append("]");
         return builder.toString();
     }
     /* (non-Javadoc)
@@ -152,6 +172,33 @@ public class ConvertibleBond
         return output.toString();
     }
     /**
+     * Get the underlying value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getTicker()
+    {
+        return ticker;
+    }
+    /**
+     * Get the coupon rate value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getCouponRate()
+    {
+        return couponRate;
+    }
+    /**
+     * Get the maturity value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getMaturity()
+    {
+        return maturity;
+    }
+    /**
      * Determines the CUSIP from the given ISIN.
      *
      * @param inIsin a <code>String</code> value
@@ -167,6 +214,19 @@ public class ConvertibleBond
      */
     @SuppressWarnings("unused")
     private ConvertibleBond() {}
+    private String symbol;
+    /**
+     * ticker value
+     */
+    private String ticker;
+    /**
+     * rate value
+     */
+    private BigDecimal couponRate;
+    /**
+     * maturity value
+     */
+    private String maturity;
     /**
      * cusip value
      */
@@ -179,5 +239,5 @@ public class ConvertibleBond
      * cusip regex
      */
     public static final Pattern cusipPattern = Pattern.compile("^[0-9]{3}[A-Z0-9]{5}[0-9]$");
-    private static final long serialVersionUID = 7922788847017047191L;
+    private static final long serialVersionUID = -7797829861069074193L;
 }
