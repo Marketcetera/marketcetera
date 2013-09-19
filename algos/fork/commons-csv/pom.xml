@@ -1,0 +1,118 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.marketcetera.fork</groupId>
+    <artifactId>fork-parent</artifactId>
+    <version>2.4.0</version>
+  </parent>
+
+  <groupId>org.marketcetera.fork</groupId>
+  <artifactId>commons-csv</artifactId>
+  <version>2.4.0</version>
+  <name>Commons CSV (Sandbox)</name>
+  <url>http://commons.apache.org/sandbox/csv/</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit-dep</artifactId>
+    </dependency>
+  </dependencies>
+
+  <developers>
+    <developer>
+      <id>bayard</id>
+      <name>Henri Yandell</name>
+      <email>bayard@apache.org</email>
+      <organization>Apache</organization>
+    </developer>
+    <developer>
+      <name>Martin van den Bemt</name>
+      <id>mvdb</id>
+      <email>mvdb@apache.org</email>
+      <organization>Apache</organization>
+    </developer>
+    <developer>
+      <name>Yonik Seeley</name>
+      <id>yonik</id>
+      <email>yonik@apache.org</email>
+      <organization>Apache</organization>
+    </developer>
+  </developers>
+  <contributors>
+  </contributors>
+
+  <!--<scm>-->
+    <!--<connection>scm:svn:http://svn.apache.org/repos/asf/commons/sandbox/csv/trunk</connection>-->
+    <!--<developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/sandbox/csv/trunk</developerConnection>-->
+    <!--<url>http://svn.apache.org/repos/asf/commons/sandbox/csv/trunk</url>-->
+  <!--</scm>-->
+
+  <!--<distributionManagement>-->
+    <!--<site>-->
+      <!--<id>apache.website</id>-->
+      <!--<name>Apache Website</name>-->
+      <!--<url>${commons.deployment.protocol}://people.apache.org/www/commons.apache.org/sandbox/csv/</url>-->
+    <!--</site>-->
+  <!--</distributionManagement>-->
+
+  <properties>
+    <commons.componentid>csv</commons.componentid>
+    <commons.jira.componentid>12311182</commons.jira.componentid>
+    <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+      <sourceDirectory>src/java</sourceDirectory>
+      <testSourceDirectory>src/test</testSourceDirectory>
+      <plugins>
+          <plugin>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>maven-bundle-plugin</artifactId>
+              <configuration>
+                  <instructions>
+                      <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                  </instructions>
+              </configuration>
+          </plugin>
+      </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <version>2.0-beta-2</version>
+        <configuration>
+          <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.9.1</version>
+        <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>
