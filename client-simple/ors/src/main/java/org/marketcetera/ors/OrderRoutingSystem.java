@@ -87,6 +87,7 @@ public class OrderRoutingSystem
     private SimpleMessageListenerContainer mListener;
     private SocketInitiator mInitiator;
     private final QuickFIXSender qSender;
+    private final RequestHandler requestHandler;
 
     // CONSTRUCTORS.
 
@@ -188,11 +189,16 @@ public class OrderRoutingSystem
         qSender=new QuickFIXSender();
         LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
         localIdFactory.init();
-        RequestHandler handler=new RequestHandler
-            (getBrokers(),selector,cfg.getAllowedOrders(),
-             persister,qSender,userManager,localIdFactory);
-        mListener=jmsMgr.getIncomingJmsFactory().registerHandlerOEX
-            (handler,Service.REQUEST_QUEUE,false);
+        requestHandler = new RequestHandler(getBrokers(),
+                                            selector,
+                                            cfg.getAllowedOrders(),
+                                            persister,
+                                            qSender,
+                                            userManager,
+                                            localIdFactory);
+        mListener=jmsMgr.getIncomingJmsFactory().registerHandlerOEX(requestHandler,
+                                                                    Service.REQUEST_QUEUE,
+                                                                    false);
         mQFApp=new QuickFIXApplication(systemInfo,getBrokers(),cfg.getSupportedMessages(),
                                        persister,
                                        qSender,
@@ -230,6 +236,10 @@ public class OrderRoutingSystem
     public ReportReceiver getOrderReceiver()
     {
         return mQFApp;
+    }
+    public RequestHandler getRequestHandler()
+    {
+        return requestHandler;
     }
     /**
      * Prints the given message alongside usage information on the

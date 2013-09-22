@@ -2,19 +2,20 @@ package org.marketcetera.client;
 
 import org.marketcetera.util.misc.ClassVersion;
 
-
 /* $License$ */
+
 /**
  * Abstraction that manages the initialization of the Client and provides
  * an easy way to get to its singleton instance.
  *
  * @author anshul@marketcetera.com
+ * @author <a href="colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public final class ClientManager {
-
+@ClassVersion("$Id$")
+public final class ClientManager
+{
     /**
      * Initializes the connection to the server. The handle to communicate
      * with the server can be obtained via {@link #getInstance()}.
@@ -26,9 +27,11 @@ public final class ClientManager {
      * @throws ClientInitException if the client is already initialized.
      */
     public static synchronized void init(ClientParameters inParameter)
-            throws ConnectionException, ClientInitException {
-        if (!isInitialized()) {
-            mClient = mClientFactory.getClient(inParameter);
+            throws ConnectionException, ClientInitException
+    {
+        if(!isInitialized()) {
+            ClientManager instance = getManagerInstance();
+            instance.mClient = instance.mClientFactory.getClient(inParameter);
         } else {
             throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
         }
@@ -45,7 +48,8 @@ public final class ClientManager {
         if(isInitialized()) {
             throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
         }
-        mClientFactory = inFactory;
+        ClientManager instance = getManagerInstance();
+        instance.mClientFactory = inFactory;
     }
     /**
      * Returns the Client instance after it has been initialized via
@@ -55,41 +59,66 @@ public final class ClientManager {
      *
      * @throws ClientInitException if the client is not initialized.
      */
-    public static Client getInstance() throws ClientInitException {
-        if (isInitialized()) {
-            return mClient;
+    public static synchronized Client getInstance()
+            throws ClientInitException
+    {
+        if(isInitialized()) {
+            ClientManager instance = getManagerInstance();
+            return instance.mClient;
         } else {
             throw new ClientInitException(Messages.CLIENT_NOT_INITIALIZED);
         }
     }
-
     /**
      * Returns true if the client is initialized, false if it's not.
      *
      * @return if the client is initialized.
      */
-    public static boolean isInitialized() {
-        return mClient != null;
+    public static synchronized boolean isInitialized()
+    {
+        ClientManager instance = getManagerInstance();
+        return instance.mClient != null;
     }
-
+    /**
+     * Create a new ClientManager instance.
+     * 
+     * @throws IllegalStateException if a <code>ClientManager</code> instance has already been created 
+     */
+    public ClientManager()
+    {
+        synchronized(ClientManager.class) {
+            if(instance != null) {
+                throw new IllegalStateException(Messages.CLIENT_ALREADY_INITIALIZED.getText());
+            }
+            instance = this;
+        }
+    }
     /**
      * Resets the client to the uninitialized state. This method is invoked
      * by the client implementation when it's {@link Client#close() closed}.
      * This method is not meant to be used by clients. 
      */
-    synchronized static void reset() {
-        mClient = null;
+    synchronized static void reset()
+    {
+        ClientManager instance = getManagerInstance();
+        instance.mClient = null;
     }
-
     /**
-     * Do not allow any instances to be created.
+     * Gets the <code>ClientManager</code> instance
+     *
+     * @return a <code>ClientManager</code> value
      */
-    private ClientManager() {
+    public static synchronized ClientManager getManagerInstance()
+    {
+        if(instance == null) {
+            instance = new ClientManager();
+        }
+        return instance;
     }
     /**
      * the <code>ClientFactory</code> to use to create the <code>Client</code> object 
      */
-    private volatile static ClientFactory mClientFactory = new ClientFactory() {
+    private volatile ClientFactory mClientFactory = new ClientFactory() {
         @Override
         public Client getClient(ClientParameters inParameters)
                 throws ClientInitException, ConnectionException
@@ -100,5 +129,9 @@ public final class ClientManager {
     /**
      * the <code>Client</code> object
      */
-    private volatile static Client mClient;
+    private volatile Client mClient;
+    /**
+     * static instance
+     */
+    private volatile static ClientManager instance;
 }

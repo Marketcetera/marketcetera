@@ -13,8 +13,10 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class ConnectionException extends I18NException {
+@ClassVersion("$Id$")
+public class ConnectionException
+        extends I18NException
+{
     /**
      * Creates an instance.
      *
@@ -23,7 +25,15 @@ public class ConnectionException extends I18NException {
     public ConnectionException(I18NBoundMessage message) {
         super(message);
     }
-
+    /**
+     * Create a new ConnectionException instance.
+     *
+     * @param inCause a <code>Throwable</code> value
+     */
+    public ConnectionException(Throwable inCause)
+    {
+        super(inCause);
+    }
     /**
      * Creates an instance.
      *
@@ -33,6 +43,5 @@ public class ConnectionException extends I18NException {
     public ConnectionException(Throwable cause, I18NBoundMessage message) {
         super(cause, message);
     }
-
     private static final long serialVersionUID = 1L;
 }
