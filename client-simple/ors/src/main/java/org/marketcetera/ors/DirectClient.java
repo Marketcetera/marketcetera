@@ -22,14 +22,16 @@ import org.marketcetera.ors.ws.Messages;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.tags.SessionId;
+import org.marketcetera.util.ws.wrappers.RemoteException;
 
 /* $License$ */
 
 /**
- *
+ * Provides an in-process {@link Client} implementation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -341,7 +343,13 @@ public class DirectClient
     {
         connectTime = new Date();
         parameters = inParameters;
-        // TODO set new session id?
+        try {
+            refreshParameters();
+        } catch (PersistenceException e) {
+            throw new ConnectionException(e);
+        } catch (ClientInitException e) {
+            throw new ConnectionException(e);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#getParameters()
@@ -394,7 +402,7 @@ public class DirectClient
     public boolean isCredentialsMatch(String inUsername,
                                       char[] inPassword)
     {
-        return ObjectUtils.equals(inUsername, parameters.getUsername()) && ObjectUtils.equals(inPassword,parameters.getPassword());
+        return ObjectUtils.equals(inUsername,parameters.getUsername()) && ObjectUtils.equals(inPassword,parameters.getPassword());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#isServerAlive()
@@ -505,10 +513,10 @@ public class DirectClient
     /**
      * Create a new DirectClient instance.
      *
-     * @param inParameters
-     * @param inSymbolResolverServices 
-     * @param inReportHistoryServices 
-     * @throws ClientInitException 
+     * @param inParameters a <code>ClientParameters</code> value
+     * @param inReportHistoryServices a <code>ReportHistoryServices</code> value
+     * @param inSymbolResolverServices a <code>SymbolResolverServices</code> value
+     * @throws ClientInitException if the client connection cannot be initialized
      */
     DirectClient(ClientParameters inParameters,
                  ReportHistoryServices inReportHistoryServices,
@@ -527,43 +535,54 @@ public class DirectClient
         connectTime = new Date();
     }
     /**
-     * 
+     * Refreshes the connection to the server with the current state of the parameters.
      *
-     *
-     * @throws PersistenceException
+     * @throws PersistenceException if the parameters refresh could not be completed
+     * @throws ClientInitException if the parameters refresh could not be completed 
      */
     private void refreshParameters()
-            throws PersistenceException
+            throws PersistenceException, ClientInitException
     {
         user = new SingleSimpleUserQuery(parameters.getUsername()).fetch();
-        sessionId = SessionId.generate(); // TODO somehow, we need to set this value properly
+        org.marketcetera.util.ws.stateful.Client mServiceClient = new org.marketcetera.util.ws.stateful.Client(parameters.getHostname(),
+                                                                                                               parameters.getPort(),
+                                                                                                               ClientVersion.APP_ID);
+        try {
+            mServiceClient.login(parameters.getUsername(),
+                                 parameters.getPassword());
+        } catch (I18NException e) {
+            throw new ClientInitException(e);
+        } catch (RemoteException e) {
+            throw new ClientInitException(e);
+        }
+        sessionId = mServiceClient.getSessionId();
     }
     /**
-     * 
+     * managers subscriptions to client services
      */
     private final ClientSubscriptionManager subscriptionManager = new ClientSubscriptionManager();
     /**
-     * 
+     * keeps track of the time the client connection was initiated
      */
     private volatile Date connectTime = new Date();
     /**
-     * 
+     * client parameter settings
      */
     private volatile ClientParameters parameters;
     /**
-     * 
+     * user represented by the current parameter connection
      */
     private volatile SimpleUser user;
     /**
-     * 
+     * session represented by the current parameter connection
      */
     private volatile SessionId sessionId;
     /**
-     * 
+     * provides report history services
      */
     private final ReportHistoryServices reportHistoryServices;
     /**
-     * 
+     * provides symbol resolver services
      */
     private final SymbolResolverServices symbolResolverServices;
 }

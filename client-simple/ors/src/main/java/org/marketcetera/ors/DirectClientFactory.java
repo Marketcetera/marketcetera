@@ -4,11 +4,12 @@ import org.marketcetera.client.*;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.symbol.SymbolResolverServices;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 
 /**
- *
+ * Creates {@link DirectClient} instances.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -66,11 +67,13 @@ public class DirectClientFactory
         symbolResolverServices = inSymbolResolverServices;
     }
     /**
-     * 
+     * report history services provider used by created client instances
      */
+    @Autowired
     private ReportHistoryServices reportHistoryServices;
     /**
-     * 
+     * symbol resolver services used by created client instances
      */
+    @Autowired
     private SymbolResolverServices symbolResolverServices;
 }
