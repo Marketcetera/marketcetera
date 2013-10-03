@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
-import org.marketcetera.marketdata.Content;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -274,7 +273,48 @@ public interface MDPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int MD_MARKETSTAT_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 4;
+    int MD_MARKETSTAT__OPEN_PRICE = MD_ITEM_FEATURE_COUNT + 4;
+
+    /**
+     * The feature id for the '<em><b>Open Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+
+    int MD_MARKETSTAT__HIGH_PRICE = MD_ITEM_FEATURE_COUNT + 5;
+
+    /**
+     * The feature id for the '<em><b>High Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+
+    int MD_MARKETSTAT__LOW_PRICE = MD_ITEM_FEATURE_COUNT + 6;
+
+    /**
+     * The feature id for the '<em><b>Open Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+
+
+    int MD_MARKETSTAT__VOLUME = MD_ITEM_FEATURE_COUNT + 7;
+
+    /**
+     * The feature id for the '<em><b>Volume</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+
+    int MD_MARKETSTAT_FEATURE_COUNT = MD_ITEM_FEATURE_COUNT + 8;
 
     /**
      * The meta object id for the '{@link org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl <em>Depth Of Book</em>}' class.
@@ -296,7 +336,6 @@ public interface MDPackage extends EPackage {
     int MD_DEPTH_OF_BOOK__INSTRUMENT = MD_ITEM__INSTRUMENT;
 
     /**
-     * The feature id for the '<em><b>Product</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -579,6 +618,51 @@ public interface MDPackage extends EPackage {
     EAttribute getMDMarketstat_PreviousCloseDate();
 
     /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>High Price</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+     * @see #getMDMarketstat()
+     * @generated
+     */
+    EAttribute getMDMarketstat_HighPrice();
+    
+    /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Low Price</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+     * @see #getMDMarketstat()
+     * @generated
+     */
+    EAttribute getMDMarketstat_LowPrice();
+    
+    /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Volume Shares Traded</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+     * @see #getMDMarketstat()
+     * @generated
+     */
+    EAttribute getMDMarketstat_VolumeTraded();
+    
+    
+    /**
+     * Returns the meta object for the attribute '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Open</em>'.
+     * @see org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate()
+     * @see #getMDMarketstat()
+     * @generated
+     */
+    EAttribute getMDMarketstat_OpenPrice();
+    
+    /**
      * Returns the meta object for class '{@link org.marketcetera.photon.model.marketdata.MDDepthOfBook <em>Depth Of Book</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -847,6 +931,46 @@ public interface MDPackage extends EPackage {
                 .getMDMarketstat_CloseDate();
 
         /**
+         * The meta object literal for the '<em><b>Open Price</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute MD_MARKETSTAT__OPEN_PRICE = eINSTANCE
+                .getMDMarketstat_OpenPrice();
+        
+        /**
+         * The meta object literal for the '<em><b>Low Price</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        
+        EAttribute MD_MARKETSTAT__LOW_PRICE = eINSTANCE
+                .getMDMarketstat_LowPrice();        
+        
+        /**
+         * The meta object literal for the '<em><b>Volume Traded</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        
+        EAttribute MD_MARKETSTAT__VOLUME = eINSTANCE
+                .getMDMarketstat_VolumeTraded();
+        
+        
+        /**
+         * The meta object literal for the '<em><b>High Price</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute MD_MARKETSTAT__HIGH_PRICE = eINSTANCE
+                .getMDMarketstat_HighPrice();
+        
+        
+        /**
          * The meta object literal for the '<em><b>Previous Close Price</b></em>' attribute feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -864,6 +988,7 @@ public interface MDPackage extends EPackage {
         EAttribute MD_MARKETSTAT__PREVIOUS_CLOSE_DATE = eINSTANCE
                 .getMDMarketstat_PreviousCloseDate();
 
+        
         /**
          * The meta object literal for the '{@link org.marketcetera.photon.model.marketdata.impl.MDDepthOfBookImpl <em>Depth Of Book</em>}' class.
          * <!-- begin-user-doc -->

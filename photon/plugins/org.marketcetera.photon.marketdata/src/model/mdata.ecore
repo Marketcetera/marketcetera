@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="marketdata"
-    nsURI="http://www.marketcetera.org/models/marketdata" nsPrefix="mdata">
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="marketdata" nsURI="http://www.marketcetera.org/models/marketdata"
+    nsPrefix="mdata">
   <eClassifiers xsi:type="ecore:EClass" name="MDItem" abstract="true">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="instrument" lowerBound="1"
         eType="#//Instrument">
@@ -71,6 +70,10 @@
         <details key="suppressedSetVisibility" value="true"/>
       </eAnnotations>
     </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="highPrice" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lowPrice" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="volumeTraded" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="openPrice" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBigDecimal"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MDDepthOfBook" eSuperTypes="#//MDItem">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="product" eType="#//DepthOfBookProduct">
@@ -113,6 +116,6 @@
       </eAnnotations>
     </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EDataType" name="DepthOfBookProduct" instanceClassName="org.marketcetera.marketdata.MarketDataRequest.Content"/>
+  <eClassifiers xsi:type="ecore:EDataType" name="DepthOfBookProduct" instanceClassName="org.marketcetera.marketdata.Content"/>
   <eClassifiers xsi:type="ecore:EDataType" name="Instrument" instanceClassName="org.marketcetera.trade.Instrument"/>
 </ecore:EPackage>

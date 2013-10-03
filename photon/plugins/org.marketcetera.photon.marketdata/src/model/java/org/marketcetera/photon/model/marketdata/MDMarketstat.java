@@ -21,16 +21,22 @@ import org.marketcetera.util.misc.ClassVersion;
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getCloseDate <em>Close Date</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousClosePrice <em>Previous Close Price</em>}</li>
  *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getPreviousCloseDate <em>Previous Close Date</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getHighPrice <em>High Price</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getLowPrice <em>Low Price</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getVolumeTraded <em>Volume Traded</em>}</li>
+ *   <li>{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getOpenPrice <em>Open Price</em>}</li>
  * </ul>
  * </p>
  *
  * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat()
  * @model
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface MDMarketstat extends MDItem {
+public interface MDMarketstat
+        extends MDItem
+{
     /**
      * Returns the value of the '<em><b>Close Price</b></em>' attribute.
      * <!-- begin-user-doc -->
@@ -75,4 +81,91 @@ public interface MDMarketstat extends MDItem {
      */
     String getPreviousCloseDate();
 
+    /**
+     * Returns the value of the '<em><b>High Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>High Price</em>' attribute.
+     * @see #setHighPrice(BigDecimal)
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_HighPrice()
+     * @model
+     * @generated
+     */
+    BigDecimal getHighPrice();
+
+    /**
+     * Sets the value of the '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getHighPrice <em>High Price</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>High Price</em>' attribute.
+     * @see #getHighPrice()
+     * @generated
+     */
+    void setHighPrice(BigDecimal value);
+
+    /**
+     * Returns the value of the '<em><b>Low Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Low Price</em>' attribute.
+     * @see #setLowPrice(BigDecimal)
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_LowPrice()
+     * @model
+     * @generated
+     */
+    BigDecimal getLowPrice();
+
+    /**
+     * Sets the value of the '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getLowPrice <em>Low Price</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Low Price</em>' attribute.
+     * @see #getLowPrice()
+     * @generated
+     */
+    void setLowPrice(BigDecimal value);
+
+    /**
+     * Returns the value of the '<em><b>Volume Traded</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Volume Traded</em>' attribute.
+     * @see #setVolumeTraded(BigDecimal)
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_VolumeTraded()
+     * @model
+     * @generated
+     */
+    BigDecimal getVolumeTraded();
+
+    /**
+     * Sets the value of the '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getVolumeTraded <em>Volume Traded</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Volume Traded</em>' attribute.
+     * @see #getVolumeTraded()
+     * @generated
+     */
+    void setVolumeTraded(BigDecimal value);
+
+    /**
+     * Returns the value of the '<em><b>Open Price</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Open Price</em>' attribute.
+     * @see #setOpenPrice(BigDecimal)
+     * @see org.marketcetera.photon.model.marketdata.MDPackage#getMDMarketstat_OpenPrice()
+     * @model
+     * @generated
+     */
+    BigDecimal getOpenPrice();
+
+    /**
+     * Sets the value of the '{@link org.marketcetera.photon.model.marketdata.MDMarketstat#getOpenPrice <em>Open Price</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Open Price</em>' attribute.
+     * @see #getOpenPrice()
+     * @generated
+     */
+    void setOpenPrice(BigDecimal value);
 } // MDMarketstat

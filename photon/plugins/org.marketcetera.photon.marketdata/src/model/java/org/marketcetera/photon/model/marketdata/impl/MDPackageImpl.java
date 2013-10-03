@@ -301,6 +301,24 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
         return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(3);
     }
 
+    @Override
+   	public EAttribute getMDMarketstat_OpenPrice() {
+   		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(4);		
+   	}
+   	@Override
+   	public EAttribute getMDMarketstat_HighPrice() {
+   		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(5);
+   	}
+
+   	@Override
+   	public EAttribute getMDMarketstat_LowPrice() {
+   		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(6);
+   	}
+   	
+   	@Override
+   	public EAttribute getMDMarketstat_VolumeTraded() {
+   		return (EAttribute) mdMarketstatEClass.getEStructuralFeatures().get(7);
+   	}
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -449,7 +467,11 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
         createEAttribute(mdMarketstatEClass,
                 MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE);
         createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__PREVIOUS_CLOSE_DATE);
-
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__OPEN_PRICE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__HIGH_PRICE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__LOW_PRICE);
+        createEAttribute(mdMarketstatEClass, MD_MARKETSTAT__VOLUME);
+        
         mdDepthOfBookEClass = createEClass(MD_DEPTH_OF_BOOK);
         createEAttribute(mdDepthOfBookEClass, MD_DEPTH_OF_BOOK__PRODUCT);
         createEReference(mdDepthOfBookEClass, MD_DEPTH_OF_BOOK__BIDS);
@@ -568,7 +590,22 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
                 getMDMarketstat_PreviousCloseDate(),
                 ecorePackage.getEString(),
                 "previousCloseDate", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
-
+        initEAttribute(
+                getMDMarketstat_OpenPrice(),
+                ecorePackage.getEString(),
+                "openPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_HighPrice(),
+                ecorePackage.getEString(),
+                "highPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$
+        initEAttribute(
+                getMDMarketstat_LowPrice(),
+                ecorePackage.getEString(),
+                "lowPrice", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$       
+        initEAttribute(
+                getMDMarketstat_VolumeTraded(),
+                ecorePackage.getEString(),
+                "volume", null, 0, 1, MDMarketstat.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED); //$NON-NLS-1$        
         initEClass(
                 mdDepthOfBookEClass,
                 MDDepthOfBook.class,
@@ -620,5 +657,6 @@ public class MDPackageImpl extends EPackageImpl implements MDPackage {
         // Create resource
         createResource(eNS_URI);
     }
-
+             
 } //MDPackageImpl
+
