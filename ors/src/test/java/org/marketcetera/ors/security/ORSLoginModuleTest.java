@@ -1,28 +1,22 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.PersistTestBase;
-import static org.marketcetera.ors.security.Messages.EMPTY_USERNAME;
-import static org.marketcetera.ors.security.Messages.PROMPT_USERNAME;
-import static org.marketcetera.ors.security.Messages.PROMPT_PASSWORD;
-import static org.marketcetera.ors.security.Messages.USER_LOGIN_ERROR;
-import static org.marketcetera.ors.security.Messages.USER_LOGIN_ERROR_LOG;
-import static org.marketcetera.ors.security.Messages.USER_LOGIN_LOG;
-import static org.marketcetera.ors.security.Messages.USER_LOGOUT_LOG;
-import org.marketcetera.util.test.TestCaseBase;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.junit.After;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import org.apache.log4j.Level;
+import static org.marketcetera.ors.security.Messages.*;
 
-import javax.security.auth.callback.*;
-import javax.security.auth.login.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
+import javax.security.auth.callback.*;
+import javax.security.auth.login.*;
+
+import org.apache.log4j.Level;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.test.TestCaseBase;
 
 import com.sun.security.auth.UserPrincipal;
 
@@ -133,7 +127,9 @@ public class ORSLoginModuleTest extends TestCaseBase {
     }
 
     @BeforeClass
-    public static void setup() throws Exception {
+    public static void setup()
+            throws Exception
+    {
         springSetup();
         user = new SimpleUser();
         user.setName(randomString());

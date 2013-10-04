@@ -1,5 +1,7 @@
 package org.marketcetera.core;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 @ClassVersion("$Id$")
 public class DatabaseIDFactory
         extends DBBackedIDFactory
@@ -59,16 +61,18 @@ public class DatabaseIDFactory
      * This is where the real request for IDs happens
      */
     protected void performIDRequest()
-            throws Exception
     {
-        PersistentDatabaseID id = PersistentDatabaseID.getPersistentID();
+        PersistentDatabaseID id = databaseIdManager.allocateIdBlock(mCacheQuantity);
         long nextID = id.getNextAllowedId();
         long upTo = nextID + mCacheQuantity;
-        id.setNextAllowedId(upTo);
         setMaxAllowedID(upTo);
         setNextID(nextID);
-        PersistentDatabaseID.save(id);
     }
+    /**
+     * 
+     */
+    @Autowired
+    private DatabaseIdManager databaseIdManager;
     /**
      * default number of ids to allocate at once
      */

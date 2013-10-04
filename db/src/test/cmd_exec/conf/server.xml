@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main server configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id: server.xml 16664 2013-08-23 23:06:00Z colin $
+  - $License$
+  -->
+
+<!--
+  - See 'README.html' for detailed documentation.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+      <context:annotation-config/>
+      <jpa:repositories base-package="org.marketcetera.db"/>
+      <bean id="hibernateJpaAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+          <property name="showSql" value="true" />
+      </bean>
+      <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+          <property name="entityManagerFactory" ref="entityManagerFactory" />
+      </bean>
+      <bean id="poolDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+          <!-- property name="driverClass" value="org.apache.derby.jdbc.EmbeddedDriver"/-->
+          <!-- property name="jdbcUrl" value="jdbc:derby:data/metc;create=true"/-->
+          <property name="driverClass" value="org.postgresql.Driver"/>
+          <property name="jdbcUrl" value="jdbc:postgresql:metc"/>
+          <property name="user" value="metc"/>
+          <property name="password" value="pw4metc"/>
+          <property name="maxPoolSize" value="10"/>
+          <property name="preferredTestQuery" value="select 1"/> <!-- use this for mysql, postgres, and others -->
+          <!-- property name="preferredTestQuery" value="VALUES 1"/--> <!-- use this for derby -->
+          <property name="testConnectionOnCheckout" value="true"/>
+      </bean>
+      <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+          <property name="dataSource" ref="poolDataSource"/>
+          <property name="persistenceUnitName" value="metc"/>
+          <property name="jpaVendorAdapter" ref="hibernateJpaAdapter"/>
+          <property name="jpaProperties">
+              <props>
+                  <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                  <!-- prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop-->
+                  <prop key="hibernate.hbm2ddl.auto">update</prop>
+                  <prop key="hibernate.show_sql">true</prop>
+                  <prop key="hibernate.format_sql">true</prop>
+              </props>
+          </property>
+          <property name="packagesToScan">
+              <list>
+                  <value>org.marketcetera.db</value>
+              </list>
+          </property>
+      </bean>
+      <bean id="manager" class="org.marketcetera.db.Manager"/>
+</beans>

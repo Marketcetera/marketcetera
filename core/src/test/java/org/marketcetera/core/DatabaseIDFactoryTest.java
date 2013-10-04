@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.persist.PersistTestBase;
 import org.springframework.context.support.AbstractApplicationContext;
 
 /**
@@ -31,7 +30,7 @@ public class DatabaseIDFactoryTest
     public static void setUp()
             throws Exception
     {
-        context = PersistTestBase.springSetup(new String[] { "persist.xml" });
+//        context = PersistTestBase.springSetup(new String[] { "persist.xml" });
         context.start();
     }
     /**

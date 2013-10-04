@@ -1,13 +1,11 @@
 package org.marketcetera.core;
 
-import java.util.List;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 import org.marketcetera.persist.EntityBase;
-import org.marketcetera.persist.PersistContext;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.Transaction;
 
 /* $License$ */
 
@@ -25,51 +23,10 @@ public class PersistentDatabaseID
         extends EntityBase
 {
     /**
-     * Gets the next ID to allocate.
-     *
-     * @return a <code>PersistentDatabaseID</code> value
-     * @throws PersistenceException if an error occurs retrieving the next id
-     */
-    static PersistentDatabaseID getPersistentID()
-            throws PersistenceException
-    {
-        return executeRemote(new Transaction<PersistentDatabaseID>() {
-            @Override
-            public PersistentDatabaseID execute(EntityManager inEntityManager,
-                                PersistContext inContext)
-                    throws PersistenceException
-            {
-                Query query = inEntityManager.createNamedQuery("getNextId"); //$NON-NLS-1$
-                List<?> list = query.getResultList();
-                PersistentDatabaseID id = null;
-                if(list.isEmpty()) {
-                    id = new PersistentDatabaseID();
-                    id.setNextAllowedId(1);
-                } else {
-                    id = (PersistentDatabaseID)list.get(0);
-                }
-                return id;
-            }
-            private static final long serialVersionUID = 1L;
-        },null);
-    }
-    /**
-     * Saves the given value.
-     *
-     * @param inId a <code>PersistentDatabaseID</code> value
-     * @throws PersistenceException if an error occurs writing the new value to the database
-     */
-    static void save(PersistentDatabaseID inId)
-            throws PersistenceException
-    {
-        inId.saveRemote(null);
-    }
-    /**
      * Get the nextAllowedId value.
      *
      * @return a <code>long</code> value
      */
-    @Column(name="next_id")
     public long getNextAllowedId()
     {
         return nextAllowedId;
@@ -86,6 +43,7 @@ public class PersistentDatabaseID
     /**
      * the next allowed id
      */
+    @Column(name="next_id")
     private long nextAllowedId;
     private static final long serialVersionUID = -3056482782155189377L;
 }
