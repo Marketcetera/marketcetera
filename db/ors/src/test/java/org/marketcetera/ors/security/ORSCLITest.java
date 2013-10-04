@@ -1,23 +1,24 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.persist.PersistTestBase;
-import org.marketcetera.persist.EntityExistsException;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.marketcetera.util.test.UnicodeData;
-import org.junit.Test;
-import org.junit.BeforeClass;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.apache.commons.cli.MissingOptionException;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.UnrecognizedOptionException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.regex.Pattern;
+
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.UnrecognizedOptionException;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.persist.EntityExistsException;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.test.UnicodeData;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */
 /**
@@ -26,7 +27,8 @@ import java.util.regex.Pattern;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class ORSCLITest extends PersistTestBase {
+public class ORSCLITest
+{
     private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
     private static ORSAdminCLI instance;
     private static ByteArrayOutputStream bOut = new ByteArrayOutputStream();
@@ -223,7 +225,7 @@ public class ORSCLITest extends PersistTestBase {
         final String password = "admin"; //$NON-NLS-1$
         admin.setPassword(password.toCharArray());
         admin.setSuperuser(true);
-        admin.save();
+        simpleUserRepository.save(admin);
         //Try list users
         runCLI("-u",admin.getName(),"-p",password,"--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         matchOut("^\\s*admin \\[sa\\]\\s*$"); //$NON-NLS-1$
@@ -401,4 +403,9 @@ public class ORSCLITest extends PersistTestBase {
             assertTrue(err, err.indexOf(ORSAdminCLI.CMD_NAME) >= 0);
         }
     }
+    /**
+     * 
+     */
+    @Autowired
+    private SimpleUserRepository simpleUserRepository;
 }

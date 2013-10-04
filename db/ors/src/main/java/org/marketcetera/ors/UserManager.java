@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
+import org.marketcetera.ors.security.SimpleUserRepository;
 import org.marketcetera.ors.ws.ClientSession;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.trade.UserID;
@@ -18,6 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.SessionHolder;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.tags.SessionId;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A manager of the set of connected users (active sessions). It also
@@ -134,11 +135,7 @@ public class UserManager
         for (UserID userID:allUserIDs) {
             // Assume user is nonexistent/inactive.
             SimpleUser user=null;
-            try {
-                user=new SingleSimpleUserQuery(userID.getValue()).fetch();
-            } catch (PersistenceException ex) {
-                // Ignored: user remains null.
-            }
+            user =  simpleUserRepository.findOne(userID.getValue());
             if ((user!=null) && (!user.isActive())) {
                 user=null;
             }
@@ -302,4 +299,9 @@ public class UserManager
             SLF4JLoggerProxy.debug(this," {}",e); //$NON-NLS-1$
         }
     }
+    /**
+     * 
+     */
+    @Autowired
+    private SimpleUserRepository simpleUserRepository;
 }

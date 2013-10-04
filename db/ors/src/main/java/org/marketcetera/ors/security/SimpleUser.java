@@ -33,25 +33,20 @@ import org.marketcetera.util.log.I18NMessage0P;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
 @Entity
-@Table(
-        name = "ors_users",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})}
-)
+@Table(name = "ors_users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 @AttributeOverride(name = "name", column = @Column(nullable = false))
-public class SimpleUser extends NDEntityBase {
-    private static final long serialVersionUID = -244334398553751199L;
-
+@ClassVersion("$Id$")
+public class SimpleUser
+        extends NDEntityBase
+{
     /**
      * The superuser flag of this user.
      * @return The flag.
      */
-    @Column(nullable = false)
     public boolean isSuperuser() {
         return superuser;
     }
-
     /**
      * Set the superuser flag for this user.
      * @param superuser the superuser flag for this user.
@@ -59,18 +54,13 @@ public class SimpleUser extends NDEntityBase {
     public void setSuperuser(boolean superuser) {
         this.superuser = superuser;
     }
-
-    private boolean superuser = false;
-
     /**
      * The active flag of this user.
      * @return The flag.
      */
-    @Column(nullable = false)
     public boolean isActive() {
         return active;
     }
-
     /**
      * Set the active flag for this user.
      * @param active the active flag for this user.
@@ -78,14 +68,11 @@ public class SimpleUser extends NDEntityBase {
     public void setActive(boolean active) {
         this.active = active;
     }
-
-    private boolean active = true;
     /**
      * Gets the user data as a <code>String</code>.
      *
      * @return a <code>String</code> value or <code>null</code>
      */
-    @Column(nullable=true,length=8096)
     public String getUserData()
     {
         return userData;
@@ -100,27 +87,19 @@ public class SimpleUser extends NDEntityBase {
         userData = inUserData;
     }
     /**
-     * the user data associated with this used - may be <code>null</code>
-     */
-    private String userData;
-    /**
      * The UserID of this user.
      * @return The UserID.
      */
-    @Transient
     public UserID getUserID() {
         return new UserID(getId());
     }
-
     /**
      * Returns true if the user password is set.
      * @return true if the user password is set.
      */
-    @Transient
     public boolean isPasswordSet() {
         return getHashedPassword() != null;
     }
-
     /**
      * Sets the user name. The user password is emptied whenever the
      * user name is modified. Make sure to the set the user
@@ -135,7 +114,6 @@ public class SimpleUser extends NDEntityBase {
             setHashedPassword(null);
         }
     }
-
     /**
      * Sets the user's password. The user name should be set to a
      * non-empty value before this method is invoked 
@@ -160,7 +138,6 @@ public class SimpleUser extends NDEntityBase {
         }
         validateAndSetPassword(password);
     }
-
     /**
      * Changes the user's password after
      * {@link #validatePassword(char[]) validating} the supplied password.
@@ -181,7 +158,6 @@ public class SimpleUser extends NDEntityBase {
         validatePassword(originalPassword);
         validateAndSetPassword(newPassword);
     }
-
     /**
      * Verifies if the supplied password matches the configured
      * password for the user. If no nonempty password is presently
@@ -206,7 +182,6 @@ public class SimpleUser extends NDEntityBase {
             throw new ValidationException(INVALID_PASSWORD);
         }
     }
-
     /**
      * Validates if the attributes of this instance are valid
      * to attempt a save operation.
@@ -225,32 +200,6 @@ public class SimpleUser extends NDEntityBase {
             throw new ValidationException(EMPTY_PASSWORD);
         }
     }
-
-    /**
-     * Saves the user to the database.
-     *
-     * @throws ValidationException if {@link #validate() validation}
-     * failed when saving the user.
-     * @throws org.marketcetera.persist.EntityExistsException if a user
-     * with the supplied name already exists in the database.
-     * @throws org.marketcetera.persist.PersistenceException If there were
-     * errors saving the user to the database.
-     */
-    public void save() throws org.marketcetera.persist.PersistenceException {
-        saveRemote(null);
-    }
-
-    /**
-     * Deletes the user from the database. After a user is deleted,
-     * any attempt to login as that user fails. Do note that
-     * deleting a user will not force logout the user from the system.
-     *
-     * @throws PersistenceException if there were errors deleting the user
-     */
-    public void delete() throws PersistenceException {
-        deleteRemote(null);
-    }
-
     /**
      * Validates if the supplied password matches the password rules
      * and saves it
@@ -263,18 +212,12 @@ public class SimpleUser extends NDEntityBase {
         validatePasswordValue(password);
         setHashedPassword(hash(getName().toCharArray(), password));
     }
-
-    @Column(nullable = false)
     private String getHashedPassword() {
         return hashedPassword;
     }
-
     private void setHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
     }
-
-    private String hashedPassword = null;
-
     /**
      * Validates if the supplied password value is valid
      *
@@ -288,7 +231,6 @@ public class SimpleUser extends NDEntityBase {
             throw new ValidationException(EMPTY_PASSWORD);
         }
     }
-
     /**
      * The custom localized name for users.
      *
@@ -298,7 +240,6 @@ public class SimpleUser extends NDEntityBase {
     private static I18NMessage0P getUserFriendlyName() {
         return SIMPLE_USER_NAME;
     }
-
     /**
      * Hashes the supplied value
      *
@@ -319,7 +260,6 @@ public class SimpleUser extends NDEntityBase {
             throw new IllegalArgumentException(e);
         }
     }
-
     /**
      * The digest used to hash the password.
      */
@@ -333,6 +273,25 @@ public class SimpleUser extends NDEntityBase {
             }
         }
     };
-    static final String ATTRIBUTE_ACTIVE = "active"; //$NON-NLS-1$
-    static final String ENTITY_NAME = "SimpleUser"; //$NON-NLS-1$
+    /**
+     * 
+     */
+    @Column(nullable = false)
+    private boolean superuser = false;
+    /**
+     * 
+     */
+    @Column(nullable = false)
+    private boolean active = true;
+    /**
+     * the user data associated with this used - may be <code>null</code>
+     */
+    @Column(nullable=true,length=8096)
+    private String userData;
+    /**
+     * 
+     */
+    @Column(nullable = false)
+    private String hashedPassword = null;
+    private static final long serialVersionUID = -244334398553751199L;
 }
