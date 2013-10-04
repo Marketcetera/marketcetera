@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 /* $License$ */
 
 /**
- *
+ * Provides business-level services for database-backed ids.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -24,7 +24,7 @@ public class DatabaseIdManager
     @Transactional(readOnly=false)
     public PersistentDatabaseID allocateIdBlock(long inBlockSize)
     {
-        Iterable<PersistentDatabaseID> idIterator = databaseIdRepository.findAll();
+        Iterable<PersistentDatabaseID> idIterator = databaseIdDao.findAll();
         PersistentDatabaseID id;
         if(idIterator.iterator().hasNext()) {
             id = idIterator.iterator().next();
@@ -35,12 +35,12 @@ public class DatabaseIdManager
         long nextID = id.getNextAllowedId();
         long upTo = nextID + inBlockSize;
         id.setNextAllowedId(upTo);
-        databaseIdRepository.save(id);
+        databaseIdDao.save(id);
         return id;
     }
     /**
      * 
      */
     @Autowired
-    private DatabaseIdRepository databaseIdRepository;
+    private DatabaseIdDao databaseIdDao;
 }

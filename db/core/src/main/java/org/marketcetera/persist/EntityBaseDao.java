@@ -11,7 +11,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
  * @version $Id$
  * @since $Release$
  */
-public interface EntityBaseRepository<Clazz extends EntityBase>
+public interface EntityBaseDao<Clazz extends EntityBase>
         extends PagingAndSortingRepository<Clazz,Long>
 {
 }

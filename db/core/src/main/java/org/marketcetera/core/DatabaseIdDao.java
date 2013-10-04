@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import org.marketcetera.persist.EntityBaseRepository;
+import org.marketcetera.persist.EntityBaseDao;
 
 /* $License$ */
 
@@ -11,7 +11,7 @@ import org.marketcetera.persist.EntityBaseRepository;
  * @version $Id$
  * @since $Release$
  */
-public interface DatabaseIdRepository
-        extends EntityBaseRepository<PersistentDatabaseID>
+public interface DatabaseIdDao
+        extends EntityBaseDao<PersistentDatabaseID>
 {
 }
