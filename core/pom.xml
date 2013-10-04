@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Author: tlerios@marketcetera.com
-  - Since: 0.5.0
-  - Version: $Id$
-  - $License$
-  -->
+- Author: tlerios@marketcetera.com
+- Since: 0.5.0
+- Version: $Id$
+- $License$
+-->
 
-<project
- xmlns="http://maven.apache.org/POM/4.0.0"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-      <groupId>org.marketcetera</groupId>
-      <artifactId>public-parent</artifactId>
-      <version>2.4.0</version>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>public-parent</artifactId>
+    <version>2.4.0</version>
   </parent>
   <artifactId>core</artifactId>
   <packaging>jar</packaging>
@@ -132,12 +130,39 @@
       <artifactId>c3p0</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-jpa</artifactId>
+    </dependency>
   </dependencies>
-
   <build>
     <plugins>
-
-      <!-- Place tests into a jar for use during testing of other packages. -->
+      <plugin>
+        <groupId>com.mysema.maven</groupId>
+        <artifactId>apt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <!-- Specifies the directory in which the query types are generated -->
+              <outputDirectory>target/generated-sources</outputDirectory>
+              <!-- States that the APT code generator should look for JPA annotations -->
+              <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>      <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
@@ -158,11 +183,11 @@
           <resolveDependencies>false</resolveDependencies>
           <additionalBuildcommands>
             <!-- 
-              - This build command runs the package goal every time test
-              - files change. Its sole purpose is to update the core.tests
-              - plug-in with the new code (see the antrun plug-in execution
-              - below). 
-              -->
+                 - This build command runs the package goal every time test
+                 - files change. Its sole purpose is to update the core.tests
+                 - plug-in with the new code (see the antrun plug-in execution
+                 - below). 
+            -->
             <buildCommand>
               <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
               <triggers>auto,full,incremental,</triggers>
@@ -171,39 +196,6 @@
               </arguments>
             </buildCommand>      
           </additionalBuildcommands>
-        </configuration>
-      </plugin>
-
-      <!-- Database schema generator. -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>hibernate3-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- In this phase, the persistence.xml file has been copied. -->
-            <phase>process-test-classes</phase>
-            <goals>
-              <goal>hbm2ddl</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <components>
-            <component>
-              <name>hbm2ddl</name>
-              <implementation>annotationconfiguration</implementation>
-            </component>
-          </components>
-          <componentProperties>
-            <implementation>jpaconfiguration</implementation>
-            <persistenceunit>unit-testing</persistenceunit>
-            <outputfilename>schema.sql</outputfilename>
-            <jdk5>true</jdk5>
-            <drop>false</drop>
-            <create>true</create>
-            <export>false</export>
-            <format>true</format>
-          </componentProperties>
         </configuration>
       </plugin>
       
@@ -217,11 +209,11 @@
             <configuration>
               <tasks>
                 <property
-                 name="targetDirTests"
-                 value="../photon/plugins/org.marketcetera.core.tests/" />
+                    name="targetDirTests"
+                    value="../photon/plugins/org.marketcetera.core.tests/" />
                 <copy
-                 file="target/core-${project.version}-tests.jar"
-                 todir="${targetDirTests}" />
+                    file="target/core-${project.version}-tests.jar"
+                    todir="${targetDirTests}" />
               </tasks>
             </configuration>
             <goals>
@@ -231,36 +223,5 @@
         </executions>
       </plugin>
     </plugins>
-    <pluginManagement>
-    	<plugins>
-    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    		<plugin>
-    			<groupId>org.eclipse.m2e</groupId>
-    			<artifactId>lifecycle-mapping</artifactId>
-    			<version>1.0.0</version>
-    			<configuration>
-    				<lifecycleMappingMetadata>
-    					<pluginExecutions>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>org.codehaus.mojo</groupId>
-    								<artifactId>
-    									hibernate3-maven-plugin
-    								</artifactId>
-    								<versionRange>[2.1,)</versionRange>
-    								<goals>
-    									<goal>hbm2ddl</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    					</pluginExecutions>
-    				</lifecycleMappingMetadata>
-    			</configuration>
-    		</plugin>
-    	</plugins>
-    </pluginManagement>
   </build>
 </project>
