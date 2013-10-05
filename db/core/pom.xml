@@ -162,7 +162,8 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>      <!-- Place tests into a jar for use during testing of other packages. -->
+      </plugin>
+      <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
