@@ -5,16 +5,16 @@ import org.marketcetera.client.ClientVersion;
 import org.marketcetera.client.IncompatibleComponentsException;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
+import org.marketcetera.ors.dao.SimpleUserRepository;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.NoResultException;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * A session authenticator that uses the database for authentication. 
@@ -91,19 +91,23 @@ public class DBAuthenticator
                  serverVersion);
         }
         try {
-            SimpleUser u=new SingleSimpleUserQuery(user).fetch();
+            SimpleUser u=simpleUserRepository.findByName(user);
             if (!u.isActive()) {
                 Messages.BAD_CREDENTIALS.warn(this,user);
                 return false;
             }
             u.validatePassword(password);
-        } catch (NoResultException ex) {
-            Messages.BAD_CREDENTIALS.warn(this,ex,user);
-            return false;
         } catch (PersistenceException ex) {
             Messages.BAD_CREDENTIALS.warn(this,ex,user);
             return false;
         }
         return true;
     }
+    
+    /**
+     * 
+     */
+    @Autowired
+    private SimpleUserRepository simpleUserRepository;
+    
 }

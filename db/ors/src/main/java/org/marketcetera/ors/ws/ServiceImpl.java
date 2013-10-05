@@ -18,10 +18,10 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.OptionRootUnderlyingMap;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.brokers.Brokers;
+import org.marketcetera.ors.dao.SimpleUserRepository;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.ors.symbol.SymbolResolverServices;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
@@ -31,6 +31,7 @@ import org.marketcetera.util.ws.stateful.*;
 import org.marketcetera.util.ws.wrappers.DateWrapper;
 import org.marketcetera.util.ws.wrappers.MapWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import quickfix.Message;
 
@@ -128,7 +129,7 @@ public class ServiceImpl
         (UserID id)
         throws PersistenceException
     {
-        SimpleUser u=(new SingleSimpleUserQuery(id.getValue())).fetch();
+        SimpleUser u=simpleUserRepository.findOne(id.getValue());
         return new UserInfo(u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()));
     }
 
@@ -265,7 +266,7 @@ public class ServiceImpl
     private String getUserDataImpl(String inUsername)
             throws PersistenceException
     {
-        return new SingleSimpleUserQuery(inUsername).fetch().getUserData();
+        return simpleUserRepository.findByName(inUsername).getUserData();
     }
     /**
      * Resolves the given symbol to an <code>Instrument</code>.
@@ -300,9 +301,7 @@ public class ServiceImpl
                                  String inUserData)
             throws PersistenceException
     {
-        SimpleUser user = new SingleSimpleUserQuery(inUsername).fetch();
-        user.setUserData(inUserData);
-        user.save();
+        simpleUserRepository.updateUserByName(inUsername, inUserData);;
     }
     /**
      * Adds the given message to the system data bus.
@@ -776,4 +775,11 @@ public class ServiceImpl
                 return getOpenOrders(sessionHolder.getSession());
         }}).execute(inContext);
     }
+    
+    /**
+     * 
+     */
+    @Autowired
+    private SimpleUserRepository simpleUserRepository;
+    
 }
