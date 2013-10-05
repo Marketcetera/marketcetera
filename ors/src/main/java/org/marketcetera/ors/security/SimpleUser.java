@@ -114,6 +114,11 @@ public class SimpleUser
             setHashedPassword(null);
         }
     }
+    
+    public void resetUserPassword(String password) throws ValidationException {
+        setHashedPassword(null);
+        setPassword(password.toCharArray());
+    }
     /**
      * Sets the user's password. The user name should be set to a
      * non-empty value before this method is invoked 
