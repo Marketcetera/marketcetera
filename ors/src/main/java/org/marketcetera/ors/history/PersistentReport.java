@@ -9,11 +9,8 @@ import javax.persistence.*;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.security.SingleSimpleUserQuery;
 import org.marketcetera.persist.EntityBase;
-import org.marketcetera.persist.PersistContext;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.Transaction;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -37,119 +34,9 @@ import quickfix.Message;
 @Table(name = "reports")
 @NamedQueries( { @NamedQuery(name="forOrderID",query="select e from PersistentReport e where e.orderID = :orderID"),
                  @NamedQuery(name="since",query="select e from PersistentReport e where e.sendingTime < :target") })
-class PersistentReport
+public class PersistentReport
         extends EntityBase
 {
-    /**
-     * Saves the supplied report to the database.
-     *
-     * @param inReport The report to be saved.
-     *
-     * @throws PersistenceException if there were errors saving the
-     * report to the database.
-     */
-    static void save(ReportBase inReport) throws PersistenceException {
-        PersistentReport report = new PersistentReport(inReport);
-        report.saveRemote(null);
-    }
-    /**
-     * Deletes the given report.
-     *
-     * @param inReport a <code>ReportBase</code> value
-     * @throws PersistenceException if an error occurs deleting the report
-     */
-    static void delete(final ReportBase inReport)
-            throws PersistenceException
-    {
-        executeRemote(new Transaction<PersistentReport>() {
-            @Override
-            public PersistentReport execute(EntityManager em,
-                                            PersistContext context)
-                    throws PersistenceException
-            {
-                Query query = em.createNamedQuery("forOrderID"); //$NON-NLS-1$
-                query.setParameter("orderID",
-                                   inReport.getOrderID()); //$NON-NLS-1$
-                List<?>list = query.getResultList();
-                if(list.isEmpty()) {
-                    return null;
-                }
-                PersistentReport report = (PersistentReport)list.get(0);
-                ExecutionReportSummary.deleteReportsFor(report);
-                report.deleteRemote(null);
-                return report;
-            }
-            private static final long serialVersionUID = 1L;
-        },null);
-    }
-    static int deleteBefore(final Date inPurgeDate)
-            throws PersistenceException
-    {
-        return executeRemote(new Transaction<Integer>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Integer execute(EntityManager em,
-                                   PersistContext context)
-                    throws PersistenceException
-            {
-                Query query = em.createNamedQuery("since"); //$NON-NLS-1$
-                query.setParameter("target", //$NON-NLS-1$
-                                   inPurgeDate);
-                List<PersistentReport> list = query.getResultList();
-                if(list == null || list.isEmpty()) {
-                    return 0;
-                }
-                // delete the Exec reports first
-                ExecutionReportSummary.deleteReportsIn(list);
-                List<Long> ids = new ArrayList<Long>();
-                if(list != null) {
-                    for(PersistentReport report : list) {
-                        ids.add(report.getId());
-                    }
-                }
-                return em.createNativeQuery("DELETE FROM reports WHERE id IN (:ids)").setParameter("ids",ids).executeUpdate();
-            }
-            private static final long serialVersionUID = 1L;
-        },null);
-    }
-    /**
-     * Returns the principals associated with the report with given
-     * order ID.
-     *
-     * @param orderID The order ID.
-     *
-     * @return The principals. If no report with the given order ID
-     * exists, {@link Principals#UNKNOWN} is returned, and no
-     * exception is thrown.
-     *
-     * @throws PersistenceException if there were errors accessing the
-     * report.
-     */
-
-    static Principals getPrincipals
-        (final OrderID orderID)
-        throws PersistenceException 
-    {
-        return executeRemote(new Transaction<Principals>() {
-            private static final long serialVersionUID=1L;
-
-            @Override
-            public Principals execute
-                (EntityManager em,
-                 PersistContext context)
-            {
-                Query query=em.createNamedQuery("forOrderID"); //$NON-NLS-1$
-                query.setParameter("orderID",orderID); //$NON-NLS-1$
-                List<?> list=query.getResultList();
-                if (list.isEmpty()) {
-                    return Principals.UNKNOWN;
-                }
-                PersistentReport report=(PersistentReport)(list.get(0));
-                return new Principals(report.getActorID(),
-                                      report.getViewerID());
-            }
-        },null);
-    }
 
     /**
      * Creates an instance, given a report.
@@ -171,14 +58,14 @@ class PersistentReport
         setOriginator(inReport.getOriginator());
         setOrderID(inReport.getOrderID());
         setReportID(inReport.getReportID());
-        if (inReport.getActorID()!=null) {
-            setActor(new SingleSimpleUserQuery
-                     (inReport.getActorID().getValue()).fetch());
-        }
-        if (inReport.getViewerID()!=null) {
-            setViewer(new SingleSimpleUserQuery
-                      (inReport.getViewerID().getValue()).fetch());
-        }
+//        if (inReport.getActorID()!=null) {
+//            setActor(new SingleSimpleUserQuery
+//                     (inReport.getActorID().getValue()).fetch());
+//        }
+//        if (inReport.getViewerID()!=null) {
+//            setViewer(new SingleSimpleUserQuery
+//                      (inReport.getViewerID().getValue()).fetch());
+//        }
         if(inReport instanceof ExecutionReport) {
             mReportType = ReportType.ExecutionReport;
         } else if (inReport instanceof OrderCancelReject) {
@@ -236,21 +123,6 @@ class PersistentReport
         } catch (MessageCreationException e) {
             throw new ReportPersistenceException(e, new I18NBoundMessage1P(
                     Messages.ERROR_RECONSTITUTE_FIX_MSG, fixMsgString));
-        }
-    }
-
-    @Override
-    protected void postSaveLocal(EntityManager em,
-                                 EntityBase merged,
-                                 PersistContext context)
-            throws PersistenceException {
-        super.postSaveLocal(em, merged, context);
-        PersistentReport mergedReport = (PersistentReport) merged;
-        //Save the summary if the report is an execution report.
-        if(mergedReport.getReportType() == ReportType.ExecutionReport) {
-            new ExecutionReportSummary(
-                    (ExecutionReport) mReportBase,
-                    mergedReport).localSave(em, context);
         }
     }
 

@@ -10,9 +10,7 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.EntityBase;
-import org.marketcetera.persist.PersistContext;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.Transaction;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -181,595 +179,7 @@ import org.marketcetera.util.misc.ClassVersion;
     @NamedNativeQuery(name="deleteReportsFor",query="delete from execreports where report_id=:id",resultClass=ExecutionReportSummary.class)
         })
 
-class ExecutionReportSummary extends EntityBase {
-    /**
-     * Gets the current aggregate position for the equity based on
-     * execution reports received on or before the supplied time, and which
-     * are visible to the given user.
-     *
-     * <p>
-     * Buy trades result in positive positions. All other kinds of trades
-     * result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the time. execution reports with sending time values less
-     * than or equal to this time are included in this calculation.
-     * @param inEquity the equity for which this position needs to be computed
-     *
-     * @return the aggregate position for the equity.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position.
-     */
-    static BigDecimal getEquityPositionAsOf
-        (final SimpleUser inUser,
-         final Date inDate,
-         final Equity inEquity)
-        throws PersistenceException
-    {
-        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public BigDecimal execute(EntityManager em, PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "eqPositionForSymbol");  //$NON-NLS-1$
-
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbol", inEquity.getSymbol());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
-            }
-        }, null);
-        return position == null? BigDecimal.ZERO: position;
-
-    }
-    
-    /**
-     * Gets the current aggregate position for the currency based on
-     * execution reports received on or before the supplied time, and which
-     * are visible to the given user.
-     *
-     * <p>
-     * Buy trades result in positive positions. All other kinds of trades
-     * result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the time. execution reports with sending time values less
-     * than or equal to this time are included in this calculation.
-     * @param inCurrency the currency for which this position needs to be computed
-     *
-     * @return the aggregate position for the currency.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position.
-     */
-    static BigDecimal getCurrencyPositionAsOf
-        (final SimpleUser inUser,
-         final Date inDate,
-         final Currency inCurrency)
-        throws PersistenceException
-    {
-        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public BigDecimal execute(EntityManager em, PersistContext context) {
-                Query query = em.createNamedQuery(	
-                        "crPositionForSymbol");  //$NON-NLS-1$
-
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbol", inCurrency.getSymbol());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Currency.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
-            }
-        }, null);
-        return position == null? BigDecimal.ZERO: position;
-
-    }
-    /**
-     * Returns the aggregate position of each (equity,account,actor)
-     * tuple based on all reports received for each tuple on or before
-     * the supplied date, and which are visible to the given user.
-     *
-     * <p> Buy trades result in positive positions. All other kinds of
-     * trades result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the date to compare with all the reports. Only
-     * the reports that were received on or prior to this date will be
-     * used in this calculation.  Cannot be null.
-     *
-     * @return the position map.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position map.
-     */
-    static Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
-        (final SimpleUser inUser,
-         final Date inDate)
-        throws PersistenceException
-    {
-        return executeRemote(new Transaction<Map<PositionKey<Equity>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Map<PositionKey<Equity>, BigDecimal> execute(EntityManager em,
-                                                    PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "eqAllPositions");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.CommonStock.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Equity>, BigDecimal> map =
-                        new HashMap<PositionKey<Equity>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //4 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the account
-                        //third one is the actor ID
-                        //fourth one is the position
-                        map.put(PositionKeyFactory.createEquityKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 ((columns[2]==null)?null:
-                                  ((BigInteger)columns[2]).toString())),
-                                 (BigDecimal)columns[3]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-
-    }    
-    /**
-     * Returns the aggregate position of each (currency,account,actor)
-     * tuple based on all reports received for each tuple on or before
-     * the supplied date, and which are visible to the given user.
-     *
-     * <p> Buy trades result in positive positions. All other kinds of
-     * trades result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the date to compare with all the reports. Only
-     * the reports that were received on or prior to this date will be
-     * used in this calculation.  Cannot be null.
-     *
-     * @return the position map.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position map.
-     */
-    static Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
-        (final SimpleUser inUser,
-         final Date inDate)
-        throws PersistenceException
-    {
-        return executeRemote(new Transaction<Map<PositionKey<Currency>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Map<PositionKey<Currency>, BigDecimal> execute(EntityManager em,
-                                                    PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "crAllPositions");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Currency.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Currency>, BigDecimal> map =
-                        new HashMap<PositionKey<Currency>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //4 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the account
-                        //third one is the actor ID
-                        //fourth one is the position
-                        map.put(PositionKeyFactory.createCurrencyKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 ((columns[2]==null)?null:
-                                  ((BigInteger)columns[2]).toString())),
-                                 (BigDecimal)columns[3]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-
-    }
-    
-    
-    /**
-     * Gets the current aggregate position for the future based on
-     * execution reports received on or before the supplied time, and which
-     * are visible to the given user.
-     *
-     * <p>
-     * Buy trades result in positive positions. All other kinds of trades
-     * result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the time. execution reports with sending time values less
-     * than or equal to this time are included in this calculation.
-     * @param inFuture the future for which this position needs to be computed
-     *
-     * @return the aggregate position for the future.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position.
-     */
-    static BigDecimal getFuturePositionAsOf(final SimpleUser inUser,
-                                            final Date inDate,
-                                            final Future inFuture)
-            throws PersistenceException
-    {
-        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
-            private static final long serialVersionUID = 1L;
-            @Override
-            public BigDecimal execute(EntityManager em,
-                                      PersistContext context)
-            {
-                Query query = em.createNamedQuery("futPositionForSymbol");  //$NON-NLS-1$
-                query.setParameter("viewerID",  //$NON-NLS-1$
-                                   inUser.getUserID().getValue());
-                query.setParameter("allViewers",  //$NON-NLS-1$
-                                   inUser.isSuperuser());
-                query.setParameter("sideBuy",  //$NON-NLS-1$
-                                   Side.Buy.ordinal());
-                query.setParameter("symbol",  //$NON-NLS-1$
-                                   inFuture.getSymbol());
-                query.setParameter("securityType",  //$NON-NLS-1$
-                                   SecurityType.Future.ordinal());
-                query.setParameter("sendingTime",  //$NON-NLS-1$
-                                   inDate,
-                        TemporalType.TIMESTAMP);
-                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
-            }
-        }, null);
-        return position == null? BigDecimal.ZERO: position;
-    }
-    /**
-     * Returns the aggregate position of each (future,account,actor)
-     * tuple based on all reports received for each tuple on or before
-     * the supplied date, and which are visible to the given user.
-     *
-     * <p> Buy trades result in positive positions. All other kinds of
-     * trades result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the date to compare with all the reports. Only
-     * the reports that were received on or prior to this date will be
-     * used in this calculation.  Cannot be null.
-     *
-     * @return the position map.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position map.
-     */
-    static Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(final SimpleUser inUser,
-                                                                          final Date inDate)
-            throws PersistenceException
-    {
-        return executeRemote(new Transaction<Map<PositionKey<Future>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-            @Override
-            public Map<PositionKey<Future>,BigDecimal> execute(EntityManager em,
-                                                               PersistContext context)
-            {
-                Query query = em.createNamedQuery("futAllPositions");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Future.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Future>, BigDecimal> map =
-                        new HashMap<PositionKey<Future>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //5 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the expiry
-                        //third one is the account
-                        //fourth one is the actor ID
-                        //fifth one is the position
-                        map.put(PositionKeyFactory.createFutureKey((String)columns[0],
-                                                                   (String)columns[1],
-                                                                   (String)columns[2],
-                                                                   ((columns[3]==null)?null:
-                                  ((BigInteger)columns[3]).toString())),
-                                 (BigDecimal)columns[4]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-    }
-    /**
-     * Gets the current aggregate position for the option tuple based on
-     * execution reports received on or before the supplied time, and which
-     * are visible to the given user.
-     *
-     * <p>
-     * Buy trades result in positive positions. All other kinds of trades
-     * result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the time. execution reports with sending time values less
-     * than or equal to this time are included in this calculation.
-     * @param inOption option instrument
-     *
-     * @return the aggregate position for the symbol.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position.
-     */
-    static BigDecimal getOptionPositionAsOf
-        (final SimpleUser inUser,
-         final Date inDate,
-         final Option inOption)
-        throws PersistenceException {
-        BigDecimal position = executeRemote(new Transaction<BigDecimal>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public BigDecimal execute(EntityManager em, PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "optPositionForTuple");  //$NON-NLS-1$
-
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbol", inOption.getSymbol());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
-                query.setParameter("expiry", inOption.getExpiry());  //$NON-NLS-1$
-                query.setParameter("strikePrice", inOption.getStrikePrice());  //$NON-NLS-1$
-                query.setParameter("optionType", inOption.getType().ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                return (BigDecimal) query.getSingleResult();  //$NON-NLS-1$
-            }
-        }, null);
-        return position == null? BigDecimal.ZERO: position;
-
-    }
-
-    /**
-     * Returns the aggregate position of each option
-     * (option,account,actor)
-     * tuple based on all reports received for each option instrument on or before
-     * the supplied date, and which are visible to the given user.
-     *
-     * <p> Buy trades result in positive positions. All other kinds of
-     * trades result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the date to compare with all the reports. Only
-     * the reports that were received on or prior to this date will be
-     * used in this calculation.  Cannot be null.
-     *
-     * @return the position map.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position map.
-     */
-    static Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
-        (final SimpleUser inUser,
-         final Date inDate)
-        throws PersistenceException {
-        return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Map<PositionKey<Option>, BigDecimal> execute(EntityManager em,
-                                                    PersistContext context) {
-                Query query = em.createNamedQuery(
-                        "optAllPositions");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Option>, BigDecimal> map =
-                        new HashMap<PositionKey<Option>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //7 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the expiry
-                        //third one is the strikePrice
-                        //fourth one is the option type
-                        //fifth one is the account
-                        //sixth one is the actor ID
-                        //seventh one is the position
-                        map.put(PositionKeyFactory.createOptionKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 (BigDecimal)columns[2],
-                                 OptionType.values()[(Integer)columns[3]],
-                                 (String)columns[4],
-                                 ((columns[5]==null)?null:
-                                  ((BigInteger)columns[5]).toString())),
-                                 (BigDecimal)columns[6]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-
-    }
-
-    /**
-     * Returns the aggregate position of each option
-     * (option,account,actor)
-     * tuple based on all reports received for each option instrument on or before
-     * the supplied date, and which are visible to the given user.
-     *
-     * <p> Buy trades result in positive positions. All other kinds of
-     * trades result in negative positions.
-     *
-     * @param inUser the user making the query. Cannot be null.
-     * @param inDate the date to compare with all the reports. Only
-     * the reports that were received on or prior to this date will be
-     * used in this calculation.  Cannot be null.
-     * @param inRootSymbols the list of option roots.
-     *
-     * @return the position map.
-     *
-     * @throws PersistenceException if there were errors retrieving the
-     * position map.
-     */
-    static Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
-        (final SimpleUser inUser,
-         final Date inDate,
-         final String... inRootSymbols)
-        throws PersistenceException {
-        return executeRemote(new Transaction<Map<PositionKey<Option>, BigDecimal>>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Map<PositionKey<Option>, BigDecimal> execute(EntityManager em,
-                                                    PersistContext context) {
-                Query query = em.createNamedQuery("optPositionsForRoots");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
-                query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
-                query.setParameter("symbols", Arrays.asList(inRootSymbols));  //$NON-NLS-1$
-                query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
-                        TemporalType.TIMESTAMP);
-                HashMap<PositionKey<Option>, BigDecimal> map =
-                        new HashMap<PositionKey<Option>, BigDecimal>();
-                List<?> list = query.getResultList();
-                Object[] columns;
-                for(Object o: list) {
-                    columns = (Object[]) o;
-                    //7 columns
-                    if(columns.length > 1) {
-                        //first one is the symbol
-                        //second one is the expiry
-                        //third one is the strikePrice
-                        //fourth one is the optionType
-                        //fifth one is the account
-                        //sixth one is the actor ID
-                        //seventh one is the position
-                        map.put(PositionKeyFactory.createOptionKey
-                                ((String)columns[0],
-                                 (String)columns[1],
-                                 (BigDecimal)columns[2],
-                                 OptionType.values()[(Integer)columns[3]],
-                                 (String)columns[4],
-                                 ((columns[5]==null)?null:
-                                  ((BigInteger)columns[5]).toString())),
-                                 (BigDecimal)columns[6]);
-                    }
-                }
-                return map;
-            }
-        }, null);
-
-    }
-    /**
-     * Returns all open orders visible to the given user.
-     *
-     * @param inUser a <code>SimplUser</code> value
-     * @return a <code>List&lt;ExecutionReportSummary&gt;</code> value
-     * @throws PersistenceException if an error occurs retrieving the orders
-     */
-    static List<ExecutionReportSummary> getOpenOrders(final SimpleUser inUser)
-            throws PersistenceException
-    {
-        return executeRemote(new Transaction<List<ExecutionReportSummary>>() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public List<ExecutionReportSummary> execute(EntityManager inEntityManager,
-                                                        PersistContext inContext)
-                    throws PersistenceException
-            {
-                Query query = inEntityManager.createNamedQuery("openOrders");  //$NON-NLS-1$
-                query.setParameter("viewerID",inUser.getUserID().getValue());  //$NON-NLS-1$
-                query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
-                return query.getResultList();
-            }
-            private static final long serialVersionUID = 1L;
-        },null);
-    }
-    /**
-     * Deletes any <code>ExecutionReportSummary</code> objects related to the given <code>PersistentReport</code>.
-     *
-     * @param inReport a <code>PersistentReport</code> value
-     * @throws PersistenceException if an error occurs deleting the reports
-     */
-    static void deleteReportsFor(final PersistentReport inReport)
-            throws PersistenceException
-    {
-        executeRemote(new Transaction<Integer>() {
-            @Override
-            public Integer execute(EntityManager inEntityManager,
-                                   PersistContext inContext)
-            {
-                Query query = inEntityManager.createNamedQuery("deleteReportsFor");  //$NON-NLS-1$
-                query.setParameter("id",inReport.getId());  //$NON-NLS-1$
-                return query.executeUpdate();
-            }
-            private static final long serialVersionUID = 1L;
-        },null);
-    }
-    /**
-     * 
-     *
-     *
-     * @param inReports
-     * @throws PersistenceException
-     */
-    static void deleteReportsIn(final List<PersistentReport> inReports)
-            throws PersistenceException
-    {
-        executeRemote(new Transaction<Integer>() {
-            @Override
-            public Integer execute(EntityManager inEntityManager,
-                                   PersistContext inContext)
-            {
-                List<Long> ids = new ArrayList<Long>();
-                if(inReports != null) {
-                    for(PersistentReport report : inReports) {
-                        ids.add(report.getId());
-                    }
-                }
-                return inEntityManager.createNativeQuery("DELETE FROM execreports WHERE report_id IN (:ids)").setParameter("ids",ids).executeUpdate();
-            }
-            private static final long serialVersionUID = 1L;
-        },null);
-    }
+public class ExecutionReportSummary extends EntityBase {
     /**
      * Creates an instance.
      *
@@ -810,77 +220,77 @@ class ExecutionReportSummary extends EntityBase {
      *
      * @throws PersistenceException if there were errors.
      */
-    void localSave(EntityManager inManager,
-                   PersistContext inContext)
-            throws PersistenceException {
-        super.saveLocal(inManager, inContext);
-    }
+//    void localSave(EntityManager inManager,
+//                   PersistContext inContext)
+//            throws PersistenceException {
+//        super.saveLocal(inManager, inContext);
+//    }
 
-    @Override
-    protected void preSaveLocal(EntityManager em, PersistContext context)
-            throws PersistenceException {
-        super.preSaveLocal(em, context);
-        // CD 17-Mar-2011 ORS-79
-        // we need to find the correct root ID of the incoming ER. for cancels and cancel/replaces,
-        //  this is easy - we can look up the root ID from the origOrderID. for a partial fill or fill
-        //  of an original order, this is also easy - the rootID is just the orderID. the difficult case
-        //  is a partial fill or fill of a replaced order. the origOrderID won't be present (not required)
-        //  but there still exists an order chain to be respected or position reporting will be broken.
-        //  therefore, the algorithm should be:
-        // if the original orderID is present, use the root from that order
-        // if it's not present, look for the rootID of an existing record with the same orderID
-        Query query = em.createNamedQuery("rootIDForOrderID");  //$NON-NLS-1$
-        SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
-                               "Searching for rootID for {}",  //$NON-NLS-1$
-                               getOrderID());
-        if(getOrigOrderID() == null) {
-            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
-                                   "No origOrderID present, using orderID for query");  //$NON-NLS-1$
-            query.setParameter("orderID",  //$NON-NLS-1$
-                               getOrderID());
-        } else {
-            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
-                                   "Using origOrderID {} for query",  //$NON-NLS-1$
-                                   getOrigOrderID());
-            query.setParameter("orderID",  //$NON-NLS-1$
-                               getOrigOrderID());
-        }
-        List<?> list = query.getResultList();
-        if(list.isEmpty()) {
-            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
-                                   "No other orders match this orderID - this must be the first in the order chain");  //$NON-NLS-1$
-            // this is the first order in this chain
-            setRootID(getOrderID());
-        } else {
-            OrderID rootID = (OrderID)list.get(0);
-            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
-                                   "Using {} for rootID",  //$NON-NLS-1$
-                                   rootID);
-            setRootID(rootID);
-        }
-    }
+//    @Override
+//    protected void preSaveLocal(EntityManager em, PersistContext context)
+//            throws PersistenceException {
+//        super.preSaveLocal(em, context);
+//        // CD 17-Mar-2011 ORS-79
+//        // we need to find the correct root ID of the incoming ER. for cancels and cancel/replaces,
+//        //  this is easy - we can look up the root ID from the origOrderID. for a partial fill or fill
+//        //  of an original order, this is also easy - the rootID is just the orderID. the difficult case
+//        //  is a partial fill or fill of a replaced order. the origOrderID won't be present (not required)
+//        //  but there still exists an order chain to be respected or position reporting will be broken.
+//        //  therefore, the algorithm should be:
+//        // if the original orderID is present, use the root from that order
+//        // if it's not present, look for the rootID of an existing record with the same orderID
+//        Query query = em.createNamedQuery("rootIDForOrderID");  //$NON-NLS-1$
+//        SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+//                               "Searching for rootID for {}",  //$NON-NLS-1$
+//                               getOrderID());
+//        if(getOrigOrderID() == null) {
+//            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+//                                   "No origOrderID present, using orderID for query");  //$NON-NLS-1$
+//            query.setParameter("orderID",  //$NON-NLS-1$
+//                               getOrderID());
+//        } else {
+//            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+//                                   "Using origOrderID {} for query",  //$NON-NLS-1$
+//                                   getOrigOrderID());
+//            query.setParameter("orderID",  //$NON-NLS-1$
+//                               getOrigOrderID());
+//        }
+//        List<?> list = query.getResultList();
+//        if(list.isEmpty()) {
+//            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+//                                   "No other orders match this orderID - this must be the first in the order chain");  //$NON-NLS-1$
+//            // this is the first order in this chain
+//            setRootID(getOrderID());
+//        } else {
+//            OrderID rootID = (OrderID)list.get(0);
+//            SLF4JLoggerProxy.debug(ExecutionReportSummary.class,
+//                                   "Using {} for rootID",  //$NON-NLS-1$
+//                                   rootID);
+//            setRootID(rootID);
+//        }
+//    }
     /* (non-Javadoc)
      * @see org.marketcetera.persist.EntityBase#postSaveLocal(javax.persistence.EntityManager, org.marketcetera.persist.EntityBase, org.marketcetera.persist.PersistContext)
      */
-    @Override
-    protected void postSaveLocal(EntityManager inEntityManager,
-                                 EntityBase inMerged,
-                                 PersistContext inContext)
-            throws PersistenceException
-    {
-        super.postSaveLocal(inEntityManager,
-                            inMerged,
-                            inContext);
-        // CD 27-Jul-2013 MATP-350
-        // mark all other orders of this family as closed
-        Query query = inEntityManager.createNamedQuery("setIsOpen"); //$NON-NLS-1$
-        ExecutionReportSummary summaryReport = (ExecutionReportSummary)inMerged;
-        query.setParameter("Id",summaryReport.getId()).setParameter("rootID",summaryReport.getRootID()).executeUpdate();
-    }
-    @OneToOne(optional = false)
-    PersistentReport getReport() {
-        return mReport;
-    }
+//    @Override
+//    protected void postSaveLocal(EntityManager inEntityManager,
+//                                 EntityBase inMerged,
+//                                 PersistContext inContext)
+//            throws PersistenceException
+//    {
+//        super.postSaveLocal(inEntityManager,
+//                            inMerged,
+//                            inContext);
+//        // CD 27-Jul-2013 MATP-350
+//        // mark all other orders of this family as closed
+//        Query query = inEntityManager.createNamedQuery("setIsOpen"); //$NON-NLS-1$
+//        ExecutionReportSummary summaryReport = (ExecutionReportSummary)inMerged;
+//        query.setParameter("Id",summaryReport.getId()).setParameter("rootID",summaryReport.getRootID()).executeUpdate();
+//    }
+//    @OneToOne(optional = false)
+//    PersistentReport getReport() {
+//        return mReport;
+//    }
     
     private void setReport(PersistentReport inReport) {
         mReport = inReport;

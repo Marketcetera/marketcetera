@@ -18,12 +18,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
+import com.mysema.query.jpa.impl.JPAQuery;
+
 import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Console;
 import java.util.List;
 import java.util.Arrays;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /* $License$ */
 /**
@@ -302,13 +307,19 @@ public class ORSAdminCLI
          Boolean active)
         throws PersistenceException
     {
-        MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
-        q.setActiveFilter(active);
-        q.setEntityOrder(MultiSimpleUserQuery.BY_NAME);
-        if(nameFilter != null) {
-            q.setNameFilter(new StringFilter(nameFilter));
-        }
-        List<SimpleUser> l = q.fetch();
+    	JPAQuery jpqQuery = new JPAQuery(entityManager);
+    	QSimpleUser simpleUser = QSimpleUser.simpleUser;
+    	simpleUser.from(simpleUser).where(simpleUser.active.eq(active)).orderBy(simpleUser.name.asc());
+        
+    	//MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
+
+//        q.setActiveFilter(active);
+//        q.setEntityOrder(MultiSimpleUserQuery.BY_NAME);
+//        if(nameFilter != null) {
+//            q.setNameFilter(new StringFilter(nameFilter));
+//        }
+        
+        List<SimpleUser> l = jpqQuery.getResultList();
         for(SimpleUser u:l) {
             StringBuilder flags=new StringBuilder();
             if (u.isSuperuser()) {
@@ -566,5 +577,8 @@ public class ORSAdminCLI
      */
     @Autowired
     private SimpleUserRepository simpleUserRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
     
 }
