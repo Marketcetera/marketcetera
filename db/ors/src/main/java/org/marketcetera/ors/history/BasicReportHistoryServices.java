@@ -17,10 +17,16 @@ import org.marketcetera.core.time.TimeFactory;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.Principals;
+import org.marketcetera.ors.dao.ExecutionReportDao;
+import org.marketcetera.ors.dao.PersistentReportDao;
+import org.marketcetera.ors.history.QPersistentReport;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.mysema.query.jpa.impl.JPAQuery;
 
 /* $License$ */
 /**
@@ -41,6 +47,13 @@ public class BasicReportHistoryServices
     private JmsManager mJmsManager;
     private ReportSavedListener mReportSavedListener;
     private DateTime mPurgeDate;
+    
+    @Autowired
+    private ExecutionReportDao executionReportDao;
+
+    @Autowired
+    private PersistentReportDao persistentReportDao;
+    
     /**
      * pattern used to identify a history threshold value expressed in seconds
      */
@@ -88,7 +101,9 @@ public class BasicReportHistoryServices
         // purge report history, if necessary
         if(mPurgeDate != null) {
             Messages.RHS_PURGING_RECORDS.info(this,mPurgeDate);
-            int count = PersistentReport.deleteBefore(mPurgeDate.toDate());
+            List<PersistentReport> reportList = persistentReportDao.findReportForOrderBefore(mpurgeDate.toDate());
+            int count = executionReportDao.deleteReportsIn(reportList);
+            //int count = PersistentReport.deleteBefore(mPurgeDate.toDate());
             Messages.RHS_RECORDS_PURGED.info(this,count);
         }
     }
@@ -98,14 +113,21 @@ public class BasicReportHistoryServices
         (SimpleUser inUser,
          Date inDate)
             throws PersistenceException, ReportPersistenceException {
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        query.setSendingTimeAfterFilter(inDate);
-        if (!inUser.isSuperuser()) {
-            query.setViewerFilter(inUser);
-        }
-        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
+    	JPAQuery jpqQuery = new JPAQuery(entityManager);
+    	QPersistenceReport persistenceReportQuery = QPersistenceReport.persistenceReport;
+    	persistenceReportQuery.from(persistenceReport).where(persistenceReport.mSendingTime).gt(inDate);
+    	if (inUser != null && !inUser.isSuperuser()) {
+    		persistenceReportQuery.and(persistenceReport.mViewer).eq(inUser);
+    	}
+    	persistenceReportQuery.orderby(persistenceReport.id);
+//        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
+//        query.setSendingTimeAfterFilter(inDate);
+//        if (!inUser.isSuperuser()) {
+//            query.setViewerFilter(inUser);
+//        }
+//        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
 
-        List<PersistentReport> reportList = query.fetch();
+        List<PersistentReport> reportList = persistenceReportQuery.getResultList();
         ReportBaseImpl [] reports = new ReportBaseImpl[reportList.size()];
         int i = 0;
         for(PersistentReport report: reportList) {
@@ -121,8 +143,7 @@ public class BasicReportHistoryServices
          Equity inEquity)
         throws PersistenceException
     {
-        return ExecutionReportSummary.getEquityPositionAsOf
-            (inUser,inDate,inEquity);
+    	return executionReportDao.getEquityPositionAsOf(inUser, inDate, inEquity);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.history.ReportHistoryServices#getOpenOrders(org.marketcetera.ors.security.SimpleUser)
@@ -132,7 +153,9 @@ public class BasicReportHistoryServices
             throws PersistenceException
     {
         List<ReportBase> reports = new ArrayList<ReportBase>();
-        List<ExecutionReportSummary> rawReports = ExecutionReportSummary.getOpenOrders(inUser);
+        
+        List<ExecutionReportSummary> rawReports = executionReportDao.getOpenOrders(inUser);
+        //ExecutionReportSummary.getOpenOrders(inUser);
         try {
             for(ExecutionReportSummary summary : rawReports) {
                 reports.add(summary.getReport().toReport());
@@ -148,7 +171,7 @@ public class BasicReportHistoryServices
          Date inDate)
         throws PersistenceException
     {
-        return ExecutionReportSummary.getAllEquityPositionsAsOf(inUser,inDate);
+        return executionReportDao.getAllEquityPositionsAsOf(inUser,inDate);
     }
     
     
@@ -159,7 +182,7 @@ public class BasicReportHistoryServices
          Currency inCurrency)
         throws PersistenceException
     {
-        return ExecutionReportSummary.getCurrencyPositionAsOf
+        return executionReportDao.getCurrencyPositionAsOf
             (inUser,inDate,inCurrency);
     }
     
@@ -172,7 +195,7 @@ public class BasicReportHistoryServices
          Date inDate)
         throws PersistenceException
     {
-        return ExecutionReportSummary.getAllCurrencyPositionsAsOf(inUser,inDate);
+        return executionReportDao.getAllCurrencyPositionsAsOf(inUser,inDate);
     }
     
     /* (non-Javadoc)
@@ -183,7 +206,7 @@ public class BasicReportHistoryServices
                                                                          Date inDate)
             throws PersistenceException
     {
-        return ExecutionReportSummary.getAllFuturePositionsAsOf(inUser,
+        return executionReportDao.getAllFuturePositionsAsOf(inUser,
                                                                 inDate);
     }
     /* (non-Javadoc)
@@ -195,7 +218,7 @@ public class BasicReportHistoryServices
                                             Future inFuture)
             throws PersistenceException
     {
-        return ExecutionReportSummary.getFuturePositionAsOf(inUser,
+        return executionReportDao.getFuturePositionAsOf(inUser,
                                                             inDate,
                                                             inFuture);
     }     
@@ -205,7 +228,7 @@ public class BasicReportHistoryServices
          final Date inDate,
          final Option inOption)
         throws PersistenceException {
-        return ExecutionReportSummary.getOptionPositionAsOf(inUser,
+        return executionReportDao.getOptionPositionAsOf(inUser,
                 inDate, inOption);
     }
 
@@ -214,7 +237,7 @@ public class BasicReportHistoryServices
         (final SimpleUser inUser,
          final Date inDate)
         throws PersistenceException {
-        return ExecutionReportSummary.getAllOptionPositionsAsOf(inUser, inDate);
+        return executionReportDao.getAllOptionPositionsAsOf(inUser, inDate);
     }
 
     @Override
@@ -223,7 +246,7 @@ public class BasicReportHistoryServices
          final Date inDate,
          final String... inSymbols)
         throws PersistenceException {
-        return ExecutionReportSummary.getOptionPositionsAsOf(inUser, inDate, inSymbols);
+        return executionReportDao.getOptionPositionsAsOf(inUser, inDate, inSymbols);
     }
     @Override
     public void save
@@ -233,7 +256,7 @@ public class BasicReportHistoryServices
         boolean success=false;
         try {
             assignID(report);
-            PersistentReport.save(report);
+            persistentReportDao.save(report);
             success=true;
             Messages.RHS_PERSISTED_REPLY.info(this,report);
         } finally {
@@ -247,7 +270,8 @@ public class BasicReportHistoryServices
     public void delete(ReportBase inReport)
             throws PersistenceException
     {
-        PersistentReport.delete(inReport);
+    	PersistenceReport report = persistentReportDao.findReportForOrder(inReport.getOrderID());
+    	executionReportDao.deleteReportsFor(report);
     }
     @Override
     public Principals getPrincipals

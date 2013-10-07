@@ -1,13 +1,13 @@
 package org.marketcetera.ors.dao;
 
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.EntityBaseRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SimpleUserRepository extends EntityBaseRepository<SimpleUser> {
+public interface SimpleUserRepository extends JpaRepository<SimpleUser, Long> {
 
 	SimpleUser findByName(String user);
 
