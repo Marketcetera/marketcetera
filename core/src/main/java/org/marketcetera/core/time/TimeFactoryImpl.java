@@ -4,9 +4,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
@@ -38,7 +38,7 @@ public class TimeFactoryImpl
         }
         if(value != null &&
            SECONDS_PATTERN.matcher(inValue).matches()) {
-            value = value.plus(new DateMidnight(DateTimeZone.UTC).getMillis());
+            value = value.plus(new LocalDate().toDateTimeAtStartOfDay(DateTimeZone.UTC).getMillis());
         }
         Validate.notNull(value);
         return value;
@@ -58,9 +58,12 @@ public class TimeFactoryImpl
     private static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
     private static final DateTimeFormatter DASH = new DateTimeFormatterBuilder().appendLiteral('-').toFormatter();
     private static final DateTimeFormatter COLON = new DateTimeFormatterBuilder().appendLiteral(':').toFormatter();
+    private static final DateTimeFormatter SLASH = new DateTimeFormatterBuilder().appendLiteral('/').toFormatter();
     private static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
     private static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
     private static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
+    public static final DateTimeFormatter US_DATE = new DateTimeFormatterBuilder().append(DAY).append(SLASH).append(MONTH).append(SLASH).append(YEAR).toFormatter();
+    public static final DateTimeFormatter INTL_DATE = new DateTimeFormatterBuilder().append(MONTH).append(SLASH).append(DAY).append(SLASH).append(YEAR).toFormatter();
     /**
      * full seconds: YYYYMMDD-HH:MM:SS
      */
@@ -76,5 +79,5 @@ public class TimeFactoryImpl
      */
     private static final DateTimeFormatter WALLCLOCK_MINUTES = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
             .toFormatter().withZone(ZONE);
-    private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] { FULL_SECONDS,WALLCLOCK_SECONDS,WALLCLOCK_MINUTES };
+    private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] { FULL_SECONDS,WALLCLOCK_SECONDS,WALLCLOCK_MINUTES,US_DATE,INTL_DATE };
 }

@@ -638,6 +638,8 @@ public abstract class QuoteEventBuilder<E extends QuoteEvent>
             future.setInstrument((Future)inInstrument);
         } else if(inInstrument instanceof Currency) {
             currency.setInstrument((Currency)inInstrument);
+        } else if(inInstrument instanceof ConvertibleBond) {
+            convertibleBond.setInstrument((ConvertibleBond)inInstrument);
         }
         if(inInstrument == null) {
             option.setInstrument(null);

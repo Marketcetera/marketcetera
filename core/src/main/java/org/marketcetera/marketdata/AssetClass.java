@@ -27,7 +27,11 @@ public enum AssetClass
     /**
      * currency
      */
-    CURRENCY;
+    CURRENCY,
+    /**
+     * convertible bond
+     */
+    CONVERTIBLE_BOND;
     /**
      * Indicates if the asset class is an appropriate match for a request
      * by underlying symbols.
@@ -36,7 +40,6 @@ public enum AssetClass
      */
     public boolean isValidForUnderlyingSymbols()
     {
-        return this == OPTION ||
-               this == FUTURE;
+        return this == OPTION || this == FUTURE;
     }
 }

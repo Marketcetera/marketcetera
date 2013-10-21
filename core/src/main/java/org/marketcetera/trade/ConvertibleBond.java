@@ -9,7 +9,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
+import org.marketcetera.core.time.TimeFactory;
+import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -31,20 +32,25 @@ public class ConvertibleBond
      * Create a new Convertible Security instance.
      *
      * @param inSymbol a <code>String</code> value
-     * @throws IllegalArgumentException if the given symbol is <code>null</code>, empty, or neither a valid CUSIP nor a valid ISIN
+     * @throws IllegalArgumentException if the given symbol is <code>null</code>, empty, neither a valid CUSIP nor a valid ISIN nor a valid symbol of the type <code>SYMBOL RATE% DUE-DATE</code>
      */
     public ConvertibleBond(String inSymbol)
     {
         inSymbol = StringUtils.trimToNull(inSymbol);
         if(isinPattern.matcher(inSymbol).matches()) {
             cusip = getCusipFromIsin(inSymbol);
+            symbol = cusip;
         } else if(cusipPattern.matcher(inSymbol).matches()) {
             cusip = inSymbol;
+            symbol = cusip;
+        } else if(symbolPattern.matcher(inSymbol).matches()) {
+            String[] parts = inSymbol.split(" ");
+            timeFactory.create(parts[2]);
+            symbol = inSymbol;
+            cusip = null;
         } else {
             throw new IllegalArgumentException();
         }
-        Validate.notNull(cusip);
-        symbol = cusip;
     }
     /**
      * Create a new ConvertibleBond instance.
@@ -239,5 +245,13 @@ public class ConvertibleBond
      * cusip regex
      */
     public static final Pattern cusipPattern = Pattern.compile("^[0-9]{3}[A-Z0-9]{5}[0-9]$");
+    /**
+     * pattern used to validate symbols of the type "ticker rate maturity", as in "IBM 2.54% 03/15/2014"
+     */
+    public static final Pattern symbolPattern = Pattern.compile("^\\w* \\d{1}(\\.{1}\\d{1,3}){0,1}% \\d{1,2}/\\d{1,2}/\\d{1,4}$");
+    /**
+     * converts due dates as necessary
+     */
+    private static final TimeFactory timeFactory = new TimeFactoryImpl();
     private static final long serialVersionUID = -7797829861069074193L;
 }
