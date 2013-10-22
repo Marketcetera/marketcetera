@@ -46,7 +46,7 @@ public class PersistentReport
      * @throws PersistenceException if there were errors creating the
      * instance.
      */
-    PersistentReport(ReportBase inReport)
+    public PersistentReport(ReportBase inReport)
         throws PersistenceException
     {
         mReportBase = inReport;
