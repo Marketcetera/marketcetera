@@ -1,20 +1,23 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
 import java.math.BigDecimal;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
  * Implementation of {@link NewOrReplaceOrder}
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-class NewOrReplaceOrderImpl extends OrderBaseImpl
-        implements NewOrReplaceOrder {
+@ClassVersion("$Id$")
+class NewOrReplaceOrderImpl
+        extends OrderBaseImpl
+        implements NewOrReplaceOrder
+{
     @Override
     public OrderType getOrderType() {
         return mOrderType;
