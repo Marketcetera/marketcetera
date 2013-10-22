@@ -11,6 +11,7 @@ import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.dao.PersistentReportDao;
 import org.marketcetera.ors.history.ExecutionReportSummary;
 import org.marketcetera.ors.history.PersistentReport;
+import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
 import org.springframework.stereotype.Repository;
@@ -22,7 +23,7 @@ public class PersistenceReportDaoImpl implements PersistentReportDao {
 	private EntityManager entityManager;
 
 	@Override
-	public void save(ReportBase inReport) {
+	public void save(ReportBase inReport) throws PersistenceException {
         PersistentReport report = new PersistentReport(inReport);
         entityManager.persist(report);
 	}
@@ -34,7 +35,7 @@ public class PersistenceReportDaoImpl implements PersistentReportDao {
 	}
 
 	@Override
-	public PersistenceReport findReportForOrder(OrderID orderID) {
+	public PersistentReport findReportForOrder(OrderID orderID) {
         Query query = entityManager.createNamedQuery("forOrderID"); //$NON-NLS-1$
         query.setParameter("orderID",
         		orderID); //$NON-NLS-1$
@@ -53,7 +54,7 @@ public class PersistenceReportDaoImpl implements PersistentReportDao {
         @SuppressWarnings("unchecked")
 		List<PersistentReport> list = (List<PersistentReport>)query.getResultList();
         if(list == null || list.isEmpty()) {
-            return 0;
+            return null;
         }
         return list;
 	}

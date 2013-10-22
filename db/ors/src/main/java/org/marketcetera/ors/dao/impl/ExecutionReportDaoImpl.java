@@ -274,7 +274,7 @@ public class ExecutionReportDaoImpl implements ExecutionReportDao {
         query.setParameter("allViewers",inUser.isSuperuser());  //$NON-NLS-1$
         query.setParameter("sideBuy", Side.Buy.ordinal());  //$NON-NLS-1$
         query.setParameter("securityType", SecurityType.Option.ordinal());  //$NON-NLS-1$
-        query.setParameter("symbols", Arrays.asList(inRootSymbols));  //$NON-NLS-1$
+        query.setParameter("symbols", Arrays.asList(inSymbols));  //$NON-NLS-1$
         query.setParameter("sendingTime", inDate,  //$NON-NLS-1$
                 TemporalType.TIMESTAMP);
         HashMap<PositionKey<Option>, BigDecimal> map =
