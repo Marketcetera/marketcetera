@@ -27,7 +27,9 @@ import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OptionType;
 import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ExecutionReportDaoImpl implements ExecutionReportDao {
 
 	@PersistenceContext

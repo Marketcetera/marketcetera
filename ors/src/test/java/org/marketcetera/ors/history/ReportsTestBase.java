@@ -370,7 +370,7 @@ public class ReportsTestBase extends TestCaseBase {
      * @throws InterruptedException if interrupted.
      */
     protected static void sleepForSignificantTime() throws InterruptedException {
-        PersistTestBase.sleepForSignificantTime();
+        //PersistTestBase.sleepForSignificantTime();
     }
 
     protected static BigDecimal getPosition(Date inDate, Equity inEquity)

@@ -10,7 +10,6 @@ import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.ors.dao.SimpleUserRepository;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.StringFilter;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
