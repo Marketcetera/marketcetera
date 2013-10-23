@@ -9,8 +9,10 @@ import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.Validator;
 import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -144,14 +146,23 @@ public class BrokerAlgo
     }
     /**
      * Maps validators from the given cannonical algo spec to this algo spec.
+     * 
+     * <p>If this object's <code>BrokerAlgoSpec</code> is <code>null</code>, this method has no effect.
      *
      * @param inCannonicalAlgoSpec a <code>BrokerAlgoSpec</code> value
+     * @throws CoreException if the given <code>BrokerAlgoSpec</code> is not the same as this object's <code>BrokerAlgoSpec</code>
      */
     public void mapValidatorsFrom(BrokerAlgoSpec inCannonicalAlgoSpec)
     {
-        if(algoSpec != null) {
-            algoSpec.setValidator(inCannonicalAlgoSpec.getValidator());
+        if(algoSpec == null) {
+            return;
         }
+        if(!algoSpec.equals(inCannonicalAlgoSpec)) {
+            throw new CoreException(new I18NBoundMessage2P(Messages.ALGO_SPEC_MISMATCH,
+                                                           algoSpec.getName(),
+                                                           inCannonicalAlgoSpec.getName()));
+        }
+        algoSpec.setValidator(inCannonicalAlgoSpec.getValidator());
         if(algoTags != null && inCannonicalAlgoSpec.getAlgoTagSpecs() != null) {
             Map<Integer,Validator<BrokerAlgoTag>> validators = new HashMap<Integer,Validator<BrokerAlgoTag>>();
             for(BrokerAlgoTagSpec algoTagSpec : inCannonicalAlgoSpec.getAlgoTagSpecs()) {
@@ -170,19 +181,22 @@ public class BrokerAlgo
      * 
      * <p>This method will not completely validate the algo unless {@link #mapValidatorsFrom(BrokerAlgoSpec)}
      * has been invoked with the cannonical broker algo spec first.
+     * @throws RuntimeException if validation fails
      */
     public void validate()
     {
         // perform spec-by-spec validation
         if(algoTags != null) {
             for(BrokerAlgoTag tag : algoTags) {
-                tag.validate(tag);
+                tag.validate();
             }
         }
         // perform top-level validation
-        Validator<BrokerAlgo> algoValidator = algoSpec.getValidator();
-        if(algoValidator != null) {
-            algoValidator.validate(this);
+        if(algoSpec != null) {
+            Validator<BrokerAlgo> algoValidator = algoSpec.getValidator();
+            if(algoValidator != null) {
+                algoValidator.validate(this);
+            }
         }
     }
     /**

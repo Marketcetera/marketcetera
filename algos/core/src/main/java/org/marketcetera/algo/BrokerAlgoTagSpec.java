@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.core.Validator;
@@ -163,7 +164,7 @@ public class BrokerAlgoTagSpec
     @Override
     public int compareTo(BrokerAlgoTagSpec inOther)
     {
-        return new Integer(tag).compareTo(inOther.tag);
+        return new CompareToBuilder().append(tag,inOther.tag).toComparison();
     }
     /**
      * order tag for this broker algo

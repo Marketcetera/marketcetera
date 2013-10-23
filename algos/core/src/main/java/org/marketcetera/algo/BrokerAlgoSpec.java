@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.*;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.core.Validator;
@@ -23,7 +25,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public class BrokerAlgoSpec
-        implements Serializable
+        implements Serializable, Comparable<BrokerAlgoSpec>
 {
     /**
      * Get the name value.
@@ -41,7 +43,7 @@ public class BrokerAlgoSpec
      */
     public void setName(String inName)
     {
-        name = inName;
+        name = StringUtils.trimToNull(inName);
     }
     /**
      * Get the algoTagSpecs value.
@@ -95,7 +97,7 @@ public class BrokerAlgoSpec
     @Override
     public int hashCode()
     {
-        return new HashCodeBuilder().append(name).append(algoTagSpecs).toHashCode();
+        return new HashCodeBuilder().append(name).toHashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -110,7 +112,15 @@ public class BrokerAlgoSpec
         if (getClass() != obj.getClass())
             return false;
         BrokerAlgoSpec other = (BrokerAlgoSpec) obj;
-        return new EqualsBuilder().append(name,other.name).append(algoTagSpecs,other.algoTagSpecs).isEquals();
+        return new EqualsBuilder().append(name,other.name).isEquals();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(BrokerAlgoSpec inOther)
+    {
+        return new CompareToBuilder().append(name,inOther.name).toComparison();
     }
     /**
      * user-readable name of the broker algo

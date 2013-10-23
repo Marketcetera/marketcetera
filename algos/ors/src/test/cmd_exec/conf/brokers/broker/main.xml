@@ -54,7 +54,7 @@
     <property name="description" value="ExDestination (100)"/>
     <property name="tag" value="100"/>
     <property name="isMandatory" value="true"/>
-    <property name="pattern" value="^\w*$"/>
+    <property name="pattern" value="^\d*$"/>
   </bean>
   <bean id="vwapAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
     <property name="name" value="VWAP"/>

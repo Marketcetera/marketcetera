@@ -93,10 +93,9 @@ public class BrokerAlgoTag
     /**
      * Validates the tag spec and tag value.
      * 
-     * @param inAlgoTag a <code>BrokerAlgoTag</code> value
      * @throws CoreException if a validation error occurs
      */
-    public void validate(BrokerAlgoTag inAlgoTag)
+    public void validate()
     {
         String pattern = tagSpec.getPattern();
         if(pattern != null) {
@@ -112,7 +111,7 @@ public class BrokerAlgoTag
         }
         Validator<BrokerAlgoTag> tagValidator = tagSpec.getValidator();
         if(tagValidator != null) {
-            tagValidator.validate(inAlgoTag);
+            tagValidator.validate(this);
         }
     }
     /* (non-Javadoc)
