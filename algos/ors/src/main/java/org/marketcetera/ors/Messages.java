@@ -142,6 +142,7 @@ public interface Messages
         new I18NMessage1P(LOGGER,"rh_report_failed"); //$NON-NLS-1$
     static final I18NMessage1P RH_SENDING_REPLY=
         new I18NMessage1P(LOGGER,"rh_sending_reply"); //$NON-NLS-1$
+    static final I18NMessage2P RH_NO_BROKER_ALGO = new I18NMessage2P(LOGGER,"rh_no_broker_algo"); //$NON-NLS-1$
 
     static final I18NMessage1P RP_PERSISTED_REPLY=
         new I18NMessage1P(LOGGER,"rp_persisted_reply"); //$NON-NLS-1$
