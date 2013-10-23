@@ -26,7 +26,7 @@ import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.mysema.query.jpa.impl.JPAQuery;
+
 
 /* $License$ */
 /**
@@ -270,7 +270,7 @@ public class BasicReportHistoryServices
     public void delete(ReportBase inReport)
             throws PersistenceException
     {
-    	PersistenceReport report = persistentReportDao.findReportForOrder(inReport.getOrderID());
+        PersistentReport report = persistentReportDao.findReportForOrder(inReport.getOrderID());
     	executionReportDao.deleteReportsFor(report);
     }
     @Override
