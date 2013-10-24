@@ -1,15 +1,13 @@
 package org.marketcetera.ors.dao;
 
+import java.util.Date;
+import java.util.List;
+
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.history.PersistentReport;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
-
-import javax.persistence.Query;
-import java.util.Date;
-import java.util.List;
-import org.marketcetera.ors.history.PersistentReport;
 
 /**
  * Created with IntelliJ IDEA.

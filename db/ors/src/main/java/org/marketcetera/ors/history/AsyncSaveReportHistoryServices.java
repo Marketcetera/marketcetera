@@ -1,12 +1,16 @@
 package org.marketcetera.ors.history;
 
 import javax.xml.bind.JAXBException;
+
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.ors.dao.PersistentReportDao;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsOperations;
 
 /**
@@ -26,8 +30,12 @@ public class AsyncSaveReportHistoryServices
 
     // CLASS DATA.
 
-    private static final String PERSIST_QUEUE=
-        "persist-queue"; //$NON-NLS-1$
+    private static final String PERSIST_QUEUE="persist-queue"; //$NON-NLS-1$
+    /**
+     * provides datastore access to <code>PersistentReport</code> objects
+     */
+    @Autowired
+    private PersistentReportDao persistentReportDao;
 
     public class QueueHandler
         implements ReceiveOnlyHandler<TradeMessage>
@@ -40,7 +48,7 @@ public class AsyncSaveReportHistoryServices
             Messages.RHS_DEQUEUED_REPLY.info(this,report);
             boolean success=false;
             try {
-                PersistentReport.save(report);
+                persistentReportDao.save(report);
                 success=true;
                 Messages.RHS_PERSISTED_REPLY.info(this,report);
             } catch (PersistenceException ex) {

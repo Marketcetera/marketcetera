@@ -9,7 +9,6 @@ import javax.persistence.Query;
 
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.dao.PersistentReportDao;
-import org.marketcetera.ors.history.ExecutionReportSummary;
 import org.marketcetera.ors.history.PersistentReport;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.OrderID;
@@ -17,7 +16,7 @@ import org.marketcetera.trade.ReportBase;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class PersistenceReportDaoImpl implements PersistentReportDao {
+public class PersistentReportDaoImpl implements PersistentReportDao {
 	
 	@PersistenceContext
 	private EntityManager entityManager;
