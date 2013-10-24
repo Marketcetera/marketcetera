@@ -51,6 +51,10 @@
       <artifactId>mockito-core</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+    </dependency>
   </dependencies>
 
   <profiles>
