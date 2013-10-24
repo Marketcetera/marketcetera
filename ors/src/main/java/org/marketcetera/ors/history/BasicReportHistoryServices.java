@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.marketcetera.client.jms.JmsManager;
@@ -19,12 +22,13 @@ import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.dao.ExecutionReportDao;
 import org.marketcetera.ors.dao.PersistentReportDao;
-import org.marketcetera.ors.history.QPersistentReport;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.mysema.query.jpa.impl.JPAQuery;
 
 
 
@@ -53,7 +57,8 @@ public class BasicReportHistoryServices
 
     @Autowired
     private PersistentReportDao persistentReportDao;
-    
+    @PersistenceContext
+    private EntityManager entityManager;
     /**
      * pattern used to identify a history threshold value expressed in seconds
      */
@@ -101,25 +106,26 @@ public class BasicReportHistoryServices
         // purge report history, if necessary
         if(mPurgeDate != null) {
             Messages.RHS_PURGING_RECORDS.info(this,mPurgeDate);
-            List<PersistentReport> reportList = persistentReportDao.findReportForOrderBefore(mpurgeDate.toDate());
+            List<PersistentReport> reportList = persistentReportDao.findReportForOrderBefore(mPurgeDate.toDate());
             int count = executionReportDao.deleteReportsIn(reportList);
-            //int count = PersistentReport.deleteBefore(mPurgeDate.toDate());
             Messages.RHS_RECORDS_PURGED.info(this,count);
         }
     }
 
     @Override
-    public ReportBaseImpl[] getReportsSince
-        (SimpleUser inUser,
-         Date inDate)
-            throws PersistenceException, ReportPersistenceException {
-    	JPAQuery jpqQuery = new JPAQuery(entityManager);
-    	QPersistenceReport persistenceReportQuery = QPersistenceReport.persistenceReport;
-    	persistenceReportQuery.from(persistenceReport).where(persistenceReport.mSendingTime).gt(inDate);
-    	if (inUser != null && !inUser.isSuperuser()) {
-    		persistenceReportQuery.and(persistenceReport.mViewer).eq(inUser);
-    	}
-    	persistenceReportQuery.orderby(persistenceReport.id);
+    public ReportBaseImpl[] getReportsSince(SimpleUser inUser,
+                                            Date inDate)
+            throws PersistenceException, ReportPersistenceException
+    {
+        JPAQuery jpaQuery = new JPAQuery(entityManager);
+        QPersistentReport persistentReportQuery = QPersistentReport.persistentReport;
+        if (inUser != null && !inUser.isSuperuser()) {
+            jpaQuery = jpaQuery.from(persistentReportQuery).where(QPersistentReport.persistentReport.sendingTime.gt(inDate)
+                                                                  .and(QPersistentReport.persistentReport.viewer.eq(inUser)));
+        } else {
+            jpaQuery = jpaQuery.from(persistentReportQuery).where(QPersistentReport.persistentReport.sendingTime.gt(inDate));
+        }
+        jpaQuery = jpaQuery.orderBy(QPersistentReport.persistentReport.id);
 //        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
 //        query.setSendingTimeAfterFilter(inDate);
 //        if (!inUser.isSuperuser()) {
@@ -127,7 +133,7 @@ public class BasicReportHistoryServices
 //        }
 //        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
 
-        List<PersistentReport> reportList = persistenceReportQuery.getResultList();
+        List<PersistentReport> reportList = jpaQuery.fetch().
         ReportBaseImpl [] reports = new ReportBaseImpl[reportList.size()];
         int i = 0;
         for(PersistentReport report: reportList) {
