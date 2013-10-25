@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -21,9 +22,10 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.ors.security.MultiSimpleUserQuery;
+import org.marketcetera.ors.PersistTestBase;
+import org.marketcetera.ors.dao.ReportService;
+import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.PersistTestBase;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
@@ -44,11 +46,21 @@ import quickfix.field.SendingTime;
  * @since 1.0.0
  */
 @SuppressWarnings("rawtypes")
-public class ReportsTestBase extends TestCaseBase {
+public class ReportsTestBase
+        extends TestCaseBase
+{
+    /**
+     * Runs once before all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @BeforeClass
     public static void springSetup()
-        throws Exception {
+        throws Exception
+    {
         PersistTestBase.springSetup(getSpringFiles());
+        userService = null; // TODO retrieve user service from spring setup
+        reportService = null; // TODO retrieve report service from spring setup
         sMessageFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
 
         InMemoryIDFactory idFactory=new InMemoryIDFactory(0);
@@ -61,7 +73,7 @@ public class ReportsTestBase extends TestCaseBase {
         sActor.setPassword("pass".toCharArray());
         sActor.setActive(true);
         sActor.setSuperuser(true);
-        sActor.save();
+        userService.save(sActor);
         sActorID=new UserID(sActor.getId());
 
         sViewer=new SimpleUser();
@@ -69,7 +81,7 @@ public class ReportsTestBase extends TestCaseBase {
         sViewer.setPassword("pass2".toCharArray());
         sViewer.setActive(true);
         sViewer.setSuperuser(false);
-        sViewer.save();
+        userService.save(sViewer);
         sViewerID=new UserID(sViewer.getId());
 
         sExtraUser=new SimpleUser();
@@ -77,31 +89,40 @@ public class ReportsTestBase extends TestCaseBase {
         sExtraUser.setPassword("pass2".toCharArray());
         sExtraUser.setActive(true);
         sExtraUser.setSuperuser(false);
-        sExtraUser.save();
+        userService.save(sExtraUser);
         sExtraUserID=new UserID(sExtraUser.getId());
     }
-
+    /**
+     * Runs once after all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @AfterClass
-    public static void cleanUser() throws Exception {
-        MultiSimpleUserQuery suQuery = MultiSimpleUserQuery.all();
-        suQuery.delete();
+    public static void cleanUser()
+            throws Exception
+    {
+        List<SimpleUser> allUsers = userService.findAll();
+        for(SimpleUser user : allUsers) {
+            userService.delete(user);
+        }
         //Verify everything's gone
-        assertEquals(0, suQuery.fetchCount());
-        assertEquals(0, suQuery.fetch().size());
+        assertTrue(userService.findAll().isEmpty());
     }
-
-    @Before
+    /**
+     * Runs before and after each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @After
-    public void cleanTables() throws Exception {
-        MultiExecReportSummary erQuery = MultiExecReportSummary.all();
-        MultiPersistentReportQuery prQuery = MultiPersistentReportQuery.all();
-        erQuery.delete();
-        prQuery.delete();
-        //Verify everything's gone
-        assertEquals(0, erQuery.fetchCount());
-        assertEquals(0, erQuery.fetch().size());
-        assertEquals(0, prQuery.fetchCount());
-        assertEquals(0, prQuery.fetch().size());
+    @Before
+    public void cleanTables()
+            throws Exception
+    {
+        reportService.purgeReportsBefore(new Date());
+        //Verify everything's gone // TODO
+//        assertEquals(0, erQuery.fetch().size());
+//        assertEquals(0, prQuery.fetchCount());
+//        assertEquals(0, prQuery.fetch().size());
     }
 
     static OrderCancelReject createCancelReject()
@@ -666,7 +687,8 @@ public class ReportsTestBase extends TestCaseBase {
             return inMap.size() == mExpectedSize;
         }
     }
-
+    protected static UserService userService;
+    protected static ReportService reportService;
     protected static final BrokerID BROKER = new BrokerID("TestBroker");
     protected static final String ACCOUNT = "account";
     protected static final String TEXT = "text";

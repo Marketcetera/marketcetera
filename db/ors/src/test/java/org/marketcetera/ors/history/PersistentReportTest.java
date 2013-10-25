@@ -120,17 +120,14 @@ public class PersistentReportTest extends ReportsTestBase {
         assertNull(reject.getReportID());
         sServices.save(reject);
         assertNotNull(reject.getReportID());
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        assertEquals(1, query.fetchCount());
-        List<PersistentReport> reports = query.fetch();
+        List<PersistentReport> reports = reportService.findAllPersistentReport();
         assertEquals(1, reports.size());
         OrderCancelReject retrieved = (OrderCancelReject) reports.get(0).toReport();
         assertReportEquals(reject,  retrieved);
-
         //Principals.
         assertSame(Principals.UNKNOWN,
-                   PersistentReport.getPrincipals(new OrderID("nonexistent")));
-        Principals p=PersistentReport.getPrincipals(reject.getOrderID());
+                   reportService.getPrincipals(new OrderID("nonexistent")));
+        Principals p = reportService.getPrincipals(reject.getOrderID());
         assertEquals(sActorID,p.getActorID());
         assertEquals(sViewerID,p.getViewerID());
     }
@@ -149,15 +146,13 @@ public class PersistentReportTest extends ReportsTestBase {
         assertNull(report.getReportID());
         sServices.save(report);
         assertNotNull(report.getReportID());
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        assertEquals(1, query.fetchCount());
-        List<PersistentReport> reports = query.fetch();
+        List<PersistentReport> reports = reportService.findAllPersistentReport();
         assertEquals(1, reports.size());
         ExecutionReport retrieved = (ExecutionReport) reports.get(0).toReport();
         assertReportEquals(report,  retrieved);
 
         //Principals.
-        Principals p=PersistentReport.getPrincipals(report.getOrderID());
+        Principals p = reportService.getPrincipals(report.getOrderID());
         assertEquals(sActorID,p.getActorID());
         assertEquals(sViewerID,p.getViewerID());
     }
@@ -188,10 +183,9 @@ public class PersistentReportTest extends ReportsTestBase {
                 return null;
             }
         });
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
+        List<PersistentReport> reports = reportService.findAllPersistentReport();
         //Verify we've got nothing persisted
-        assertEquals(0, query.fetchCount());
-        assertEquals(0, query.fetch().size());
+        assertEquals(0, reports.size());
     }
 
     /**
@@ -221,9 +215,9 @@ public class PersistentReportTest extends ReportsTestBase {
         assertTrue(report3.getReportID().compareTo(report2.getReportID()) > 0);
         assertTrue(report2.getReportID().compareTo(reject1.getReportID()) > 0);
         //Retrieve them and verify that they're retrieved in order
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        assertEquals(4, query.fetchCount());
-        assertRetrievedReports(query.fetch(), reject1, report2,
+        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        assertEquals(4, reports.size());
+        assertRetrievedReports(reports, reject1, report2,
                 report3, reject4);
     }
 
@@ -263,32 +257,31 @@ public class PersistentReportTest extends ReportsTestBase {
         sServices.save(report3);
         sServices.save(reject4);
         //Retrieve them and verify that they're retrieved in order
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
+        List<PersistentReport> reports = reportService.findAllPersistentReportSince(time1);
         //Retrieve all reports
-        query.setSendingTimeAfterFilter(time1);
-        assertEquals(4, query.fetchCount());
-        assertRetrievedReports(query.fetch(), reject1, report2,
+        assertEquals(4, reports.size());
+        assertRetrievedReports(reports, reject1, report2,
                 report3, reject4);
 
         //Retrieve last 3 reports
-        query.setSendingTimeAfterFilter(time2);
-        assertEquals(3, query.fetchCount());
-        assertRetrievedReports(query.fetch(), report2, report3, reject4);
+        reports = reportService.findAllPersistentReportSince(time2);
+        assertEquals(3, reports.size());
+        assertRetrievedReports(reports, report2, report3, reject4);
 
         //Retrieve last 2 reports
-        query.setSendingTimeAfterFilter(time3);
-        assertEquals(2, query.fetchCount());
-        assertRetrievedReports(query.fetch(), report3, reject4);
+        reports = reportService.findAllPersistentReportSince(time3);
+        assertEquals(2, reports.size());
+        assertRetrievedReports(reports, report3, reject4);
 
         //Retrieve last 1 reports
-        query.setSendingTimeAfterFilter(time4);
-        assertEquals(1, query.fetchCount());
-        assertRetrievedReports(query.fetch(), reject4);
+        reports = reportService.findAllPersistentReportSince(time4);
+        assertEquals(1, reports.size());
+        assertRetrievedReports(reports, reject4);
 
         //Retrieve no reports
-        query.setSendingTimeAfterFilter(time5);
-        assertEquals(0, query.fetchCount());
-        assertRetrievedReports(query.fetch());
+        reports = reportService.findAllPersistentReportSince(time5);
+        assertEquals(0, reports.size());
+        assertRetrievedReports(reports);
     }
 
     /**
@@ -311,53 +304,15 @@ public class PersistentReportTest extends ReportsTestBase {
             createCancelReject(BROKER,sActorID,sExtraUserID);
         sServices.save(r3);
 
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        assertRetrievedReports(query.fetch(),r1,r2,r3);
-        query.setViewerFilter(sViewer);
-        assertRetrievedReports(query.fetch(),r1);
-        query.setViewerFilter(sExtraUser);
-        assertRetrievedReports(query.fetch(),r3);
-        query.setViewerFilter(sActor);
-        assertRetrievedReports(query.fetch());
+        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        assertRetrievedReports(reports,r1,r2,r3);
+        reports = reportService.findAllPersistentReportByViewer(sViewer);
+        assertRetrievedReports(reports,r1);
+        reports = reportService.findAllPersistentReportByViewer(sExtraUser);
+        assertRetrievedReports(reports,r3);
+        reports = reportService.findAllPersistentReportByViewer(sActor);
+        assertRetrievedReports(reports);
     }
-
-    /**
-     * Verifies query defaults.
-     *
-     * @throws Exception if there were errors
-     */
-    @Test
-    public void queryDefaults() throws Exception {
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-        assertEquals(MultiPersistentReportQuery.BY_ID, query.getEntityOrder());
-        assertNull(query.getSendingTimeAfterFilter());
-        assertEquals(-1, query.getFirstResult());
-        assertEquals(-1, query.getMaxResult());
-    }
-
-    /**
-     * Verifies query setters.
-     *
-     * @throws Exception if there were errors.
-     */
-    @Test
-    public void querySetters() throws Exception {
-        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-
-        //entity order verification
-        query.setEntityOrder(null);
-        assertEquals(null, query.getEntityOrder());
-        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
-        assertEquals(MultiPersistentReportQuery.BY_ID, query.getEntityOrder());
-
-        //sending time verification
-        query.setSendingTimeAfterFilter(null);
-        assertEquals(null, query.getSendingTimeAfterFilter());
-        Date d = new Date();
-        query.setSendingTimeAfterFilter(d);
-        assertEquals(d, query.getSendingTimeAfterFilter());
-    }
-
     @Test
     public void delete() {
         //Doesn't need to be tested as it's only needed for unit testing

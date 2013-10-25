@@ -1,14 +1,10 @@
 package org.marketcetera.ors.history;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -20,15 +16,12 @@ import org.marketcetera.core.time.TimeFactory;
 import org.marketcetera.core.time.TimeFactoryImpl;
 import org.marketcetera.ors.LongIDFactory;
 import org.marketcetera.ors.Principals;
-import org.marketcetera.ors.dao.ExecutionReportDao;
-import org.marketcetera.ors.dao.PersistentReportDao;
+import org.marketcetera.ors.dao.ReportService;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.mysema.query.jpa.impl.JPAQuery;
 
 
 
@@ -51,14 +44,11 @@ public class BasicReportHistoryServices
     private JmsManager mJmsManager;
     private ReportSavedListener mReportSavedListener;
     private DateTime mPurgeDate;
-    
+    /**
+     * provides datastore access to reports
+     */
     @Autowired
-    private ExecutionReportDao executionReportDao;
-
-    @Autowired
-    private PersistentReportDao persistentReportDao;
-    @PersistenceContext
-    private EntityManager entityManager;
+    private ReportService reportService;
     /**
      * pattern used to identify a history threshold value expressed in seconds
      */
@@ -106,102 +96,57 @@ public class BasicReportHistoryServices
         // purge report history, if necessary
         if(mPurgeDate != null) {
             Messages.RHS_PURGING_RECORDS.info(this,mPurgeDate);
-            List<PersistentReport> reportList = persistentReportDao.findReportForOrderBefore(mPurgeDate.toDate());
-            int count = executionReportDao.deleteReportsIn(reportList);
+            int count = reportService.purgeReportsBefore(mPurgeDate.toDate());
             Messages.RHS_RECORDS_PURGED.info(this,count);
         }
     }
-
     @Override
     public ReportBaseImpl[] getReportsSince(SimpleUser inUser,
                                             Date inDate)
-            throws PersistenceException, ReportPersistenceException
     {
-        JPAQuery jpaQuery = new JPAQuery(entityManager);
-        QPersistentReport persistentReportQuery = QPersistentReport.persistentReport;
-        if (inUser != null && !inUser.isSuperuser()) {
-            jpaQuery = jpaQuery.from(persistentReportQuery).where(QPersistentReport.persistentReport.sendingTime.gt(inDate)
-                                                                  .and(QPersistentReport.persistentReport.viewer.eq(inUser)));
-        } else {
-            jpaQuery = jpaQuery.from(persistentReportQuery).where(QPersistentReport.persistentReport.sendingTime.gt(inDate));
-        }
-        jpaQuery = jpaQuery.orderBy(QPersistentReport.persistentReport.id);
-//        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-//        query.setSendingTimeAfterFilter(inDate);
-//        if (!inUser.isSuperuser()) {
-//            query.setViewerFilter(inUser);
-//        }
-//        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
-
-        List<PersistentReport> reportList = jpaQuery.fetch().
-        ReportBaseImpl [] reports = new ReportBaseImpl[reportList.size()];
-        int i = 0;
-        for(PersistentReport report: reportList) {
-            reports[i++] = (ReportBaseImpl) report.toReport();
-        }
-        return reports;
+        return reportService.getReportsSince(inUser,
+                                             inDate);
     }
-
     @Override
-    public BigDecimal getEquityPositionAsOf
-        (SimpleUser inUser,
-         Date inDate,
-         Equity inEquity)
-        throws PersistenceException
+    public BigDecimal getEquityPositionAsOf(SimpleUser inUser,
+                                            Date inDate,
+                                            Equity inEquity)
     {
-    	return executionReportDao.getEquityPositionAsOf(inUser, inDate, inEquity);
+    	return reportService.getEquityPositionAsOf(inUser, inDate, inEquity);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.history.ReportHistoryServices#getOpenOrders(org.marketcetera.ors.security.SimpleUser)
      */
     @Override
     public List<ReportBase> getOpenOrders(SimpleUser inUser)
-            throws PersistenceException
     {
-        List<ReportBase> reports = new ArrayList<ReportBase>();
-        
-        List<ExecutionReportSummary> rawReports = executionReportDao.getOpenOrders(inUser);
-        //ExecutionReportSummary.getOpenOrders(inUser);
-        try {
-            for(ExecutionReportSummary summary : rawReports) {
-                reports.add(summary.getReport().toReport());
-            }
-        } catch (ReportPersistenceException e) {
-            throw new PersistenceException(e);
-        }
-        return reports;
+        return reportService.getOpenOrders(inUser);
     }
     @Override
-    public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf
-        (SimpleUser inUser,
-         Date inDate)
-        throws PersistenceException
+    public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf(SimpleUser inUser,
+                                                                          Date inDate)
     {
-        return executionReportDao.getAllEquityPositionsAsOf(inUser,inDate);
+        return reportService.getAllEquityPositionsAsOf(inUser,
+                                                       inDate);
     }
-    
-    
     @Override
-    public BigDecimal getCurrencyPositionAsOf
-        (SimpleUser inUser,
-         Date inDate,
-         Currency inCurrency)
-        throws PersistenceException
+    public BigDecimal getCurrencyPositionAsOf(SimpleUser inUser,
+                                              Date inDate,
+                                              Currency inCurrency)
     {
-        return executionReportDao.getCurrencyPositionAsOf
-            (inUser,inDate,inCurrency);
+        return reportService.getCurrencyPositionAsOf(inUser,
+                                                     inDate,
+                                                     inCurrency);
     }
-    
     /* (non-Javadoc)
      * @see org.marketcetera.ors.history.ReportHistoryServices#getAllCurrencyPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
-    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf
-        (SimpleUser inUser,
-         Date inDate)
-        throws PersistenceException
+    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(SimpleUser inUser,
+                                                                              Date inDate)
     {
-        return executionReportDao.getAllCurrencyPositionsAsOf(inUser,inDate);
+        return reportService.getAllCurrencyPositionsAsOf(inUser,
+                                                         inDate);
     }
     
     /* (non-Javadoc)
@@ -210,10 +155,9 @@ public class BasicReportHistoryServices
     @Override
     public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(SimpleUser inUser,
                                                                          Date inDate)
-            throws PersistenceException
     {
-        return executionReportDao.getAllFuturePositionsAsOf(inUser,
-                                                                inDate);
+        return reportService.getAllFuturePositionsAsOf(inUser,
+                                                       inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.history.ReportHistoryServices#getFuturePositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Future)
@@ -222,47 +166,44 @@ public class BasicReportHistoryServices
     public BigDecimal getFuturePositionAsOf(SimpleUser inUser,
                                             Date inDate,
                                             Future inFuture)
-            throws PersistenceException
     {
-        return executionReportDao.getFuturePositionAsOf(inUser,
-                                                            inDate,
-                                                            inFuture);
+        return reportService.getFuturePositionAsOf(inUser,
+                                                   inDate,
+                                                   inFuture);
     }     
     @Override
-    public BigDecimal getOptionPositionAsOf
-        (final SimpleUser inUser,
-         final Date inDate,
-         final Option inOption)
-        throws PersistenceException {
-        return executionReportDao.getOptionPositionAsOf(inUser,
-                inDate, inOption);
-    }
-
-    @Override
-    public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf
-        (final SimpleUser inUser,
-         final Date inDate)
-        throws PersistenceException {
-        return executionReportDao.getAllOptionPositionsAsOf(inUser, inDate);
-    }
-
-    @Override
-    public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf
-        (final SimpleUser inUser,
-         final Date inDate,
-         final String... inSymbols)
-        throws PersistenceException {
-        return executionReportDao.getOptionPositionsAsOf(inUser, inDate, inSymbols);
+    public BigDecimal getOptionPositionAsOf(final SimpleUser inUser,
+                                            final Date inDate,
+                                            final Option inOption)
+    {
+        return reportService.getOptionPositionAsOf(inUser,
+                                                   inDate,
+                                                   inOption);
     }
     @Override
-    public void save
-        (ReportBase report)
+    public Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(final SimpleUser inUser,
+                                                                          final Date inDate)
+    {
+        return reportService.getAllOptionPositionsAsOf(inUser,
+                                                       inDate);
+    }
+    @Override
+    public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(final SimpleUser inUser,
+                                                                       final Date inDate,
+                                                                       final String... inSymbols)
+    {
+        return reportService.getOptionPositionsAsOf(inUser,
+                                                    inDate,
+                                                    inSymbols);
+    }
+    @Override
+    public void save(ReportBase report)
         throws PersistenceException
     {
         boolean success=false;
         try {
             assignID(report);
-            persistentReportDao.save(report);
+            reportService.save(report);
             success=true;
             Messages.RHS_PERSISTED_REPLY.info(this,report);
         } finally {
@@ -276,15 +217,13 @@ public class BasicReportHistoryServices
     public void delete(ReportBase inReport)
             throws PersistenceException
     {
-        PersistentReport report = persistentReportDao.findReportForOrder(inReport.getOrderID());
-    	executionReportDao.deleteReportsFor(report);
+    	reportService.delete(inReport);
     }
     @Override
-    public Principals getPrincipals
-        (OrderID orderID)
+    public Principals getPrincipals(OrderID orderID)
         throws PersistenceException
     {
-        return PersistentReport.getPrincipals(orderID);
+        return reportService.getPrincipals(orderID);
     }
     /**
      * Get the purgeDate value.

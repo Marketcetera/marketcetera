@@ -14,6 +14,7 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.persist.EntityExistsException;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -225,7 +226,7 @@ public class ORSCLITest
         final String password = "admin"; //$NON-NLS-1$
         admin.setPassword(password.toCharArray());
         admin.setSuperuser(true);
-        simpleUserRepository.save(admin);
+        userService.save(admin);
         //Try list users
         runCLI("-u",admin.getName(),"-p",password,"--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         matchOut("^\\s*admin \\[sa\\]\\s*$"); //$NON-NLS-1$
@@ -407,5 +408,5 @@ public class ORSCLITest
      * 
      */
     @Autowired
-    private UserDao simpleUserRepository;
+    private UserService userService;
 }

@@ -16,6 +16,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.ors.PersistTestBase;
+import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.util.test.TestCaseBase;
 
 import com.sun.security.auth.UserPrincipal;
@@ -33,6 +35,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
     private static boolean doNotHandleCallbacks = false;
     private static IOException callbackException = null;
     private LoginContext loginContext;
+    private static UserService userService;
 
     /**
      * Test login success & failures.
@@ -131,16 +134,17 @@ public class ORSLoginModuleTest extends TestCaseBase {
             throws Exception
     {
         springSetup();
+        userService = null; // TODO retrieve from Spring setup
         user = new SimpleUser();
         user.setName(randomString());
         password = randomString().toCharArray();
         user.setPassword(password);
-        user.save();
+        userService.save(user);
         Configuration.setConfiguration(new MockConfiguration());
     }
     @AfterClass
     public static void cleanup() throws Exception {
-        user.delete();
+        userService.delete(user);
         user = null;
     }
     @After

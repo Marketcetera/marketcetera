@@ -1,27 +1,25 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ClassVersion;
-
 import static org.marketcetera.ors.security.Messages.*;
 
-import org.marketcetera.ors.dao.UserDao;
-import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.NoResultException;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.security.auth.spi.LoginModule;
-import javax.security.auth.Subject;
-import javax.security.auth.login.LoginException;
-import javax.security.auth.login.FailedLoginException;
-import javax.security.auth.login.AccountNotFoundException;
-import javax.security.auth.callback.*;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.security.auth.Subject;
+import javax.security.auth.callback.*;
+import javax.security.auth.login.AccountNotFoundException;
+import javax.security.auth.login.FailedLoginException;
+import javax.security.auth.login.LoginException;
+import javax.security.auth.spi.LoginModule;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.ors.dao.UserService;
+import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sun.security.auth.UserPrincipal;
 
@@ -68,7 +66,7 @@ public class ORSLoginModule implements LoginModule {
         }
         char [] password = ((PasswordCallback)callbacks[1]).getPassword();
         try {
-            SimpleUser u = simpleUserRepository.findByName(username);
+            SimpleUser u = userService.findByName(username);
             if (u == null) {
                 USER_LOGIN_ERROR_LOG.warn(this,username);
                 throw new AccountNotFoundException(USER_LOGIN_ERROR.getText());
@@ -113,11 +111,9 @@ public class ORSLoginModule implements LoginModule {
     private CallbackHandler callback;
     private Set<Principal> principals = new HashSet<Principal>();
     private String username;
-    
     /**
-     * 
+     * provides datastore access to user objects
      */
     @Autowired
-    private UserDao simpleUserRepository;
-    
+    private UserService userService;
 }

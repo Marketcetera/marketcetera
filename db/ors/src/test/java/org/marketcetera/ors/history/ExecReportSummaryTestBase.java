@@ -1,20 +1,22 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.*;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.persist.PersistTestBase;
-import org.marketcetera.event.HasFIXMessage;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import javax.persistence.TemporalType;
-import java.util.List;
-import java.util.Date;
-import java.util.concurrent.Callable;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Callable;
+
+import javax.persistence.TemporalType;
+
+import org.junit.Test;
+import org.marketcetera.event.HasFIXMessage;
+import org.marketcetera.ors.PersistTestBase;
+import org.marketcetera.trade.*;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.Side;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.field.*;
 
@@ -46,10 +48,8 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
             (createExecReport
              ("o1",null, getInstrument(),Side.Buy,OrderStatus.PartiallyFilled,
               BigDecimal.TEN,BigDecimal.TEN,BigDecimal.ONE,BigDecimal.ONE));
-
-        MultiExecReportSummary query=MultiExecReportSummary.all();
-        query.setEntityOrder(MultiExecReportSummary.BY_ID);
-        List<ExecutionReportSummary> summary=query.fetch();
+//        query.setEntityOrder(MultiExecReportSummary.BY_ID); TODO sort order on service
+        List<ExecutionReportSummary> summary = reportService.findAllExecutionReportSummary();
         assertEquals(2,summary.size());
 
         assertNull(summary.get(0).getViewer());
@@ -68,11 +68,10 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         OrderCancelReject reject = createCancelReject();
         sServices.save(reject);
         //report got saved
-        assertEquals(1, MultiPersistentReportQuery.all().fetchCount());
+        assertEquals(1, reportService.findAllPersistentReport().size());
         //but the summary didn't
-        MultiExecReportSummary query = MultiExecReportSummary.all();
-        assertEquals(0, query.fetchCount());
-        assertEquals(0, query.fetch().size());
+        List<ExecutionReportSummary> allErSummary = reportService.findAllExecutionReportSummary();
+        assertEquals(0, allErSummary.size());
     }
 
     /**
@@ -96,19 +95,16 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
         sServices.save(report1);
         //report got saved
-        MultiPersistentReportQuery reportQuery = MultiPersistentReportQuery.all();
-        assertEquals(1, reportQuery.fetchCount());
+        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        assertEquals(1, reports.size());
         //and so did the summary
-        MultiExecReportSummary query = MultiExecReportSummary.all();
-        query.setEntityOrder(MultiExecReportSummary.BY_ID);
-
-        assertEquals(1, query.fetchCount());
-        List<ExecutionReportSummary> summary = query.fetch();
-        assertEquals(1, summary.size());
-        assertSummary(summary.get(0), report1.getAveragePrice(),
+        List<ExecutionReportSummary> execReports = reportService.findAllExecutionReportSummary();
+//        query.setEntityOrder(MultiExecReportSummary.BY_ID); // TODO sort order
+        assertEquals(1, execReports.size());
+        assertSummary(execReports.get(0), report1.getAveragePrice(),
                 report1.getCumulativeQuantity(), report1.getLastPrice(),
                 report1.getLastQuantity(), report1.getOrderID(),
-                report1.getOrderStatus(), null, reportQuery.fetch().get(0),
+                report1.getOrderStatus(), null, reports.get(0),
                 report1.getOrderID(), report1.getSendingTime(),
                 report1.getSide(), instrument);
 
@@ -118,17 +114,17 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
                 instrument, Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
         sServices.save(report2);
+        reports = reportService.findAllPersistentReport();
         //report got saved
-        assertEquals(2, reportQuery.fetchCount());
+        assertEquals(2, reports.size());
         //and so did the summary
-        assertEquals(2, query.fetchCount());
-        summary = query.fetch();
-        assertEquals(2, summary.size());
-        assertSummary(summary.get(1), report2.getAveragePrice(),
+        execReports = reportService.findAllExecutionReportSummary();
+        assertEquals(2, execReports.size());
+        assertSummary(execReports.get(1), report2.getAveragePrice(),
                 report2.getCumulativeQuantity(), report2.getLastPrice(),
                 report2.getLastQuantity(), report2.getOrderID(),
                 report2.getOrderStatus(), report2.getOriginalOrderID(),
-                reportQuery.fetch().get(1),
+                reports.get(1),
                 report1.getOrderID(), report2.getSendingTime(),
                 report2.getSide(), instrument);
 
@@ -138,17 +134,17 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
                 instrument, Side.Buy, OrderStatus.PartiallyFilled,
                 BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ONE);
         sServices.save(report3);
+        reports = reportService.findAllPersistentReport();
         //report3 got saved
-        assertEquals(3, reportQuery.fetchCount());
+        assertEquals(3, reports.size());
         //and so did the summary
-        assertEquals(3, query.fetchCount());
-        summary = query.fetch();
-        assertEquals(3, summary.size());
-        assertSummary(summary.get(2), report3.getAveragePrice(),
+        execReports = reportService.findAllExecutionReportSummary();
+        assertEquals(3, execReports.size());
+        assertSummary(execReports.get(2), report3.getAveragePrice(),
                 report3.getCumulativeQuantity(), report3.getLastPrice(),
                 report3.getLastQuantity(), report3.getOrderID(),
                 report3.getOrderStatus(), report3.getOriginalOrderID(),
-                reportQuery.fetch().get(2),
+                reports.get(2),
                 report1.getOrderID(), report3.getSendingTime(),
                 report3.getSide(), instrument);
     }
@@ -177,14 +173,12 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
                                                   BigDecimal.ONE);
         sServices.save(report);
         //report got saved
-        MultiPersistentReportQuery reportQuery = MultiPersistentReportQuery.all();
-        assertEquals(1, reportQuery.fetchCount());
+        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        assertEquals(1, reports.size());
         //and so did the summary
-        MultiExecReportSummary query = MultiExecReportSummary.all();
-        assertEquals(1, query.fetchCount());
-        List<ExecutionReportSummary> summary = query.fetch();
-        assertEquals(1, summary.size());
-        assertSummary(summary.get(0),
+        List<ExecutionReportSummary> execReports = reportService.findAllExecutionReportSummary();
+        assertEquals(1, execReports.size());
+        assertSummary(execReports.get(0),
                       report.getAveragePrice(),
                       report.getCumulativeQuantity(),
                       report.getLastPrice(),
@@ -192,7 +186,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
                       report.getOrderID(),
                       report.getOrderStatus(),
                       report.getOriginalOrderID(),
-                      reportQuery.fetch().get(0),
+                      reports.get(0),
                       report.getOrderID(),
                       report.getSendingTime(),
                       report.getSide(),
@@ -289,17 +283,6 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         });
     }
 
-    /**
-     * Verifies that the query has expected default values.
-     */
-    @Test
-    public void queryDefaults() {
-        MultiExecReportSummary query = MultiExecReportSummary.all();
-        assertEquals(null, query.getEntityOrder());
-        assertEquals(-1, query.getFirstResult());
-        assertEquals(-1, query.getMaxResult());
-    }
-
     protected abstract I getInstrument();
     
     protected void assertSummary(ExecutionReportSummary inSummary,
@@ -323,7 +306,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument> extends Re
         assertEquals(inOrderStatus, inSummary.getOrderStatus());
         assertEquals(inOrigOrderID, inSummary.getOrigOrderID());
         assertReportEquals(inReport.toReport(),
-                inSummary.getReport().toReport());
+                           inSummary.getReport().toReport());
         assertEquals(inReport.getViewerID(),inSummary.getViewerID());
         assertEquals(inRootID, inSummary.getRootID());
         PersistTestBase.assertCalendarEquals(inSendingTime,

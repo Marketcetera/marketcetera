@@ -1,13 +1,12 @@
 
 package org.marketcetera.ors;
 
+import java.util.Arrays;
+
+import org.junit.Assert;
 import org.marketcetera.core.ApplicationBase;
-import org.marketcetera.persist.PersistTestBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.junit.Assert;
-
-import java.util.Arrays;
 
 /* $License$ */
 /**
@@ -49,9 +48,6 @@ public class DBInit
     public static void initORSDB() throws Exception {
         //
         //Close the spring context so that ORS can startup
-        PersistTestBase.springSetup
-            (new String[] {
-                "file:"+CONF_DIR+ //$NON-NLS-1$
-                "dbinit.xml"}).close(); //$NON-NLS-1$
+        PersistTestBase.springSetup(new String[] { "file:"+CONF_DIR+"dbinit.xml"}).close();
     }
 }

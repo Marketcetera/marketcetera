@@ -1,19 +1,14 @@
 package org.marketcetera.ors.history;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.*;
+import java.util.Date;
 
 import javax.persistence.*;
 
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.EntityBase;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
-import org.marketcetera.trade.Currency;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -305,6 +300,7 @@ public class ExecutionReportSummary extends EntityBase {
         return mRootID;
     }
 
+    @SuppressWarnings("unused")
     private void setRootID(OrderID inRootID) {
         mRootID = inRootID;
     }
@@ -489,6 +485,15 @@ public class ExecutionReportSummary extends EntityBase {
     {
         mIsOpen = inIsOpen;
     }
+    /**
+    *
+    *
+    * @return
+    */
+   public PersistentReport getReport()
+   {
+       return mReport;
+   }
     @Transient
     UserID getViewerID() {
         if (getViewer()==null) {

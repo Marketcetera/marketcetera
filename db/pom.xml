@@ -928,7 +928,6 @@
     <module>util</module>
     <module>util-test</module>
     <module>tools</module>
-    <module>db</module>
   </modules>
   <repositories>
     <!--
