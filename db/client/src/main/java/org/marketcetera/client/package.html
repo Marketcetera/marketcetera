@@ -1,0 +1,160 @@
+<body>
+<p>
+    Provides client API to communicate with the server.
+    It also provides a module to enable other modules, participating in
+    data flows, to be able to send trading orders to the server and receive
+    trading reports from the server. 
+</p>
+<p>
+    Currently the client can only connect to a single server instance.
+    It's not possible for the client to connect to multiple server instances
+    at the same time from within the same JVM.
+</p>
+<h3>Java API</h3>
+<p>
+    The Java API provides means to connect to the server and
+    communicate with it via a Facade, {@link org.marketcetera.client.Client}.
+    The Facade hides the details of communications with the server from the
+    clients.
+</p>
+<a id="Lifecycle"/>
+<h4>Lifecycle</h4>
+<p>
+    When using Java API to communicate with the server, the client is
+    initialized via
+    {@link org.marketcetera.client.ClientManager#init(ClientParameters)}.
+    Once the client is initialized, its instance can be accessed via
+    {@link org.marketcetera.client.ClientManager#getInstance()}. 
+</p>
+<p>
+    All the services available from the Server are available via
+    {@link org.marketcetera.client.Client}. After communicating
+    with the server, the connection to the server can be closed and all
+    the associated resources be released by invoking
+    {@link org.marketcetera.client.Client#close()}. The client should
+    not be used after it has been closed. The behavior of client
+    after invoking <code>close()</code> is unspecified. After the client
+    has been closed, the only permitted operation is to initialize it again
+    via {@link org.marketcetera.client.ClientManager#init(org.marketcetera.client.ClientParameters)}.
+</p>
+<p>
+    The client can reconnect to the server by invoking
+    {@link org.marketcetera.client.Client#reconnect()}. One may choose to
+    invoke this API because they believe that
+    the current connection to the server is not working (ie. they are receiving
+    {@link org.marketcetera.client.ConnectionException} when invoking
+    services). The client can be used after a successful reconnect. If the
+    reconnect fails, the only operations permitted are reconnect and close.
+</p>
+<h4>Features</h4>
+<p>
+    The Java API offers the following features.
+</p>
+<ol>
+    <li><b>Send orders</b> : Send various types of orders to the server.</li>
+    <li><b>Receive Reports</b> : Receive various execution reports from the server.</li>
+    <li><b>Exception Notifications</b> : Receive a notification whenever the client encounters errors when communicating with the server.</li>
+    <li><b>Fetch Old Reports</b> : Fetch old execution reports from the server.</li>
+    <li><b>Fetch Positions</b> : Fetch positions of various symbols from the server.</li>
+</ol>
+<h3>Module</h3>
+<p>
+    A module is provided to enable server to participate in data flows.
+    Do note that while operating as a module, only the features that send
+    orders and receive reports are available. All other server features
+    are only available via the Java API. It's possible to use the Java API
+    via {@link org.marketcetera.client.Client} in parallel, along with the
+    module. 
+</p>
+<p>
+    The module factory provides a singleton module that is auto-created and
+    auto-started. See {@link org.marketcetera.client.ClientModuleFactory} for
+    more details.
+</p>
+<h4>Configuration</h4>
+<p>
+    The module factory can be configured in two different ways.
+</p>
+<ol>
+    <li><b>Via Java API</b> : In this scenario, the client is configured via
+    the Java API. The module uses the already configured client instance
+    to communicate with the server. See the <a href="#Lifecycle">Lifecycle</a>
+        section for details on Java API.</li>
+    <li><b>Via Module Configuration</b> : In this scenario, the module provider
+    is provided the server connection details via the module framework. The
+    factory uses those details to initialize the client.</li>
+</ol>
+<p>
+    The module factory exposes the parameters for its configuration via
+    {@link org.marketcetera.client.ClientModuleFactoryMXBean}. The following
+    parameters need to be specified for the factory to be able to initialize
+    the client.
+</p>
+<ol>
+    <li>URL: The URL of the server</li>
+    <li>Username: The user name to authenticate to the server.</li>
+    <li>Password: The user's password to authenticate to the server.</li>
+    <li>Hostname: The hostname for the server's web service.</li>
+    <li>Port: The port number for the server's web service.</li>
+    <li>IDPrefix: The ID Prefix for all orders sent out by this client.</li>
+</ol>
+<p>
+    To set these parameters by default within a strategy agent, create a file
+    named <code>ors_system.properties</code> with the following contents.
+</p>
+<pre>
+Hostname=127.0.0.1
+Port=9000
+URL=tcp://127.0.0.1:61616
+Username=admin
+Password=admin
+IDPrefix=
+</pre>
+<p>
+    Do note that the factory will not attempt to initialize the client if it
+    already has been initialized via the Java API.
+</p>
+<h4>Lifecycle</h4>
+<p>
+    The module does not validate that the client has been initialized
+    when it's started. The module does not close the client when it's stopped.
+    Once created, the module's lifecycle is independent of the status of
+    client's connection to the server.
+    Do note that the client is configured to be closed when the JVM is stopped.
+</p>
+<h4>Data Types</h4>
+<p>
+    The module accepts data of following types.
+</p>
+<ul>
+    <li>{@link org.marketcetera.trade.OrderSingle}</li>
+    <li>{@link org.marketcetera.trade.OrderCancel}</li>
+    <li>{@link org.marketcetera.trade.OrderReplace}</li>
+    <li>{@link org.marketcetera.trade.FIXOrder}</li>
+</ul>
+<p>
+    The module will emit all the reports from the server when requested.
+    Following types of reports may be emitted by the module.
+</p>
+<ul>
+    <li>{@link org.marketcetera.trade.ExecutionReport}</li>
+    <li>{@link org.marketcetera.trade.OrderCancelReject}</li>
+</ul>
+<h4>Request Parameters</h4>
+<p>
+    The module does not accept any request parameters. When requested to emit
+    data, the module will emit all the trading reports that server sends.
+</p>
+<h4>Management Interface</h4>
+<p>
+    The Module provides a management interface,
+    {@link org.marketcetera.client.ClientModuleMXBean},
+    to operate on it during runtime.
+</p>
+<h3>Design Notes</h3>
+<p>
+    The Client is meant to be a thin API to access the server. It's not
+    intended to perform any functions that are not directly related to
+    communicating with the server. The server depends on the client.
+</p>
+</body>

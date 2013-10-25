@@ -1,0 +1,1248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <!--
+    Copyright (c) 2003 Object Factory Inc. All rights reserved.
+    RELAX NG schema for XSWT
+    XML Schema is automatically generated from xswt.rnc by trang.
+    Do not modify XML Schema by hand!
+  -->
+  <xs:element name="xswt">
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="control"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="control">
+    <xs:choice>
+      <xs:element ref="compound"/>
+      <xs:element ref="single"/>
+    </xs:choice>
+  </xs:group>
+  <xs:element name="compound" abstract="true"/>
+  <xs:element name="single" abstract="true"/>
+  <xs:element name="scrollable" abstract="true" substitutionGroup="single"/>
+  <!-- |tableTree|toolBar|sashForm|ccombo|styledText|coolBar|cTabFolder|scrolledComposite -->
+  <xs:simpleType name="controlStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of LEFT_TO_RIGHT RIGHT_TO_LEFT is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="BORDER"/>
+      <xs:enumeration value="LEFT_TO_RIGHT"/>
+      <xs:enumeration value="RIGHT_TO_LEFT"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:attributeGroup name="widgetAttributes">
+    <xs:attribute name="id" type="xs:ID"/>
+  </xs:attributeGroup>
+  <xs:element name="data">
+    <xs:complexType>
+      <xs:attribute name="key"/>
+      <xs:attribute name="value"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="controlAttributes">
+    <xs:attributeGroup ref="widgetAttributes"/>
+    <xs:attribute name="background" type="color"/>
+    <xs:attribute name="cursor" type="cursors"/>
+    <xs:attribute name="enabled" type="xs:boolean"/>
+    <xs:attribute name="focus" type="xs:boolean"/>
+    <xs:attribute name="foreground" type="color"/>
+    <xs:attribute name="location">
+      <xs:simpleType>
+        <xs:restriction>
+          <xs:simpleType>
+            <xs:list>
+              <xs:simpleType>
+                <xs:union memberTypes="xs:int xs:int"/>
+              </xs:simpleType>
+            </xs:list>
+          </xs:simpleType>
+          <xs:length value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="size">
+      <xs:simpleType>
+        <xs:restriction>
+          <xs:simpleType>
+            <xs:list>
+              <xs:simpleType>
+                <xs:union memberTypes="xs:int xs:int"/>
+              </xs:simpleType>
+            </xs:list>
+          </xs:simpleType>
+          <xs:length value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="toolTipText"/>
+    <xs:attribute name="visible" type="xs:boolean"/>
+  </xs:attributeGroup>
+  <xs:group name="controlElements">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="data"/>
+      <xs:element minOccurs="0" ref="layoutData"/>
+      <xs:element minOccurs="0" ref="font"/>
+      <xs:element minOccurs="0" ref="menu"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:element name="layoutData" abstract="true"/>
+  <xs:element name="formData" substitutionGroup="layoutData">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" ref="bottom"/>
+        <xs:element minOccurs="0" ref="left"/>
+        <xs:element minOccurs="0" ref="right"/>
+        <xs:element minOccurs="0" ref="top"/>
+      </xs:all>
+      <xs:attribute name="height" type="xs:nonNegativeInteger"/>
+      <xs:attribute name="width" type="xs:nonNegativeInteger"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="bottom">
+    <xs:complexType>
+      <xs:attributeGroup ref="attachmentContent"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="left">
+    <xs:complexType>
+      <xs:attributeGroup ref="attachmentContent"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="right">
+    <xs:complexType>
+      <xs:attributeGroup ref="attachmentContent"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="top">
+    <xs:complexType>
+      <xs:attributeGroup ref="attachmentContent"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gridData" substitutionGroup="layoutData">
+    <xs:complexType>
+      <xs:attribute name="style">
+        <xs:simpleType>
+          <xs:list>
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="VERTICAL_ALIGN_BEGINNING"/>
+                <xs:enumeration value="VERTICAL_ALIGN_CENTER"/>
+                <xs:enumeration value="VERTICAL_ALIGN_END"/>
+                <xs:enumeration value="VERTICAL_ALIGN_FILL"/>
+                <xs:enumeration value="HORIZONTAL_ALIGN_BEGINNING"/>
+                <xs:enumeration value="HORIZONTAL_ALIGN_CENTER"/>
+                <xs:enumeration value="HORIZONTAL_ALIGN_END"/>
+                <xs:enumeration value="HORIZONTAL_ALIGN_FILL"/>
+                <xs:enumeration value="GRAB_HORIZONTAL"/>
+                <xs:enumeration value="GRAB_VERTICAL"/>
+                <xs:enumeration value="FILL_VERTICAL"/>
+                <xs:enumeration value="FILL_HORIZONTAL"/>
+                <xs:enumeration value="FILL_BOTH"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:list>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="horizontalAlignment" type="gridAlignment"/>
+      <xs:attribute name="verticalAlignment" type="gridAlignment"/>
+      <xs:attribute name="widthHint">
+        <xs:simpleType>
+          <xs:union memberTypes="xs:nonNegativeInteger">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="DEFAULT"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:union>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="heightHint">
+        <xs:simpleType>
+          <xs:union memberTypes="xs:nonNegativeInteger">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:enumeration value="DEFAULT"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:union>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="horizontalIndent" type="xs:nonNegativeInteger"/>
+      <xs:attribute name="horizontalSpan" type="xs:positiveInteger"/>
+      <xs:attribute name="verticalSpan" type="xs:positiveInteger"/>
+      <xs:attribute name="grabExcessHorizontalSpace" type="xs:boolean"/>
+      <xs:attribute name="grabExcessVerticalSpace" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rowData" substitutionGroup="layoutData">
+    <xs:complexType>
+      <xs:attribute name="width" type="xs:nonNegativeInteger"/>
+      <xs:attribute name="height" type="xs:nonNegativeInteger"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="attachmentContent">
+    <xs:attribute name="numerator" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="denominator" type="xs:positiveInteger"/>
+    <xs:attribute name="offset" type="xs:int"/>
+    <xs:attribute name="control" type="xs:IDREF"/>
+    <xs:attribute name="alignment">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="TOP"/>
+          <xs:enumeration value="BOTTOM"/>
+          <xs:enumeration value="LEFT"/>
+          <xs:enumeration value="RIGHT"/>
+          <xs:enumeration value="CENTER"/>
+          <xs:enumeration value="DEFAULT"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:simpleType name="gridAlignment">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="BEGINNING"/>
+      <xs:enumeration value="CENTER"/>
+      <xs:enumeration value="END"/>
+      <xs:enumeration value="FILL"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="menu">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="font">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="fontData"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="fontDescription"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="fontDescription">
+    <xs:annotation>
+      <xs:documentation>Any missing attributes are assumed to refer to current control font</xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="name"/>
+    <xs:attribute name="height" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list>
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:enumeration value="NORMAL"/>
+              <xs:enumeration value="BOLD"/>
+              <xs:enumeration value="ITALIC"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:list>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:element name="fontData">
+    <xs:complexType>
+      <xs:attributeGroup ref="fontDescription"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:simpleType name="color">
+    <xs:union memberTypes="colorname">
+      <xs:simpleType>
+        <xs:restriction>
+          <xs:simpleType>
+            <xs:list>
+              <xs:simpleType>
+                <xs:union memberTypes="colorpart colorpart colorpart"/>
+              </xs:simpleType>
+            </xs:list>
+          </xs:simpleType>
+          <xs:length value="3"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:simpleType name="colorpart">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="255"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="colorname">
+    <xs:annotation>
+      <xs:documentation>color names are those supported in CSS by Internet Explorer and Navigator</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="AliceBlue"/>
+      <xs:enumeration value="AntiqueWhite"/>
+      <xs:enumeration value="Aqua"/>
+      <xs:enumeration value="Aquamarine"/>
+      <xs:enumeration value="Azure"/>
+      <xs:enumeration value="Beige"/>
+      <xs:enumeration value="Bisque"/>
+      <xs:enumeration value="Black"/>
+      <xs:enumeration value="BlanchedAlmond"/>
+      <xs:enumeration value="Blue"/>
+      <xs:enumeration value="BlueViolet"/>
+      <xs:enumeration value="Brown"/>
+      <xs:enumeration value="BurlyWood"/>
+      <xs:enumeration value="CadetBlue"/>
+      <xs:enumeration value="Chartreuse"/>
+      <xs:enumeration value="Chocolate"/>
+      <xs:enumeration value="Coral"/>
+      <xs:enumeration value="CornflowerBlue"/>
+      <xs:enumeration value="Cornsilk"/>
+      <xs:enumeration value="Crimson"/>
+      <xs:enumeration value="Cyan"/>
+      <xs:enumeration value="DarkBlue"/>
+      <xs:enumeration value="DarkCyan"/>
+      <xs:enumeration value="DarkGoldenRod"/>
+      <xs:enumeration value="DarkGray"/>
+      <xs:enumeration value="DarkGreen"/>
+      <xs:enumeration value="DarkKhaki"/>
+      <xs:enumeration value="DarkMagenta"/>
+      <xs:enumeration value="DarkOliveGreen"/>
+      <xs:enumeration value="Darkorange"/>
+      <xs:enumeration value="DarkOrchid"/>
+      <xs:enumeration value="DarkRed"/>
+      <xs:enumeration value="DarkSalmon"/>
+      <xs:enumeration value="DarkSeaGreen"/>
+      <xs:enumeration value="DarkSlateBlue"/>
+      <xs:enumeration value="DarkSlateGray"/>
+      <xs:enumeration value="DarkTurquoise"/>
+      <xs:enumeration value="DarkViolet"/>
+      <xs:enumeration value="DeepPink"/>
+      <xs:enumeration value="DeepSkyBlue"/>
+      <xs:enumeration value="DimGray"/>
+      <xs:enumeration value="DodgerBlue"/>
+      <xs:enumeration value="Feldspar"/>
+      <xs:enumeration value="FireBrick"/>
+      <xs:enumeration value="FloralWhite"/>
+      <xs:enumeration value="ForestGreen"/>
+      <xs:enumeration value="Fuchsia"/>
+      <xs:enumeration value="Gainsboro"/>
+      <xs:enumeration value="GhostWhite"/>
+      <xs:enumeration value="Gold"/>
+      <xs:enumeration value="GoldenRod"/>
+      <xs:enumeration value="Gray"/>
+      <xs:enumeration value="Green"/>
+      <xs:enumeration value="GreenYellow"/>
+      <xs:enumeration value="HoneyDew"/>
+      <xs:enumeration value="HotPink"/>
+      <xs:enumeration value="IndianRed"/>
+      <xs:enumeration value="Indigo"/>
+      <xs:enumeration value="Ivory"/>
+      <xs:enumeration value="Khaki"/>
+      <xs:enumeration value="Lavender"/>
+      <xs:enumeration value="LavenderBlush"/>
+      <xs:enumeration value="LawnGreen"/>
+      <xs:enumeration value="LemonChiffon"/>
+      <xs:enumeration value="LightBlue"/>
+      <xs:enumeration value="LightCoral"/>
+      <xs:enumeration value="LightCyan"/>
+      <xs:enumeration value="LightGoldenRodYellow"/>
+      <xs:enumeration value="LightGrey"/>
+      <xs:enumeration value="LightGreen"/>
+      <xs:enumeration value="LightPink"/>
+      <xs:enumeration value="LightSalmon"/>
+      <xs:enumeration value="LightSeaGreen"/>
+      <xs:enumeration value="LightSkyBlue"/>
+      <xs:enumeration value="LightSlateBlue"/>
+      <xs:enumeration value="LightSlateGray"/>
+      <xs:enumeration value="LightSteelBlue"/>
+      <xs:enumeration value="LightYellow"/>
+      <xs:enumeration value="Lime"/>
+      <xs:enumeration value="LimeGreen"/>
+      <xs:enumeration value="Linen"/>
+      <xs:enumeration value="Magenta"/>
+      <xs:enumeration value="Maroon"/>
+      <xs:enumeration value="MediumAquaMarine"/>
+      <xs:enumeration value="MediumBlue"/>
+      <xs:enumeration value="MediumOrchid"/>
+      <xs:enumeration value="MediumPurple"/>
+      <xs:enumeration value="MediumSeaGreen"/>
+      <xs:enumeration value="MediumSlateBlue"/>
+      <xs:enumeration value="MediumSpringGreen"/>
+      <xs:enumeration value="MediumTurquoise"/>
+      <xs:enumeration value="MediumVioletRed"/>
+      <xs:enumeration value="MidnightBlue"/>
+      <xs:enumeration value="MintCream"/>
+      <xs:enumeration value="MistyRose"/>
+      <xs:enumeration value="Moccasin"/>
+      <xs:enumeration value="NavajoWhite"/>
+      <xs:enumeration value="Navy"/>
+      <xs:enumeration value="OldLace"/>
+      <xs:enumeration value="Olive"/>
+      <xs:enumeration value="OliveDrab"/>
+      <xs:enumeration value="Orange"/>
+      <xs:enumeration value="OrangeRed"/>
+      <xs:enumeration value="Orchid"/>
+      <xs:enumeration value="PaleGoldenRod"/>
+      <xs:enumeration value="PaleGreen"/>
+      <xs:enumeration value="PaleTurquoise"/>
+      <xs:enumeration value="PaleVioletRed"/>
+      <xs:enumeration value="PapayaWhip"/>
+      <xs:enumeration value="PeachPuff"/>
+      <xs:enumeration value="Peru"/>
+      <xs:enumeration value="Pink"/>
+      <xs:enumeration value="Plum"/>
+      <xs:enumeration value="PowderBlue"/>
+      <xs:enumeration value="Purple"/>
+      <xs:enumeration value="Red"/>
+      <xs:enumeration value="RosyBrown"/>
+      <xs:enumeration value="RoyalBlue"/>
+      <xs:enumeration value="SaddleBrown"/>
+      <xs:enumeration value="Salmon"/>
+      <xs:enumeration value="SandyBrown"/>
+      <xs:enumeration value="SeaGreen"/>
+      <xs:enumeration value="SeaShell"/>
+      <xs:enumeration value="Sienna"/>
+      <xs:enumeration value="Silver"/>
+      <xs:enumeration value="SkyBlue"/>
+      <xs:enumeration value="SlateBlue"/>
+      <xs:enumeration value="SlateGray"/>
+      <xs:enumeration value="Snow"/>
+      <xs:enumeration value="SpringGreen"/>
+      <xs:enumeration value="SteelBlue"/>
+      <xs:enumeration value="Tan"/>
+      <xs:enumeration value="Teal"/>
+      <xs:enumeration value="Thistle"/>
+      <xs:enumeration value="Tomato"/>
+      <xs:enumeration value="Turquoise"/>
+      <xs:enumeration value="Violet"/>
+      <xs:enumeration value="VioletRed"/>
+      <xs:enumeration value="Wheat"/>
+      <xs:enumeration value="White"/>
+      <xs:enumeration value="WhiteSmoke"/>
+      <xs:enumeration value="Yellow"/>
+      <xs:enumeration value="YellowGreen"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="cursors">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="CURSOR_ARROW"/>
+      <xs:enumeration value="CURSOR_WAIT"/>
+      <xs:enumeration value="CURSOR_CROSS"/>
+      <xs:enumeration value="CURSOR_APPSTARTING"/>
+      <xs:enumeration value="CURSOR_HELP"/>
+      <xs:enumeration value="CURSOR_SIZEALL"/>
+      <xs:enumeration value="CURSOR_SIZENESW"/>
+      <xs:enumeration value="CURSOR_SIZENS"/>
+      <xs:enumeration value="CURSOR_SIZENWSE"/>
+      <xs:enumeration value="CURSOR_SIZEWE"/>
+      <xs:enumeration value="CURSOR_SIZEN"/>
+      <xs:enumeration value="CURSOR_SIZES"/>
+      <xs:enumeration value="CURSOR_SIZEE"/>
+      <xs:enumeration value="CURSOR_SIZEW"/>
+      <xs:enumeration value="CURSOR_SIZENE"/>
+      <xs:enumeration value="CURSOR_SIZESE"/>
+      <xs:enumeration value="CURSOR_SIZESW"/>
+      <xs:enumeration value="CURSOR_SIZENW"/>
+      <xs:enumeration value="CURSOR_UPARROW"/>
+      <xs:enumeration value="CURSOR_IBEAM"/>
+      <xs:enumeration value="CURSOR_NO"/>
+      <xs:enumeration value="CURSOR_HAND"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="scrollableStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of H_SCROLL or V_SCROLL is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="H_SCROLL"/>
+          <xs:enumeration value="V_SCROLL"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="composite" substitutionGroup="compound">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="controlElements"/>
+        <xs:group ref="compositeChildren"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="compositeAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:group name="compositeChildren">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="layout"/>
+      <xs:element minOccurs="0" ref="children"/>
+    </xs:sequence>
+  </xs:group>
+  <xs:element name="children">
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" ref="control"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="compositeAttributes">
+    <xs:attributeGroup ref="baseCompositeAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="compositeStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="baseCompositeAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="tabList" type="xs:IDREFS"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="compositeStyles">
+    <xs:union memberTypes="scrollableStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="NO_BACKGROUND"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="NO_FOCUS"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="NO_MERGE_PAINTS"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="NO_REDRAW_RESIZE"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="NO_RADIO_GROUP"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="layout" abstract="true"/>
+  <xs:element name="fillLayout" substitutionGroup="layout">
+    <xs:complexType>
+      <xs:attribute name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="VERTICAL"/>
+            <xs:enumeration value="HORIZONTAL"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="gridLayout" substitutionGroup="layout">
+    <xs:complexType>
+      <xs:attribute name="horizontalSpacing" type="xs:int"/>
+      <xs:attribute name="makeColumnsEqualWidth" type="xs:boolean"/>
+      <xs:attribute name="marginHeight" type="xs:int"/>
+      <xs:attribute name="marginWidth" type="xs:int"/>
+      <xs:attribute name="numColumns" type="xs:positiveInteger"/>
+      <xs:attribute name="verticalSpacing" type="xs:int"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="rowLayout" substitutionGroup="layout">
+    <xs:complexType>
+      <xs:attribute name="fill" type="xs:boolean"/>
+      <xs:attribute name="justify" type="xs:boolean"/>
+      <xs:attribute name="pack" type="xs:boolean"/>
+      <xs:attribute name="wrap" type="xs:boolean"/>
+      <xs:attribute name="marginBottom" type="xs:nonNegativeInteger"/>
+      <xs:attribute name="marginLeft" type="xs:nonNegativeInteger"/>
+      <xs:attribute name="marginRight" type="xs:nonNegativeInteger"/>
+      <xs:attribute name="marginTop" type="xs:nonNegativeInteger"/>
+      <xs:attribute name="spacing" type="xs:int"/>
+      <xs:attribute name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="VERTICAL"/>
+            <xs:enumeration value="HORIZONTAL"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="formLayout" substitutionGroup="layout">
+    <xs:complexType>
+      <xs:attribute name="marginHeight" type="xs:int"/>
+      <xs:attribute name="marginWidth" type="xs:int"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="group" substitutionGroup="compound">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="controlElements"/>
+        <xs:group ref="compositeChildren"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="groupAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="groupAttributes">
+    <xs:attributeGroup ref="baseCompositeAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="groupStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="text"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="groupStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of SHADOW_ETCHED_IN, SHADOW_ETCHED_OUT, SHADOW_IN, SHADOW_OUT, SHADOW_NONE is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="compositeStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="SHADOW_ETCHED_IN"/>
+          <xs:enumeration value="SHADOW_ETCHED_OUT"/>
+          <xs:enumeration value="SHADOW_IN"/>
+          <xs:enumeration value="SHADOW_OUT"/>
+          <xs:enumeration value="SHADOW_NONE"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="canvas" substitutionGroup="compound">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="canvasAttributes">
+          <xs:sequence>
+            <xs:group ref="controlElements"/>
+            <xs:group ref="compositeChildren"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="canvasAttributes">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="style"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="baseCompositeAttributes"/>
+  </xs:complexType>
+  <xs:element name="style">
+    <xs:simpleType>
+      <xs:list itemType="compositeStyles"/>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="button" substitutionGroup="single">
+    <xs:complexType>
+      <xs:group ref="controlElements"/>
+      <xs:attributeGroup ref="buttonAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="buttonAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:union>
+          <xs:simpleType>
+            <xs:list>
+              <xs:simpleType>
+                <xs:union memberTypes="controlStyles arrowStyle"/>
+              </xs:simpleType>
+            </xs:list>
+          </xs:simpleType>
+          <xs:simpleType>
+            <xs:list>
+              <xs:simpleType>
+                <xs:union memberTypes="controlStyles buttonStyles"/>
+              </xs:simpleType>
+            </xs:list>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="alignment">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="LEFT"/>
+          <xs:enumeration value="RIGHT"/>
+          <xs:enumeration value="UP"/>
+          <xs:enumeration value="DOWN"/>
+          <xs:enumeration value="LEFT"/>
+          <xs:enumeration value="RIGHT"/>
+          <xs:enumeration value="CENTER"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="image"/>
+    <xs:attribute name="selection" type="xs:boolean"/>
+    <xs:attribute name="text"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="arrowStyle">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="ARROW"/>
+      <xs:enumeration value="LEFT"/>
+      <xs:enumeration value="RIGHT"/>
+      <xs:enumeration value="UP"/>
+      <xs:enumeration value="DOWN"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="buttonStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of CHECK, PUSH, RADIO, TOGGLE is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="CHECK"/>
+      <xs:enumeration value="PUSH"/>
+      <xs:enumeration value="RADIO"/>
+      <xs:enumeration value="TOGGLE"/>
+      <xs:enumeration value="FLAT"/>
+      <xs:enumeration value="LEFT"/>
+      <xs:enumeration value="RIGHT"/>
+      <xs:enumeration value="CENTER"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="label" substitutionGroup="single">
+    <xs:complexType>
+      <xs:group ref="controlElements"/>
+      <xs:attributeGroup ref="labelAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="labelAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="labelStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="alignment">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="LEFT"/>
+          <xs:enumeration value="RIGHT"/>
+          <xs:enumeration value="CENTER"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="image"/>
+    <xs:attribute name="text"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="labelStyles">
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="SEPARATOR"/>
+          <xs:enumeration value="HORIZONTAL"/>
+          <xs:enumeration value="VERTICAL"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="CENTER"/>
+          <xs:enumeration value="LEFT"/>
+          <xs:enumeration value="RIGHT"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="WRAP"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="SHADOW_IN"/>
+          <xs:enumeration value="SHADOW_OUT"/>
+          <xs:enumeration value="SHADOW_NONE"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="progressBar" substitutionGroup="single">
+    <xs:complexType>
+      <xs:group ref="controlElements"/>
+      <xs:attributeGroup ref="progressBarAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="progressBarAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="progressBarStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="maximum" type="xs:int"/>
+    <xs:attribute name="minimum" type="xs:int"/>
+    <xs:attribute name="selection" type="xs:boolean"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="progressBarStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of HORIZONTAL or VERTICAL is allowed</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="SMOOTH"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="HORIZONTAL"/>
+          <xs:enumeration value="VERTICAL"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="INDETERMINATE"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="sash" substitutionGroup="single">
+    <xs:complexType>
+      <xs:group ref="controlElements"/>
+      <xs:attributeGroup ref="sashAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="sashAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style" use="required">
+      <xs:simpleType>
+        <xs:list itemType="sashStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:simpleType name="sashStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of HORIZONTAL or VERTICAL is allowed</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="HORIZONTAL"/>
+          <xs:enumeration value="VERTICAL"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="scale" substitutionGroup="single">
+    <xs:complexType>
+      <xs:group ref="controlElements"/>
+      <xs:attributeGroup ref="scaleAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="scaleAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style" type="scaleStyles"/>
+    <xs:attribute name="increment" type="xs:positiveInteger"/>
+    <xs:attribute name="maximum" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="minimum" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="pageIncrement" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="selection" type="xs:nonNegativeInteger"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="scaleStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of HORIZONTAL or VERTICAL is allowed</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="HORIZONTAL"/>
+          <xs:enumeration value="VERTICAL"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="combo" substitutionGroup="scrollable">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="controlElements"/>
+        <xs:element name="items">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="item">
+                <xs:complexType>
+                  <xs:attribute name="value" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="comboAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="comboAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="comboStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="selection">
+      <xs:simpleType>
+        <xs:restriction>
+          <xs:simpleType>
+            <xs:list>
+              <xs:simpleType>
+                <xs:union memberTypes="xs:nonNegativeInteger xs:nonNegativeInteger"/>
+              </xs:simpleType>
+            </xs:list>
+          </xs:simpleType>
+          <xs:length value="2"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="text"/>
+    <xs:attribute name="textLimit" type="xs:nonNegativeInteger"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="comboStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of DROP_DOWN or SIMPLE is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="DROP_DOWN"/>
+          <xs:enumeration value="SIMPLE"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="READ_ONLY"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="tabFolder" substitutionGroup="scrollable">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="controlElements"/>
+        <xs:element name="items">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="item">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="control"/>
+                  </xs:sequence>
+                  <xs:attribute name="image"/>
+                  <xs:attribute name="text"/>
+                  <xs:attribute name="toolTipText"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="tabFolderAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="control">
+    <xs:complexType>
+      <xs:group ref="control"/>
+    </xs:complexType>
+  </xs:element>
+  <!-- Composite attributes, styles and elements are not relevant to tabFolder. -->
+  <xs:attributeGroup name="tabFolderAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="controlStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="selection" type="xs:nonNegativeInteger"/>
+  </xs:attributeGroup>
+  <xs:element name="table" substitutionGroup="scrollable">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="controlElements"/>
+        <xs:element minOccurs="0" ref="columns"/>
+        <xs:element minOccurs="0" name="items">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="unbounded" ref="tableItem"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="tableAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="columns">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="tableColumn"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tableColumn">
+    <xs:complexType>
+      <xs:attribute name="style">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="LEFT"/>
+            <xs:enumeration value="RIGHT"/>
+            <xs:enumeration value="CENTER"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="alignment">
+        <xs:simpleType>
+          <xs:restriction base="xs:token">
+            <xs:enumeration value="LEFT"/>
+            <xs:enumeration value="RIGHT"/>
+            <xs:enumeration value="CENTER"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="image"/>
+      <xs:attribute name="resizable" type="xs:boolean"/>
+      <xs:attribute name="text"/>
+      <xs:attribute name="width" type="xs:nonNegativeInteger"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="tableItem">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" name="data">
+          <xs:complexType>
+            <xs:attribute name="image"/>
+            <xs:attribute name="text"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="background" type="color"/>
+      <xs:attribute name="checked" type="xs:boolean"/>
+      <xs:attribute name="foreground" type="color"/>
+      <xs:attribute name="grayed" type="xs:boolean"/>
+      <xs:attribute name="imageIndent" type="xs:int"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="tableAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="tableStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="headerVisible" type="xs:boolean"/>
+    <xs:attribute name="linesVisible" type="xs:boolean"/>
+    <xs:attribute name="selection">
+      <xs:simpleType>
+        <xs:union memberTypes="xs:nonNegativeInteger">
+          <xs:simpleType>
+            <xs:restriction>
+              <xs:simpleType>
+                <xs:list>
+                  <xs:simpleType>
+                    <xs:union memberTypes="xs:nonNegativeInteger xs:nonNegativeInteger"/>
+                  </xs:simpleType>
+                </xs:list>
+              </xs:simpleType>
+              <xs:length value="2"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="topIndex" type="xs:nonNegativeInteger"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="tableStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of SINGLE or MULTI is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="SINGLE"/>
+          <xs:enumeration value="MULTI"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="CHECK"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="FULL_SELECTION"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="HIDE_SELECTION"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="tree" substitutionGroup="scrollable">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="controlElements"/>
+        <xs:element ref="items"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="treeAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="items">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="treeItem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="treeItem">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" maxOccurs="unbounded" ref="treeItem"/>
+      </xs:sequence>
+      <xs:attribute name="background" type="color"/>
+      <xs:attribute name="checked" type="xs:boolean"/>
+      <xs:attribute name="expanded" type="xs:boolean"/>
+      <xs:attribute name="foreground" type="color"/>
+      <xs:attribute name="grayed" type="xs:boolean"/>
+      <xs:attribute name="image"/>
+      <xs:attribute name="text"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="treeAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="treeStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:simpleType name="treeStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of SINGLE or MULTI is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="SINGLE"/>
+          <xs:enumeration value="MULTI"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="CHECK"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="list" substitutionGroup="scrollable">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="controlElements"/>
+        <xs:element minOccurs="0" name="items">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="item">
+                <xs:complexType>
+                  <xs:attribute name="value" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="listAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="listAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="listStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="selection">
+      <xs:simpleType>
+        <xs:union memberTypes="xs:int">
+          <xs:simpleType>
+            <xs:restriction>
+              <xs:simpleType>
+                <xs:list>
+                  <xs:simpleType>
+                    <xs:union memberTypes="xs:int xs:int"/>
+                  </xs:simpleType>
+                </xs:list>
+              </xs:simpleType>
+              <xs:length value="2"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="topIndex" type="xs:int"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="listStyles">
+    <xs:annotation>
+      <xs:documentation>Only one of SINGLE or MULTI is allowed.</xs:documentation>
+    </xs:annotation>
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="SINGLE"/>
+          <xs:enumeration value="MULTI"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  <xs:element name="text" substitutionGroup="scrollable">
+    <xs:complexType>
+      <xs:group ref="controlElements"/>
+      <xs:attributeGroup ref="textAttributes"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:attributeGroup name="textAttributes">
+    <xs:attributeGroup ref="controlAttributes"/>
+    <xs:attribute name="style">
+      <xs:simpleType>
+        <xs:list itemType="textStyles"/>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="doubleClickEnabled" type="xs:boolean"/>
+    <xs:attribute name="echoChar"/>
+    <xs:attribute name="editable" type="xs:boolean"/>
+    <xs:attribute name="selection">
+      <xs:simpleType>
+        <xs:union memberTypes="xs:nonNegativeInteger">
+          <xs:simpleType>
+            <xs:restriction>
+              <xs:simpleType>
+                <xs:list>
+                  <xs:simpleType>
+                    <xs:union memberTypes="xs:nonNegativeInteger xs:nonNegativeInteger"/>
+                  </xs:simpleType>
+                </xs:list>
+              </xs:simpleType>
+              <xs:length value="2"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:union>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="tabs" type="xs:nonNegativeInteger"/>
+    <xs:attribute name="text"/>
+    <xs:attribute name="textLimit" type="xs:positiveInteger"/>
+    <xs:attribute name="topIndex" type="xs:nonNegativeInteger"/>
+  </xs:attributeGroup>
+  <xs:simpleType name="textStyles">
+    <xs:union memberTypes="controlStyles">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="CENTER"/>
+          <xs:enumeration value="LEFT"/>
+          <xs:enumeration value="RIGHT"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="MULTI"/>
+          <xs:enumeration value="SINGLE"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="READ_ONLY"/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:enumeration value="WRAP"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+</xs:schema>
