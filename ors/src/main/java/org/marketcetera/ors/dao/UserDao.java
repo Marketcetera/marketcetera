@@ -4,10 +4,10 @@ import org.marketcetera.ors.security.SimpleUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface SimpleUserRepository extends JpaRepository<SimpleUser, Long> {
+public interface UserDao
+        extends JpaRepository<SimpleUser,Long>
+{
 
 	SimpleUser findByName(String user);
 

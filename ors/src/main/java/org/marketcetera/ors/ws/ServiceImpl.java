@@ -18,7 +18,7 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.OptionRootUnderlyingMap;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.brokers.Brokers;
-import org.marketcetera.ors.dao.SimpleUserRepository;
+import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
@@ -780,6 +780,6 @@ public class ServiceImpl
      * 
      */
     @Autowired
-    private SimpleUserRepository simpleUserRepository;
+    private UserDao simpleUserRepository;
     
 }

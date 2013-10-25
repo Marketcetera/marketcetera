@@ -5,7 +5,7 @@ import org.marketcetera.client.ClientVersion;
 import org.marketcetera.client.IncompatibleComponentsException;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
-import org.marketcetera.ors.dao.SimpleUserRepository;
+import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.NoResultException;
 import org.marketcetera.persist.PersistenceException;
@@ -108,6 +108,6 @@ public class DBAuthenticator
      * 
      */
     @Autowired
-    private SimpleUserRepository simpleUserRepository;
+    private UserDao simpleUserRepository;
     
 }
