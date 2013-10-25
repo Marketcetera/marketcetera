@@ -1,19 +1,23 @@
 package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ApplicationBase;
+
 import static org.marketcetera.ors.security.Messages.*;
+
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.ors.dao.SimpleUserRepository;
 import org.marketcetera.persist.PersistenceException;
-import org.marketcetera.persist.StringFilter;
 import org.apache.log4j.PropertyConfigurator;
-
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+
+import com.mysema.query.jpa.impl.JPAQuery;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -21,6 +25,9 @@ import java.io.PrintWriter;
 import java.io.Console;
 import java.util.List;
 import java.util.Arrays;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /* $License$ */
 /**
@@ -213,7 +220,8 @@ public class ORSAdminCLI
                            String password) throws I18NException {
         password = getOptionFromConsole(userName, password,
                 OPT_CURRENT_PASSWORD, CLI_PROMPT_PASSWORD);
-        auth.authorize(userName, password);
+        SimpleUser simpleUser = simpleUserRepository.findByName(userName);
+        auth.authorize(simpleUser, password);
     }
 
     private String getOptionFromConsole(String userName,
@@ -245,7 +253,7 @@ public class ORSAdminCLI
     private SimpleUser fetchUser(String user)
         throws I18NException
     {
-        SimpleUser u = new SingleSimpleUserQuery(user).fetch();
+        SimpleUser u = simpleUserRepository.findByName(user);
         if (!u.isActive()) {
             throw new I18NException(CLI_ERR_INACTIVE_USER);
         }
@@ -272,17 +280,14 @@ public class ORSAdminCLI
         SimpleUser u = null;
         if(opUser != null && !opUser.equals(userName)) {
             u = fetchUser(opUser);
+            u.resetUserPassword(password);
             //go through set name to reset the password as we do not have
             //the original password
-            String name = u.getName();
-            u.setName(null);
-            u.setName(name);
-            u.setPassword(opPass.toCharArray());
         } else {
             u = fetchUser(userName);
             u.changePassword(password.toCharArray(), opPass.toCharArray());
         }
-        u.save();
+        simpleUserRepository.save(u);
         out.println(CLI_OUT_USER_CHG_PASS.getText(u.getName()));
     }
 
@@ -301,13 +306,19 @@ public class ORSAdminCLI
          Boolean active)
         throws PersistenceException
     {
-        MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
-        q.setActiveFilter(active);
-        q.setEntityOrder(MultiSimpleUserQuery.BY_NAME);
-        if(nameFilter != null) {
-            q.setNameFilter(new StringFilter(nameFilter));
-        }
-        List<SimpleUser> l = q.fetch();
+    	JPAQuery jpqQuery = new JPAQuery(entityManager);
+    	QSimpleUser simpleUser = QSimpleUser.simpleUser;
+    	simpleUser.from(simpleUser).where(simpleUser.active.eq(active)).orderBy(simpleUser.name.asc());
+        
+    	//MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
+
+//        q.setActiveFilter(active);
+//        q.setEntityOrder(MultiSimpleUserQuery.BY_NAME);
+//        if(nameFilter != null) {
+//            q.setNameFilter(new StringFilter(nameFilter));
+//        }
+        
+        List<SimpleUser> l = jpqQuery.getResultList();
         for(SimpleUser u:l) {
             StringBuilder flags=new StringBuilder();
             if (u.isSuperuser()) {
@@ -339,10 +350,8 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_DELETE,opUser));
         }
-        SimpleUser u = new SingleSimpleUserQuery(opUser).fetch();
-        u.setActive(false);
-        u.save();
-        out.println(CLI_OUT_USER_DELETED.getText(u.getName()));
+        simpleUserRepository.updateUserActiveStatus(opUser, false);
+        out.println(CLI_OUT_USER_DELETED.getText(opUser));
     }
 
     /**
@@ -357,10 +366,8 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_RESTORE,opUser));
         }
-        SimpleUser u = new SingleSimpleUserQuery(opUser).fetch();
-        u.setActive(true);
-        u.save();
-        out.println(CLI_OUT_USER_RESTORED.getText(u.getName()));
+        simpleUserRepository.updateUserActiveStatus(opUser, false);
+        out.println(CLI_OUT_USER_RESTORED.getText(opUser));
     }
 
     /**
@@ -380,10 +387,10 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_CHANGE_SUPERUSER,opUser));
         }
-        SimpleUser u = fetchUser(opUser);
-        u.setSuperuser(superuser);
-        u.save();
-        out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(u.getName()));
+
+        simpleUserRepository.updateSuperUser(opUser, superuser);
+        
+        out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(opUser));
     }
 
     /**
@@ -408,7 +415,7 @@ public class ORSAdminCLI
         if (superuser!=null) {
             u.setSuperuser(superuser);
         }
-        u.save();
+        simpleUserRepository.save(u);
         out.println(CLI_OUT_USER_CREATED.getText(u.getName()));
     }
 
@@ -423,28 +430,26 @@ public class ORSAdminCLI
         CHANGE_SUPERUSER,
         LIST_USERS {
             @Override
-            public void authorize(String userName, String password)
+            public void authorize(SimpleUser simpleUser, String password)
                     throws I18NException {
-                validateUser(userName, password);
+                validateUser(simpleUser, password);
             }}
         ;
 
-        public void authorize(String userName, String password) throws I18NException {
-            validateUser(userName,password);
-            if(!userName.toLowerCase().equals(ADMIN_USER_NAME)) {
+        public void authorize(SimpleUser simpleUser, String password) throws I18NException {
+            validateUser(simpleUser,password);
+            if(!simpleUser.getName().toLowerCase().equals(ADMIN_USER_NAME)) {
                 throw new I18NException(CLI_UNAUTHORIZED_ACTION);
             }
         }
-        private static void validateUser(String userName, String password)
+        private static void validateUser(SimpleUser simpleUser, String password)
                 throws I18NException {
-            SimpleUser u;
             try {
-                u=new SingleSimpleUserQuery(userName).fetch();
-                u.validatePassword(password.toCharArray());
+            	simpleUser.validatePassword(password.toCharArray());
             } catch (PersistenceException e) {
                 throw new I18NException(CLI_ERR_INVALID_LOGIN);
             }
-            if (!u.isActive()) {
+            if (!simpleUser.isActive()) {
                 throw new I18NException(CLI_ERR_INVALID_LOGIN);
             }
         }
@@ -562,4 +567,17 @@ public class ORSAdminCLI
     private static final String OPT_NO = "n"; //$NON-NLS-1$
 
     static final String CMD_NAME = "orsadmin"; //$NON-NLS-1$
+    
+    public SimpleUserRepository getSimpleUserRepository() {
+    	return simpleUserRepository;
+    }
+    /**
+     * 
+     */
+    @Autowired
+    private SimpleUserRepository simpleUserRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
+    
 }

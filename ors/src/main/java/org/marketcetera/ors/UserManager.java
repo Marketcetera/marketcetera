@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.security.SimpleUserRepository;
+import org.marketcetera.ors.dao.SimpleUserRepository;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
