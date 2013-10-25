@@ -5,7 +5,7 @@ import javax.xml.bind.JAXBException;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.ors.UserManager;
-import org.marketcetera.ors.dao.SimpleUserRepository;
+import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
@@ -137,6 +137,6 @@ public class ClientSessionFactory
      * 
      */
     @Autowired
-    private SimpleUserRepository simpleUserRepository;
+    private UserDao simpleUserRepository;
     
 }

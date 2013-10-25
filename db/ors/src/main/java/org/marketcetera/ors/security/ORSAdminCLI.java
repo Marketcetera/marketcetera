@@ -1,33 +1,32 @@
 package org.marketcetera.ors.security;
 
-import org.marketcetera.core.ApplicationBase;
-
 import static org.marketcetera.ors.security.Messages.*;
 
+import java.io.Console;
+import java.io.File;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.commons.cli.*;
+import org.apache.commons.lang.SystemUtils;
+import org.apache.log4j.PropertyConfigurator;
+import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.ors.dao.UserService;
+import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.ors.dao.SimpleUserRepository;
-import org.marketcetera.persist.PersistenceException;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.commons.cli.*;
-import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.mysema.query.jpa.impl.JPAQuery;
-
-import java.io.File;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Console;
-import java.util.List;
-import java.util.Arrays;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /* $License$ */
 /**
@@ -220,7 +219,7 @@ public class ORSAdminCLI
                            String password) throws I18NException {
         password = getOptionFromConsole(userName, password,
                 OPT_CURRENT_PASSWORD, CLI_PROMPT_PASSWORD);
-        SimpleUser simpleUser = simpleUserRepository.findByName(userName);
+        SimpleUser simpleUser = userService.findByName(userName);
         auth.authorize(simpleUser, password);
     }
 
@@ -253,7 +252,7 @@ public class ORSAdminCLI
     private SimpleUser fetchUser(String user)
         throws I18NException
     {
-        SimpleUser u = simpleUserRepository.findByName(user);
+        SimpleUser u = userService.findByName(user);
         if (!u.isActive()) {
             throw new I18NException(CLI_ERR_INACTIVE_USER);
         }
@@ -287,7 +286,7 @@ public class ORSAdminCLI
             u = fetchUser(userName);
             u.changePassword(password.toCharArray(), opPass.toCharArray());
         }
-        simpleUserRepository.save(u);
+        userService.save(u);
         out.println(CLI_OUT_USER_CHG_PASS.getText(u.getName()));
     }
 
@@ -350,7 +349,7 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_DELETE,opUser));
         }
-        simpleUserRepository.updateUserActiveStatus(opUser, false);
+        userService.updateUserActiveStatus(opUser, false);
         out.println(CLI_OUT_USER_DELETED.getText(opUser));
     }
 
@@ -366,7 +365,7 @@ public class ORSAdminCLI
             throw new I18NException(new I18NBoundMessage1P(
                     CLI_ERR_UNAUTH_RESTORE,opUser));
         }
-        simpleUserRepository.updateUserActiveStatus(opUser, false);
+        userService.updateUserActiveStatus(opUser, false);
         out.println(CLI_OUT_USER_RESTORED.getText(opUser));
     }
 
@@ -388,7 +387,7 @@ public class ORSAdminCLI
                     CLI_ERR_UNAUTH_CHANGE_SUPERUSER,opUser));
         }
 
-        simpleUserRepository.updateSuperUser(opUser, superuser);
+        userService.updateSuperUser(opUser, superuser);
         
         out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(opUser));
     }
@@ -415,7 +414,7 @@ public class ORSAdminCLI
         if (superuser!=null) {
             u.setSuperuser(superuser);
         }
-        simpleUserRepository.save(u);
+        userService.save(u);
         out.println(CLI_OUT_USER_CREATED.getText(u.getName()));
     }
 
@@ -568,16 +567,28 @@ public class ORSAdminCLI
 
     static final String CMD_NAME = "orsadmin"; //$NON-NLS-1$
     
-    public SimpleUserRepository getSimpleUserRepository() {
-    	return simpleUserRepository;
+    /**
+     * Get the userService value.
+     *
+     * @return a <code>UserService</code> value
+     */
+    public UserService getUserService()
+    {
+        return userService;
+    }
+
+    /**
+     * Sets the userService value.
+     *
+     * @param inUserService a <code>UserService</code> value
+     */
+    public void setUserService(UserService inUserService)
+    {
+        userService = inUserService;
     }
     /**
-     * 
+     * provides access to user objects
      */
     @Autowired
-    private SimpleUserRepository simpleUserRepository;
-    
-    @PersistenceContext
-    private EntityManager entityManager;
-    
+    private UserService userService;
 }

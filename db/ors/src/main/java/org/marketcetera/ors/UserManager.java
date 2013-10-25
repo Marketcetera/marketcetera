@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.marketcetera.ors.info.SessionInfo;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.ors.dao.SimpleUserRepository;
+import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.TradeMessage;
@@ -303,5 +303,5 @@ public class UserManager
      * 
      */
     @Autowired
-    private SimpleUserRepository simpleUserRepository;
+    private UserDao simpleUserRepository;
 }

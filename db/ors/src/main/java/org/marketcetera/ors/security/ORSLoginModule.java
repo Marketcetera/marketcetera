@@ -4,7 +4,7 @@ import org.marketcetera.core.ClassVersion;
 
 import static org.marketcetera.ors.security.Messages.*;
 
-import org.marketcetera.ors.dao.SimpleUserRepository;
+import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.persist.NoResultException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -118,6 +118,6 @@ public class ORSLoginModule implements LoginModule {
      * 
      */
     @Autowired
-    private SimpleUserRepository simpleUserRepository;
+    private UserDao simpleUserRepository;
     
 }

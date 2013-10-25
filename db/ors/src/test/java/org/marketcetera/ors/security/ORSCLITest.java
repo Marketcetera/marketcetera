@@ -407,5 +407,5 @@ public class ORSCLITest
      * 
      */
     @Autowired
-    private SimpleUserRepository simpleUserRepository;
+    private UserDao simpleUserRepository;
 }
