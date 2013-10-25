@@ -1,10 +1,6 @@
 package org.marketcetera.photon.views;
 
-import org.eclipse.core.databinding.AggregateValidationStatus;
-import org.eclipse.core.databinding.Binding;
-import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.ObservablesManager;
-import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.*;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
@@ -22,20 +18,9 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -45,10 +30,12 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.marketcetera.algo.BrokerAlgo;
+import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.photon.BrokerManager;
-import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.BrokerManager.Broker;
 import org.marketcetera.photon.BrokerManager.BrokerLabelProvider;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commons.databinding.TypedConverter;
 import org.marketcetera.photon.commons.databinding.TypedObservableValue;
 import org.marketcetera.photon.commons.ui.databinding.RequiredFieldSupport;
@@ -94,7 +81,8 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
     private ComboViewer mAvailableBrokersViewer;
 
     private CheckboxTableViewer mCustomFieldsTableViewer;
-
+    private ComboViewer mAvailableAlgosViewer;
+    private TableViewer mAlgoTagsTableViewer;
     private ComboViewer mSideComboViewer;
 
     private ComboViewer mTimeInForceComboViewer;
@@ -194,6 +182,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
             bindFormTitle();
             bindMessage();
             bindCustomFields();
+            bindAlgoTags();
         } catch (Exception e) {
             PhotonPlugin.getMainConsoleLogger().error(
                     Messages.ORDER_TICKET_VIEW_CANNOT_BIND_TO_TICKET.getText(),
@@ -258,7 +247,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         addSendOrderListener(ticket.getTifCombo());
         addSendOrderListener(ticket.getAccountText());
     }
-
     /**
      * Set up viewers.
      * 
@@ -283,11 +271,42 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          * Broker combo based on available brokers.
          */
         mAvailableBrokersViewer = new ComboViewer(ticket.getBrokerCombo());
-        mAvailableBrokersViewer
-                .setContentProvider(new ObservableListContentProvider());
+        mAvailableBrokersViewer.setContentProvider(new ObservableListContentProvider());
         mAvailableBrokersViewer.setLabelProvider(new BrokerLabelProvider());
         mAvailableBrokersViewer.setInput(getModel().getValidBrokers());
-
+        // watches broker combo and sets currently selected broker appropriately
+        mAvailableBrokersViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent inEvent)
+            {
+                Broker broker = (Broker)((StructuredSelection)inEvent.getSelection()).getFirstElement();
+                if(broker == null || BrokerManager.AUTO_SELECT_BROKER.getName().equals(broker.getName())) {
+                    getModel().setSelectedBroker(BrokerManager.AUTO_SELECT_BROKER);
+                    getModel().setSelectedAlgo(null);
+                } else {
+                    getModel().setSelectedBroker(BrokerManager.getCurrent().getBroker(broker.getId()));
+                }
+            }
+        });
+        /*
+         * broker algos based on selected broker
+         */
+        mAvailableAlgosViewer = new ComboViewer(ticket.getAlgoCombo());
+        mAvailableAlgosViewer.setContentProvider(new ObservableListContentProvider());
+        mAvailableAlgosViewer.setLabelProvider(new AlgoLabelProvider());
+        mAvailableAlgosViewer.setInput(getModel().getValidAlgos());
+        mAvailableAlgosViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent inEvent)
+            {
+                Object selectedObject = ((StructuredSelection)inEvent.getSelection()).getFirstElement();
+                BrokerAlgo brokerAlgo = null;
+                if(selectedObject != null && selectedObject instanceof BrokerAlgo) {
+                    brokerAlgo = (BrokerAlgo)selectedObject;
+                }
+                getModel().setSelectedAlgo(brokerAlgo);
+            }
+        });
         /*
          * Time in Force combo based on TimeInForce enum.
          * 
@@ -295,25 +314,26 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         mTimeInForceComboViewer = new ComboViewer(ticket.getTifCombo());
         mTimeInForceComboViewer.setContentProvider(new ArrayContentProvider());
-        mTimeInForceComboViewer
-                .setInput(getModel().getValidTimeInForceValues());
+        mTimeInForceComboViewer.setInput(getModel().getValidTimeInForceValues());
 
         /*
          * Custom fields table.
          * 
          * Input is bound to model in bindCustomFields.
          */
-        mCustomFieldsTableViewer = new CheckboxTableViewer(ticket
-                .getCustomFieldsTable());
+        mCustomFieldsTableViewer = new CheckboxTableViewer(ticket.getCustomFieldsTable());
         ObservableListContentProvider contentProvider = new ObservableListContentProvider();
         mCustomFieldsTableViewer.setContentProvider(contentProvider);
-        mCustomFieldsTableViewer
-                .setLabelProvider(new ObservableMapLabelProvider(
-                        BeansObservables.observeMaps(contentProvider
-                                .getKnownElements(), CustomField.class,
-                                new String[] { "keyString", "valueString" })));//$NON-NLS-1$ //$NON-NLS-2$
+        mCustomFieldsTableViewer.setLabelProvider(new ObservableMapLabelProvider(BeansObservables.observeMaps(contentProvider.getKnownElements(),
+                                                                                                              CustomField.class,
+                                                                                                              new String[] { "keyString", "valueString" })));//$NON-NLS-1$ //$NON-NLS-2$
+        mAlgoTagsTableViewer = new TableViewer(ticket.getAlgoTagsTable());
+        ObservableListContentProvider algoTagsContentProvider = new ObservableListContentProvider();
+        mAlgoTagsTableViewer.setContentProvider(algoTagsContentProvider);
+        mAlgoTagsTableViewer.setLabelProvider(new ObservableMapLabelProvider(BeansObservables.observeMaps(algoTagsContentProvider.getKnownElements(),
+                                                                                                          BrokerAlgoTag.class,
+                                                                                                          new String[] { "tagSpec", "value" })));//$NON-NLS-1$ //$NON-NLS-2$
     }
-
     /**
      * Get the UI string to show for a "new order" message.
      * 
@@ -522,7 +542,11 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                     .getText());
         }
         enableForNewOrderOnly(mAvailableBrokersViewer.getControl());
-
+        /*
+         * broker algos
+         */
+        bindCombo(mAvailableAlgosViewer,
+                  model.getBrokerAlgo());
         /*
          * Time in Force
          */
@@ -533,7 +557,36 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         bindText(getXSWTView().getAccountText(), model.getAccount());
     }
-
+    /**
+     * Binds the algo tags on the model to the view.
+     */
+    protected void bindAlgoTags()
+    {
+        M model = getModel();
+        mAlgoTagsTableViewer.setInput(model.getAlgoTagsList());
+        model.getAlgoTagsList().addListChangeListener(new IListChangeListener() {
+            public void handleListChange(ListChangeEvent event)
+            {
+                System.out.println("Algo Tags table change: " + event);
+//                ScrolledForm theForm = getXSWTView().getForm();
+//                if (!theForm.isDisposed()) {
+//                    ListDiffEntry[] differences = event.diff.getDifferences();
+//                    for (ListDiffEntry listDiffEntry : differences) {
+//                        if (listDiffEntry.isAddition()) {
+//                            CustomField customField = (CustomField) listDiffEntry.getElement();
+//                            String key = CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX + customField.getKeyString();
+//                            IMemento theMemento = getMemento();
+//                            if (theMemento != null && theMemento.getInteger(key) != null) {
+//                                boolean itemChecked = (theMemento.getInteger(key).intValue() != 0);
+//                                customField.setEnabled(itemChecked);
+//                            }
+//                        }
+//                    }
+//                    theForm.reflow(true);
+//                }
+            }
+        });
+    }
     /**
      * Bind the custom fields on the model to the view.
      */
@@ -928,5 +981,28 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                 mFocusListener);
         mObservablesManager.dispose();
         super.dispose();
+    }
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    public final static class AlgoLabelProvider
+            extends LabelProvider
+    {
+        /* (non-Javadoc)
+         * @see org.eclipse.jface.viewers.LabelProvider#getText(java.lang.Object)
+         */
+        @Override
+        public String getText(Object inElement)
+        {
+            if(inElement == null || !(inElement instanceof BrokerAlgo)) {
+                return null;
+            }
+            return ((BrokerAlgo)inElement).getAlgoSpec().getName();
+        }
     }
 }

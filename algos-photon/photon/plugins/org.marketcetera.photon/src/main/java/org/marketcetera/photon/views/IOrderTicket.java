@@ -37,6 +37,18 @@ public interface IOrderTicket {
     Text getSymbolText();
 
 	Combo getBrokerCombo();
+	/**
+	 * Gets the control corresponding to the selected algo.
+	 *
+	 * @return a <code>Combo</code> value
+	 */
+	Combo getAlgoCombo();
+	/**
+	 * Gets the control corresponding to the selected algo tags table.
+	 *
+	 * @return a <code>Table</code> value
+	 */
+	Table getAlgoTagsTable();
 
 	Combo getTifCombo();
 
