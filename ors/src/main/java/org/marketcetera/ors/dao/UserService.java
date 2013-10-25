@@ -1,5 +1,7 @@
 package org.marketcetera.ors.dao;
 
+import java.util.List;
+
 import org.marketcetera.ors.security.SimpleUser;
 
 /* $License$ */
@@ -53,4 +55,25 @@ public interface UserService
      */
     void updateSuperUser(String inUsername,
                          boolean inIsSuperuser);
+    /**
+     * Lists all users taking into account the given optional filters.
+     *
+     * @param inNameFilter a <code>String</code> value
+     * @param inActiveFilter a <code>Boolean</code> value
+     * @return a <code>List&lt;SimpleUser&gt;</code> value
+     */
+    List<SimpleUser> listUsers(String inNameFilter,
+                               Boolean inActiveFilter);
+    /**
+     *
+     *
+     * @param inUser
+     */
+    void delete(SimpleUser inUser);
+    /**
+     *
+     *
+     * @return
+     */
+    List<SimpleUser> findAll();
 }

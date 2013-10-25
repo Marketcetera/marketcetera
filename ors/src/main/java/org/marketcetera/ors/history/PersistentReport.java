@@ -1,13 +1,10 @@
 package org.marketcetera.ors.history;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.*;
 
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.EntityBase;
 import org.marketcetera.persist.PersistenceException;

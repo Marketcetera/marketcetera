@@ -9,9 +9,6 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.PropertyConfigurator;
@@ -25,8 +22,6 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.mysema.query.jpa.impl.JPAQuery;
 
 /* $License$ */
 /**
@@ -300,24 +295,12 @@ public class ORSAdminCLI
      *
      * @throws PersistenceException if there was an error fetching the users.
      */
-    private void listUsers
-        (String nameFilter,
-         Boolean active)
+    private void listUsers(String nameFilter,
+                           Boolean active)
         throws PersistenceException
     {
-    	JPAQuery jpqQuery = new JPAQuery(entityManager);
-    	QSimpleUser simpleUser = QSimpleUser.simpleUser;
-    	simpleUser.from(simpleUser).where(simpleUser.active.eq(active)).orderBy(simpleUser.name.asc());
-        
-    	//MultiSimpleUserQuery q = MultiSimpleUserQuery.all();
-
-//        q.setActiveFilter(active);
-//        q.setEntityOrder(MultiSimpleUserQuery.BY_NAME);
-//        if(nameFilter != null) {
-//            q.setNameFilter(new StringFilter(nameFilter));
-//        }
-        
-        List<SimpleUser> l = jpqQuery.getResultList();
+        List<SimpleUser> l = userService.listUsers(nameFilter,
+                                                   active);
         for(SimpleUser u:l) {
             StringBuilder flags=new StringBuilder();
             if (u.isSuperuser()) {
@@ -459,6 +442,7 @@ public class ORSAdminCLI
      *
      * @return the options accepted by the CLI
      */
+    @SuppressWarnings("static-access")
     private static Options options() {
         Options opts = new Options();
         opts.addOption(OptionBuilder.hasArg().
