@@ -799,26 +799,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- generate querydsl sources -->
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>apt-maven-plugin</artifactId>
-        <version>1.1.1</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <!-- Specifies the directory in which the query types are generated -->
-              <outputDirectory>target/generated-sources</outputDirectory>
-              <!-- States that the APT code generator should look for JPA annotations -->
-              <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>      <!-- Place tests into a jar for use during testing of other packages. -->
     </plugins>
   </build>
   <profiles>

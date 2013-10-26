@@ -142,10 +142,31 @@
       </resource>
     </resources>
     <plugins>
-
+      <plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>build-helper-maven-plugin</artifactId>
+	<version>1.7</version>
+	<executions>
+	  <execution>
+	    <id>add-source</id>
+	    <phase>generate-sources</phase>
+	    <goals>
+	      <goal>add-source</goal>
+	      <goal>add-test-source</goal>
+	    </goals>
+	    <configuration>
+	      <sources>
+		<source>target/generated-sources/java</source>
+		<source>src/main/java</source>
+	      </sources>
+	    </configuration>
+	  </execution>
+	</executions>
+      </plugin>
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>apt-maven-plugin</artifactId>
+        <version>1.1.1</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>
