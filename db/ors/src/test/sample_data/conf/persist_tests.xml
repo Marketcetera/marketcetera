@@ -9,38 +9,20 @@
   - $License$
   -->
 
-<beans
- xmlns="http://www.springframework.org/schema/beans"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
-
-  <import
-   resource="properties.xml"/>
-  <import
-   resource="db/db.xml"/>
-  <import
-   resource="db/orm.xml"/>
-
-  <bean
-   id="metc_db_init"
-   class="org.marketcetera.persist.ExecuteSQLFromFile">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+  <import resource="properties.xml"/>
+  <import resource="db/db.xml"/>
+  <import resource="db/orm.xml"/>
+  <bean id="metc_db_init" class="org.marketcetera.persist.ExecuteSQLFromFile">
     <constructor-arg>
       <list>
         <value>file:src/main/sample_data/create_server_schema.sql</value>
       </list>
     </constructor-arg>
-    <constructor-arg
-     ref="metc_sql_pool"/>
+    <constructor-arg ref="metc_sql_pool"/>
   </bean>
-
-  <bean
-   id="metc_db_vendor"
-   class="org.marketcetera.persist.MySQLDBVendor"/>
-
-  <bean
-   id="metc_jpa_vendor"
-   class="org.marketcetera.persist.HibernateVendor"
-   depends-on="metc_db_vendor,metc_db_init"/>
+  <bean id="metc_db_vendor" class="org.marketcetera.persist.MySQLDBVendor"/>
+  <bean id="metc_jpa_vendor" class="org.marketcetera.persist.HibernateVendor" depends-on="metc_db_vendor,metc_db_init"/>
 </beans>

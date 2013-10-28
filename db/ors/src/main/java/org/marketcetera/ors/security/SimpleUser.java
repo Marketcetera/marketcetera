@@ -33,8 +33,8 @@ import org.marketcetera.util.log.I18NMessage0P;
  *
  * @author anshul@marketcetera.com
  */
-@Entity
-@Table(name = "ors_users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@Entity(name="user")
+@Table(name = "users",uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 @AttributeOverride(name = "name", column = @Column(nullable = false))
 @ClassVersion("$Id$")
 public class SimpleUser
@@ -281,22 +281,22 @@ public class SimpleUser
     /**
      * 
      */
-    @Column(nullable = false)
+    @Column(name="is_superuser",nullable=false)
     private boolean superuser = false;
     /**
      * 
      */
-    @Column(nullable = false)
+    @Column(name="is_active",nullable=false)
     private boolean active = true;
     /**
      * the user data associated with this used - may be <code>null</code>
      */
-    @Column(nullable=true,length=8096)
+    @Column(name="user_data",nullable=true,length=8096)
     private String userData;
     /**
      * 
      */
-    @Column(nullable = false)
+    @Column(name="password",nullable=false)
     private String hashedPassword = null;
     private static final long serialVersionUID = -244334398553751199L;
 }

@@ -1,6 +1,6 @@
 package org.marketcetera.core;
 
-import org.marketcetera.persist.EntityBaseDao;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /* $License$ */
 
@@ -12,6 +12,6 @@ import org.marketcetera.persist.EntityBaseDao;
  * @since $Release$
  */
 public interface DatabaseIdDao
-        extends EntityBaseDao<PersistentDatabaseID>
+        extends JpaRepository<PersistentDatabaseID,Long>
 {
 }

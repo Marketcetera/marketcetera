@@ -1,6 +1,7 @@
 package org.marketcetera.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
@@ -12,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
  * @version $Id$
  * @since $Release$
  */
+@Service
 public class DatabaseIdManager
 {
     /**
-     * 
+     * Allocates an id block of the given size and returns the resulting id.
      *
-     *
-     * @param inBlockSize
-     * @return
+     * @param inBlockSize a <code>long</code> value
+     * @return a <code>PersistentDatabaseID</code> value
      */
     @Transactional(readOnly=false)
     public PersistentDatabaseID allocateIdBlock(long inBlockSize)
@@ -39,7 +40,7 @@ public class DatabaseIdManager
         return id;
     }
     /**
-     * 
+     * provides datastore access to database ids 
      */
     @Autowired
     private DatabaseIdDao databaseIdDao;

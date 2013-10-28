@@ -26,11 +26,11 @@ import quickfix.Message;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
 @Entity
-@Table(name = "reports")
-@NamedQueries( { @NamedQuery(name="forOrderID",query="select e from PersistentReport e where e.orderID = :orderID"),
-                 @NamedQuery(name="since",query="select e from PersistentReport e where e.sendingTime < :target") })
+@Table(name="reports")
+@NamedQueries( { @NamedQuery(name="forOrderID",query="select e from PersistentReport e where e.mOrderID=:orderID"),
+                 @NamedQuery(name="since",query="select e from PersistentReport e where e.mSendingTime<:target") })
+@ClassVersion("$Id$")
 public class PersistentReport
         extends EntityBase
 {
@@ -131,10 +131,6 @@ public class PersistentReport
         mOriginator = inOriginator;
     }
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name="value",
-                    column = @Column(name = "orderID", nullable = false))})
     OrderID getOrderID() {
         return mOrderID;
     }
@@ -143,7 +139,6 @@ public class PersistentReport
         mOrderID = inOrderID;
     }
 
-    @ManyToOne
     public SimpleUser getActor() {
         return mActor;
     }
@@ -152,7 +147,6 @@ public class PersistentReport
         mActor = inActor;
     }
 
-    @Transient
     UserID getActorID() {
         if (getActor()==null) {
             return null;
@@ -160,7 +154,6 @@ public class PersistentReport
         return getActor().getUserID();
     }
 
-    @ManyToOne
     public SimpleUser getViewer() {
         return mViewer;
     }
@@ -169,7 +162,6 @@ public class PersistentReport
         mViewer = inViewer;
     }
 
-    @Transient
     UserID getViewerID() {
         if (getViewer()==null) {
             return null;
@@ -177,7 +169,6 @@ public class PersistentReport
         return getViewer().getUserID();
     }
 
-    @Transient
     BrokerID getBrokerID() {
         return mBrokerID;
     }
@@ -185,7 +176,7 @@ public class PersistentReport
     private void setBrokerID(BrokerID inBrokerID) {
         mBrokerID = inBrokerID;
     }
-    @Column(name = "brokerID")
+//    @Column(name = "brokerID") TODO
     private String getBrokerIDAsString() {
         return getBrokerID() == null
                 ? null
@@ -198,7 +189,6 @@ public class PersistentReport
                 : new BrokerID(inValue));
     }
 
-    @Transient
     ReportID getReportID() {
         return mReportID;
     }
@@ -206,7 +196,7 @@ public class PersistentReport
     private void setReportID(ReportID inReportID) {
         mReportID = inReportID;
     }
-    @Column(name = "reportID", nullable = false)
+//    @Column(name = "reportID", nullable = false) TODO
     private long getReportIDAsLong() {
         return getReportID().longValue();
     }
@@ -215,8 +205,6 @@ public class PersistentReport
         setReportID(new ReportID(inValue));
     }
 
-    @Lob
-    @Column(nullable = false)
     private String getFixMessage() {
         return mFixMessage;
     }
@@ -225,7 +213,6 @@ public class PersistentReport
         mFixMessage = inFIXMessage;
     }
 
-    @Column(nullable = false)
     private Date getSendingTime() {
         return mSendingTime;
     }
@@ -234,7 +221,6 @@ public class PersistentReport
         mSendingTime = inSendingTime;
     }
 
-    @Column(nullable = false)
     private ReportType getReportType() {
         return mReportType;
     }
@@ -266,16 +252,61 @@ public class PersistentReport
      * The entity name as is used in various JPQL Queries
      */
     static final String ENTITY_NAME = PersistentReport.class.getSimpleName();
-
-    private Originator mOriginator;
+    /**
+     * 
+     */
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="order_id",nullable=false))})
     private OrderID mOrderID;
+    /**
+     * 
+     */
+    @ManyToOne
+    @JoinColumn(name="actor_id")
     private SimpleUser mActor; 
+    /**
+     * 
+     */
+    @ManyToOne
+    @JoinColumn(name="viewer_id")
     private SimpleUser mViewer; 
-    private BrokerID mBrokerID;
-    private ReportID mReportID;
+    /**
+     * 
+     */
+    @Lob
+    @Column(name="message",nullable=false)
     private String mFixMessage;
+    /**
+     * 
+     */
+    @Column(name="send_time",nullable=false)
     private Date mSendingTime;
+    /**
+     * 
+     */
+    @Column(name="report_type",nullable=false)
     private ReportType mReportType;
+    /**
+     * 
+     */
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_id",nullable=false))})
+    private BrokerID mBrokerID;
+    /**
+     * 
+     */
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="report_id",nullable=false))})
+    private ReportID mReportID;
+    /**
+     * 
+     */
+    @Transient
     private ReportBase mReportBase;
+    /**
+     * 
+     */
+    @Transient
+    private Originator mOriginator;
     private static final long serialVersionUID = 1;
 }

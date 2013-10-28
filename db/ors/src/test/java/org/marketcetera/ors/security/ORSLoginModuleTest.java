@@ -12,13 +12,10 @@ import javax.security.auth.login.*;
 
 import org.apache.log4j.Level;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.ors.PersistTestBase;
-import org.marketcetera.ors.dao.UserService;
-import org.marketcetera.util.test.TestCaseBase;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.security.auth.UserPrincipal;
 
@@ -28,22 +25,60 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
-public class ORSLoginModuleTest extends TestCaseBase {
-    private static SimpleUser user;
-    private static char[] password;
-    private static boolean doNotHandleCallbacks = false;
-    private static IOException callbackException = null;
-    private LoginContext loginContext;
-    private static UserService userService;
-
+public class ORSLoginModuleTest
+        extends PersistTestBase
+{
+    /**
+     * Runs before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void setup()
+            throws Exception
+    {
+        ORSLoginModule.setUserService(userService);
+        user = new SimpleUser();
+        user.setName(randomString());
+        password = randomString().toCharArray();
+        user.setPassword(password);
+        userService.save(user);
+        Configuration.setConfiguration(new MockConfiguration());
+    }
+    /**
+     * Runs after each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @After
+    public void reset()
+            throws Exception
+    {
+//        userService.delete(user);
+        user = null;
+        doNotHandleCallbacks = false;
+        callbackException = null;
+    }
+    public static void springSetup()
+        throws Exception
+    {
+        PersistTestBase.springSetup(getSpringFiles());
+    }
+    static String[] getSpringFiles()
+    {
+        return new String[] { "file:"+DIR_ROOT+File.separator+"conf"+File.separator+"persist_tests.xml"};
+    }
     /**
      * Test login success & failures.
      * @throws Exception if there was failure
      */
     @Test
-    public void loginTest() throws Exception {
-        setLevel(ORSLoginModule.class.getName(), Level.INFO);
+    @Transactional
+    public void loginTest()
+            throws Exception
+    {
+        setLevel(ORSLoginModule.class.getName(),
+                 Level.INFO);
         //test failure conditions
         attemptLogin(null, password,
                 AccountNotFoundException.class,
@@ -99,6 +134,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
      * @throws Exception if there was failure
      */
     @Test
+    @Transactional
     public void unsupportedCallback() throws Exception {
         doNotHandleCallbacks = true;
         UnsupportedCallbackException uce = new UnsupportedCallbackException(
@@ -120,6 +156,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
      * @throws Exception if there was a failure
      */
     @Test
+    @Transactional
     public void callbackIOFailure() throws Exception {
         callbackException = new IOException("ioeoeoe"); //$NON-NLS-1$
         LoginException ex = attemptLogin(user.getName(), password,
@@ -127,46 +164,6 @@ public class ORSLoginModuleTest extends TestCaseBase {
         assertNotNull(ex.getCause());
         assertTrue(ex.getCause() instanceof IOException);
         assertSame(callbackException, ex.getCause());
-    }
-
-    @BeforeClass
-    public static void setup()
-            throws Exception
-    {
-        springSetup();
-        userService = null; // TODO retrieve from Spring setup
-        user = new SimpleUser();
-        user.setName(randomString());
-        password = randomString().toCharArray();
-        user.setPassword(password);
-        userService.save(user);
-        Configuration.setConfiguration(new MockConfiguration());
-    }
-    @AfterClass
-    public static void cleanup() throws Exception {
-        userService.delete(user);
-        user = null;
-    }
-    @After
-    public void reset() throws Exception {
-        doNotHandleCallbacks = false;
-        callbackException = null;
-    }
-
-    public static void springSetup()
-        throws Exception {
-        PersistTestBase.springSetup(getSpringFiles()); //$NON-NLS-1$
-    }
-
-    static String[] getSpringFiles() {
-        return new String[] {
-            "file:"+DIR_ROOT+File.separator+ //$NON-NLS-1$
-            "conf"+File.separator+ //$NON-NLS-1$
-            "persist_tests.xml"}; //$NON-NLS-1$
-    }
-
-    private static String randomString() {
-        return PersistTestBase.randomString();
     }
 
     /**
@@ -181,27 +178,27 @@ public class ORSLoginModuleTest extends TestCaseBase {
      *
      * @throws Exception if there was unexpected failure
      */
-    private LoginException attemptLogin(
-            String name, char[] password,
-            Class<? extends LoginException> failure,
-            String failureMsg) throws Exception{
+    private LoginException attemptLogin(String name,
+                                        char[] password,
+                                        Class<? extends LoginException> failure,
+                                        String failureMsg)
+            throws Exception
+    {
         MockCallbackHandler ch = null;
         loginContext = null;
         try {
             ch = new MockCallbackHandler(name, password);
-            loginContext = new LoginContext("ors_test",ch); //$NON-NLS-1$
+            loginContext = new LoginContext("ors_test",ch);
             loginContext.login();
-            assertNull("Expected failure:" + failure + failureMsg, failure); //$NON-NLS-1$
-            //verify that the appropriate principals are set in the subject
+            assertNull("Expected failure:" + failure + failureMsg, failure);
+            // verify that the appropriate principals are set in the subject
             assertTrue(loginContext.getSubject().getPrincipals().toString(),
-                    loginContext.getSubject().getPrincipals().contains(
-                            new UserPrincipal(user.getName())));
+                       loginContext.getSubject().getPrincipals().contains(new UserPrincipal(user.getName())));
         } catch (LoginException e) {
-            assertNotNull("Unexpected failure:" + e,failure); //$NON-NLS-1$
-            assertTrue("Expected:" + failure + ":Actual:" + //$NON-NLS-1$ //$NON-NLS-2$
-                    e.getClass().getName() + e.toString(),
-                    failure.isInstance(e));
-            if (failureMsg != null) {
+            assertNotNull("Unexpected failure:" + e,failure);
+            assertTrue("Expected:" + failure + ":Actual:" + e.getClass().getName() + e.toString(),
+                       failure.isInstance(e));
+            if(failureMsg != null) {
                 assertEquals(failureMsg,e.getMessage());
             }
             assertNotNull(loginContext);
@@ -224,12 +221,12 @@ public class ORSLoginModuleTest extends TestCaseBase {
         }
         return null;
     }
-
     /**
      * Test call back handler
      */
-    private static class MockCallbackHandler implements CallbackHandler {
-
+    private class MockCallbackHandler
+            implements CallbackHandler
+    {
         MockCallbackHandler(String nameValue, char[] passwordValue) {
             this.nameValue = nameValue;
             this.passwordValue = passwordValue;
@@ -285,18 +282,24 @@ public class ORSLoginModuleTest extends TestCaseBase {
         private String passwordPrompt;
         private char[] passwordValue;
     }
-
     /**
      * Create our own configuration so as to not have to create login
      * configuration files
      */
-    private static class MockConfiguration extends Configuration {
-        public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
-            return new AppConfigurationEntry[]{
-                    new AppConfigurationEntry(ORSLoginModule.class.getName(),
-                            AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
-                            new HashMap<String,String>())
+    private static class MockConfiguration
+            extends Configuration
+    {
+        public AppConfigurationEntry[] getAppConfigurationEntry(String name)
+        {
+            return new AppConfigurationEntry[] { new AppConfigurationEntry(ORSLoginModule.class.getName(),
+                                                                           AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+                                                                           new HashMap<String,String>())
             };
         }
     }
+    private SimpleUser user;
+    private char[] password;
+    private boolean doNotHandleCallbacks = false;
+    private IOException callbackException = null;
+    private LoginContext loginContext;
 }

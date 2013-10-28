@@ -115,7 +115,7 @@ public class UserServiceImpl
     @Transactional(readOnly=false)
     public void delete(SimpleUser inUser)
     {
-        throw new UnsupportedOperationException(); // TODO
+        userDao.delete(inUser);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.UserService#findAll()

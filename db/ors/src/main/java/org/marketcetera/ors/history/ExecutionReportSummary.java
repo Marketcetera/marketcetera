@@ -21,12 +21,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
 @Entity
-@Table(name="execreports")
+@Table(name="exec_reports")
 @NamedQueries({
-    @NamedQuery(name="rootIDForOrderID",query="select e.rootID from ExecutionReportSummary e where e.orderID = :orderID"),
-    @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.isOpen = false where e.rootID = :rootID and e.id != :Id") })
+    @NamedQuery(name="rootIDForOrderID",query="select e.mRootID from ExecutionReportSummary e where e.mOrderID=:orderID"),
+    @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.mIsOpen=false where e.mRootID=:rootID and e.id!=:Id") })
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "positionForSymbol",
             columns = {@ColumnResult(name = "position")}),
@@ -68,75 +67,75 @@ import org.marketcetera.util.misc.ClassVersion;
 // Hibernate maps enums to 0-based index values, so 7, 11, and 15 map to values in the OrderStatus enum, the PENDING values.
 @NamedNativeQueries({
     @NamedNativeQuery(name = "eqPositionForSymbol",query = "select " +
-            "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "sum(case when e.side = :sideBuy then e.cum_qy else -e.cum_qty end) as position " +
+            "from exec_reports e " +
             "where e.symbol = :symbol " +
-            "and (e.securityType is null " +
-            "or e.securityType = :securityType) " +
-            "and e.sendingTime <= :sendingTime " +
+            "and (e.security_type is null " +
+            "or e.security_type = :securityType) " +
+            "and e.send_time <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
+            "(select max(s.id) from exec_reports s where s.root_id = e.root_id and s.ord_status not in (7,11,15))",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "eqAllPositions",query = "select " +
             "e.symbol as symbol, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "from exec_reports e " +
             "join reports r on (e.report_id=r.id) " +
             "where e.sendingTime <= :sendingTime " +
             "and (e.securityType is null " +
             "or e.securityType = :securityType) " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
+            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, account, actor having position <> 0",
             resultSetMapping = "eqAllPositions"),
     @NamedNativeQuery(name = "crPositionForSymbol",query = "select " +
             "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "from exec_reports e " +
             "where e.symbol = :symbol " +
             "and (e.securityType is null " +
             "or e.securityType = :securityType) " +
             "and e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
+            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "crAllPositions",query = "select " +
             "e.symbol as symbol, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "from exec_reports e " +
             "join reports r on (e.report_id=r.id) " +
             "where e.sendingTime <= :sendingTime " +
             "and (e.securityType is null " +
             "or e.securityType = :securityType) " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
+            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, account, actor having position <> 0",
              resultSetMapping = "crAllPositions"),    
     @NamedNativeQuery(name = "futPositionForSymbol",query = "select " +
             "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "from exec_reports e " +
             "where e.symbol = :symbol " +
             "and e.securityType = :securityType " +
             "and e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
+            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "futAllPositions",query = "select " +
             "e.symbol as symbol, e.expiry as expiry, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "from exec_reports e " +
             "join reports r on (e.report_id=r.id) " +
             "where e.sendingTime <= :sendingTime " +
             "and e.securityType = :securityType " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
+            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, account, actor having position <> 0",
             resultSetMapping = "futAllPositions"),
     @NamedNativeQuery(name = "optPositionForTuple",query = "select " +
             "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "from exec_reports e " +
             "where e.symbol = :symbol " +
             "and e.securityType = :securityType " +
             "and e.expiry = :expiry " +
@@ -145,36 +144,38 @@ import org.marketcetera.util.misc.ClassVersion;
             "and e.sendingTime <= :sendingTime " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
+            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "optAllPositions",query = "select " +
             "e.symbol as symbol, e.expiry as expiry, e.strikePrice as strikePrice, e.optionType as optionType, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "from exec_reports e " +
             "join reports r on (e.report_id=r.id) " +
             "where e.sendingTime <= :sendingTime " +
             "and e.securityType = :securityType " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
+            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
             resultSetMapping = "optAllPositions"),
     @NamedNativeQuery(name = "optPositionsForRoots",query = "select " +
             "e.symbol as symbol, e.expiry as expiry, e.strikePrice as strikePrice, e.optionType as optionType, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
-            "from execreports e " +
+            "from exec_reports e " +
             "join reports r on (e.report_id=r.id) " +
             "where e.sendingTime <= :sendingTime " +
             "and e.securityType = :securityType " +
             "and e.symbol in (:symbols) " +
             "and (:allViewers or e.viewer_id = :viewerID) " +
             "and e.id = " +
-            "(select max(s.id) from execreports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
+            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, expiry, strikePrice, optionType, account, actor having position <> 0",
             resultSetMapping = "optAllPositions"),
-    @NamedNativeQuery(name="openOrders",query="select * from execreports e where e.isOpen=true and (:allViewers=true or e.viewer_id=:viewerID)",resultClass=ExecutionReportSummary.class),
-    @NamedNativeQuery(name="deleteReportsFor",query="delete from execreports where report_id=:id",resultClass=ExecutionReportSummary.class)
+    @NamedNativeQuery(name="openOrders",query="select * from exec_reports e where e.isOpen=true and (:allViewers=true or e.viewer_id=:viewerID)",resultClass=ExecutionReportSummary.class),
+    @NamedNativeQuery(name="deleteReportsFor",query="delete from exec_reports where report_id=:id",resultClass=ExecutionReportSummary.class)
         })
-
-public class ExecutionReportSummary extends EntityBase {
+@ClassVersion("$Id$")
+public class ExecutionReportSummary
+        extends EntityBase
+{
     /**
      * Creates an instance.
      *
@@ -291,11 +292,6 @@ public class ExecutionReportSummary extends EntityBase {
         mReport = inReport;
     }
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name="value",
-                    column = @Column(name = "rootID", nullable = false))})
-    @Column(nullable = false)
     OrderID getRootID() {
         return mRootID;
     }
@@ -305,10 +301,6 @@ public class ExecutionReportSummary extends EntityBase {
         mRootID = inRootID;
     }
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name="value",
-                    column = @Column(name = "orderID", nullable = false))})
     OrderID getOrderID() {
         return mOrderID;
     }
@@ -318,10 +310,6 @@ public class ExecutionReportSummary extends EntityBase {
         mOrderID = inOrderID;
     }
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name="value",
-                    column = @Column(name = "origOrderID"))})
     OrderID getOrigOrderID() {
         return mOrigOrderID;
     }
@@ -340,7 +328,6 @@ public class ExecutionReportSummary extends EntityBase {
         mSecurityType = inSecurityType;
     }
 
-    @Column(nullable = false)
     String getSymbol() {
         return mSymbol;
     }
@@ -359,7 +346,6 @@ public class ExecutionReportSummary extends EntityBase {
         mExpiry = inExpiry;
     }
 
-    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = true)
     BigDecimal getStrikePrice() {
         return mStrikePrice;
     }
@@ -387,7 +373,6 @@ public class ExecutionReportSummary extends EntityBase {
         mAccount = inAccount;
     }
 
-    @Column(nullable = false)
     Side getSide() {
         return mSide;
     }
@@ -397,7 +382,6 @@ public class ExecutionReportSummary extends EntityBase {
         mSide = inSide;
     }
 
-    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = false)
     BigDecimal getCumQuantity() {
         return mCumQuantity;
     }
@@ -407,7 +391,6 @@ public class ExecutionReportSummary extends EntityBase {
         mCumQuantity = inCumQuantity;
     }
 
-    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = false)
     BigDecimal getAvgPrice() {
         return mAvgPrice;
     }
@@ -417,7 +400,6 @@ public class ExecutionReportSummary extends EntityBase {
         mAvgPrice = inAvgPrice;
     }
 
-    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE)
     BigDecimal getLastQuantity() {
         return mLastQuantity;
     }
@@ -427,7 +409,6 @@ public class ExecutionReportSummary extends EntityBase {
         mLastQuantity = inLastQuantity;
     }
 
-    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE)
     BigDecimal getLastPrice() {
         return mLastPrice;
     }
@@ -437,7 +418,6 @@ public class ExecutionReportSummary extends EntityBase {
         mLastPrice = inLastPrice;
     }
 
-    @Column(nullable = false)
     OrderStatus getOrderStatus() {
         return mOrderStatus;
     }
@@ -447,7 +427,6 @@ public class ExecutionReportSummary extends EntityBase {
         mOrderStatus = inOrderStatus;
     }
 
-    @Column(nullable = false)
     Date getSendingTime() {
         return mSendingTime;
     }
@@ -457,7 +436,6 @@ public class ExecutionReportSummary extends EntityBase {
         mSendingTime = inSendingTime;
     }
 
-    @ManyToOne
     public SimpleUser getViewer() {
         return mViewer;
     }
@@ -471,7 +449,6 @@ public class ExecutionReportSummary extends EntityBase {
      *
      * @return a <code>boolean</code> value
      */
-    @Column
     public boolean getIsOpen()
     {
         return mIsOpen;
@@ -494,39 +471,161 @@ public class ExecutionReportSummary extends EntityBase {
    {
        return mReport;
    }
-    @Transient
     UserID getViewerID() {
         if (getViewer()==null) {
             return null;
         }
         return getViewer().getUserID();
     }
-
     /**
      * Defined to get JPA to work.
      */
-    ExecutionReportSummary() {
-    }
-
+    @SuppressWarnings("unused")
+    private ExecutionReportSummary() {}
+    /*
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="value",column = @Column(name = "rootID", nullable = false))})
+    @Column(nullable = false)
     private OrderID mRootID;
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="value",column = @Column(name = "orderID", nullable = false))})
     private OrderID mOrderID;
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="value",column = @Column(name = "origOrderID"))})
     private OrderID mOrigOrderID;
-    private SecurityType mSecurityType;
+    @Column(nullable = false)
     private String mSymbol;
-    private String mExpiry;
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = true)
     private BigDecimal mStrikePrice;
-    private OptionType mOptionType;
-    private String mAccount;
+    @Column(nullable = false)
     private Side mSide;
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = false)
     private BigDecimal mCumQuantity;
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE, nullable = false)
     private BigDecimal mAvgPrice;
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE)
     private BigDecimal mLastQuantity;
+    @Column(precision = DECIMAL_PRECISION, scale = DECIMAL_SCALE)
     private BigDecimal mLastPrice;
+    @Column(nullable = false)
     private OrderStatus mOrderStatus;
+    @Column(nullable = false)
     private Date mSendingTime;
+    @ManyToOne
     private SimpleUser mViewer; 
-    private PersistentReport mReport;
+    @Column
     private boolean mIsOpen;
+    @Transient
+    private SecurityType mSecurityType;
+    @Transient
+    private String mExpiry;
+    @Transient
+    private OptionType mOptionType;
+    @Transient
+    private String mAccount;
+    @Transient
+    private PersistentReport mReport;
+     */
+    /**
+     * 
+     */
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="root_order_id",nullable=false))})
+    private OrderID mRootID;
+    /**
+     * 
+     */
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="order_id",nullable=false))})
+    private OrderID mOrderID;
+    /**
+     * 
+     */
+    @Embedded
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="orig_order_id",nullable=false))})
+    private OrderID mOrigOrderID;
+    /**
+     * 
+     */
+    @Column(name="symbol",nullable=false)
+    private String mSymbol;
+    /**
+     * 
+     */
+    @Column(name="strike_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    private BigDecimal mStrikePrice;
+    /**
+     * 
+     */
+    @Column(name="side",nullable=false)
+    private Side mSide;
+    /**
+     * 
+     */
+    @Column(name="cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    private BigDecimal mCumQuantity;
+    /**
+     * 
+     */
+    @Column(name="avg_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    private BigDecimal mAvgPrice;
+    /**
+     * 
+     */
+    @Column(name="last_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    private BigDecimal mLastQuantity;
+    /**
+     * 
+     */
+    @Column(name="last_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
+    private BigDecimal mLastPrice;
+    /**
+     * 
+     */
+    @Column(name="ord_status",nullable=false)
+    private OrderStatus mOrderStatus;
+    /**
+     * 
+     */
+    @Column(name="send_time",nullable=false)
+    private Date mSendingTime;
+    /**
+     * 
+     */
+    @ManyToOne
+    @JoinColumn(name="viewer_id")
+    private SimpleUser mViewer; 
+    /**
+     * 
+     */
+    @Column(name="is_open",nullable=false)
+    private boolean mIsOpen;
+    /**
+     * 
+     */
+    @Column(name="security_type",nullable=false)
+    private SecurityType mSecurityType;
+    /**
+     * 
+     */
+    @Column(name="expiry",nullable=true)
+    private String mExpiry;
+    /**
+     * 
+     */
+    @Column(name="option_type",nullable=true)
+    private OptionType mOptionType;
+    /**
+     * 
+     */
+    @Column(name="account",nullable=true)
+    private String mAccount;
+    /**
+     * 
+     */
+    @OneToOne(optional=false)
+    @JoinColumn(name="report_id")
+    private PersistentReport mReport;
     /**
      * The attribute viewer used in JPQL queries
      */
