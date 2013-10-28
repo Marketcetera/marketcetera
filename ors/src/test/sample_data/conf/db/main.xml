@@ -37,7 +37,8 @@
     <property name="password" value="${metc.jdbc.password}"/>
     <!-- The size of the JDBC connection pool. -->
     <property name="maxPoolSize" value="${metc.jdbc.pool.size}"/>
-    <property name="preferredTestQuery" value="select 1"/>
+    <!-- property name="preferredTestQuery" value="select 1"/--> <!-- use this for mysql, postgres, and others -->
+    <property name="preferredTestQuery" value="VALUES 1"/> <!-- use this for derby -->
     <property name="testConnectionOnCheckout" value="true"/>
   </bean>
   <bean id="metc_emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

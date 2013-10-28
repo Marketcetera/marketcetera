@@ -10,8 +10,10 @@ import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.security.QSimpleUser;
 import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mysema.query.jpa.impl.JPAQuery;
@@ -20,14 +22,15 @@ import com.mysema.query.types.expr.BooleanExpression;
 /* $License$ */
 
 /**
- *
+ * Provides access to user objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @Service
-@Transactional(readOnly=true)
+@Transactional(readOnly=true,propagation=Propagation.REQUIRED)
+@ClassVersion("$Id$")
 public class UserServiceImpl
         implements UserService
 {
@@ -70,7 +73,7 @@ public class UserServiceImpl
      * @see org.marketcetera.ors.dao.UserService#updateUserDataByName(java.lang.String, java.lang.String)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void updateUserDataByName(String inUsername,
                                      String inUserData)
     {
@@ -81,18 +84,18 @@ public class UserServiceImpl
      * @see org.marketcetera.ors.dao.UserService#updateUserActiveStatus(java.lang.String, boolean)
      */
     @Override
-    @Transactional(readOnly=false)
-    public SimpleUser updateUserActiveStatus(String inUsername,
-                                             boolean inIsActive)
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
+    public void updateUserActiveStatus(String inUsername,
+                                       boolean inIsActive)
     {
-        return userDao.updateUserActiveStatus(inUsername,
-                                              inIsActive);
+        userDao.updateUserActiveStatus(inUsername,
+                                       inIsActive);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.UserService#updateSuperUser(java.lang.String, boolean)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void updateSuperUser(String inUsername,
                                 boolean inIsSuperuser)
     {
@@ -103,7 +106,7 @@ public class UserServiceImpl
      * @see org.marketcetera.ors.dao.UserService#save(org.marketcetera.ors.security.SimpleUser)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public SimpleUser save(SimpleUser inUser)
     {
         return userDao.save(inUser);
@@ -112,10 +115,18 @@ public class UserServiceImpl
      * @see org.marketcetera.ors.dao.UserService#delete(org.marketcetera.ors.security.SimpleUser)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void delete(SimpleUser inUser)
     {
         userDao.delete(inUser);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.dao.UserService#findOne(long)
+     */
+    @Override
+    public SimpleUser findOne(long inValue)
+    {
+        return userDao.findOne(inValue);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.UserService#findAll()

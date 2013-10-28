@@ -13,6 +13,8 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.persistence.*;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.PersistenceException;
@@ -199,6 +201,8 @@ public class SimpleUser
      *
      * @throws PersistenceException if there were validation failures
      */
+    @PreUpdate
+    @PrePersist
     public void validate() throws PersistenceException {
         super.validate();
         if(getHashedPassword() == null || getHashedPassword().length() == 0) {
@@ -222,6 +226,39 @@ public class SimpleUser
     }
     private void setHashedPassword(String hashedPassword) {
         this.hashedPassword = hashedPassword;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder().append(getName()).toHashCode();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SimpleUser other = (SimpleUser) obj;
+        return new EqualsBuilder().append(getName(),other.getName()).isEquals();
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("User ").append(getName()).append('[').append(getId()).append("] active=").append(active).append(" superuser=").append(superuser);
+        return builder.toString();
     }
     /**
      * Validates if the supplied password value is valid
@@ -279,12 +316,12 @@ public class SimpleUser
         }
     };
     /**
-     * 
+     * indicates if this user is a super user
      */
     @Column(name="is_superuser",nullable=false)
     private boolean superuser = false;
     /**
-     * 
+     * indicates if this user is currently active
      */
     @Column(name="is_active",nullable=false)
     private boolean active = true;
@@ -294,7 +331,7 @@ public class SimpleUser
     @Column(name="user_data",nullable=true,length=8096)
     private String userData;
     /**
-     * 
+     * hashed password value
      */
     @Column(name="password",nullable=false)
     private String hashedPassword = null;
