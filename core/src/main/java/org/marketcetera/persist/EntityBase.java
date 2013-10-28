@@ -1,5 +1,7 @@
 package org.marketcetera.persist;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.persistence.*;
 
@@ -95,6 +97,15 @@ public abstract class EntityBase
     {
         return lastUpdated;
     }
+    /**
+     * Sets the lastUpdated value.
+     *
+     * @param inLastUpdated a <code>Date</code> value
+     */
+    public void setLastUpdated(Date inLastUpdated)
+    {
+        lastUpdated = inLastUpdated;
+    }
     public String toString() {
         return "EntityBase{" + //$NON-NLS-1$
                 "id=" + id + //$NON-NLS-1$
@@ -103,21 +114,31 @@ public abstract class EntityBase
                 ", identity=" + System.identityHashCode(this) + //$NON-NLS-1$
                 '}';
     }
+    @PrePersist
+    @PreUpdate
+    private void setLastUpdated()
+    {
+        //Set lastUpdated to the current date.
+        setLastUpdated(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
+    }
     /**
      * 
      */
     @Id
     @GeneratedValue
+    @Column(name="id",nullable=false)
     private long id = UNINITIALIZED;
     /**
      * 
      */
     @Version
+    @Column(name="update_count",nullable=false)
     private int updateCount = UNINITIALIZED;
     /**
      * 
      */
-    @Temporal(TemporalType.TIMESTAMP) //i18n_datetime when storing to / retrieving from database
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="last_updated",nullable=false)
     private Date lastUpdated;
     /**
      * 

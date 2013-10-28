@@ -18,9 +18,9 @@ import java.io.Serializable;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 @Embeddable
 @XmlAccessorType(XmlAccessType.FIELD)
+@ClassVersion("$Id$")
 public class OrderID implements Serializable {
     /**
      * Creates an instance, given the text value of the OrderID.

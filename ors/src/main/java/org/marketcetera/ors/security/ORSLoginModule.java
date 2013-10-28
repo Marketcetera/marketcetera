@@ -19,7 +19,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.sun.security.auth.UserPrincipal;
 
@@ -104,6 +103,25 @@ public class ORSLoginModule implements LoginModule {
         clear();
         return true;
     }
+    /**
+     * Get the userService value.
+     *
+     * @return a <code>UserService</code> value
+     */
+    public static UserService getUserService()
+    {
+        return userService;
+    }
+    /**
+     * Sets the userService value.
+     *
+     * @param inUserService a <code>UserService</code> value
+     */
+    public static void setUserService(UserService inUserService)
+    {
+        userService = inUserService;
+    }
+
     private void clear() {
         username = null;
     }
@@ -114,6 +132,5 @@ public class ORSLoginModule implements LoginModule {
     /**
      * provides datastore access to user objects
      */
-    @Autowired
-    private UserService userService;
+    private static UserService userService;
 }
