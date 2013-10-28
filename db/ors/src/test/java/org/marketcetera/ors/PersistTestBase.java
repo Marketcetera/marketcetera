@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.ors.dao.ReportService;
 import org.marketcetera.ors.dao.UserService;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.persist.ValidationException;
 import org.marketcetera.util.misc.RandomStrings;
 import org.marketcetera.util.misc.UCPFilter;
 import org.marketcetera.util.test.TestCaseBase;
@@ -61,6 +63,24 @@ public class PersistTestBase
         context = (ConfigurableApplicationContext)inContext;
         context.registerShutdownHook();
         userService = context.getBean(UserService.class);
+    }
+    /**
+     * 
+     *
+     *
+     * @return
+     * @throws Exception
+     */
+    protected SimpleUser generateUser()
+            throws Exception
+    {
+        SimpleUser user = new SimpleUser();
+        user.setName(randomString());
+        String password = randomString();
+        user.setPassword(password.toCharArray());
+        user.setActive(true);
+        user.setSuperuser(false);
+        return user;
     }
     /**
      *

@@ -18,7 +18,7 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.OptionRootUnderlyingMap;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.brokers.Brokers;
-import org.marketcetera.ors.dao.UserDao;
+import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.history.ReportPersistenceException;
 import org.marketcetera.ors.security.SimpleUser;
@@ -125,11 +125,10 @@ public class ServiceImpl
         return getBrokers().getStatus(inUsername);
     }
 
-    private UserInfo getUserInfoImpl
-        (UserID id)
+    private UserInfo getUserInfoImpl(UserID id)
         throws PersistenceException
     {
-        SimpleUser u=simpleUserRepository.findOne(id.getValue());
+        SimpleUser u = userService.findOne(id.getValue());
         return new UserInfo(u.getName(),u.getUserID(),u.isActive(),u.isSuperuser(),Util.propertiesFromString(u.getUserData()));
     }
 
@@ -266,7 +265,7 @@ public class ServiceImpl
     private String getUserDataImpl(String inUsername)
             throws PersistenceException
     {
-        return simpleUserRepository.findByName(inUsername).getUserData();
+        return userService.findByName(inUsername).getUserData();
     }
     /**
      * Resolves the given symbol to an <code>Instrument</code>.
@@ -301,7 +300,8 @@ public class ServiceImpl
                                  String inUserData)
             throws PersistenceException
     {
-        simpleUserRepository.updateUserByName(inUsername, inUserData);;
+        userService.updateUserDataByName(inUsername,
+                                         inUserData);
     }
     /**
      * Adds the given message to the system data bus.
@@ -777,9 +777,9 @@ public class ServiceImpl
     }
     
     /**
-     * 
+     * provides access to user objects
      */
     @Autowired
-    private UserDao simpleUserRepository;
+    private UserService userService;
     
 }
