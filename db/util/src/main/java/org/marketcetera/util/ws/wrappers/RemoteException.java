@@ -4,7 +4,9 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -65,6 +67,8 @@ public class RemoteException
             return;
         }
         setProperties(new RemoteProperties(t));
+        SLF4JLoggerProxy.warn(this,
+                              t);
     }
 
     /**

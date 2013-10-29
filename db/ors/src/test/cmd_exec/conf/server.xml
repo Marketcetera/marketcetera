@@ -94,4 +94,6 @@
     <property name="filename" value="${metc.optionroot.map.file}"/>
     <property name="includeTypes" value="EU,EL"/>
   </bean>
+  <!--  authenticator -->
+  <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
 </beans>

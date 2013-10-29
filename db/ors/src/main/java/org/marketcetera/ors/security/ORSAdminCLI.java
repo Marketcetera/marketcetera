@@ -88,7 +88,24 @@ public class ORSAdminCLI
             throw e;
         }
     }
-
+    /**
+     * Get the userService value.
+     *
+     * @return a <code>UserService</code> value
+     */
+    public UserService getUserService()
+    {
+        return userService;
+    }
+    /**
+     * Sets the userService value.
+     *
+     * @param inUserService a <code>UserService</code> value
+     */
+    public void setUserService(UserService inUserService)
+    {
+        userService = inUserService;
+    }
     /**
      * Returns a list of spring configurations that should be used
      * to configure the CLI
@@ -548,28 +565,8 @@ public class ORSAdminCLI
 
     private static final String OPT_YES = "y"; //$NON-NLS-1$
     private static final String OPT_NO = "n"; //$NON-NLS-1$
-
     static final String CMD_NAME = "orsadmin"; //$NON-NLS-1$
     
-    /**
-     * Get the userService value.
-     *
-     * @return a <code>UserService</code> value
-     */
-    public UserService getUserService()
-    {
-        return userService;
-    }
-
-    /**
-     * Sets the userService value.
-     *
-     * @param inUserService a <code>UserService</code> value
-     */
-    public void setUserService(UserService inUserService)
-    {
-        userService = inUserService;
-    }
     /**
      * provides access to user objects
      */

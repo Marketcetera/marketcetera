@@ -8,9 +8,11 @@ import javax.persistence.PersistenceContext;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.dao.UserService;
+import org.marketcetera.ors.security.ORSLoginModule;
 import org.marketcetera.ors.security.QSimpleUser;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -32,7 +34,7 @@ import com.mysema.query.types.expr.BooleanExpression;
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 @ClassVersion("$Id$")
 public class UserServiceImpl
-        implements UserService
+        implements UserService, InitializingBean
 {
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.UserService#listUsers(java.lang.String, java.lang.Boolean)
@@ -135,6 +137,15 @@ public class UserServiceImpl
     public List<SimpleUser> findAll()
     {
         return userDao.findAll();
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    @Override
+    public void afterPropertiesSet()
+            throws Exception
+    {
+        ORSLoginModule.setUserService(this);
     }
     /**
      * Get the userDao value.

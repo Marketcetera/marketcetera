@@ -16,13 +16,13 @@ import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.config.SpringConfig;
+import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.ors.info.SystemInfoImpl;
 import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.ClientSessionFactory;
-import org.marketcetera.ors.ws.DBAuthenticator;
 import org.marketcetera.ors.ws.ServiceImpl;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
@@ -35,6 +35,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.SpringSessionSettings;
 import org.marketcetera.util.spring.SpringUtils;
+import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.quickfixj.jmx.JmxExporter;
@@ -100,109 +101,102 @@ public class OrderRoutingSystem
      *
      * @throws Exception Thrown if construction fails.
      */
-
     public OrderRoutingSystem(String[] args)
-        throws Exception
+            throws Exception
     {
         // Obtain authorization credentials.
         instance = this;
-        mAuth=new StandardAuthentication(APP_CONTEXT_CFG_BASE,args);
-        if (!getAuth().setValues()) {
+        mAuth = new StandardAuthentication(APP_CONTEXT_CFG_BASE,
+                                           args);
+        if(!getAuth().setValues()) {
             printUsage(Messages.APP_MISSING_CREDENTIALS);
         }
-        args=getAuth().getOtherArgs();
-        if (args.length!=0) {
+        args = getAuth().getOtherArgs();
+        if(args.length != 0) {
             printUsage(Messages.APP_NO_ARGS_ALLOWED);
         }
-        StaticApplicationContext parentContext=
-            new StaticApplicationContext
-            (new FileSystemXmlApplicationContext(APP_CONTEXT_CFG_BASE));
-        SpringUtils.addStringBean
-            (parentContext,USERNAME_BEAN_NAME,
-             getAuth().getUser());
-        SpringUtils.addStringBean
-            (parentContext,PASSWORD_BEAN_NAME,
-             getAuth().getPasswordAsString());
+        StaticApplicationContext parentContext = new StaticApplicationContext(new FileSystemXmlApplicationContext(APP_CONTEXT_CFG_BASE));
+        SpringUtils.addStringBean(parentContext,
+                                  USERNAME_BEAN_NAME,
+                                  getAuth().getUser());
+        SpringUtils.addStringBean(parentContext,PASSWORD_BEAN_NAME,
+                                  getAuth().getPasswordAsString());
         parentContext.refresh();
-
         // Read Spring configuration.
-
-        mContext=new FileSystemXmlApplicationContext
-            (new String[] {"file:"+CONF_DIR+ //$NON-NLS-1$
-                           "server.xml"}, //$NON-NLS-1$
-                parentContext);
+        mContext = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"server.xml" }, //$NON-NLS-1$ //$NON-NLS-2$
+                                                       parentContext);
         mContext.start();
-
         // Create system information.
-
-        SystemInfoImpl systemInfo=new SystemInfoImpl();
-
+        SystemInfoImpl systemInfo = new SystemInfoImpl();
         // Create resource managers.
-
-        SpringConfig cfg=SpringConfig.getSingleton();
-        if (cfg==null) {
+        SpringConfig cfg = SpringConfig.getSingleton();
+        if(cfg == null) {
             throw new I18NException(Messages.APP_NO_CONFIGURATION);
         }
         cfg.getIDFactory().init();
-        JmsManager jmsMgr=new JmsManager
-            (cfg.getIncomingConnectionFactory(),
-             cfg.getOutgoingConnectionFactory());
-        ReportHistoryServices historyServices=cfg.getReportHistoryServices();
-        systemInfo.setValue
-            (SystemInfo.HISTORY_SERVICES,historyServices);
-        mBrokers=new Brokers(cfg.getBrokers(),historyServices);
-        Selector selector=new Selector(getBrokers(),cfg.getSelector());
-        UserManager userManager=new UserManager();
-        ReplyPersister persister=new ReplyPersister
-            (historyServices,cfg.getOrderInfoCache());
-        historyServices.init(cfg.getIDFactory(),jmsMgr,persister);
-
+        JmsManager jmsMgr = new JmsManager(cfg.getIncomingConnectionFactory(),
+                                           cfg.getOutgoingConnectionFactory());
+        ReportHistoryServices historyServices = cfg.getReportHistoryServices();
+        systemInfo.setValue(SystemInfo.HISTORY_SERVICES,
+                            historyServices);
+        mBrokers = new Brokers(cfg.getBrokers(),
+                               historyServices);
+        Selector selector = new Selector(getBrokers(),
+                                         cfg.getSelector());
+        UserManager userManager = new UserManager();
+        ReplyPersister persister = new ReplyPersister(historyServices,
+                                                      cfg.getOrderInfoCache());
+        historyServices.init(cfg.getIDFactory(),
+                             jmsMgr,
+                             persister);
         // Set dictionary for all QuickFIX/J messages we generate.
-
-        CurrentFIXDataDictionary.setCurrentFIXDataDictionary
-            (FIXDataDictionary.initializeDataDictionary
-             (FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
-
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL()));
         // Initiate web services.
-
-        SessionManager<ClientSession> sessionManager=
-            new SessionManager<ClientSession>
-            (new ClientSessionFactory(systemInfo,jmsMgr,userManager),
-             (cfg.getServerSessionLife()==
-              SessionManager.INFINITE_SESSION_LIFESPAN)?
-             SessionManager.INFINITE_SESSION_LIFESPAN:
-             (cfg.getServerSessionLife()*1000));
-        userManager.setSessionManager(sessionManager);
-        Server<ClientSession> server=new Server<ClientSession>
-            (cfg.getServerHost(),cfg.getServerPort(),
-             new DBAuthenticator(),sessionManager);
+        ClientSessionFactory clientSessionFactory = new ClientSessionFactory(systemInfo,
+                                                                             jmsMgr,
+                                                                             userManager);
+        clientSessionFactory = new ClientSessionFactory(systemInfo,
+                                                        jmsMgr,
+                                                        userManager);
+        clientSessionFactory.setUserService(mContext.getBean(UserService.class));
+        SessionManager<ClientSession> sessionManager = new SessionManager<ClientSession>(clientSessionFactory,
+                                                                                         (cfg.getServerSessionLife()==SessionManager.INFINITE_SESSION_LIFESPAN) ? SessionManager.INFINITE_SESSION_LIFESPAN : (cfg.getServerSessionLife()*1000));
+                                                                                         userManager.setSessionManager(sessionManager);
+        Authenticator authenticator = mContext.getBean(org.marketcetera.util.ws.stateful.Authenticator.class);
+        Server<ClientSession> server = new Server<ClientSession>(cfg.getServerHost(),
+                                                                 cfg.getServerPort(),
+                                                                 authenticator,
+                                                                 sessionManager);
         server.publish(new ServiceImpl(sessionManager,
                                        getBrokers(),
                                        cfg.getIDFactory(),
                                        historyServices,
                                        cfg.getSymbolResolverServices()),
                        Service.class);
-
         // Initiate JMS.
-
-        qSender=new QuickFIXSender();
-        LocalIDFactory localIdFactory=new LocalIDFactory(cfg.getIDFactory());
+        qSender = new QuickFIXSender();
+        LocalIDFactory localIdFactory = new LocalIDFactory(cfg.getIDFactory());
         localIdFactory.init();
-        RequestHandler handler=new RequestHandler
-            (getBrokers(),selector,cfg.getAllowedOrders(),
-             persister,qSender,userManager,localIdFactory);
-        mListener=jmsMgr.getIncomingJmsFactory().registerHandlerOEX
-            (handler,Service.REQUEST_QUEUE,false);
-        mQFApp=new QuickFIXApplication(systemInfo,getBrokers(),cfg.getSupportedMessages(),
-                                       persister,
-                                       qSender,
-                                       userManager,
-                                       jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
-                                                                                         true),
-                                       null); // CD 20101202 - Removed as I don't think this is used any more and just consumes memory
-
+        RequestHandler handler = new RequestHandler(getBrokers(),
+                                                    selector,
+                                                    cfg.getAllowedOrders(),
+                                                    persister,
+                                                    qSender,
+                                                    userManager,
+                                                    localIdFactory);
+        mListener = jmsMgr.getIncomingJmsFactory().registerHandlerOEX(handler,
+                                                                      Service.REQUEST_QUEUE,
+                                                                      false);
+        mQFApp = new QuickFIXApplication(systemInfo,getBrokers(),
+                                         cfg.getSupportedMessages(),
+                                         persister,
+                                         qSender,
+                                         userManager,
+                                         jmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.BROKER_STATUS_TOPIC,
+                                                                                           true),
+                                                                                           null); // CD 20101202 - Removed as I don't think this is used any more and just consumes memory
         // Initiate broker connections.
-        SpringSessionSettings settings=getBrokers().getSettings();
+        SpringSessionSettings settings = getBrokers().getSettings();
         mInitiator = new SocketInitiator(mQFApp,
                                          settings.getQMessageStoreFactory(),
                                          settings.getQSettings(),
@@ -210,8 +204,7 @@ public class OrderRoutingSystem
                                          new DefaultMessageFactory());
         mInitiator.start();
         // Initiate JMX (for QuickFIX/J and application MBeans).
-
-        MBeanServer mbeanServer=ManagementFactory.getPlatformMBeanServer();
+        MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
         (new JmxExporter(mbeanServer)).export(mInitiator);
         mbeanServer.registerMBean(new ORSAdmin(getBrokers(),
                                                qSender,
@@ -268,8 +261,8 @@ public class OrderRoutingSystem
                                        broker.getBrokerID());
                 Message logout = broker.getFIXMessageFactory().createMessage(MsgType.LOGOUT);
                 // set mandatory fields
-                logout.getHeader().setField(new SenderCompID(broker.getSpringBroker().getDescriptor().getDictionary().get("SenderCompID")));
-                logout.getHeader().setField(new TargetCompID(broker.getSpringBroker().getDescriptor().getDictionary().get("TargetCompID")));
+                logout.getHeader().setField(new SenderCompID(broker.getSpringBroker().getDescriptor().getDictionary().get("SenderCompID"))); //$NON-NLS-1$
+                logout.getHeader().setField(new TargetCompID(broker.getSpringBroker().getDescriptor().getDictionary().get("TargetCompID"))); //$NON-NLS-1$
                 logout.getHeader().setField(new SendingTime(new Date()));
                 logout.toString();
                 try {

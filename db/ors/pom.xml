@@ -124,13 +124,11 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
-      <version>10.9.1.0</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>9.2-1003-jdbc4</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

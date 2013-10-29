@@ -36,7 +36,7 @@
   <properties>
     <mvn.javase.version>6</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>3.2.3.RELEASE</mvn.spring.version>
+    <mvn.spring.version>3.2.4.RELEASE</mvn.spring.version>
     <mvn.cxf.version>2.1.2</mvn.cxf.version>
     <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
     <mvn.xjc.version>2.1.7</mvn.xjc.version>
@@ -478,13 +478,13 @@
       <dependency>
 	<groupId>org.hibernate</groupId>
 	<artifactId>hibernate-entitymanager</artifactId>
-	<version>4.2.6.Final</version>
+	<version>4.2.7.Final</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>postgresql</groupId>
+	<groupId>org.postgresql</groupId>
 	<artifactId>postgresql</artifactId>
-	<version>9.1-901-1.jdbc4</version>
+	<version>9.2-1003-jdbc4</version>
 	<scope>runtime</scope>
       </dependency>
       <dependency>
