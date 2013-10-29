@@ -54,7 +54,6 @@ public class ORSLoginModuleTest
     public void reset()
             throws Exception
     {
-//        userService.delete(user);
         user = null;
         doNotHandleCallbacks = false;
         callbackException = null;

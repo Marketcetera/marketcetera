@@ -44,6 +44,24 @@
   <bean id="metc_emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="metc_sql_pool"/>
     <property name="persistenceUnitName" value="ors"/>
+    <property name="jpaVendorAdapter">
+      <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+    </property>
+    <property name="jpaProperties">
+      <props>
+        <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+        <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+        <prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop>
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
+        <!-- prop key="hibernate.hbm2ddl.auto">create-drop</prop-->
+      </props>
+    </property>
+    <property name="packagesToScan">
+      <list>
+        <value>org.marketcetera.core</value>
+        <value>org.marketcetera.ors</value>
+      </list>
+    </property>
   </bean>
   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="metc_emf" />

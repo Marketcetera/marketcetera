@@ -26,7 +26,7 @@
   <import resource="messaging/main.xml"/>
   <import resource="brokers/main.xml"/>
   <import resource="filters/main.xml"/>
-  <import resource="db/main.xml"/>
+  <import resource="db/db.xml"/>
   <context:component-scan base-package="org.marketcetera.core,org.marketcetera.ors"/>
   <jpa:repositories base-package="org.marketcetera.core,org.marketcetera.ors"/>
   <tx:annotation-driven/>

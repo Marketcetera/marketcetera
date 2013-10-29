@@ -14,7 +14,6 @@ import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.ors.dao.ReportService;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.ValidationException;
 import org.marketcetera.util.misc.RandomStrings;
 import org.marketcetera.util.misc.UCPFilter;
 import org.marketcetera.util.test.TestCaseBase;
@@ -29,7 +28,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 /* $License$ */
 
 /**
- *
+ * Provides Spring-based persistence services for tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -65,11 +64,10 @@ public class PersistTestBase
         userService = context.getBean(UserService.class);
     }
     /**
-     * 
+     * Generates an unpersisted user with unique name and password values.
      *
-     *
-     * @return
-     * @throws Exception
+     * @return a <code>SimpleUser</code> value
+     * @throws Exception if an error occurs generating the user
      */
     protected SimpleUser generateUser()
             throws Exception
@@ -150,9 +148,9 @@ public class PersistTestBase
         }
     }
     /**
+     * Generates a string with random values.
      *
-     *
-     * @return
+     * @return a <code>String</code> value
      */
     public static String randomString()
     {
@@ -165,7 +163,8 @@ public class PersistTestBase
      *
      * @return a random name string.
      */
-    public static String randomNameString() {
+    public static String randomNameString()
+    {
         return RandomStrings.genStr(PersistNameStringFilter.INSTANCE, 10);
     }
     /**
