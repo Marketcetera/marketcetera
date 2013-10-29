@@ -5,10 +5,9 @@ import javax.xml.bind.JAXBException;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.JmsUtils;
 import org.marketcetera.ors.UserManager;
-import org.marketcetera.ors.dao.UserDao;
+import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.util.except.I18NRuntimeException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -30,7 +29,7 @@ import org.springframework.jms.core.JmsOperations;
 
 @ClassVersion("$Id$")
 public class ClientSessionFactory
-    implements SessionFactory<ClientSession>
+        implements SessionFactory<ClientSession>
 {
 
     // INSTANCE DATA.
@@ -53,10 +52,9 @@ public class ClientSessionFactory
      * @param userManager The user manager.
      */
 
-    public ClientSessionFactory
-        (SystemInfo systemInfo,
-         JmsManager jmsManager,
-         UserManager userManager)
+    public ClientSessionFactory(SystemInfo systemInfo,
+                                JmsManager jmsManager,
+                                UserManager userManager)
     {
         mSystemInfo=systemInfo;
         mJmsManager=jmsManager;
@@ -74,7 +72,7 @@ public class ClientSessionFactory
 
     public SystemInfo getSystemInfo()
     {
-        return mSystemInfo;         
+        return mSystemInfo;
     }
 
     /**
@@ -119,7 +117,7 @@ public class ClientSessionFactory
                 (ex,new I18NBoundMessage1P
                  (Messages.CANNOT_CREATE_REPLY_TOPIC,topicName));
         }
-        dbUser=(simpleUserRepository.findByName(user));
+        dbUser=(userService.findByName(user));
         ClientSession session=new ClientSession
             (getSystemInfo(),id,dbUser,jmsOps);
         getUserManager().addSession(session);
@@ -131,12 +129,28 @@ public class ClientSessionFactory
     {
         getUserManager().removedSession(session);
     }
-
     
     /**
-     * 
+     * Get the userService value.
+     *
+     * @return a <code>UserService</code> value
+     */
+    public UserService getUserService()
+    {
+        return userService;
+    }
+    /**
+     * Sets the userService value.
+     *
+     * @param inUserService a <code>UserService</code> value
+     */
+    public void setUserService(UserService inUserService)
+    {
+        userService = inUserService;
+    }
+    /**
+     * provides access to user objects
      */
     @Autowired
-    private UserDao simpleUserRepository;
-    
+    private UserService userService;
 }

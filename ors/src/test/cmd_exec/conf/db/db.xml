@@ -5,7 +5,7 @@
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.0.0
-  - Version: $Id$
+  - Version: $Id: db.xml -1   $
   - $License$
   -->
 
@@ -37,8 +37,8 @@
     <property name="password" value="${metc.jdbc.password}"/>
     <!-- The size of the JDBC connection pool. -->
     <property name="maxPoolSize" value="${metc.jdbc.pool.size}"/>
-    <!-- property name="preferredTestQuery" value="select 1"/--> <!-- use this for mysql, postgres, and others -->
-    <property name="preferredTestQuery" value="VALUES 1"/> <!-- use this for derby -->
+    <property name="preferredTestQuery" value="select 1"/> <!-- use this for mysql, postgres, and others -->
+    <!-- property name="preferredTestQuery" value="VALUES 1"/--> <!-- use this for derby -->
     <property name="testConnectionOnCheckout" value="true"/>
   </bean>
   <bean id="metc_emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
@@ -50,9 +50,9 @@
     <property name="jpaProperties">
       <props>
         <!-- prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop-->
-        <!-- prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop-->
-        <prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop>
-        <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+        <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+        <!-- prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop-->
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
         <prop key="hibernate.show_sql">false</prop>
         <prop key="hibernate.format_sql">false</prop>
       </props>

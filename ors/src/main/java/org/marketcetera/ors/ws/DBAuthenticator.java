@@ -5,9 +5,8 @@ import org.marketcetera.client.ClientVersion;
 import org.marketcetera.client.IncompatibleComponentsException;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
-import org.marketcetera.ors.dao.UserDao;
+import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.NoResultException;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
@@ -16,6 +15,8 @@ import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/* $License$ */
+
 /**
  * A session authenticator that uses the database for authentication. 
  *
@@ -23,16 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 1.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class DBAuthenticator
-    implements Authenticator
+        implements Authenticator
 {
-
-    // CLASS METHODS.
-
     /**
      * Checks for compatibility between the given client and server
      * versions.
@@ -42,7 +37,6 @@ public class DBAuthenticator
      *
      * @return True if the two versions are compatible.
      */
-
     static boolean compatibleVersions
         (String clientVersion,
          String serverVersion)
@@ -51,7 +45,6 @@ public class DBAuthenticator
         return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
                 ObjectUtils.equals(clientVersion,serverVersion));
     }
-
     /**
      * Checks if a client with the supplied name is compatible with
      * this server.
@@ -91,7 +84,7 @@ public class DBAuthenticator
                  serverVersion);
         }
         try {
-            SimpleUser u=simpleUserRepository.findByName(user);
+            SimpleUser u=userService.findByName(user);
             if (!u.isActive()) {
                 Messages.BAD_CREDENTIALS.warn(this,user);
                 return false;
@@ -105,9 +98,9 @@ public class DBAuthenticator
     }
     
     /**
-     * 
+     * allows access to user object
      */
     @Autowired
-    private UserDao simpleUserRepository;
+    private UserService userService;
     
 }

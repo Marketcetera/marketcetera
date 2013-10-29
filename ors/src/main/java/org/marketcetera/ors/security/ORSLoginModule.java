@@ -34,17 +34,28 @@ import com.sun.security.auth.UserPrincipal;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class ORSLoginModule implements LoginModule {
-
-    public void initialize(Subject subject,
-                           CallbackHandler callbackHandler,
-                           Map<String, ?> sharedState,
-                           Map<String, ?> options) {
-        this.subject = subject;
-        this.callback = callbackHandler;
+public class ORSLoginModule
+        implements LoginModule
+{
+    /* (non-Javadoc)
+     * @see javax.security.auth.spi.LoginModule#initialize(javax.security.auth.Subject, javax.security.auth.callback.CallbackHandler, java.util.Map, java.util.Map)
+     */
+    @Override
+    public void initialize(Subject inSubject,
+                           CallbackHandler inCallbackHandler,
+                           Map<String,?> inSharedState,
+                           Map<String,?> inOptions)
+    {
+        subject = inSubject;
+        callback = inCallbackHandler;
     }
-
-    public boolean login() throws LoginException {
+    /* (non-Javadoc)
+     * @see javax.security.auth.spi.LoginModule#login()
+     */
+    @Override
+    public boolean login()
+            throws LoginException
+    {
         Callback[] callbacks = new Callback[2];
         callbacks[0] = new NameCallback(PROMPT_USERNAME.getText());
         callbacks[1] = new PasswordCallback(PROMPT_PASSWORD.getText(),false);
@@ -82,24 +93,41 @@ public class ORSLoginModule implements LoginModule {
         SLF4JLoggerProxy.debug(this,"login done for user {}",username); //$NON-NLS-1$
         return true;
     }
-
-    public boolean commit() throws LoginException {
-        principals.add(new UserPrincipal(username));
-        subject.getPrincipals().addAll(principals);
-        USER_LOGIN_LOG.info(this,username);
-        return true;
-    }
-
-    public boolean abort() throws LoginException {
+    /* (non-Javadoc)
+     * @see javax.security.auth.spi.LoginModule#abort()
+     */
+    @Override
+    public boolean abort()
+            throws LoginException
+    {
         SLF4JLoggerProxy.debug(this,"Aborting login for user {}",username); //$NON-NLS-1$
         clear();
         return true;
     }
-
-    public boolean logout() throws LoginException {
+    /* (non-Javadoc)
+     * @see javax.security.auth.spi.LoginModule#commit()
+     */
+    @Override
+    public boolean commit()
+            throws LoginException
+    {
+        principals.add(new UserPrincipal(username));
+        subject.getPrincipals().addAll(principals);
+        USER_LOGIN_LOG.info(this,
+                            username);
+        return true;
+    }
+    /* (non-Javadoc)
+     * @see javax.security.auth.spi.LoginModule#logout()
+     */
+    @Override
+    public boolean logout()
+            throws LoginException
+    {
         subject.getPrincipals().removeAll(principals);
         principals.clear();
-        USER_LOGOUT_LOG.info(this,username);
+        USER_LOGOUT_LOG.info(this,
+                             username);
         clear();
         return true;
     }
@@ -121,13 +149,28 @@ public class ORSLoginModule implements LoginModule {
     {
         userService = inUserService;
     }
-
-    private void clear() {
+    /**
+     * Clears the login state.
+     */
+    private void clear()
+    {
         username = null;
     }
+    /**
+     * login subject
+     */
     private Subject subject;
+    /**
+     * login callback handler
+     */
     private CallbackHandler callback;
+    /**
+     * login principals collection
+     */
     private Set<Principal> principals = new HashSet<Principal>();
+    /**
+     * login username
+     */
     private String username;
     /**
      * provides datastore access to user objects
