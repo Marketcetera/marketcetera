@@ -1,5 +1,8 @@
 package org.marketcetera.core;
 
+import java.io.File;
+import java.util.concurrent.Semaphore;
+
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -8,10 +11,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.Semaphore;
 
 /**
  * Abstract superclass to all applications
