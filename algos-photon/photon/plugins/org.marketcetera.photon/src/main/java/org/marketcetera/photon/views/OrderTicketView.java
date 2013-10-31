@@ -18,12 +18,14 @@ import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IMemento;
@@ -41,6 +43,8 @@ import org.marketcetera.photon.commons.databinding.TypedObservableValue;
 import org.marketcetera.photon.commons.ui.databinding.RequiredFieldSupport;
 import org.marketcetera.photon.commons.ui.databinding.UpdateStrategyFactory;
 import org.marketcetera.photon.ui.databinding.StatusToImageConverter;
+import org.marketcetera.photon.views.providers.AlgoTableColumnEdditorSupport;
+import org.marketcetera.photon.views.providers.AlgoTableObservableMapLabelProvider;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.NewOrReplaceOrder;
 import org.marketcetera.trade.OrderReplace;
@@ -329,11 +333,15 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                                                                                                               new String[] { "keyString", "valueString" })));//$NON-NLS-1$ //$NON-NLS-2$
         mAlgoTagsTableViewer = new TableViewer(ticket.getAlgoTagsTable());
         ObservableListContentProvider algoTagsContentProvider = new ObservableListContentProvider();
+        TableViewerColumn valueColumn = new TableViewerColumn(mAlgoTagsTableViewer, mAlgoTagsTableViewer.getTable().getColumns()[1]);
         mAlgoTagsTableViewer.setContentProvider(algoTagsContentProvider);
-        mAlgoTagsTableViewer.setLabelProvider(new ObservableMapLabelProvider(BeansObservables.observeMaps(algoTagsContentProvider.getKnownElements(),
+        mAlgoTagsTableViewer.setLabelProvider(new AlgoTableObservableMapLabelProvider(BeansObservables.observeMaps(algoTagsContentProvider.getKnownElements(),
                                                                                                           BrokerAlgoTag.class,
                                                                                                           new String[] { "tagSpec", "value" })));//$NON-NLS-1$ //$NON-NLS-2$
+        valueColumn.setEditingSupport(new AlgoTableColumnEdditorSupport(mAlgoTagsTableViewer));
+        System.out.println();
     }
+    
     /**
      * Get the UI string to show for a "new order" message.
      * 

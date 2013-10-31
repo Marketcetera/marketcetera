@@ -1,5 +1,6 @@
 package org.marketcetera.algo;
 
+import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
@@ -127,6 +128,15 @@ public class BrokerAlgoTag
             tagValidator.validate(this);
         }
     }
+    
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+    	
+    }
+    
+    public void removePropertyChangeListener(PropertyChangeListener listener){
+    	
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
