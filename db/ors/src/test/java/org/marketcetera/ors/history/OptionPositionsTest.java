@@ -72,12 +72,12 @@ public class OptionPositionsTest extends PositionsTestBase<Option> {
         BigDecimal[] strikes = {BigDecimal.ONE, BigDecimal.TEN};
         OptionType [] types = {OptionType.Call, OptionType.Put};
         String [] accounts = {"blue", "green"};
-        UserID superUserID = sActorID;
-        UserID regularUserID = sViewerID;
+        UserID superUserID = actorID;
+        UserID regularUserID = viewerID;
         UserID [] actors = {superUserID, regularUserID};
         UserID [] viewers = {superUserID, regularUserID};
         BigDecimal individualPosition = BigDecimal.ONE;
-        SimpleUser []viewerUsers = {sActor, sViewer};
+        SimpleUser []viewerUsers = {actor, viewer};
         int orderID = 1;
         //Create ERs for all combinations
         for(String symbol: symbols) {

@@ -13,12 +13,14 @@ import java.util.Date;
 import java.util.Map;
 
 /* $License$ */
+
 /**
  * Tests {@link ReportHistoryServices} behavior for Currency instruments
  *
  */
-@ClassVersion("$Id: CurrencyReportsHistoryTest.java")
-public class CurrencyReportsHistoryTest extends ReportHistoryTestBase<Currency> {
+public class CurrencyReportsHistoryTest
+        extends ReportHistoryTestBase<Currency>
+{
     /**
      * Verifies the behavior when instrument cannot be extracted from the report.
      *
@@ -37,11 +39,11 @@ public class CurrencyReportsHistoryTest extends ReportHistoryTestBase<Currency> 
         new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run() throws Exception {
-                sServices.save(report);
+                reportHistoryServices.save(report);
             }
         };
         //verify that no reports were saved.
-        assertEquals(0, sServices.getReportsSince(sViewer, before).length);
+        assertEquals(0, reportHistoryServices.getReportsSince(viewer, before).length);
     }
 
     @Override

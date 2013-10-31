@@ -25,11 +25,7 @@
   <bean id="metc_sql_pool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
     <!-- The class of the database JDBC driver. -->
     <property name="driverClass" value="${metc.jdbc.driver}"/>
-    <!--
-      - The JDBC connection URL; by default, we use MySQL, so the URL can
-      - be further customized per 'http://dev.mysql.com/doc/refman/5.1/en/
-      - connector-j-reference-configuration-properties.html'.
-      -->
+    <!-- The JDBC connection URL -->
     <property name="jdbcUrl" value="${metc.jdbc.url}"/>
     <!-- The credentials used to connect to the database: user name. -->
     <property name="user" value="${metc.jdbc.user}"/>
@@ -37,22 +33,19 @@
     <property name="password" value="${metc.jdbc.password}"/>
     <!-- The size of the JDBC connection pool. -->
     <property name="maxPoolSize" value="${metc.jdbc.pool.size}"/>
-    <!-- property name="preferredTestQuery" value="select 1"/--> <!-- use this for mysql, postgres, and others -->
-    <property name="preferredTestQuery" value="VALUES 1"/> <!-- use this for derby -->
+    <property name="preferredTestQuery" value="${metc.jdbc.testquery}"/>
     <property name="testConnectionOnCheckout" value="true"/>
   </bean>
   <bean id="metc_emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="metc_sql_pool"/>
-    <property name="persistenceUnitName" value="ors"/>
+    <property name="persistenceUnitName" value="test"/>
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
     </property>
     <property name="jpaProperties">
       <props>
-        <!-- prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop-->
-        <!-- prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop-->
-        <prop key="hibernate.dialect">org.hibernate.dialect.DerbyDialect</prop>
-        <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+        <prop key="hibernate.dialect">${metc.hibernate.dialect}</prop>
+        <prop key="hibernate.hbm2ddl.auto">create</prop>
         <prop key="hibernate.show_sql">false</prop>
         <prop key="hibernate.format_sql">false</prop>
       </props>

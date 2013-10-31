@@ -1,19 +1,20 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Option;
-import org.marketcetera.trade.OptionType;
-import org.marketcetera.trade.Side;
-import org.marketcetera.core.position.PositionKey;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import org.hamcrest.Matchers;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
+
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.ors.PersistTestBase;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.Side;
 
 /* $License$ */
 /**
@@ -24,8 +25,9 @@ import java.util.Map;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
-public class DistinctInstrumentPositionsTest extends ReportsTestBase {
+public class DistinctInstrumentPositionsTest
+        extends PersistTestBase
+{
     /**
      * Verifies that equity position for a symbol that is the same as the
      * option root symbol for an option doesn't lead to equity/option

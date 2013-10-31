@@ -58,11 +58,6 @@ public class ORSLoginModuleTest
         doNotHandleCallbacks = false;
         callbackException = null;
     }
-    public static void springSetup()
-        throws Exception
-    {
-        PersistTestBase.springSetup(getSpringFiles());
-    }
     static String[] getSpringFiles()
     {
         return new String[] { "file:"+DIR_ROOT+File.separator+"conf"+File.separator+"persist_tests.xml"};

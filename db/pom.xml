@@ -4,7 +4,8 @@
 - Since: 0.5.0
 - Version: $Id$
 - $License$
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.sonatype.oss</groupId>
@@ -172,42 +173,42 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
         <version>${mvn.spring.version}</version>
-	<exclusions>
-	  <exclusion>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-aop</artifactId>
-	  </exclusion>
-	</exclusions>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jms</artifactId>
         <version>${mvn.spring.version}</version>
-	<exclusions>
-	  <exclusion>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-aop</artifactId>
-	  </exclusion>
-	  <exclusion>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-tx</artifactId>
-	  </exclusion>
-	</exclusions>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
-	<groupId>org.springframework.data</groupId>
-	<artifactId>spring-data-jpa</artifactId>
-	<version>1.4.1.RELEASE</version>
-	<exclusions>
-	  <exclusion>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-aop</artifactId>
-	  </exclusion>
-	  <exclusion>
-	    <groupId>org.springframework</groupId>
-	    <artifactId>spring-tx</artifactId>
-	  </exclusion>
-	</exclusions>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-jpa</artifactId>
+        <version>1.4.1.RELEASE</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.skife.kasparov</groupId>
@@ -342,9 +343,9 @@
         <version>2.0.1</version>
       </dependency>
       <dependency>
-	<groupId>org.ow2.sirocco</groupId>
-	<artifactId>sirocco-text-table-formatter</artifactId>
-	<version>1.0</version>
+        <groupId>org.ow2.sirocco</groupId>
+        <artifactId>sirocco-text-table-formatter</artifactId>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>jparsec</groupId>
@@ -357,19 +358,19 @@
         <version>2.5.0</version>
       </dependency>
       <dependency>
-	<groupId>com.mysema.querydsl</groupId>
-	<artifactId>querydsl-core</artifactId>
-	<version>${mvn.querydsl.version}</version>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-core</artifactId>
+        <version>${mvn.querydsl.version}</version>
       </dependency>
       <dependency>
-	<groupId>com.mysema.querydsl</groupId>
-	<artifactId>querydsl-apt</artifactId>
-	<version>${mvn.querydsl.version}</version>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-apt</artifactId>
+        <version>${mvn.querydsl.version}</version>
       </dependency>
       <dependency>
-	<groupId>com.mysema.querydsl</groupId>
-	<artifactId>querydsl-jpa</artifactId>
-	<version>${mvn.querydsl.version}</version>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-jpa</artifactId>
+        <version>${mvn.querydsl.version}</version>
       </dependency>
       <!-- Runtime. -->
       <dependency>
@@ -464,10 +465,10 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>org.apache.derby</groupId>
-	<artifactId>derby</artifactId>
-	<version>10.10.1.1</version>
-	<scope>runtime</scope>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.10.1.1</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>hsqldb</groupId>
@@ -476,16 +477,16 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>org.hibernate</groupId>
-	<artifactId>hibernate-entitymanager</artifactId>
-	<version>4.2.7.Final</version>
-	<scope>runtime</scope>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>4.2.7.Final</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>org.postgresql</groupId>
-	<artifactId>postgresql</artifactId>
-	<version>9.2-1003-jdbc4</version>
-	<scope>runtime</scope>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>9.2-1003-jdbc4</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>cglib</groupId>
@@ -494,11 +495,11 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>c3p0</groupId>
-        <artifactId>c3p0</artifactId>
-        <version>0.9.1.2</version>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-c3p0</artifactId>
+        <version>4.2.7.Final</version>
         <scope>runtime</scope>
-      </dependency>
+      </dependency>       
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>

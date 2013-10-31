@@ -36,14 +36,10 @@ public interface ReportHistoryServices {
      * @param reportSavedListener The listener notified after a report
      * has been saved (successfully or not). It may be null if no
      * notifications are needed.
-     *
-     * @throws ReportPersistenceException Thrown if initialization cannot complete
-     * @throws PersistenceException if an error occurs during initialization
      */
     public void init(IDFactory idFactory,
                      JmsManager jmsManager,
-                     ReportSavedListener reportSavedListener)
-            throws ReportPersistenceException, PersistenceException;
+                     ReportSavedListener reportSavedListener);
 
     /**
      * Returns all the reports received after the supplied date-time

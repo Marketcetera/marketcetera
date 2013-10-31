@@ -1,12 +1,14 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessorType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlValue;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -17,6 +19,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @version $Id$
  * @since 1.0.0
  */
+@Embeddable
 @XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
 public class BrokerID implements Serializable {
@@ -71,6 +74,7 @@ public class BrokerID implements Serializable {
     }
 
     @XmlValue
+    @Column(name="broker_id")
     private final String mValue;
     private static final long serialVersionUID = 1L;
 }

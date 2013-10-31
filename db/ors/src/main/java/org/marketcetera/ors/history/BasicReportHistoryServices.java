@@ -88,7 +88,6 @@ public class BasicReportHistoryServices
     public void init(IDFactory idFactory,
                      JmsManager jmsManager,
                      ReportSavedListener reportSavedListener)
-            throws ReportPersistenceException, PersistenceException
     {
         mReportIDFactory=new LongIDFactory(idFactory);
         mJmsManager=jmsManager;
@@ -196,18 +195,22 @@ public class BasicReportHistoryServices
                                                     inDate,
                                                     inSymbols);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.history.ReportHistoryServices#save(org.marketcetera.trade.ReportBase)
+     */
     @Override
-    public void save(ReportBase report)
-        throws PersistenceException
+    public void save(ReportBase inReport)
     {
-        boolean success=false;
+        boolean success = false;
         try {
-            assignID(report);
-            reportService.save(report);
-            success=true;
-            Messages.RHS_PERSISTED_REPLY.info(this,report);
+            assignID(inReport);
+            reportService.save(inReport);
+            success = true;
+            Messages.RHS_PERSISTED_REPLY.info(this,
+                                              inReport);
         } finally {
-            invokeListener(report,success);
+            invokeListener(inReport,
+                           success);
         }
     }
     /* (non-Javadoc)
@@ -215,7 +218,6 @@ public class BasicReportHistoryServices
      */
     @Override
     public void delete(ReportBase inReport)
-            throws PersistenceException
     {
     	reportService.delete(inReport);
     }

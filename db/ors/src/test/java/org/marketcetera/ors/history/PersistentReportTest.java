@@ -1,29 +1,26 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
-import org.marketcetera.messagehistory.TradeReportsHistory;
-import org.marketcetera.messagehistory.TradeReportsHistoryTest;
-import org.marketcetera.ors.Principals;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import static org.junit.Assert.*;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
+import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
+import org.marketcetera.messagehistory.TradeReportsHistory;
+import org.marketcetera.messagehistory.TradeReportsHistoryTest;
+import org.marketcetera.ors.PersistTestBase;
+import org.marketcetera.ors.Principals;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.*;
 
 import quickfix.Message;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Collection;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
 
 /* $License$ */
 /**
@@ -34,7 +31,9 @@ import java.util.concurrent.Callable;
  * @since 1.0.0
  */
 @RunWith(Parameterized.class)
-public class PersistentReportTest extends ReportsTestBase {
+public class PersistentReportTest
+        extends PersistTestBase
+{
     /**
      * The test parameters that this test iterates through.
      *
@@ -66,29 +65,36 @@ public class PersistentReportTest extends ReportsTestBase {
     public void emptyBrokerActorViewer()
         throws Exception
     {
-        PersistentReport report=new PersistentReport
-            (createCancelReject(null,null,null));
+        PersistentReport report=new PersistentReport(createCancelReject(null,
+                                                                        null,
+                                                                        null),
+                                                     null,
+                                                     null);
         assertNull(report.getBrokerID());
         assertNull(report.getActor());
         assertNull(report.getActorID());
         assertNull(report.getViewer());
         assertNull(report.getViewerID());
 
-        report=new PersistentReport
-            (createCancelReject(BROKER,sActorID,null));
+        report=new PersistentReport(createCancelReject(BROKER,
+                                                       actorID,
+                                                       null),
+                                    actor,
+                                    null);
         assertEquals(BROKER,report.getBrokerID());
-        assertEquals(sActor.getId(),report.getActor().getId());
-        assertEquals(sActorID,report.getActorID());
+        assertEquals(actor.getId(),report.getActor().getId());
+        assertEquals(actorID,report.getActorID());
         assertNull(report.getViewer());
         assertNull(report.getViewerID());
 
-        report=new PersistentReport
-            (createCancelReject());
+        report=new PersistentReport(createCancelReject(),
+                                    actor,
+                                    viewer);
         assertEquals(BROKER,report.getBrokerID());
-        assertEquals(sActor.getId(),report.getActor().getId());
-        assertEquals(sActorID,report.getActorID());
-        assertEquals(sViewer.getId(),report.getViewer().getId());
-        assertEquals(sViewerID,report.getViewerID());
+        assertEquals(actor.getId(),report.getActor().getId());
+        assertEquals(actorID,report.getActorID());
+        assertEquals(viewer.getId(),report.getViewer().getId());
+        assertEquals(viewerID,report.getViewerID());
     }
 
     /*
@@ -103,7 +109,9 @@ public class PersistentReportTest extends ReportsTestBase {
         aMessage.getTrailer().setInt(10, 1);
         history.addIncomingMessage(TradeReportsHistoryTest.createServerReport(aMessage));
         ExecutionReport execReport = history.getLatestExecutionReport(new OrderID("1171508063701-server02/127.0.0.1"));
-        PersistentReport pers = new PersistentReport(execReport);
+        PersistentReport pers = new PersistentReport(execReport,
+                                                     actor,
+                                                     viewer);
         ReportBase reportBase = pers.toReport();
         assertEquals("INVALID_CHECKSUM_TEST",reportBase.getText());
     }
@@ -118,7 +126,7 @@ public class PersistentReportTest extends ReportsTestBase {
         //Create order cancel reject, save and retrieve it.
         OrderCancelReject reject = createCancelReject();
         assertNull(reject.getReportID());
-        sServices.save(reject);
+        reportHistoryServices.save(reject);
         assertNotNull(reject.getReportID());
         List<PersistentReport> reports = reportService.findAllPersistentReport();
         assertEquals(1, reports.size());
@@ -128,8 +136,8 @@ public class PersistentReportTest extends ReportsTestBase {
         assertSame(Principals.UNKNOWN,
                    reportService.getPrincipals(new OrderID("nonexistent")));
         Principals p = reportService.getPrincipals(reject.getOrderID());
-        assertEquals(sActorID,p.getActorID());
-        assertEquals(sViewerID,p.getViewerID());
+        assertEquals(actorID,p.getActorID());
+        assertEquals(viewerID,p.getViewerID());
     }
 
     /**
@@ -144,7 +152,7 @@ public class PersistentReportTest extends ReportsTestBase {
                 Side.Buy, OrderStatus.New, BigDecimal.ONE, BigDecimal.ONE,
                 BigDecimal.ONE, BigDecimal.ONE);
         assertNull(report.getReportID());
-        sServices.save(report);
+        reportHistoryServices.save(report);
         assertNotNull(report.getReportID());
         List<PersistentReport> reports = reportService.findAllPersistentReport();
         assertEquals(1, reports.size());
@@ -153,8 +161,8 @@ public class PersistentReportTest extends ReportsTestBase {
 
         //Principals.
         Principals p = reportService.getPrincipals(report.getOrderID());
-        assertEquals(sActorID,p.getActorID());
-        assertEquals(sViewerID,p.getViewerID());
+        assertEquals(actorID,p.getActorID());
+        assertEquals(viewerID,p.getViewerID());
     }
 
     /**
@@ -168,7 +176,7 @@ public class PersistentReportTest extends ReportsTestBase {
         //null sending time in cancel reject
         nonNullCVCheck("sendingTime", new Callable<Object>(){
             public Object call() throws Exception {
-                sServices.save(removeSendingTime(
+                reportHistoryServices.save(removeSendingTime(
                         createCancelReject()));
                 return null;
             }
@@ -176,7 +184,7 @@ public class PersistentReportTest extends ReportsTestBase {
         //null sending time in exec report
         nonNullCVCheck("sendingTime", new Callable<Object>(){
             public Object call() throws Exception {
-                sServices.save(removeSendingTime(createExecReport("o1",
+                reportHistoryServices.save(removeSendingTime(createExecReport("o1",
                         null, getInstrument(), Side.Buy, OrderStatus.DoneForDay,
                         BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
                         BigDecimal.ONE)));
@@ -206,10 +214,10 @@ public class PersistentReportTest extends ReportsTestBase {
                 BigDecimal.ONE, BigDecimal.ONE);
         OrderCancelReject reject4 = createCancelReject();
         //Save 'em
-        sServices.save(reject1);
-        sServices.save(report2);
-        sServices.save(report3);
-        sServices.save(reject4);
+        reportHistoryServices.save(reject1);
+        reportHistoryServices.save(report2);
+        reportHistoryServices.save(report3);
+        reportHistoryServices.save(reject4);
         //Verify that their IDs are assigned in ascending order
         assertTrue(reject4.getReportID().compareTo(report3.getReportID()) > 0);
         assertTrue(report3.getReportID().compareTo(report2.getReportID()) > 0);
@@ -252,10 +260,10 @@ public class PersistentReportTest extends ReportsTestBase {
         sleepForSignificantTime();
         Date time5 = new Date();
         //Save 'em
-        sServices.save(reject1);
-        sServices.save(report2);
-        sServices.save(report3);
-        sServices.save(reject4);
+        reportHistoryServices.save(reject1);
+        reportHistoryServices.save(report2);
+        reportHistoryServices.save(report3);
+        reportHistoryServices.save(reject4);
         //Retrieve them and verify that they're retrieved in order
         List<PersistentReport> reports = reportService.findAllPersistentReportSince(time1);
         //Retrieve all reports
@@ -296,21 +304,21 @@ public class PersistentReportTest extends ReportsTestBase {
     {
         OrderCancelReject r1=
             createCancelReject();
-        sServices.save(r1);
+        reportHistoryServices.save(r1);
         OrderCancelReject r2=
-            createCancelReject(BROKER,sActorID,null);
-        sServices.save(r2);
+            createCancelReject(BROKER,actorID,null);
+        reportHistoryServices.save(r2);
         OrderCancelReject r3=
-            createCancelReject(BROKER,sActorID,sExtraUserID);
-        sServices.save(r3);
+            createCancelReject(BROKER,actorID,extraUserID);
+        reportHistoryServices.save(r3);
 
         List<PersistentReport> reports = reportService.findAllPersistentReport();
         assertRetrievedReports(reports,r1,r2,r3);
-        reports = reportService.findAllPersistentReportByViewer(sViewer);
+        reports = reportService.findAllPersistentReportByViewer(viewer);
         assertRetrievedReports(reports,r1);
-        reports = reportService.findAllPersistentReportByViewer(sExtraUser);
+        reports = reportService.findAllPersistentReportByViewer(extraUser);
         assertRetrievedReports(reports,r3);
-        reports = reportService.findAllPersistentReportByViewer(sActor);
+        reports = reportService.findAllPersistentReportByViewer(actor);
         assertRetrievedReports(reports);
     }
     @Test
@@ -319,8 +327,8 @@ public class PersistentReportTest extends ReportsTestBase {
         //execution reports are never deleted in production.
     }
     
-    private static void assertRetrievedReports(List<PersistentReport> inList,
-                                               ReportBase... inReports)
+    private void assertRetrievedReports(List<PersistentReport> inList,
+                                        ReportBase... inReports)
             throws Exception {
         assertEquals(inReports.length, inList.size());
         int idx = 0;
