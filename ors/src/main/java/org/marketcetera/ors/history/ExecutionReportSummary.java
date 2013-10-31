@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @Entity
 @Table(name="exec_reports")
 @NamedQueries({
-    @NamedQuery(name="rootIDForOrderID",query="select e.mRootID from ExecutionReportSummary e where e.mOrderID=:orderID"),
+    @NamedQuery(name="ExecutionReportSummary.findRootIDForOrderID",query="select e.mRootID from ExecutionReportSummary e where e.mOrderID=?1"),
     @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.mIsOpen=false where e.mRootID=:rootID and e.id!=:Id") })
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "positionForSymbol",
@@ -182,13 +182,14 @@ public class ExecutionReportSummary
      * @param inReport The original execution report message.
      * @param inSavedReport the saved persistent report.
      */
-    ExecutionReportSummary(ExecutionReport inReport,
-                           PersistentReport inSavedReport) {
+    public ExecutionReportSummary(ExecutionReport inReport,
+                                  PersistentReport inSavedReport)
+    {
         setReport(inSavedReport);
         mOrderID = inReport.getOrderID();
         mOrigOrderID = inReport.getOriginalOrderID();
         Instrument instrument = inReport.getInstrument();
-        if (instrument != null) {
+        if(instrument != null) {
             mSecurityType = instrument.getSecurityType();
             mSymbol = instrument.getSymbol();
             InstrumentSummaryFields<?> summaryFields = InstrumentSummaryFields.SELECTOR.forInstrument(instrument);
@@ -296,12 +297,18 @@ public class ExecutionReportSummary
         return mRootID;
     }
 
-    @SuppressWarnings("unused")
-    private void setRootID(OrderID inRootID) {
+    public void setRootID(OrderID inRootID)
+    {
         mRootID = inRootID;
     }
-
-    OrderID getOrderID() {
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    public OrderID getOrderID()
+    {
         return mOrderID;
     }
 
@@ -309,8 +316,14 @@ public class ExecutionReportSummary
     private void setOrderID(OrderID inOrderID) {
         mOrderID = inOrderID;
     }
-
-    OrderID getOrigOrderID() {
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    public OrderID getOrigOrderID()
+    {
         return mOrigOrderID;
     }
 
@@ -542,7 +555,7 @@ public class ExecutionReportSummary
      * 
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="orig_order_id",nullable=false))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="orig_order_id",nullable=true))})
     private OrderID mOrigOrderID;
     /**
      * 
@@ -641,10 +654,10 @@ public class ExecutionReportSummary
     /**
      * The scale used for storing all decimal values.
      */
-    static final int DECIMAL_SCALE = 7;
+    public static final int DECIMAL_SCALE = 7;
     /**
      * The precision used for storing all decimal values.
      */
-    static final int DECIMAL_PRECISION = 17;
+    public static final int DECIMAL_PRECISION = 17;
     private static final long serialVersionUID = -6939295144839290006L;
 }

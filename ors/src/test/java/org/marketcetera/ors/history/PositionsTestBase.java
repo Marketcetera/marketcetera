@@ -15,6 +15,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.ors.PersistTestBase;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.*;
 
@@ -27,7 +28,9 @@ import org.marketcetera.trade.*;
  * @since 2.0.0
  */
 @SuppressWarnings("unchecked")
-public abstract class PositionsTestBase<T extends Instrument> extends ReportsTestBase {
+public abstract class PositionsTestBase<T extends Instrument>
+        extends PersistTestBase
+{
     @Test
     public void noRecords() throws Exception {
         assertBigDecimalEquals(BigDecimal.ZERO,
@@ -41,13 +44,13 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
         createBackgroundNoise();
         BigDecimal value = new BigDecimal("135.79");
         Date before = new Date();
-        createAndSaveER("o1", null, getInstrument(), Side.Buy, value, sExtraUserID);
+        createAndSaveER("o1", null, getInstrument(), Side.Buy, value, extraUserID);
         Date after = new Date();
-        assertBigDecimalEquals(value, getInstrumentPosition(after, getInstrument(), sExtraUser));
-        assertThat(getInstrumentPositions(after, sExtraUser), allOf(isOfSize(1),
+        assertBigDecimalEquals(value, getInstrumentPosition(after, getInstrument(), extraUser));
+        assertThat(getInstrumentPositions(after, extraUser), allOf(isOfSize(1),
                 hasEntry(pos(getInstrument()), value.setScale(SCALE))));
-        assertBigDecimalEquals(BigDecimal.ZERO, getInstrumentPosition(before, getInstrument(), sExtraUser));
-        assertThat(getInstrumentPositions(before, sExtraUser), Matchers.allOf(isOfSize(0)));
+        assertBigDecimalEquals(BigDecimal.ZERO, getInstrumentPosition(before, getInstrument(), extraUser));
+        assertThat(getInstrumentPositions(before, extraUser), Matchers.allOf(isOfSize(0)));
     }
 
     @Test
@@ -158,70 +161,70 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
         BigDecimal five=four.add(new BigDecimal(1));
 
         createChainReportsForBuyA
-            ("1a",ACCOUNT,sViewerID,sViewerID,one);
+            ("1a",ACCOUNT,viewerID,viewerID,one);
         createChainReportsForBuyA
-            ("1b",ACCOUNT,sViewerID,sViewerID,one);
+            ("1b",ACCOUNT,viewerID,viewerID,one);
 
         createChainReportsForBuyA
-            ("2a",ACCOUNT,sExtraUserID,sViewerID,one);
+            ("2a",ACCOUNT,extraUserID,viewerID,one);
         createChainReportsForBuyA
-            ("2b",ACCOUNT,sExtraUserID,sViewerID,two);
-
-        createChainReportsForBuyA
-            ("3a",oAccount,sViewerID,sViewerID,one);
-        createChainReportsForBuyA
-            ("3b",oAccount,sViewerID,sViewerID,three);
+            ("2b",ACCOUNT,extraUserID,viewerID,two);
 
         createChainReportsForBuyA
-            ("4a",oAccount,null,sViewerID,one);
+            ("3a",oAccount,viewerID,viewerID,one);
         createChainReportsForBuyA
-            ("4b",oAccount,null,sViewerID,four);
+            ("3b",oAccount,viewerID,viewerID,three);
+
+        createChainReportsForBuyA
+            ("4a",oAccount,null,viewerID,one);
+        createChainReportsForBuyA
+            ("4b",oAccount,null,viewerID,four);
 
         createChainReportsForSellB1
-            ("1a",null,sViewerID,sExtraUserID,four);
+            ("1a",null,viewerID,extraUserID,four);
         createChainReportsForSellB1
-            ("1b",null,sViewerID,sExtraUserID,one);
+            ("1b",null,viewerID,extraUserID,one);
 
         createChainReportsForSellB1
-            ("2a",ACCOUNT,sExtraUserID,sExtraUserID,three);
+            ("2a",ACCOUNT,extraUserID,extraUserID,three);
         createChainReportsForSellB1
-            ("2b",ACCOUNT,sExtraUserID,sExtraUserID,one);
+            ("2b",ACCOUNT,extraUserID,extraUserID,one);
 
         createChainReportsForSellB1
-            ("3a",null,null,sExtraUserID,two);
+            ("3a",null,null,extraUserID,two);
         createChainReportsForSellB1
-            ("3b",null,null,sExtraUserID,one);
+            ("3b",null,null,extraUserID,one);
 
         createChainReportsForSellB1
-            ("4a",oAccount,null,sExtraUserID,one);
+            ("4a",oAccount,null,extraUserID,one);
         createChainReportsForSellB1
-            ("4b",oAccount,null,sExtraUserID,one);
+            ("4b",oAccount,null,extraUserID,one);
 
         Date after = new Date();
 
         assertThat(getInstrumentPositions(after),
                    allOf(isOfSize(4),
-                         hasEntry(pos(getInstrumentA(),ACCOUNT,sViewerID),
+                         hasEntry(pos(getInstrumentA(),ACCOUNT,viewerID),
                                   two.setScale(SCALE)),
-                         hasEntry(pos(getInstrumentA(),ACCOUNT,sExtraUserID),
+                         hasEntry(pos(getInstrumentA(),ACCOUNT,extraUserID),
                                   three.setScale(SCALE)),
-                         hasEntry(pos(getInstrumentA(),oAccount,sViewerID),
+                         hasEntry(pos(getInstrumentA(),oAccount,viewerID),
                                   four.setScale(SCALE)),
                          hasEntry(pos(getInstrumentA(),oAccount,(String)null),
                                   five.setScale(SCALE))));
-        assertThat(getInstrumentPositions(after, sActor),
+        assertThat(getInstrumentPositions(after, actor),
                    allOf(isOfSize(8),
-                         hasEntry(pos(getInstrumentA(),ACCOUNT,sViewerID),
+                         hasEntry(pos(getInstrumentA(),ACCOUNT,viewerID),
                                   two.setScale(SCALE)),
-                         hasEntry(pos(getInstrumentA(),ACCOUNT,sExtraUserID),
+                         hasEntry(pos(getInstrumentA(),ACCOUNT,extraUserID),
                                   three.setScale(SCALE)),
-                         hasEntry(pos(getInstrumentA(),oAccount,sViewerID),
+                         hasEntry(pos(getInstrumentA(),oAccount,viewerID),
                                   four.setScale(SCALE)),
                          hasEntry(pos(getInstrumentA(),oAccount,(String)null),
                                   five.setScale(SCALE)),
-                         hasEntry(pos(getInstrumentB(),null,sViewerID),
+                         hasEntry(pos(getInstrumentB(),null,viewerID),
                                   five.negate().setScale(SCALE)),
-                         hasEntry(pos(getInstrumentB(),ACCOUNT,sExtraUserID),
+                         hasEntry(pos(getInstrumentB(),ACCOUNT,extraUserID),
                                   four.negate().setScale(SCALE)),
                          hasEntry(pos(getInstrumentB(),null,(String)null),
                                   three.negate().setScale(SCALE)),
@@ -328,9 +331,9 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
                                                      BROKER,
                                                      ACCOUNT,
                                                      "text",
-                                                     sActorID,
-                                                     sViewerID);
-        sServices.save(newReport);
+                                                     actorID,
+                                                     viewerID);
+        reportHistoryServices.save(newReport);
         // position is still 0
         assertBigDecimalEquals(BigDecimal.ZERO,
                                getInstrumentPosition(new Date(),
@@ -351,9 +354,9 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
                                                           BROKER,
                                                           ACCOUNT,
                                                           "text",
-                                                          sActorID,
-                                                          sViewerID);
-        sServices.save(partialReport1);
+                                                          actorID,
+                                                          viewerID);
+        reportHistoryServices.save(partialReport1);
         // position is now 1
         assertBigDecimalEquals(BigDecimal.ONE,
                                getInstrumentPosition(new Date(),
@@ -376,9 +379,9 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
                                                            BROKER,
                                                            ACCOUNT,
                                                            "text",
-                                                           sActorID,
-                                                           sViewerID);
-        sServices.save(replacedReport1);
+                                                           actorID,
+                                                           viewerID);
+        reportHistoryServices.save(replacedReport1);
         // position is still 1
         assertBigDecimalEquals(BigDecimal.ONE,
                                getInstrumentPosition(new Date(),
@@ -401,9 +404,9 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
                                                            BROKER,
                                                            ACCOUNT,
                                                            "text",
-                                                           sActorID,
-                                                           sViewerID);
-        sServices.save(replacedReport2);
+                                                           actorID,
+                                                           viewerID);
+        reportHistoryServices.save(replacedReport2);
         // position is still 1
         assertBigDecimalEquals(BigDecimal.ONE,
                                getInstrumentPosition(new Date(),
@@ -424,9 +427,9 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
                                                           BROKER,
                                                           ACCOUNT,
                                                           "text",
-                                                          sActorID,
-                                                          sViewerID);
-        sServices.save(partialReport2);
+                                                          actorID,
+                                                          viewerID);
+        reportHistoryServices.save(partialReport2);
         // position is now 2
         assertBigDecimalEquals(new BigDecimal(2),
                                getInstrumentPosition(new Date(),
@@ -532,7 +535,7 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
         throws Exception
     {
         return createChainReportsForBuyA
-            ("",ACCOUNT,sActorID,sViewerID,POSITION_BUY_A);
+            ("",ACCOUNT,actorID,viewerID,POSITION_BUY_A);
     }
 
     private List<ExecutionReport> createChainReportsForBuyA
@@ -588,7 +591,7 @@ public abstract class PositionsTestBase<T extends Instrument> extends ReportsTes
 
     private List<ExecutionReport> createChainReportsForSellB1() throws Exception {
         return createChainReportsForSellB1
-            ("",ACCOUNT,sActorID,sViewerID,POSITION_SELL_B1);
+            ("",ACCOUNT,actorID,viewerID,POSITION_SELL_B1);
     }
 
     private List<ExecutionReport> createChainReportsForSellB1

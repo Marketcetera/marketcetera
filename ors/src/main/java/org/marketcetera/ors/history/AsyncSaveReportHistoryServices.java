@@ -71,7 +71,6 @@ public class AsyncSaveReportHistoryServices
     public void init(IDFactory idFactory,
                      JmsManager jmsManager,
                      ReportSavedListener reportSavedListener)
-            throws ReportPersistenceException, PersistenceException
     {
         super.init(idFactory,jmsManager,reportSavedListener);
         try {
@@ -80,8 +79,8 @@ public class AsyncSaveReportHistoryServices
             getJmsManager().getIncomingJmsFactory().registerHandlerTMX
                 (new QueueHandler(),PERSIST_QUEUE,false);
         } catch (JAXBException ex) {
-            throw new ReportPersistenceException
-                (ex,Messages.RHS_CANNOT_CREATE_QUEUE);
+            throw new ReportPersistenceException(ex,
+                                                 Messages.RHS_CANNOT_CREATE_QUEUE);
         }
     }
 

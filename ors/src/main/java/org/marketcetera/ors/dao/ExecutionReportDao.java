@@ -1,6 +1,9 @@
 package org.marketcetera.ors.dao;
 
+import java.util.List;
+
 import org.marketcetera.ors.history.ExecutionReportSummary;
+import org.marketcetera.trade.OrderID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,8 +18,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 @ClassVersion("$Id$")
 public interface ExecutionReportDao
-//        extends JpaRepository<ExecutionReportSummary,Long>
+        extends JpaRepository<ExecutionReportSummary,Long>
 {
+    List<OrderID> findRootIDForOrderID(OrderID inOrderID);
 //
 //     int deleteReportsFor(PersistentReport report);
 //

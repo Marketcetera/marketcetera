@@ -1,17 +1,22 @@
 package org.marketcetera.ors.history;
 
 import org.marketcetera.trade.Currency;
-import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
+
 /**
  * Tests exec report summary persistence for currency.
  *
  */
-@ClassVersion("$Id$")
-public class CurrencyExecReportSummaryTest extends ExecReportSummaryTestBase<Currency> {
+public class CurrencyExecReportSummaryTest
+        extends ExecReportSummaryTestBase<Currency>
+{
+    /* (non-Javadoc)
+     * @see org.marketcetera.ors.history.ExecReportSummaryTestBase#getInstrument()
+     */
     @Override
-    protected Currency getInstrument() {
+    protected Currency getInstrument()
+    {
         return new Currency("GBP/USD");
     }
 }

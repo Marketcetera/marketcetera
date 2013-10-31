@@ -1,6 +1,7 @@
 package org.marketcetera.ors.dao.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +14,13 @@ import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.dao.ExecutionReportDao;
 import org.marketcetera.ors.dao.PersistentReportDao;
 import org.marketcetera.ors.dao.ReportService;
+import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.history.ExecutionReportSummary;
 import org.marketcetera.ors.history.PersistentReport;
+import org.marketcetera.ors.history.ReportType;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,11 +46,22 @@ public class ReportServiceImpl
      * @see org.marketcetera.ors.dao.ExecutionReportService#purgeReportsBefore(java.util.Date)
      */
     @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public int purgeReportsBefore(Date inPurgeDate)
     {
-//        List<PersistentReport> reportList = persistentReportDao.findReportForOrderBefore(mPurgeDate.toDate());
-//        int count = executionReportService.deleteReportsIn(reportList);
-        throw new UnsupportedOperationException(); // TODO
+        List<PersistentReport> reports = persistentReportDao.findSince(inPurgeDate);
+        if(reports == null || reports.isEmpty()) {
+            return 0;
+        }
+        List<Long> ids = new ArrayList<Long>();
+        for(PersistentReport report : reports) {
+            ids.add(report.getId());
+        }
+        // delete report summaries first - need to use a manual query here to include the list param
+        entityManager.createNativeQuery("DELETE FROM exec_reports WHERE report_id IN (:ids)").setParameter("ids",ids).executeUpdate();
+        // now, delete the reports
+        persistentReportDao.delete(reports);
+        return reports.size();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getReportsSince(org.marketcetera.ors.security.SimpleUser, java.util.Date)
@@ -196,23 +211,73 @@ public class ReportServiceImpl
      * @see org.marketcetera.ors.dao.ReportService#save(org.marketcetera.trade.ReportBase)
      */
     @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public PersistentReport save(ReportBase inReport)
     {
-        if(inReport instanceof PersistentReport) {
-            return persistentReportDao.save((PersistentReport)inReport);
-        } else {
-            return persistentReportDao.save(new PersistentReport(inReport));
+        PersistentReport report = persistentReportDao.save(new PersistentReport(inReport,
+                                                                                inReport.getActorID() == null ? null : userDao.findOne(inReport.getActorID().getValue()),
+                                                                                inReport.getViewerID() == null ? null : userDao.findOne(inReport.getViewerID().getValue())));
+        if(report.getReportType() == ReportType.ExecutionReport) {
+            ExecutionReportSummary reportSummary = new ExecutionReportSummary((ExecutionReport)inReport,
+                                                                              report);
+            // CD 17-Mar-2011 ORS-79
+            // we need to find the correct root ID of the incoming ER. for cancels and cancel/replaces,
+            //  this is easy - we can look up the root ID from the origOrderID. for a partial fill or fill
+            //  of an original order, this is also easy - the rootID is just the orderID. the difficult case
+            //  is a partial fill or fill of a replaced order. the origOrderID won't be present (not required)
+            //  but there still exists an order chain to be respected or position reporting will be broken.
+            //  therefore, the algorithm should be:
+            // if the original orderID is present, use the root from that order
+            // if it's not present, look for the rootID of an existing record with the same orderID
+            SLF4JLoggerProxy.debug(this,
+                                   "Searching for rootID for {}",  //$NON-NLS-1$
+                                   reportSummary.getOrderID());
+            OrderID orderId = null;
+            if(reportSummary.getOrigOrderID() == null) {
+                SLF4JLoggerProxy.debug(this,
+                                       "No origOrderID present, using orderID for query");  //$NON-NLS-1$
+                orderId = reportSummary.getOrderID();
+            } else {
+                SLF4JLoggerProxy.debug(this,
+                                       "Using origOrderID {} for query",  //$NON-NLS-1$
+                                       reportSummary.getOrigOrderID());
+                orderId = reportSummary.getOrigOrderID();
+            }
+            List<OrderID> list = executionReportDao.findRootIDForOrderID(orderId);
+            if(list.isEmpty()) {
+                SLF4JLoggerProxy.debug(this,
+                                       "No other orders match this orderID - this must be the first in the order chain");  //$NON-NLS-1$
+                // this is the first order in this chain
+                reportSummary.setRootID(reportSummary.getOrderID());
+            } else {
+                OrderID rootID = (OrderID)list.get(0);
+                SLF4JLoggerProxy.debug(this,
+                                       "Not the first orderID in the chain, using {} for rootID",  //$NON-NLS-1$
+                                       rootID);
+                reportSummary.setRootID(rootID);
+            }
+            reportSummary = executionReportDao.save(reportSummary);
         }
+        return report;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#delete(org.marketcetera.ors.history.PersistentReport)
      */
     @Override
+    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
     public void delete(ReportBase inReport)
     {
-//        PersistentReport report = persistentReportDao.findReportForOrder(inReport.getOrderID());
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inReport == null) {
+            return;
+        }
+        if(inReport instanceof PersistentReport) {
+            persistentReportDao.delete(((PersistentReport)inReport));
+        } else {
+            PersistentReport report = persistentReportDao.findByReportID(inReport.getReportID());
+            if(report != null) {
+                persistentReportDao.delete(report);
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getPrincipals(org.marketcetera.trade.OrderID)
@@ -229,7 +294,7 @@ public class ReportServiceImpl
     @Override
     public List<ExecutionReportSummary> findAllExecutionReportSummary()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return executionReportDao.findAll();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#findAllPersistentReport()
@@ -237,7 +302,7 @@ public class ReportServiceImpl
     @Override
     public List<PersistentReport> findAllPersistentReport()
     {
-        throw new UnsupportedOperationException(); // TODO
+        return persistentReportDao.findAll();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#findAllPersistentReportSince(java.util.Date)
@@ -255,6 +320,11 @@ public class ReportServiceImpl
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /**
+     * provides datastore access to users
+     */
+    @Autowired
+    private UserDao userDao;
     /**
      * provides datastore access to execution reports
      */

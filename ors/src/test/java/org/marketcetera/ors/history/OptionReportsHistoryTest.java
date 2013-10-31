@@ -20,8 +20,9 @@ import java.util.Map;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
-public class OptionReportsHistoryTest extends ReportHistoryTestBase<Option> {
+public class OptionReportsHistoryTest
+        extends ReportHistoryTestBase<Option>
+{
     @Override
     public void instrument() throws Exception {
         Date before = new Date();
@@ -31,16 +32,16 @@ public class OptionReportsHistoryTest extends ReportHistoryTestBase<Option> {
         assertThat(getOptionPositions(after, option.getSymbol()),
                    allOf(isOfSize(1),
                          hasEntry(pos(option),getExpectedPosition().setScale(SCALE))));
-        assertThat(getOptionPositions(after,sActor,option.getSymbol()),
+        assertThat(getOptionPositions(after,actor,option.getSymbol()),
                    allOf(isOfSize(1),
                          hasEntry(pos(option),getExpectedActorPosition().setScale(SCALE))));
-        assertThat(getOptionPositions(after,sExtraUser,option.getSymbol()),
+        assertThat(getOptionPositions(after,extraUser,option.getSymbol()),
                    allOf(isOfSize(1),
                          hasEntry(pos(option),getExpectedExtraPosition().setScale(SCALE))));
 
         assertThat(getOptionPositions(before,option.getSymbol()),isOfSize(0));
-        assertThat(getOptionPositions(before,sActor,option.getSymbol()),isOfSize(0));
-        assertThat(getOptionPositions(before,sExtraUser,option.getSymbol()),isOfSize(0));
+        assertThat(getOptionPositions(before,actor,option.getSymbol()),isOfSize(0));
+        assertThat(getOptionPositions(before,extraUser,option.getSymbol()),isOfSize(0));
     }
 
     @Override

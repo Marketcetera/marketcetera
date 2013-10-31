@@ -1,17 +1,20 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.trade.*;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.core.position.PositionKey;
-import org.junit.Test;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
+
+import org.junit.Test;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.ors.PersistTestBase;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Side;
 
 /* $License$ */
 /**
@@ -21,7 +24,9 @@ import java.util.Map;
  * @version $Id$
  * @since 1.0.0
  */
-public abstract class ReportHistoryTestBase<I extends Instrument> extends ReportsTestBase {
+public abstract class ReportHistoryTestBase<I extends Instrument>
+        extends PersistTestBase
+{
 
     /**
      * Runs a very basic test that saves execution reports, and
@@ -44,56 +49,56 @@ public abstract class ReportHistoryTestBase<I extends Instrument> extends Report
         String origOrderID = null;
         I instrument = getInstrument();
         for(int i = 0; i < 10; i++) {
-            sServices.save(createCancelReject());
+            reportHistoryServices.save(createCancelReject());
             String orderID = idPrefix + i;
             mExpectedPosition = mExpectedPosition.add(BigDecimal.ONE);
             createAndSaveER(orderID, origOrderID,
                             instrument,Side.Buy, mExpectedPosition);
             origOrderID = orderID;
         }
-        sServices.save(createCancelReject(sExtraUserID));
+        reportHistoryServices.save(createCancelReject(extraUserID));
         mExpectedExtraPosition = mExpectedPosition.add(BigDecimal.ONE);
         createAndSaveER(idPrefix + 10, null,
-                        instrument,Side.Buy, mExpectedExtraPosition, sExtraUserID);
+                        instrument,Side.Buy, mExpectedExtraPosition, extraUserID);
         mExpectedActorPosition = mExpectedExtraPosition.add(mExpectedPosition);
         sleepForSignificantTime();
         Date after = new Date();
 
-        assertEquals(20,sServices.getReportsSince(sViewer,before).length);
-        assertEquals(22,sServices.getReportsSince(sActor,before).length);
-        assertEquals(2,sServices.getReportsSince(sExtraUser,before).length);
+        assertEquals(20,reportHistoryServices.getReportsSince(viewer,before).length);
+        assertEquals(22,reportHistoryServices.getReportsSince(actor,before).length);
+        assertEquals(2,reportHistoryServices.getReportsSince(extraUser,before).length);
 
-        assertEquals(0,sServices.getReportsSince(sViewer,after).length);
-        assertEquals(0,sServices.getReportsSince(sActor,after).length);
-        assertEquals(0,sServices.getReportsSince(sExtraUser,after).length);
+        assertEquals(0,reportHistoryServices.getReportsSince(viewer,after).length);
+        assertEquals(0,reportHistoryServices.getReportsSince(actor,after).length);
+        assertEquals(0,reportHistoryServices.getReportsSince(extraUser,after).length);
 
         assertBigDecimalEquals
             (mExpectedPosition, getInstrumentPosition(after,instrument));
         assertBigDecimalEquals
-            (mExpectedActorPosition, getInstrumentPosition(after,instrument,sActor));
+            (mExpectedActorPosition, getInstrumentPosition(after,instrument,actor));
         assertBigDecimalEquals
-            (mExpectedExtraPosition, getInstrumentPosition(after,instrument,sExtraUser));
+            (mExpectedExtraPosition, getInstrumentPosition(after,instrument,extraUser));
 
         assertBigDecimalEquals
             (BigDecimal.ZERO, getInstrumentPosition(before,instrument));
         assertBigDecimalEquals
-            (BigDecimal.ZERO, getInstrumentPosition(before,instrument,sActor));
+            (BigDecimal.ZERO, getInstrumentPosition(before,instrument,actor));
         assertBigDecimalEquals
-            (BigDecimal.ZERO, getInstrumentPosition(before,instrument,sExtraUser));
+            (BigDecimal.ZERO, getInstrumentPosition(before,instrument,extraUser));
 
         assertThat(getInstrumentPositions(after),
                    allOf(isOfSize(1),
                          hasEntry(pos(instrument), mExpectedPosition.setScale(SCALE))));
-        assertThat(getInstrumentPositions(after,sActor),
+        assertThat(getInstrumentPositions(after,actor),
                    allOf(isOfSize(1),
                          hasEntry(pos(instrument), mExpectedActorPosition.setScale(SCALE))));
-        assertThat(getInstrumentPositions(after,sExtraUser),
+        assertThat(getInstrumentPositions(after,extraUser),
                    allOf(isOfSize(1),
                          hasEntry(pos(instrument), mExpectedExtraPosition.setScale(SCALE))));
 
         assertThat(getPositions(before),isOfSize(0));
-        assertThat(getPositions(before,sActor),isOfSize(0));
-        assertThat(getPositions(before,sExtraUser),isOfSize(0));
+        assertThat(getPositions(before,actor),isOfSize(0));
+        assertThat(getPositions(before,extraUser),isOfSize(0));
     }
 
     /**

@@ -7,13 +7,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.ors.PersistTestBase;
 import org.marketcetera.ors.security.SimpleUser;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
@@ -28,20 +26,6 @@ public class UserServiceImplTest
         extends PersistTestBase
 {
     /**
-     * Runs once after each test.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @After
-    public void cleanup()
-            throws Exception
-    {
-        for(SimpleUser user : userService.findAll()) {
-            userService.delete(user);
-        }
-        assertTrue(userService.findAll().isEmpty());
-    }
-    /**
      * Tests {@link UserServiceImpl#save(SimpleUser)}.
      *
      * @throws Exception if an unexpected error occurs
@@ -51,6 +35,10 @@ public class UserServiceImplTest
             throws Exception
     {
         List<SimpleUser> allUsers;
+        allUsers = userService.findAll();
+        for(SimpleUser user : allUsers) {
+            userService.delete(user);
+        }
         allUsers = userService.findAll();
         assertTrue(allUsers.isEmpty());
         SimpleUser user = generateUser();
@@ -104,11 +92,14 @@ public class UserServiceImplTest
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Transactional
     public void testDelete()
             throws Exception
     {
         List<SimpleUser> allUsers = userService.findAll();
+        for(SimpleUser user : allUsers) {
+            userService.delete(user);
+        }
+        allUsers = userService.findAll();
         assertTrue(allUsers.isEmpty());
         // delete a user that doesn't exist
         SimpleUser user = generateUser();
@@ -131,10 +122,14 @@ public class UserServiceImplTest
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Transactional
     public void testListUsers()
             throws Exception
     {
+        List<SimpleUser> allUsers = userService.findAll();
+        for(SimpleUser user : allUsers) {
+            userService.delete(user);
+        }
+        allUsers = userService.findAll();
         List<SimpleUser> users = userService.listUsers(null,
                                                        null);
         assertTrue(users.isEmpty());
@@ -184,7 +179,6 @@ public class UserServiceImplTest
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Transactional
     public void testFindByName()
             throws Exception
     {

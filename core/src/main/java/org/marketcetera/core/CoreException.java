@@ -10,12 +10,15 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * @since 0.6.0
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class CoreException
-    extends I18NException
+        extends I18NException
 {
     private static final long serialVersionUID = 2L;
-
+    /**
+     * Create a new CoreException instance.
+     */
+    public CoreException() {}
     /**
      * Constructs a new throwable without a message, but with the 
      * given underlying cause.
