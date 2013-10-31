@@ -62,6 +62,7 @@ public class PersistTestBase
         context = (ConfigurableApplicationContext)inContext;
         context.registerShutdownHook();
         userService = context.getBean(UserService.class);
+        reportService = context.getBean(ReportService.class);
     }
     /**
      * Generates an unpersisted user with unique name and password values.
@@ -90,29 +91,13 @@ public class PersistTestBase
     public static ConfigurableApplicationContext springSetup(String[] inConfigFiles)
             throws Exception
     {
-//        return springSetup(inConfigFiles,
-//                           null);
-        return context;
+        throw new UnsupportedOperationException();
     }
     public static ConfigurableApplicationContext springSetup(String[] configFiles,
                                                              ApplicationContext parent)
             throws Exception
     {
-//        try {
-//            generator = SecureRandom.getInstance("SHA1PRNG"); //$NON-NLS-1$
-//            if(parent == null) {
-//                context = new ClassPathXmlApplicationContext(configFiles);
-//            } else {
-//                context = new ClassPathXmlApplicationContext(configFiles,
-//                                                             parent);
-//            }
-//            context.registerShutdownHook();
-//            return context;
-//        } catch (Exception e) {
-//            SLF4JLoggerProxy.error(PersistTestBase.class, "FailedSetup:", e); //$NON-NLS-1$
-//            throw e;
-//        }
-        return context;
+        throw new UnsupportedOperationException();
     }
     /**
      * 
@@ -200,5 +185,5 @@ public class PersistTestBase
     protected UserService userService;
     protected ReportService reportService;
     private static SecureRandom generator;
-    private static ConfigurableApplicationContext context;
+    protected ConfigurableApplicationContext context;
 }

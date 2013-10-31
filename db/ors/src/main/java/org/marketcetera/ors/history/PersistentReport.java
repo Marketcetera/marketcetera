@@ -7,7 +7,6 @@ import javax.persistence.*;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.EntityBase;
-import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -34,17 +33,12 @@ import quickfix.Message;
 public class PersistentReport
         extends EntityBase
 {
-
     /**
      * Creates an instance, given a report.
      *
      * @param inReport the report instance.
-     *
-     * @throws PersistenceException if there were errors creating the
-     * instance.
      */
     public PersistentReport(ReportBase inReport)
-        throws PersistenceException
     {
         mReportBase = inReport;
         setBrokerID(inReport.getBrokerID());
@@ -229,13 +223,11 @@ public class PersistentReport
     private void setReportType(ReportType inReportType) {
         mReportType = inReportType;
     }
-
     /**
      * Declared to get JPA to work.
      */
-    PersistentReport() {
-    }
-
+    @SuppressWarnings("unused")
+    private PersistentReport() {}
     /**
      * The attribute sending time used in JPQL queries
      */

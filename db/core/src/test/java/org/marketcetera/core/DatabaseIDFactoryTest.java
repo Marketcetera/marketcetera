@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 /**
  * Tests the database ID factory to make sure that if the DB is not there
@@ -21,23 +22,22 @@ import org.springframework.context.support.AbstractApplicationContext;
 public class DatabaseIDFactoryTest
 {
     /**
-     * 
+     * Runs once before all tests.
      *
-     *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @BeforeClass
     public static void setUp()
             throws Exception
     {
-//        context = PersistTestBase.springSetup(new String[] { "persist.xml" });
-        context.start();
+        LoggerConfiguration.logSetup();
+        context = new FileSystemXmlApplicationContext(new String[] { "file:src/test/sample_data/conf/test_persist.xml" },
+                                                      null); 
     }
     /**
-     * 
+     * Runs once after all tests.
      *
-     *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @AfterClass
     public static void tearDown()
@@ -46,8 +46,7 @@ public class DatabaseIDFactoryTest
         context.stop();
     }
     /**
-     * 
-     *
+     * Tests database ID factory.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -55,7 +54,7 @@ public class DatabaseIDFactoryTest
     public void testDatabaseIDs()
             throws Exception
     {
-        DatabaseIDFactory factory = new DatabaseIDFactory();
+        IDFactory factory = context.getBean(IDFactory.class);
         factory.init();
         String next = factory.getNext();
         assertNotNull(next);
@@ -71,7 +70,7 @@ public class DatabaseIDFactoryTest
         }
     }
     /**
-     * 
+     * test spring context
      */
     private static AbstractApplicationContext context;
 }

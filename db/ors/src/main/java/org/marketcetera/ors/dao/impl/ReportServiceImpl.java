@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.dao.ExecutionReportDao;
@@ -14,21 +17,24 @@ import org.marketcetera.ors.history.ExecutionReportSummary;
 import org.marketcetera.ors.history.PersistentReport;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.*;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
 /**
- *
+ * Provides access to report objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
 @Service
-@Transactional(readOnly=true)
+@Transactional(readOnly=true,propagation=Propagation.REQUIRED)
+@ClassVersion("$Id$")
 public class ReportServiceImpl
         implements ReportService
 {
@@ -112,16 +118,6 @@ public class ReportServiceImpl
     {
         throw new UnsupportedOperationException(); // TODO
     }
-    /**
-     * provides datastore access to execution reports
-     */
-    @Autowired
-    private ExecutionReportDao executionReportDao;
-    /**
-     * provides datastore access to persistent reports
-     */
-    @Autowired
-    private PersistentReportDao persistentReportDao;
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getCurrencyPositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Currency)
      */
@@ -202,8 +198,11 @@ public class ReportServiceImpl
     @Override
     public PersistentReport save(ReportBase inReport)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        if(inReport instanceof PersistentReport) {
+            return persistentReportDao.save((PersistentReport)inReport);
+        } else {
+            return persistentReportDao.save(new PersistentReport(inReport));
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#delete(org.marketcetera.ors.history.PersistentReport)
@@ -256,4 +255,19 @@ public class ReportServiceImpl
     {
         throw new UnsupportedOperationException(); // TODO
     }
+    /**
+     * provides datastore access to execution reports
+     */
+    @Autowired
+    private ExecutionReportDao executionReportDao;
+    /**
+     * provides datastore access to persistent reports
+     */
+    @Autowired
+    private PersistentReportDao persistentReportDao;
+    /**
+     * 
+     */
+    @PersistenceContext
+    private EntityManager entityManager;
 }

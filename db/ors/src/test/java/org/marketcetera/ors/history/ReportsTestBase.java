@@ -14,23 +14,18 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.ors.PersistTestBase;
-import org.marketcetera.ors.dao.ReportService;
-import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.*;
-import org.marketcetera.util.test.TestCaseBase;
 
 import quickfix.Message;
 import quickfix.field.ClOrdID;
@@ -47,33 +42,29 @@ import quickfix.field.SendingTime;
  */
 @SuppressWarnings("rawtypes")
 public class ReportsTestBase
-        extends TestCaseBase
+        extends PersistTestBase
 {
     /**
-     * Runs once before all tests.
+     * Runs before each test.
      *
      * @throws Exception if an unexpected error occurs
      */
-    @BeforeClass
-    public static void springSetup()
-        throws Exception
+    @Before
+    public void before()
+            throws Exception
     {
-        PersistTestBase.springSetup(getSpringFiles());
-        userService = null; // TODO retrieve user service from spring setup
-        reportService = null; // TODO retrieve report service from spring setup
         sMessageFactory = FIXVersion.FIX_SYSTEM.getMessageFactory();
-
         InMemoryIDFactory idFactory=new InMemoryIDFactory(0);
         idFactory.init();
-        sServices=new BasicReportHistoryServices();
-        sServices.init(idFactory,null,null);
-
+        sServices = context.getBean(ReportHistoryServices.class);
+        sServices.init(idFactory,
+                       null,
+                       null);
         sActor=new SimpleUser();
         sActor.setName("actor");
         sActor.setPassword("pass".toCharArray());
         sActor.setActive(true);
         sActor.setSuperuser(true);
-        userService.save(sActor);
         sActorID=new UserID(sActor.getId());
 
         sViewer=new SimpleUser();
@@ -81,7 +72,6 @@ public class ReportsTestBase
         sViewer.setPassword("pass2".toCharArray());
         sViewer.setActive(true);
         sViewer.setSuperuser(false);
-        userService.save(sViewer);
         sViewerID=new UserID(sViewer.getId());
 
         sExtraUser=new SimpleUser();
@@ -89,56 +79,47 @@ public class ReportsTestBase
         sExtraUser.setPassword("pass2".toCharArray());
         sExtraUser.setActive(true);
         sExtraUser.setSuperuser(false);
-        userService.save(sExtraUser);
         sExtraUserID=new UserID(sExtraUser.getId());
+        userService.save(sActor);
+        userService.save(sViewer);
+        userService.save(sExtraUser);
     }
     /**
-     * Runs once after all tests.
+     * Runs after each test.
      *
      * @throws Exception if an unexpected error occurs
      */
-    @AfterClass
-    public static void cleanUser()
+    @After
+    public void cleanTables()
             throws Exception
     {
+        reportService.purgeReportsBefore(new Date());
         List<SimpleUser> allUsers = userService.findAll();
         for(SimpleUser user : allUsers) {
             userService.delete(user);
         }
         //Verify everything's gone
         assertTrue(userService.findAll().isEmpty());
-    }
-    /**
-     * Runs before and after each test.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @After
-    @Before
-    public void cleanTables()
-            throws Exception
-    {
-        reportService.purgeReportsBefore(new Date());
         //Verify everything's gone // TODO
 //        assertEquals(0, erQuery.fetch().size());
 //        assertEquals(0, prQuery.fetchCount());
 //        assertEquals(0, prQuery.fetch().size());
     }
 
-    static OrderCancelReject createCancelReject()
+    OrderCancelReject createCancelReject()
             throws MessageCreationException {
         return createCancelReject(sViewerID);
     }
-    static OrderCancelReject createCancelReject(UserID inViewerID)
+    OrderCancelReject createCancelReject(UserID inViewerID)
             throws MessageCreationException {
         return createCancelReject(BROKER,inViewerID);
     }
-    static OrderCancelReject createCancelReject(BrokerID inBrokerID,
+    OrderCancelReject createCancelReject(BrokerID inBrokerID,
                                                 UserID inViewerID)
             throws MessageCreationException {
         return createCancelReject(inBrokerID,sActorID,inViewerID);
     }
-    static OrderCancelReject createCancelReject(BrokerID inBrokerID,
+    OrderCancelReject createCancelReject(BrokerID inBrokerID,
                                                 UserID inActorID,
                                                 UserID inViewerID)
             throws MessageCreationException {
@@ -150,7 +131,7 @@ public class ReportsTestBase
             (msg, inBrokerID, Originator.Server, inActorID, inViewerID);
     }
 
-    static ExecutionReport createExecReport(String inOrderID,
+    ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
                                             Instrument inInstrument,
                                             Side inSide,
@@ -164,7 +145,7 @@ public class ReportsTestBase
                 inInstrument, inSide, inOrderStatus, inCumQuantity, inAvgPrice,
                 inLastQty, inLastPrice, sViewerID);
     }
-    static ExecutionReport createExecReport(String inOrderID,
+    ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
                                             Instrument inInstrument,
                                             Side inSide,
@@ -179,7 +160,7 @@ public class ReportsTestBase
                 inSide, inOrderStatus, inCumQuantity, inAvgPrice,
                 inLastQty, inLastPrice, BROKER, inViewerID);
     }
-    static ExecutionReport createExecReport(String inOrderID,
+    ExecutionReport createExecReport(String inOrderID,
                                             String inOrigOrderID,
                                             Instrument inInstrument,
                                             Side inSide,
@@ -394,78 +375,78 @@ public class ReportsTestBase
         //PersistTestBase.sleepForSignificantTime();
     }
 
-    protected static BigDecimal getPosition(Date inDate, Equity inEquity)
+    protected BigDecimal getPosition(Date inDate, Equity inEquity)
             throws Exception {
         return getPosition(inDate, inEquity, sViewer);
     }
     
-    protected static BigDecimal getPosition(Date inDate, Equity inEquity, SimpleUser inViewer)
+    protected BigDecimal getPosition(Date inDate, Equity inEquity, SimpleUser inViewer)
             throws Exception {
         return sServices.getEquityPositionAsOf(inViewer, inDate, inEquity);
     }
 
-    protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate)
+    protected Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate)
             throws Exception {
         return getPositions(inDate, sViewer);
     }
     
-    protected static BigDecimal getPosition(Date inDate, Currency inCurrency)
+    protected BigDecimal getPosition(Date inDate, Currency inCurrency)
             throws Exception {
         return getPosition(inDate, inCurrency, sViewer);
     }
     
-    protected static BigDecimal getPosition(Date inDate, Currency inCurrency, SimpleUser inViewer)
+    protected BigDecimal getPosition(Date inDate, Currency inCurrency, SimpleUser inViewer)
             throws Exception {
         return sServices.getCurrencyPositionAsOf(inViewer, inDate, inCurrency);
     }
 
-    protected static Map<PositionKey<Currency>,BigDecimal> getCurrencyPositions(Date inDate)
+    protected Map<PositionKey<Currency>,BigDecimal> getCurrencyPositions(Date inDate)
             throws Exception {
         return getCurrencyPositions(inDate, sViewer);
     }
     
     
-    protected static BigDecimal getPosition(Date inDate, Option inOption) throws Exception {
+    protected BigDecimal getPosition(Date inDate, Option inOption) throws Exception {
         return getPosition(inDate, inOption, sViewer);
     }
-    protected static BigDecimal getPosition(Date inDate, Option inOption,
+    protected BigDecimal getPosition(Date inDate, Option inOption,
                                             SimpleUser inViewer)
             throws Exception {
         return sServices.getOptionPositionAsOf(inViewer, inDate, inOption);
     }
 
-    protected static Map<PositionKey<Option>,BigDecimal> getAllOptionPositions(
+    protected Map<PositionKey<Option>,BigDecimal> getAllOptionPositions(
             Date inDate) throws PersistenceException {
         return getAllOptionPositions(inDate, sViewer);
     }
-    protected static Map<PositionKey<Option>,BigDecimal> getAllOptionPositions(
+    protected Map<PositionKey<Option>,BigDecimal> getAllOptionPositions(
             Date inDate, SimpleUser inViewer) throws PersistenceException {
         return sServices.getAllOptionPositionsAsOf(inViewer, inDate);
     }
 
-    protected static Map<PositionKey<Option>,BigDecimal> getOptionPositions(
+    protected Map<PositionKey<Option>,BigDecimal> getOptionPositions(
             Date inDate, String... inSymbols) throws PersistenceException {
         return getOptionPositions(inDate, sViewer,  inSymbols);
     }
     
-    protected static Map<PositionKey<Option>,BigDecimal> getOptionPositions(
+    protected Map<PositionKey<Option>,BigDecimal> getOptionPositions(
             Date inDate, SimpleUser inViewer, String... inSymbols)
             throws PersistenceException {
         return sServices.getOptionPositionsAsOf(inViewer, inDate, inSymbols);
     }
 
-    protected static Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
+    protected Map<PositionKey<Equity>,BigDecimal> getPositions(Date inDate, SimpleUser inViewer)
             throws Exception {
         return sServices.getAllEquityPositionsAsOf(inViewer, inDate);
     }
     
-    protected static Map<PositionKey<Currency>,BigDecimal> getCurrencyPositions(Date inDate, SimpleUser inViewer)
+    protected Map<PositionKey<Currency>,BigDecimal> getCurrencyPositions(Date inDate, SimpleUser inViewer)
             throws Exception {
         return sServices.getAllCurrencyPositionsAsOf(inViewer, inDate);
     }
 
 
-    protected static ExecutionReport createAndSaveER(String inOrderID,
+    protected ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
                                             Instrument inInstrument,
                                             Side inSide,
@@ -485,7 +466,7 @@ public class ReportsTestBase
      * @return an <code>ExecutionReport</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected static ExecutionReport createAndSaveER(String inOrderID,
+    protected ExecutionReport createAndSaveER(String inOrderID,
                                                      String inOrigOrderID,
                                                      Instrument inInstrument,
                                                      Side inSide,
@@ -501,7 +482,7 @@ public class ReportsTestBase
                                sViewerID,
                                inOrderStatus);
     }
-    protected static ExecutionReport createAndSaveER(String inOrderID,
+    protected ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
                                             Instrument inInstrument,
                                             Side inSide,
@@ -523,7 +504,7 @@ public class ReportsTestBase
      * @return an <code>ExecutionReport</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected static ExecutionReport createAndSaveER(String inOrderID,
+    protected ExecutionReport createAndSaveER(String inOrderID,
                                                      String inOrigOrderID,
                                                      Instrument inInstrument,
                                                      Side inSide,
@@ -540,7 +521,7 @@ public class ReportsTestBase
                                inViewerID,
                                inOrderStatus);
     }
-    protected static ExecutionReport createAndSaveER(String inOrderID,
+    protected ExecutionReport createAndSaveER(String inOrderID,
                                             String inOrigOrderID,
                                             Instrument inInstrument,
                                             Side inSide,
@@ -564,7 +545,7 @@ public class ReportsTestBase
      * @return an <code>ExecutionReport</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected static ExecutionReport createAndSaveER(String inOrderID,
+    protected ExecutionReport createAndSaveER(String inOrderID,
                                                      String inOrigOrderID,
                                                      Instrument inInstrument,
                                                      Side inSide,
@@ -584,7 +565,7 @@ public class ReportsTestBase
                                inViewerID,
                                inOrderStatus);
     }
-    protected static ExecutionReport createAndSaveER(String inOrderID,
+    protected ExecutionReport createAndSaveER(String inOrderID,
                                                      String inOrigOrderID,
                                                      Instrument inInstrument,
                                                      Side inSide,
@@ -619,7 +600,7 @@ public class ReportsTestBase
      * @return an <code>ExecutionReport</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected static ExecutionReport createAndSaveER(String inOrderID,
+    protected ExecutionReport createAndSaveER(String inOrderID,
                                                      String inOrigOrderID,
                                                      Instrument inInstrument,
                                                      Side inSide,
@@ -649,28 +630,28 @@ public class ReportsTestBase
         sleepForSignificantTime();
         return report;
     }
-    protected static <T extends Instrument> PositionKey<T> pos(T inInstrument) {
+    protected <T extends Instrument> PositionKey<T> pos(T inInstrument) {
         return pos(inInstrument,ACCOUNT,sActorID);
     }
 
-    protected static <T extends Instrument> PositionKey<T> pos(T inInstrument,
+    protected <T extends Instrument> PositionKey<T> pos(T inInstrument,
                                                                String inAccount,
                                                                UserID inActor) {
         return new PositionKeyImpl<T>(inInstrument, inAccount,
                 Long.toString(inActor.getValue()));
     }
     
-    protected static <T extends Instrument> PositionKey<T> pos(T inSymbol,
+    protected <T extends Instrument> PositionKey<T> pos(T inSymbol,
                                                                String inAccount,
                                                                String inActor) {
         return new PositionKeyImpl<T>(inSymbol, inAccount, inActor);
     }
 
-    protected static Matcher<Map> isOfSize(int inLength) {
+    protected Matcher<Map> isOfSize(int inLength) {
         return new SizeMatcher(inLength);
     }
 
-    private static class SizeMatcher extends TypeSafeMatcher<Map> {
+    private class SizeMatcher extends TypeSafeMatcher<Map> {
         SizeMatcher(int inExpectedSize) {
             mExpectedSize = inExpectedSize;
         }
@@ -687,18 +668,16 @@ public class ReportsTestBase
             return inMap.size() == mExpectedSize;
         }
     }
-    protected static UserService userService;
-    protected static ReportService reportService;
     protected static final BrokerID BROKER = new BrokerID("TestBroker");
     protected static final String ACCOUNT = "account";
     protected static final String TEXT = "text";
-    protected static SimpleUser sActor;
-    protected static UserID sActorID;
-    protected static SimpleUser sViewer;
-    protected static UserID sViewerID;
-    protected static SimpleUser sExtraUser;
-    protected static UserID sExtraUserID;
+    protected SimpleUser sActor;
+    protected UserID sActorID;
+    protected SimpleUser sViewer;
+    protected UserID sViewerID;
+    protected SimpleUser sExtraUser;
+    protected UserID sExtraUserID;
     private static FIXMessageFactory sMessageFactory;
-    protected static ReportHistoryServices sServices;
+    protected ReportHistoryServices sServices;
     protected static final int SCALE = ExecutionReportSummary.DECIMAL_SCALE;
 }
