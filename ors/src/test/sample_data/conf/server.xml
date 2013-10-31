@@ -95,4 +95,5 @@
   <bean id="runtimePassword" class="java.lang.String">
     <constructor-arg value="admin"/>
   </bean>
+  <bean class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
 </beans>

@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.ors.PersistTestBase;
 import org.marketcetera.ors.security.SimpleUser;
-import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
@@ -89,7 +89,7 @@ public class UserServiceImplTest
         final SimpleUser badUser = generateUser();
         badUser.setName(user.getName());
         badUser.setPassword(randomString().toCharArray());
-        new ExpectedFailure<JpaSystemException>() {
+        new ExpectedFailure<DataIntegrityViolationException>() {
             @Override
             protected void run()
                     throws Exception

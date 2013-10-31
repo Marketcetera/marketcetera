@@ -1,8 +1,7 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Equity;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
