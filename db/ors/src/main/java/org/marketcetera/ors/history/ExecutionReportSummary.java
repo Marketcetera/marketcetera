@@ -24,8 +24,8 @@ import org.marketcetera.util.misc.ClassVersion;
 @Entity
 @Table(name="exec_reports")
 @NamedQueries({
-    @NamedQuery(name="ExecutionReportSummary.findRootIDForOrderID",query="select e.mRootID from ExecutionReportSummary e where e.mOrderID=?1"),
-    @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.mIsOpen=false where e.mRootID=:rootID and e.id!=:Id") })
+    @NamedQuery(name="ExecutionReportSummary.findRootIDForOrderID",query="select e.rootOrderId from ExecutionReportSummary e where e.orderId=?1"),
+    @NamedQuery(name="setIsOpen",query="update ExecutionReportSummary e set e.isOpen=false where e.rootOrderId=:rootID and e.id!=:Id") })
 @SqlResultSetMappings({
     @SqlResultSetMapping(name = "positionForSymbol",
             columns = {@ColumnResult(name = "position")}),
@@ -89,16 +89,16 @@ import org.marketcetera.util.misc.ClassVersion;
             "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15)) " +
             "group by symbol, account, actor having position <> 0",
             resultSetMapping = "eqAllPositions"),
-    @NamedNativeQuery(name = "crPositionForSymbol",query = "select " +
-            "sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
+    @NamedNativeQuery(name = "ExecutionReportSummary.findCurrencyPositionForSymbol",query = "select " +
+            "sum(case when e.side = ?1 then e.cum_qty else -e.cum_qty end) as position " +
             "from exec_reports e " +
-            "where e.symbol = :symbol " +
-            "and (e.securityType is null " +
-            "or e.securityType = :securityType) " +
-            "and e.sendingTime <= :sendingTime " +
-            "and (:allViewers or e.viewer_id = :viewerID) " +
+            "where e.symbol = ?2 " +
+            "and (e.security_type is null " +
+            "or e.security_type = ?3) " +
+            "and e.send_time <= ?4 " +
+            "and (?5 or e.viewer_id = ?6) " +
             "and e.id = " +
-            "(select max(s.id) from exec_reports s where s.rootID = e.rootID and s.orderStatus not in (7,11,15))",
+            "(select max(s.id) from exec_reports s where s.root_order_id = e.root_order_id and s.ord_status not in (7,11,15))",
             resultSetMapping = "positionForSymbol"),
     @NamedNativeQuery(name = "crAllPositions",query = "select " +
             "e.symbol as symbol, e.account as account, r.actor_id as actor, sum(case when e.side = :sideBuy then e.cumQuantity else -e.cumQuantity end) as position " +
@@ -186,27 +186,33 @@ public class ExecutionReportSummary
                                   PersistentReport inSavedReport)
     {
         setReport(inSavedReport);
-        mOrderID = inReport.getOrderID();
-        mOrigOrderID = inReport.getOriginalOrderID();
+        orderId = inReport.getOrderID();
+        origOrderID = inReport.getOriginalOrderID();
         Instrument instrument = inReport.getInstrument();
         if(instrument != null) {
-            mSecurityType = instrument.getSecurityType();
-            mSymbol = instrument.getSymbol();
+            securityType = instrument.getSecurityType();
+            symbol = instrument.getSymbol();
             InstrumentSummaryFields<?> summaryFields = InstrumentSummaryFields.SELECTOR.forInstrument(instrument);
-            mOptionType = summaryFields.getOptionType(instrument);
-            mStrikePrice = summaryFields.getStrikePrice(instrument);
-            mExpiry = summaryFields.getExpiry(instrument);
+            optionType = summaryFields.getOptionType(instrument);
+            strikePrice = summaryFields.getStrikePrice(instrument);
+            expiry = summaryFields.getExpiry(instrument);
         }
-        mAccount = inReport.getAccount();
-        mSide = inReport.getSide();
-        mCumQuantity = inReport.getCumulativeQuantity();
-        mAvgPrice = inReport.getAveragePrice();
-        mLastQuantity = inReport.getLastQuantity();
-        mLastPrice = inReport.getLastPrice();
-        mOrderStatus = inReport.getOrderStatus();
-        mSendingTime = inReport.getSendingTime();
-        mViewer = inSavedReport.getViewer();
-        mIsOpen = inReport.isCancelable();
+        account = inReport.getAccount();
+        side = inReport.getSide();
+        cumQuantity = inReport.getCumulativeQuantity();
+        if(side == Side.Buy) {
+            effectiveCumQuantity = cumQuantity;
+        } else {
+            effectiveCumQuantity = cumQuantity == null ? BigDecimal.ZERO : cumQuantity.negate();
+        }
+        avgPrice = inReport.getAveragePrice();
+        lastQuantity = inReport.getLastQuantity();
+        lastPrice = inReport.getLastPrice();
+        orderStatus = inReport.getOrderStatus();
+        sendingTime = inReport.getSendingTime();
+        viewer = inSavedReport.getViewer();
+        actor = inSavedReport.getActor();
+        isOpen = inReport.isCancelable();
     }
 
     /**
@@ -290,16 +296,16 @@ public class ExecutionReportSummary
 //    }
     
     private void setReport(PersistentReport inReport) {
-        mReport = inReport;
+        report = inReport;
     }
 
     OrderID getRootID() {
-        return mRootID;
+        return rootOrderId;
     }
 
     public void setRootID(OrderID inRootID)
     {
-        mRootID = inRootID;
+        rootOrderId = inRootID;
     }
     /**
      * 
@@ -309,12 +315,12 @@ public class ExecutionReportSummary
      */
     public OrderID getOrderID()
     {
-        return mOrderID;
+        return orderId;
     }
 
     @SuppressWarnings("unused")
     private void setOrderID(OrderID inOrderID) {
-        mOrderID = inOrderID;
+        orderId = inOrderID;
     }
     /**
      * 
@@ -324,138 +330,174 @@ public class ExecutionReportSummary
      */
     public OrderID getOrigOrderID()
     {
-        return mOrigOrderID;
+        return origOrderID;
     }
 
     @SuppressWarnings("unused")
     private void setOrigOrderID(OrderID inOrigOrderID) {
-        mOrigOrderID = inOrigOrderID;
+        origOrderID = inOrigOrderID;
     }
 
     SecurityType getSecurityType() {
-        return mSecurityType;
+        return securityType;
     }
 
     @SuppressWarnings("unused")
     private void setSecurityType(SecurityType inSecurityType) {
-        mSecurityType = inSecurityType;
+        securityType = inSecurityType;
     }
 
     String getSymbol() {
-        return mSymbol;
+        return symbol;
     }
 
     @SuppressWarnings("unused")
     private void setSymbol(String inSymbol) {
-        mSymbol = inSymbol;
+        symbol = inSymbol;
     }
 
     String getExpiry() {
-        return mExpiry;
+        return expiry;
     }
 
     @SuppressWarnings("unused")
     private void setExpiry(String inExpiry) {
-        mExpiry = inExpiry;
+        expiry = inExpiry;
     }
 
     BigDecimal getStrikePrice() {
-        return mStrikePrice;
+        return strikePrice;
     }
 
     @SuppressWarnings("unused")
     private void setStrikePrice(BigDecimal inStrikePrice) {
-        mStrikePrice = inStrikePrice;
+        strikePrice = inStrikePrice;
     }
 
     OptionType getOptionType() {
-        return mOptionType;
+        return optionType;
     }
 
     @SuppressWarnings("unused")
     private void setOptionType(OptionType inOptionType) {
-        mOptionType = inOptionType;
+        optionType = inOptionType;
     }
 
     String getAccount() {
-        return mAccount;
+        return account;
     }
 
     @SuppressWarnings("unused")
     private void setAccount(String inAccount) {
-        mAccount = inAccount;
+        account = inAccount;
     }
 
     Side getSide() {
-        return mSide;
+        return side;
     }
 
     @SuppressWarnings("unused")
     private void setSide(Side inSide) {
-        mSide = inSide;
+        side = inSide;
     }
 
-    BigDecimal getCumQuantity() {
-        return mCumQuantity;
+    BigDecimal getCumQuantity()
+    {
+        return cumQuantity;
     }
-
+    /**
+     * Get the effectiveCumQuantity value.
+     *
+     * @return a <code>BigDecimal</code> value
+     */
+    public BigDecimal getEffectiveCumQuantity()
+    {
+        return effectiveCumQuantity;
+    }
+    /**
+     * Sets the effectiveCumQuantity value.
+     *
+     * @param inEffectiveCumQuantity a <code>BigDecimal</code> value
+     */
+    public void setEffectiveCumQuantity(BigDecimal inEffectiveCumQuantity)
+    {
+        effectiveCumQuantity = inEffectiveCumQuantity;
+    }
     @SuppressWarnings("unused")
     private void setCumQuantity(BigDecimal inCumQuantity) {
-        mCumQuantity = inCumQuantity;
+        cumQuantity = inCumQuantity;
     }
 
     BigDecimal getAvgPrice() {
-        return mAvgPrice;
+        return avgPrice;
     }
 
     @SuppressWarnings("unused")
     private void setAvgPrice(BigDecimal inAvgPrice) {
-        mAvgPrice = inAvgPrice;
+        avgPrice = inAvgPrice;
     }
 
     BigDecimal getLastQuantity() {
-        return mLastQuantity;
+        return lastQuantity;
     }
 
     @SuppressWarnings("unused")
     private void setLastQuantity(BigDecimal inLastQuantity) {
-        mLastQuantity = inLastQuantity;
+        lastQuantity = inLastQuantity;
     }
 
     BigDecimal getLastPrice() {
-        return mLastPrice;
+        return lastPrice;
     }
 
     @SuppressWarnings("unused")
     private void setLastPrice(BigDecimal inLastPrice) {
-        mLastPrice = inLastPrice;
+        lastPrice = inLastPrice;
     }
 
     OrderStatus getOrderStatus() {
-        return mOrderStatus;
+        return orderStatus;
     }
 
     @SuppressWarnings("unused")
     private void setOrderStatus(OrderStatus inOrderStatus) {
-        mOrderStatus = inOrderStatus;
+        orderStatus = inOrderStatus;
     }
 
     Date getSendingTime() {
-        return mSendingTime;
+        return sendingTime;
     }
 
     @SuppressWarnings("unused")
     private void setSendingTime(Date inSendingTime) {
-        mSendingTime = inSendingTime;
+        sendingTime = inSendingTime;
     }
 
     public SimpleUser getViewer() {
-        return mViewer;
+        return viewer;
     }
 
     @SuppressWarnings("unused")
     private void setViewer(SimpleUser inViewer) {
-        mViewer = inViewer;
+        viewer = inViewer;
+    }
+    /**
+     * Get the actor value.
+     *
+     * @return a <code>SimpleUser</code> value
+     */
+    public SimpleUser getActor()
+    {
+        return actor;
+    }
+    /**
+     * Sets the actor value.
+     *
+     * @param inActor a <code>SimpleUser</code> value
+     */
+    public void setActor(SimpleUser inActor)
+    {
+        actor = inActor;
     }
     /**
      * Gets the is open value.
@@ -464,7 +506,7 @@ public class ExecutionReportSummary
      */
     public boolean getIsOpen()
     {
-        return mIsOpen;
+        return isOpen;
     }
     /**
      * Sets the is open value.
@@ -473,7 +515,7 @@ public class ExecutionReportSummary
      */
     public void setIsOpen(boolean inIsOpen)
     {
-        mIsOpen = inIsOpen;
+        isOpen = inIsOpen;
     }
     /**
     *
@@ -482,7 +524,7 @@ public class ExecutionReportSummary
     */
    public PersistentReport getReport()
    {
-       return mReport;
+       return report;
    }
     UserID getViewerID() {
         if (getViewer()==null) {
@@ -544,101 +586,112 @@ public class ExecutionReportSummary
      */
     @Embedded
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="root_order_id",nullable=false))})
-    private OrderID mRootID;
+    private OrderID rootOrderId;
     /**
      * 
      */
     @Embedded
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="order_id",nullable=false))})
-    private OrderID mOrderID;
+    private OrderID orderId;
     /**
      * 
      */
     @Embedded
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="orig_order_id",nullable=true))})
-    private OrderID mOrigOrderID;
+    private OrderID origOrderID;
     /**
      * 
      */
     @Column(name="symbol",nullable=false)
-    private String mSymbol;
+    private String symbol;
     /**
      * 
      */
     @Column(name="strike_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
-    private BigDecimal mStrikePrice;
+    private BigDecimal strikePrice;
     /**
      * 
      */
     @Column(name="side",nullable=false)
-    private Side mSide;
+    private Side side;
     /**
      * 
      */
     @Column(name="cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
-    private BigDecimal mCumQuantity;
+    private BigDecimal cumQuantity;
+    /**
+     * 
+     */
+    @Column(name="eff_cum_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
+    private BigDecimal effectiveCumQuantity;
     /**
      * 
      */
     @Column(name="avg_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
-    private BigDecimal mAvgPrice;
+    private BigDecimal avgPrice;
     /**
      * 
      */
     @Column(name="last_qty",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=false)
-    private BigDecimal mLastQuantity;
+    private BigDecimal lastQuantity;
     /**
      * 
      */
     @Column(name="last_price",precision=DECIMAL_PRECISION,scale=DECIMAL_SCALE,nullable=true)
-    private BigDecimal mLastPrice;
+    private BigDecimal lastPrice;
     /**
      * 
      */
     @Column(name="ord_status",nullable=false)
-    private OrderStatus mOrderStatus;
+    private OrderStatus orderStatus;
     /**
      * 
      */
     @Column(name="send_time",nullable=false)
-    private Date mSendingTime;
+    private Date sendingTime;
     /**
      * 
      */
     @ManyToOne
     @JoinColumn(name="viewer_id")
-    private SimpleUser mViewer; 
+    private SimpleUser viewer; 
+    /**
+     * 
+     */
+    @ManyToOne
+    @JoinColumn(name="actor_id")
+    private SimpleUser actor; 
     /**
      * 
      */
     @Column(name="is_open",nullable=false)
-    private boolean mIsOpen;
+    private boolean isOpen;
     /**
      * 
      */
     @Column(name="security_type",nullable=false)
-    private SecurityType mSecurityType;
+    private SecurityType securityType;
     /**
      * 
      */
     @Column(name="expiry",nullable=true)
-    private String mExpiry;
+    private String expiry;
     /**
      * 
      */
     @Column(name="option_type",nullable=true)
-    private OptionType mOptionType;
+    private OptionType optionType;
     /**
      * 
      */
     @Column(name="account",nullable=true)
-    private String mAccount;
+    private String account;
     /**
      * 
      */
     @OneToOne(optional=false)
     @JoinColumn(name="report_id")
-    private PersistentReport mReport;
+    private PersistentReport report;
     /**
      * The attribute viewer used in JPQL queries
      */

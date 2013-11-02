@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!--
   - Main configuration for database initialization (test wrapper).
   -
@@ -8,28 +7,30 @@
   - Version: $Id$
   - $License$
   -->
-
-<beans
- xmlns="http://www.springframework.org/schema/beans"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
-
-  <import
-   resource="properties.xml"/>
-  <import
-   resource="db/db.xml"/>
-
-  <bean
-   class="org.marketcetera.persist.ExecuteSQLFromFile">
-    <constructor-arg>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+  <import resource="properties.xml"/>
+  <import resource="db/db-create.xml"/>
+  <context:component-scan base-package="org.marketcetera.core,org.marketcetera.ors"/>
+  <jpa:repositories base-package="org.marketcetera.core,org.marketcetera.ors"/>
+  <tx:annotation-driven/>
+  <bean id="adminUser" class="org.marketcetera.ors.security.SimpleUser">
+    <property name="name" value="admin"/>
+    <property name="password" value="admin"/>
+    <property name="superuser" value="true"/>
+  </bean>
+  <bean id="userInitializer" class="org.marketcetera.ors.security.SimpleUserInitializer">
+    <property name="users">
       <list>
-        <value>file:src/main/sample_data/create_server_schema.sql</value>
-        <value>file:src/test/sample_data/conf/dbinit/101_create_admin_user.sql</value>
+        <ref bean="adminUser"/>
       </list>
-    </constructor-arg>
-    <constructor-arg
-     ref="metc_sql_pool"/>
+    </property>
   </bean>
 </beans>

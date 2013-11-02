@@ -5,7 +5,7 @@
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.0.0
-  - Version: $Id: db.xml 16728 2013-10-31 19:58:37Z colin $
+  - Version: $Id$
   - $License$
   -->
 
@@ -45,7 +45,7 @@
     <property name="jpaProperties">
       <props>
         <prop key="hibernate.dialect">${metc.hibernate.dialect}</prop>
-        <prop key="hibernate.hbm2ddl.auto">validate</prop>
+        <prop key="hibernate.hbm2ddl.auto">create</prop>
         <prop key="hibernate.show_sql">false</prop>
         <prop key="hibernate.format_sql">false</prop>
       </props>

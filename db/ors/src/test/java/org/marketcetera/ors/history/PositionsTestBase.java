@@ -38,19 +38,41 @@ public abstract class PositionsTestBase<T extends Instrument>
         Date date = new Date();
         assertThat(getInstrumentPositions(date), isOfSize(0));
     }
-
+    /**
+     * Tests that a single buy report is reported correctly.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void singleReportBuy() throws Exception {
+    public void singleReportBuy()
+            throws Exception
+    {
         createBackgroundNoise();
         BigDecimal value = new BigDecimal("135.79");
         Date before = new Date();
-        createAndSaveER("o1", null, getInstrument(), Side.Buy, value, extraUserID);
+        createAndSaveER("o1",
+                        null,
+                        getInstrument(),
+                        Side.Buy,
+                        value,
+                        extraUserID);
         Date after = new Date();
-        assertBigDecimalEquals(value, getInstrumentPosition(after, getInstrument(), extraUser));
-        assertThat(getInstrumentPositions(after, extraUser), allOf(isOfSize(1),
-                hasEntry(pos(getInstrument()), value.setScale(SCALE))));
-        assertBigDecimalEquals(BigDecimal.ZERO, getInstrumentPosition(before, getInstrument(), extraUser));
-        assertThat(getInstrumentPositions(before, extraUser), Matchers.allOf(isOfSize(0)));
+        assertBigDecimalEquals(value,
+                               getInstrumentPosition(after,
+                                                     getInstrument(),
+                                                     extraUser));
+        assertThat(getInstrumentPositions(after,
+                                          extraUser),
+                   allOf(isOfSize(1),
+                         hasEntry(pos(getInstrument()),
+                                  value.setScale(SCALE))));
+        assertBigDecimalEquals(BigDecimal.ZERO,
+                               getInstrumentPosition(before,
+                                                     getInstrument(),
+                                                     extraUser));
+        assertThat(getInstrumentPositions(before,
+                                          extraUser),
+                   Matchers.allOf(isOfSize(0)));
     }
 
     @Test
@@ -147,24 +169,34 @@ public abstract class PositionsTestBase<T extends Instrument>
         assertThat(getInstrumentPositions(after4), allOf(isOfSize(1),
                 hasEntry(pos(getInstrumentA()), position.setScale(SCALE))));
     }
-
+    /**
+     * Tests multiple reports for accounts and actors.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
     public void chainReportsBuyAndSellMultiAccountsActors()
-        throws Exception
+            throws Exception
     {
-        String oAccount=ACCOUNT+"a";
-
-        BigDecimal one=BigDecimal.ONE;
-        BigDecimal two=one.add(new BigDecimal(1));
-        BigDecimal three=two.add(new BigDecimal(1));
-        BigDecimal four=three.add(new BigDecimal(1));
-        BigDecimal five=four.add(new BigDecimal(1));
-
-        createChainReportsForBuyA
-            ("1a",ACCOUNT,viewerID,viewerID,one);
-        createChainReportsForBuyA
-            ("1b",ACCOUNT,viewerID,viewerID,one);
-
+        String oAccount = ACCOUNT + "a";
+        BigDecimal one = BigDecimal.ONE;
+        BigDecimal two = one.add(new BigDecimal(1));
+        BigDecimal three = two.add(new BigDecimal(1));
+        BigDecimal four = three.add(new BigDecimal(1));
+        BigDecimal five = four.add(new BigDecimal(1));
+        // create reports for positions for order 1a
+        createChainReportsForBuyA("1a",
+                                  ACCOUNT,
+                                  viewerID,
+                                  viewerID,
+                                  one);
+        // create reports on a different order
+        createChainReportsForBuyA("1b",
+                                  ACCOUNT,
+                                  viewerID,
+                                  viewerID,
+                                  one);
+        // new order, different actor
         createChainReportsForBuyA
             ("2a",ACCOUNT,extraUserID,viewerID,one);
         createChainReportsForBuyA
@@ -204,13 +236,21 @@ public abstract class PositionsTestBase<T extends Instrument>
 
         assertThat(getInstrumentPositions(after),
                    allOf(isOfSize(4),
-                         hasEntry(pos(getInstrumentA(),ACCOUNT,viewerID),
+                         hasEntry(pos(getInstrumentA(),
+                                      ACCOUNT,
+                                      viewerID),
                                   two.setScale(SCALE)),
-                         hasEntry(pos(getInstrumentA(),ACCOUNT,extraUserID),
+                         hasEntry(pos(getInstrumentA(),
+                                      ACCOUNT,
+                                      extraUserID),
                                   three.setScale(SCALE)),
-                         hasEntry(pos(getInstrumentA(),oAccount,viewerID),
+                         hasEntry(pos(getInstrumentA(),
+                                      oAccount,
+                                      viewerID),
                                   four.setScale(SCALE)),
-                         hasEntry(pos(getInstrumentA(),oAccount,(String)null),
+                         hasEntry(pos(getInstrumentA(),
+                                      oAccount,
+                                      (String)null),
                                   five.setScale(SCALE))));
         assertThat(getInstrumentPositions(after, actor),
                    allOf(isOfSize(8),
@@ -537,25 +577,94 @@ public abstract class PositionsTestBase<T extends Instrument>
         return createChainReportsForBuyA
             ("",ACCOUNT,actorID,viewerID,POSITION_BUY_A);
     }
-
-    private List<ExecutionReport> createChainReportsForBuyA
-        (String prefix,
-         String inAccount,
-         UserID inActorID,
-         UserID inViewerID,
-         BigDecimal finalPosition)
+    /**
+     * Create and persist a group of buy execution reports that represent the given final position.
+     *
+     * @param inOrderPrefix a <code>String</code> value
+     * @param inAccount a <code>String</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     * @param inFinalPosition
+     * @return a <code>List&lt;ExecutionReport&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private List<ExecutionReport> createChainReportsForBuyA(String inOrderPrefix,
+                                                            String inAccount,
+                                                            UserID inActorID,
+                                                            UserID inViewerID,
+                                                            BigDecimal inFinalPosition)
         throws Exception
     {
         //A simple chain of buy orders for A
         List<ExecutionReport> reports = new LinkedList<ExecutionReport>();
-        reports.add(createAndSaveER(prefix+"a1", null, getInstrumentA(), Side.Buy, BigDecimal.ONE, inAccount, inActorID, inViewerID));
-        reports.add(createAndSaveER(prefix+"a1", null, getInstrumentA(), Side.Buy, BigDecimal.ONE, inAccount, inActorID, inViewerID, OrderStatus.PendingCancel));
-        reports.add(createAndSaveER(prefix+"a2", prefix+"a1", getInstrumentA(), Side.Buy, BigDecimal.TEN, inAccount, inActorID, inViewerID));
-        reports.add(createAndSaveER(prefix+"a2", prefix+"a1", getInstrumentA(), Side.Buy, BigDecimal.TEN, inAccount, inActorID, inViewerID, OrderStatus.PendingNew));
-        reports.add(createAndSaveER(prefix+"a3", prefix+"a2", getInstrumentA(), Side.Buy, POSITION_SELL_SHORTE_A, inAccount, inActorID, inViewerID));
-        reports.add(createAndSaveER(prefix+"a3", prefix+"a2", getInstrumentA(), Side.Buy, POSITION_SELL_SHORTE_A, inAccount, inActorID, inViewerID, OrderStatus.PendingReplace));
-        reports.add(createAndSaveER(prefix+"a4", prefix+"a3", getInstrumentA(), Side.Buy, finalPosition, inAccount, inActorID, inViewerID));
-        reports.add(createAndSaveER(prefix+"a4", prefix+"a3", getInstrumentA(), Side.Buy, finalPosition, inAccount, inActorID, inViewerID, OrderStatus.PendingNew));
+        reports.add(createAndSaveER(inOrderPrefix+"a1",
+                                    null,
+                                    getInstrumentA(),
+                                    Side.Buy,
+                                    BigDecimal.ONE,
+                                    inAccount,
+                                    inActorID,
+                                    inViewerID));
+        reports.add(createAndSaveER(inOrderPrefix+"a1",
+                                    null,
+                                    getInstrumentA(),
+                                    Side.Buy,
+                                    BigDecimal.ONE,
+                                    inAccount,
+                                    inActorID,
+                                    inViewerID,
+                                    OrderStatus.PendingCancel));
+        reports.add(createAndSaveER(inOrderPrefix+"a2",
+                                    inOrderPrefix+"a1",
+                                    getInstrumentA(),
+                                    Side.Buy,
+                                    BigDecimal.TEN,
+                                    inAccount,
+                                    inActorID,
+                                    inViewerID));
+        reports.add(createAndSaveER(inOrderPrefix+"a2",
+                                    inOrderPrefix+"a1",
+                                    getInstrumentA(),
+                                    Side.Buy,
+                                    BigDecimal.TEN,
+                                    inAccount,
+                                    inActorID,
+                                    inViewerID,
+                                    OrderStatus.PendingNew));
+        reports.add(createAndSaveER(inOrderPrefix+"a3",
+                                    inOrderPrefix+"a2",
+                                    getInstrumentA(),
+                                    Side.Buy,
+                                    POSITION_SELL_SHORTE_A,
+                                    inAccount,
+                                    inActorID,
+                                    inViewerID));
+        reports.add(createAndSaveER(inOrderPrefix+"a3",
+                                    inOrderPrefix+"a2",
+                                    getInstrumentA(),
+                                    Side.Buy,
+                                    POSITION_SELL_SHORTE_A,
+                                    inAccount,
+                                    inActorID,
+                                    inViewerID,
+                                    OrderStatus.PendingReplace));
+        reports.add(createAndSaveER(inOrderPrefix+"a4",
+                                    inOrderPrefix+"a3",
+                                    getInstrumentA(),
+                                    Side.Buy,
+                                    inFinalPosition,
+                                    inAccount,
+                                    inActorID,
+                                    inViewerID));
+        reports.add(createAndSaveER(inOrderPrefix+"a4",
+                                    inOrderPrefix+"a3",
+                                    getInstrumentA(),
+                                    Side.Buy,
+                                    inFinalPosition,
+                                    inAccount,
+                                    inActorID,
+                                    inViewerID,
+                                    OrderStatus.PendingNew));
         return reports;
     }
 

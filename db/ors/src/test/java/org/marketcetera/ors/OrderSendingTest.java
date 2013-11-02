@@ -30,7 +30,7 @@ import org.marketcetera.core.instruments.InstrumentFromMessage;
 
 @RunWith(Parameterized.class)
 public class OrderSendingTest
-    extends ORSTestBase
+        extends ORSTestBase
 {
     public OrderSendingTest(Instrument inInstrument)
     {

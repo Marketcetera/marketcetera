@@ -1,31 +1,34 @@
 package org.marketcetera.ors.dao.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.ors.Principals;
 import org.marketcetera.ors.dao.ExecutionReportDao;
 import org.marketcetera.ors.dao.PersistentReportDao;
 import org.marketcetera.ors.dao.ReportService;
 import org.marketcetera.ors.dao.UserDao;
-import org.marketcetera.ors.history.ExecutionReportSummary;
-import org.marketcetera.ors.history.PersistentReport;
-import org.marketcetera.ors.history.ReportType;
+import org.marketcetera.ors.history.*;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.mysema.query.Tuple;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.sql.SQLSubQuery;
+import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.expr.NumberExpression;
 
 /* $License$ */
 
@@ -70,30 +73,19 @@ public class ReportServiceImpl
     public ReportBaseImpl[] getReportsSince(SimpleUser inUser,
                                             Date inDate)
     {
-//        JPAQuery jpaQuery = new JPAQuery(entityManager);
-//        QPersistentReport persistentReportQuery = QPersistentReport.persistentReport;
-//        if (inUser != null && !inUser.isSuperuser()) {
-//            jpaQuery = jpaQuery.from(persistentReportQuery).where(QPersistentReport.persistentReport.sendingTime.gt(inDate)
-//                                                                  .and(QPersistentReport.persistentReport.viewer.eq(inUser)));
-//        } else {
-//            jpaQuery = jpaQuery.from(persistentReportQuery).where(QPersistentReport.persistentReport.sendingTime.gt(inDate));
-//        }
-//        jpaQuery = jpaQuery.orderBy(QPersistentReport.persistentReport.id);
-////        MultiPersistentReportQuery query = MultiPersistentReportQuery.all();
-////        query.setSendingTimeAfterFilter(inDate);
-////        if (!inUser.isSuperuser()) {
-////            query.setViewerFilter(inUser);
-////        }
-////        query.setEntityOrder(MultiPersistentReportQuery.BY_ID);
-//
-////        List<PersistentReport> reportList = jpaQuery.fetch().
-//        ReportBaseImpl [] reports = new ReportBaseImpl[reportList.size()];
-//        int i = 0;
-//        for(PersistentReport report: reportList) {
-//            reports[i++] = (ReportBaseImpl) report.toReport();
-//        }
-//        return reports;
-        throw new UnsupportedOperationException(); // TODO
+        JPAQuery jpaQuery = new JPAQuery(entityManager);
+        QPersistentReport r = QPersistentReport.persistentReport;
+        BooleanExpression where = r.sendingTime.goe(inDate);
+        if(!inUser.isSuperuser()) {
+            where = where.and(r.mViewer.eq(inUser));
+        }
+        List<PersistentReport> reports = jpaQuery.from(r).where(where).orderBy(r.sendingTime.asc()).list(r);
+        ReportBaseImpl[] results = new ReportBaseImpl[reports.size()];
+        int counter = 0;
+        for(PersistentReport report : reports) {
+            results[counter++] = (ReportBaseImpl)report.toReport();
+        }
+        return results;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getEquityPositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Equity)
@@ -103,7 +95,17 @@ public class ReportServiceImpl
                                             Date inDate,
                                             Equity inEquity)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return getPositionAsOf(inUser,
+                               inDate,
+                               inEquity,
+                               new SymbolMatcher<Equity>() {
+                                @Override
+                                public BooleanExpression where(QExecutionReportSummary inTableProxy,
+                                                               Equity inInstrument)
+                                {
+                                    return inTableProxy.symbol.eq(inInstrument.getSymbol());
+                                }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getOpenOrders(org.marketcetera.ors.security.SimpleUser)
@@ -128,10 +130,25 @@ public class ReportServiceImpl
      * @see org.marketcetera.ors.dao.ReportService#getAllEquityPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
-    public Map<PositionKey<Equity>, BigDecimal> getAllEquityPositionsAsOf(SimpleUser inUser,
-                                                                          Date inDate)
+    public Map<PositionKey<Equity>,BigDecimal> getAllEquityPositionsAsOf(SimpleUser inUser,
+                                                                         Date inDate)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return getAllPositionsAsOf(inDate,
+                                   inUser,
+                                   SecurityType.CommonStock,
+                                   new PositionTransformer<Equity>() {
+            @Override
+            public PositionKey<Equity> createPositionKey(String inSymbol,
+                                                         String inExpiry,
+                                                         BigDecimal inStrikePrice,
+                                                         OptionType inOptionType,
+                                                         String inAccount,
+                                                         Long inTraderId)
+            {
+                return PositionKeyFactory.createEquityKey(inSymbol,
+                                                          inAccount,
+                                                          inTraderId == null ? null : String.valueOf(inTraderId));
+            }});
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getCurrencyPositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Currency)
@@ -141,28 +158,66 @@ public class ReportServiceImpl
                                               Date inDate,
                                               Currency inCurrency)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return getPositionAsOf(inUser,
+                               inDate,
+                               inCurrency,
+                               new SymbolMatcher<Currency>() {
+                                @Override
+                                public BooleanExpression where(QExecutionReportSummary inTableProxy,
+                                                               Currency inInstrument)
+                                {
+                                    return inTableProxy.symbol.eq(inInstrument.getSymbol());
+                                }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getAllCurrencyPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
-    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(SimpleUser inUser,
-                                                                              Date inDate)
+    public Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(SimpleUser inUser,
+                                                                             Date inDate)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return getAllPositionsAsOf(inDate,
+                                   inUser,
+                                   SecurityType.Currency,
+                                   new PositionTransformer<Currency>() {
+            @Override
+            public PositionKey<Currency> createPositionKey(String inSymbol,
+                                                           String inExpiry,
+                                                           BigDecimal inStrikePrice,
+                                                           OptionType inOptionType,
+                                                           String inAccount,
+                                                           Long inTraderId)
+            {
+                return PositionKeyFactory.createCurrencyKey(inSymbol,
+                                                            inAccount,
+                                                            inTraderId == null ? null : String.valueOf(inTraderId));
+            }});
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getAllFuturePositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
-    public Map<PositionKey<Future>, BigDecimal> getAllFuturePositionsAsOf(SimpleUser inUser,
-                                                                          Date inDate)
+    public Map<PositionKey<Future>,BigDecimal> getAllFuturePositionsAsOf(SimpleUser inUser,
+                                                                         Date inDate)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return getAllPositionsAsOf(inDate,
+                                   inUser,
+                                   SecurityType.Future,
+                                   new PositionTransformer<Future>() {
+            @Override
+            public PositionKey<Future> createPositionKey(String inSymbol,
+                                                         String inExpiry,
+                                                         BigDecimal inStrikePrice,
+                                                         OptionType inOptionType,
+                                                         String inAccount,
+                                                         Long inTraderId)
+            {
+                return PositionKeyFactory.createFutureKey(inSymbol,
+                                                          inExpiry,
+                                                          inAccount,
+                                                          inTraderId == null ? null : String.valueOf(inTraderId));
+            }});
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getFuturePositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Future)
@@ -172,8 +227,17 @@ public class ReportServiceImpl
                                             Date inDate,
                                             Future inFuture)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return getPositionAsOf(inUser,
+                               inDate,
+                               inFuture,
+                               new SymbolMatcher<Future>() {
+                                @Override
+                                public BooleanExpression where(QExecutionReportSummary inTableProxy,
+                                                               Future inInstrument)
+                                {
+                                    return inTableProxy.symbol.eq(inInstrument.getSymbol()).and(inTableProxy.expiry.eq(inInstrument.getExpiryAsString()));
+                                }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getOptionPositionAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, org.marketcetera.trade.Option)
@@ -183,29 +247,75 @@ public class ReportServiceImpl
                                             Date inDate,
                                             Option inOption)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return getPositionAsOf(inUser,
+                               inDate,
+                               inOption,
+                               new SymbolMatcher<Option>() {
+                                @Override
+                                public BooleanExpression where(QExecutionReportSummary inTableProxy,
+                                                               Option inInstrument)
+                                {
+                                    return inTableProxy.symbol.eq(inInstrument.getSymbol())
+                                            .and(inTableProxy.expiry.eq(inInstrument.getExpiry()))
+                                            .and(inTableProxy.strikePrice.eq(inInstrument.getStrikePrice()))
+                                            .and(inTableProxy.optionType.eq(inInstrument.getType()));
+                                }
+        });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getAllOptionPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
-    public Map<PositionKey<Option>, BigDecimal> getAllOptionPositionsAsOf(SimpleUser inUser,
-                                                                          Date inDate)
+    public Map<PositionKey<Option>,BigDecimal> getAllOptionPositionsAsOf(SimpleUser inUser,
+                                                                         Date inDate)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return getAllPositionsAsOf(inDate,
+                                   inUser,
+                                   SecurityType.Option,
+                                   new PositionTransformer<Option>() {
+            @Override
+            public PositionKey<Option> createPositionKey(String inSymbol,
+                                                         String inExpiry,
+                                                         BigDecimal inStrikePrice,
+                                                         OptionType inOptionType,
+                                                         String inAccount,
+                                                         Long inTraderId)
+            {
+                return PositionKeyFactory.createOptionKey(inSymbol,
+                                                          inExpiry,
+                                                          inStrikePrice,
+                                                          inOptionType,
+                                                          inAccount,
+                                                          inTraderId == null ? null : String.valueOf(inTraderId));
+            }});
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getOptionPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date, java.lang.String[])
      */
     @Override
-    public Map<PositionKey<Option>, BigDecimal> getOptionPositionsAsOf(SimpleUser inUser,
-                                                                       Date inDate,
-                                                                       String[] inSymbols)
+    public Map<PositionKey<Option>,BigDecimal> getOptionPositionsAsOf(SimpleUser inUser,
+                                                                      Date inDate,
+                                                                      String[] inSymbols)
     {
-        throw new UnsupportedOperationException(); // TODO
-        
+        return getAllPositionsAsOf(inDate,
+                                   inUser,
+                                   SecurityType.Option,
+                                   new PositionTransformer<Option>() {
+            @Override
+            public PositionKey<Option> createPositionKey(String inSymbol,
+                                                         String inExpiry,
+                                                         BigDecimal inStrikePrice,
+                                                         OptionType inOptionType,
+                                                         String inAccount,
+                                                         Long inTraderId)
+            {
+                return PositionKeyFactory.createOptionKey(inSymbol,
+                                                          inExpiry,
+                                                          inStrikePrice,
+                                                          inOptionType,
+                                                          inAccount,
+                                                          inTraderId == null ? null : String.valueOf(inTraderId));
+            }},inSymbols);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#save(org.marketcetera.trade.ReportBase)
@@ -319,6 +429,128 @@ public class ReportServiceImpl
     public List<PersistentReport> findAllPersistentReportByViewer(SimpleUser inViewer)
     {
         throw new UnsupportedOperationException(); // TODO
+    }
+    /**
+     * Executes an all positions query by instrument type.
+     *
+     * @param inAsOfDate a <code>Date</code> value
+     * @param inViewer a <code>SimpleUser</code> value
+     * @param inSecurityType a <code>SecurityType</code> value
+     * @param inTupleTransformer a <code>PositionTransformer&lt;I&gt;</code> value
+     * @param inSymbols a <code>String[]</code> value
+     * @return a <code>Map&lt;PositionKey&lt;I&gt;,BigDecimal&gt;</code> value
+     */
+    private <I extends Instrument> Map<PositionKey<I>,BigDecimal> getAllPositionsAsOf(Date inAsOfDate,
+                                                                                      SimpleUser inViewer,
+                                                                                      SecurityType inSecurityType,
+                                                                                      PositionTransformer<I> inTupleTransformer,
+                                                                                      String...inSymbols)
+    {
+        JPAQuery jpaQuery = new JPAQuery(entityManager);
+        QExecutionReportSummary e = new QExecutionReportSummary("e");
+        BooleanExpression where = e.sendingTime.loe(inAsOfDate);
+        where = where.and(e.securityType.eq(inSecurityType));
+        if(!inViewer.isSuperuser()) {
+            where = where.and(e.viewer.eq(inViewer));
+        }
+        if(inSymbols != null && inSymbols.length != 0) {
+            where = where.and(e.symbol.in(inSymbols));
+        }
+        QExecutionReportSummary s = new QExecutionReportSummary("s");
+        where = where.and(e.id.eq(new SQLSubQuery().where(s.rootOrderId.eq(e.rootOrderId).and(s.orderStatus.notIn(OrderStatus.PendingCancel,OrderStatus.PendingNew,OrderStatus.PendingReplace))).from(s).unique(s.id.max())));
+        jpaQuery = jpaQuery.from(e).where(where);
+        NumberExpression<BigDecimal> position = e.effectiveCumQuantity.sum();
+        jpaQuery = jpaQuery.groupBy(e.symbol,e.expiry,e.strikePrice,e.optionType,e.account,e.actor).having(position.ne(BigDecimal.ZERO));
+        jpaQuery = jpaQuery.orderBy(e.symbol.asc(),e.account.asc(),e.actor.id.asc());
+        List<Tuple> results = jpaQuery.list(position,e.symbol,e.account,e.actor.id,e.expiry,e.strikePrice,e.optionType);
+        Map<PositionKey<I>,BigDecimal> finalResults = new LinkedHashMap<PositionKey<I>,BigDecimal>();
+        for(Tuple result : results) {
+            finalResults.put(inTupleTransformer.createPositionKey(result.get(e.symbol),
+                                                                  result.get(e.expiry),
+                                                                  result.get(e.strikePrice),
+                                                                  result.get(e.optionType),
+                                                                  result.get(e.account),
+                                                                  result.get(e.actor.id)),
+                             result.get(position));
+        }
+        return finalResults;
+    }
+    /**
+     * Executes a position query for the given instrument.
+     *
+     * @param inUser a <code>SimpleUser</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inInstrument an <code>I</code> value
+     * @param inSymbolMatcher a <code>SymbolMatcher&lt;I&gt;</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    private <I extends Instrument> BigDecimal getPositionAsOf(SimpleUser inUser,
+                                                              Date inDate,
+                                                              I inInstrument,
+                                                              SymbolMatcher<I> inSymbolMatcher)
+    {
+        JPAQuery jpaQuery = new JPAQuery(entityManager);
+        QExecutionReportSummary a = new QExecutionReportSummary("a");
+        BooleanExpression where = inSymbolMatcher.where(a,
+                                                        inInstrument);
+        where = where.and(a.securityType.eq(inInstrument.getSecurityType()));
+        where = where.and(a.sendingTime.loe(inDate));
+        if(!inUser.isSuperuser()) {
+            where = where.and(a.viewer.eq(inUser));
+        }
+        QExecutionReportSummary b = new QExecutionReportSummary("b");
+        where = where.and(a.id.eq(new SQLSubQuery().where(b.rootOrderId.eq(a.rootOrderId).and(b.orderStatus.notIn(OrderStatus.PendingCancel,OrderStatus.PendingNew,OrderStatus.PendingReplace))).from(b).unique(b.id.max())));
+        jpaQuery = jpaQuery.from(a).where(where);
+        BigDecimal result = jpaQuery.singleResult(a.effectiveCumQuantity.sum().as("position"));
+        return result == null ? BigDecimal.ZERO : result;
+    }
+    /**
+     * Translates a position tuple to a position key.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private interface PositionTransformer<I extends Instrument>
+    {
+        /**
+         * Creates a <code>PositionKey</code> from the given inputs.
+         *
+         * @param inSymbol a <code>String</code> value
+         * @param inExpiry a <code>String</code> value
+         * @param inStrikePrice a <code>BigDecimal</code> value
+         * @param inOptionType an <code>OptionType</code> value
+         * @param inAccount a <code>String</code> value
+         * @param inTraderId a <code>Long</code> value
+         * @return a <code>PositionKey&lt;I&gt; value
+         */
+        PositionKey<I> createPositionKey(String inSymbol,
+                                         String inExpiry,
+                                         BigDecimal inStrikePrice,
+                                         OptionType inOptionType,
+                                         String inAccount,
+                                         Long inTraderId);
+    }
+    /**
+     * Creates a predicate used to match rows to a given instrument.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private interface SymbolMatcher<I extends Instrument>
+    {
+        /**
+         * Builds a where predicate that matches records to the given instrument.
+         *
+         * @param inTableProxy a <code>QExecutionReportSummary</code> value
+         * @param inInstrument an <code>I</code> value
+         * @return a <code>BooleanExpression</code> value
+         */
+        BooleanExpression where(QExecutionReportSummary inTableProxy,
+                                I inInstrument);
     }
     /**
      * provides datastore access to users

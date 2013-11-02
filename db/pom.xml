@@ -198,7 +198,7 @@
       <dependency>
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-jpa</artifactId>
-        <version>1.4.1.RELEASE</version>
+        <version>1.4.2.RELEASE</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -370,6 +370,11 @@
       <dependency>
         <groupId>com.mysema.querydsl</groupId>
         <artifactId>querydsl-jpa</artifactId>
+        <version>${mvn.querydsl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-sql</artifactId>
         <version>${mvn.querydsl.version}</version>
       </dependency>
       <!-- Runtime. -->

@@ -15,7 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.ors.PersistTestBase;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.security.auth.UserPrincipal;
 
@@ -54,6 +53,7 @@ public class ORSLoginModuleTest
     public void reset()
             throws Exception
     {
+        super.cleanTables();
         user = null;
         doNotHandleCallbacks = false;
         callbackException = null;
@@ -67,7 +67,6 @@ public class ORSLoginModuleTest
      * @throws Exception if there was failure
      */
     @Test
-    @Transactional
     public void loginTest()
             throws Exception
     {
@@ -128,7 +127,6 @@ public class ORSLoginModuleTest
      * @throws Exception if there was failure
      */
     @Test
-    @Transactional
     public void unsupportedCallback() throws Exception {
         doNotHandleCallbacks = true;
         UnsupportedCallbackException uce = new UnsupportedCallbackException(
@@ -150,7 +148,6 @@ public class ORSLoginModuleTest
      * @throws Exception if there was a failure
      */
     @Test
-    @Transactional
     public void callbackIOFailure() throws Exception {
         callbackException = new IOException("ioeoeoe"); //$NON-NLS-1$
         LoginException ex = attemptLogin(user.getName(), password,

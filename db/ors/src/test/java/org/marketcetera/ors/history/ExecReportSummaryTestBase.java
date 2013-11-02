@@ -259,7 +259,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
         final ExecutionReport report = removeField(createDummyExecReport(),
                                                    AvgPx.FIELD);
         assertNull(report.getAveragePrice());
-        nonNullCVCheck("mAvgPrice",
+        nonNullCVCheck("avgPrice",
                        new Callable<Object>() {
             public Object call()
                     throws Exception
@@ -281,7 +281,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
         final ExecutionReport report = removeField(createDummyExecReport(),
                                                    CumQty.FIELD);
         assertNull(report.getCumulativeQuantity());
-        nonNullCVCheck("mCumQuantity",
+        nonNullCVCheck("cumQuantity",
                        new Callable<Object>() {
             public Object call()
                     throws Exception
@@ -325,7 +325,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
         final ExecutionReport report = removeField(createDummyExecReport(),
                                                    OrdStatus.FIELD);
         assertNull(report.getOrderStatus());
-        nonNullCVCheck("mOrderStatus",
+        nonNullCVCheck("orderStatus",
                        new Callable<Object>() {
             public Object call()
                     throws Exception
@@ -367,7 +367,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
         final ExecutionReport report = removeField(createDummyExecReport(),
                                                    quickfix.field.Side.FIELD);
         assertNull(report.getSide());
-        nonNullCVCheck("mSide",
+        nonNullCVCheck("side",
                        new Callable<Object>() {
             public Object call()
                     throws Exception
@@ -389,7 +389,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
         final ExecutionReport report = removeField(createDummyExecReport(),
                                                    Symbol.FIELD);
         assertNull(report.getInstrument());
-        nonNullCVCheck("mSecurityType",
+        nonNullCVCheck("securityType",
                        new Callable<Object>() {
             public Object call()
                     throws Exception
