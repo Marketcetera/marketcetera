@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
-  - Main configuration for database initialization (unit test).
+  - Main server configuration.
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.0.0
@@ -9,20 +9,92 @@
   - $License$
   -->
 
+<!--
+  - See 'README.html' for detailed documentation.
+  -->
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
   <import resource="properties.xml"/>
-  <import resource="db/db.xml"/>
-  <import resource="db/orm.xml"/>
-  <bean id="metc_db_init" class="org.marketcetera.persist.ExecuteSQLFromFile">
-    <constructor-arg>
-      <list>
-        <value>file:src/main/sample_data/create_server_schema.sql</value>
-      </list>
-    </constructor-arg>
-    <constructor-arg ref="metc_sql_pool"/>
+  <import resource="messaging/main.xml"/>
+  <import resource="brokers/main.xml"/>
+  <import resource="filters/main.xml"/>
+  <import resource="db/db-create.xml"/>
+  <context:component-scan base-package="org.marketcetera.core,org.marketcetera.ors"/>
+  <jpa:repositories base-package="org.marketcetera.core,org.marketcetera.ors"/>
+  <tx:annotation-driven/>
+  <bean class="org.marketcetera.ors.config.SpringConfig">
+    <!-- The brokers. -->
+    <property name="brokers" ref="metc_brokers"/>
+    <!-- The broker selector. -->
+    <property name="selector" ref="metc_selector"/>
+    <!--
+      - A 'MessageFilter' instance, applied to messages received from all
+      - brokers.
+      -->
+    <property name="supportedMessages" ref="metc_supported_messages"/>
+    <!--
+      - An 'OrderFilter' instance, applied to messages received from all
+      - ORS Clients.
+      -->
+    <property name="allowedOrders">
+        <list>
+            <ref bean="metc_allowed_orders"/>
+        </list>
+    </property>
+    <!-- The WS hostname. -->
+    <property name="serverHost" value="${metc.ws.host}"/>
+    <!-- The WS port. -->
+    <property name="serverPort" value="${metc.ws.port}"/>
+    <!--
+      - The length of a WS session, in seconds; -1 means sessions
+      - never expire.
+      -->
+    <property name="serverSessionLife" value="${metc.ws.session.life}"/>
+    <!-- The connection factory for incoming JMS connections. -->
+    <property name="incomingConnectionFactory" ref="metc_connection_factory_in"/>
+    <!-- The connection factory for outgoing JMS connections. -->
+    <property name="outgoingConnectionFactory" ref="metc_connection_factory_out"/>
+    <!-- The ID generation factory. -->
+    <property name="IDFactory">
+      <ref bean="idFactory"/>
+    </property>
+  <!-- The report history services provider. -->
+    <property name="reportHistoryServices">
+      <ref bean="reportHistoryServices"/>
+    </property>
+    <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
+    <property name="symbolResolverServices">
+      <bean class="org.marketcetera.ors.symbol.IterativeSymbolResolver">
+        <property name="symbolResolvers">
+          <list>
+            <bean class="org.marketcetera.ors.symbol.PatternSymbolResolver"/>
+          </list>
+        </property>
+      </bean>
+    </property>
+    <!-- The order information cache. -->
+    <property name="orderInfoCache">
+      <bean class="org.marketcetera.ors.SimpleOrderInfoCache"/>
+    </property>
   </bean>
-  <bean id="metc_db_vendor" class="org.marketcetera.persist.MySQLDBVendor"/>
-  <bean id="metc_jpa_vendor" class="org.marketcetera.persist.HibernateVendor" depends-on="metc_db_vendor,metc_db_init"/>
+  <bean class="org.marketcetera.ors.OptionRootUnderlyingMap">
+    <property name="filename" value="${metc.optionroot.map.file}"/>
+    <property name="includeTypes" value="EU,EL"/>
+  </bean>
+  <bean id="runtimeUsername" class="java.lang.String">
+    <constructor-arg value="admin"/>
+  </bean>
+  <bean id="runtimePassword" class="java.lang.String">
+    <constructor-arg value="admin"/>
+  </bean>
+  <bean id="reportHistoryServices" class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
+  <bean id="idFactory" class="org.marketcetera.core.DatabaseIDFactory"/>
 </beans>

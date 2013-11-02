@@ -1,11 +1,9 @@
 
 package org.marketcetera.ors;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -58,26 +56,9 @@ public class DBInit
     public static void initORSDB()
             throws IOException
     {
-        // need to hack up the db.xml file to force a regeneration of the schema
-        File dbFile = new File(CONF_DIR+"db"+File.separator+"db.xml");
-        File dbBackupFile = new File(CONF_DIR+"db"+File.separator+"db.xml.bak");
-        FileUtils.copyFile(dbFile,
-                           dbBackupFile);
-        try {
-            String contents = FileUtils.readFileToString(dbFile);
-            contents = contents.replace("<prop key=\"hibernate.hbm2ddl.auto\">update</prop>",
-                                        "<prop key=\"hibernate.hbm2ddl.auto\">create</prop>");
-            FileUtils.writeStringToFile(dbFile,
-                                        contents);
-            ConfigurableApplicationContext context = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"dbinit.xml" },
-                                                                                         null);
-            context.start();
-            // this context is done, close it to allow the passed app to run normally
-            context.close();
-        } finally {
-            FileUtils.deleteQuietly(dbFile);
-            FileUtils.moveFile(dbBackupFile,
-                               dbFile);
-        }
+        ConfigurableApplicationContext context = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"dbinit.xml" },
+                                                                                     null);
+        // this context is done, close it to allow the passed app to run normally
+        context.close();
     }
 }

@@ -45,7 +45,7 @@
     <property name="jpaProperties">
       <props>
         <prop key="hibernate.dialect">${metc.hibernate.dialect}</prop>
-        <prop key="hibernate.hbm2ddl.auto">validate</prop>
+        <prop key="hibernate.hbm2ddl.auto">create</prop>
         <prop key="hibernate.show_sql">false</prop>
         <prop key="hibernate.format_sql">false</prop>
       </props>

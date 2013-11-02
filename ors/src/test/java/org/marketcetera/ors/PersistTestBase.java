@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,8 +25,7 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.impl.PositionKeyImpl;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.ors.dao.ReportService;
-import org.marketcetera.ors.dao.UserService;
+import org.marketcetera.ors.dao.*;
 import org.marketcetera.ors.history.ExecutionReportSummary;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.security.SimpleUser;
@@ -63,7 +61,7 @@ import quickfix.field.SendingTime;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback=true)
-@ContextConfiguration(locations={"file:src/test/sample_data/conf/server.xml"})
+@ContextConfiguration(locations={"file:src/test/sample_data/conf/persist_tests.xml"})
 public class PersistTestBase
         extends TestCaseBase
         implements ApplicationContextAware
@@ -91,6 +89,9 @@ public class PersistTestBase
         context.registerShutdownHook();
         userService = context.getBean(UserService.class);
         reportService = context.getBean(ReportService.class);
+        userDao = context.getBean(UserDao.class);
+        persistentReportDao = context.getBean(PersistentReportDao.class);
+        executionReportDao = context.getBean(ExecutionReportDao.class);
         IDFactory idFactory = context.getBean(IDFactory.class);
         reportHistoryServices = context.getBean(ReportHistoryServices.class);
         reportHistoryServices.init(idFactory,
@@ -127,12 +128,10 @@ public class PersistTestBase
     public void cleanTables()
             throws Exception
     {
-        reportService.purgeReportsBefore(new Date());
-        List<SimpleUser> allUsers = userService.findAll();
-        for(SimpleUser user : allUsers) {
-            userService.delete(user);
-        }
-        //Verify everything's gone
+        executionReportDao.deleteAll();
+        persistentReportDao.deleteAll();
+        userDao.deleteAll();
+        // verify everything's gone
         assertTrue(userService.findAll().isEmpty());
         assertTrue(reportService.findAllExecutionReportSummary().isEmpty());
         assertTrue(reportService.findAllPersistentReport().isEmpty());
@@ -686,7 +685,7 @@ public class PersistTestBase
      * @throws InterruptedException if interrupted.
      */
     protected void sleepForSignificantTime() throws InterruptedException {
-        //PersistTestBase.sleepForSignificantTime();
+        Thread.sleep(1);
     }
 
     protected BigDecimal getPosition(Date inDate, Equity inEquity)
@@ -718,8 +717,60 @@ public class PersistTestBase
             throws Exception {
         return getCurrencyPositions(inDate, viewer);
     }
-    
-    
+    /**
+     * Gets the position of the given instrument as of the given date.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inFuture a <code>Future</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    protected BigDecimal getPosition(Date inDate,
+                                     Future inFuture)
+    {
+        return getPosition(inDate,
+                           inFuture,
+                           viewer);
+    }
+    /**
+     * Gets the position of the given instrument as of the given date from the perspective of the given user.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inFuture a <code>Future</code> value
+     * @param inViewer a <code>SimpleUser</code> value
+     * @return a <code>BigDecimal</code> value
+     */
+    protected BigDecimal getPosition(Date inDate,
+                                     Future inFuture,
+                                     SimpleUser inViewer)
+    {
+        return reportHistoryServices.getFuturePositionAsOf(inViewer,
+                                                           inDate,
+                                                           inFuture);
+    }
+    /**
+     * Gets all future positions as of the given date.
+     *
+     * @param inDate a <code>Date</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Future&gt;,BigDecimal&gt;</code> value
+     */
+    protected Map<PositionKey<Future>,BigDecimal> getFuturePositions(Date inDate)
+    {
+        return getFuturePositions(inDate,
+                                  viewer);
+    }
+    /**
+     * Gets all future positions as of the given date.
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inUser a <code>SimpleUser</code> value
+     * @return a <code>Map&lt;PositionKey&lt;Future&gt;,BigDecimal&gt;</code> value
+     */
+    protected Map<PositionKey<Future>,BigDecimal> getFuturePositions(Date inDate,
+                                                                     SimpleUser inUser)
+    {
+        return reportHistoryServices.getAllFuturePositionsAsOf(inUser,
+                                                               inDate);
+    }
     protected BigDecimal getPosition(Date inDate, Option inOption) throws Exception {
         return getPosition(inDate, inOption, viewer);
     }
@@ -1021,6 +1072,9 @@ public class PersistTestBase
     protected UserID extraUserID;
     protected UserService userService;
     protected ReportService reportService;
+    protected UserDao userDao;
+    protected PersistentReportDao persistentReportDao;
+    protected ExecutionReportDao executionReportDao;
     protected ConfigurableApplicationContext context;
     protected ReportHistoryServices reportHistoryServices;
     protected static final BrokerID BROKER = new BrokerID("TestBroker");

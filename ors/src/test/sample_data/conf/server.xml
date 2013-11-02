@@ -68,7 +68,7 @@
     </property>
   <!-- The report history services provider. -->
     <property name="reportHistoryServices">
-      <bean class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
+      <ref bean="reportHistoryServices"/>
     </property>
     <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
     <property name="symbolResolverServices">
@@ -95,6 +95,8 @@
   <bean id="runtimePassword" class="java.lang.String">
     <constructor-arg value="admin"/>
   </bean>
-  <bean class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
+  <bean id="reportHistoryServices" class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
   <bean id="idFactory" class="org.marketcetera.core.DatabaseIDFactory"/>
+  <!--  authenticator -->
+  <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
 </beans>

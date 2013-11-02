@@ -73,7 +73,7 @@ public class PersistentReport
      * @return the system report instance.
      * @throws ReportPersistenceException if there were errors converting the message from its persistent representation to system report instance
      */
-    ReportBase toReport()
+    public ReportBase toReport()
     {
         ReportBase returnValue = null;
         String fixMsgString = null;
