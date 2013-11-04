@@ -11,15 +11,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.ors.dao.UserService;
-import org.marketcetera.persist.EntityExistsException;
+import org.marketcetera.ors.PersistTestBase;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 
 /* $License$ */
 /**
@@ -27,17 +26,24 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
 public class ORSCLITest
+        extends PersistTestBase
 {
-    private static final String ENCODING = "UTF-8"; //$NON-NLS-1$
+    private static final String ENCODING = "UTF-8";
     private static ORSAdminCLI instance;
     private static ByteArrayOutputStream bOut = new ByteArrayOutputStream();
     private static PrintStream pOut;
     private static ByteArrayOutputStream bErr = new ByteArrayOutputStream();
     private static PrintStream pErr;
+    /**
+     * Runs once before all tests.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @BeforeClass
-    public static void setup() throws Exception {
+    public static void setupOnce()
+            throws Exception
+    {
         if(pOut == null) {
             pOut = new PrintStream(bOut, false, ENCODING);
         }
@@ -62,6 +68,17 @@ public class ORSCLITest
             SLF4JLoggerProxy.error(ORSCLITest.class, e);
             throw e;
         }
+    }
+    /**
+     * Runs before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void setup()
+            throws Exception
+    {
+        cleanTables();
     }
     @Test
     public void parsingFailures() throws Exception {
@@ -219,19 +236,21 @@ public class ORSCLITest
                "name");             //$NON-NLS-1$
     }
     @Test
-    public void commands() throws Exception {
+    public void commands()
+            throws Exception
+    {
         //Create an admin account
         SimpleUser admin = new SimpleUser();
         admin.setName("admin"); //$NON-NLS-1$
         final String password = "admin"; //$NON-NLS-1$
         admin.setPassword(password.toCharArray());
         admin.setSuperuser(true);
-        userService.save(admin);
+        admin = userService.save(admin);
         //Try list users
         runCLI("-u",admin.getName(),"-p",password,"--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         matchOut("^\\s*admin \\[sa\\]\\s*$"); //$NON-NLS-1$
         //Try creating admin again
-        runCLI(EntityExistsException.class, "-u", admin.getName(), "-p", //$NON-NLS-1$ //$NON-NLS-2$
+        runCLI(DataIntegrityViolationException.class, "-u", admin.getName(), "-p", //$NON-NLS-1$ //$NON-NLS-2$
                 password, "--addUser", "-n", "admin", "-w", "pssst"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^$"); //$NON-NLS-1$
         //Try creating a different user
@@ -271,15 +290,24 @@ public class ORSCLITest
         runCLI("-u","blah","-p","ugh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^\\s*admin \\[sa\\]\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         //Try changing another user password as a non-admin user
-        runCLI(I18NException.class, "-u", "blah", "-p", "ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                "--changePassword", "-w", "meh", "-n", "admin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        runCLI(I18NException.class,
+               "-u", "blah",
+               "-p", "ugh",
+                "--changePassword",
+                "-w", "meh",
+                "-n", "admin");
         matchOut("^$"); //$NON-NLS-1$
         //Try changing another user password as a admin user
-        runCLI("-u", "admin", "-p", password, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                "--changePassword", "-w", "meh", "-n", "blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
+        runCLI("-u","admin",
+               "-p",password,
+                "--changePassword",
+                "-w","meh",
+                "-n","blah");
+        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*");
         //verify that new password works
-        runCLI("-u","blah","-p","meh","--listUsers"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        runCLI("-u","blah",
+               "-p","meh",
+               "--listUsers");
         matchOut("^\\s*admin \\[sa\\]\\s*blah \\[a\\]\\s*$"); //$NON-NLS-1$
         //try deleting a user a non admin user
         runCLI(I18NException.class, "-u","blah","-p","meh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -338,10 +366,14 @@ public class ORSCLITest
                 "--changePassword","-w","ugh","-n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^$"); //$NON-NLS-1$
         //Try changing the superuser flag of an inactive user
-        runCLI(I18NException.class, "-u","admin","-p","ugh", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                "--changeSuperuser","-n","blah","-s","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        matchOut("^$"); //$NON-NLS-1$
-
+        runCLI(I18NException.class,
+               "-u","admin",
+               "-p","ugh",
+                "--changeSuperuser",
+                "-n","blah",
+                "-s",
+                "y");
+        matchOut("^$");
         //Create a superuser with unicode name and password
         runCLI("-u", admin.getName(), "-p", "ugh", "--addUser", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                "-n", UnicodeData.HELLO_GR, "-w", UnicodeData.COMBO, "-s", " y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
@@ -372,16 +404,22 @@ public class ORSCLITest
     static void matchErr(String regex) throws Exception {
         matchStream(regex, bErr);
     }
-    static void matchStream(String regex, ByteArrayOutputStream baos)
-            throws Exception {
+    static void matchStream(String regex,
+                            ByteArrayOutputStream baos)
+            throws Exception
+    {
         String str = baos.toString(ENCODING);
-        assertTrue(str + "~" + regex, Pattern.matches(regex,str)); //$NON-NLS-1$
+        assertTrue(str + "~" + regex,
+                   Pattern.matches(regex,
+                                   str));
     }
     static void runCLI(String... args) throws Exception{
         runCLI(null,args);
     }
     static void runCLI(Class<? extends Exception> expectedFailure,
-                       String... args) throws Exception{
+                       String... args)
+            throws Exception
+    {
         //Uncomment the following lines to view CLI output
         //System.out.print(bOut.toString());
         //System.err.print(bErr.toString());
@@ -395,6 +433,7 @@ public class ORSCLITest
             //no error output generated during normal run
             matchErr("^$"); //$NON-NLS-1$
         } catch (Exception e) {
+            e.printStackTrace();
             assertNotNull(e.toString(), expectedFailure);
             assertTrue(e.toString(),expectedFailure.isInstance(e));
             //verify that the exception message and usage message is
@@ -404,9 +443,4 @@ public class ORSCLITest
             assertTrue(err, err.indexOf(ORSAdminCLI.CMD_NAME) >= 0);
         }
     }
-    /**
-     * 
-     */
-    @Autowired
-    private UserService userService;
 }

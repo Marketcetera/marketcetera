@@ -158,7 +158,8 @@ public class OrderRoutingSystem
         clientSessionFactory = new ClientSessionFactory(systemInfo,
                                                         jmsMgr,
                                                         userManager);
-        clientSessionFactory.setUserService(mContext.getBean(UserService.class));
+        UserService userService = mContext.getBean(UserService.class);
+        clientSessionFactory.setUserService(userService);
         SessionManager<ClientSession> sessionManager = new SessionManager<ClientSession>(clientSessionFactory,
                                                                                          (cfg.getServerSessionLife()==SessionManager.INFINITE_SESSION_LIFESPAN) ? SessionManager.INFINITE_SESSION_LIFESPAN : (cfg.getServerSessionLife()*1000));
                                                                                          userManager.setSessionManager(sessionManager);
@@ -167,11 +168,13 @@ public class OrderRoutingSystem
                                                                  cfg.getServerPort(),
                                                                  authenticator,
                                                                  sessionManager);
-        server.publish(new ServiceImpl(sessionManager,
-                                       getBrokers(),
-                                       cfg.getIDFactory(),
-                                       historyServices,
-                                       cfg.getSymbolResolverServices()),
+        ServiceImpl service = new ServiceImpl(sessionManager,
+                                              getBrokers(),
+                                              cfg.getIDFactory(),
+                                              historyServices,
+                                              cfg.getSymbolResolverServices(),
+                                              userService);
+        server.publish(service,
                        Service.class);
         // Initiate JMS.
         qSender = new QuickFIXSender();

@@ -303,7 +303,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
         final ExecutionReport report = removeField(createDummyExecReport(),
                                                    ClOrdID.FIELD);
         assertNull(report.getOrderID());
-        nonNullCVCheck("mOrderID",
+        nonNullCVCheck("orderID",
                        new Callable<Object>() {
             public Object call()
                     throws Exception

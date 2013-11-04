@@ -69,18 +69,21 @@ public class ServiceImpl
      * @param idFactory the ID factory.
      * @param historyServices The report history services provider.
      * @param inSymbolResolverServices a <code>SymbolResolverServices</code> value
+     * @param inUserService a <code>UserService</code> value
      */
     public ServiceImpl(SessionManager<ClientSession> sessionManager,
                        Brokers brokers,
                        IDFactory idFactory,
                        ReportHistoryServices historyServices,
-                       SymbolResolverServices inSymbolResolverServices)
+                       SymbolResolverServices inSymbolResolverServices,
+                       UserService inUserService)
     {
         super(sessionManager);
         mBrokers=brokers;
         mIDFactory=idFactory;
         mHistoryServices=historyServices;
         symbolResolverServices = inSymbolResolverServices;
+        userService = inUserService;
     }
     // INSTANCE METHODS.
 
@@ -775,11 +778,36 @@ public class ServiceImpl
                 return getOpenOrders(sessionHolder.getSession());
         }}).execute(inContext);
     }
-    
+    /**
+     * Get the userService value.
+     *
+     * @return a <code>UserService</code> value
+     */
+    public UserService getUserService()
+    {
+        return userService;
+    }
+    /**
+     * Sets the userService value.
+     *
+     * @param inUserService a <code>UserService</code> value
+     */
+    public void setUserService(UserService inUserService)
+    {
+        userService = inUserService;
+    }
+    /**
+     * Get the symbolResolverServices value.
+     *
+     * @return a <code>SymbolResolverServices</code> value
+     */
+    public SymbolResolverServices getSymbolResolverServices()
+    {
+        return symbolResolverServices;
+    }
     /**
      * provides access to user objects
      */
     @Autowired
     private UserService userService;
-    
 }

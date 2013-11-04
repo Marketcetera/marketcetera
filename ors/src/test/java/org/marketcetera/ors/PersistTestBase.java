@@ -17,8 +17,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.position.PositionKey;
@@ -42,7 +42,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import quickfix.Message;
@@ -59,7 +59,6 @@ import quickfix.field.SendingTime;
  * @version $Id$
  * @since $Release$
  */
-@RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(defaultRollback=true)
 @ContextConfiguration(locations={"file:src/test/sample_data/conf/persist_tests.xml"})
 public class PersistTestBase
@@ -76,6 +75,18 @@ public class PersistTestBase
             throws Exception
     {
         LoggerConfiguration.logSetup();
+    }
+    /**
+     * Sets up the test context before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void setupContext()
+            throws Exception
+    {
+        testContextManager = new TestContextManager(getClass());
+        testContextManager.prepareTestInstance(this);
     }
     /* (non-Javadoc)
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
@@ -1063,6 +1074,7 @@ public class PersistTestBase
             return ucp >= 32 && ucp <= 127 && Character.isLetterOrDigit(ucp); 
         }
     }
+    private TestContextManager testContextManager;
     protected FIXMessageFactory messageFactory;
     protected SimpleUser actor;
     protected SimpleUser viewer;
