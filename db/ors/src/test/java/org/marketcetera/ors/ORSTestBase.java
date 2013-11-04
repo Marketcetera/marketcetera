@@ -41,15 +41,13 @@ import static org.marketcetera.trade.TypesTestBase.*;
 /* $License$ */
 
 public class ORSTestBase
-    extends TestCaseBase
+        extends TestCaseBase
 {
     /**
      * The URL for the JMS broker. It must match the ORS configuration
      * files.
      */
-
-    protected static final String BROKER_URL=
-        "tcp://localhost:61616";
+    protected static final String BROKER_URL = "tcp://localhost:61616";
 
 
     private static SampleExchange mExchange;

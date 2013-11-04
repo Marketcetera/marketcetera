@@ -20,8 +20,17 @@ import org.marketcetera.trade.*;
 
 /* $License$ */
 
+/**
+ * Tests ORS web services.
+ *
+ * @author Tlerios
+ * @author Anshul
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
 public class ServiceTest
-    extends ORSTestBase
+        extends ORSTestBase
 {
     private static final Equity TEST_EQUITY =new Equity
         ("IBM");

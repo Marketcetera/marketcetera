@@ -7,7 +7,7 @@ import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -37,13 +37,11 @@ public class DBAuthenticator
      *
      * @return True if the two versions are compatible.
      */
-    static boolean compatibleVersions
-        (String clientVersion,
-         String serverVersion)
+    static boolean compatibleVersions(String clientVersion,
+                                      String serverVersion)
     {
         // If the server's version is unknown, any client is allowed.
-        return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
-                ObjectUtils.equals(clientVersion,serverVersion));
+        return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) || ObjectUtils.equals(clientVersion,serverVersion));
     }
     /**
      * Checks if a client with the supplied name is compatible with
@@ -58,49 +56,45 @@ public class DBAuthenticator
     {
         return ClientVersion.APP_ID_NAME.equals(clientName);
     }
-
-    // Authenticator.
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.ws.stateful.Authenticator#shouldAllow(org.marketcetera.util.ws.stateless.StatelessClientContext, java.lang.String, char[])
+     */
     @Override
-    public boolean shouldAllow
-        (StatelessClientContext context,
-         String user,
-         char[] password)
-        throws IncompatibleComponentsException
+    public boolean shouldAllow(StatelessClientContext inContext,
+                               String inUsername,
+                               char[] inPassword)
+            throws I18NException
     {
-        String serverVersion=ApplicationVersion.getVersion();
-        String clientName=Util.getName(context.getAppId());
-        String clientVersion=Util.getVersion(context.getAppId());
-        if (!compatibleApp(clientName)) {
-            throw new IncompatibleComponentsException
-                (new I18NBoundMessage2P(Messages.APP_MISMATCH,
-                                        clientName,user),
-                 serverVersion);
+        String serverVersion = ApplicationVersion.getVersion();
+        String clientName = Util.getName(inContext.getAppId());
+        String clientVersion = Util.getVersion(inContext.getAppId());
+        System.out.println("ServerVersion: " + serverVersion + " clientName: " + clientName + " clientVersion: " + clientVersion);
+        if(!compatibleApp(clientName)) {
+            throw new IncompatibleComponentsException(new I18NBoundMessage2P(Messages.APP_MISMATCH,
+                                                                             clientName,
+                                                                             inUsername),
+                                                       serverVersion);
         }
-        if (!compatibleVersions(clientVersion,serverVersion)) {
-            throw new IncompatibleComponentsException
-                (new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
-                                        clientVersion,serverVersion,user),
-                 serverVersion);
+        if(!compatibleVersions(clientVersion,
+                               serverVersion)) {
+            throw new IncompatibleComponentsException(new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
+                                                                             clientVersion,
+                                                                             serverVersion,
+                                                                             inUsername),
+                                                       serverVersion);
         }
-        try {
-            SimpleUser u=userService.findByName(user);
-            if (!u.isActive()) {
-                Messages.BAD_CREDENTIALS.warn(this,user);
-                return false;
-            }
-            u.validatePassword(password);
-        } catch (PersistenceException ex) {
-            Messages.BAD_CREDENTIALS.warn(this,ex,user);
+        SimpleUser u = userService.findByName(inUsername);
+        if(u == null || !u.isActive()) {
+            Messages.BAD_CREDENTIALS.warn(this,
+                                          inUsername);
             return false;
         }
+        u.validatePassword(inPassword);
         return true;
     }
-    
     /**
-     * allows access to user object
+     * allows access to user objects
      */
     @Autowired
     private UserService userService;
-    
 }

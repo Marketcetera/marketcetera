@@ -27,8 +27,7 @@ import quickfix.Message;
  */
 @Entity
 @Table(name="reports")
-@NamedQueries( { @NamedQuery(name="forOrderID",query="select e from PersistentReport e where e.mOrderID=:orderID"),
-                 @NamedQuery(name="PersistentReport.findSince",query="select e from PersistentReport e where e.sendingTime<?1") })
+@NamedQueries( { @NamedQuery(name="PersistentReport.findSince",query="select e from PersistentReport e where e.sendingTime>?1") })
 @ClassVersion("$Id$")
 public class PersistentReport
         extends EntityBase
@@ -119,104 +118,122 @@ public class PersistentReport
                     Messages.ERROR_RECONSTITUTE_FIX_MSG, fixMsgString));
         }
     }
-
-    private Originator getOriginator() {
-        return mOriginator;
-    }
-
-    private void setOriginator(Originator inOriginator) {
-        mOriginator = inOriginator;
-    }
-
-    OrderID getOrderID() {
-        return mOrderID;
-    }
-
-    private void setOrderID(OrderID inOrderID) {
-        mOrderID = inOrderID;
-    }
-
-    public SimpleUser getActor() {
-        return mActor;
-    }
-
-    private void setActor(SimpleUser inActor) {
-        mActor = inActor;
-    }
-
-    UserID getActorID() {
+    /**
+     * Gets the actor id of the report.
+     *
+     * @return a <code>UserID</code> value or <code>null</code>
+     */
+    public UserID getActorID()
+    {
         if (getActor()==null) {
             return null;
         }
         return getActor().getUserID();
     }
-
-    public SimpleUser getViewer() {
-        return mViewer;
-    }
-
-    private void setViewer(SimpleUser inViewer) {
-        mViewer = inViewer;
-    }
-
-    UserID getViewerID() {
+    /**
+     * Gets the viewer id of the report.
+     *
+     * @return a <code>UserID</code> value or <code>null</code>
+     */
+    public UserID getViewerID()
+    {
         if (getViewer()==null) {
             return null;
         }
         return getViewer().getUserID();
     }
-
-    BrokerID getBrokerID() {
-        return brokerID;
+    /**
+     * Get the orderID value.
+     *
+     * @return an <code>OrderID</code> value
+     */
+    public OrderID getOrderID()
+    {
+        return orderID;
     }
-
-    private void setBrokerID(BrokerID inBrokerID) {
-        brokerID = inBrokerID;
+    /**
+     * Sets the orderID value.
+     *
+     * @param inOrderID an <code>OrderID</code> value
+     */
+    public void setOrderID(OrderID inOrderID)
+    {
+        orderID = inOrderID;
     }
-    private String getBrokerIDAsString() {
-        return getBrokerID() == null
-                ? null
-                : getBrokerID().toString();
+    /**
+     * Get the actor value.
+     *
+     * @return a <code>SimpleUser</code> value
+     */
+    public SimpleUser getActor()
+    {
+        return mActor;
     }
-    @SuppressWarnings("unused")
-    private void setBrokerIDAsString(String inValue) {
-        setBrokerID(inValue == null
-                ? null
-                : new BrokerID(inValue));
+    /**
+     * Sets the actor value.
+     *
+     * @param inActor a <code>SimpleUser</code> value
+     */
+    public void setActor(SimpleUser inActor)
+    {
+        mActor = inActor;
     }
-
-    ReportID getReportID() {
-        return reportID;
+    /**
+     * Get the viewer value.
+     *
+     * @return a <code>SimpleUser</code> value
+     */
+    public SimpleUser getViewer()
+    {
+        return viewer;
     }
-
-    private void setReportID(ReportID inReportID) {
-        reportID = inReportID;
+    /**
+     * Sets the viewer value.
+     *
+     * @param inViewer a <code>SimpleUser</code> value
+     */
+    public void setViewer(SimpleUser inViewer)
+    {
+        viewer = inViewer;
     }
-    private long getReportIDAsLong() {
-        return getReportID().longValue();
-    }
-    @SuppressWarnings("unused")
-    private void setReportIDAsLong(long inValue) {
-        setReportID(new ReportID(inValue));
-    }
-
-    private String getFixMessage() {
+    /**
+     * Get the fixMessage value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getFixMessage()
+    {
         return mFixMessage;
     }
-
-    private void setFixMessage(String inFIXMessage) {
-        mFixMessage = inFIXMessage;
+    /**
+     * Sets the fixMessage value.
+     *
+     * @param inFixMessage a <code>String</code> value
+     */
+    public void setFixMessage(String inFixMessage)
+    {
+        mFixMessage = inFixMessage;
     }
-
-    private Date getSendingTime() {
+    /**
+     * Get the sendingTime value.
+     *
+     * @return a <code>Date</code> value
+     */
+    public Date getSendingTime()
+    {
         return sendingTime;
     }
-
-    private void setSendingTime(Date inSendingTime) {
+    /**
+     * Sets the sendingTime value.
+     *
+     * @param inSendingTime a <code>Date</code> value
+     */
+    public void setSendingTime(Date inSendingTime)
+    {
         sendingTime = inSendingTime;
     }
     /**
-     * Gets the report type value.
+     * Get the reportType value.
      *
      * @return a <code>ReportType</code> value
      */
@@ -224,10 +241,86 @@ public class PersistentReport
     {
         return mReportType;
     }
-
-    @SuppressWarnings("unused")
-    private void setReportType(ReportType inReportType) {
+    /**
+     * Sets the reportType value.
+     *
+     * @param inReportType a <code>ReportType</code> value
+     */
+    public void setReportType(ReportType inReportType)
+    {
         mReportType = inReportType;
+    }
+    /**
+     * Get the brokerID value.
+     *
+     * @return a <code>BrokerID</code> value
+     */
+    public BrokerID getBrokerID()
+    {
+        return brokerID;
+    }
+    /**
+     * Sets the brokerID value.
+     *
+     * @param inBrokerID a <code>BrokerID</code> value
+     */
+    public void setBrokerID(BrokerID inBrokerID)
+    {
+        brokerID = inBrokerID;
+    }
+    /**
+     * Get the reportID value.
+     *
+     * @return a <code>ReportID</code> value
+     */
+    public ReportID getReportID()
+    {
+        return reportID;
+    }
+    /**
+     * Sets the reportID value.
+     *
+     * @param inReportID a <code>ReportID</code> value
+     */
+    public void setReportID(ReportID inReportID)
+    {
+        reportID = inReportID;
+    }
+    /**
+     * Get the originator value.
+     *
+     * @return an <code>Originator</code> value
+     */
+    public Originator getOriginator()
+    {
+        return mOriginator;
+    }
+    /**
+     * Sets the originator value.
+     *
+     * @param inOriginator an <code>Originator</code> value
+     */
+    public void setOriginator(Originator inOriginator)
+    {
+        mOriginator = inOriginator;
+    }
+    /**
+     * Get the reportBase value.
+     *
+     * @return a <code>ReportBase</code> value
+     */
+    public ReportBase getReportBase()
+    {
+        return mReportBase;
+    }
+    /**
+     * Sets the reportBase value.
+     *
+     * @param inReportBase a <code>ReportBase</code> value
+     */
+    public void setReportBase(ReportBase inReportBase)
+    {
+        mReportBase = inReportBase;
     }
     /**
      * Declared to get JPA to work.
@@ -235,73 +328,57 @@ public class PersistentReport
     @SuppressWarnings("unused")
     private PersistentReport() {}
     /**
-     * The attribute sending time used in JPQL queries
-     */
-    static final String ATTRIBUTE_SENDING_TIME = "sendingTime";  //$NON-NLS-1$
-    /**
-     * The attribute actor used in JPQL queries
-     */
-    static final String ATTRIBUTE_ACTOR = "actor";  //$NON-NLS-1$
-    /**
-     * The attribute viewer used in JPQL queries
-     */
-    static final String ATTRIBUTE_VIEWER = "viewer";  //$NON-NLS-1$
-    /**
-     * The entity name as is used in various JPQL Queries
-     */
-    static final String ENTITY_NAME = PersistentReport.class.getSimpleName();
-    /**
-     * 
+     * order id value
      */
     @Embedded
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="order_id",nullable=false))})
-    private OrderID mOrderID;
+    private OrderID orderID;
     /**
-     * 
+     * actor value
      */
     @ManyToOne
     @JoinColumn(name="actor_id")
     private SimpleUser mActor; 
     /**
-     * 
+     * viewer value
      */
     @ManyToOne
     @JoinColumn(name="viewer_id")
-    private SimpleUser mViewer; 
+    private SimpleUser viewer; 
     /**
-     * 
+     * raw FIX message value
      */
     @Column(name="message",nullable=false,length=8192)
     private String mFixMessage;
     /**
-     * 
+     * sending time value
      */
     @Column(name="send_time",nullable=false)
     private Date sendingTime;
     /**
-     * 
+     * report type value
      */
     @Column(name="report_type",nullable=false)
     private ReportType mReportType;
     /**
-     * 
+     * broker ID valkue
      */
     @Embedded
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_id",nullable=false))})
     private BrokerID brokerID;
     /**
-     * 
+     * report ID value
      */
     @Embedded
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="report_id",nullable=false,unique=true))})
     private ReportID reportID;
     /**
-     * 
+     * report originator value
      */
     @Column(name="originator",nullable=false)
     private Originator mOriginator;
     /**
-     * 
+     * root report base value
      */
     @Transient
     private transient ReportBase mReportBase;

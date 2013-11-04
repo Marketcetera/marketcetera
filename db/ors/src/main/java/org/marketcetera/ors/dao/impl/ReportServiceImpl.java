@@ -77,7 +77,7 @@ public class ReportServiceImpl
         QPersistentReport r = QPersistentReport.persistentReport;
         BooleanExpression where = r.sendingTime.goe(inDate);
         if(!inUser.isSuperuser()) {
-            where = where.and(r.mViewer.eq(inUser));
+            where = where.and(r.viewer.eq(inUser));
         }
         List<PersistentReport> reports = jpaQuery.from(r).where(where).orderBy(r.sendingTime.asc()).list(r);
         ReportBaseImpl[] results = new ReportBaseImpl[reports.size()];
@@ -111,20 +111,14 @@ public class ReportServiceImpl
      * @see org.marketcetera.ors.dao.ReportService#getOpenOrders(org.marketcetera.ors.security.SimpleUser)
      */
     @Override
-    public List<ReportBase> getOpenOrders(SimpleUser inUser)
+    public List<ReportBase> getOpenOrders(SimpleUser inViewer)
     {
-//        List<ReportBase> reports = new ArrayList<ReportBase>();
-//        
-//        List<ReportBase> rawReports = reportService.getOpenOrders(inUser);
-//        //ExecutionReportSummary.getOpenOrders(inUser);
-//        try {
-//            for(ExecutionReportSummary summary : rawReports) {
-//                reports.add(summary.getReport().toReport());
-//            }
-//        } catch (ReportPersistenceException e) {
-//            throw new PersistenceException(e);
-//        }
-        throw new UnsupportedOperationException(); // TODO
+        List<ReportBase> reports = new ArrayList<ReportBase>();
+        List<ExecutionReportSummary> rawReports = executionReportDao.findOpenOrders(inViewer);
+        for(ExecutionReportSummary summary : rawReports) {
+            reports.add(summary.getReport().toReport());
+        }
+        return reports;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#getAllEquityPositionsAsOf(org.marketcetera.ors.security.SimpleUser, java.util.Date)
@@ -353,20 +347,27 @@ public class ReportServiceImpl
                                        reportSummary.getOrigOrderID());
                 orderId = reportSummary.getOrigOrderID();
             }
-            List<OrderID> list = executionReportDao.findRootIDForOrderID(orderId);
-            if(list.isEmpty()) {
+            OrderID rootID = executionReportDao.findRootIDForOrderID(orderId);
+            if(rootID == null) {
                 SLF4JLoggerProxy.debug(this,
                                        "No other orders match this orderID - this must be the first in the order chain");  //$NON-NLS-1$
                 // this is the first order in this chain
-                reportSummary.setRootID(reportSummary.getOrderID());
+                rootID = reportSummary.getOrderID();
             } else {
-                OrderID rootID = (OrderID)list.get(0);
                 SLF4JLoggerProxy.debug(this,
                                        "Not the first orderID in the chain, using {} for rootID",  //$NON-NLS-1$
                                        rootID);
-                reportSummary.setRootID(rootID);
             }
+            reportSummary.setRootID(rootID);
             reportSummary = executionReportDao.save(reportSummary);
+            // update is_open marker on other reports in the family (not sure if this should be run for ERs only or all reports)
+        /*
+                Query query = inEntityManager.createNamedQuery("setIsOpen"); //$NON-NLS-1$
+                ExecutionReportSummary summaryReport = (ExecutionReportSummary)inMerged;
+                query.setParameter("Id",summaryReport.getId()).setParameter("rootID",summaryReport.getRootID()).executeUpdate();
+         */
+            executionReportDao.updateOpenOrders(rootID,
+                                                reportSummary.getId());
         }
         return report;
     }
@@ -395,8 +396,13 @@ public class ReportServiceImpl
     @Override
     public Principals getPrincipals(OrderID inOrderID)
     {
-//        return PersistentReport.getPrincipals(orderID);
-        throw new UnsupportedOperationException(); // TODO
+        List<PersistentReport> reports = persistentReportDao.findByOrderID(inOrderID);
+        if(reports.isEmpty()) {
+            return Principals.UNKNOWN;
+        }
+        PersistentReport report = reports.get(0);
+        return new Principals(report.getActorID(),
+                              report.getViewerID());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#findAll()
@@ -420,7 +426,7 @@ public class ReportServiceImpl
     @Override
     public List<PersistentReport> findAllPersistentReportSince(Date inDate)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return persistentReportDao.findSince(inDate);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.ReportService#findAllPersistentReportByViewer(org.marketcetera.ors.security.SimpleUser)
@@ -428,7 +434,7 @@ public class ReportServiceImpl
     @Override
     public List<PersistentReport> findAllPersistentReportByViewer(SimpleUser inViewer)
     {
-        throw new UnsupportedOperationException(); // TODO
+        return persistentReportDao.findByViewer(inViewer);
     }
     /**
      * Executes an all positions query by instrument type.
@@ -568,7 +574,7 @@ public class ReportServiceImpl
     @Autowired
     private PersistentReportDao persistentReportDao;
     /**
-     * 
+     * entity manager value used to construct queries
      */
     @PersistenceContext
     private EntityManager entityManager;

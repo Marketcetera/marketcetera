@@ -1,19 +1,21 @@
 package org.marketcetera.ors.ws;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.client.ClientVersion;
 import org.marketcetera.client.IncompatibleComponentsException;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.util.except.I18NException;
+import org.marketcetera.ors.PersistTestBase;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.test.TestCaseBase;
+import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -24,8 +26,19 @@ import static org.junit.Assert.*;
 /* $License$ */
 
 public class DBAuthenticatorTest
-    extends TestCaseBase
+        extends PersistTestBase
 {
+    /**
+     * Runs before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void setup()
+            throws Exception
+    {
+        instance = context.getBean(Authenticator.class);
+    }
     @Test
     public void basics()
     {
@@ -67,11 +80,16 @@ public class DBAuthenticatorTest
                 new I18NBoundMessage2P(Messages.APP_MISMATCH,"x",null),
                 ctx,null,null);
         //no app version
-        ctx.setAppId(Util.getAppId(ClientVersion.APP_ID_NAME,""));
-        shouldAllowFailure(
-                new I18NBoundMessage3P(Messages.VERSION_MISMATCH, null,
-                        ApplicationVersion.getVersion(),null),
-                ctx,null,null);
+        ctx.setAppId(Util.getAppId(ClientVersion.APP_ID_NAME,
+                                   ""));
+        System.out.println("Executing test");
+        shouldAllowFailure(new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
+                                                  null,
+                                                  ApplicationVersion.getVersion(),
+                                                  null),
+                          ctx,
+                          null,
+                          null);
         //invalid app version
         ctx.setAppId(Util.getAppId(ClientVersion.APP_ID_NAME,"x"));
         shouldAllowFailure(
@@ -88,13 +106,22 @@ public class DBAuthenticatorTest
                                            final StatelessClientContext inContext,
                                            final String inUsername,
                                            final char[] inPassword)
-            throws Exception {
-        new ExpectedFailure<IncompatibleComponentsException>(inMessage){
+            throws Exception
+    {
+        new ExpectedFailure<IncompatibleComponentsException>(inMessage) {
             @Override
-            protected void run() throws Exception {
-                new DBAuthenticator().shouldAllow(inContext,
-                        inUsername, inPassword);
+            protected void run()
+                    throws Exception
+            {
+                System.out.println("Executing test with " + inContext + " " + inUsername);
+                instance.shouldAllow(inContext,
+                                     inUsername,
+                                     inPassword);
             }
         };
     }
+    /**
+     * authenticator instance
+     */
+    private static Authenticator instance;
 }

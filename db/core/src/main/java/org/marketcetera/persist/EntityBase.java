@@ -122,26 +122,26 @@ public abstract class EntityBase
         setLastUpdated(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
     }
     /**
-     * 
+     * unique identifier of the object
      */
     @Id
     @GeneratedValue
     @Column(name="id",nullable=false)
     private long id = UNINITIALIZED;
     /**
-     * 
+     * update count, used to prevent dirty writes
      */
     @Version
     @Column(name="update_count",nullable=false)
     private int updateCount = UNINITIALIZED;
     /**
-     * 
+     * indicates last update time
      */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="last_updated",nullable=false)
     private Date lastUpdated;
     /**
-     * 
+     * indicates that a record hasn't been written yet
      */
     protected static final int UNINITIALIZED = -1;
     private static final long serialVersionUID = -7445081112376896281L;

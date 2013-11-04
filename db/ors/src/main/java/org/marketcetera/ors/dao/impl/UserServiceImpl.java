@@ -48,7 +48,15 @@ public class UserServiceImpl
         inNameFilter = StringUtils.trimToNull(inNameFilter);
         BooleanExpression wherePredicate = null;
         if(inNameFilter != null) {
-            wherePredicate = simpleUser.name.eq(inNameFilter);
+            // prepare name filter, check for presence of wildcards
+            if(inNameFilter.contains("*") || inNameFilter.contains("?")) {
+                inNameFilter = inNameFilter.replaceAll("\\*",
+                        "%").replaceAll("\\?",
+                                        "_");
+                wherePredicate = simpleUser.name.like(inNameFilter);
+            } else {
+                wherePredicate = simpleUser.name.eq(inNameFilter);
+            }
         }
         if(inActiveFilter != null) {
             if(wherePredicate == null) {

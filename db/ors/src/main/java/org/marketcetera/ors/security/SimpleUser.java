@@ -135,13 +135,15 @@ public class SimpleUser
      * @throws ValidationException If the user password is already set, or if
      * an empty password is supplied or if the user name is not set.
      */
-    public void setPassword(char[] password) throws ValidationException {
+    public void setPassword(char[] password)
+            throws ValidationException
+    {
         if(getName() == null) {
             throw new ValidationException(UNSPECIFIED_NAME_ATTRIBUTE);
         }
         if(isPasswordSet()) {
-            throw new ValidationException(
-                    new I18NBoundMessage1P(CANNOT_SET_PASSWORD,getName()));
+            throw new ValidationException(new I18NBoundMessage1P(CANNOT_SET_PASSWORD,
+                                                                 getName()));
         }
         validateAndSetPassword(password);
     }
@@ -161,7 +163,8 @@ public class SimpleUser
      */
     public void changePassword(char [] originalPassword,
                                char[] newPassword)
-            throws ValidationException {
+            throws ValidationException
+    {
         validatePassword(originalPassword);
         validateAndSetPassword(newPassword);
     }
@@ -180,12 +183,15 @@ public class SimpleUser
      * the specified password doesn't match the currently configured
      * user password.
      */
-    public void validatePassword(char[] password) throws ValidationException {
+    public void validatePassword(char[] password)
+            throws ValidationException
+    {
         if(getHashedPassword() == null || getHashedPassword().length() == 0) {
             return;
         }
         validatePasswordValue(password);
-        if(!getHashedPassword().equals(hash(getName().toCharArray(),password))) {
+        if(!getHashedPassword().equals(hash(getName().toCharArray(),
+                                            password))) {
             throw new ValidationException(INVALID_PASSWORD);
         }
     }
@@ -217,9 +223,12 @@ public class SimpleUser
      *
      * @throws ValidationException if the supplied password is empty.
      */
-    private void validateAndSetPassword(char[] password) throws ValidationException {
+    private void validateAndSetPassword(char[] password)
+            throws ValidationException
+    {
         validatePasswordValue(password);
-        setHashedPassword(hash(getName().toCharArray(), password));
+        setHashedPassword(hash(getName().toCharArray(),
+                               password));
     }
     private String getHashedPassword() {
         return hashedPassword;
@@ -305,9 +314,9 @@ public class SimpleUser
     /**
      * The digest used to hash the password.
      */
-    private static ThreadLocal<MessageDigest> digest =
-            new ThreadLocal<MessageDigest>(){
-        protected MessageDigest initialValue() {
+    private static ThreadLocal<MessageDigest> digest = new ThreadLocal<MessageDigest>() {
+        protected MessageDigest initialValue()
+        {
             try {
                 return MessageDigest.getInstance("SHA1"); //$NON-NLS-1$
             } catch (NoSuchAlgorithmException e) {

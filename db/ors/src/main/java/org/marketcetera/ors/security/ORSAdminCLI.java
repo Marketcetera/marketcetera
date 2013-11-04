@@ -51,6 +51,7 @@ public class ORSAdminCLI
         this.err = err;
         context = new ClassPathXmlApplicationContext(getConfigurations());
         context.registerShutdownHook();
+        userService = context.getBean(UserService.class);
     }
 
     public static void main(String[] args) {
@@ -232,6 +233,9 @@ public class ORSAdminCLI
         password = getOptionFromConsole(userName, password,
                 OPT_CURRENT_PASSWORD, CLI_PROMPT_PASSWORD);
         SimpleUser simpleUser = userService.findByName(userName);
+        if(simpleUser == null) {
+            throw new I18NException(CLI_ERR_INVALID_LOGIN);
+        }
         auth.authorize(simpleUser, password);
     }
 
@@ -265,7 +269,10 @@ public class ORSAdminCLI
         throws I18NException
     {
         SimpleUser u = userService.findByName(user);
-        if (!u.isActive()) {
+        if(u == null) {
+            throw new I18NException(CLI_ERR_INVALID_LOGIN);
+        }
+        if(!u.isActive()) {
             throw new I18NException(CLI_ERR_INACTIVE_USER);
         }
         return u;
@@ -441,8 +448,10 @@ public class ORSAdminCLI
                 throw new I18NException(CLI_UNAUTHORIZED_ACTION);
             }
         }
-        private static void validateUser(SimpleUser simpleUser, String password)
-                throws I18NException {
+        private static void validateUser(SimpleUser simpleUser,
+                                         String password)
+                throws I18NException
+        {
             try {
             	simpleUser.validatePassword(password.toCharArray());
             } catch (PersistenceException e) {
