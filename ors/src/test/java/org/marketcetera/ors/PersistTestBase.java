@@ -7,10 +7,13 @@ import static org.junit.Assert.fail;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TemporalType;
 
 import org.hamcrest.Description;
@@ -27,6 +30,8 @@ import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.ors.dao.*;
 import org.marketcetera.ors.history.ExecutionReportSummary;
+import org.marketcetera.ors.history.PersistentReport;
+import org.marketcetera.ors.history.QPersistentReport;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.persist.PersistenceException;
@@ -41,6 +46,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.transaction.TransactionConfiguration;
@@ -49,6 +55,8 @@ import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.SendingTime;
+
+import com.mysema.query.jpa.impl.JPAQuery;
 
 /* $License$ */
 
@@ -144,8 +152,82 @@ public class PersistTestBase
         userDao.deleteAll();
         // verify everything's gone
         assertTrue(userService.findAll().isEmpty());
-        assertTrue(reportService.findAllExecutionReportSummary().isEmpty());
-        assertTrue(reportService.findAllPersistentReport().isEmpty());
+        assertTrue(findAllExecutionReportSummary().isEmpty());
+        assertTrue(findAllPersistentReport().isEmpty());
+    }
+    /**
+     * Finds all execution report summary objects.
+     * 
+     * <p>Returned objects are sorted ascending by id.
+     *
+     * @return a <code>List&lt;ExecutionReportSummary&gt;</code> value
+     */
+    protected List<ExecutionReportSummary> findAllExecutionReportSummary()
+    {
+        return findAllExecutionReportSummary(new Sort(Sort.Direction.ASC,
+                                                      "id"));
+    }
+    /**
+     * Finds all execution report summary objects sorted by the given sort.
+     *
+     * @param inSort a <code>Sort</code> value
+     * @return a <code>List&lt;ExecutionReportSummary&gt;</code> value
+     */
+    protected List<ExecutionReportSummary> findAllExecutionReportSummary(Sort inSort)
+    {
+        return executionReportDao.findAll(inSort);
+    }
+    /**
+     * Finds all persistent report objects.
+     * 
+     * <p>Returned objects are sorted ascending by id.
+     *
+     * @return a <code>List&lt;PersistentReport&gt;</code> value
+     */
+    protected List<PersistentReport> findAllPersistentReport()
+    {
+        return findAllPersistentReport(new Sort(Sort.Direction.ASC,
+                                                "id"));
+    }
+    /**
+     * Finds all persistent report objects sorted by the given sort.
+     *
+     * @param inSort a <code>Sort</code> value
+     * @return a <code>List&lt;PersistentReport&gt;</code> value
+     */
+    protected List<PersistentReport> findAllPersistentReport(Sort inSort)
+    {
+        return persistentReportDao.findAll(inSort);
+    }
+    /**
+     * Finds all reports visible to the given viewer.
+     *
+     * <p>Returned objects are sorted ascending by id.
+     *
+     * @param inViewer a <code>SimpleUser</code> value
+     * @return a <code>List&lt;PersistentReport&gt;</code> value
+     */
+    protected List<PersistentReport> findAllPersistentReportByViewer(SimpleUser inViewer)
+    {
+        JPAQuery jpaQuery = new JPAQuery(entityManager);
+        QPersistentReport r = QPersistentReport.persistentReport;
+        jpaQuery = jpaQuery.from(r).where(r.viewer.eq(inViewer)).orderBy(r.id.asc());
+        return jpaQuery.fetchAll().list(r);
+    }
+    /**
+     * Finds all reports since the given date.
+     * 
+     * <p>Returned objects are sorted ascending by id.
+     *
+     * @param inDate a <code>Date</code> value
+     * @return a <code>List&lt;PersistentReport&gt;</code> value
+     */
+    protected List<PersistentReport> findAllPersistentReportSince(Date inDate)
+    {
+        JPAQuery jpaQuery = new JPAQuery(entityManager);
+        QPersistentReport r = QPersistentReport.persistentReport;
+        jpaQuery = jpaQuery.from(r).where(r.sendingTime.gt(inDate)).orderBy(r.id.asc());
+        return jpaQuery.fetchAll().list(r);
     }
     /**
      * Generates an unpersisted user with unique name and password values.
@@ -1094,4 +1176,6 @@ public class PersistTestBase
     protected static final String TEXT = "text";
     protected static final int SCALE = ExecutionReportSummary.DECIMAL_SCALE;
     protected static final AtomicInteger counter = new AtomicInteger(0);
+    @PersistenceContext
+    private EntityManager entityManager;
 }

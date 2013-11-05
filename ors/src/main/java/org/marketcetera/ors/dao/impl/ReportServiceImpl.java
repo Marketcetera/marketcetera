@@ -20,6 +20,8 @@ import org.marketcetera.trade.Currency;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,13 +75,19 @@ public class ReportServiceImpl
     public List<ReportBase> getReportsSince(SimpleUser inUser,
                                             Date inDate)
     {
-        JPAQuery jpaQuery = new JPAQuery(entityManager);
         QPersistentReport r = QPersistentReport.persistentReport;
         BooleanExpression where = r.sendingTime.goe(inDate);
         if(!inUser.isSuperuser()) {
             where = where.and(r.viewer.eq(inUser));
         }
-        List<PersistentReport> reports = jpaQuery.from(r).where(where).orderBy(r.sendingTime.asc()).list(r);
+        Sort sort = new Sort(Sort.Direction.ASC,
+                             r.sendingTime.getMetadata().getName());
+        // can expose the page and page size to allow paging through the api interfaces
+        PageRequest page = new PageRequest(0,
+                                           Integer.MAX_VALUE,
+                                           sort);
+        Iterable<PersistentReport> reports = persistentReportDao.findAll(where,
+                                                                         page);
         List<ReportBase> results = new ArrayList<ReportBase>();
         for(PersistentReport report : reports) {
             results.add(report.toReport());
@@ -360,11 +368,6 @@ public class ReportServiceImpl
             reportSummary.setRootID(rootID);
             reportSummary = executionReportDao.save(reportSummary);
             // update is_open marker on other reports in the family (not sure if this should be run for ERs only or all reports)
-        /*
-                Query query = inEntityManager.createNamedQuery("setIsOpen"); //$NON-NLS-1$
-                ExecutionReportSummary summaryReport = (ExecutionReportSummary)inMerged;
-                query.setParameter("Id",summaryReport.getId()).setParameter("rootID",summaryReport.getRootID()).executeUpdate();
-         */
             executionReportDao.updateOpenOrders(rootID,
                                                 reportSummary.getId());
         }
@@ -402,38 +405,6 @@ public class ReportServiceImpl
         PersistentReport report = reports.get(0);
         return new Principals(report.getActorID(),
                               report.getViewerID());
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ors.dao.ReportService#findAll()
-     */
-    @Override
-    public List<ExecutionReportSummary> findAllExecutionReportSummary()
-    {
-        return executionReportDao.findAll();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ors.dao.ReportService#findAllPersistentReport()
-     */
-    @Override
-    public List<PersistentReport> findAllPersistentReport()
-    {
-        return persistentReportDao.findAll();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ors.dao.ReportService#findAllPersistentReportSince(java.util.Date)
-     */
-    @Override
-    public List<PersistentReport> findAllPersistentReportSince(Date inDate)
-    {
-        return persistentReportDao.findSince(inDate);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.ors.dao.ReportService#findAllPersistentReportByViewer(org.marketcetera.ors.security.SimpleUser)
-     */
-    @Override
-    public List<PersistentReport> findAllPersistentReportByViewer(SimpleUser inViewer)
-    {
-        return persistentReportDao.findByViewer(inViewer);
     }
     /**
      * Executes an all positions query by instrument type.

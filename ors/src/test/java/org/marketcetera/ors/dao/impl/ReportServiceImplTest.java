@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.marketcetera.ors.PersistTestBase;
 import org.marketcetera.ors.history.PersistentReport;
 import org.marketcetera.trade.ReportBase;
-import org.springframework.transaction.annotation.Transactional;
 
 /* $License$ */
 
@@ -28,11 +27,10 @@ public class ReportServiceImplTest
      * @throws Exception if an unexpected error occurs
      */
     @Test
-    @Transactional
     public void testSaveReport()
             throws Exception
     {
-        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        List<PersistentReport> reports = findAllPersistentReport();
         assertTrue(reports.isEmpty());
         ReportBase report1 = generateReport();
         reportService.save(report1);
