@@ -104,7 +104,7 @@ public class BasicReportHistoryServices
                                             Date inDate)
     {
         return reportService.getReportsSince(inUser,
-                                             inDate);
+                                             inDate).toArray(new ReportBaseImpl[0]);
     }
     @Override
     public BigDecimal getEquityPositionAsOf(SimpleUser inUser,
