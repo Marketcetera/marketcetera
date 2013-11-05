@@ -70,7 +70,7 @@ public class ReportServiceImpl
      * @see org.marketcetera.ors.dao.ReportService#getReportsSince(org.marketcetera.ors.security.SimpleUser, java.util.Date)
      */
     @Override
-    public ReportBaseImpl[] getReportsSince(SimpleUser inUser,
+    public List<ReportBase> getReportsSince(SimpleUser inUser,
                                             Date inDate)
     {
         JPAQuery jpaQuery = new JPAQuery(entityManager);
@@ -80,10 +80,9 @@ public class ReportServiceImpl
             where = where.and(r.viewer.eq(inUser));
         }
         List<PersistentReport> reports = jpaQuery.from(r).where(where).orderBy(r.sendingTime.asc()).list(r);
-        ReportBaseImpl[] results = new ReportBaseImpl[reports.size()];
-        int counter = 0;
+        List<ReportBase> results = new ArrayList<ReportBase>();
         for(PersistentReport report : reports) {
-            results[counter++] = (ReportBaseImpl)report.toReport();
+            results.add(report.toReport());
         }
         return results;
     }
