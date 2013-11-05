@@ -68,7 +68,6 @@ public class DBAuthenticator
         String serverVersion = ApplicationVersion.getVersion();
         String clientName = Util.getName(inContext.getAppId());
         String clientVersion = Util.getVersion(inContext.getAppId());
-        System.out.println("ServerVersion: " + serverVersion + " clientName: " + clientName + " clientVersion: " + clientVersion);
         if(!compatibleApp(clientName)) {
             throw new IncompatibleComponentsException(new I18NBoundMessage2P(Messages.APP_MISMATCH,
                                                                              clientName,

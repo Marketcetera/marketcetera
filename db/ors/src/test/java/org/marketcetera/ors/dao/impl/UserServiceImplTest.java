@@ -253,32 +253,4 @@ public class UserServiceImplTest
         user1 = userService.findOne(user1.getId());
         assertTrue(user1.isActive());
     }
-    /**
-     * Tests {@link UserServiceImpl#updateSuperUser(String, boolean)}.
-     *
-     * @throws Exception if an unexpected error occurs
-     */
-    @Test
-    public void testUpdateSuperUser()
-            throws Exception
-    {
-        userService.updateSuperUser(null,
-                                    false);
-        userService.updateSuperUser(randomNameString(),
-                                    false);
-        SimpleUser user1 = generateUser();
-        assertFalse(user1.isSuperuser());
-        user1 = userService.save(user1);
-        assertFalse(user1.isSuperuser());
-        user1 = userService.findOne(user1.getId());
-        assertFalse(user1.isSuperuser());
-        userService.updateSuperUser(user1.getName(),
-                                    true);
-        user1 = userService.findOne(user1.getId());
-        assertTrue(user1.isSuperuser());
-        userService.updateSuperUser(user1.getName(),
-                                    false);
-        user1 = userService.findOne(user1.getId());
-        assertFalse(user1.isSuperuser());
-    }
 }

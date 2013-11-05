@@ -117,7 +117,9 @@ public class SimpleUser
         }
     }
     
-    public void resetUserPassword(String password) throws ValidationException {
+    public void resetUserPassword(String password)
+            throws ValidationException
+    {
         setHashedPassword(null);
         setPassword(password.toCharArray());
     }
@@ -300,7 +302,8 @@ public class SimpleUser
      *
      * @throws IllegalArgumentException If there's a bug in the code.
      */
-    private static String hash(char[] ...value)  {
+    private static String hash(char[] ...value)
+    {
         try {
             MessageDigest dig = digest.get();
             for(char[] c:value) {

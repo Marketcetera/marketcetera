@@ -99,7 +99,7 @@ public class DBAuthenticatorTest
         //valid app name & version
         ctx.setAppId(Util.getAppId(ClientVersion.APP_ID_NAME,
                 ApplicationVersion.getVersion()));
-        assertFalse(new DBAuthenticator().shouldAllow(ctx,"x",null));
+        assertFalse(instance.shouldAllow(ctx,"x",null));
     }
 
     private static void shouldAllowFailure(I18NBoundMessage inMessage,
@@ -113,7 +113,6 @@ public class DBAuthenticatorTest
             protected void run()
                     throws Exception
             {
-                System.out.println("Executing test with " + inContext + " " + inUsername);
                 instance.shouldAllow(inContext,
                                      inUsername,
                                      inPassword);
