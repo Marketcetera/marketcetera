@@ -1,17 +1,24 @@
 package org.marketcetera.photon.views;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.core.databinding.*;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.conversion.Converter;
+import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.core.databinding.observable.list.IListChangeListener;
+import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.list.ListDiffEntry;
+import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.DecoratingObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
@@ -32,6 +39,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.views.framelist.UpAction;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.photon.BrokerManager;
@@ -339,7 +347,6 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
                                                                                                           BrokerAlgoTag.class,
                                                                                                           new String[] { "tagSpec", "value" })));//$NON-NLS-1$ //$NON-NLS-2$
         valueColumn.setEditingSupport(new AlgoTableColumnEdditorSupport(mAlgoTagsTableViewer));
-        System.out.println();
     }
     
     /**
@@ -565,7 +572,8 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         bindText(getXSWTView().getAccountText(), model.getAccount());
     }
-    /**
+
+	/**
      * Binds the algo tags on the model to the view.
      */
     protected void bindAlgoTags()
@@ -576,22 +584,19 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
             public void handleListChange(ListChangeEvent event)
             {
                 System.out.println("Algo Tags table change: " + event);
-//                ScrolledForm theForm = getXSWTView().getForm();
-//                if (!theForm.isDisposed()) {
-//                    ListDiffEntry[] differences = event.diff.getDifferences();
-//                    for (ListDiffEntry listDiffEntry : differences) {
-//                        if (listDiffEntry.isAddition()) {
-//                            CustomField customField = (CustomField) listDiffEntry.getElement();
-//                            String key = CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX + customField.getKeyString();
-//                            IMemento theMemento = getMemento();
-//                            if (theMemento != null && theMemento.getInteger(key) != null) {
-//                                boolean itemChecked = (theMemento.getInteger(key).intValue() != 0);
-//                                customField.setEnabled(itemChecked);
-//                            }
-//                        }
-//                    }
-//                    theForm.reflow(true);
-//                }
+                /*for(Object object: algoTagLists){
+                	BrokerAlgoTag algoTag = (BrokerAlgoTag)object;
+                	algoTag.addPropertyChangeListener(new PropertyChangeListener() {
+						
+						@Override
+						public void propertyChange(PropertyChangeEvent evt) {
+							try{
+								((BrokerAlgoTag)evt.getSource()).validate();
+							}catch (Exception e){
+							}
+						}
+					});
+                }*/
             }
         });
     }

@@ -1,9 +1,13 @@
 package org.marketcetera.algo;
 
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -90,7 +94,10 @@ public class BrokerAlgoTag
      */
     public final void setValue(String inValue)
     {
+    	String oldValue = value;
         value = StringUtils.trimToNull(inValue);
+        System.out.println(value);
+        propertyChangeSupport.firePropertyChange("value", oldValue, value);
     }
     /**
      * Gets the underlying tag spec label.
@@ -113,7 +120,9 @@ public class BrokerAlgoTag
     {
         String pattern = tagSpec.getPattern();
         if(pattern != null) {
-            if(!Pattern.compile(pattern).matcher(value).matches()) {
+        	//Allow validation of empty string
+        	String valueToCompare = (value == null)? "" : value;
+            if(!Pattern.compile(pattern).matcher(valueToCompare).matches()) {
                 throw new CoreException(new I18NBoundMessage2P(Messages.ALGO_TAG_VALUE_PATTERN_MISMATCH,
                                                                tagSpec.getTag(),
                                                                value));
@@ -130,11 +139,11 @@ public class BrokerAlgoTag
     }
     
     public void addPropertyChangeListener(PropertyChangeListener listener){
-    	
+    	propertyChangeSupport.addPropertyChangeListener(listener);
     }
     
     public void removePropertyChangeListener(PropertyChangeListener listener){
-    	
+    	propertyChangeSupport.removePropertyChangeListener(listener);
     }
     
     /* (non-Javadoc)
@@ -183,6 +192,9 @@ public class BrokerAlgoTag
      */
     @XmlElement
     private BrokerAlgoTagSpec tagSpec;
+    
+    @Transient
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     /**
      * contains the value to apply to the given tag spec
      */

@@ -84,8 +84,15 @@ public class AlgoTableColumnEdditorSupport extends EditingSupport {
 		if(value == null)
 			return;
 		if(element instanceof BrokerAlgoTag){
+			String newValue = (value == null)?"": value.toString();
 			BrokerAlgoTag brokerAlgoTag = (BrokerAlgoTag)element;
-			brokerAlgoTag.setValue(value.toString());
+			if(brokerAlgoTag.getTagSpec().getOptions() != null){
+				newValue = (brokerAlgoTag.getTagSpec().getOptions().get(value));
+				if(newValue == null)
+					newValue = "";
+			}
+			brokerAlgoTag.setValue(newValue);
+			getViewer().refresh();
 		}
 	}
 

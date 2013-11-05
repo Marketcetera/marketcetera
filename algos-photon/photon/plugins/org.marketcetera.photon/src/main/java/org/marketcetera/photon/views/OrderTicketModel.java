@@ -128,6 +128,9 @@ public abstract class OrderTicketModel {
     public void updateAlgoTags()
     {
         // find selected algo and populate the algo table
+        for(int i = 0; i < mAlgoTagsList.size(); i ++){
+            ((BrokerAlgoTag)mAlgoTagsList.get(i)).removePropertyChangeListener(null);
+        }
         mAlgoTagsList.clear();
         if(selectedAlgo != null && selectedAlgo.getAlgoTags() != null) {
             for(BrokerAlgoTag tag : selectedAlgo.getAlgoTags()) {

@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views.providers;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.databinding.observable.map.IMapChangeListener;
@@ -71,7 +72,15 @@ public class AlgoTableObservableMapLabelProvider extends LabelProvider
 				case 0:
 					return brokerAlgoTag.getLabel();
 				case 1:
-					return brokerAlgoTag.getValue();
+					if(brokerAlgoTag.getTagSpec().getOptions() == null)
+						return brokerAlgoTag.getValue();
+					Map<String, String> options = brokerAlgoTag.getTagSpec().getOptions();
+					for(String key : options.keySet()){
+						if(options.get(key).equals(brokerAlgoTag.getValue()))
+							return key;
+					}
+					return "";
+					
 			}
 		}
 		return null;
