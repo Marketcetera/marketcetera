@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.ors.Principals;
-import org.marketcetera.ors.history.ExecutionReportSummary;
 import org.marketcetera.ors.history.PersistentReport;
 import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.*;
@@ -163,30 +162,4 @@ public interface ReportService
      * @return a <code>Principals</code> value
      */
     public Principals getPrincipals(OrderID inOrderID);
-    /**
-     * Gets all execution report objects.
-     *
-     * @return a <code>List&lt;ExecutionReportSummary&gt;</code> value
-     */
-    public List<ExecutionReportSummary> findAllExecutionReportSummary();
-    /**
-     * Gets all persistent report objects.
-     *
-     * @return a <code>List&lt;PersistentReport&gt;</code> value
-     */
-    public List<PersistentReport> findAllPersistentReport();
-    /**
-     * Finds all persistent report objects since the given date.
-     *
-     * @param inDate a <code>Date</code> value
-     * @return a <code>List&lt;PersistentReport&gt;</code> value
-     */
-    public List<PersistentReport> findAllPersistentReportSince(Date inDate);
-    /**
-     * Finds all persistent reports visible to the given viewer.
-     *
-     * @param inViewer a <code>SimpleUser</code> value
-     * @return a <code>List&lt;PersistentReport&gt;</code> value
-     */
-    public List<PersistentReport> findAllPersistentReportByViewer(SimpleUser inViewer);
 }

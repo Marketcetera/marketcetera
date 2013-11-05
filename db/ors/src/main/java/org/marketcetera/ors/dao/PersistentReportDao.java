@@ -4,11 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.ors.history.PersistentReport;
-import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 
 /* $License$ */
 
@@ -21,7 +21,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 @ClassVersion("$Id$")
 public interface PersistentReportDao
-        extends JpaRepository<PersistentReport,Long>
+        extends JpaRepository<PersistentReport,Long>,QueryDslPredicateExecutor<PersistentReport>
 {
     /**
      * Finds the report with the given report id.
@@ -44,11 +44,4 @@ public interface PersistentReportDao
      * @return a <code>List&lt;PersistentReport</code> value
      */
     List<PersistentReport> findSince(Date inDate);
-    /**
-     * Finds all reports for the given viewer.
-     *
-     * @param inViewer a <code>SimpleUser</code> value
-     * @return a <code>List&lt;PersistentReport</code> value
-     */
-    List<PersistentReport> findByViewer(SimpleUser inViewer);
 }

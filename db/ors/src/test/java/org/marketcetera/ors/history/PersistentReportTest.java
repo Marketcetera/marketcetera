@@ -128,7 +128,7 @@ public class PersistentReportTest
         assertNull(reject.getReportID());
         reportHistoryServices.save(reject);
         assertNotNull(reject.getReportID());
-        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        List<PersistentReport> reports = findAllPersistentReport();
         assertEquals(1, reports.size());
         OrderCancelReject retrieved = (OrderCancelReject) reports.get(0).toReport();
         assertReportEquals(reject,  retrieved);
@@ -154,7 +154,7 @@ public class PersistentReportTest
         assertNull(report.getReportID());
         reportHistoryServices.save(report);
         assertNotNull(report.getReportID());
-        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        List<PersistentReport> reports = findAllPersistentReport();
         assertEquals(1, reports.size());
         ExecutionReport retrieved = (ExecutionReport) reports.get(0).toReport();
         assertReportEquals(report,  retrieved);
@@ -191,7 +191,7 @@ public class PersistentReportTest
                 return null;
             }
         });
-        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        List<PersistentReport> reports = findAllPersistentReport();
         //Verify we've got nothing persisted
         assertEquals(0, reports.size());
     }
@@ -223,7 +223,7 @@ public class PersistentReportTest
         assertTrue(report3.getReportID().compareTo(report2.getReportID()) > 0);
         assertTrue(report2.getReportID().compareTo(reject1.getReportID()) > 0);
         //Retrieve them and verify that they're retrieved in order
-        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        List<PersistentReport> reports = findAllPersistentReport();
         assertEquals(4, reports.size());
         assertRetrievedReports(reports, reject1, report2,
                 report3, reject4);
@@ -265,33 +265,32 @@ public class PersistentReportTest
         reportHistoryServices.save(report3);
         reportHistoryServices.save(reject4);
         //Retrieve them and verify that they're retrieved in order
-        List<PersistentReport> reports = reportService.findAllPersistentReportSince(time1);
+        List<PersistentReport> reports = findAllPersistentReportSince(time1);
         //Retrieve all reports
         assertEquals(4, reports.size());
         assertRetrievedReports(reports, reject1, report2,
                 report3, reject4);
 
         //Retrieve last 3 reports
-        reports = reportService.findAllPersistentReportSince(time2);
+        reports = findAllPersistentReportSince(time2);
         assertEquals(3, reports.size());
         assertRetrievedReports(reports, report2, report3, reject4);
 
         //Retrieve last 2 reports
-        reports = reportService.findAllPersistentReportSince(time3);
+        reports = findAllPersistentReportSince(time3);
         assertEquals(2, reports.size());
         assertRetrievedReports(reports, report3, reject4);
 
         //Retrieve last 1 reports
-        reports = reportService.findAllPersistentReportSince(time4);
+        reports = findAllPersistentReportSince(time4);
         assertEquals(1, reports.size());
         assertRetrievedReports(reports, reject4);
 
         //Retrieve no reports
-        reports = reportService.findAllPersistentReportSince(time5);
+        reports = findAllPersistentReportSince(time5);
         assertEquals(0, reports.size());
         assertRetrievedReports(reports);
     }
-
     /**
      * Tests viewer
      * {@link MultiPersistentReportQuery#getViewerFilter() filter}
@@ -312,13 +311,13 @@ public class PersistentReportTest
             createCancelReject(BROKER,actorID,extraUserID);
         reportHistoryServices.save(r3);
 
-        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        List<PersistentReport> reports = findAllPersistentReport();
         assertRetrievedReports(reports,r1,r2,r3);
-        reports = reportService.findAllPersistentReportByViewer(viewer);
+        reports = findAllPersistentReportByViewer(viewer);
         assertRetrievedReports(reports,r1);
-        reports = reportService.findAllPersistentReportByViewer(extraUser);
+        reports = findAllPersistentReportByViewer(extraUser);
         assertRetrievedReports(reports,r3);
-        reports = reportService.findAllPersistentReportByViewer(actor);
+        reports = findAllPersistentReportByViewer(actor);
         assertRetrievedReports(reports);
     }
     @Test

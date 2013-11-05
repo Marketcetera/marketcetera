@@ -60,7 +60,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
                                                     BigDecimal.TEN,
                                                     BigDecimal.ONE,
                                                     BigDecimal.ONE));
-        List<ExecutionReportSummary> summary = reportService.findAllExecutionReportSummary();
+        List<ExecutionReportSummary> summary = findAllExecutionReportSummary();
         assertEquals(2,
                      summary.size());
         assertNull(summary.get(0).getViewer());
@@ -82,9 +82,9 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
         OrderCancelReject reject = createCancelReject();
         reportHistoryServices.save(reject);
         //report got saved
-        assertEquals(1, reportService.findAllPersistentReport().size());
+        assertEquals(1, findAllPersistentReport().size());
         //but the summary didn't
-        List<ExecutionReportSummary> allErSummary = reportService.findAllExecutionReportSummary();
+        List<ExecutionReportSummary> allErSummary = findAllExecutionReportSummary();
         assertEquals(0, allErSummary.size());
     }
 
@@ -117,12 +117,11 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
                                                    BigDecimal.ONE);
         reportHistoryServices.save(report1);
         // report got saved
-        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        List<PersistentReport> reports = findAllPersistentReport();
         assertEquals(1,
                      reports.size());
         //and so did the summary
-        List<ExecutionReportSummary> execReports = reportService.findAllExecutionReportSummary();
-//        query.setEntityOrder(MultiExecReportSummary.BY_ID); // TODO sort order
+        List<ExecutionReportSummary> execReports = findAllExecutionReportSummary();
         assertEquals(1,
                      execReports.size());
         assertSummary(execReports.get(0),
@@ -150,12 +149,12 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
                                                    BigDecimal.ONE,
                                                    BigDecimal.ONE);
         reportHistoryServices.save(report2);
-        reports = reportService.findAllPersistentReport();
+        reports = findAllPersistentReport();
         //report got saved
         assertEquals(2,
                      reports.size());
         //and so did the summary
-        execReports = reportService.findAllExecutionReportSummary();
+        execReports = findAllExecutionReportSummary();
         assertEquals(2, execReports.size());
         assertSummary(execReports.get(1),
                       report2.getAveragePrice(),
@@ -182,12 +181,12 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
                                                    BigDecimal.ONE,
                                                    BigDecimal.ONE);
         reportHistoryServices.save(report3);
-        reports = reportService.findAllPersistentReport();
+        reports = findAllPersistentReport();
         //report3 got saved
         assertEquals(3,
                      reports.size());
         //and so did the summary
-        execReports = reportService.findAllExecutionReportSummary();
+        execReports = findAllExecutionReportSummary();
         assertEquals(3,
                      execReports.size());
         assertSummary(execReports.get(2),
@@ -228,10 +227,10 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
                                                   BigDecimal.ONE);
         reportHistoryServices.save(report);
         //report got saved
-        List<PersistentReport> reports = reportService.findAllPersistentReport();
+        List<PersistentReport> reports = findAllPersistentReport();
         assertEquals(1, reports.size());
         //and so did the summary
-        List<ExecutionReportSummary> execReports = reportService.findAllExecutionReportSummary();
+        List<ExecutionReportSummary> execReports = findAllExecutionReportSummary();
         assertEquals(1, execReports.size());
         assertSummary(execReports.get(0),
                       report.getAveragePrice(),
