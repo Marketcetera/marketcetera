@@ -298,12 +298,13 @@ public class ORSAdminCLI
         SimpleUser u = null;
         if(opUser != null && !opUser.equals(userName)) {
             u = fetchUser(opUser);
-            u.resetUserPassword(password);
+            u.resetUserPassword(opPass);
             //go through set name to reset the password as we do not have
             //the original password
         } else {
             u = fetchUser(userName);
-            u.changePassword(password.toCharArray(), opPass.toCharArray());
+            u.changePassword(password.toCharArray(),
+                             opPass.toCharArray());
         }
         userService.save(u);
         out.println(CLI_OUT_USER_CHG_PASS.getText(u.getName()));
@@ -367,12 +368,15 @@ public class ORSAdminCLI
      *
      * @throws I18NException if there were errors restoring the user.
      */
-    private void restoreUser(String opUser) throws I18NException {
+    private void restoreUser(String opUser)
+            throws I18NException
+    {
         if(ADMIN_USER_NAME.equals(opUser)) {
-            throw new I18NException(new I18NBoundMessage1P(
-                    CLI_ERR_UNAUTH_RESTORE,opUser));
+            throw new I18NException(new I18NBoundMessage1P(CLI_ERR_UNAUTH_RESTORE,
+                                                           opUser));
         }
-        userService.updateUserActiveStatus(opUser, false);
+        userService.updateUserActiveStatus(opUser,
+                                           true);
         out.println(CLI_OUT_USER_RESTORED.getText(opUser));
     }
 
@@ -384,18 +388,17 @@ public class ORSAdminCLI
      *
      * @throws I18NException if there were errors setting the flag.
      */
-    private void changeSuperuser
-        (String opUser,
-         Boolean superuser)
+    private void changeSuperuser(String opUser,
+                                 Boolean superuser)
         throws I18NException
     {
         if(ADMIN_USER_NAME.equals(opUser)) {
-            throw new I18NException(new I18NBoundMessage1P(
-                    CLI_ERR_UNAUTH_CHANGE_SUPERUSER,opUser));
+            throw new I18NException(new I18NBoundMessage1P(CLI_ERR_UNAUTH_CHANGE_SUPERUSER,
+                                                           opUser));
         }
-
-        userService.updateSuperUser(opUser, superuser);
-        
+        SimpleUser user = fetchUser(opUser);
+        user.setSuperuser(superuser);
+        userService.save(user);
         out.println(CLI_OUT_USER_CHG_SUPERUSER.getText(opUser));
     }
 
@@ -453,8 +456,9 @@ public class ORSAdminCLI
                 throws I18NException
         {
             try {
-            	simpleUser.validatePassword(password.toCharArray());
+                simpleUser.validatePassword(password.toCharArray());
             } catch (PersistenceException e) {
+                e.printStackTrace();
                 throw new I18NException(CLI_ERR_INVALID_LOGIN);
             }
             if (!simpleUser.isActive()) {

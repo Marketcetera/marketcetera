@@ -1,16 +1,16 @@
 package org.marketcetera.ors.history;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.trade.*;
-import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
+
+import org.junit.Test;
+import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.ors.security.SimpleUser;
+import org.marketcetera.trade.*;
 
 /* $License$ */
 

@@ -48,14 +48,6 @@ public interface UserService
     void updateUserActiveStatus(String inUsername,
                                 boolean inIsActive);
     /**
-     * Updates the superuser status for the user with the given name.
-     *
-     * @param inUsername a <code>String</code> value
-     * @param inIsSuperuser a <code>boolean</code> value
-     */
-    void updateSuperUser(String inUsername,
-                         boolean inIsSuperuser);
-    /**
      * Lists all users taking into account the given optional filters.
      *
      * @param inNameFilter a <code>String</code> value

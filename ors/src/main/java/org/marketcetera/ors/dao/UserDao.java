@@ -26,34 +26,24 @@ public interface UserDao
      * @return a <code>SimpleUser</code> value
      */
     SimpleUser findByName(String inUsername);
-	/**
-	 * Updates the user data for the user with the given name. 
-	 *
-	 * @param inUsername a <code>String</code> value
-	 * @param inUserData a <code>String</code> value
-	 */
-	@Modifying
-	@Query("update user u set u.userData=?2 where u.name=?1")
-	void updateUserByName(String inUsername,
-	                      String inUserData);
-	/**
-	 * Updates the active status for the user with the given name.
-	 *
-	 * @param inUsername a <code>String</code> value
-	 * @param inIsActive a <code>boolean</code> value
-	 */
-	@Modifying	
-	@Query("update user u set u.active=?2 where u.name=?1")
-	void updateUserActiveStatus(String inUsername,
-	                            boolean inIsActive);
-	/**
-	 * Updates the super user status for the user with the given name.
-	 *
-	 * @param inUsername a <code>String</code> value
-	 * @param inIsSuperUser a <code>boolean</code> value
-	 */
-	@Modifying	
-	@Query("update user u set u.superuser=?2 where u.name = ?1")
-	void updateSuperUser(String inUsername,
-	                     boolean inIsSuperUser);
+    /**
+     * Updates the user data for the user with the given name. 
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inUserData a <code>String</code> value
+     */
+    @Modifying
+    @Query("update user u set u.userData=?2 where u.name=?1")
+    void updateUserByName(String inUsername,
+                          String inUserData);
+    /**
+     * Updates the active status for the user with the given name.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inIsActive a <code>boolean</code> value
+     */
+    @Modifying	
+    @Query("update user u set u.active=?2 where u.name=?1")
+    void updateUserActiveStatus(String inUsername,
+                                boolean inIsActive);
 }

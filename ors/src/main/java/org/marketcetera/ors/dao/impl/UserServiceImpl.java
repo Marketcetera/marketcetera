@@ -102,17 +102,6 @@ public class UserServiceImpl
                                        inIsActive);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.ors.dao.UserService#updateSuperUser(java.lang.String, boolean)
-     */
-    @Override
-    @Transactional(readOnly=false,propagation=Propagation.REQUIRED)
-    public void updateSuperUser(String inUsername,
-                                boolean inIsSuperuser)
-    {
-        userDao.updateSuperUser(inUsername,
-                                inIsSuperuser);
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.UserService#save(org.marketcetera.ors.security.SimpleUser)
      */
     @Override

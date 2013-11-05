@@ -385,15 +385,25 @@ public class ORSCLITest
         //verify that the new user can login with the unicode password
         runCLI("-u",UnicodeData.HELLO_GR,"-p", UnicodeData.COMBO, "--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^\\s*admin \\[s\\]\\s*" + UnicodeData.HELLO_GR + " \\[s\\]\\s*$"); //$NON-NLS-1$ //$NON-NLS-2$
-        //restore the blah user
-        runCLI("-u","admin","-p","ugh", "--restoreUser","-n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
-        //make blah a superuser.
-        runCLI("-u","admin","-p","ugh","--changeSuperuser","-n","blah","-s","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
-        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*"); //$NON-NLS-1$
-        //list active users
-        runCLI("-u","admin","-p","ugh","--listUsers","-a","y"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-        matchOut("^\\s*admin \\[s\\]\\s*blah \\[s\\]\\s*" + UnicodeData.HELLO_GR + " \\[s\\]\\s*$"); //$NON-NLS-1$
+        // restore the blah user
+        runCLI("-u","admin",
+               "-p","ugh",
+               "--restoreUser",
+               "-n","blah");
+        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*");
+        // make blah a superuser.
+        runCLI("-u","admin",
+               "-p","ugh",
+               "--changeSuperuser",
+               "-n","blah",
+               "-s","y");
+        matchOut("[\\p{L}\\s]*'blah'[\\p{L}\\s]*");
+        // list active users
+        runCLI("-u","admin",
+               "-p","ugh",
+               "--listUsers",
+               "-a","y");
+        matchOut("^\\s*admin \\[s\\]\\s*blah \\[s\\]\\s*" + UnicodeData.HELLO_GR + " \\[s\\]\\s*$");
         // superusers other than admin cannot perform admin operations
         runCLI(I18NException.class,"-u",UnicodeData.HELLO_GR,"-p", UnicodeData.COMBO, "--deleteUser","-n","blah"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         matchOut("^$"); //$NON-NLS-1$
