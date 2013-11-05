@@ -53,20 +53,19 @@ import quickfix.field.SenderCompID;
 import quickfix.field.SendingTime;
 import quickfix.field.TargetCompID;
 
+/* $License$ */
+
 /**
- * The main application. See {@link SpringConfig} for configuration
- * information.
+ * Routes orders to order destination and maintains FIX sessions.
  *
  * @author tlerios@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 1.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class OrderRoutingSystem
-    extends ApplicationBase
+        extends ApplicationBase
 {
 
     // CLASS DATA.

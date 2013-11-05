@@ -5,7 +5,7 @@
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.0.0
-  - Version: $Id$
+  - Version: $Id: server.xml 16725 2013-10-29 20:33:04Z colin $
   - $License$
   -->
 
@@ -22,14 +22,9 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
                            http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
-  <import resource="properties.xml"/>
   <import resource="messaging/main.xml"/>
   <import resource="brokers/main.xml"/>
   <import resource="filters/main.xml"/>
-  <import resource="db/db.xml"/>
-  <context:component-scan base-package="org.marketcetera.core,org.marketcetera.ors"/>
-  <jpa:repositories base-package="org.marketcetera.core,org.marketcetera.ors"/>
-  <tx:annotation-driven/>
   <bean id="orsConfig" class="org.marketcetera.ors.config.SpringConfig">
     <!-- The brokers. -->
     <property name="brokers" ref="metc_brokers"/>
@@ -49,23 +44,12 @@
     <!-- The connection factory for outgoing JMS connections. -->
     <property name="outgoingConnectionFactory" ref="metc_connection_factory_out"/>
     <!-- The ID generation factory. -->
-    <property name="IDFactory">
-      <bean class="org.marketcetera.core.DatabaseIDFactory"/>
-    </property>
+    <property name="IDFactory" ref="idFactory"/>
   <!-- The report history services provider. -->
     <property name="reportHistoryServices">
       <bean class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
     </property>
-    <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
-    <property name="symbolResolverServices">
-      <bean class="org.marketcetera.ors.symbol.IterativeSymbolResolver">
-        <property name="symbolResolvers">
-          <list>
-            <bean class="org.marketcetera.ors.symbol.PatternSymbolResolver"/>
-          </list>
-        </property>
-      </bean>
-    </property>
+    <property name="symbolResolverServices" ref="symbolResolver"/>
     <!-- The order information cache. -->
     <property name="orderInfoCache">
       <bean class="org.marketcetera.ors.SimpleOrderInfoCache"/>
@@ -74,21 +58,5 @@
   <bean class="org.marketcetera.ors.OptionRootUnderlyingMap">
     <property name="filename" value="${metc.optionroot.map.file}"/>
     <property name="includeTypes" value="EU,EL"/>
-  </bean>
-  <!--  authenticator -->
-  <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
-  <!--  authentication -->
-  <bean id="securityManager" class="org.apache.shiro.mgt.DefaultSecurityManager">
-    <property name="realm" ref="userService"/>
-  </bean>
-  <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod" value="org.apache.shiro.SecurityUtils.setSecurityManager"/>
-    <property name="arguments" ref="securityManager"/>
-  </bean>
-  <!-- make sure all beans that need autowiring are instantiated before creating this bean -->
-  <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor,orsConfig"/>
-  <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-    <property name="securityManager" ref="securityManager"/>
   </bean>
 </beans>
