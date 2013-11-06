@@ -936,7 +936,7 @@
     <module>util</module>
     <module>util-test</module>
     <module>tools</module>
-    <module>application-container</module>
+    <module>packages</module>
   </modules>
   <repositories>
     <!--

@@ -26,7 +26,7 @@
           - The name of the JAAS configuration file containing the JAAS
           - 'ors-amq-domain'.
           -->
-        <entry key="java.security.auth.login.config" value="${java.security.auth.login.config}"/>
+        <!-- entry key="java.security.auth.login.config" value="${java.security.auth.login.config}"/-->
       </map>
     </property>
   </bean>
