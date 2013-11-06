@@ -22,9 +22,12 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
                            http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+  <import resource="properties.xml"/>
   <import resource="messaging/main.xml"/>
   <import resource="brokers/main.xml"/>
   <import resource="filters/main.xml"/>
+  <bean id="ors" class="org.marketcetera.ors.OrderRoutingSystem">
+  </bean>
   <bean id="orsConfig" class="org.marketcetera.ors.config.SpringConfig">
     <!-- The brokers. -->
     <property name="brokers" ref="metc_brokers"/>
