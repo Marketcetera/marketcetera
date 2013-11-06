@@ -490,12 +490,12 @@ public class SpringConfig
         if (getSelector()==null) {
             throw new I18NException(Messages.NO_SELECTOR);
         }
-        if (getIncomingConnectionFactory()==null) {
-            throw new I18NException(Messages.NO_INCOMING_CONNECTION_FACTORY);
-        }
-        if (getOutgoingConnectionFactory()==null) {
-            throw new I18NException(Messages.NO_OUTGOING_CONNECTION_FACTORY);
-        }
+//        if (getIncomingConnectionFactory()==null) {
+//            throw new I18NException(Messages.NO_INCOMING_CONNECTION_FACTORY);
+//        }
+//        if (getOutgoingConnectionFactory()==null) {
+//            throw new I18NException(Messages.NO_OUTGOING_CONNECTION_FACTORY);
+//        }
         if (getIDFactory()==null) {
             throw new I18NException(Messages.NO_ID_FACTORY);
         }

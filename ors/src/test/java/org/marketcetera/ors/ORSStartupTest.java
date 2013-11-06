@@ -30,7 +30,7 @@ public class ORSStartupTest extends TestCase {
      */
     public void testRealORSStartup() throws Exception {
         failed = false;
-        OrderRoutingSystem theORS=new OrderRoutingSystem(new String[0]);
+        OrderRoutingSystem theORS=new OrderRoutingSystem();
 
         assertFalse("failure in ORS startup: " + failureEx, failed); //$NON-NLS-1$
 

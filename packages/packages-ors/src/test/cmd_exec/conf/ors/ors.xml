@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main server configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id: server.xml 16725 2013-10-29 20:33:04Z colin $
+  - $License$
+  -->
+
+<!--
+  - See 'README.html' for detailed documentation.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+  <!-- import resource="messaging/main.xml"/-->
+  <import resource="brokers/main.xml"/>
+  <import resource="filters/main.xml"/>
+  <!-- ORS object -->
+  <bean id="ors" class="org.marketcetera.ors.OrderRoutingSystem">
+    <property name="config" ref="orsConfig"/>
+  </bean>
+  <bean id="orsConfig" class="org.marketcetera.ors.config.SpringConfig">
+    <!-- The brokers. -->
+    <property name="brokers" ref="metc_brokers"/>
+    <!-- The broker selector. -->
+    <property name="selector" ref="metc_selector"/>
+    <!-- The WS hostname. -->
+    <property name="serverHost" value="${metc.ws.host}"/>
+    <!-- The WS port. -->
+    <property name="serverPort" value="${metc.ws.port}"/>
+    <!--
+      - The length of a WS session, in seconds; -1 means sessions
+      - never expire.
+      -->
+    <property name="serverSessionLife" value="${metc.ws.session.life}"/>
+    <!-- The connection factory for incoming JMS connections. -->
+    <!-- property name="incomingConnectionFactory" ref="metc_connection_factory_in"/-->
+    <!-- The connection factory for outgoing JMS connections. -->
+    <!-- property name="outgoingConnectionFactory" ref="metc_connection_factory_out"/-->
+    <!-- The ID generation factory. -->
+    <property name="IDFactory" ref="idFactory"/>
+  <!-- The report history services provider. -->
+    <property name="reportHistoryServices">
+      <bean class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
+    </property>
+    <property name="symbolResolverServices" ref="symbolResolver"/>
+    <!-- The order information cache. -->
+    <property name="orderInfoCache">
+      <bean class="org.marketcetera.ors.SimpleOrderInfoCache"/>
+    </property>
+  </bean>
+  <bean class="org.marketcetera.ors.OptionRootUnderlyingMap">
+    <property name="filename" value="${metc.optionroot.map.file}"/>
+    <property name="includeTypes" value="EU,EL"/>
+  </bean>
+</beans>
