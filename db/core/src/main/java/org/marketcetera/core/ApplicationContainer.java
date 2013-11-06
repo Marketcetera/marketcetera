@@ -4,8 +4,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.core.ApplicationBase;
-import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -145,7 +143,7 @@ public class ApplicationContainer
     {
         instance = this;
         context = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"application.xml" }, //$NON-NLS-1$ //$NON-NLS-2$
-                                                       null);
+                                                      null);
     }
     /**
      * Spring application context
