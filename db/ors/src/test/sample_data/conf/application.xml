@@ -46,6 +46,7 @@
     <property name="service" ref="orsService"/>
     <property name="quickFixSender" ref="orsQuickFixSender"/>
     <property name="idFactory" ref="orsIdFactory"/>
+    <property name="requestHandler" ref="orsRequestHandler"/>
   </bean>
   <!-- ORS JMS manager -->
   <bean id="jmsManager" class="org.marketcetera.client.jms.JmsManager">
@@ -114,6 +115,22 @@
   <bean id="orsQuickFixSender" class="org.marketcetera.quickfix.QuickFIXSenderImpl"/>
   <!-- ORS ID Factory -->
   <bean id="orsIdFactory" class="org.marketcetera.ors.LocalIDFactory" init-method="init">
+    <constructor-arg ref="idFactory"/>
+  </bean>
+  <!-- ORS Request Handler -->
+  <bean id="orsRequestHandler" class="org.marketcetera.ors.RequestHandler">
+    <constructor-arg ref="brokers"/>
+    <constructor-arg ref="selector"/>
+    <constructor-arg><list/></constructor-arg> <!-- allowed orders filter -->
+      <!-- 
+        <list>
+            <ref bean="metc_allowed_orders"/>
+            <ref bean="metc_restricted_users"/>
+        </list>
+       -->
+    <constructor-arg ref="replyPersister"/>
+    <constructor-arg ref="orsQuickFixSender"/>
+    <constructor-arg ref="orsUserManager"/>
     <constructor-arg ref="idFactory"/>
   </bean>
   <!-- ORS config object -->

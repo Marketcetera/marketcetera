@@ -10,7 +10,7 @@
   <groupId>org.marketcetera</groupId>
   <artifactId>packages-ors</artifactId>
   <version>2.4.0</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>packages-ors</name>
   <url>http://maven.apache.org</url>
   <properties>
