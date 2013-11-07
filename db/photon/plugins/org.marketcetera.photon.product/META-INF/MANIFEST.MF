@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.debug.core,
  org.marketcetera.photon.positions.ui,
  org.marketcetera.photon.core,
  org.marketcetera.photon.strategy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Localization: plugin
 Bundle-Activator: org.marketcetera.photon.internal.product.Activator
 Bundle-ActivationPolicy: lazy
