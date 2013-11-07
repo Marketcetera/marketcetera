@@ -44,6 +44,8 @@
     <property name="sessionManager" ref="orsSessionManager"/>
     <property name="server" ref="orsServer"/>
     <property name="service" ref="orsService"/>
+    <property name="quickFixSender" ref="orsQuickFixSender"/>
+    <property name="idFactory" ref="orsIdFactory"/>
   </bean>
   <!-- ORS JMS manager -->
   <bean id="jmsManager" class="org.marketcetera.client.jms.JmsManager">
@@ -107,6 +109,12 @@
         <bean class="org.marketcetera.ors.symbol.PatternSymbolResolver"/>
       </list>
     </property>
+  </bean>
+  <!-- ORS QuickFix Sender -->
+  <bean id="orsQuickFixSender" class="org.marketcetera.quickfix.QuickFIXSenderImpl"/>
+  <!-- ORS ID Factory -->
+  <bean id="orsIdFactory" class="org.marketcetera.ors.LocalIDFactory" init-method="init">
+    <constructor-arg ref="idFactory"/>
   </bean>
   <!-- ORS config object -->
   <bean id="orsConfig" class="org.marketcetera.ors.config.SpringConfig">

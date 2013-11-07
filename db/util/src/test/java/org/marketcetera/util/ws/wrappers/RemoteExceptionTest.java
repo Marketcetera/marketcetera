@@ -1,7 +1,11 @@
 package org.marketcetera.util.ws.wrappers;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.marketcetera.util.test.EqualityAssert.assertEquality;
+
 import javax.jws.WebService;
-import org.apache.cxf.jaxws.JaxWsClientProxy;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,9 +13,6 @@ import org.marketcetera.util.ws.stateless.StatelessClient;
 import org.marketcetera.util.ws.stateless.StatelessServer;
 import org.marketcetera.util.ws.stateless.StatelessServiceBase;
 import org.marketcetera.util.ws.stateless.StatelessServiceBaseImpl;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.EqualityAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -29,8 +30,6 @@ public class RemoteExceptionTest
 
     private static final String LOCAL_PROXY_SOURCE=
         RemoteExceptionTest.class.getName();
-    private static final String JAXB_PROXY_SOURCE=
-        JaxWsClientProxy.class.getName();
     private static final String JAVA_PROXY_SOURCE=
         "sun.reflect.NativeConstructorAccessorImpl";
 
@@ -165,7 +164,7 @@ public class RemoteExceptionTest
         singleBase(server,properties,false,false,
                    LOCAL_PROXY_SOURCE,cause,false);
         singleBase(assertRoundTripJAXBEx(server),properties,false,false,
-                   JAXB_PROXY_SOURCE,cause,false);
+                   JAVA_PROXY_SOURCE,cause,false);
         singleBase(assertRoundTripJava(server),properties,false,false,
                    JAVA_PROXY_SOURCE,cause,false);
     }
@@ -245,7 +244,7 @@ public class RemoteExceptionTest
                    false);
 
         singleNonSerializable
-            (server,assertRoundTripJAXBEx(server),JAXB_PROXY_SOURCE);
+            (server,assertRoundTripJAXBEx(server),JAVA_PROXY_SOURCE);
         singleNonSerializable
             (server,assertRoundTripJava(server),JAVA_PROXY_SOURCE);
     }
@@ -271,7 +270,7 @@ public class RemoteExceptionTest
                    false);
 
         singleNonDeserializable
-            (server,assertRoundTripJAXBEx(server),JAXB_PROXY_SOURCE);
+            (server,assertRoundTripJAXBEx(server),JAVA_PROXY_SOURCE);
         singleNonDeserializable
             (server,assertRoundTripJava(server),JAVA_PROXY_SOURCE);
     }
