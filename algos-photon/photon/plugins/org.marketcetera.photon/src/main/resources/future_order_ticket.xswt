@@ -57,7 +57,7 @@
                 </combo>
                 <composite>
                     <layout x:class="gridLayout" numColumns="4" marginWidth="0" marginHeight="0" verticalSpacing="1" horizontalSpacing="10"/>
-                    <layoutData x:class="gridData" horizontalAlignment="SWT.FILL" horizontalSpan="5"/>
+                    <layoutData x:class="gridData" horizontalAlignment="SWT.FILL" horizontalSpan="6"/>
                     <label text="ExpirationYear"/>
                     <label text="ExpirationMonth"/>
                     <label text=""/>
@@ -66,12 +66,6 @@
                         horizontalAlignment="GridData.FILL" 
                         verticalAlignment="GridData.CENTER"/></text>
                     <combo x:style="BORDER|READ_ONLY" x:id="ExpirationMonthCombo"/>
-                </composite>
-                <composite>
-                    <layout x:class="rowLayout" x:style="HORIZONTAL"/>
-                    <layoutData x:class="gridData" verticalAlignment="SWT.BOTTOM" horizontalAlignment="SWT.END" horizontalSpan="2"/>
-                    <button x:id="SendButton" x:style="PUSH" text="Send" enabled="false"/>
-                    <button x:id="ClearButton" x:style="PUSH" text="Clear"/>
                 </composite>
                 <section x:id="OtherExpandableComposite" x:style="ExpandableComposite.TITLE_BAR|ExpandableComposite.TWISTIE" text="Other" expanded="true" client="_other_composite">
                     <layoutData x:class="gridData" horizontalSpan="2"
@@ -121,6 +115,12 @@
                         </table>
                     </composite>
                 </section>
+                <composite>
+                    <layout x:class="rowLayout" x:style="HORIZONTAL"/>
+                    <layoutData x:class="gridData" verticalAlignment="SWT.BOTTOM" horizontalAlignment="SWT.BEGINNING" horizontalSpan="2"/>
+                    <button x:id="SendButton" x:style="PUSH" text="Send" enabled="false"/>
+                    <button x:id="ClearButton" x:style="PUSH" text="Clear"/>
+                </composite>
             </x:children>
         </getBody>
     </scrolledForm>

@@ -39,7 +39,7 @@
                         <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER"/>
                     </text>
                     <text x:style="SINGLE|BORDER" x:id="SymbolText" text="">
-                        <layoutData x:class="gridData" grabExcessHorizontalSpace="false" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER"/>
+                        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" horizontalAlignment="GridData.FILL" verticalAlignment="GridData.CENTER"/>
                     </text>
                     <combo x:style="BORDER|READ_ONLY" x:id="OrderTypeCombo"/>
                     <text x:style="SINGLE|BORDER" x:id="PriceText" text="">
