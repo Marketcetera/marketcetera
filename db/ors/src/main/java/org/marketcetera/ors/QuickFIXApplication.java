@@ -14,7 +14,7 @@ import org.marketcetera.ors.config.LogoutAction;
 import org.marketcetera.ors.filters.MessageFilter;
 import org.marketcetera.ors.info.*;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -52,7 +52,7 @@ public class QuickFIXApplication
     private final Brokers mBrokers;
     private final MessageFilter mSupportedMessages;
     private final ReplyPersister mPersister;
-    private final IQuickFIXSender mSender;
+    private final QuickFIXSender mSender;
     private final UserManager mUserManager;
     private final JmsOperations mToClientStatus;
     private final JmsOperations mToTradeRecorder;
@@ -66,7 +66,7 @@ public class QuickFIXApplication
          Brokers brokers,
          MessageFilter supportedMessages,
          ReplyPersister persister,
-         IQuickFIXSender sender,
+         QuickFIXSender sender,
          UserManager userManager,
          JmsOperations toClientStatus,
          JmsOperations toTradeRecorder)
@@ -105,7 +105,7 @@ public class QuickFIXApplication
         return mPersister;
     }
 
-    public IQuickFIXSender getSender()
+    public QuickFIXSender getSender()
     {
         return mSender;
     }

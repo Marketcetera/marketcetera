@@ -1,37 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!--
-  - Main server configuration.
+  - Main configuration for database initialization (test wrapper).
   -
   - Author: tlerios@marketcetera.com
   - Since: 1.0.0
-  - Version: $Id: server.xml 16725 2013-10-29 20:33:04Z colin $
+  - Version: $Id: dbinit.xml 16729 2013-11-02 00:00:24Z colin $
   - $License$
   -->
-
-<!--
-  - See 'README.html' for detailed documentation.
-  -->
-
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
                            http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
   <import resource="properties.xml"/>
-  <import resource="ors/ors.xml"/>
+  <import resource="ors/db-create.xml"/>
   <context:component-scan base-package="org.marketcetera.core,org.marketcetera.ors"/>
   <jpa:repositories base-package="org.marketcetera.core,org.marketcetera.ors"/>
   <tx:annotation-driven/>
-  <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
-  <bean id="symbolResolver" class="org.marketcetera.ors.symbol.IterativeSymbolResolver">
-    <property name="symbolResolvers">
+  <bean id="adminUser" class="org.marketcetera.ors.security.SimpleUser">
+    <property name="name" value="admin"/>
+    <property name="password" value="admin"/>
+    <property name="superuser" value="true"/>
+  </bean>
+  <bean id="userInitializer" class="org.marketcetera.ors.security.SimpleUserInitializer">
+    <property name="users">
       <list>
-        <bean class="org.marketcetera.ors.symbol.PatternSymbolResolver"/>
+        <ref bean="adminUser"/>
       </list>
     </property>
   </bean>

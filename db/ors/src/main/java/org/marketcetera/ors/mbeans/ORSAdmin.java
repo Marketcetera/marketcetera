@@ -6,7 +6,7 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.ors.UserManager;
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
-import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
@@ -25,12 +25,12 @@ import quickfix.field.*;
 @ClassVersion("$Id$")
 public class ORSAdmin implements ORSAdminMBean {
     private Brokers brokers;
-    protected IQuickFIXSender quickFIXSender;
+    protected QuickFIXSender quickFIXSender;
     private IDFactory idFactory;
     private UserManager userManager;
 
     public ORSAdmin(Brokers brokers,
-                    IQuickFIXSender qfSender,
+                    QuickFIXSender qfSender,
                     IDFactory idFactory,
                     UserManager userManager)
             throws NoMoreIDsException, ClassNotFoundException {

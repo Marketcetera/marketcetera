@@ -1,34 +1,39 @@
 package org.marketcetera.quickfix;
 
 import quickfix.Message;
-import quickfix.Session;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
 
-public class QuickFIXSender implements IQuickFIXSender {
+public interface QuickFIXSender {
+	/**
+	 * Send a message to the session specified in the message's target
+	 * identifiers.
+	 */
+	boolean sendToTarget(Message message) throws SessionNotFound;
 
-	public boolean sendToTarget(Message message) throws SessionNotFound {
-		return Session.sendToTarget(message);
-	}
+	/** Send a message to the session specified by the provided session ID. */
+	boolean sendToTarget(Message message, SessionID sessionID)
+			throws SessionNotFound;
 
-	public boolean sendToTarget(Message message, SessionID sessionID)
-			throws SessionNotFound {
-		return Session.sendToTarget(message, sessionID);
-	}
+	/**
+	 * Send a message to the session specified in the message's target
+	 * identifiers.
+	 */
+	boolean sendToTarget(Message message, java.lang.String qualifier)
+			throws SessionNotFound;
 
-	public boolean sendToTarget(Message message, String qualifier)
-			throws SessionNotFound {
-		return Session.sendToTarget(message, qualifier);
-	}
+	/**
+	 * Send a message to the session specified by the provided target company
+	 * ID.
+	 */
+	boolean sendToTarget(Message message, java.lang.String senderCompID,
+			java.lang.String targetCompID) throws SessionNotFound;
 
-	public boolean sendToTarget(Message message, String senderCompID,
-			String targetCompID) throws SessionNotFound {
-		return Session.sendToTarget(message, senderCompID, targetCompID);
-	}
-
-	public boolean sendToTarget(Message message, String senderCompID,
-			String targetCompID, String qualifier) throws SessionNotFound {
-		return Session.sendToTarget(message, senderCompID, targetCompID,
-				qualifier);
-	}
+	/**
+	 * Send a message to the session specified by the provided target company
+	 * ID.
+	 */
+	boolean sendToTarget(Message message, java.lang.String senderCompID,
+			java.lang.String targetCompID, java.lang.String qualifier)
+			throws SessionNotFound;
 }

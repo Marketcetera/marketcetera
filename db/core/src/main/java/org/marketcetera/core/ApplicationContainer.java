@@ -4,6 +4,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.marketcetera.util.auth.StandardAuthentication;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -22,6 +25,26 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 public class ApplicationContainer
         extends ApplicationBase
 {
+    /**
+     * Create a new ApplicationContainer instance.
+     *
+     * @param inArgs a <code>String[]</code> value
+     */
+    public ApplicationContainer(String[] inArgs)
+    {
+        instance = this;
+        authentication = new StandardAuthentication(APP_CONTEXT_CFG_BASE,
+                                                    inArgs);
+        if(!authentication.setValues()) {
+            printUsage(Messages.APP_MISSING_CREDENTIALS);
+        }
+        inArgs = getAuthentication().getOtherArgs();
+        if(inArgs.length != 0) {
+            printUsage(Messages.APP_NO_ARGS_ALLOWED);
+        }
+        context = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"application.xml" }, //$NON-NLS-1$ //$NON-NLS-2$
+                                                      null);
+    }
     /**
      * Starts application.
      *
@@ -95,7 +118,7 @@ public class ApplicationContainer
      * 
      * @param inTask a <code>ShutdownTask</code> value
      */
-    public void addShutdownTask(ComparableTask inTask)
+    public synchronized static void addShutdownTask(ComparableTask inTask)
     {
         shutdownTasks.add(inTask);
     }
@@ -104,7 +127,7 @@ public class ApplicationContainer
      * 
      * @param inTask a <code>ShutdownTask</code> value
      */
-    public void removeShutdownTask(ComparableTask inTask)
+    public synchronized static void removeShutdownTask(ComparableTask inTask)
     {
         shutdownTasks.remove(inTask);
     }
@@ -116,6 +139,15 @@ public class ApplicationContainer
     public static ApplicationContainer getInstance()
     {
         return instance;
+    }
+    /**
+     * Returns the receiver's authentication system.
+     *
+     * @return The authentication system.
+     */
+    public StandardAuthentication getAuthentication()
+    {
+        return authentication;
     }
     /**
      * Executed when the application stops.
@@ -135,16 +167,28 @@ public class ApplicationContainer
         context.stop();
     }
     /**
-     * Create a new ApplicationContainer instance.
+     * Prints the given message alongside usage information on the
+     * standard error stream, and throws an exception.
      *
-     * @param inArgs a <code>String[]</code> value
+     * @param message The message.
+     *
+     * @throws IllegalStateException Always thrown.
      */
-    private ApplicationContainer(String[] inArgs)
+    private void printUsage(I18NBoundMessage message)
+        throws I18NException
     {
-        instance = this;
-        context = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"application.xml" }, //$NON-NLS-1$ //$NON-NLS-2$
-                                                      null);
+        System.err.println(message.getText());
+        System.err.println(Messages.APP_USAGE.getText
+                           (ApplicationContainer.class.getName()));
+        System.err.println(Messages.APP_AUTH_OPTIONS.getText());
+        System.err.println();
+        getAuthentication().printUsage(System.err);
+        throw new I18NException(message);
     }
+    /**
+     * 
+     */
+    private StandardAuthentication authentication;
     /**
      * Spring application context
      */
@@ -156,5 +200,9 @@ public class ApplicationContainer
     /**
      * collection of tasks to run upon application shutdown
      */
-    private final Set<ComparableTask> shutdownTasks = new TreeSet<ComparableTask>();
+    private static final Set<ComparableTask> shutdownTasks = new TreeSet<ComparableTask>();
+    /**
+     * 
+     */
+    private static final String APP_CONTEXT_CFG_BASE = "file:" + CONF_DIR + "properties.xml"; //$NON-NLS-1$ //$NON-NLS-2$
 }

@@ -77,18 +77,4 @@
   </bean>
   <!--  authenticator -->
   <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
-  <!--  authentication -->
-  <bean id="securityManager" class="org.apache.shiro.mgt.DefaultSecurityManager">
-    <property name="realm" ref="userService"/>
-  </bean>
-  <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod" value="org.apache.shiro.SecurityUtils.setSecurityManager"/>
-    <property name="arguments" ref="securityManager"/>
-  </bean>
-  <!-- make sure all beans that need autowiring are instantiated before creating this bean -->
-  <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor,orsConfig"/>
-  <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-    <property name="securityManager" ref="securityManager"/>
-  </bean>
 </beans>

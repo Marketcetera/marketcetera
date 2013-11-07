@@ -329,7 +329,7 @@ public class RequestHandlerTest
     }
 
     public void testInvalidSessionID() throws Exception {
-        QuickFIXSender quickFIXSender = new QuickFIXSender();
+        QuickFIXSenderImpl quickFIXSender = new QuickFIXSenderImpl();
         RequestHandler handler = new MyRequestHandler(quickFIXSender);
         SessionID sessionID = new SessionID(msgFactory.getBeginString(), "no-sender", "no-target"); //$NON-NLS-1$ //$NON-NLS-2$
         //        handler.setDefaultSessionID(sessionID);
@@ -574,7 +574,7 @@ public class RequestHandlerTest
         private QuickFIXApplication qfApp = new QuickFIXApplicationTest.MockQuickFIXApplication(null);
 
         public MyRequestHandler
-            (IQuickFIXSender inQuickFIXSender,
+            (QuickFIXSender inQuickFIXSender,
              JmsOperations inIncomingCommandsCopier)
                 throws ClassNotFoundException,
                        ConfigError, FieldConvertError, CoreException {
@@ -586,7 +586,7 @@ public class RequestHandlerTest
         }
 
         public MyRequestHandler
-            (IQuickFIXSender sender)
+            (QuickFIXSender sender)
                 throws ClassNotFoundException,
                        ConfigError, FieldConvertError, CoreException {
             this(sender, null);

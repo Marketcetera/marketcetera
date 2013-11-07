@@ -18,7 +18,7 @@ import java.util.concurrent.Semaphore;
  * @author toli
 * @version $Id$
 */
-public class NullQuickFIXSender implements IQuickFIXSender {
+public class NullQuickFIXSender implements QuickFIXSender {
 
     LinkedList<Message> capturedMessages = new LinkedList<Message>();
     private Semaphore sema;

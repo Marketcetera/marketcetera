@@ -6,19 +6,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.realm.Realm;
-import org.apache.shiro.subject.PrincipalCollection;
 import org.marketcetera.ors.dao.UserDao;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.ors.security.ORSLoginModule;
 import org.marketcetera.ors.security.QSimpleUser;
 import org.marketcetera.ors.security.SimpleUser;
-import org.marketcetera.persist.ValidationException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +34,7 @@ import com.mysema.query.types.expr.BooleanExpression;
 @Transactional(readOnly=true,propagation=Propagation.REQUIRED)
 @ClassVersion("$Id$")
 public class UserServiceImpl
-        extends AuthorizingRealm
-        implements UserService, InitializingBean, Realm
+        implements UserService, InitializingBean
 {
     /* (non-Javadoc)
      * @see org.marketcetera.ors.dao.UserService#listUsers(java.lang.String, java.lang.Boolean)
@@ -144,70 +135,6 @@ public class UserServiceImpl
     {
         return userDao.findAll();
     }
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    @Override
-    public void afterPropertiesSet()
-            throws Exception
-    {
-        ORSLoginModule.setUserService(this);
-    }
-    /* (non-Javadoc)
-     * @see org.apache.shiro.realm.AuthorizingRealm#doGetAuthorizationInfo(org.apache.shiro.subject.PrincipalCollection)
-     */
-    @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection inPrincipalCollection)
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
-     * @see org.apache.shiro.realm.AuthenticatingRealm#doGetAuthenticationInfo(org.apache.shiro.authc.AuthenticationToken)
-     */
-    @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken inToken)
-            throws AuthenticationException
-    {
-        System.out.println("SHIRO: Authenticating with " + inToken.getPrincipal() + " " + inToken.getCredentials());
-        final SimpleUser user = userDao.findByName((String)inToken.getPrincipal());
-        if(user == null) {
-            throw new AuthenticationException();
-        }
-        try {
-            user.validatePassword((char[])inToken.getCredentials());
-        } catch (ValidationException e) {
-            throw new AuthenticationException();
-        }
-        return new AuthenticationInfo() {
-            @Override
-            public Object getCredentials()
-            {
-                return user;
-            }
-            @Override
-            public PrincipalCollection getPrincipals()
-            {
-                throw new UnsupportedOperationException(); // TODO
-            }
-            private static final long serialVersionUID = 1L;
-        };
-    }
-    /* (non-Javadoc)
-     * @see org.apache.shiro.realm.Realm#getName()
-     */
-    @Override
-    public String getName()
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
-    /* (non-Javadoc)
-     * @see org.apache.shiro.realm.Realm#supports(org.apache.shiro.authc.AuthenticationToken)
-     */
-    @Override
-    public boolean supports(AuthenticationToken inToken)
-    {
-        return true;
-    }
     /**
      * Get the userDao value.
      *
@@ -243,6 +170,15 @@ public class UserServiceImpl
     public void setEntityManager(EntityManager inEntityManager)
     {
         entityManager = inEntityManager;
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
+    @Override
+    public void afterPropertiesSet()
+            throws Exception
+    {
+        ORSLoginModule.setUserService(this);
     }
     /**
      * provides datastore access to user objects

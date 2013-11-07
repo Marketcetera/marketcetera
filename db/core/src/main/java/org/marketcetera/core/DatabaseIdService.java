@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since $Release$
  */
 @Service
-public class DatabaseIdManager
+public class DatabaseIdService
 {
     /**
      * Allocates an id block of the given size and returns the resulting id.
