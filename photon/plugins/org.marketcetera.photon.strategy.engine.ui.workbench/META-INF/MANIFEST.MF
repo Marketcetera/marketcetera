@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.views,
  org.marketcetera.photon.commons.ui.workbench
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: com.google.inject,
  com.google.inject.binder,
  org.ops4j.peaberry,

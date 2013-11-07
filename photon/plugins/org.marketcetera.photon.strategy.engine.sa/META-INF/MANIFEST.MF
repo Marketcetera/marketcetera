@@ -6,7 +6,7 @@ Bundle-Version: 2.4.0
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.marketcetera.photon.strategy.engine.model.sa,
  org.marketcetera.photon.strategy.engine.model.sa.impl,
  org.marketcetera.photon.strategy.engine.model.sa.util,
