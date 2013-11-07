@@ -3,8 +3,6 @@ package org.marketcetera.algo;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.persistence.Transient;
@@ -96,8 +94,15 @@ public class BrokerAlgoTag
     {
     	String oldValue = value;
         value = StringUtils.trimToNull(inValue);
-        System.out.println(value);
-        propertyChangeSupport.firePropertyChange("value", oldValue, value);
+        if(oldValue != null){
+        	if(!oldValue.equals(value)){
+        		propertyChangeSupport.firePropertyChange("value", oldValue, value);
+        	}
+        }else{
+            if(value != null)
+            	propertyChangeSupport.firePropertyChange("value", oldValue, value);
+        }
+        	
     }
     /**
      * Gets the underlying tag spec label.
@@ -124,13 +129,13 @@ public class BrokerAlgoTag
         	String valueToCompare = (value == null)? "" : value;
             if(!Pattern.compile(pattern).matcher(valueToCompare).matches()) {
                 throw new CoreException(new I18NBoundMessage2P(Messages.ALGO_TAG_VALUE_PATTERN_MISMATCH,
-                                                               tagSpec.getTag(),
-                                                               value));
+                                                               tagSpec.getLabel(),
+                                                               valueToCompare));
             }
         }
         if(tagSpec.getIsMandatory() && value == null) {
             throw new CoreException(new I18NBoundMessage1P(Messages.ALGO_TAG_VALUE_REQUIRED,
-                                                           tagSpec.getTag()));
+                                                           tagSpec.getLabel()));
         }
         Validator<BrokerAlgoTag> tagValidator = tagSpec.getValidator();
         if(tagValidator != null) {

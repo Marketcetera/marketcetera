@@ -1,64 +1,85 @@
 package org.marketcetera.photon.views.providers;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.marketcetera.algo.BrokerAlgoTag;
 import org.marketcetera.algo.BrokerAlgoTagSpec;
 
+/**
+ * Editor support for BrokerAlgoTags table.
+ * TextBox (options == null) or comboBox (options != null).
+ * 
+ * @author Milos Djuric
+ *
+ */
 public class AlgoTableColumnEdditorSupport extends EditingSupport {
 	
 	CellEditor mEditor = null;
 
+	
 	public AlgoTableColumnEdditorSupport(ColumnViewer viewer) {
 		super(viewer);
 	}
 
+	/**
+	 * Return appropriate cell editor for BrokerAlgoTags element from table
+	 */
 	@Override
 	protected CellEditor getCellEditor(Object element) {
 		if(element instanceof BrokerAlgoTag){
 			BrokerAlgoTag brokerAlgoTag = (BrokerAlgoTag)element;		
 			if(brokerAlgoTag.getTagSpec().getOptions() != null){
-				mEditor = createComboBoxCellEditor(brokerAlgoTag.getTagSpec());
+				mEditor = createComboBoxCellEditor(brokerAlgoTag);
 			}else{
-				mEditor = createTextBoxCellEditor(brokerAlgoTag.getTagSpec());
+				mEditor = createTextBoxCellEditor(brokerAlgoTag);
 			}
 			return mEditor;
 		}
 		return null;
 	}
 
-	private CellEditor createComboBoxCellEditor(BrokerAlgoTagSpec brokerAlgoTagSpec) {
+	/**
+	 * Create and populate comboBox cell editor (with empty value for non mandatory fields).
+	 */
+	private CellEditor createComboBoxCellEditor(BrokerAlgoTag brokerAlgoTag) {
+		BrokerAlgoTagSpec brokerAlgoTagSpec = brokerAlgoTag.getTagSpec();
 		Set<String> keys = brokerAlgoTagSpec.getOptions().keySet();
 		String[] values = new String[keys.size() + (brokerAlgoTagSpec.getIsMandatory()? 1 : 0)];
+		String selectedValue = brokerAlgoTag.getValue();
+		String selectedKey = null;
 		int index = 0;
 		if(brokerAlgoTagSpec.getIsMandatory()){
 			values[index++] = "";
 		}
 		for(String key:keys){
 			values[index++] = key;
+			if(selectedValue != null && !selectedValue.equals("") && selectedValue.equals(brokerAlgoTagSpec.getOptions().get(key))){
+				selectedKey = key;
+			}
 		}
 		ComboBoxViewerCellEditor editor = new ComboBoxViewerCellEditor((Composite)(getViewer().getControl()), SWT.READ_ONLY);
 		editor.setLabelProvider(new LabelProvider());
 		editor.setContenProvider(new ArrayContentProvider());
 		editor.setInput(values);
+		if(selectedKey != null){
+			editor.setValue(selectedKey);
+		}
 		return editor;
 	}
 	
-	private CellEditor createTextBoxCellEditor(BrokerAlgoTagSpec brokerAlgoTagSpec) {
+	/**
+	 * Create textBox cell editor 
+	 */
+	private CellEditor createTextBoxCellEditor(BrokerAlgoTag brokerAlgoTag) {
 		return new TextCellEditor((Composite)(getViewer().getControl()));
 	}
 

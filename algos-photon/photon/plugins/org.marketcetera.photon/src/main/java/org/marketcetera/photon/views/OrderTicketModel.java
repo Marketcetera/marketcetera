@@ -125,6 +125,10 @@ public abstract class OrderTicketModel {
             }
         });
     }
+    
+    /**
+     * Populate algo table with appropriate label - value pairs
+     */
     public void updateAlgoTags()
     {
         // find selected algo and populate the algo table

@@ -1,47 +1,45 @@
 package org.marketcetera.photon.views;
 
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.eclipse.core.databinding.*;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.conversion.Converter;
-import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.conversion.NumberToStringConverter;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.core.databinding.observable.list.IListChangeListener;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.ListChangeEvent;
 import org.eclipse.core.databinding.observable.list.ListDiffEntry;
-import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.DecoratingObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
-import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.views.framelist.UpAction;
 import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.algo.BrokerAlgoTag;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.BrokerManager.Broker;
 import org.marketcetera.photon.BrokerManager.BrokerLabelProvider;
@@ -572,7 +570,20 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
          */
         bindText(getXSWTView().getAccountText(), model.getAccount());
     }
-
+    
+    /**
+     * Listener for changes on element from algo tags list.
+     */
+    private PropertyChangeListener algoTagsListChanged = new PropertyChangeListener() {
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			BrokerAlgoTag tag = (BrokerAlgoTag)evt.getSource();
+			int index = getModel().getAlgoTagsList().indexOf(tag);
+			getModel().getAlgoTagsList().set(index, tag);
+		}
+	};
+    
 	/**
      * Binds the algo tags on the model to the view.
      */
@@ -583,22 +594,49 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
         model.getAlgoTagsList().addListChangeListener(new IListChangeListener() {
             public void handleListChange(ListChangeEvent event)
             {
-                System.out.println("Algo Tags table change: " + event);
-                /*for(Object object: algoTagLists){
-                	BrokerAlgoTag algoTag = (BrokerAlgoTag)object;
-                	algoTag.addPropertyChangeListener(new PropertyChangeListener() {
-						
-						@Override
-						public void propertyChange(PropertyChangeEvent evt) {
-							try{
-								((BrokerAlgoTag)evt.getSource()).validate();
-							}catch (Exception e){
-							}
-						}
-					});
-                }*/
+            	for(ListDiffEntry entry:event.diff.getDifferences()){
+            		if(entry.isAddition()){
+            			BrokerAlgoTag tag = (BrokerAlgoTag)entry.getElement();
+            			tag.addPropertyChangeListener(algoTagsListChanged);
+            		}else{
+            			BrokerAlgoTag tag = (BrokerAlgoTag)entry.getElement();
+            			tag.removePropertyChangeListener(algoTagsListChanged);            			
+            		}
+            	}
             }
         });
+        //Add validation for algo tags list
+        getDataBindingContext().addValidationStatusProvider(new ValidationStatusProvider() {
+			
+			@Override
+			public IObservableValue getValidationStatus() {
+				return new ComputedValue() {
+					
+					@Override
+					protected Object calculate() {
+						for(Object object: getModel().getAlgoTagsList()){
+							BrokerAlgoTag algoTag = (BrokerAlgoTag)object;
+							try{
+								algoTag.validate();
+							}catch (CoreException e){
+								return ValidationStatus.error(e.getLocalizedMessage());
+							}
+						}
+						return ValidationStatus.OK_STATUS;
+					}
+				};
+			}
+			
+			@Override
+			public IObservableList getTargets() {
+				return ViewersObservables.observeMultiSelection(mAlgoTagsTableViewer);
+			}
+			
+			@Override
+			public IObservableList getModels() {
+				return getModel().getAlgoTagsList();
+			}
+		});
     }
     /**
      * Bind the custom fields on the model to the view.
