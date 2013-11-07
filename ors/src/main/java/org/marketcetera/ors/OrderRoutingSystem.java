@@ -327,7 +327,9 @@ public class OrderRoutingSystem
         Validate.notNull(service,
                          "ORS service required"); // TODO
         Validate.notNull(quickFixSender,
-                         "ORS quick fix server required"); // TODO
+                         "ORS quick fix sender required"); // TODO
+        Validate.notNull(idFactory,
+                         "ORS id factory required"); // TODO
         // Create system information.
         systemInfo.setValue(SystemInfo.HISTORY_SERVICES,
                             reportHistoryServices);
@@ -341,15 +343,15 @@ public class OrderRoutingSystem
         server.publish(service,
                        Service.class);
         // Initiate JMS.
-        LocalIDFactory localIdFactory = new LocalIDFactory(config.getIDFactory());
-        localIdFactory.init();
+//        LocalIDFactory localIdFactory = new LocalIDFactory(config.getIDFactory());
+//        localIdFactory.init();
         RequestHandler handler = new RequestHandler(getBrokers(),
                                                     selector,
                                                     config.getAllowedOrders(),
                                                     replyPersister,
                                                     quickFixSender,
                                                     userManager,
-                                                    localIdFactory);
+                                                    idFactory);
         mListener = jmsManager.getIncomingJmsFactory().registerHandlerOEX(handler,
                                                                           Service.REQUEST_QUEUE,
                                                                           false);
@@ -374,7 +376,7 @@ public class OrderRoutingSystem
         (new JmxExporter(mbeanServer)).export(mInitiator);
         mbeanServer.registerMBean(new ORSAdmin(getBrokers(),
                                                quickFixSender,
-                                               localIdFactory,
+                                               idFactory,
                                                userManager),
                                   new ObjectName(JMX_NAME));
         ComparableTask orsStopTask = new ComparableTask() {

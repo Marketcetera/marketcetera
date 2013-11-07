@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$")
 public class LocalIDFactory
-    implements IDFactory
+        implements IDFactory
 {
 
     // CLASS DATA.
