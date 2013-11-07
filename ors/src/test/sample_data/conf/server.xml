@@ -30,7 +30,11 @@
   <context:component-scan base-package="org.marketcetera.core,org.marketcetera.ors"/>
   <jpa:repositories base-package="org.marketcetera.core,org.marketcetera.ors"/>
   <tx:annotation-driven/>
-  <bean class="org.marketcetera.ors.config.SpringConfig">
+  <!-- ORS object -->
+  <bean id="ors" class="org.marketcetera.ors.OrderRoutingSystem">
+    <property name="config" ref="orsConfig"/>
+  </bean>
+  <bean id="orsConfig" class="org.marketcetera.ors.config.SpringConfig">
     <!-- The brokers. -->
     <property name="brokers" ref="metc_brokers"/>
     <!-- The broker selector. -->

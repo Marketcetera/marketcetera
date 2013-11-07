@@ -49,5 +49,34 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>executeDBInit</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals><goal>java</goal></goals>
+              </execution>
+            </executions>
+            <configuration>
+              <mainClass>org.marketcetera.core.DBInit</mainClass>
+              <arguments>
+                <argument>org.marketcetera.core.ApplicationContainer</argument>
+              </arguments>
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 </project>

@@ -1,11 +1,9 @@
-
-package org.marketcetera.ors;
+package org.marketcetera.core;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.marketcetera.core.ApplicationBase;
+import org.apache.commons.lang.Validate;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -20,6 +18,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class DBInit
         extends ApplicationBase
 {
@@ -34,8 +33,8 @@ public class DBInit
         try {
             initORSDB();
             // verify that at least the class name is supplied
-            Assert.assertTrue("Class name not supplied",
-                              args.length > 0);
+            Validate.isTrue(args.length > 0,
+                            "Class name not supplied");
             Class.forName(args[0]).getDeclaredMethod("main",
                                                      String[].class).invoke(null,
                                                                             (Object)Arrays.copyOfRange(args,

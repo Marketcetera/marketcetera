@@ -22,7 +22,7 @@ import org.marketcetera.ors.security.SimpleUser;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -72,7 +72,7 @@ public class RequestHandler
     private final Selector mSelector;
     private final List<OrderFilter> mAllowedOrders;
     private final ReplyPersister mPersister;
-    private final IQuickFIXSender mSender;
+    private final QuickFIXSender mSender;
     private final UserManager mUserManager;
     private final IDFactory mIDFactory;
     private final DataDictionary mDataDictionary;
@@ -85,7 +85,7 @@ public class RequestHandler
          Selector selector,
          List<OrderFilter> allowedOrders,
          ReplyPersister persister,
-         IQuickFIXSender sender,
+         QuickFIXSender sender,
          UserManager userManager,
          IDFactory idFactory)
         throws ConfigError
@@ -129,7 +129,7 @@ public class RequestHandler
         return mUserManager;
     }
 
-    public IQuickFIXSender getSender()
+    public QuickFIXSender getSender()
     {
         return mSender;
     }

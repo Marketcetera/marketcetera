@@ -2,6 +2,15 @@ package org.marketcetera.core;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+/* $License$ */
+
+/**
+ * Constructs unique identifiers backed by the database.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
 @ClassVersion("$Id$")
 public class DatabaseIDFactory
         extends DBBackedIDFactory
@@ -69,10 +78,10 @@ public class DatabaseIDFactory
         setNextID(nextID);
     }
     /**
-     * 
+     * manages access to database id values
      */
     @Autowired
-    private DatabaseIdManager databaseIdManager;
+    private DatabaseIdService databaseIdManager;
     /**
      * default number of ids to allocate at once
      */

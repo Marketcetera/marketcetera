@@ -202,7 +202,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
             // noop
         }
 
-        protected IQuickFIXSender createQuickFIXSender() {
+        protected QuickFIXSender createQuickFIXSender() {
             return new NullQuickFIXSender();
         }
         

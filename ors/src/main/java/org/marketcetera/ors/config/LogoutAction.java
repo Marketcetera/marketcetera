@@ -1,7 +1,7 @@
 package org.marketcetera.ors.config;
 
 import org.marketcetera.ors.brokers.Broker;
-import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -23,5 +23,5 @@ public interface LogoutAction
      * @param inSender an <code>IQuickFIXSender</code> value
      */
     public void onLogout(Broker inBroker,
-                         IQuickFIXSender inSender);
+                         QuickFIXSender inSender);
 }

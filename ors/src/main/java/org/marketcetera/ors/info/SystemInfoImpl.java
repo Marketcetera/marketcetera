@@ -2,6 +2,8 @@ package org.marketcetera.ors.info;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
 /**
  * A store for system-wide key-value pairs: implementation.
  *
@@ -11,9 +13,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class SystemInfoImpl
     extends ReadWriteInfoImpl

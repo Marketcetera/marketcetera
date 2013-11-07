@@ -27,8 +27,8 @@
     -->
   <bean id="metc_connection_factory_in" class="org.apache.activemq.ActiveMQConnectionFactory" depends-on="metc_jms_broker">
     <property name="brokerURL" value="vm://localhost?create=false&amp;waitForStart=30000"/>
-    <property name="userName" ref="runtimeUsername"/>
-    <property name="password" ref="runtimePassword"/>
+    <property name="userName" value="${metc.amq.user}"/>
+    <property name="password" value="${metc.amq.password}"/>
   </bean>
   <!--
     - The connection factory for outgoing connections.
