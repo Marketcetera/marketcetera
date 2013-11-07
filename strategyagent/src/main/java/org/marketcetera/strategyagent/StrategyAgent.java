@@ -15,9 +15,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.client.ClientManager;
-import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.publisher.IPublisher;
@@ -38,9 +37,10 @@ import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
 /* $License$ */
@@ -60,25 +60,25 @@ import org.springframework.context.support.StaticApplicationContext;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class StrategyAgent
-        extends ApplicationBase
-        implements IPublisher
+        implements IPublisher, InitializingBean
 {
-    /**
-     * Creates and runs the application.
-     *
-     * @param args the command line arguments.
-     */
-    public static void main(String[] args) {
-        initializeLogger(LOGGER_CONF_FILE);
-        Messages.LOG_APP_COPYRIGHT.info(StrategyAgent.class);
-        Messages.LOG_APP_VERSION_BUILD.info(StrategyAgent.class,
-                ApplicationVersion.getVersion(),
-                ApplicationVersion.getBuildNumber());
-        //Run the application.
-        run(new StrategyAgent(), args);
-    }
+//    /**
+//     * Creates and runs the application.
+//     *
+//     * @param args the command line arguments.
+//     */
+//    public static void main(String[] args) {
+//        initializeLogger(LOGGER_CONF_FILE);
+//        Messages.LOG_APP_COPYRIGHT.info(StrategyAgent.class);
+//        Messages.LOG_APP_VERSION_BUILD.info(StrategyAgent.class,
+//                ApplicationVersion.getVersion(),
+//                ApplicationVersion.getBuildNumber());
+//        //Run the application.
+//        run(new StrategyAgent(),
+//            args);
+//    }
     /**
      * Gets the most recently created <code>StrategyAgent</code> instance in this process.
      *
@@ -149,183 +149,70 @@ public class StrategyAgent
         }
         stopRemoteService();
     }
-
-    /**
-     * Runs the application instance with the supplied set of arguments.
-     *
-     * @param inAgent the application instance
-     * @param args the command line arguments to the instance.
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
-    protected static void run(StrategyAgent inAgent, String[] args) {
+    @Override
+    public void afterPropertiesSet()
+            throws Exception
+    {
         try {
             //Configure the application. If it fails, exit
-            inAgent.configure();
+            configure();
+            String[] args = ApplicationContainer.getInstance().getArguments();
             if(args.length > 0) {
-                int parseErrors = inAgent.parseCommands(args[0]);
+                int parseErrors = parseCommands(args[0]);
                 if(parseErrors > 0) {
-                    Messages.LOG_COMMAND_PARSE_ERRORS.error(
-                            StrategyAgent.class, parseErrors);
-                    inAgent.exit(EXIT_CMD_PARSE_ERROR);
-                    return;
+                    Messages.LOG_COMMAND_PARSE_ERRORS.error(StrategyAgent.class,
+                                                            parseErrors);
+                    throw new IllegalArgumentException(String.valueOf(EXIT_CMD_PARSE_ERROR));
                 }
             }
-        } catch (Throwable e) {
+        } catch(Exception e) {
             Messages.LOG_ERROR_CONFIGURE_AGENT.error(StrategyAgent.class,
-                    getMessage(e));
+                                                     getMessage(e));
             Messages.LOG_ERROR_CONFIGURE_AGENT.debug(StrategyAgent.class,
-                    e, getMessage(e));
-            inAgent.exit(EXIT_START_ERROR);
-            return;
+                                                     e,
+                                                     getMessage(e));
+            throw e;
         }
         //Initialize the application. If it fails, exit
         try {
-            inAgent.init();
-        } catch (Throwable e) {
+            init();
+        } catch (Exception e) {
             Messages.LOG_ERROR_INITIALIZING_AGENT.error(StrategyAgent.class,
-                    getMessage(e));
+                                                        getMessage(e));
             Messages.LOG_ERROR_INITIALIZING_AGENT.debug(StrategyAgent.class,
-                    e, getMessage(e));
-            inAgent.exit(EXIT_INIT_ERROR);
-            return;
+                                                        e,
+                                                        getMessage(e));
+            throw e;
         }
         //Run the commands, if commands fail, the failure is logged, but
         //the application doesn't exit.
-        inAgent.executeCommands();
-        //Wait forever, do not exit unless killed.
-        inAgent.startWaitingForever();
+        executeCommands();
     }
     /**
-     * Create a new StrategyAgent instance.
+     * Configures the agent.
      */
-    public StrategyAgent()
+    private void configure()
     {
-        instance = this;
-    }
-    /**
-     * Terminates the process with the supplied exit code.
-     *
-     * @param inExitCode the exit code.
-     */
-    protected void exit(int inExitCode) {
-        System.exit(inExitCode);
-    }
-
-    /**
-     * Returns the module manager.
-     * This method is exposed to aid testing.
-     *
-     * @return the module manager.
-     */
-    protected ModuleManager getManager() {
-        return mManager;
-    }
-
-    /**
-     * Stops the remote web service.
-     */
-    private void stopRemoteService() {
-        if(mRemoteService != null) {
-            mRemoteService.stop();
-            mRemoteService = null;
-        }
-        if(mServer != null) {
-            mServer.stop();
-            mServer = null;
-        }
-    }
-
-    /**
-     * Return the exception message from the supplied Throwable.
-     *
-     * @param inThrowable the throwable whose message needs to be returned.
-     *
-     * @return the throwable message.
-     */
-    private static String getMessage(Throwable inThrowable) {
-        if(inThrowable instanceof I18NException) {
-            return ((I18NException)inThrowable).getLocalizedDetail();
-        } else {
-            return inThrowable.getLocalizedMessage();
-        }
-    }
-
-    /**
-     * Initializes the logger for this application.
-     *
-     * @param logConfig the logger configuration file.
-     */
-    private static void initializeLogger(String logConfig)
-    {
-        PropertyConfigurator.configureAndWatch
-            (ApplicationBase.CONF_DIR+logConfig, LOGGER_WATCH_DELAY);
-    }
-
-    /**
-     * Parses the commands from the supplied commands file.
-     *
-     * @param inFile the file path
-     *
-     * @throws IOException if there were errors parsing the file.
-     *
-     * @return the number of errors encountered when parsing the command file.
-     */
-    private int parseCommands(String inFile) throws IOException {
-        int numErrors = 0;
-        LineNumberReader reader = new LineNumberReader(
-                new UnicodeFileReader(inFile));
-        try {
-            String line;
-            while((line = reader.readLine()) != null) {
-                if(line.startsWith("#") || line.trim().isEmpty()) {  //$NON-NLS-1$
-                    //Ignore comments and empty lines.
-                    continue;
-                }
-                int idx = line.indexOf(';');  //$NON-NLS-1$
-                if(idx > 0) {
-                    String key = line.substring(0, idx);
-                    CommandRunner runner = sRunners.get(key);
-                    if(runner == null) {
-                        numErrors++;
-                        Messages.INVALID_COMMAND_NAME.error(this, key,
-                                reader.getLineNumber());
-                        continue;
-                    }
-                    mCommands.add(new Command(runner, line.substring(++idx),
-                            reader.getLineNumber()));
-                } else {
-                    numErrors++;
-                    Messages.INVALID_COMMAND_SYNTAX.error(this,
-                            line, reader.getLineNumber());
-                }
-            }
-            return numErrors;
-        } finally {
-            reader.close();
-        }
-    }
-
-
-    /**
-     * Configures the agent. Initializes the spring configuration to get
-     * a properly configured module manager instance.
-     */
-    private void configure() {
-        File modulesDir = new File(APP_DIR,"modules");  //$NON-NLS-1$
+        File modulesDir = new File(ApplicationContainer.getInstance().getAppDir(),
+                                   "modules");  //$NON-NLS-1$
         StaticApplicationContext parentCtx = new StaticApplicationContext();
         //Provide the module jar directory path to the spring context.
-        SpringUtils.addStringBean(parentCtx,"modulesDir",   //$NON-NLS-1$
-                modulesDir.getAbsolutePath());
-        parentCtx.refresh();
-        mContext = new FileSystemXmlApplicationContext(new String[] {"file:"+CONF_DIR+"strategyagent.xml"}, //$NON-NLS-1$  //$NON-NLS-2$
-                                                       parentCtx);
-        mContext.registerShutdownHook();
-        mManager = (ModuleManager) mContext.getBean("moduleManager",  //$NON-NLS-1$
-                                                    ModuleManager.class);
+        SpringUtils.addStringBean(parentCtx,
+                                  "modulesDir",   //$NON-NLS-1$
+                                  modulesDir.getAbsolutePath());
+        ConfigurableApplicationContext context = ApplicationContainer.getInstance().getContext();
+        context.setParent(parentCtx);
+        context.refresh();
+//        mContext = new FileSystemXmlApplicationContext(new String[] {"file:"+CONF_DIR+"strategyagent.xml"}, //$NON-NLS-1$  //$NON-NLS-2$
+//                                                       parentCtx);
+        mManager = context.getBean(ModuleManager.class);
         //Set the context classloader to the jar classloader so that
         //all modules have the thread context classloader set to the same
         //value as the classloader that loaded them.
-        ClassLoader loader = (ClassLoader) mContext.getBean("moduleLoader",  //$NON-NLS-1$
-                ClassLoader.class);
+        ClassLoader loader = context.getBean(ClassLoader.class);
         Thread.currentThread().setContextClassLoader(loader);
         Authenticator authenticator;
         try {
@@ -372,6 +259,134 @@ public class StrategyAgent
             Messages.LOG_REMOTE_WS_CONFIGURED.info(this, hostname, String.valueOf(port));
         }
     }
+    /**
+     * Initializes the module manager.
+     *
+     * @throws ModuleException if there were errors initializing the module
+     * manager.
+     * @throws MalformedObjectNameException if there were errors creating
+     * the object name of the module manager bean.
+     */
+    private void init() throws ModuleException, MalformedObjectNameException {
+        //Initialize the module manager.
+        mManager.init();
+        //Add the logger sink listener
+        mManager.addSinkListener(new SinkDataListener() {
+            public void receivedData(DataFlowID inFlowID, Object inData) {
+                final boolean isNullData = inData == null;
+                Messages.LOG_SINK_DATA.info(SINK_DATA, inFlowID,
+                        isNullData ? 0: 1,
+                        isNullData ? null: inData.getClass().getName(),
+                        inData);
+            }
+        });
+        mManagerBean = JMX.newMXBeanProxy(
+                ManagementFactory.getPlatformMBeanServer(),
+                new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
+                ModuleManagerMXBean.class);
+    }
+    /**
+     * Create a new StrategyAgent instance.
+     */
+    public StrategyAgent()
+    {
+        instance = this;
+    }
+    /**
+     * Returns the module manager.
+     * This method is exposed to aid testing.
+     *
+     * @return the module manager.
+     */
+    protected ModuleManager getManager() {
+        return mManager;
+    }
+
+    /**
+     * Stops the remote web service.
+     */
+    private void stopRemoteService() {
+        if(mRemoteService != null) {
+            mRemoteService.stop();
+            mRemoteService = null;
+        }
+        if(mServer != null) {
+            mServer.stop();
+            mServer = null;
+        }
+    }
+
+    /**
+     * Return the exception message from the supplied Throwable.
+     *
+     * @param inThrowable the throwable whose message needs to be returned.
+     *
+     * @return the throwable message.
+     */
+    private static String getMessage(Throwable inThrowable) {
+        if(inThrowable instanceof I18NException) {
+            return ((I18NException)inThrowable).getLocalizedDetail();
+        } else {
+            return inThrowable.getLocalizedMessage();
+        }
+    }
+
+//    /**
+//     * Initializes the logger for this application.
+//     *
+//     * @param logConfig the logger configuration file.
+//     */
+//    private static void initializeLogger(String logConfig)
+//    {
+//        PropertyConfigurator.configureAndWatch
+//            (ApplicationBase.CONF_DIR+logConfig, LOGGER_WATCH_DELAY);
+//    }
+//
+    /**
+     * Parses the commands from the supplied commands file.
+     *
+     * @param inFile the file path
+     *
+     * @throws IOException if there were errors parsing the file.
+     *
+     * @return the number of errors encountered when parsing the command file.
+     */
+    private int parseCommands(String inFile) throws IOException {
+        int numErrors = 0;
+        LineNumberReader reader = new LineNumberReader(
+                new UnicodeFileReader(inFile));
+        try {
+            String line;
+            while((line = reader.readLine()) != null) {
+                if(line.startsWith("#") || line.trim().isEmpty()) {  //$NON-NLS-1$
+                    //Ignore comments and empty lines.
+                    continue;
+                }
+                int idx = line.indexOf(';');  //$NON-NLS-1$
+                if(idx > 0) {
+                    String key = line.substring(0, idx);
+                    CommandRunner runner = sRunners.get(key);
+                    if(runner == null) {
+                        numErrors++;
+                        Messages.INVALID_COMMAND_NAME.error(this, key,
+                                reader.getLineNumber());
+                        continue;
+                    }
+                    mCommands.add(new Command(runner, line.substring(++idx),
+                            reader.getLineNumber()));
+                } else {
+                    numErrors++;
+                    Messages.INVALID_COMMAND_SYNTAX.error(this,
+                            line, reader.getLineNumber());
+                }
+            }
+            return numErrors;
+        } finally {
+            reader.close();
+        }
+    }
+
+
 
     /**
      * Authenticates a client connection.
@@ -408,32 +423,6 @@ public class StrategyAgent
         return ClientManager.getInstance().isCredentialsMatch(user, password);
     }
 
-    /**
-     * Initializes the module manager.
-     *
-     * @throws ModuleException if there were errors initializing the module
-     * manager.
-     * @throws MalformedObjectNameException if there were errors creating
-     * the object name of the module manager bean.
-     */
-    private void init() throws ModuleException, MalformedObjectNameException {
-        //Initialize the module manager.
-        mManager.init();
-        //Add the logger sink listener
-        mManager.addSinkListener(new SinkDataListener() {
-            public void receivedData(DataFlowID inFlowID, Object inData) {
-                final boolean isNullData = inData == null;
-                Messages.LOG_SINK_DATA.info(SINK_DATA, inFlowID,
-                        isNullData ? 0: 1,
-                        isNullData ? null: inData.getClass().getName(),
-                        inData);
-            }
-        });
-        mManagerBean = JMX.newMXBeanProxy(
-                ManagementFactory.getPlatformMBeanServer(),
-                new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
-                ModuleManagerMXBean.class);
-    }
 
     /**
      * Executes commands, if any were provided. If any command fails, the

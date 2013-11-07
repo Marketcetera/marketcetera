@@ -229,66 +229,6 @@
   </build>
 
   <profiles>
-
-    <!-- Command-line execution of the ORS. -->
-    <profile>
-      <id>execute</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals><goal>java</goal></goals>
-              </execution>
-            </executions>
-            <configuration>
-              <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
-              <systemProperties>
-                <systemProperty>
-                  <key>org.marketcetera.appDir</key>
-                  <value>src/test/cmd_exec</value>
-                </systemProperty>
-              </systemProperties>
-              <classpathScope>test</classpathScope>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!-- Command-line execution of the ORS (with DB initialization). -->
-    <profile>
-      <id>executeDBInit</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals><goal>java</goal></goals>
-              </execution>
-            </executions>
-            <configuration>
-              <mainClass>org.marketcetera.ors.DBInit</mainClass>
-              <arguments>
-                <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
-              </arguments>
-              <systemProperties>
-                <systemProperty>
-                  <key>org.marketcetera.appDir</key>
-                  <value>src/test/cmd_exec</value>
-                </systemProperty>
-              </systemProperties>
-              <classpathScope>test</classpathScope>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
     <!-- Command-line execution of the miniscule exchange. -->
     <profile>
       <id>exchange</id>

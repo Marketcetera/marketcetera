@@ -145,7 +145,7 @@ public class StrategyAgentTestBase extends TestCaseBase {
     }
 
     protected static void run(TestAgent inRunner, String... args) {
-        StrategyAgent.run(inRunner, args);
+//        StrategyAgent.run(inRunner, args);
     }
 
     protected TestAgent createAgent(boolean inWaitForever) {
@@ -235,17 +235,17 @@ public class StrategyAgentTestBase extends TestCaseBase {
         public int getExitCode() {
             return mExitCode;
         }
-        @Override
-        protected void exit(int inExitCode) {
-            mExitCode = inExitCode;
-        }
+//        @Override
+//        protected void exit(int inExitCode) {
+//            mExitCode = inExitCode;
+//        }
 
-        @Override
-        public void startWaitingForever() {
-            if (mWaitForever) {
-                super.startWaitingForever();
-            }
-        }
+//        @Override
+//        public void startWaitingForever() {
+//            if (mWaitForever) {
+//                super.startWaitingForever();
+//            }
+//        }
 
         private final boolean mWaitForever;
         private int mExitCode;

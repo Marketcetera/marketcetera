@@ -8,7 +8,10 @@ import javax.management.ObjectName;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.client.Service;
+import org.marketcetera.client.jms.IncomingJmsFactory;
 import org.marketcetera.client.jms.JmsManager;
+import org.marketcetera.client.jms.OrderEnvelope;
+import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ComparableTask;
 import org.marketcetera.core.IDFactory;
@@ -22,7 +25,10 @@ import org.marketcetera.ors.info.SystemInfoImpl;
 import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.ClientSessionFactory;
-import org.marketcetera.quickfix.*;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.util.auth.StandardAuthentication;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -297,6 +303,24 @@ public class OrderRoutingSystem
     {
         quickFixSender = inQuickFixSender;
     }
+    /**
+     * Get the requestHandler value.
+     *
+     * @return a <code>ReceiveOnlyHandler&lt;OrderEnvelope&gt;</code> value
+     */
+    public ReceiveOnlyHandler<OrderEnvelope> getRequestHandler()
+    {
+        return requestHandler;
+    }
+    /**
+     * Sets the requestHandler value.
+     *
+     * @param inRequestHandler a <code>ReceiveOnlyHandler&lt;OrderEnvelope&gt;</code> value
+     */
+    public void setRequestHandler(ReceiveOnlyHandler<OrderEnvelope> inRequestHandler)
+    {
+        requestHandler = inRequestHandler;
+    }
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
@@ -330,6 +354,8 @@ public class OrderRoutingSystem
                          "ORS quick fix sender required"); // TODO
         Validate.notNull(idFactory,
                          "ORS id factory required"); // TODO
+        Validate.notNull(requestHandler,
+                         "ORS request handler required"); // TODO
         // Create system information.
         systemInfo.setValue(SystemInfo.HISTORY_SERVICES,
                             reportHistoryServices);
@@ -343,16 +369,7 @@ public class OrderRoutingSystem
         server.publish(service,
                        Service.class);
         // Initiate JMS.
-//        LocalIDFactory localIdFactory = new LocalIDFactory(config.getIDFactory());
-//        localIdFactory.init();
-        RequestHandler handler = new RequestHandler(getBrokers(),
-                                                    selector,
-                                                    config.getAllowedOrders(),
-                                                    replyPersister,
-                                                    quickFixSender,
-                                                    userManager,
-                                                    idFactory);
-        mListener = jmsManager.getIncomingJmsFactory().registerHandlerOEX(handler,
+        mListener = jmsManager.getIncomingJmsFactory().registerHandlerOEX(requestHandler,
                                                                           Service.REQUEST_QUEUE,
                                                                           false);
         mQFApp = new QuickFIXApplication(systemInfo,getBrokers(),
@@ -541,4 +558,8 @@ public class OrderRoutingSystem
      * 
      */
     private Service service;
+    /**
+     * 
+     */
+    private ReceiveOnlyHandler<OrderEnvelope> requestHandler;
 }

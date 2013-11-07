@@ -63,6 +63,11 @@
         <version>2.4.0</version>
       </dependency>
       <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategyagent</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
         <groupId>${project.groupId}.fork</groupId>
         <artifactId>commons-csv</artifactId>
         <version>2.4.0</version>

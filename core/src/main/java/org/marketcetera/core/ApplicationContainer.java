@@ -32,6 +32,7 @@ public class ApplicationContainer
      */
     public ApplicationContainer(String[] inArgs)
     {
+        arguments = inArgs;
         instance = this;
         authentication = new StandardAuthentication(APP_CONTEXT_CFG_BASE,
                                                     inArgs);
@@ -44,6 +45,7 @@ public class ApplicationContainer
         }
         context = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"application.xml" }, //$NON-NLS-1$ //$NON-NLS-2$
                                                       null);
+        context.registerShutdownHook();
     }
     /**
      * Starts application.
@@ -150,6 +152,24 @@ public class ApplicationContainer
         return authentication;
     }
     /**
+     * Get the arguments value.
+     *
+     * @return a <code>String[]</code> value
+     */
+    public String[] getArguments()
+    {
+        return arguments;
+    }
+    /**
+     * Get the application directory value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getAppDir()
+    {
+        return APP_DIR;
+    }
+    /**
      * Executed when the application stops.
      */
     private void stop()
@@ -185,6 +205,10 @@ public class ApplicationContainer
         getAuthentication().printUsage(System.err);
         throw new I18NException(message);
     }
+    /**
+     * arguments passed to the cmd line
+     */
+    private String[] arguments;
     /**
      * 
      */
