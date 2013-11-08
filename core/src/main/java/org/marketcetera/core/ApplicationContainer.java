@@ -1,12 +1,10 @@
 package org.marketcetera.core;
 
+import java.io.File;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.util.auth.StandardAuthentication;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -24,6 +22,7 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 @ClassVersion("$Id$")
 public class ApplicationContainer
         extends ApplicationBase
+        implements ApplicationInfoProvider
 {
     /**
      * Create a new ApplicationContainer instance.
@@ -34,18 +33,41 @@ public class ApplicationContainer
     {
         arguments = inArgs;
         instance = this;
-        authentication = new StandardAuthentication(APP_CONTEXT_CFG_BASE,
-                                                    inArgs);
-        if(!authentication.setValues()) {
-            printUsage(Messages.APP_MISSING_CREDENTIALS);
-        }
-        inArgs = getAuthentication().getOtherArgs();
-        if(inArgs.length != 0) {
-            printUsage(Messages.APP_NO_ARGS_ALLOWED);
-        }
         context = new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"application.xml" }, //$NON-NLS-1$ //$NON-NLS-2$
                                                       null);
         context.registerShutdownHook();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.ApplicationInfoProvider#getAppDir()
+     */
+    @Override
+    public File getAppDir()
+    {
+        return new File(APP_DIR);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.ApplicationInfoProvider#getConfDir()
+     */
+    @Override
+    public File getConfDir()
+    {
+        return new File(CONF_DIR);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.ApplicationInfoProvider#getContext()
+     */
+    @Override
+    public ConfigurableApplicationContext getContext()
+    {
+        return context;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.ApplicationInfoProvider#getArguments()
+     */
+    @Override
+    public String[] getArguments()
+    {
+        return arguments;
     }
     /**
      * Starts application.
@@ -105,15 +127,6 @@ public class ApplicationContainer
         Messages.APP_STOP_SUCCESS.info(ApplicationContainer.class);
     }
     /**
-     * Get the context value.
-     *
-     * @return a <code>ConfigurableApplicationContext</code> value
-     */
-    public ConfigurableApplicationContext getContext()
-    {
-        return context;
-    }
-    /**
      * Adds the given shutdown task to the shutdown task collection.
      * 
      * <p>Tasks are executed upon application shutdown in their native order.
@@ -143,33 +156,6 @@ public class ApplicationContainer
         return instance;
     }
     /**
-     * Returns the receiver's authentication system.
-     *
-     * @return The authentication system.
-     */
-    public StandardAuthentication getAuthentication()
-    {
-        return authentication;
-    }
-    /**
-     * Get the arguments value.
-     *
-     * @return a <code>String[]</code> value
-     */
-    public String[] getArguments()
-    {
-        return arguments;
-    }
-    /**
-     * Get the application directory value.
-     *
-     * @return a <code>String</code> value
-     */
-    public String getAppDir()
-    {
-        return APP_DIR;
-    }
-    /**
      * Executed when the application stops.
      */
     private void stop()
@@ -187,32 +173,9 @@ public class ApplicationContainer
         context.stop();
     }
     /**
-     * Prints the given message alongside usage information on the
-     * standard error stream, and throws an exception.
-     *
-     * @param message The message.
-     *
-     * @throws IllegalStateException Always thrown.
-     */
-    private void printUsage(I18NBoundMessage message)
-        throws I18NException
-    {
-        System.err.println(message.getText());
-        System.err.println(Messages.APP_USAGE.getText
-                           (ApplicationContainer.class.getName()));
-        System.err.println(Messages.APP_AUTH_OPTIONS.getText());
-        System.err.println();
-        getAuthentication().printUsage(System.err);
-        throw new I18NException(message);
-    }
-    /**
      * arguments passed to the cmd line
      */
     private String[] arguments;
-    /**
-     * 
-     */
-    private StandardAuthentication authentication;
     /**
      * Spring application context
      */
@@ -225,8 +188,4 @@ public class ApplicationContainer
      * collection of tasks to run upon application shutdown
      */
     private static final Set<ComparableTask> shutdownTasks = new TreeSet<ComparableTask>();
-    /**
-     * 
-     */
-    private static final String APP_CONTEXT_CFG_BASE = "file:" + CONF_DIR + "properties.xml"; //$NON-NLS-1$ //$NON-NLS-2$
 }

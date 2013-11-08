@@ -1,15 +1,15 @@
 package org.marketcetera.strategyagent;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.RefreshListener;
-
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
+
+import org.marketcetera.module.RefreshListener;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -41,14 +41,17 @@ import java.util.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-class JarClassLoader extends URLClassLoader implements RefreshListener {
+@ClassVersion("$Id$")
+class JarClassLoader
+        extends URLClassLoader
+        implements RefreshListener
+{
     /**
      * Creates an instance that loads classes from all the jars in the
      * supplied directory. When refreshed, the classloader will discover
      * any jars added to the directory and load classes from them.
      *
-     * @param inJarDir the directory containing all the module jars.
+     * @param inAppInfoProvider a <code>StrategyAgentApplicationInfoProvider</code> value
      * @param inParent the parent class loader
      *
      * @throws MalformedURLException if there were errors
@@ -56,29 +59,31 @@ class JarClassLoader extends URLClassLoader implements RefreshListener {
      * @throws FileNotFoundException if the supplied jar directory does not
      * exist or is inaccessible.
      */
-    public JarClassLoader(File inJarDir, ClassLoader inParent)
-            throws MalformedURLException, FileNotFoundException {
+    public JarClassLoader(StrategyAgentApplicationInfoProvider inAppInfoProvider,
+                          ClassLoader inParent)
+            throws MalformedURLException, FileNotFoundException
+    {
         super(new URL[0], inParent);
-        Messages.LOG_JAR_LOADER_INIT.info(this, inJarDir);
-        if(!inJarDir.isDirectory()) {
-            throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.
-                    getText(inJarDir.getAbsolutePath()));
+        Messages.LOG_JAR_LOADER_INIT.info(this, inAppInfoProvider);
+        if(!inAppInfoProvider.getModulesDir().isDirectory()) {
+            throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.getText(inAppInfoProvider.getModulesDir().getAbsolutePath()));
         }
         //Initialize the directory containing all the module jars
-        mJarDir = new File(inJarDir,"jars");  //$NON-NLS-1$
+        mJarDir = new File(inAppInfoProvider.getModulesDir(),
+                           "jars");  //$NON-NLS-1$
         if(!mJarDir.isDirectory()) {
             throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.
                     getText(mJarDir.getAbsolutePath()));
         }
         //The directory containing the module default configuration
         //properties files.
-        inJarDir = new File(inJarDir, "conf");  //$NON-NLS-1$
-        if(!inJarDir.isDirectory()) {
-            throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.
-                    getText(inJarDir.getAbsolutePath()));
+        File jarConfDir = new File(inAppInfoProvider.getModulesDir(),
+                                   "conf");  //$NON-NLS-1$
+        if(!jarConfDir.isDirectory()) {
+            throw new FileNotFoundException(Messages.JAR_DIR_DOES_NOT_EXIST.getText(jarConfDir.getAbsolutePath()));
         }
         //Add the conf directory to the classloader
-        addURL(inJarDir.toURI().toURL());
+        addURL(jarConfDir.toURI().toURL());
         List<URL> urls = getJarURLs();
         if (urls != null) {
             for(URL url:urls) {

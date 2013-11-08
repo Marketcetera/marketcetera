@@ -1,6 +1,5 @@
 package org.marketcetera.strategyagent;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.lang.management.ManagementFactory;
@@ -30,18 +29,17 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.unicode.UnicodeFileReader;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /* $License$ */
 /**
@@ -62,7 +60,7 @@ import org.springframework.context.support.StaticApplicationContext;
  */
 @ClassVersion("$Id$")
 public class StrategyAgent
-        implements IPublisher, InitializingBean
+        implements IPublisher, InitializingBean, ApplicationContextAware
 {
 //    /**
 //     * Creates and runs the application.
@@ -139,14 +137,19 @@ public class StrategyAgent
     {
         dataPublisher.publishAndWait(inData);
     }
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext inContext)
+            throws BeansException
+    {
+        context = inContext;
+    }
     /**
      * Stops the strategy agent. This method is meant to help with unit testing.
      */
     protected void stop() {
-        if(mContext != null) {
-            mContext.destroy();
-            mContext = null;
-        }
         stopRemoteService();
     }
     /* (non-Javadoc)
@@ -196,18 +199,6 @@ public class StrategyAgent
      */
     private void configure()
     {
-        File modulesDir = new File(ApplicationContainer.getInstance().getAppDir(),
-                                   "modules");  //$NON-NLS-1$
-        StaticApplicationContext parentCtx = new StaticApplicationContext();
-        //Provide the module jar directory path to the spring context.
-        SpringUtils.addStringBean(parentCtx,
-                                  "modulesDir",   //$NON-NLS-1$
-                                  modulesDir.getAbsolutePath());
-        ConfigurableApplicationContext context = ApplicationContainer.getInstance().getContext();
-        context.setParent(parentCtx);
-        context.refresh();
-//        mContext = new FileSystemXmlApplicationContext(new String[] {"file:"+CONF_DIR+"strategyagent.xml"}, //$NON-NLS-1$  //$NON-NLS-2$
-//                                                       parentCtx);
         mManager = context.getBean(ModuleManager.class);
         //Set the context classloader to the jar classloader so that
         //all modules have the thread context classloader set to the same
@@ -216,7 +207,7 @@ public class StrategyAgent
         Thread.currentThread().setContextClassLoader(loader);
         Authenticator authenticator;
         try {
-            authenticator = mContext.getBean(Authenticator.class);
+            authenticator = context.getBean(Authenticator.class);
             SLF4JLoggerProxy.debug(this,
                                    "Using custom authenticator {}",
                                    authenticator);
@@ -235,9 +226,9 @@ public class StrategyAgent
             };
         }
         //Setup the WS services after setting up the context class loader.
-        String hostname = (String) mContext.getBean("wsServerHost");  //$NON-NLS-1$
+        String hostname = (String) context.getBean("wsServerHost");  //$NON-NLS-1$
         if (hostname != null && !hostname.trim().isEmpty()) {
-            int port = (Integer) mContext.getBean("wsServerPort");  //$NON-NLS-1$
+            int port = (Integer) context.getBean("wsServerPort");  //$NON-NLS-1$
             SessionManager<ClientSession> sessionManager= new SessionManager<ClientSession>(new ClientSessionFactory(),
                                                                                             SessionManager.INFINITE_SESSION_LIFESPAN);
             mServer = new Server<ClientSession>(hostname,
@@ -535,7 +526,6 @@ public class StrategyAgent
      * The handle to the remote web service.
      */
     private volatile ServiceInterface mRemoteService;
-    private volatile AbstractApplicationContext mContext;
     private volatile Server<ClientSession> mServer;
     /**
      * used to publish data received to interested subscribers
@@ -549,4 +539,8 @@ public class StrategyAgent
      * most recent strategy agent instance
      */
     private volatile static StrategyAgent instance;
+    /**
+     * 
+     */
+    private ApplicationContext context;
 }
