@@ -8,13 +8,13 @@ import javax.management.ObjectName;
 
 import org.apache.commons.lang.Validate;
 import org.marketcetera.client.Service;
-import org.marketcetera.client.jms.IncomingJmsFactory;
 import org.marketcetera.client.jms.JmsManager;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ComparableTask;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.Messages;
 import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
@@ -30,6 +30,8 @@ import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.QuickFIXSender;
 import org.marketcetera.util.auth.StandardAuthentication;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.SpringSessionSettings;
@@ -356,6 +358,19 @@ public class OrderRoutingSystem
                          "ORS id factory required"); // TODO
         Validate.notNull(requestHandler,
                          "ORS request handler required"); // TODO
+        // create authentication
+        String APP_CONTEXT_CFG_BASE = "file:" + ApplicationContainer.CONF_DIR + "properties.xml"; //$NON-NLS-1$ //$NON-NLS-2$
+        String[] args = ApplicationContainer.getInstance().getArguments();
+        authentication = new StandardAuthentication(APP_CONTEXT_CFG_BASE,
+                                                    args);
+        if(!authentication.setValues()) {
+            printUsage(Messages.APP_MISSING_CREDENTIALS);
+        }
+        args = authentication.getOtherArgs();
+        if(args.length != 0) {
+            printUsage(Messages.APP_NO_ARGS_ALLOWED);
+            throw new IllegalArgumentException(Messages.APP_NO_ARGS_ALLOWED.getText());
+        }
         // Create system information.
         systemInfo.setValue(SystemInfo.HISTORY_SERVICES,
                             reportHistoryServices);
@@ -471,7 +486,7 @@ public class OrderRoutingSystem
      */
     StandardAuthentication getAuth()
     {
-        return ApplicationContainer.getInstance().getAuthentication();
+        return authentication;
     }
     /**
      * Returns the receiver's brokers.
@@ -500,11 +515,37 @@ public class OrderRoutingSystem
     {
         return instance;
     }
+    /**
+     * Prints the given message alongside usage information on the
+     * standard error stream, and throws an exception.
+     *
+     * @param message The message.
+     *
+     * @throws IllegalStateException Always thrown.
+     */
+    private void printUsage(I18NBoundMessage message)
+        throws I18NException
+    {
+        System.err.println(message.getText());
+        System.err.println(Messages.APP_USAGE.getText
+                           (ApplicationContainer.class.getName()));
+        System.err.println(Messages.APP_AUTH_OPTIONS.getText());
+        System.err.println();
+        authentication.printUsage(System.err);
+        throw new I18NException(message);
+    }
+    /**
+     * 
+     */
     private static final String JMX_NAME = "org.marketcetera.ors.mbean:type=ORSAdmin"; //$NON-NLS-1$
     /**
      * singleton instance reference
      */
     private static OrderRoutingSystem instance;
+    /**
+     * 
+     */
+    private StandardAuthentication authentication;
     /**
      * 
      */
