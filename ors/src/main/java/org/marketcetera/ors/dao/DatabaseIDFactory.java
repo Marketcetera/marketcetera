@@ -1,5 +1,6 @@
-package org.marketcetera.core;
+package org.marketcetera.ors.dao;
 
+import org.marketcetera.core.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /* $License$ */

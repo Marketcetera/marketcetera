@@ -1,33 +1,34 @@
 package org.marketcetera.strategyagent;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.TestCaseBase;
-import org.marketcetera.util.file.Deleter;
-import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.unicode.UnicodeFileWriter;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.core.ApplicationBase;
-import org.junit.Before;
-import org.junit.After;
-import org.junit.BeforeClass;
 import static org.junit.Assert.assertThat;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.hamcrest.Matchers;
 
-import javax.management.MBeanServer;
-import java.util.Properties;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.regex.Pattern;
-import java.io.IOException;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.BufferedWriter;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.regex.Pattern;
+
+import javax.management.MBeanServer;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.util.file.Deleter;
+import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.test.TestCaseBase;
+import org.marketcetera.util.unicode.UnicodeFileWriter;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
 
 /* $License$ */
 /**
@@ -37,8 +38,9 @@ import java.lang.management.ManagementFactory;
  * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id$")
-public class StrategyAgentTestBase extends TestCaseBase {
+public class StrategyAgentTestBase
+        extends TestCaseBase
+{
     /**
      * Set the app dir property so that the properties files are picked up.
      */
@@ -165,7 +167,7 @@ public class StrategyAgentTestBase extends TestCaseBase {
      */
     protected static byte[] generateSubclass(
             Class<?> inSuperClass, String inSubClassName) {
-        ClassWriter cw = new ClassWriter(false);
+        ClassWriter cw = new ClassWriter(0);
         cw.visit(org.objectweb.asm.Opcodes.V1_6,
                 org.objectweb.asm.Opcodes.ACC_PUBLIC,
                 transformName(inSubClassName),null,
@@ -194,7 +196,7 @@ public class StrategyAgentTestBase extends TestCaseBase {
      */
     protected static byte[] generateSubclassURNConstructor(
             Class<?> inSuperClass, String inSubClassName) {
-        ClassWriter cw = new ClassWriter(false);
+        ClassWriter cw = new ClassWriter(0);
         cw.visit(org.objectweb.asm.Opcodes.V1_6,
                 org.objectweb.asm.Opcodes.ACC_PUBLIC,
                 transformName(inSubClassName),null,

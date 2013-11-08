@@ -1,0 +1,12 @@
+#
+# author:anshul@marketcetera.com
+# since 1.0.0
+# version: $Id: MarketData.txt 16154 2012-07-14 16:34:05Z colin $
+#
+#
+# Create the Market Data strategy
+createModule;metc:strategy:system;marketData,MarketData,RUBY,samples/ruby/scripts/market_data.rb,,false,metc:sink:system
+# Start the market data module
+startModule;metc:mdata:bogus:single
+# Start the strategy
+startModule;metc:strategy:system:marketData

@@ -1,4 +1,4 @@
-package org.marketcetera.core;
+package org.marketcetera.ors.dao;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
