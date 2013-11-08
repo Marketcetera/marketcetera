@@ -22,8 +22,33 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-  <!--build>
+  <build>
     <plugins>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.2</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+           </execution>
+         </executions>
+         <configuration>
+           <file>src/test/cmd_exec/conf/user.properties</file>
+           <replacements>
+             <replacement>
+               <token>SENDER_COMP_ID</token>
+               <value>METC-${user.name}</value>
+             </replacement>
+           </replacements>
+         </configuration>
+       </plugin>
+     </plugins>
+  </build>
+    <!-- plugins>
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-dependency-plugin</artifactId>
