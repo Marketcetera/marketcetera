@@ -27,7 +27,7 @@
   <import resource="filters/main.xml"/>
   <import resource="messaging/main.xml"/>
   <!-- unique id generator -->
-  <bean id="idFactory" class="org.marketcetera.core.DatabaseIDFactory" init-method="init"/>
+  <bean id="idFactory" class="org.marketcetera.ors.dao.DatabaseIDFactory" init-method="init"/>
   <!-- ORS object -->
   <bean id="ors" class="org.marketcetera.ors.OrderRoutingSystem">
     <property name="config" ref="orsConfig"/>

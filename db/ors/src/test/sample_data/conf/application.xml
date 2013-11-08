@@ -183,7 +183,7 @@
     <property name="filename" value="${metc.optionroot.map.file}"/>
     <property name="includeTypes" value="EU,EL"/>
   </bean>
-  <bean id="idFactory" class="org.marketcetera.core.DatabaseIDFactory"/>
+  <bean id="idFactory" class="org.marketcetera.ors.dao.DatabaseIDFactory"/>
   <!--  authenticator -->
   <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
   <!-- added for unit tests -->

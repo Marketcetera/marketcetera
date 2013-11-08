@@ -89,6 +89,7 @@ public class ApplicationContainer
         try {
             application = new ApplicationContainer(args);
         } catch(Exception e) {
+            e.printStackTrace();
             try {
                 Messages.APP_STOP_ERROR.error(ApplicationContainer.class,
                                               e);

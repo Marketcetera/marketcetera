@@ -1,0 +1,10 @@
+#
+# author:anshul@marketcetera.com
+# since 2.0.0
+# version: $Id: HelloWorld.txt 16154 2012-07-14 16:34:05Z colin $
+#
+#
+# Create the Hello World strategy
+createModule;metc:strategy:system;helloWorld,HelloWorld,JAVA,samples/java/scripts/HelloWorld.java,,true,metc:sink:system
+# Start the strategy
+startModule;metc:strategy:system:helloWorld

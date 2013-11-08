@@ -17,7 +17,7 @@
   <name>Packages</name>
 
   <modules>
-    <module>packages-ors</module>
+    <module>ors-app</module>
     <module>sa-app</module>
   </modules>
 </project>

@@ -1,4 +1,4 @@
-package org.marketcetera.core;
+package org.marketcetera.ors.dao.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -10,6 +10,9 @@ import java.net.InetAddress;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.core.LoggerConfiguration;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 

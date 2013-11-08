@@ -1,0 +1,12 @@
+#
+# author:anshul@marketcetera.com
+# since 2.0.0
+# version: $Id: VWAPStrategy.txt 16154 2012-07-14 16:34:05Z colin $
+#
+#
+# Create the VWAP strategy
+createModule;metc:strategy:system;vwapStrategy,VWAPStrategy,RUBY,samples/ruby/scripts/vwap_strategy.rb,,false,metc:sink:system
+# Start the market data module
+startModule;metc:mdata:bogus:single
+# Start the strategy
+startModule;metc:strategy:system:vwapStrategy

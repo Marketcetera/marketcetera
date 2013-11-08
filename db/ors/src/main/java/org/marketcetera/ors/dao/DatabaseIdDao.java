@@ -1,4 +1,4 @@
-package org.marketcetera.core;
+package org.marketcetera.ors.dao;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.data.jpa.repository.JpaRepository;

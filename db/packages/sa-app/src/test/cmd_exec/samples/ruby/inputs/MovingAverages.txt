@@ -1,0 +1,17 @@
+#
+# author:anshul@marketcetera.com
+# since 1.5.0
+# version: $Id: MovingAverages.txt 16154 2012-07-14 16:34:05Z colin $
+#
+#
+# Create the Strategy Module
+createModule;metc:strategy:system;movingAverages,MovingAverages,RUBY,samples/ruby/scripts/moving_averages.rb,,false,metc:sink:system
+# Start the strategy
+startModule;metc:strategy:system:movingAverages
+# Create a data flow to feed historical OHLC data from yahoo to the strategy
+# Note the prefix 'r:' to the URL to cause the emitter module to emit the
+# data in reverse order than it appears in the CSV.
+# The historical data is fed into an Esper query that computes the
+# 50 day moving average. The esper query outputs the closing price,
+# the moving average and date to the strategy.
+createDataFlow;metc:csv:system;r:http://ichart.finance.yahoo.com/table.csv?s=JAVA&d=2&e=31&f=2009&g=d&a=2&b=11&c=1987&ignore=.csv^metc:cep:esper:movingAverages;select avg(java.lang.Double.valueOf(cast(Close?, String))) as average, java.lang.Double.valueOf(cast(Close?, String)) as close , Date? as date from map.win:length(50)^metc:strategy:system:movingAverages;ALL

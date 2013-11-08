@@ -1,4 +1,4 @@
-package org.marketcetera.core;
+package org.marketcetera.ors.dao;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -8,6 +8,7 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.unicode.UnicodeInputStreamReader;
 

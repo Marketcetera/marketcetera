@@ -3,10 +3,7 @@ package org.marketcetera.strategyagent;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import javax.management.JMX;
@@ -62,21 +59,6 @@ import org.springframework.context.ApplicationContextAware;
 public class StrategyAgent
         implements IPublisher, InitializingBean, ApplicationContextAware
 {
-//    /**
-//     * Creates and runs the application.
-//     *
-//     * @param args the command line arguments.
-//     */
-//    public static void main(String[] args) {
-//        initializeLogger(LOGGER_CONF_FILE);
-//        Messages.LOG_APP_COPYRIGHT.info(StrategyAgent.class);
-//        Messages.LOG_APP_VERSION_BUILD.info(StrategyAgent.class,
-//                ApplicationVersion.getVersion(),
-//                ApplicationVersion.getBuildNumber());
-//        //Run the application.
-//        run(new StrategyAgent(),
-//            args);
-//    }
     /**
      * Gets the most recently created <code>StrategyAgent</code> instance in this process.
      *
@@ -203,7 +185,8 @@ public class StrategyAgent
         //Set the context classloader to the jar classloader so that
         //all modules have the thread context classloader set to the same
         //value as the classloader that loaded them.
-        ClassLoader loader = context.getBean(ClassLoader.class);
+        ClassLoader loader = context.getBean("currentLoader",
+                                             ClassLoader.class);
         Thread.currentThread().setContextClassLoader(loader);
         Authenticator authenticator;
         try {
@@ -321,18 +304,6 @@ public class StrategyAgent
             return inThrowable.getLocalizedMessage();
         }
     }
-
-//    /**
-//     * Initializes the logger for this application.
-//     *
-//     * @param logConfig the logger configuration file.
-//     */
-//    private static void initializeLogger(String logConfig)
-//    {
-//        PropertyConfigurator.configureAndWatch
-//            (ApplicationBase.CONF_DIR+logConfig, LOGGER_WATCH_DELAY);
-//    }
-//
     /**
      * Parses the commands from the supplied commands file.
      *
@@ -376,9 +347,6 @@ public class StrategyAgent
             reader.close();
         }
     }
-
-
-
     /**
      * Authenticates a client connection.
      * <p>
@@ -413,8 +381,6 @@ public class StrategyAgent
         //Use client to carry out authentication.
         return ClientManager.getInstance().isCredentialsMatch(user, password);
     }
-
-
     /**
      * Executes commands, if any were provided. If any command fails, the
      * failure is logged. Failure of any command doesn't prevent the next
@@ -540,7 +506,7 @@ public class StrategyAgent
      */
     private volatile static StrategyAgent instance;
     /**
-     * 
+     * application context
      */
     private ApplicationContext context;
 }

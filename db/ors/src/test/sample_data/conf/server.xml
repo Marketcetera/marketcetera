@@ -100,7 +100,7 @@
     <constructor-arg value="admin"/>
   </bean>
   <bean id="reportHistoryServices" class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
-  <bean id="idFactory" class="org.marketcetera.core.DatabaseIDFactory"/>
+  <bean id="idFactory" class="org.marketcetera.ors.dao.DatabaseIDFactory"/>
   <!--  authenticator -->
   <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
 </beans>

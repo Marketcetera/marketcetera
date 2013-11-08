@@ -1,0 +1,10 @@
+#
+# author:anshul@marketcetera.com
+# since 2.0.0
+# version: $Id: OrderSlicer.txt 16154 2012-07-14 16:34:05Z colin $
+#
+#
+# Create the Order Slicer strategy, with properties symbol=IBM and quantity=2000
+createModule;metc:strategy:system;orderSlicer,OrderSlicer,RUBY,samples/ruby/scripts/order_slicer.rb,symbol=IBM:quantity=2000,false,metc:sink:system
+# Start the strategy
+startModule;metc:strategy:system:orderSlicer

@@ -11,7 +11,6 @@
   <artifactId>sa-app</artifactId>
   <version>2.4.0</version>
   <name>sa-app</name>
-  <packaging>pom</packaging>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,6 +20,22 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>strategyagent</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <!-- test modules -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cep-esper</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>strategy</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <profiles>
@@ -52,7 +67,7 @@
     <profile>
       <id>executeSample</id>
       <properties>
-        <sampleName>HelloWorld.txt</sampleName>
+        <sampleName>VWAPStrategy.txt</sampleName>
         <language>ruby</language>
       </properties>
       <build>
@@ -66,10 +81,10 @@
                 <argument>-Dorg.marketcetera.appDir=.</argument>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>org.marketcetera.strategyagent.StrategyAgent</argument>
+                <argument>org.marketcetera.core.ApplicationContainer</argument>
                 <argument>samples/${language}/inputs/${sampleName}</argument>
               </arguments>
-              <workingDirectory>src/main/sample_data</workingDirectory>
+              <workingDirectory>src/test/cmd_exec</workingDirectory>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

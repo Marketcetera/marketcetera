@@ -111,16 +111,6 @@
       <artifactId>spring-orm</artifactId>
     </dependency>
     <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm-attrs</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.mysema.querydsl</groupId>
       <artifactId>querydsl-core</artifactId>
     </dependency>
