@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.util.file.Deleter;
 import org.marketcetera.util.log.I18NMessage;
@@ -29,6 +30,9 @@ import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.unicode.UnicodeFileWriter;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /* $License$ */
 /**
@@ -40,34 +44,60 @@ import org.objectweb.asm.MethodVisitor;
  */
 public class StrategyAgentTestBase
         extends TestCaseBase
+        implements ApplicationContextAware
 {
     /**
      * Set the app dir property so that the properties files are picked up.
      */
     @BeforeClass
-    public static void setupConfDirProperty() {
-        System.setProperty(ApplicationBase.APP_DIR_PROP, ApplicationBase.APP_DIR);
+    public static void setupConfDirProperty()
+    {
+        LoggerConfiguration.logSetup();
+        System.setProperty(ApplicationBase.APP_DIR_PROP,
+                           ApplicationBase.APP_DIR);
     }
+    /**
+     * 
+     *
+     *
+     */
     @Before
-    public void setupLogLevel() {
+    public void setupLogLevel()
+            throws Exception
+    {
         Logger.getRootLogger().setLevel(Level.ERROR);
         setLevel(StrategyAgent.class.getName(), Level.INFO);
-        setLevel(TestAgent.class.getName(), Level.INFO);
+        setLevel(TestAgentRunner.class.getName(), Level.INFO);
         setLevel(StrategyAgent.SINK_DATA, Level.INFO);
     }
-
+    /**
+     * 
+     *
+     *
+     * @throws Exception
+     */
     @After
-    public void cleanup() throws Exception {
-        if(mRunner != null) {
-            mRunner.stop();
-            mRunner = null;
+    public void cleanup()
+            throws Exception
+    {
+        if(testRunner != null) {
+            testRunner.stop();
+            testRunner = null;
         }
         if(mFile != null) {
             Deleter.apply(mFile);
             mFile = null;
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext inContext)
+            throws BeansException
+    {
+        context = inContext;
+    }
     protected static void savePropertiesForProvider(
             ModuleURN inURN, Properties inProperties) throws IOException {
         File conf = new File(JarClassLoaderTest.CONF_DIR, new StringBuilder().
@@ -145,16 +175,21 @@ public class StrategyAgentTestBase
                     Matchers.lessThanOrEqualTo(inLevel.toInt()));
         }
     }
-
-    protected static void run(TestAgent inRunner, String... args) {
-//        StrategyAgent.run(inRunner, args);
+    /**
+     * 
+     *
+     *
+     * @param args
+     * @return
+     * @throws Exception
+     */
+    protected TestAgentRunner createRunnerWith(String... args)
+            throws Exception
+    {
+        testRunner = new TestAgentRunner();
+        testRunner.launch(args);
+        return testRunner;
     }
-
-    protected TestAgent createAgent(boolean inWaitForever) {
-        mRunner = new TestAgent(inWaitForever);
-        return mRunner;
-    }
-
     /**
      * Creates a subclass of the supplied super class with the supplied name.
      * The subclass simply extends the super class and has a default constructor
@@ -219,41 +254,9 @@ public class StrategyAgentTestBase
         return inName.replace('.','/');
     }
 
-    /**
-     * A test agent that prevents the strategy agent from exiting the
-     * process.
-     */
-    protected static class TestAgent extends StrategyAgent {
-        private TestAgent(boolean inWaitForever) {
-            mWaitForever = inWaitForever;
-            mExitCode = NO_EXIT;
-        }
-
-        /**
-         * Returns the exit code of the agent.
-         *
-         * @return the exit code of the agent.
-         */
-        public int getExitCode() {
-            return mExitCode;
-        }
-//        @Override
-//        protected void exit(int inExitCode) {
-//            mExitCode = inExitCode;
-//        }
-
-//        @Override
-//        public void startWaitingForever() {
-//            if (mWaitForever) {
-//                super.startWaitingForever();
-//            }
-//        }
-
-        private final boolean mWaitForever;
-        private int mExitCode;
-    }
-
-    protected TestAgent mRunner;
+    protected TestAgentRunner testRunner;
     private File mFile;
     protected static final int NO_EXIT = -1;
+    protected ApplicationContext context;
 }
+

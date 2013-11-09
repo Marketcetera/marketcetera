@@ -85,7 +85,7 @@ public class StrategyAgentRemotingConfigTest extends StrategyAgentTestBase {
         //default value.
         System.setProperty(WS_HOST_PROPERTY," ");
         //start agent
-        run(createAgent(false));
+        createRunnerWith();
         //verify that the Web service is available.
         tryConnectTo(WS_HOST, WS_PORT, false);
         //verify that the client cannot connect.
@@ -113,7 +113,7 @@ public class StrategyAgentRemotingConfigTest extends StrategyAgentTestBase {
         //default value.
         System.setProperty(RECV_URL_PROPERTY," ");
         //start agent
-        run(createAgent(false));
+        createRunnerWith();
         //verify that the JMS service is not available.
         tryConnectTo(WS_HOST, JMS_PORT, false);
         //verify that the client cannot connect
@@ -137,10 +137,10 @@ public class StrategyAgentRemotingConfigTest extends StrategyAgentTestBase {
     @Test
     public void remoteWSAvailable() throws Exception {
         //start agent
-        run(createAgent(false));
+        createRunnerWith();
         //verify that the Web service is available.
         tryConnectTo(WS_HOST, WS_PORT, true);
-        mLogAssist.assertSomeEvent(Level.INFO, TestAgent.class.getName(),
+        mLogAssist.assertSomeEvent(Level.INFO, TestAgentRunner.class.getName(),
                 Messages.LOG_REMOTE_WS_CONFIGURED.getText("localhost",
                         String.valueOf(9001)), null);
     }
@@ -153,7 +153,7 @@ public class StrategyAgentRemotingConfigTest extends StrategyAgentTestBase {
     @Test
     public void remoteJMSAvailable() throws Exception {
         //start agent
-        run(createAgent(false));
+        createRunnerWith();
         //verify that the JMS service is available.
         tryConnectTo(WS_HOST, JMS_PORT, true);
         mLogAssist.assertSomeEvent(Level.INFO, ReceiverModule.class.getName(),
@@ -166,7 +166,7 @@ public class StrategyAgentRemotingConfigTest extends StrategyAgentTestBase {
      * categories that it needs to track.
      */
     public StrategyAgentRemotingConfigTest() {
-        mLogAssist = new LogTestAssist(TestAgent.class.getName(), Level.INFO);
+        mLogAssist = new LogTestAssist(TestAgentRunner.class.getName(), Level.INFO);
         mLogAssist.trackLogger(ReceiverModule.class.getName(), Level.INFO);
     }
 

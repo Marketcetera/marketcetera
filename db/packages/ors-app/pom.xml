@@ -37,7 +37,7 @@
            </execution>
          </executions>
          <configuration>
-           <file>src/test/cmd_exec/conf/user.properties</file>
+           <file>${basedir}/src/test/cmd_exec/conf/user.properties</file>
            <replacements>
              <replacement>
                <token>SENDER_COMP_ID</token>
