@@ -11,6 +11,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.Validate;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
@@ -141,6 +142,8 @@ public class StrategyAgent
     public void afterPropertiesSet()
             throws Exception
     {
+        Validate.notNull(moduleManager); // TODO message
+        Validate.notNull(loader); // TODO message
         try {
             //Configure the application. If it fails, exit
             configure();
@@ -177,16 +180,46 @@ public class StrategyAgent
         executeCommands();
     }
     /**
+     * Get the moduleManager value.
+     *
+     * @return a <code>ModuleManager</code> value
+     */
+    public ModuleManager getModuleManager()
+    {
+        return moduleManager;
+    }
+    /**
+     * Sets the moduleManager value.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     */
+    public void setModuleManager(ModuleManager inModuleManager)
+    {
+        moduleManager = inModuleManager;
+    }
+    /**
+     * Get the loader value.
+     *
+     * @return a <code>ClassLoader</code> value
+     */
+    public ClassLoader getLoader()
+    {
+        return loader;
+    }
+    /**
+     * Sets the loader value.
+     *
+     * @param inLoader a <code>ClassLoader</code> value
+     */
+    public void setLoader(ClassLoader inLoader)
+    {
+        loader = inLoader;
+    }
+    /**
      * Configures the agent.
      */
     private void configure()
     {
-        mManager = context.getBean(ModuleManager.class);
-        //Set the context classloader to the jar classloader so that
-        //all modules have the thread context classloader set to the same
-        //value as the classloader that loaded them.
-        ClassLoader loader = context.getBean("currentLoader",
-                                             ClassLoader.class);
         Thread.currentThread().setContextClassLoader(loader);
         Authenticator authenticator;
         try {
@@ -220,7 +253,7 @@ public class StrategyAgent
                                                 sessionManager,
                                                 contextClasses);
             mRemoteService = mServer.publish(new SAServiceImpl(sessionManager,
-                                                               mManager,
+                                                               moduleManager,
                                                                dataPublisher),
                                              SAService.class);
             //Register a shutdown task to shutdown the remote service.
@@ -243,9 +276,9 @@ public class StrategyAgent
      */
     private void init() throws ModuleException, MalformedObjectNameException {
         //Initialize the module manager.
-        mManager.init();
+        moduleManager.init();
         //Add the logger sink listener
-        mManager.addSinkListener(new SinkDataListener() {
+        moduleManager.addSinkListener(new SinkDataListener() {
             public void receivedData(DataFlowID inFlowID, Object inData) {
                 final boolean isNullData = inData == null;
                 Messages.LOG_SINK_DATA.info(SINK_DATA, inFlowID,
@@ -265,17 +298,9 @@ public class StrategyAgent
     public StrategyAgent()
     {
         instance = this;
+        SLF4JLoggerProxy.info(this,
+                              "Starting Strategy Agent");
     }
-    /**
-     * Returns the module manager.
-     * This method is exposed to aid testing.
-     *
-     * @return the module manager.
-     */
-    protected ModuleManager getManager() {
-        return mManager;
-    }
-
     /**
      * Stops the remote web service.
      */
@@ -478,7 +503,11 @@ public class StrategyAgent
     /**
      * The module manager instance.
      */
-    private ModuleManager mManager;
+    private ModuleManager moduleManager;
+    /**
+     * SA class loader value
+     */
+    private ClassLoader loader;
     /**
      * The module manager mxbean reference.
      */
@@ -486,12 +515,14 @@ public class StrategyAgent
     /**
      * The list of parsed commands.
      */
-    private List<Command> mCommands =
-            new LinkedList<Command>();
+    private List<Command> mCommands = new LinkedList<Command>();
     /**
      * The handle to the remote web service.
      */
     private volatile ServiceInterface mRemoteService;
+    /**
+     * web services provider server
+     */
     private volatile Server<ClientSession> mServer;
     /**
      * used to publish data received to interested subscribers

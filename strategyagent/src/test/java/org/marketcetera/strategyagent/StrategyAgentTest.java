@@ -19,7 +19,6 @@ import org.apache.log4j.Level;
 import org.junit.Test;
 import org.marketcetera.module.*;
 import org.marketcetera.strategyagent.JarClassLoaderTest.JarContents;
-import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -27,18 +26,35 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
-public class StrategyAgentTest extends StrategyAgentTestBase {
+public class StrategyAgentTest
+        extends StrategyAgentTestBase
+{
+    /**
+     * 
+     *
+     *
+     * @throws Exception
+     */
     @Test
-    public void runNoArgs() {
-        run(createAgent(false));
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+    public void runNoArgs()
+            throws Exception
+    {
+        createRunnerWith();
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertNoEventsAbove(Level.INFO);
     }
+    /**
+     * 
+     *
+     *
+     * @throws Exception
+     */
     @Test
-    public void runInvalidArgs() {
-        run(createAgent(false), "/doesnotexist");
-        assertEquals(StrategyAgent.EXIT_START_ERROR, mRunner.getExitCode());
+    public void runInvalidArgs()
+            throws Exception
+    {
+        createRunnerWith("/doesnotexist");
+        assertEquals(StrategyAgent.EXIT_START_ERROR, testRunner.getExitCode());
         assertLastButXEvent(0, Level.ERROR,
                 StrategyAgent.class.getName(),
                 Messages.LOG_ERROR_CONFIGURE_AGENT);
@@ -47,10 +63,10 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
     public void runInvalidCmdSyntax() throws Exception {
         final String syntax = "this is invalid command syntax";
         File f = createFileWithText("#comment", syntax,"");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, testRunner.getExitCode());
         assertLastButXEvent(1, Level.ERROR,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.INVALID_COMMAND_SYNTAX, syntax, 2);
         assertLastButXEvent(0, Level.ERROR,
                 StrategyAgent.class.getName(),
@@ -60,10 +76,10 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
     public void runInvalidCmdName() throws Exception {
         File f = createFileWithText("badname;this one's bad",
                 "#comment","    \t");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, testRunner.getExitCode());
         assertLastButXEvent(1, Level.ERROR,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.INVALID_COMMAND_NAME, "badname", 1);
         assertLastButXEvent(0, Level.ERROR,
                 StrategyAgent.class.getName(),
@@ -87,16 +103,16 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
                 "# yet another valid command",
                 "startModule;metc:blah:zoo:gah",
                 "# end");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, testRunner.getExitCode());
         assertLastButXEvent(3, Level.ERROR,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.INVALID_COMMAND_NAME, "badname", 2);
         assertLastButXEvent(2, Level.ERROR,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.INVALID_COMMAND_SYNTAX, syntax,  5);
         assertLastButXEvent(1, Level.ERROR,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.INVALID_COMMAND_NAME, "createDataFlo", 10);
         assertLastButXEvent(0, Level.ERROR,
                 StrategyAgent.class.getName(),
@@ -106,14 +122,14 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
     @Test
     public void createModuleSyntaxError() throws Exception {
         File f = createFileWithText("createModule;metc:blah:zoo:gah");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "createModule",
                 "metc:blah:zoo:gah");
         assertLastButXEvent(0, Level.WARN,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_ERROR_EXEC_CMD, "createModule",
                 "metc:blah:zoo:gah",1, Messages.CREATE_MODULE_INVALID_SYNTAX.
                 getText("metc:blah:zoo:gah"));
@@ -124,14 +140,14 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
         ModuleURN instanceURN = new ModuleURN(factoryURN, "blah");
         String parameter = factoryURN + ";" + instanceURN;
         File f = createFileWithText("createModule;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "createModule",
                 parameter);
         assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_COMMAND_RUN_RESULT, "createModule",
                 instanceURN.getValue());
     }
@@ -141,14 +157,14 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
         ModuleURN instanceURN = new ModuleURN(factoryURN, "blah");
         String parameter = factoryURN + ";" + instanceURN;
         File f = createFileWithText("createModule;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "createModule",
                 parameter);
         assertLastButXEvent(0, Level.WARN,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_ERROR_EXEC_CMD, "createModule", parameter, 1,
                 org.marketcetera.module.Messages.PROVIDER_NOT_FOUND.getText(
                         factoryURN.getValue()));
@@ -156,14 +172,14 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
     @Test
     public void startModuleError() throws Exception {
         File f = createFileWithText("startModule;metc:does:not:exist");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "startModule",
                 "metc:does:not:exist");
         assertLastButXEvent(0, Level.WARN,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_ERROR_EXEC_CMD, "startModule",
                 "metc:does:not:exist", 1,
                 org.marketcetera.module.Messages.MODULE_NOT_FOUND.getText(
@@ -173,14 +189,14 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
     public void startModule() throws Exception {
         File f = createFileWithText("startModule;" +
                 SingleModuleFactory.INSTANCE_URN);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "startModule",
                 SingleModuleFactory.INSTANCE_URN);
         assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_COMMAND_RUN_RESULT, "startModule",
                 true);
     }
@@ -194,14 +210,14 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
         String parameter = EmitterModuleFactory.INSTANCE_URN +
                 ";somestring^" + instanceURN;
         File f = createFileWithText("createDataFlow;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "createDataFlow",
                 parameter);
         assertLastButXEvent(0, Level.WARN,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_ERROR_EXEC_CMD, "createDataFlow",
                 parameter, 1,
                 org.marketcetera.module.Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT.
@@ -221,25 +237,25 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
         File f = createFileWithText(
                 "startModule;" + EmitterModuleFactory.INSTANCE_URN,
                 "createDataFlow;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertLastButXEvent(3, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "startModule",
                 EmitterModuleFactory.INSTANCE_URN);
         assertLastButXEvent(2, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_COMMAND_RUN_RESULT, "startModule",
                 true);
         assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "createDataFlow",
                 parameter);
         //Get the data flow ID
-        List<DataFlowID> flows = mRunner.getManager().getDataFlows(true);
+        List<DataFlowID> flows = testRunner.getModuleManager().getDataFlows(true);
         assertEquals(1,flows.size());
         assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_COMMAND_RUN_RESULT, "createDataFlow",
                 flows.get(0));
     }
@@ -278,14 +294,14 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
                 instanceURN.getValue();
         File f = createFileWithText("createModule;" +
                 parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_RUNNING_COMMAND, "createModule",
                 parameter);
         assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
+                TestAgentRunner.class.getName(),
                 Messages.LOG_COMMAND_RUN_RESULT, "createModule",
                 instanceURN.getValue());
         ConfigurationProviderFactoryMXBean factory = JMX.newMXBeanProxy(
@@ -319,24 +335,24 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
                 JarClassLoaderTest.SAMPLE_DATA_DIR, "inputs"),
                 "sampleCommands.txt");
         assertTrue(input.getAbsolutePath(), input.isFile());
-        run(createAgent(false), input.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(input.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
     }
 
     @Test(timeout = 5000)
     public void sinkLogging() throws Exception {
         //Disable other kinds of logging so that it doesn't interfere
         //with sink logging.
-        setLevel(TestAgent.class.getName(), Level.ERROR);
+        setLevel(TestAgentRunner.class.getName(), Level.ERROR);
         String parameter = EmitterModuleFactory.INSTANCE_URN +
                         ";somestring";
         File f = createFileWithText(
                 "startModule;" + EmitterModuleFactory.INSTANCE_URN,
                 "createDataFlow;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT, testRunner.getExitCode());
         //Get the data flow ID
-        List<DataFlowID> flows = mRunner.getManager().getDataFlows(true);
+        List<DataFlowID> flows = testRunner.getModuleManager().getDataFlows(true);
         assertEquals(1,flows.size());
         //Wait until we have one event in the log
         while(getAppender().getEvents().isEmpty()) {
@@ -353,8 +369,8 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
         ObjectName on = new ObjectName(ModuleManager.MODULE_MBEAN_NAME);
         getMBeanServer().registerMBean(new JMXTestModule(
                 new ModuleURN("metc:blah:goo:gah")), on);
-        run(createAgent(false));
-        assertEquals(StrategyAgent.EXIT_INIT_ERROR, mRunner.getExitCode());
+        createRunnerWith();
+        assertEquals(StrategyAgent.EXIT_INIT_ERROR, testRunner.getExitCode());
         assertLastButXEvent(0, Level.ERROR,
                 StrategyAgent.class.getName(),
                 Messages.LOG_ERROR_INITIALIZING_AGENT);

@@ -1,21 +1,21 @@
 package org.marketcetera.strategyagent;
 
-import org.marketcetera.util.misc.ClassVersion;
-import static org.marketcetera.strategyagent.JarClassLoaderTest.createJar;
-import org.marketcetera.module.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.marketcetera.strategyagent.ContextCLTestFactoryBase.*;
 import static org.marketcetera.strategyagent.ContextCLTestModuleBase.*;
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertNotSame;
-import org.apache.log4j.Level;
+import static org.marketcetera.strategyagent.JarClassLoaderTest.createJar;
+
+import java.io.File;
+import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import javax.management.JMX;
 import javax.management.ObjectName;
-import java.io.File;
-import java.util.Properties;
-import java.util.concurrent.*;
+
+import org.junit.Test;
+import org.marketcetera.module.*;
 
 /* $License$ */
 /**
@@ -26,8 +26,9 @@ import java.util.concurrent.*;
  * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id$")
-public class ContextClassLoaderTest extends StrategyAgentTestBase {
+public class ContextClassLoaderTest
+        extends StrategyAgentTestBase
+{
     /**
      * Verifies that the context class loader is correctly setup when
      * the module methods are invoked
@@ -35,7 +36,9 @@ public class ContextClassLoaderTest extends StrategyAgentTestBase {
      * @throws Exception if there were errors.
      */
     @Test
-    public void contextLoading() throws Exception {
+    public void contextLoading()
+            throws Exception
+    {
         //Verify initial factory state
         assertCLEquals(null, sConstructClassLoader, sCreateClassLoader,
                 sFactoryGetAttributeLoader, sFactorySetAttributeLoader,
@@ -57,65 +60,59 @@ public class ContextClassLoaderTest extends StrategyAgentTestBase {
         JarClassLoaderTest.JarContents moduleClass = new JarClassLoaderTest.JarContents(
                 transformName(newModuleSubclass) + ".class", moduleClassBytes);
         //Create the factory file to load this factory via the service loader
-        File jar = createJar("clprovider.jar",
-                new JarClassLoaderTest.JarContents[]{
-                        jc, moduleClass,
-                        new JarClassLoaderTest.JarContents("META-INF/services/" +
-                                ModuleFactory.class.getName(), newSubclass.getBytes())
-                });
-        final ModuleURN instanceURN = new ModuleURN(
-                ContextCLTestFactoryBase.PROVIDER_URN, "con");
+        createJar("clprovider.jar",
+                  new JarClassLoaderTest.JarContents[] { jc, moduleClass, new JarClassLoaderTest.JarContents("META-INF/services/" + ModuleFactory.class.getName(), newSubclass.getBytes()) });
+        final ModuleURN instanceURN = new ModuleURN(ContextCLTestFactoryBase.PROVIDER_URN,
+                                                    "con");
         //Create the properties file for testing default parameter setting
         Properties properties = new Properties();
         properties.setProperty("Attribute", "does not matter");
         properties.setProperty(".Attribute", "does not matter");
         savePropertiesForProvider(instanceURN, properties);
-        String parameter = ContextCLTestFactoryBase.PROVIDER_URN + ";" +
-                instanceURN.getValue();
-        File f = createFileWithText("createModule;" +
-                parameter);
+        String parameter = ContextCLTestFactoryBase.PROVIDER_URN + ";" + instanceURN.getValue();
+        File f = createFileWithText("createModule;" + parameter);
         //verify that the context classloader is same as the current classloader
         assertSame(getClass().getClassLoader(),
-                Thread.currentThread().getContextClassLoader());
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "createModule",
-                parameter);
-        assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_COMMAND_RUN_RESULT, "createModule",
-                instanceURN.getValue());
+                   Thread.currentThread().getContextClassLoader());
+        createRunnerWith(f.getAbsolutePath());
+        assertEquals(NO_EXIT,
+                     testRunner.getExitCode());
         //verify that the context classloader is now different
-        ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader contextLoader = testRunner.getAppThread().getContextClassLoader();
         assertNotSame(getClass().getClassLoader(),
-                contextLoader);
+                      contextLoader);
         //verify factory class loaders.
-        assertCLEquals(contextLoader, sConstructClassLoader, sCreateClassLoader,
-                sFactorySetAttributeLoader);
-        assertEquals(null, sFactoryGetAttributeLoader, sFactoryOperationLoader);
+        assertCLEquals(contextLoader,
+                       sConstructClassLoader,
+                       sCreateClassLoader,
+                       sFactorySetAttributeLoader);
+        assertEquals(null,
+                     sFactoryGetAttributeLoader,
+                     sFactoryOperationLoader);
         sFactorySetAttributeLoader = null;
-        final ContextCLFactoryMXBean factoryBean = JMX.newMXBeanProxy(
-                getMBeanServer(),
-                ContextCLTestFactoryBase.PROVIDER_URN.toObjectName(),
-                ContextCLFactoryMXBean.class);
+        final ContextCLFactoryMXBean factoryBean = JMX.newMXBeanProxy(getMBeanServer(),
+                                                                      ContextCLTestFactoryBase.PROVIDER_URN.toObjectName(),
+                                                                      ContextCLFactoryMXBean.class);
         invokeClearCtxCL(new Callable<Object>() {
-            public Object call() throws Exception {
+            public Object call()
+                    throws Exception
+            {
                 factoryBean.operation();
                 factoryBean.setAttribute("value");
                 return factoryBean.getAttribute();
             }
         });
-        assertCLEquals(contextLoader, sFactoryGetAttributeLoader,
-                sFactoryOperationLoader, sFactorySetAttributeLoader);
+        assertCLEquals(contextLoader,
+                       sFactoryGetAttributeLoader,
+                       sFactoryOperationLoader,
+                       sFactorySetAttributeLoader);
 
         final ModuleManagerMXBean mmBean = JMX.newMXBeanProxy(getMBeanServer(),
-                new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
-                ModuleManagerMXBean.class);
+                                                              new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
+                                                              ModuleManagerMXBean.class);
         //verify autostarted module
-        verifyModuleCtxLoaders(mmBean, instanceURN);
+        verifyModuleCtxLoaders(mmBean,
+                               instanceURN);
         //Clear all module loaders
         sStartLoader = sStopLoader = sRequestLoader = sCancelLoader =
                 sReceiveLoader = sGetAttributeLoader = sSetAttributeLoader =
@@ -135,10 +132,12 @@ public class ContextClassLoaderTest extends StrategyAgentTestBase {
         verifyModuleCtxLoaders(mmBean, instanceURN);
     }
 
-    private void verifyModuleCtxLoaders(final ModuleManagerMXBean inMgrBean
-            , final ModuleURN inInstanceURN) throws Exception {
+    private void verifyModuleCtxLoaders(final ModuleManagerMXBean inMgrBean,
+                                        final ModuleURN inInstanceURN)
+            throws Exception
+    {
         ClassLoader contextLoader;
-        contextLoader = Thread.currentThread().getContextClassLoader();
+        contextLoader = testRunner.getAppThread().getContextClassLoader();
         //run the module through data flows
         invokeClearCtxCL(new Callable<Object>() {
             public Object call() throws Exception {
@@ -162,8 +161,14 @@ public class ContextClassLoaderTest extends StrategyAgentTestBase {
             }
         });
         //verify module class loaders
-        assertCLEquals(contextLoader, sStartLoader, sStopLoader, sRequestLoader,
-                sCancelLoader, sReceiveLoader, sFlowSupportLoader, sSetAttributeLoader);
+        assertCLEquals(contextLoader,
+                       sStartLoader,
+                       sStopLoader,
+                       sRequestLoader,
+                       sCancelLoader,
+                       sReceiveLoader,
+                       sFlowSupportLoader,
+                       sSetAttributeLoader);
         final ContextCLModuleMXBean moduleBean = JMX.newMXBeanProxy(getMBeanServer(),
                 inInstanceURN.toObjectName(), ContextCLModuleMXBean.class);
         invokeClearCtxCL(new Callable<Object>() {

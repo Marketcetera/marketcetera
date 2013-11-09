@@ -82,10 +82,13 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
 
     /**
      * Starts the strategy agent.
+     * @throws Exception 
      */
     @Before
-    public void startAgent() {
-        run(createAgent(false));
+    public void startAgent()
+            throws Exception
+    {
+        createRunnerWith();
     }
 
     /**
