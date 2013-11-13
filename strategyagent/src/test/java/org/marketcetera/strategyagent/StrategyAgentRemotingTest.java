@@ -14,7 +14,10 @@ import javax.management.InstanceNotFoundException;
 import javax.management.InvalidAttributeValueException;
 
 import org.hamcrest.Matchers;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientModuleFactory;
 import org.marketcetera.client.ClientParameters;
@@ -48,7 +51,6 @@ import org.marketcetera.util.ws.wrappers.RemoteProperties;
 public class StrategyAgentRemotingTest
         extends StrategyAgentTestBase
 {
-
     /**
      * Initializes the mock server, its client connection and the strategy
      * agent so that remote receiver is able to authenticate its clients
@@ -67,6 +69,8 @@ public class StrategyAgentRemotingTest
                                                 MockServer.URL,
                                                 Node.DEFAULT_HOST,
                                                 Node.DEFAULT_PORT));
+        useWs = true;
+        createSaWith();
     }
     /**
      * Closes the client connection and shuts down the mock server.
@@ -83,17 +87,7 @@ public class StrategyAgentRemotingTest
         if (sServer != null) {
             sServer.close();
         }
-    }
-    /**
-     * Starts the strategy agent.
-     * @throws Exception 
-     */
-    @Before
-    public void startAgent()
-            throws Exception
-    {
-        useWs = true;
-        createSaWith();
+        shutdownSa();
     }
     /**
      * Closes the SA client connection if it's active.
@@ -104,6 +98,14 @@ public class StrategyAgentRemotingTest
         if(sSAClient != null) {
             sSAClient.close();
             sSAClient = null;
+        }
+        for(ModuleURN strategyInstance : moduleManager.getModuleInstances(STRATEGY_PROVIDER_URN)) {
+            try {
+                moduleManager.stop(strategyInstance);
+            } catch (Exception ignored) {}
+            try {
+                moduleManager.deleteModule(strategyInstance);
+            } catch (Exception ignored) {}
         }
     }
     /**
@@ -310,26 +312,35 @@ public class StrategyAgentRemotingTest
     }
 
     @Test
-    public void setPropertiesFailure() throws Exception {
+    public void setPropertiesFailure()
+            throws Exception
+    {
         final SAClient saClient = createClient();
-        //null URN
+        // null URN
         verifyNullURNFailure(new WSOpFailure() {
             @Override
-            protected void run() throws Exception {
-                saClient.setProperties(null, null);
+            protected void run()
+                    throws Exception
+            {
+                saClient.setProperties(null,
+                                       null);
             }
         });
-        //non strategy URN
-        verifyNestedFailure(new I18NBoundMessage1P(
-                Messages.SET_PROPERTY_MODULE_NOT_STRATEGY, RECEIVER_URN),
-                new WSOpFailure() {
+        // non strategy URN
+        verifyNestedFailure(new I18NBoundMessage1P(Messages.SET_PROPERTY_MODULE_NOT_STRATEGY,
+                                                   RECEIVER_URN),
+                            new WSOpFailure() {
             @Override
-            protected void run() throws Exception {
-                saClient.setProperties(RECEIVER_URN, null);
+            protected void run()
+                    throws Exception
+            {
+                saClient.setProperties(RECEIVER_URN,
+                                       null);
             }
         });
-        //non existent strategy
-        final ModuleURN urn = new ModuleURN(STRATEGY_PROVIDER_URN, "notexist");
+        // non existent strategy
+        final ModuleURN urn = new ModuleURN(STRATEGY_PROVIDER_URN,
+                                            "notexist");
         ConnectionException failure = new WSOpFailure(){
             @Override
             protected void run() throws Exception {

@@ -10,7 +10,6 @@ import java.util.Properties;
 
 import javax.management.MBeanServer;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.marketcetera.core.LoggerConfiguration;
@@ -44,6 +43,7 @@ public class StrategyAgentTestBase
     public static void setupConfDirProperty()
     {
         LoggerConfiguration.logSetup();
+        initParams();
     }
     /**
      * Runs before each test.
@@ -54,6 +54,15 @@ public class StrategyAgentTestBase
     public void setup()
             throws Exception
     {
+        initParams();
+    }
+    /**
+     * 
+     *
+     *
+     */
+    protected static void initParams()
+    {
         useWs = false;
         wsHostname = "localhost";
         wsPort = 9001;
@@ -61,13 +70,11 @@ public class StrategyAgentTestBase
         buildJmsUrl();
     }
     /**
-     * Runs after each test.
+     * 
      *
-     * @throws Exception if an unexpected error occurs
+     *
      */
-    @After
-    public void cleanup()
-            throws Exception
+    protected static void shutdownSa()
     {
         if(moduleManager != null) {
             moduleManager.stop();
@@ -119,7 +126,7 @@ public class StrategyAgentTestBase
     /**
      * Sets the JMS URL test value based on the hostname and jms port value.
      */
-    protected void buildJmsUrl()
+    protected static void buildJmsUrl()
     {
         jmsUrl = "tcp://" + wsHostname + ":" + jmsPort;
     }
@@ -153,7 +160,7 @@ public class StrategyAgentTestBase
      * @param inArguments a <code>String[]</code> value
      * @throws Exception if an unexpected error occurs
      */
-    protected void createSaWith(String... inArguments)
+    protected static void createSaWith(String... inArguments)
             throws Exception
     {
         app = new MockApplicationContainer();
@@ -161,7 +168,7 @@ public class StrategyAgentTestBase
         app.start();
         sa = new StrategyAgent();
         loader = new JarClassLoader(new StaticStrategyAgentApplicationInfoProvider(),
-                                    getClass().getClassLoader());
+                                    StrategyAgentTestBase.class.getClassLoader());
         AgentConfigurationProvider configurationProvider = new AgentConfigurationProvider(loader);
         Map<String,String> receiverProperties = Maps.newHashMap();
         receiverProperties.put("URL",
@@ -275,49 +282,49 @@ public class StrategyAgentTestBase
     /**
      * test application value
      */
-    protected MockApplicationContainer app;
+    protected static MockApplicationContainer app;
     /**
      * test data publisher value
      */
-    protected PublisherEngine publisher;
+    protected static PublisherEngine publisher;
     /**
      * test class loader value
      */
-    protected ClassLoader loader;
+    protected static ClassLoader loader;
     /**
      * test module manager value
      */
-    protected ModuleManager moduleManager;
+    protected static ModuleManager moduleManager;
     /**
      * test strategy agent value
      */
-    protected StrategyAgent sa;
+    protected static StrategyAgent sa;
     /**
      * 
      */
-    protected SAService servicesProvider;
+    protected static SAService servicesProvider;
     /**
      * 
      */
-    protected StrategyAgentWebServicesProvider server;
+    protected static StrategyAgentWebServicesProvider server;
     /**
      * 
      */
-    protected String wsHostname;
+    protected static String wsHostname;
     /**
      * 
      */
-    protected int wsPort;
+    protected static int wsPort;
     /**
      * 
      */
-    protected String jmsUrl;
+    protected static String jmsUrl;
     /**
      * 
      */
-    protected int jmsPort;
+    protected static int jmsPort;
     /**
      * 
      */
-    protected boolean useWs;
+    protected static boolean useWs;
 }
