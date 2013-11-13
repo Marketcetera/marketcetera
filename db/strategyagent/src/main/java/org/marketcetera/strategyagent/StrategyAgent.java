@@ -3,8 +3,12 @@ package org.marketcetera.strategyagent;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.lang.management.ManagementFactory;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
@@ -21,23 +25,16 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.module.*;
 import org.marketcetera.saclient.SAClientVersion;
-import org.marketcetera.saclient.SAService;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.unicode.UnicodeFileReader;
-import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.Server;
-import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.Lifecycle;
 
 /* $License$ */
 /**
@@ -58,7 +55,7 @@ import org.springframework.context.ApplicationContextAware;
  */
 @ClassVersion("$Id$")
 public class StrategyAgent
-        implements IPublisher, InitializingBean, ApplicationContextAware
+        implements IPublisher, Lifecycle
 {
     /**
      * Gets the most recently created <code>StrategyAgent</code> instance in this process.
@@ -120,40 +117,60 @@ public class StrategyAgent
     {
         dataPublisher.publishAndWait(inData);
     }
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+    /**
+     * Get the dataPublisher value.
+     *
+     * @return a <code>PublisherEngine</code> value
      */
-    @Override
-    public void setApplicationContext(ApplicationContext inContext)
-            throws BeansException
+    public PublisherEngine getDataPublisher()
     {
-        context = inContext;
+        return dataPublisher;
     }
     /**
-     * Stops the strategy agent. This method is meant to help with unit testing.
+     * Sets the dataPublisher value.
+     *
+     * @param inDataPublisher a <code>PublisherEngine</code> value
      */
-    protected void stop() {
+    public void setDataPublisher(PublisherEngine inDataPublisher)
+    {
+        dataPublisher = inDataPublisher;
+    }
+    /**
+     * Stops the strategy agent.
+     */
+    public void stop()
+    {
         stopRemoteService();
     }
     /* (non-Javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     * @see org.springframework.context.Lifecycle#isRunning()
      */
     @Override
-    public void afterPropertiesSet()
-            throws Exception
+    public boolean isRunning()
     {
+        return running.get();
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#start()
+     */
+    @Override
+    public void start()
+    {
+        SLF4JLoggerProxy.info(this,
+                              "Starting Strategy Agent"); // TODO message
         Validate.notNull(moduleManager); // TODO message
         Validate.notNull(loader); // TODO message
+        Validate.notNull(dataPublisher); // TODO message
         try {
             //Configure the application. If it fails, exit
-            configure();
+            Thread.currentThread().setContextClassLoader(loader);
             String[] args = ApplicationContainer.getInstance().getArguments();
-            if(args.length > 0) {
+            if(args != null && args.length > 0) {
                 int parseErrors = parseCommands(args[0]);
                 if(parseErrors > 0) {
                     Messages.LOG_COMMAND_PARSE_ERRORS.error(StrategyAgent.class,
                                                             parseErrors);
-                    throw new IllegalArgumentException(String.valueOf(EXIT_CMD_PARSE_ERROR));
+                    throw new IllegalArgumentException(Messages.LOG_COMMAND_PARSE_ERRORS.getText(parseErrors));
                 }
             }
         } catch(Exception e) {
@@ -162,9 +179,9 @@ public class StrategyAgent
             Messages.LOG_ERROR_CONFIGURE_AGENT.debug(StrategyAgent.class,
                                                      e,
                                                      getMessage(e));
-            throw e;
+            throw new RuntimeException(e);
         }
-        //Initialize the application. If it fails, exit
+        // initialize the application. If it fails, exit
         try {
             init();
         } catch (Exception e) {
@@ -173,11 +190,11 @@ public class StrategyAgent
             Messages.LOG_ERROR_INITIALIZING_AGENT.debug(StrategyAgent.class,
                                                         e,
                                                         getMessage(e));
-            throw e;
+            throw new RuntimeException(e);
         }
-        //Run the commands, if commands fail, the failure is logged, but
-        //the application doesn't exit.
+        // run the commands
         executeCommands();
+        running.set(true);
     }
     /**
      * Get the moduleManager value.
@@ -216,57 +233,6 @@ public class StrategyAgent
         loader = inLoader;
     }
     /**
-     * Configures the agent.
-     */
-    private void configure()
-    {
-        Thread.currentThread().setContextClassLoader(loader);
-        Authenticator authenticator;
-        try {
-            authenticator = context.getBean(Authenticator.class);
-            SLF4JLoggerProxy.debug(this,
-                                   "Using custom authenticator {}",
-                                   authenticator);
-        } catch (NoSuchBeanDefinitionException e) {
-            authenticator = new Authenticator() {
-                @Override
-                public boolean shouldAllow(StatelessClientContext context,
-                                           String user,
-                                           char[] password)
-                        throws I18NException
-                {
-                    return authenticate(context,
-                                        user,
-                                        password);
-                }
-            };
-        }
-        //Setup the WS services after setting up the context class loader.
-        String hostname = (String) context.getBean("wsServerHost");  //$NON-NLS-1$
-        if (hostname != null && !hostname.trim().isEmpty()) {
-            int port = (Integer) context.getBean("wsServerPort");  //$NON-NLS-1$
-            SessionManager<ClientSession> sessionManager= new SessionManager<ClientSession>(new ClientSessionFactory(),
-                                                                                            SessionManager.INFINITE_SESSION_LIFESPAN);
-            mServer = new Server<ClientSession>(hostname,
-                                                port,
-                                                authenticator,
-                                                sessionManager,
-                                                contextClasses);
-            mRemoteService = mServer.publish(new SAServiceImpl(sessionManager,
-                                                               moduleManager,
-                                                               dataPublisher),
-                                             SAService.class);
-            //Register a shutdown task to shutdown the remote service.
-            Runtime.getRuntime().addShutdownHook(new Thread(){
-                @Override
-                public void run() {
-                    stopRemoteService();
-                }
-            });
-            Messages.LOG_REMOTE_WS_CONFIGURED.info(this, hostname, String.valueOf(port));
-        }
-    }
-    /**
      * Initializes the module manager.
      *
      * @throws ModuleException if there were errors initializing the module
@@ -274,7 +240,9 @@ public class StrategyAgent
      * @throws MalformedObjectNameException if there were errors creating
      * the object name of the module manager bean.
      */
-    private void init() throws ModuleException, MalformedObjectNameException {
+    private void init()
+            throws ModuleException, MalformedObjectNameException
+    {
         //Initialize the module manager.
         moduleManager.init();
         //Add the logger sink listener
@@ -287,10 +255,9 @@ public class StrategyAgent
                         inData);
             }
         });
-        mManagerBean = JMX.newMXBeanProxy(
-                ManagementFactory.getPlatformMBeanServer(),
-                new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
-                ModuleManagerMXBean.class);
+        mManagerBean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(),
+                                          new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
+                                          ModuleManagerMXBean.class);
     }
     /**
      * Create a new StrategyAgent instance.
@@ -298,8 +265,6 @@ public class StrategyAgent
     public StrategyAgent()
     {
         instance = this;
-        SLF4JLoggerProxy.info(this,
-                              "Starting Strategy Agent");
     }
     /**
      * Stops the remote web service.
@@ -393,18 +358,20 @@ public class StrategyAgent
         String serverVersion = ApplicationVersion.getVersion();
         String clientName = Util.getName(context.getAppId());
         String clientVersion = Util.getVersion(context.getAppId());
-        if (!compatibleApp(clientName)) {
-            throw new I18NException
-                    (new I18NBoundMessage2P(Messages.APP_MISMATCH,
-                            clientName, user));
+        if(!compatibleApp(clientName)) {
+            throw new I18NException(new I18NBoundMessage2P(Messages.APP_MISMATCH,
+                                                           clientName,
+                                                           user));
         }
-        if (!compatibleVersions(clientVersion, serverVersion)) {
-            throw new I18NException
-                    (new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
-                            clientVersion, serverVersion, user));
+        if(!compatibleVersions(clientVersion, serverVersion)) {
+            throw new I18NException(new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
+                                                           clientVersion,
+                                                           serverVersion,
+                                                           user));
         }
-        //Use client to carry out authentication.
-        return ClientManager.getInstance().isCredentialsMatch(user, password);
+        // use client to carry out authentication.
+        return ClientManager.getInstance().isCredentialsMatch(user,
+                                                              password);
     }
     /**
      * Executes commands, if any were provided. If any command fails, the
@@ -421,15 +388,15 @@ public class StrategyAgent
                             mManagerBean, c.getParameter());
                     Messages.LOG_COMMAND_RUN_RESULT.info(this,
                             c.getRunner().getName(), result);
-                } catch (Throwable t) {
+                } catch (Exception e) {
                     Messages.LOG_ERROR_EXEC_CMD.warn(this,
                             c.getRunner().getName(),
                             c.getParameter(), c.getLineNum(),
-                            getMessage(t));
-                    Messages.LOG_ERROR_EXEC_CMD.debug(this, t,
+                            getMessage(e));
+                    Messages.LOG_ERROR_EXEC_CMD.debug(this, e,
                             c.getRunner().getName(),
                             c.getParameter(), c.getLineNum(),
-                            getMessage(t));
+                            getMessage(e));
                 }
             }
         }
@@ -527,7 +494,7 @@ public class StrategyAgent
     /**
      * used to publish data received to interested subscribers
      */
-    private final PublisherEngine dataPublisher = new PublisherEngine();
+    private volatile PublisherEngine dataPublisher;
     /**
      * extra context classes to add to the server context
      */
@@ -536,8 +503,5 @@ public class StrategyAgent
      * most recent strategy agent instance
      */
     private volatile static StrategyAgent instance;
-    /**
-     * application context
-     */
-    private ApplicationContext context;
+    private final AtomicBoolean running = new AtomicBoolean(false);
 }

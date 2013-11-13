@@ -32,7 +32,6 @@ import org.marketcetera.util.file.Deleter;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
@@ -46,8 +45,9 @@ import org.marketcetera.util.ws.wrappers.RemoteProperties;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
-public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
+public class StrategyAgentRemotingTest
+        extends StrategyAgentTestBase
+{
 
     /**
      * Initializes the mock server, its client connection and the strategy
@@ -57,21 +57,26 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
      * @throws Exception if there were unexpected failures.
      */
     @BeforeClass
-    public static void createServerAndClient() throws Exception {
+    public static void createServerAndClient()
+            throws Exception
+    {
         StrategyAgentRemotingConfigTest.setupConfiguration();
         sServer = new MockServer();
         ClientManager.init(new ClientParameters(DEFAULT_CREDENTIAL,
-                DEFAULT_CREDENTIAL.toCharArray(), MockServer.URL,
-                Node.DEFAULT_HOST, Node.DEFAULT_PORT));
+                                                DEFAULT_CREDENTIAL.toCharArray(),
+                                                MockServer.URL,
+                                                Node.DEFAULT_HOST,
+                                                Node.DEFAULT_PORT));
     }
-
     /**
      * Closes the client connection and shuts down the mock server.
      *
      * @throws Exception if there were errors.
      */
     @AfterClass
-    public static void stopServerAndClient() throws Exception {
+    public static void stopServerAndClient()
+            throws Exception
+    {
         if(ClientManager.isInitialized()) {
             ClientManager.getInstance().close();
         }
@@ -79,7 +84,6 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
             sServer.close();
         }
     }
-
     /**
      * Starts the strategy agent.
      * @throws Exception 
@@ -88,27 +92,29 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
     public void startAgent()
             throws Exception
     {
-        createRunnerWith();
+        useWs = true;
+        createSaWith();
     }
-
     /**
      * Closes the SA client connection if it's active.
      */
     @After
-    public void closeClient() {
+    public void closeClient()
+    {
         if(sSAClient != null) {
             sSAClient.close();
             sSAClient = null;
         }
     }
-
     /**
      * Tests failures due to user authentication failure.
      *
      * @throws Exception if there were unexpected errors.
      */
     @Test
-    public void loginFailures() throws Exception {
+    public void loginFailures()
+            throws Exception
+    {
         //test null password
         new ExpectedFailure<ConnectionException>(
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
@@ -152,14 +158,15 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
         //finally a successful login
         createClient();
     }
-
     /**
      * Tests {@link StrategyAgent#authenticate(org.marketcetera.util.ws.stateless.StatelessClientContext, String, char[])}
      *
      * @throws Exception if there were unexpected failures.
      */
     @Test
-    public void clientAuth() throws Exception {
+    public void clientAuth()
+            throws Exception
+    {
         //null context
         new ExpectedFailure<NullPointerException>(){
             @Override
@@ -533,99 +540,153 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
      */
     @Test
     @SuppressWarnings("unchecked")
-    public void strategyLifecycle() throws Exception {
+    public void strategyLifecycle()
+            throws Exception
+    {
         final SAClient saClient = createClient();
-        //create, start, stop, delete, get/set props, get createParms
-        //verify no instances exist yet
+        // create, start, stop, delete, get/set props, get createParms
+        // verify no instances exist yet
         List<ModuleURN> instances = saClient.getInstances(STRATEGY_PROVIDER_URN);
-        assertTrue(instances.toString(),  instances.isEmpty());
-        //create a strategy
-        assertTrue(TEST_STRATEGY.getAbsolutePath(), TEST_STRATEGY.isFile());
+        assertTrue(instances.toString(),
+                   instances.isEmpty());
+        // create a strategy
+        assertTrue(TEST_STRATEGY.getAbsolutePath(),
+                   TEST_STRATEGY.isFile());
         String name = "myStrat";
         ModuleURN urn = saClient.createStrategy(new CreateStrategyParameters(name,
-                "HelloWorld", "RUBY", TEST_STRATEGY, null, false));
-        assertEquals(name, urn.instanceName());
-        assertEquals(STRATEGY_PROVIDER_URN, urn.parent());
-
-        //verify the instance is reported
+                                                                             "HelloWorld",
+                                                                             "RUBY",
+                                                                             TEST_STRATEGY,
+                                                                             null,
+                                                                             false));
+        assertEquals(name,
+                     urn.instanceName());
+        assertEquals(STRATEGY_PROVIDER_URN,
+                     urn.parent());
+        // verify the instance is reported
         instances = saClient.getInstances(STRATEGY_PROVIDER_URN);
-        assertEquals(instances.toString(), 1, instances.size());
-        assertEquals(urn, instances.get(0));
-
-        //verify strategy properties and state
-        ModuleTestBase.assertModuleInfo(saClient.getModuleInfo(urn), urn,
-                ModuleState.CREATED, null, null,
-                false, false, true, true, true);
+        assertEquals(instances.toString(),
+                     1,
+                     instances.size());
+        assertEquals(urn,
+                     instances.get(0));
+        // verify strategy properties and state
+        ModuleTestBase.assertModuleInfo(saClient.getModuleInfo(urn),
+                                        urn,
+                                        ModuleState.CREATED,
+                                        null,
+                                        null,
+                                        false,
+                                        false,
+                                        true,
+                                        true,
+                                        true);
         Map<String, Object> props = saClient.getProperties(urn);
         assertNotNull(props);
         assertFalse(props.isEmpty());
-        assertEquals(props.toString(), 5, props.size());
-        assertThat(props, allOf(hasEntry("Parameters", null),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, false),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
-
-        //start the strategy
+        assertEquals(props.toString(),
+                     5,
+                     props.size());
+        assertThat(props,
+                   allOf(hasEntry("Parameters",
+                                  null),
+                         hasEntry("Name",
+                                  "HelloWorld"),
+                         hasEntry("Language",
+                                  Language.RUBY.toString()),
+                         hasEntry(STRAT_PROP_ROUTING_ORDERS,
+                                  false),
+                         hasEntry("OutputDestination",
+                                  RECEIVER_URN.parent().getValue())));
+        // start the strategy
         saClient.start(urn);
-        //verify properties and state
-        assertEquals(ModuleState.STARTED, saClient.getModuleInfo(urn).getState());
+        // verify properties and state
+        assertEquals(ModuleState.STARTED,
+                     saClient.getModuleInfo(urn).getState());
         props = saClient.getProperties(urn);
         assertNotNull(props);
-        assertEquals(props.toString(), 6, props.size());
-        assertThat(props, allOf(hasEntry("Parameters", null),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, false),
-                hasEntry("Status", "RUNNING"),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
-
-        //stop the strategy
+        assertEquals(props.toString(),
+                     6,
+                     props.size());
+        assertThat(props,
+                   allOf(hasEntry("Parameters",
+                                  null),
+                         hasEntry("Name",
+                                  "HelloWorld"),
+                         hasEntry("Language",
+                                  Language.RUBY.toString()),
+                         hasEntry(STRAT_PROP_ROUTING_ORDERS,
+                                  false),
+                         hasEntry("Status",
+                                  "RUNNING"),
+                         hasEntry("OutputDestination",
+                                  RECEIVER_URN.parent().getValue())));
+        // stop the strategy
         saClient.stop(urn);
-        //verify properties and state
-        assertEquals(ModuleState.STOPPED, saClient.getModuleInfo(urn).getState());
-
-        //change properties
+        // verify properties and state
+        assertEquals(ModuleState.STOPPED,
+                     saClient.getModuleInfo(urn).getState());
+        // change properties
         props = new HashMap<String, Object>();
         String paramValue = "key1=value1";
-        props.put("Parameters", paramValue);
-        props.put(STRAT_PROP_ROUTING_ORDERS, true);
-        props = saClient.setProperties(urn, props);
+        props.put("Parameters",
+                  paramValue);
+        props.put(STRAT_PROP_ROUTING_ORDERS,
+                  true);
+        props = saClient.setProperties(urn,
+                                       props);
         assertNotNull(props);
-        assertEquals(props.toString(), 2, props.size());
-        assertThat(props, allOf(hasEntry("Parameters", (Object)paramValue),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, true)));
-        //verify that the property indeed changed by fetching them again
+        assertEquals(props.toString(),
+                     2,
+                     props.size());
+        assertThat(props,
+                   allOf(hasEntry("Parameters",
+                                  (Object)paramValue),
+                         hasEntry(STRAT_PROP_ROUTING_ORDERS,
+                                  true)));
+        // verify that the property indeed changed by fetching them again
         props = saClient.getProperties(urn);
         assertNotNull(props);
-        assertEquals(props.toString(), 6, props.size());
-        assertThat(props, allOf(hasEntry("Parameters", (Object)paramValue),
-                hasEntry("Name", "HelloWorld"),
-                hasEntry("Language", Language.RUBY.toString()),
-                hasEntry(STRAT_PROP_ROUTING_ORDERS, true),
-                hasEntry("Status", "STOPPED"),
-                hasEntry("OutputDestination", RECEIVER_URN.parent().getValue())));
-
+        assertEquals(props.toString(),
+                     6,
+                     props.size());
+        assertThat(props,
+                   allOf(hasEntry("Parameters",
+                                  (Object)paramValue),
+                         hasEntry("Name",
+                                  "HelloWorld"),
+                         hasEntry("Language",
+                                  Language.RUBY.toString()),
+                         hasEntry(STRAT_PROP_ROUTING_ORDERS,
+                                  true),
+                         hasEntry("Status",
+                                  "STOPPED"),
+                         hasEntry("OutputDestination",
+                                  RECEIVER_URN.parent().getValue())));
         props.clear();
-        props.put(STRAT_PROP_ROUTING_ORDERS, BigDecimal.ONE);
-        props = saClient.setProperties(urn, props);
+        props.put(STRAT_PROP_ROUTING_ORDERS,
+                  BigDecimal.ONE);
+        props = saClient.setProperties(urn,
+                                       props);
         assertNotNull(props);
-        assertEquals(1, props.size());
-        assertThat(props, Matchers.hasKey(STRAT_PROP_ROUTING_ORDERS));
+        assertEquals(1,
+                     props.size());
+        assertThat(props,
+                   Matchers.hasKey(STRAT_PROP_ROUTING_ORDERS));
         Object err = props.get(STRAT_PROP_ROUTING_ORDERS);
-        assertThat(err, Matchers.instanceOf(RemoteProperties.class));
+        assertThat(err,
+                   Matchers.instanceOf(RemoteProperties.class));
         RemoteProperties prop = (RemoteProperties)err;
-        //Verify the we had the expected failure. 
+        // verify the we had the expected failure. 
         assertThat(prop.getServerString(),
                 Matchers.containsString(InvalidAttributeValueException.class.getName()));
-
-        //delete strategy
+        // delete strategy
         saClient.delete(urn);
-        //verify it's not reported any more
+        // verify it's not reported any more
         instances = saClient.getInstances(STRATEGY_PROVIDER_URN);
-        assertTrue(instances.toString(), instances.isEmpty());
+        assertTrue(instances.toString(),
+                   instances.isEmpty());
     }
-
     private void verifyNullURNFailure(final WSOpFailure inTest) throws Exception {
         verifyNestedFailure(Messages.CANNOT_PROCESS_NULL_URN, inTest); }
 
@@ -637,11 +698,14 @@ public class StrategyAgentRemotingTest extends StrategyAgentTestBase {
 
     }
 
-    private static SAClient createClient() throws ConnectionException {
-        return sSAClient = SAClientFactory.getInstance().create(
-                new SAClientParameters(DEFAULT_CREDENTIAL,
-                        DEFAULT_CREDENTIAL.toCharArray(),
-                        RECEIVER_URL, WS_HOST, WS_PORT));
+    private static SAClient createClient()
+            throws ConnectionException
+    {
+        return sSAClient = SAClientFactory.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
+                                                                                       DEFAULT_CREDENTIAL.toCharArray(),
+                                                                                       RECEIVER_URL,
+                                                                                       WS_HOST,
+                                                                                       WS_PORT));
     }
 
     /**
