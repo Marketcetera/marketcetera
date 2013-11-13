@@ -8,10 +8,7 @@ import java.util.HashMap;
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.MockLoginModule;
@@ -75,6 +72,17 @@ public class StrategyAgentRemotingConfigTest
     public void reset()
     {
         useWs = true;
+    }
+    /**
+     * Runs after each test.
+     *
+     * @throws Exception if there were unexpected errors.
+     */
+    @After
+    public void cleanup()
+            throws Exception
+    {
+        shutdownSa();
     }
     /**
      * Verifies that remote WS is not configured when the ws host property
@@ -198,7 +206,6 @@ public class StrategyAgentRemotingConfigTest
             }
         });
     }
-    
     /**
      * Tries connecting to the specified host and port and verifies if the
      * connection is successful or not.

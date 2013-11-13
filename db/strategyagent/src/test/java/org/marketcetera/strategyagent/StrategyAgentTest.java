@@ -12,6 +12,7 @@ import java.util.Properties;
 import javax.management.JMX;
 import javax.management.ObjectName;
 
+import org.junit.After;
 import org.junit.Test;
 import org.marketcetera.module.*;
 import org.marketcetera.strategyagent.JarClassLoaderTest.JarContents;
@@ -25,6 +26,11 @@ import org.marketcetera.strategyagent.JarClassLoaderTest.JarContents;
 public class StrategyAgentTest
         extends StrategyAgentTestBase
 {
+    @After
+    public void cleanup()
+    {
+        shutdownSa();
+    }
     /**
      * Tests running the SA with no arguments.
      *
