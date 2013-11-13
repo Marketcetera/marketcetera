@@ -23,7 +23,7 @@
   <context:component-scan base-package="org.marketcetera.core,org.marketcetera.strategyagent"/>
   <import resource="properties.xml"/>
   <!-- Main Strategy Agent Object -->
-  <bean id="sa" class="org.marketcetera.strategyagent.StrategyAgent">
+  <bean id="sa" class="org.marketcetera.strategyagent.StrategyAgent" destroy-method="stop">
     <property name="moduleManager" ref="moduleManager"/>
     <property name="loader" ref="moduleLoader"/>
   </bean>

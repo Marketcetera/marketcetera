@@ -1,40 +1,33 @@
 package org.marketcetera.strategyagent;
 
-import static org.junit.Assert.assertThat;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 import javax.management.MBeanServer;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.util.file.Deleter;
-import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.test.TestCaseBase;
+import org.marketcetera.saclient.SAService;
 import org.marketcetera.util.unicode.UnicodeFileWriter;
+import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateful.SessionManager;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+
+import com.google.common.collect.Maps;
 
 /* $License$ */
+
 /**
  * Base class for Strategy Agent tests.
  *
@@ -43,8 +36,6 @@ import org.springframework.context.ApplicationContextAware;
  * @since 1.5.0
  */
 public class StrategyAgentTestBase
-        extends TestCaseBase
-        implements ApplicationContextAware
 {
     /**
      * Set the app dir property so that the properties files are picked up.
@@ -53,95 +44,97 @@ public class StrategyAgentTestBase
     public static void setupConfDirProperty()
     {
         LoggerConfiguration.logSetup();
-        System.setProperty(ApplicationBase.APP_DIR_PROP,
-                           ApplicationBase.APP_DIR);
     }
     /**
-     * 
+     * Runs before each test.
      *
-     *
+     * @throws Exception if an unexpected error occurs
      */
     @Before
-    public void setupLogLevel()
+    public void setup()
             throws Exception
     {
-        Logger.getRootLogger().setLevel(Level.ERROR);
-        setLevel(StrategyAgent.class.getName(), Level.INFO);
-        setLevel(TestAgentRunner.class.getName(), Level.INFO);
-        setLevel(StrategyAgent.SINK_DATA, Level.INFO);
+        useWs = false;
+        wsHostname = "localhost";
+        wsPort = 9001;
+        jmsPort = 61617;
+        buildJmsUrl();
     }
     /**
-     * 
+     * Runs after each test.
      *
-     *
-     * @throws Exception
+     * @throws Exception if an unexpected error occurs
      */
     @After
     public void cleanup()
             throws Exception
     {
-        if(testRunner != null) {
-            testRunner.stop();
-            testRunner = null;
+        if(moduleManager != null) {
+            moduleManager.stop();
+            moduleManager = null;
         }
-        if(mFile != null) {
-            Deleter.apply(mFile);
-            mFile = null;
+        if(sa != null && sa.isRunning()) {
+            try {
+                sa.stop();
+                sa = null;
+            } catch (Exception ignored) {}
+        }
+        if(app != null) {
+            app.stop();
+            app = null;
+        }
+        if(server != null && server.isRunning()) {
+            server.stop();
+            server = null;
         }
     }
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+    /**
+     * Creates and saves a properties file for the module with the given URN containing the given properties.
+     *
+     * @param inURN a <code>ModuleURN</code> value
+     * @param inProperties a <code>Properties</code> value
+     * @throws IOException if an error occurs saving the properties
      */
-    @Override
-    public void setApplicationContext(ApplicationContext inContext)
-            throws BeansException
+    protected static void savePropertiesForProvider(ModuleURN inURN,
+                                                    Properties inProperties)
+            throws IOException
     {
-        context = inContext;
-    }
-    protected static void savePropertiesForProvider(
-            ModuleURN inURN, Properties inProperties) throws IOException {
-        File conf = new File(JarClassLoaderTest.CONF_DIR, new StringBuilder().
-                append(inURN.providerType()).
-                append("_").append(inURN.providerName()).
-                append(".properties").toString());
+        File conf = new File(JarClassLoaderTest.CONF_DIR,
+                             new StringBuilder().append(inURN.providerType()).append("_").append(inURN.providerName()).append(".properties").toString());
         FileOutputStream fos = new FileOutputStream(conf);
-        inProperties.store(fos, "");
+        inProperties.store(fos,
+                           "");
         fos.close();
         conf.deleteOnExit();
     }
-
-    protected static MBeanServer getMBeanServer() {
+    /**
+     * Gets the test MBean server.
+     *
+     * @return an <code>MBeanServer</code> value
+     */
+    protected static MBeanServer getMBeanServer()
+    {
         return ManagementFactory.getPlatformMBeanServer();
     }
-
-    private static void matchMessage(I18NMessage inMessage,
-                                     LoggingEvent inMsg,
-                                     Object... inMsgParams) {
-        int i = inMessage.getParamCount();
-        Object [] msgParams;
-        boolean useRegex = false;
-        if(inMsgParams.length < i) {
-            //Use regex for parameters that are not supplied
-            msgParams = Arrays.copyOf(inMsgParams, i);
-            for(i = inMsgParams.length; i < msgParams.length; i++) {
-                msgParams[i] = ".+";
-                useRegex = true;
-            }
-        } else {
-            msgParams = inMsgParams;
-        }
-        String expectedMsg = inMessage.getMessageProvider().getText(
-                inMessage, msgParams);
-        String actualMsg = inMsg.getMessage().toString();
-        if (useRegex) {
-            Pattern p = Pattern.compile(expectedMsg);
-            org.junit.Assert.assertTrue(actualMsg, p.matcher(actualMsg).matches());
-        } else {
-            org.junit.Assert.assertEquals(expectedMsg, actualMsg);
-        }
+    /**
+     * Sets the JMS URL test value based on the hostname and jms port value.
+     */
+    protected void buildJmsUrl()
+    {
+        jmsUrl = "tcp://" + wsHostname + ":" + jmsPort;
     }
-
-    protected File createFileWithText(String... inLines) throws IOException {
+    /**
+     * Creates a file containing the given lines.
+     *
+     * <p>The file will be deleted at the end of the test run.
+     *
+     * @param inLines a <code>String[]</code> value
+     * @return a <code>File</code> value referring to a file containing the given content
+     * @throws IOException if an error occurs writing the file
+     */
+    protected File createFileWithText(String... inLines)
+            throws IOException
+    {
         File f = File.createTempFile("com",".txt");
         UnicodeFileWriter writer = new UnicodeFileWriter(f);
         BufferedWriter bufWriter = new BufferedWriter(writer);
@@ -152,43 +145,55 @@ public class StrategyAgentTestBase
         bufWriter.close();
         writer.close();
         f.deleteOnExit();
-        mFile = f;
         return f;
     }
-
-    protected LoggingEvent assertLastButXEvent(int inFromEnd,
-                                                    Level inLevel,
-                                                    String inLogger,
-                                                    I18NMessage inMessage,
-                                                    Object... inMsgParams) {
-        LinkedList<LoggingEvent> events = getAppender().getEvents();
-        org.junit.Assert.assertTrue("" + events.size(), events.size() > inFromEnd);
-        LoggingEvent event = events.get(events.size() - inFromEnd - 1);
-        assertEvent(event, inLevel,  inLogger, null, null);
-        matchMessage(inMessage, event, inMsgParams);
-        return event;
-    }
-    
-    protected void assertNoEventsAbove(Level inLevel) {
-        for(LoggingEvent event: getAppender().getEvents()) {
-            assertThat(event.getRenderedMessage(), event.getLevel().toInt(), 
-                    Matchers.lessThanOrEqualTo(inLevel.toInt()));
-        }
-    }
     /**
-     * 
+     * Creates a running Strategy Agent using the given arguments.
      *
-     *
-     * @param args
-     * @return
-     * @throws Exception
+     * @param inArguments a <code>String[]</code> value
+     * @throws Exception if an unexpected error occurs
      */
-    protected TestAgentRunner createRunnerWith(String... args)
+    protected void createSaWith(String... inArguments)
             throws Exception
     {
-        testRunner = new TestAgentRunner();
-        testRunner.launch(args);
-        return testRunner;
+        app = new MockApplicationContainer();
+        app.setArguments(inArguments);
+        app.start();
+        sa = new StrategyAgent();
+        loader = new JarClassLoader(new StaticStrategyAgentApplicationInfoProvider(),
+                                    getClass().getClassLoader());
+        AgentConfigurationProvider configurationProvider = new AgentConfigurationProvider(loader);
+        Map<String,String> receiverProperties = Maps.newHashMap();
+        receiverProperties.put("URL",
+                               jmsUrl);
+        receiverProperties.put("LogLevel",
+                               "WARN");
+        receiverProperties.put("SkipJAASConfiguration",
+                               "false");
+        configurationProvider.setReceiverProperties(receiverProperties);
+        moduleManager = new ModuleManager(loader);
+        moduleManager.setConfigurationProvider(configurationProvider);
+        publisher = new PublisherEngine();
+        sa.setModuleManager(moduleManager);
+        sa.setLoader(loader);
+        sa.setDataPublisher(publisher);
+        sa.start();
+        if(useWs) {
+            Authenticator authenticator = new DefaultAuthenticator();
+            ClientSessionFactory clientSessionFactory = new ClientSessionFactory();
+            SessionManager<ClientSession> sessionManager = new SessionManager<ClientSession>(clientSessionFactory,
+                                                                                             -1);
+            servicesProvider = new SAServiceImpl(sessionManager,
+                                                 moduleManager,
+                                                 publisher);
+            server = new StrategyAgentWebServicesProvider();
+            server.setHostname(wsHostname);
+            server.setPort(wsPort);
+            server.setAuthenticator(authenticator);
+            server.setSessionManager(sessionManager);
+            server.setServiceProvider(servicesProvider);
+            server.start();
+        }
     }
     /**
      * Creates a subclass of the supplied super class with the supplied name.
@@ -200,19 +205,27 @@ public class StrategyAgentTestBase
      *
      * @return the array containing sub class byte code.
      */
-    protected static byte[] generateSubclass(
-            Class<?> inSuperClass, String inSubClassName) {
+    protected static byte[] generateSubclass(Class<?> inSuperClass,
+                                             String inSubClassName)
+    {
         ClassWriter cw = new ClassWriter(0);
         cw.visit(org.objectweb.asm.Opcodes.V1_6,
                 org.objectweb.asm.Opcodes.ACC_PUBLIC,
-                transformName(inSubClassName),null,
-                transformName(inSuperClass.getName()),null);
-        //Generate default constructor
+                transformName(inSubClassName),
+                null,
+                transformName(inSuperClass.getName()),
+                null);
+        // generate default constructor
         MethodVisitor mv = cw.visitMethod(org.objectweb.asm.Opcodes.ACC_PUBLIC,
-                "<init>", "()V", null, null);
+                                          "<init>",
+                                          "()V",
+                                          null,
+                                          null);
         mv.visitVarInsn(org.objectweb.asm.Opcodes.ALOAD, 0);
         mv.visitMethodInsn(org.objectweb.asm.Opcodes.INVOKESPECIAL,
-                transformName(inSuperClass.getName()), "<init>", "()V");
+                           transformName(inSuperClass.getName()),
+                           "<init>",
+                           "()V");
         mv.visitInsn(org.objectweb.asm.Opcodes.RETURN);
         mv.visitMaxs(1,1);
         cw.visitEnd();
@@ -249,14 +262,62 @@ public class StrategyAgentTestBase
         cw.visitEnd();
         return cw.toByteArray();
     }
-
-    protected static String transformName(String inName) {
+    /**
+     * Transforms the given name, replacing '.' with '/'.
+     *
+     * @param inName a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    protected static String transformName(String inName)
+    {
         return inName.replace('.','/');
     }
-
-    protected TestAgentRunner testRunner;
-    private File mFile;
-    protected static final int NO_EXIT = -1;
-    protected ApplicationContext context;
+    /**
+     * test application value
+     */
+    protected MockApplicationContainer app;
+    /**
+     * test data publisher value
+     */
+    protected PublisherEngine publisher;
+    /**
+     * test class loader value
+     */
+    protected ClassLoader loader;
+    /**
+     * test module manager value
+     */
+    protected ModuleManager moduleManager;
+    /**
+     * test strategy agent value
+     */
+    protected StrategyAgent sa;
+    /**
+     * 
+     */
+    protected SAService servicesProvider;
+    /**
+     * 
+     */
+    protected StrategyAgentWebServicesProvider server;
+    /**
+     * 
+     */
+    protected String wsHostname;
+    /**
+     * 
+     */
+    protected int wsPort;
+    /**
+     * 
+     */
+    protected String jmsUrl;
+    /**
+     * 
+     */
+    protected int jmsPort;
+    /**
+     * 
+     */
+    protected boolean useWs;
 }
-

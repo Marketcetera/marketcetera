@@ -82,7 +82,9 @@ public class ORSTestBase
         Thread.sleep(1000);
         // Create and start ORS in a separate thread.
         // create the test context
-        final ApplicationContainer application = new ApplicationContainer(inArgs);
+        final ApplicationContainer application = new ApplicationContainer();
+        application.setArguments(inArgs);
+        application.start();
         context = application.getContext();
         ors = context.getBean(OrderRoutingSystem.class);
         applicationThread = new Thread("testThread") {

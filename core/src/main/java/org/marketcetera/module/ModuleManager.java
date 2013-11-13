@@ -62,8 +62,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")  //$NON-NLS-1$
-public final class ModuleManager {
+@ClassVersion("$Id$")
+public final class ModuleManager
+{
     /**
      * Gets the singleton instance of <code>ModuleManager</code> if one
      * has been created.

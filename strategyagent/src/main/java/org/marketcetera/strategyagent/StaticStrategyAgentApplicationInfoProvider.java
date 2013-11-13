@@ -25,7 +25,7 @@ public class StaticStrategyAgentApplicationInfoProvider
     @Override
     public File getModulesDir()
     {
-        return new File(super.getAppDir(),
+        return new File(getAppDir(),
                         "modules");
     }
 }
