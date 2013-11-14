@@ -36,7 +36,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cep-system</artifactId>
     </dependency>
-
     <!-- Testing -->
     <dependency>
       <groupId>${project.groupId}</groupId>
