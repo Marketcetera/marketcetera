@@ -319,12 +319,12 @@
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
         <version>4.10.0</version>
-        <exclusions>
+        <!--exclusions>
           <exclusion>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
           </exclusion>
-        </exclusions>
+        </exclusions-->
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>

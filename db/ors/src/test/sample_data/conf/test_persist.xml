@@ -63,11 +63,12 @@
     <property name="packagesToScan">
       <list>
         <value>org.marketcetera.core</value>
+        <value>org.marketcetera.ors</value>
       </list>
     </property>
   </bean>
   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
     <property name="entityManagerFactory" ref="metc_emf" />
   </bean>
-  <bean class="org.marketcetera.core.DatabaseIDFactory"/>
+  <bean class="org.marketcetera.ors.dao.DatabaseIDFactory"/>
 </beans>
