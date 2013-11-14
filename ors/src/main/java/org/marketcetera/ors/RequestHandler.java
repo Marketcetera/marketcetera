@@ -2,9 +2,12 @@ package org.marketcetera.ors;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.algo.BrokerAlgo;
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.client.jms.OrderEnvelope;
 import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.core.CoreException;
@@ -26,6 +29,7 @@ import org.marketcetera.quickfix.IQuickFIXSender;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.*;
@@ -306,8 +310,7 @@ public class RequestHandler
     // ReplyHandler.
 
     @Override
-    public void receiveMessage
-        (OrderEnvelope msgEnv)
+    public void receiveMessage(OrderEnvelope msgEnv)
     {
         Messages.RH_RECEIVED_MESSAGE.info(this,msgEnv);
         Order msg=null;
@@ -379,7 +382,9 @@ public class RequestHandler
                 (RequestInfo.FIX_MESSAGE_FACTORY,b.getFIXMessageFactory());
             ThreadedMetric.event
                 ("requestHandler.brokerSelected"); //$NON-NLS-1$
-
+            // apply broker algos, if available
+            applyBrokerAlgos(oMsg,
+                             b);
             // Convert to a QuickFIX/J message.
 
             try {
@@ -512,4 +517,37 @@ public class RequestHandler
         }
         ThreadedMetric.end(METRIC_CONDITION_RH);
 	}
+    /**
+     * Validates and applies the tags associated with the broker algos on the order, if any.
+     *
+     * @param inOrder an <code>Order</code> value
+     * @param inBroker a <code>Broker</code> value
+     * @throws CoreException if an algo validation fails
+     */
+    private void applyBrokerAlgos(Order inOrder,
+                                  Broker inBroker)
+    {
+        if(inOrder instanceof NewOrReplaceOrder) {
+            NewOrReplaceOrder algoOrder = (NewOrReplaceOrder)inOrder;
+            BrokerAlgo algo = algoOrder.getBrokerAlgo();
+            if(algo != null) {
+                // find the cannonical (from-the-config) algo specs - these will have validators, if any
+                Map<String,BrokerAlgoSpec> cannonicalAlgos = inBroker.getSpringBroker().getBrokerAlgosAsMap();
+                // retrieve the cannonical spec for this algo
+                BrokerAlgoSpec cannonicalAlgoSpec = cannonicalAlgos.get(algo.getAlgoSpec().getName());
+                if(cannonicalAlgoSpec == null) {
+                    throw new CoreException(new I18NBoundMessage2P(Messages.RH_NO_BROKER_ALGO,
+                                                                   algo.getAlgoSpec().getName(),
+                                                                   inBroker.getBrokerID()));
+                }
+                // validators specified in config exist in the algo specs available from the broker, but not on the bound
+                //  algo (or algo tags) themselves so map the validators back on the bound algos
+                algo.mapValidatorsFrom(cannonicalAlgoSpec);
+                // now, validation can be performed using the bound algo
+                algo.validate();
+                // apply the tags on the order (maps to custom fields)
+                algo.applyTo(algoOrder);
+            }
+        }
+    }
 }

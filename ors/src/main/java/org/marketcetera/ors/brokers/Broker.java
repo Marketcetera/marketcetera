@@ -1,5 +1,8 @@
 package org.marketcetera.ors.brokers;
 
+import java.util.HashSet;
+
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.ors.filters.MessageModifierManager;
 import org.marketcetera.ors.filters.MessageRouteManager;
@@ -13,6 +16,7 @@ import org.marketcetera.trade.BrokerID;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.quickfix.AnalyzedMessage;
+
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.Session;
@@ -87,7 +91,10 @@ public class Broker
 
     public BrokerStatus getStatus()
     {
-        return new BrokerStatus(getName(),getBrokerID(),getLoggedOn());
+        return new BrokerStatus(getName(),
+                                getBrokerID(),
+                                getLoggedOn(),
+                                getSpringBroker().getBrokerAlgosAsMap() == null ? null : new HashSet<BrokerAlgoSpec>(getSpringBroker().getBrokerAlgosAsMap().values()));
     }
 
     /**

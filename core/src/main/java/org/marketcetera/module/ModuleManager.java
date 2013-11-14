@@ -1764,6 +1764,8 @@ public final class ModuleManager {
                     }
                 }
             }
+        } catch (ModuleException e) {
+            throw e;
         } catch (RuntimeException e) {
             //bean setters may throw runtime exception
             throw new MXBeanOperationException(e,

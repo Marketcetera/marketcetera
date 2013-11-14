@@ -7,17 +7,11 @@ import org.eclipse.core.databinding.observable.Diffs;
 import org.eclipse.core.databinding.observable.IObservable;
 import org.eclipse.core.databinding.observable.masterdetail.IObservableFactory;
 import org.eclipse.core.databinding.observable.masterdetail.MasterDetailObservables;
+import org.marketcetera.algo.BrokerAlgo;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.NewOrReplaceOrder;
-import org.marketcetera.trade.OrderCapacity;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.PositionEffect;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -179,7 +173,17 @@ public class NewOrReplaceOrderObservable extends
     public ITypedObservableValue<BrokerID> observeBrokerId() {
         return observeDetail("brokerID", BrokerID.class); //$NON-NLS-1$
     }
-
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    public ITypedObservableValue<BrokerAlgo> observeBrokerAlgo()
+    {
+        return observeDetail("brokerAlgo", //$NON-NLS-1$
+                             BrokerAlgo.class);
+    }
     /**
      * Provides a detail observable value for the given field on the underlying
      * order. The created observable will be disposed with this object.

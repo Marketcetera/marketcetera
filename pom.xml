@@ -138,6 +138,11 @@
         </exclusions>
       </dependency>
       <dependency>
+	<groupId>org.creditanalytics</groupId>
+	<artifactId>creditanalytics</artifactId>
+	<version>2.2.2</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http</artifactId>
         <version>${mvn.cxf.version}</version>

@@ -1,9 +1,8 @@
 package org.marketcetera.ors.brokers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
+import org.marketcetera.algo.BrokerAlgoSpec;
 import org.marketcetera.ors.config.LogonAction;
 import org.marketcetera.ors.config.LogoutAction;
 import org.marketcetera.ors.filters.MessageModifierManager;
@@ -42,6 +41,8 @@ public class SpringBroker
     private Collection<LogoutAction> logoutActions = new ArrayList<LogoutAction>();
     private Set<String> userWhitelist;
     private Set<String> userBlacklist;
+    private Set<BrokerAlgoSpec> brokerAlgos;
+    private Map<String,BrokerAlgoSpec> brokerAlgoMap;
 
     // INSTANCE METHODS.
 
@@ -314,9 +315,44 @@ public class SpringBroker
         }
         return userWhitelist == null || userWhitelist.contains(inUsername);
     }
+    /**
+     * Get the brokerAlgos value.
+     *
+     * @return a <code>Map&lt;String,BrokerAlgoSpec&gt;</code> value
+     */
+    public Map<String,BrokerAlgoSpec> getBrokerAlgosAsMap()
+    {
+        return brokerAlgoMap;
+    }
+    /**
+     * Sets the brokerAlgos value.
+     *
+     * @param inBrokerAlgos a <code>Set<BrokerAlgoSpec></code> value
+     */
+    public void setBrokerAlgos(Set<BrokerAlgoSpec> inBrokerAlgos)
+    {
+        brokerAlgos = inBrokerAlgos;
+        if(inBrokerAlgos == null) {
+            brokerAlgoMap = null;
+        } else {
+            brokerAlgoMap = new HashMap<String,BrokerAlgoSpec>();
+            for(BrokerAlgoSpec algoSpec : brokerAlgos) {
+                brokerAlgoMap.put(algoSpec.getName(),
+                                  algoSpec);
+            }
+        }
+    }
+    /**
+     * Get the brokerAlgos value.
+     *
+     * @return a <code>Set&lt;BrokerAlgoSpec&gt;</code> value
+     */
+    public Set<BrokerAlgoSpec> getBrokerAlgos()
+    {
+        return brokerAlgos;
+    }
+
     // InitializingBean.
-
-
     @Override
     public void afterPropertiesSet()
         throws I18NException

@@ -1,9 +1,10 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
-
-import java.math.BigDecimal;
 import java.io.Serializable;
+import java.math.BigDecimal;
+
+import org.marketcetera.algo.BrokerAlgo;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -11,11 +12,14 @@ import java.io.Serializable;
  * This message type is not meant to be used directly.   
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public interface NewOrReplaceOrder extends OrderBase, Serializable {
+@ClassVersion("$Id$")
+public interface NewOrReplaceOrder
+        extends OrderBase, Serializable
+{
     /**
      * Gets the OrderType for the Order.
      *
@@ -105,4 +109,16 @@ public interface NewOrReplaceOrder extends OrderBase, Serializable {
      * @param inDisplayQuantity the display quantity.
      */
     void setDisplayQuantity(BigDecimal inDisplayQuantity);
+    /**
+     * Gets the broker algo value, if any.
+     *
+     * @return a <code>BrokerAlgo</code> value
+     */
+    BrokerAlgo getBrokerAlgo();
+    /**
+     * Sets the broker algo value.
+     *
+     * @param inBrokerAlgo a <code>BrokerAlgo</code> value
+     */
+    void setBrokerAlgo(BrokerAlgo inBrokerAlgo);
 }

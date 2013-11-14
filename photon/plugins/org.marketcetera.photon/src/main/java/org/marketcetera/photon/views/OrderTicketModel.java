@@ -3,25 +3,29 @@ package org.marketcetera.photon.views;
 import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
+import org.eclipse.core.databinding.observable.Observables;
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.ComputedValue;
 import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.marketcetera.algo.BrokerAlgo;
+import org.marketcetera.algo.BrokerAlgoSpec;
+import org.marketcetera.algo.BrokerAlgoTag;
+import org.marketcetera.algo.BrokerAlgoTagSpec;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.BrokerManager;
+import org.marketcetera.photon.BrokerManager.Broker;
 import org.marketcetera.photon.commons.databinding.ITypedObservableValue;
 import org.marketcetera.photon.commons.databinding.TypedObservableValueDecorator;
 import org.marketcetera.photon.ui.databinding.NewOrReplaceOrderObservable;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.NewOrReplaceOrder;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.*;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ObjectArrays;
 
@@ -49,7 +53,15 @@ public abstract class OrderTicketModel {
     private final ITypedObservableValue<String> mAccount;
     private final ITypedObservableValue<OrderType> mOrderType;
     private final ITypedObservableValue<Boolean> mIsLimitOrder;
+    private final ITypedObservableValue<BrokerAlgo> mBrokerAlgo;
     private final WritableList mCustomFieldsList = new WritableList();
+    private final WritableList mAlgoTagsList = new WritableList();
+    private Broker selectedBroker;
+    private BrokerAlgo selectedAlgo;
+    private final IObservableList validAlgos = new WritableList(new SyncRealm(),
+                                                                Lists.newArrayList(BLANK),
+                                                                BrokerAlgo.class);
+    private final IObservableList unmodifiableValidAlgos = Observables.unmodifiableObservableList(validAlgos);
 
     /**
      * Constructor.
@@ -63,6 +75,7 @@ public abstract class OrderTicketModel {
         mTimeInForce = mOrderObservable.observeTimeInForce();
         mAccount = mOrderObservable.observeAccount();
         mBrokerId = mOrderObservable.observeBrokerId();
+        mBrokerAlgo = mOrderObservable.observeBrokerAlgo();
 
         mIsLimitOrder = TypedObservableValueDecorator.decorate(
                 new ComputedValue(Boolean.class) {
@@ -80,8 +93,91 @@ public abstract class OrderTicketModel {
                 }
             }
         });
+        // this listener watches the selection of the broker ID combo and updates the list of available broker algos
+        mBrokerId.addValueChangeListener(new IValueChangeListener() {
+            @Override
+            public void handleValueChange(ValueChangeEvent inEvent)
+            {
+                if(getSelectedBroker() != null) {
+                    Set<BrokerAlgoSpec> algos = getSelectedBroker().getAlgos();
+                    validAlgos.clear();
+                    // add a blank value at the top that allows you to unselect an algo
+                    validAlgos.add(BLANK);
+                    if(algos != null) {
+                        for(BrokerAlgoSpec algo : algos) {
+                            Set<BrokerAlgoTag> algoTags = new TreeSet<BrokerAlgoTag>();
+                            for(BrokerAlgoTagSpec tagSpec : algo.getAlgoTagSpecs()) {
+                                algoTags.add(new BrokerAlgoTag(tagSpec));
+                            }
+                            validAlgos.add(new BrokerAlgo(algo,
+                                                          algoTags));
+                        }
+                    }
+                }
+            }
+        });
+        // this listener watches the selection of the algo and populates the algo tag table
+        mBrokerAlgo.addValueChangeListener(new IValueChangeListener() {
+            @Override
+            public void handleValueChange(ValueChangeEvent inEvent)
+            {
+                updateAlgoTags();
+            }
+        });
     }
-
+    
+    /**
+     * Populate algo table with appropriate label - value pairs
+     */
+    public void updateAlgoTags()
+    {
+        // find selected algo and populate the algo table
+        for(int i = 0; i < mAlgoTagsList.size(); i ++){
+            ((BrokerAlgoTag)mAlgoTagsList.get(i)).removePropertyChangeListener(null);
+        }
+        mAlgoTagsList.clear();
+        if(selectedAlgo != null && selectedAlgo.getAlgoTags() != null) {
+            for(BrokerAlgoTag tag : selectedAlgo.getAlgoTags()) {
+                mAlgoTagsList.add(tag);
+            }
+        }
+    }
+    /**
+     * Get the selectedBroker value.
+     *
+     * @return a <code>Broker</code> value
+     */
+    public Broker getSelectedBroker()
+    {
+        return selectedBroker;
+    }
+    /**
+     * Sets the selectedBroker value.
+     *
+     * @param inSelectedBroker a <code>Broker</code> value
+     */
+    public void setSelectedBroker(Broker inSelectedBroker)
+    {
+        selectedBroker = inSelectedBroker;
+    }
+    /**
+     * Get the selectedAlgo value.
+     *
+     * @return a <code>BrokerAlgo</code> value
+     */
+    public BrokerAlgo getSelectedAlgo()
+    {
+        return selectedAlgo;
+    }
+    /**
+     * Sets the selectedAlgo value.
+     *
+     * @param inSelectedAlgo a <code>BrokerAlgo</code> value
+     */
+    public void setSelectedAlgo(BrokerAlgo inSelectedAlgo)
+    {
+        selectedAlgo = inSelectedAlgo;
+    }
     /**
      * Returns an observable that tracks the current order.
      * 
@@ -99,7 +195,15 @@ public abstract class OrderTicketModel {
     public final ITypedObservableValue<BrokerID> getBrokerId() {
         return mBrokerId;
     }
-
+    /**
+     * Get the brokerAlgo value.
+     *
+     * @return an <code>ITypedObservableValue<BrokerAlgo></code> value
+     */
+    public ITypedObservableValue<BrokerAlgo> getBrokerAlgo()
+    {
+        return mBrokerAlgo;
+    }
     /**
      * Returns an observable that tracks the side of the current order.
      * 
@@ -214,7 +318,16 @@ public abstract class OrderTicketModel {
     public final WritableList getCustomFieldsList() {
         return mCustomFieldsList;
     }
-
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    public final WritableList getAlgoTagsList()
+    {
+        return mAlgoTagsList;
+    }
     /**
      * This method is responsible for "completing" the order message prior to
      * sending it.
@@ -270,7 +383,10 @@ public abstract class OrderTicketModel {
     public IObservableList getValidBrokers() {
         return BrokerManager.getCurrent().getAvailableBrokers();
     }
-
+    public IObservableList getValidAlgos()
+    {
+        return unmodifiableValidAlgos;
+    }
     /**
      * Get the valid values for the time in force.
      * 
@@ -304,5 +420,20 @@ public abstract class OrderTicketModel {
             return mString;
         }
     }
+    @ClassVersion("$Id$")
+    private final class SyncRealm
+            extends Realm
+    {
+        @Override
+        public boolean isCurrent() {
+            return true;
+        }
 
+        @Override
+        protected void syncExec(Runnable runnable) {
+            synchronized(OrderTicketModel.this) {
+                super.syncExec(runnable);
+            }
+        }
+    }
 }
