@@ -35,6 +35,7 @@ import org.marketcetera.util.file.Deleter;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
@@ -169,11 +170,12 @@ public class StrategyAgentRemotingTest
     public void clientAuth()
             throws Exception
     {
+        final Authenticator authenticator = new DefaultAuthenticator();
         //null context
         new ExpectedFailure<NullPointerException>(){
             @Override
             protected void run() throws Exception {
-                StrategyAgent.authenticate(null,"value", "value".toCharArray());
+                authenticator.shouldAllow(null,"value", "value".toCharArray());
             }
         };
         final StatelessClientContext ctx = new StatelessClientContext();
@@ -183,7 +185,7 @@ public class StrategyAgentRemotingTest
                 null, DEFAULT_CREDENTIAL){
             @Override
             protected void run() throws Exception {
-               StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL, 
+               authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL, 
                        DEFAULT_CREDENTIAL.toCharArray());
             }
         };
@@ -193,47 +195,25 @@ public class StrategyAgentRemotingTest
                 "invalid", DEFAULT_CREDENTIAL){
             @Override
             protected void run() throws Exception {
-               StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
+               authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL,
                        DEFAULT_CREDENTIAL.toCharArray());
-            }
-        };
-        //context with invalid version
-        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, "invalid"));
-        new ExpectedFailure<I18NException>(Messages.VERSION_MISMATCH,
-                "invalid", ApplicationVersion.getVersion(), DEFAULT_CREDENTIAL){
-            @Override
-            protected void run() throws Exception {
-               StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
-                       DEFAULT_CREDENTIAL.toCharArray());
-            }
-        };
-        //context with default version number
-        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME,
-                ApplicationVersion.DEFAULT_VERSION));
-        new ExpectedFailure<I18NException>(Messages.VERSION_MISMATCH,
-                ApplicationVersion.DEFAULT_VERSION,
-                ApplicationVersion.getVersion(), DEFAULT_CREDENTIAL){
-            @Override
-            protected void run() throws Exception {
-               StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
-                DEFAULT_CREDENTIAL.toCharArray());
             }
         };
         //context with correct name & version number
         ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getVersion()));
-        assertTrue(StrategyAgent.authenticate(ctx, DEFAULT_CREDENTIAL,
+        assertTrue(authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray()));
         //valid contexts
         //invalid user/password
-        assertFalse(StrategyAgent.authenticate(ctx,"go","go".toCharArray()));
+        assertFalse(authenticator.shouldAllow(ctx,"go","go".toCharArray()));
         //invalid password
-        assertFalse(StrategyAgent.authenticate(ctx,DEFAULT_CREDENTIAL,"go".toCharArray()));
+        assertFalse(authenticator.shouldAllow(ctx,DEFAULT_CREDENTIAL,"go".toCharArray()));
         //null password
-        assertFalse(StrategyAgent.authenticate(ctx,DEFAULT_CREDENTIAL,null));
+        assertFalse(authenticator.shouldAllow(ctx,DEFAULT_CREDENTIAL,null));
         //invalid user
-        assertFalse(StrategyAgent.authenticate(ctx,"go",DEFAULT_CREDENTIAL.toCharArray()));
+        assertFalse(authenticator.shouldAllow(ctx,"go",DEFAULT_CREDENTIAL.toCharArray()));
         //null user
-        assertFalse(StrategyAgent.authenticate(ctx,null,DEFAULT_CREDENTIAL.toCharArray()));
+        assertFalse(authenticator.shouldAllow(ctx,null,DEFAULT_CREDENTIAL.toCharArray()));
     }
 
     @Test

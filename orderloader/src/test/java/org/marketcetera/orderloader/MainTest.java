@@ -15,7 +15,7 @@ import java.io.File;
 
 /* $License$ */
 /**
- * Tests {@link Main}
+ * Tests {@link OrderLoaderMain}
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -30,35 +30,35 @@ public class MainTest {
     @Test
     public void inputFileMissing() {
         MockMain main = run();
-        assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
+        assertEquals(OrderLoaderMain.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains(ERROR_MISSING_FILE.getText()));
     }
     @Test
     public void tooManyArgs() {
         MockMain main = run("file","extra");
-        assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
+        assertEquals(OrderLoaderMain.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains(ERROR_TOO_MANY_ARGUMENTS.getText()));
     }
     @Test
     public void incorrectModeSyntax() {
         MockMain main = run("-m");
-        assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
+        assertEquals(OrderLoaderMain.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains("option: m"));
     }
     @Test
     public void incorrectBrokerSyntax() {
         MockMain main = run("-b");
-        assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
+        assertEquals(OrderLoaderMain.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains("option: b"));
     }
     @Test
     public void incorrectUsernameSyntax() {
         MockMain main = run("-u");
-        assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
+        assertEquals(OrderLoaderMain.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains("option: u"));
         //verify that the copyright message is printed even when there's failure.
@@ -67,7 +67,7 @@ public class MainTest {
     @Test
     public void incorrectPasswordSyntax() {
         MockMain main = run("-p");
-        assertEquals(Main.EXIT_CODE_USAGE, main.getExitCode());
+        assertEquals(OrderLoaderMain.EXIT_CODE_USAGE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains("option: p"));
     }
@@ -79,7 +79,7 @@ public class MainTest {
                 OrderLoaderTest.SYSTEM_ORDER_EXAMPLE).toCharArray(),
                 tmpFile.getAbsolutePath());
         MockMain main = run(tmpFile.getAbsolutePath());
-        assertEquals(Main.EXIT_CODE_SUCCESS, main.getExitCode());
+        assertEquals(OrderLoaderMain.EXIT_CODE_SUCCESS, main.getExitCode());
         //Verify Client Parameter values
         ClientParameters parameters = main.getClientParameters();
         assertEquals("127.0.0.1", parameters.getHostname());
@@ -106,7 +106,7 @@ public class MainTest {
                 "Side,Symbol,Price,OrderType,What?").toCharArray(),
                 tmpFile.getAbsolutePath());
         MockMain main = run(tmpFile.getAbsolutePath());
-        assertEquals(Main.EXIT_CODE_FAILURE, main.getExitCode());
+        assertEquals(OrderLoaderMain.EXIT_CODE_FAILURE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains(Messages.INVALID_CUSTOM_HEADER.getText("What?", 4)));
     }
@@ -114,14 +114,16 @@ public class MainTest {
     public void failConnectServer() throws Exception {
         MockMain main = create();
         main.setFailCreateProcessor(true);
-        Main.run(new String[]{"don'tmatter"}, main);
-        assertEquals(Main.EXIT_CODE_FAILURE, main.getExitCode());
+//        OrderLoaderMain.run(new String[]{"don'tmatter"}, main);
+        main.start();
+        assertEquals(OrderLoaderMain.EXIT_CODE_FAILURE, main.getExitCode());
         String output = mOutput.toString();
         assertTrue(output, output.contains(TEST_FAILURE));
     }
     private MockMain run(String... inArgs) {
         MockMain main = create();
-        Main.run(inArgs, main);
+//        OrderLoaderMain.run(inArgs, main);
+        main.start();
         return main;
     }
     private MockMain create() {
@@ -130,7 +132,7 @@ public class MainTest {
         main.setMsgStream(new PrintStream(mOutput));
         return main;
     }
-    public static class MockMain extends Main {
+    public static class MockMain extends OrderLoaderMain {
         @Override
         protected void exit(int inCode) {
             mExitCode = inCode;

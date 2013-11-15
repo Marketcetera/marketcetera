@@ -49,25 +49,10 @@ public class ORSCLITest
         if(pErr == null) {
             pErr = new PrintStream(bErr, false, ENCODING);
         }
-//        try {
-//            instance = new ORSAdminCLI(pOut,pErr) {
-//                @Override
-//                protected String[] getConfigurations() {
-//                    //Initialize the DB.
-//                    return ORSLoginModuleTest.getSpringFiles();
-//                }
-//
-//                @Override
-//                protected char[] readPasswordFromConsole(String message) {
-//                    //don't try to read from console in unit tests
-//                    return null;
-//                }
-//            };
-//        } catch (Exception e) {
-//            SLF4JLoggerProxy.error(ORSCLITest.class, e);
-//            throw e;
-//        }
-        throw new UnsupportedOperationException(); // TODO
+        instance = new ORSAdminCLI();
+        instance.setErr(pErr);
+        instance.setOut(pOut);
+        instance.setConsole(null);
     }
     /**
      * Runs before each test.
@@ -78,6 +63,7 @@ public class ORSCLITest
     public void setup()
             throws Exception
     {
+        instance.setUserService(userService);
         cleanTables();
     }
     @Test

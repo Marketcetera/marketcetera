@@ -1,2 +1,4 @@
 org.marketcetera.orderloader.system.EquityFromRow
 org.marketcetera.orderloader.system.OptionFromRow
+org.marketcetera.orderloader.system.FutureFromRow
+org.marketcetera.orderloader.system.CurrencyFromRow

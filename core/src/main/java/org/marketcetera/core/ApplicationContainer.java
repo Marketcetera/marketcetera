@@ -154,6 +154,30 @@ public class ApplicationContainer
         shutdownTasks.remove(inTask);
     }
     /**
+     * Stops the running instance from waiting.
+     *
+     * <p>Does not stop the instance, just interrupts the running loop.
+     */
+    public static void stopInstanceWaiting()
+    {
+        if(instance != null) {
+            instance.stopWaitingForever();
+        }
+    }
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    public static String[] getInstanceArguments()
+    {
+        if(instance == null) {
+            return null;
+        }
+        return instance.getArguments();
+    }
+    /**
      * Get the instance value.
      *
      * @return an <code>ApplicationContainer</code> value

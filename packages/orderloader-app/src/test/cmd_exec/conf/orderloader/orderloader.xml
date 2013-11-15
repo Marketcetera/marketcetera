@@ -5,22 +5,13 @@
   -
   - Author: tlerios@marketcetera.com
   - Since: 0.5.0
-  - Version: $Id$
+  - Version: $Id: orderloader.xml 16614 2013-07-03 22:35:32Z colin $
   - $License$
-  -->
-
-<!--
-  - DO NOT CHANGE THIS FILE. Place your settings in
-  - 'orderloader_user.properties'.
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
-  <import resource="properties.xml"/>
-  <context:component-scan base-package="org.marketcetera.core"/>
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
   <bean id="clientURL" class="java.lang.String">
     <constructor-arg value="${metc.client.url}"/>
   </bean>
@@ -33,4 +24,6 @@
   <bean id="clientWSPort" class="java.lang.Integer">
     <constructor-arg value="${metc.client.ws.port}"/>
   </bean>
+  <!-- Orderloader App -->
+  <bean id="orderloaderApp" class="org.marketcetera.orderloader.OrderLoaderMain" init-method="start" destroy-method="stop"/>
 </beans>
