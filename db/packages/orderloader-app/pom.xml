@@ -48,34 +48,6 @@
     </plugins>
   </build>
   <profiles>
-    <!-- Security administration utility. -->
-    <profile>
-      <id>cli</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals><goal>java</goal></goals>
-              </execution>
-            </executions>
-            <configuration>
-              <mainClass>org.marketcetera.ors.security.ORSAdminCLI</mainClass>
-              <!-- -Dexec.args="-u admin ..." -->
-              <systemProperties>
-                <systemProperty>
-                  <key>org.marketcetera.appDir</key>
-                  <value>src/test/cmd_exec</value>
-                </systemProperty>
-              </systemProperties>
-              <classpathScope>test</classpathScope>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <!-- Command-line execution. -->
     <profile>
       <id>executeFIX</id>
@@ -85,14 +57,20 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.orderloader.Main</mainClass>
+              <mainClass>org.marketcetera.core.ApplicationContainer</mainClass>
               <arguments>
                 <argument>-m</argument>
                 <argument>FIX.4.2</argument>
                 <argument>-b</argument>
                 <argument>broker1</argument>
-                <argument>src/test/sample_data/inputs/smallMarketFIX.csv</argument>
+                <argument>src/test/cmd_exec/inputs/smallMarketFIX.csv</argument>
               </arguments>
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>
@@ -107,12 +85,18 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.orderloader.Main</mainClass>
+              <mainClass>org.marketcetera.core.ApplicationContainer</mainClass>
               <arguments>
                 <argument>-m</argument>
                 <argument>sys</argument>
-                <argument>src/test/sample_data/inputs/smallMarketSys.csv</argument>
+                <argument>src/test/cmd_exec/inputs/smallMarketSys.csv</argument>
               </arguments>
+              <systemProperties>
+                <systemProperty>
+                  <key>org.marketcetera.appDir</key>
+                  <value>src/test/cmd_exec</value>
+                </systemProperty>
+              </systemProperties>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

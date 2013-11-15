@@ -14,21 +14,17 @@ import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.marketcetera.client.ClientManager;
+import org.apache.commons.lang.Validate;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.core.Util;
 import org.marketcetera.core.publisher.IPublisher;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.module.*;
-import org.marketcetera.saclient.SAClientVersion;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.unicode.UnicodeFileReader;
+import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
@@ -140,6 +136,24 @@ public class StrategyAgent
         dataPublisher = inDataPublisher;
     }
     /**
+     * Get the authenticator value.
+     *
+     * @return an <code>Authenticator</code> value
+     */
+    public Authenticator getAuthenticator()
+    {
+        return authenticator;
+    }
+    /**
+     * Sets the authenticator value.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     */
+    public void setAuthenticator(Authenticator inAuthenticator)
+    {
+        authenticator = inAuthenticator;
+    }
+    /**
      * Stops the strategy agent.
      */
     public void stop()
@@ -163,6 +177,7 @@ public class StrategyAgent
         Messages.LOG_APP_VERSION_BUILD.info(this,
                                             ApplicationVersion.getVersion(),
                                             ApplicationVersion.getBuildNumber());
+        Validate.notNull(authenticator);
         if(loader != null) {
             Thread.currentThread().setContextClassLoader(loader);
         }
@@ -365,28 +380,14 @@ public class StrategyAgent
      *
      * @throws I18NException if the client is incompatible with the server.
      */
-    static boolean authenticate(StatelessClientContext context,
+    boolean authenticate(StatelessClientContext context,
                                 String user,
                                 char[] password)
-            throws I18NException {
-        //Verify client version
-        String serverVersion = ApplicationVersion.getVersion();
-        String clientName = Util.getName(context.getAppId());
-        String clientVersion = Util.getVersion(context.getAppId());
-        if(!compatibleApp(clientName)) {
-            throw new I18NException(new I18NBoundMessage2P(Messages.APP_MISMATCH,
-                                                           clientName,
-                                                           user));
-        }
-        if(!compatibleVersions(clientVersion, serverVersion)) {
-            throw new I18NException(new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
-                                                           clientVersion,
-                                                           serverVersion,
-                                                           user));
-        }
-        // use client to carry out authentication.
-        return ClientManager.getInstance().isCredentialsMatch(user,
-                                                              password);
+            throws I18NException
+    {
+        return authenticator.shouldAllow(context,
+                                         user,
+                                         password);
     }
     /**
      * Executes commands, if any were provided. If any command fails, the
@@ -425,34 +426,6 @@ public class StrategyAgent
     private static void addRunner(CommandRunner inRunner) {
         sRunners.put(inRunner.getName(), inRunner);
     }
-
-    /**
-     * Checks for compatibility between the given client and server
-     * versions.
-     *
-     * @param clientVersion The client version.
-     * @param serverVersion The server version.
-     * @return True if the two versions are compatible.
-     */
-
-    private static boolean compatibleVersions(String clientVersion, String serverVersion) {
-        // If the server's version is unknown, any client is allowed.
-        return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
-                ObjectUtils.equals(clientVersion, serverVersion));
-    }
-
-    /**
-     * Checks if a client with the supplied name is compatible with this server.
-     *
-     * @param clientName The client name.
-     *
-     * @return True if a client with the supplied name is compatible with this
-     * server.
-     */
-    private static boolean compatibleApp(String clientName) {
-        return SAClientVersion.APP_ID_NAME.equals(clientName);
-    }
-
     /**
      * The log category used to log all the data received by the sink module
      */
@@ -522,4 +495,8 @@ public class StrategyAgent
      * indicates if the SA is running or not
      */
     private final AtomicBoolean running = new AtomicBoolean(false);
+    /**
+     * provides authentication services
+     */
+    private Authenticator authenticator = new DefaultAuthenticator();
 }

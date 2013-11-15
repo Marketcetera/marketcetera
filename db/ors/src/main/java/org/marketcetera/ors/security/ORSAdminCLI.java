@@ -35,34 +35,6 @@ import org.springframework.context.Lifecycle;
 public class ORSAdminCLI
         implements Lifecycle
 {
-//    /**
-//     * Creates an instance.
-//     * 
-//     * @param out The output stream to write output to
-//     * @param err The error stream to write error output to
-//     */
-//    public ORSAdminCLI(PrintStream out,
-//                       PrintStream err)
-//    {
-//        PropertyConfigurator.configureAndWatch(CONF_DIR+"log4j"+File.separator+"cli.properties", //$NON-NLS-1$ //$NON-NLS-2$
-//                                               LOGGER_WATCH_DELAY);
-//        this.out = out;
-//        this.err = err;
-//        context = new ClassPathXmlApplicationContext(getConfigurations());
-//        context.registerShutdownHook();
-//        userService = context.getBean(UserService.class);
-//    }
-//    public static void main(String[] args)
-//    {
-//        ORSAdminCLI cli = new ORSAdminCLI(System.out,
-//                                          System.err);
-//        try {
-//            cli.parseAndRun(args);
-//            System.exit(0);
-//        } catch (Exception e) {
-//            System.exit(1);
-//        }
-//    }
     /**
      * Get the out value.
      *
@@ -100,19 +72,40 @@ public class ORSAdminCLI
         err = inErr;
     }
     /**
+     * Get the console value.
+     *
+     * @return a <code>Console</code> value
+     */
+    public Console getConsole()
+    {
+        return console;
+    }
+    /**
+     * Sets the console value.
+     *
+     * @param inConsole a <code>Console</code> value
+     */
+    public void setConsole(Console inConsole)
+    {
+        console = inConsole;
+    }
+    /**
      * Parses and runs the supplied command. This method
      * can be invoked multiple times.
      *
      * @param args the arguments per the usage of the CLI
+     * @throws Exception if an error occurs running the command 
      */
     public void parseAndRun(String... args)
+            throws Exception
     {
         try {
             execute(new GnuParser().parse(options(),
                                           args));
-        } catch (ParseException e) {
+        } catch (Exception e) {
             printError(e.getLocalizedMessage());
             printUsage();
+            throw e;
         }
     }
     /**
@@ -147,8 +140,13 @@ public class ORSAdminCLI
     @Override
     public void start()
     {
-        parseAndRun(ApplicationContainer.getInstance().getArguments());
-        running.set(true);
+        try {
+            parseAndRun(ApplicationContainer.getInstance().getArguments());
+            running.set(true);
+        } catch (Exception alreadyhandled) {
+        } finally {
+            ApplicationContainer.stopInstanceWaiting();
+        }
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#stop()
@@ -172,7 +170,6 @@ public class ORSAdminCLI
      */
     protected char[] readPasswordFromConsole(String message)
     {
-        Console console = System.console();
         if(console == null) {
             return null;
         } else {
@@ -616,6 +613,7 @@ public class ORSAdminCLI
     }
     private PrintStream out = System.out;
     private PrintStream err = System.err;
+    private Console console = System.console();
     private static final String CMD_LIST_USERS = "listUsers"; //$NON-NLS-1$
     private static final String CMD_ADD_USER = "addUser"; //$NON-NLS-1$
     private static final String CMD_DELETE_USER = "deleteUser"; //$NON-NLS-1$

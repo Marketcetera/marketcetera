@@ -9,6 +9,7 @@
     <property name="moduleManager" ref="moduleManager"/>
     <property name="loader" ref="moduleLoader"/>
     <property name="dataPublisher" ref="saDataPublisher"/>
+    <property name="authenticator" ref="saAuthenticator"/>
   </bean>
   <!-- This bean is instantiated to get to the class loader instance -->
   <bean id="class" class="java.lang.Class" factory-method="forName">

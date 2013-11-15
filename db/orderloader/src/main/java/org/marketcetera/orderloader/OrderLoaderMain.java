@@ -1,25 +1,34 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.auth.StandardAuthentication;
-import org.marketcetera.util.auth.OptionsProvider;
+import static org.marketcetera.core.ApplicationBase.CONF_DIR;
+import static org.marketcetera.orderloader.Messages.*;
 import static org.marketcetera.util.auth.StandardAuthentication.*;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.marketcetera.client.ClientParameters;
+import org.marketcetera.core.ApplicationContainer;
+import org.marketcetera.core.ApplicationVersion;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.util.auth.OptionsProvider;
+import org.marketcetera.util.auth.StandardAuthentication;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.commons.cli.*;
-import static org.marketcetera.core.ApplicationBase.*;
-import org.marketcetera.core.ApplicationVersion;
-import static org.marketcetera.orderloader.Messages.*;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.client.ClientParameters;
-import org.springframework.context.support.StaticApplicationContext;
+import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.Lifecycle;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-
-import java.io.PrintStream;
-import java.io.File;
-import java.util.List;
-import java.util.Arrays;
+import org.springframework.context.support.StaticApplicationContext;
 
 /* $License$ */
 /**
@@ -30,24 +39,59 @@ import java.util.Arrays;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public class Main {
-
-    /**
-     * Runs the order loader given the array of command line arguments.
-     *
-     * @param inArgs the arguments to the order loader.
+public class OrderLoaderMain
+        implements Lifecycle, ApplicationContextAware
+{
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#isRunning()
      */
-    public static void main(String []inArgs) {
-        PropertyConfigurator.configureAndWatch
-            (CONF_DIR + LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
-        LOG_APP_COPYRIGHT.info(Main.class);
-        LOG_APP_VERSION_BUILD.info(Main.class,
-                ApplicationVersion.getVersion(),
-                ApplicationVersion.getBuildNumber());
-        Main main = new Main();
-        run(inArgs, main);
+    @Override
+    public boolean isRunning()
+    {
+        return running.get();
     }
-
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#start()
+     */
+    @Override
+    public void start()
+    {
+        run(ApplicationContainer.getInstanceArguments());
+        running.set(true);
+        ApplicationContainer.stopInstanceWaiting();
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#stop()
+     */
+    @Override
+    public void stop()
+    {
+        running.set(false);
+    }
+//    /**
+//     * Runs the order loader given the array of command line arguments.
+//     *
+//     * @param inArgs the arguments to the order loader.
+//     */
+//    public static void main(String []inArgs) {
+//        PropertyConfigurator.configureAndWatch
+//            (CONF_DIR + LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
+//        LOG_APP_COPYRIGHT.info(Main.class);
+//        LOG_APP_VERSION_BUILD.info(Main.class,
+//                ApplicationVersion.getVersion(),
+//                ApplicationVersion.getBuildNumber());
+//        Main main = new Main();
+//        run(inArgs, main);
+//    }
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext inContext)
+            throws BeansException
+    {
+        context = inContext;
+    }
     /**
      * Sets the stream on which all the messages should be printed.
      *
@@ -69,17 +113,25 @@ public class Main {
      * When used by the user, if there's an error, this method will never
      * return, it will exit the process.
      */
-    protected boolean processArguments(String[] inArgs) {
+    protected boolean processArguments(String[] inArgs)
+    {
         //Get user name password
-        mAuthentication = new StandardAuthentication(CFG_BASE_FILE_NAME,
-                PROPERTIES_FILE_BEAN, USER_PROPERTY, PASSWORD_PROPERTY,
-                USER_SHORT, USER_LONG, PASSWORD_SHORT, PASSWORD_LONG, inArgs);
+        mAuthentication = new StandardAuthentication(null,
+                                                     null,
+                                                     USER_PROPERTY,
+                                                     PASSWORD_PROPERTY,
+                                                     USER_SHORT,
+                                                     USER_LONG,
+                                                     PASSWORD_SHORT,
+                                                     PASSWORD_LONG,
+                                                     inArgs);
         mAuthentication.getCliContext().setOptionsProvider(new OptionsProvider() {
-            public void addOptions(Options inOptions) {
+            public void addOptions(Options inOptions)
+            {
                 options(inOptions);
             }
         });
-        if (!mAuthentication.setValues()) {
+        if(!mAuthentication.setValues()) {
             usage();
             return false;
         }
@@ -121,7 +173,7 @@ public class Main {
      * @param inCode the exit code for the process.
      */
     protected void exit(int inCode) {
-        System.exit(inCode);
+        ApplicationContainer.stopInstanceWaiting();
     }
 
     /**
@@ -131,23 +183,24 @@ public class Main {
      */
     protected void doProcessing()
             throws Exception {
-        //Create the order processor
-        StaticApplicationContext context =
-            new StaticApplicationContext
-            (new FileSystemXmlApplicationContext(CFG_BASE_FILE_NAME));
-        String clientURL = (String) context.getBean("clientURL");  //$NON-NLS-1$
+        // create the order processor
+        String clientURL = (String)context.getBean("clientURL");  //$NON-NLS-1$
         String clientWSHost = (String) context.getBean("clientWSHost");  //$NON-NLS-1$
         Integer clientWSPort = (Integer) context.getBean("clientWSPort");  //$NON-NLS-1$
         String clientIDPrefix = (String) context.getBean("clientIDPrefix");  //$NON-NLS-1$
-        ClientParameters parameters = new ClientParameters(
-                mAuthentication.getUser(),
-                mAuthentication.getPassword(),
-                clientURL, clientWSHost, clientWSPort,clientIDPrefix);
+        ClientParameters parameters = new ClientParameters(mAuthentication.getUser(),
+                                                           mAuthentication.getPassword(),
+                                                           clientURL,
+                                                           clientWSHost,
+                                                           clientWSPort,
+                                                           clientIDPrefix);
         OrderProcessor processor = createProcessor(parameters);
-        //Run the order loader and display the summary of results.
+        // run the order loader and display the summary of results.
         try {
-            displaySummary(new OrderLoader(mMode, mBrokerID,
-                    processor, new File(mFileName)));
+            displaySummary(new OrderLoader(mMode,
+                                           mBrokerID,
+                                           processor,
+                                           new File(mFileName)));
         } finally {
             processor.done();
         }
@@ -231,20 +284,16 @@ public class Main {
      * Runs the supplied instance given the arguments.
      *
      * @param inArgs the command line arguments to run.
-     * @param inMain the instance that needs to be run.
      */
-    static void run(String[] inArgs, Main inMain){
-        inMain.printMessage(LOG_APP_COPYRIGHT.getText());
-        inMain.printMessage(LOG_APP_VERSION_BUILD.getText(
-                ApplicationVersion.getVersion(),
-                ApplicationVersion.getBuildNumber()));
-        if (inMain.processArguments(inArgs)) {
+    private void run(String[] inArgs) {
+        printMessage(LOG_APP_COPYRIGHT.getText());
+        printMessage(LOG_APP_VERSION_BUILD.getText(ApplicationVersion.getVersion(),
+                                                   ApplicationVersion.getBuildNumber()));
+        if(processArguments(inArgs)) {
             try {
-                inMain.doProcessing();
-                inMain.exit(EXIT_CODE_SUCCESS);
+                doProcessing();
             } catch (Exception e) {
-                inMain.printError(e);
-                inMain.exit(EXIT_CODE_FAILURE);
+                printError(e);
             }
         }
     }
@@ -272,23 +321,22 @@ public class Main {
      *
      * @param inOptions the options used for parsing the command line.
      */
-    private void options(Options inOptions) {
-        inOptions.addOption(OptionBuilder.hasArg().
-                withArgName(ARG_MODE_VALUE.getText()).
-                withDescription(ARG_MODE_DESCRIPTION.getText()).
-                isRequired(false).create(OPT_MODE));
-        inOptions.addOption(OptionBuilder.hasArg().
-                withArgName(ARG_BROKER_VALUE.getText()).
-                withDescription(ARG_BROKER_DESCRIPTION.getText()).
-                isRequired(false).create(OPT_BROKER));
+    @SuppressWarnings("static-access")
+    private void options(Options inOptions)
+    {
+        inOptions.addOption(OptionBuilder.hasArg().withArgName(ARG_MODE_VALUE.getText())
+                            .withDescription(ARG_MODE_DESCRIPTION.getText())
+                            .isRequired(false).create(OPT_MODE));
+        inOptions.addOption(OptionBuilder.hasArg().withArgName(ARG_BROKER_VALUE.getText())
+                            .withDescription(ARG_BROKER_DESCRIPTION.getText())
+                            .isRequired(false).create(OPT_BROKER));
     }
     private PrintStream mMsgStream = System.err;
     private StandardAuthentication mAuthentication;
     private String mMode;
     private BrokerID mBrokerID;
     private String mFileName;
-    private static final String CFG_BASE_FILE_NAME=
-        "file:" + CONF_DIR + "orderloader.xml"; //$NON-NLS-1$ //$NON-NLS-2$
+    private static final String CFG_BASE_FILE_NAME = "file:" + CONF_DIR + "orderloader.xml"; //$NON-NLS-1$ //$NON-NLS-2$
     private static final String OPT_MODE = "m";  //$NON-NLS-1$
     private static final String OPT_BROKER = "b";  //$NON-NLS-1$
     private static final String USER_PROPERTY = "metc.client.user";  //$NON-NLS-1$
@@ -296,4 +344,12 @@ public class Main {
     static final int EXIT_CODE_FAILURE = 2;
     static final int EXIT_CODE_USAGE = 1;
     static final int EXIT_CODE_SUCCESS = 0;
+    /**
+     * indicates if the order loader is running or not 
+     */
+    private final AtomicBoolean running = new AtomicBoolean(false);
+    /**
+     * application context value
+     */
+    private ApplicationContext context;
 }

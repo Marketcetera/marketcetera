@@ -102,9 +102,8 @@ public class ApplicationBase implements Clock {
         return createApplicationContext(ctxFileNames,null,registerShutdownHook);
     }
 
-    /** Create a semaphor and wait for it forever (noone will ever signal it).
-     * This is to put the app in a loop if the app is written as a "receiver"
-     * You quit the app by either killing the process or pressing Ctrl-C.
+    /**
+     * The application waits until {@link #stopWaitingForever() stopped} or interrupted.
      */
     public void startWaitingForever()
     {
@@ -119,13 +118,12 @@ public class ApplicationBase implements Clock {
         }
     }
     /**
-     * 
-     *
-     *
+     * Stops the application from waiting forever.
      */
     public void stopWaitingForever()
     {
         waitingSemaphore.release();
+        waitingForever = false;
     }
     /**
      * Returns true if the application is running
