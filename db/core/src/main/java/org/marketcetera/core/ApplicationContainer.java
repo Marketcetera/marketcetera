@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -83,6 +84,11 @@ public class ApplicationContainer
                                         ApplicationVersion.getVersion(),
                                         ApplicationVersion.getBuildNumber());
         Messages.APP_START.info(ApplicationContainer.class);
+        // check to see if we're using a different starting context file than the default
+        String rawContextFilename = StringUtils.trimToNull(System.getProperty(CONTEXT_FILE_PROP));
+        if(rawContextFilename != null) {
+            contextFilename = rawContextFilename;
+        }
         final ApplicationContainer application;
         try {
             application = new ApplicationContainer();
@@ -205,7 +211,7 @@ public class ApplicationContainer
      */
     protected ConfigurableApplicationContext generateContext()
     {
-        return new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+"application.xml" }, //$NON-NLS-1$ //$NON-NLS-2$
+        return new FileSystemXmlApplicationContext(new String[] { "file:"+CONF_DIR+contextFilename }, //$NON-NLS-1$
                                                    null);
     }
     /**
@@ -228,4 +234,12 @@ public class ApplicationContainer
      * collection of tasks to run upon application shutdown
      */
     private static final Set<ComparableTask> shutdownTasks = new TreeSet<ComparableTask>();
+    /**
+     * optional command-line parameter that indicates a different context file to use
+     */
+    public static final String CONTEXT_FILE_PROP = "org.marketcetera.contextFile"; //$NON-NLS-1$
+    /**
+     * indicates the name of the context file to use
+     */
+    private static String contextFilename = "application.xml";
 }

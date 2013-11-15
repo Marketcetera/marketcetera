@@ -68,6 +68,11 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>orderloader</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>strategyagent</artifactId>
         <version>2.4.0</version>
       </dependency>
@@ -79,6 +84,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-bogus</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-marketcetera</artifactId>
         <version>2.4.0</version>
       </dependency>
       <dependency>
@@ -319,6 +329,8 @@
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
         <version>4.10.0</version>
+	<!-- esper requires cglib-nodep 2.2 which conflicts in principle with cglib 3.0 -->
+	<!-- for now, both are packaged with the SA and Photon :-o -->
         <!--exclusions>
           <exclusion>
             <groupId>cglib</groupId>

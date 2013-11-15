@@ -111,14 +111,22 @@ public class ApplicationBase implements Clock {
         waitingForever = true;
         try {
             SLF4JLoggerProxy.debug(this, "Starting to wait forever"); //$NON-NLS-1$
-            new Semaphore(0).acquire();
+            waitingSemaphore.acquire();
         } catch (InterruptedException e) {
             SLF4JLoggerProxy.debug(this, e, "Exception in sema wait"); //$NON-NLS-1$
         } finally {
             waitingForever = false;
         }
     }
-
+    /**
+     * 
+     *
+     *
+     */
+    public void stopWaitingForever()
+    {
+        waitingSemaphore.release();
+    }
     /**
      * Returns true if the application is running
      * the {@link #startWaitingForever()} method
@@ -154,4 +162,5 @@ public class ApplicationBase implements Clock {
     public ClassPathXmlApplicationContext getAppCtx() {
         return appCtx;
     }
+    private Semaphore waitingSemaphore = new Semaphore(0);
 }

@@ -3,16 +3,15 @@ package org.marketcetera.ors.security;
 import static org.marketcetera.ors.security.Messages.*;
 
 import java.io.Console;
-import java.io.File;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.ors.dao.UserService;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.util.except.I18NException;
@@ -20,8 +19,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.Lifecycle;
 
 /* $License$ */
 /**
@@ -31,62 +29,90 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * The CLI instance can eventually be destroyed by invoking {@link #close()} 
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
 @ClassVersion("$Id$")
 public class ORSAdminCLI
-    extends ApplicationBase {
-    private AbstractApplicationContext context;
-
-
+        implements Lifecycle
+{
+//    /**
+//     * Creates an instance.
+//     * 
+//     * @param out The output stream to write output to
+//     * @param err The error stream to write error output to
+//     */
+//    public ORSAdminCLI(PrintStream out,
+//                       PrintStream err)
+//    {
+//        PropertyConfigurator.configureAndWatch(CONF_DIR+"log4j"+File.separator+"cli.properties", //$NON-NLS-1$ //$NON-NLS-2$
+//                                               LOGGER_WATCH_DELAY);
+//        this.out = out;
+//        this.err = err;
+//        context = new ClassPathXmlApplicationContext(getConfigurations());
+//        context.registerShutdownHook();
+//        userService = context.getBean(UserService.class);
+//    }
+//    public static void main(String[] args)
+//    {
+//        ORSAdminCLI cli = new ORSAdminCLI(System.out,
+//                                          System.err);
+//        try {
+//            cli.parseAndRun(args);
+//            System.exit(0);
+//        } catch (Exception e) {
+//            System.exit(1);
+//        }
+//    }
     /**
-     * Creates an instance
-     * @param out The output stream to write output to
-     * @param err The error stream to write error output to
+     * Get the out value.
+     *
+     * @return a <code>PrintStream</code> value
      */
-    public ORSAdminCLI(PrintStream out, PrintStream err) {
-        PropertyConfigurator.configureAndWatch
-            (CONF_DIR+"log4j"+File.separator+"cli.properties", //$NON-NLS-1$ //$NON-NLS-2$
-             LOGGER_WATCH_DELAY);
-        this.out = out;
-        this.err = err;
-        context = new ClassPathXmlApplicationContext(getConfigurations());
-        context.registerShutdownHook();
-        userService = context.getBean(UserService.class);
+    public PrintStream getOut()
+    {
+        return out;
     }
-
-    public static void main(String[] args) {
-        ORSAdminCLI cli = new ORSAdminCLI(System.out,System.err);
-        try {
-            cli.parseAndRun(args);
-            System.exit(0);
-        } catch (Exception e) {
-            System.exit(1);
-        }
-    }
-
     /**
-     * Closes the application. Destroys all the resources that were
-     * used by the application.
+     * Sets the out value.
+     *
+     * @param inOut a <code>PrintStream</code> value
      */
-    public void close() {
-        context.close();
+    public void setOut(PrintStream inOut)
+    {
+        out = inOut;
     }
-
+    /**
+     * Get the err value.
+     *
+     * @return a <code>PrintStream</code> value
+     */
+    public PrintStream getErr()
+    {
+        return err;
+    }
+    /**
+     * Sets the err value.
+     *
+     * @param inErr a <code>PrintStream</code> value
+     */
+    public void setErr(PrintStream inErr)
+    {
+        err = inErr;
+    }
     /**
      * Parses and runs the supplied command. This method
      * can be invoked multiple times.
      *
      * @param args the arguments per the usage of the CLI
-     *
-     * @throws Exception if there were errors running the command
      */
-    public void parseAndRun(String... args) throws Exception {
+    public void parseAndRun(String... args)
+    {
         try {
-            execute(new GnuParser().parse(options(),args));
-        } catch (Exception e) {
+            execute(new GnuParser().parse(options(),
+                                          args));
+        } catch (ParseException e) {
             printError(e.getLocalizedMessage());
             printUsage();
-            throw e;
         }
     }
     /**
@@ -107,18 +133,35 @@ public class ORSAdminCLI
     {
         userService = inUserService;
     }
-    /**
-     * Returns a list of spring configurations that should be used
-     * to configure the CLI
-     *
-     * @return the list of spring configurations
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#isRunning()
      */
-    protected String[] getConfigurations() {
-        return new String[] {
-            "file:"+CONF_DIR+ //$NON-NLS-1$
-            "cli.xml"}; //$NON-NLS-1$
+    @Override
+    public boolean isRunning()
+    {
+        return running.get();
     }
-
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#start()
+     */
+    @Override
+    public void start()
+    {
+        parseAndRun(ApplicationContainer.getInstance().getArguments());
+        running.set(true);
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#stop()
+     */
+    @Override
+    public void stop()
+    {
+        try {
+            
+        } finally {
+            running.set(false);
+        }
+    }
     /**
      * Reads the password from the console if one is available.
      *
@@ -127,7 +170,8 @@ public class ORSAdminCLI
      * @return the password, null, if no console is available or
      * if end of stream is reached.
      */
-    protected char[] readPasswordFromConsole(String message) {
+    protected char[] readPasswordFromConsole(String message)
+    {
         Console console = System.console();
         if(console == null) {
             return null;
@@ -135,7 +179,6 @@ public class ORSAdminCLI
             return console.readPassword(message);
         }
     }
-
     /**
      * Executes the command line based on the supplied options
      *
@@ -144,56 +187,67 @@ public class ORSAdminCLI
      * @throws I18NException if there were errors in the command line options
      * or if there were errors executing commands.
      */
-    private void execute(CommandLine commandLine) throws I18NException {
+    private void execute(CommandLine commandLine)
+    {
         String userName = commandLine.getOptionValue(OPT_CURRENT_USER);
         String password = commandLine.getOptionValue(OPT_CURRENT_PASSWORD);
         String opUser = commandLine.getOptionValue(OPT_OPERATED_USER);
         String opPass = commandLine.getOptionValue(OPT_OPERATED_PASSWORD);
         Boolean opSuperuser = null;
-        if (commandLine.hasOption(OPT_OPERATED_SUPERUSER)) {
-            opSuperuser = commandLine.getOptionValue(OPT_OPERATED_SUPERUSER).
-                trim().equals(OPT_YES);
+        if(commandLine.hasOption(OPT_OPERATED_SUPERUSER)) {
+            opSuperuser = commandLine.getOptionValue(OPT_OPERATED_SUPERUSER).trim().equals(OPT_YES);
         }
         Boolean opActive = null;
-        if (commandLine.hasOption(OPT_OPERATED_ACTIVE)) {
-            opActive = commandLine.getOptionValue(OPT_OPERATED_ACTIVE).
-                trim().equals(OPT_YES);
+        if(commandLine.hasOption(OPT_OPERATED_ACTIVE)) {
+            opActive = commandLine.getOptionValue(OPT_OPERATED_ACTIVE).trim().equals(OPT_YES);
         }
         if(commandLine.hasOption(CMD_ADD_USER)) {
             if(!commandLine.hasOption(OPT_OPERATED_USER)) {
-                throw new I18NException(new I18NBoundMessage1P(
-                        CLI_ERR_OPTION_MISSING, OPT_OPERATED_USER));
+                throw new I18NException(new I18NBoundMessage1P(CLI_ERR_OPTION_MISSING,
+                                                               OPT_OPERATED_USER));
             }
             if(!commandLine.hasOption(OPT_OPERATED_PASSWORD)) {
-                opPass = getOptionFromConsole(opUser, opPass,
-                        OPT_OPERATED_PASSWORD, CLI_PROMPT_PASSWORD);
+                opPass = getOptionFromConsole(opUser,
+                                              opPass,
+                                              OPT_OPERATED_PASSWORD,
+                                              CLI_PROMPT_PASSWORD);
             }
-            authorize(Authorization.ADD_USER,userName,password);
-            addUser(opUser, opPass, opSuperuser);
-        } else if (commandLine.hasOption(CMD_DELETE_USER)) {
+            authorize(Authorization.ADD_USER,
+                      userName,
+                      password);
+            addUser(opUser,
+                    opPass,
+                    opSuperuser);
+        } else if(commandLine.hasOption(CMD_DELETE_USER)) {
             if(!commandLine.hasOption(OPT_OPERATED_USER)) {
-                throw new I18NException(new I18NBoundMessage1P(
-                        CLI_ERR_OPTION_MISSING, OPT_OPERATED_USER));
+                throw new I18NException(new I18NBoundMessage1P(CLI_ERR_OPTION_MISSING,
+                                                               OPT_OPERATED_USER));
             }
-            authorize(Authorization.DELETE_USER,userName,password);
+            authorize(Authorization.DELETE_USER,
+                      userName,
+                      password);
             deleteUser(opUser);
-        } else if (commandLine.hasOption(CMD_RESTORE_USER)) {
+        } else if(commandLine.hasOption(CMD_RESTORE_USER)) {
             if(!commandLine.hasOption(OPT_OPERATED_USER)) {
-                throw new I18NException(new I18NBoundMessage1P(
-                        CLI_ERR_OPTION_MISSING, OPT_OPERATED_USER));
+                throw new I18NException(new I18NBoundMessage1P(CLI_ERR_OPTION_MISSING,
+                                                               OPT_OPERATED_USER));
             }
-            authorize(Authorization.RESTORE_USER,userName,password);
+            authorize(Authorization.RESTORE_USER,
+                      userName,
+                      password);
             restoreUser(opUser);
         } else if (commandLine.hasOption(CMD_LIST_USERS)) {
-            authorize(Authorization.LIST_USERS,userName,password);
-            listUsers(opUser, opActive);
+            authorize(Authorization.LIST_USERS,
+                      userName,
+                      password);
+            listUsers(opUser,
+                      opActive);
         } else if (commandLine.hasOption(CMD_CHANGE_PASS)) {
             //The order of these statements is important as it
             //determines the order in which the user is prompted
             //First we want to get the login password
             //and then we want to prompt for the new password
             //if one wasn't supplied on the command line
-
             //Get the login password
             if(!commandLine.hasOption(OPT_CURRENT_PASSWORD)) {
                 password = getOptionFromConsole(userName, password,
@@ -560,8 +614,8 @@ public class ORSAdminCLI
                 options(), leftPad, descPad, "", false); //$NON-NLS-1$
         writer.flush();
     }
-    private PrintStream out;
-    private PrintStream err;
+    private PrintStream out = System.out;
+    private PrintStream err = System.err;
     private static final String CMD_LIST_USERS = "listUsers"; //$NON-NLS-1$
     private static final String CMD_ADD_USER = "addUser"; //$NON-NLS-1$
     private static final String CMD_DELETE_USER = "deleteUser"; //$NON-NLS-1$
@@ -579,10 +633,13 @@ public class ORSAdminCLI
     private static final String OPT_YES = "y"; //$NON-NLS-1$
     private static final String OPT_NO = "n"; //$NON-NLS-1$
     static final String CMD_NAME = "orsadmin"; //$NON-NLS-1$
-    
     /**
      * provides access to user objects
      */
     @Autowired
     private UserService userService;
+    /**
+     * indicates if the service is running or not
+     */
+    private final AtomicBoolean running = new AtomicBoolean(false);
 }

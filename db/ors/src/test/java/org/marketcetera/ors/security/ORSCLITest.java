@@ -16,7 +16,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.ors.PersistTestBase;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -50,24 +49,25 @@ public class ORSCLITest
         if(pErr == null) {
             pErr = new PrintStream(bErr, false, ENCODING);
         }
-        try {
-            instance = new ORSAdminCLI(pOut,pErr) {
-                @Override
-                protected String[] getConfigurations() {
-                    //Initialize the DB.
-                    return ORSLoginModuleTest.getSpringFiles();
-                }
-
-                @Override
-                protected char[] readPasswordFromConsole(String message) {
-                    //don't try to read from console in unit tests
-                    return null;
-                }
-            };
-        } catch (Exception e) {
-            SLF4JLoggerProxy.error(ORSCLITest.class, e);
-            throw e;
-        }
+//        try {
+//            instance = new ORSAdminCLI(pOut,pErr) {
+//                @Override
+//                protected String[] getConfigurations() {
+//                    //Initialize the DB.
+//                    return ORSLoginModuleTest.getSpringFiles();
+//                }
+//
+//                @Override
+//                protected char[] readPasswordFromConsole(String message) {
+//                    //don't try to read from console in unit tests
+//                    return null;
+//                }
+//            };
+//        } catch (Exception e) {
+//            SLF4JLoggerProxy.error(ORSCLITest.class, e);
+//            throw e;
+//        }
+        throw new UnsupportedOperationException(); // TODO
     }
     /**
      * Runs before each test.

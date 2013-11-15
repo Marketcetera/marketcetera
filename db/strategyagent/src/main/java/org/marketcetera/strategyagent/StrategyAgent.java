@@ -15,7 +15,6 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.Validate;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
@@ -28,7 +27,6 @@ import org.marketcetera.saclient.SAClientVersion;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.unicode.UnicodeFileReader;
 import org.marketcetera.util.ws.stateful.Server;
@@ -82,6 +80,9 @@ public class StrategyAgent
      */
     public void setContextClasses(Class<?>[] inContextClasses)
     {
+        if(isRunning()) {
+            throw new IllegalStateException();
+        }
         contextClasses = inContextClasses;
     }
     /* (non-Javadoc)
@@ -133,6 +134,9 @@ public class StrategyAgent
      */
     public void setDataPublisher(PublisherEngine inDataPublisher)
     {
+        if(isRunning()) {
+            throw new IllegalStateException();
+        }
         dataPublisher = inDataPublisher;
     }
     /**
@@ -156,14 +160,17 @@ public class StrategyAgent
     @Override
     public void start()
     {
-        SLF4JLoggerProxy.info(this,
-                              "Starting Strategy Agent"); // TODO message
-        Validate.notNull(moduleManager); // TODO message
-        Validate.notNull(loader); // TODO message
-        Validate.notNull(dataPublisher); // TODO message
+        Messages.LOG_APP_VERSION_BUILD.info(this,
+                                            ApplicationVersion.getVersion(),
+                                            ApplicationVersion.getBuildNumber());
+        if(loader != null) {
+            Thread.currentThread().setContextClassLoader(loader);
+        }
+        if(dataPublisher == null) {
+            dataPublisher = new PublisherEngine();
+        }
         try {
             //Configure the application. If it fails, exit
-            Thread.currentThread().setContextClassLoader(loader);
             String[] args = ApplicationContainer.getInstance().getArguments();
             if(args != null && args.length > 0) {
                 int parseErrors = parseCommands(args[0]);
@@ -212,6 +219,9 @@ public class StrategyAgent
      */
     public void setModuleManager(ModuleManager inModuleManager)
     {
+        if(isRunning()) {
+            throw new IllegalStateException();
+        }
         moduleManager = inModuleManager;
     }
     /**
@@ -230,6 +240,9 @@ public class StrategyAgent
      */
     public void setLoader(ClassLoader inLoader)
     {
+        if(isRunning()) {
+            throw new IllegalStateException();
+        }
         loader = inLoader;
     }
     /**
@@ -244,20 +257,22 @@ public class StrategyAgent
             throws ModuleException, MalformedObjectNameException
     {
         //Initialize the module manager.
-        moduleManager.init();
-        //Add the logger sink listener
-        moduleManager.addSinkListener(new SinkDataListener() {
-            public void receivedData(DataFlowID inFlowID, Object inData) {
-                final boolean isNullData = inData == null;
-                Messages.LOG_SINK_DATA.info(SINK_DATA, inFlowID,
-                        isNullData ? 0: 1,
-                        isNullData ? null: inData.getClass().getName(),
-                        inData);
-            }
-        });
-        mManagerBean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(),
-                                          new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
-                                          ModuleManagerMXBean.class);
+        if(moduleManager != null) {
+            moduleManager.init();
+            //Add the logger sink listener
+            moduleManager.addSinkListener(new SinkDataListener() {
+                public void receivedData(DataFlowID inFlowID, Object inData) {
+                    final boolean isNullData = inData == null;
+                    Messages.LOG_SINK_DATA.info(SINK_DATA, inFlowID,
+                            isNullData ? 0: 1,
+                            isNullData ? null: inData.getClass().getName(),
+                            inData);
+                }
+            });
+            mManagerBean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(),
+                                              new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
+                                              ModuleManagerMXBean.class);
+        }
     }
     /**
      * Create a new StrategyAgent instance.
@@ -503,5 +518,8 @@ public class StrategyAgent
      * most recent strategy agent instance
      */
     private volatile static StrategyAgent instance;
+    /**
+     * indicates if the SA is running or not
+     */
     private final AtomicBoolean running = new AtomicBoolean(false);
 }
