@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.marketcetera</groupId>
@@ -21,23 +21,70 @@
       <artifactId>strategyagent</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- test modules -->
+    <!-- Add modules for packaged runtime -->
+    <!-- CEP modules -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cep-system</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>cep-esper</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- marketdata modules -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-yahoo</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-bogus</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-marketcetera</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-csv</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- strategy -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>strategy</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <!-- assemble complete SA app to target/sa -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/sa</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>     
+    </plugins>
+  </build>
   <profiles>
     <!-- Command-line execution. -->
     <profile>
@@ -87,49 +134,6 @@
               <workingDirectory>src/test/cmd_exec</workingDirectory>
               <classpathScope>test</classpathScope>
             </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!-- Assembly. -->
-    <profile>
-      <id>assembly</id>
-      <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>single</goal></goals>
-                        <configuration>
-                            <formats><format>dir</format></formats>
-                            <descriptors>
-                                <descriptor>src/main/assembly/assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>exec</goal></goals>
-                        <configuration>
-                            <executable>${perl.path}</executable>
-                            <arguments>
-                                <argument>../tools/scripts/createScript.pl</argument>
-                                <argument>${project.build.directory}/${project.artifactId}</argument>
-                                <argument>strategyagent</argument>
-                                <argument>org.marketcetera.strategyagent.StrategyAgent</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
           </plugin>
         </plugins>
       </build>

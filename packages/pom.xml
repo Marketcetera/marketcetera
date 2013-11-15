@@ -19,5 +19,6 @@
   <modules>
     <module>ors-app</module>
     <module>sa-app</module>
+    <module>orderloader-app</module>
   </modules>
 </project>
