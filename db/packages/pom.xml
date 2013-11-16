@@ -20,5 +20,6 @@
     <module>ors-app</module>
     <module>sa-app</module>
     <module>orderloader-app</module>
+    <module>migrate-app</module>
   </modules>
 </project>

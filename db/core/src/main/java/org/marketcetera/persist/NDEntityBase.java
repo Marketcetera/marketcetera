@@ -112,12 +112,12 @@ public abstract class NDEntityBase
      */
     static final Pattern namePattern = Pattern.compile("^[\\p{L}\\p{N}- ]{1,255}$"); //$NON-NLS-1$
     /**
-     * 
+     * entity name value
      */
-    @Column(name="name",nullable=false)
+    @Column(name="name",nullable=false,unique=true)
     private String name;
     /**
-     * 
+     * entity description value
      */
     @Column(name="description",nullable=true)
     private String description;

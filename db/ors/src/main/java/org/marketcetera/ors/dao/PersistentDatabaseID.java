@@ -6,6 +6,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.marketcetera.persist.EntityBase;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -19,6 +20,7 @@ import org.marketcetera.persist.EntityBase;
 @Entity
 @Table(name="id_repository")
 @NamedQuery(name="getNextId",query="select e from PersistentDatabaseID e")
+@ClassVersion("$Id$")
 public class PersistentDatabaseID
         extends EntityBase
 {
