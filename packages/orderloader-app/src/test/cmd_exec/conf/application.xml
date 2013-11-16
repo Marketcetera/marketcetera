@@ -20,5 +20,5 @@
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
   <import resource="properties.xml"/>
   <import resource="orderloader/orderloader.xml"/>
-  <context:component-scan base-package="org.marketcetera.core"/>
+  <context:component-scan base-package="org.marketcetera,com.marketcetera"/>
 </beans>

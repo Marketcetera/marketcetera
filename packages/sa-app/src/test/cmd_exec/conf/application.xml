@@ -22,5 +22,5 @@
                            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
   <import resource="properties.xml"/>
   <import resource="sa/strategyagent.xml"/>
-  <context:component-scan base-package="org.marketcetera.core,org.marketcetera.strategyagent"/>
+  <context:component-scan base-package="org.marketcetera,com.marketcetera"/>
 </beans>

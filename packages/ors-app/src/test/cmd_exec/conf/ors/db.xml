@@ -16,6 +16,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+  <!-- Exception translation bean post processor -->
+  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
   <!--
     - The database connection pool.
     -
@@ -45,15 +47,15 @@
     <property name="jpaProperties">
       <props>
         <prop key="hibernate.dialect">${metc.hibernate.dialect}</prop>
-        <prop key="hibernate.hbm2ddl.auto">update</prop>
+        <prop key="hibernate.hbm2ddl.auto">validate</prop>
         <prop key="hibernate.show_sql">false</prop>
         <prop key="hibernate.format_sql">false</prop>
       </props>
     </property>
     <property name="packagesToScan">
       <list>
-        <value>org.marketcetera.core</value>
-        <value>org.marketcetera.ors</value>
+        <value>org.marketcetera</value>
+        <value>com.marketcetera</value>
       </list>
     </property>
   </bean>

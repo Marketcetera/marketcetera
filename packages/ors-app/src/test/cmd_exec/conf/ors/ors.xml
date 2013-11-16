@@ -45,6 +45,8 @@
     <property name="quickFixSender" ref="orsQuickFixSender"/>
     <property name="idFactory" ref="orsIdFactory"/>
     <property name="requestHandler" ref="orsRequestHandler"/>
+    <property name="migrate" value="${metc.database.automigrate}"/>
+    <property name="migrator" ref="dbMigrator"/>
   </bean>
   <!-- ORS Reply Persister -->
   <bean id="replyPersister" class="org.marketcetera.ors.ReplyPersister">
@@ -61,7 +63,9 @@
   <!-- ORS System Info -->
   <bean id="systemInfo" class="org.marketcetera.ors.info.SystemInfoImpl"/>
   <!-- ORS Report History Services -->
-  <bean id="reportHistoryServices" class="org.marketcetera.ors.history.BasicReportHistoryServices"/>
+  <bean id="reportHistoryServices" class="org.marketcetera.ors.history.BasicReportHistoryServices">
+    <!-- property name="purgeDate" value="30d"/--> <!-- enable to purge trade history older than 30d at start -->
+  </bean>
   <!-- ORS Brokers -->
   <bean id="brokers" class="org.marketcetera.ors.brokers.Brokers">
     <constructor-arg ref="metc_brokers"/>
@@ -157,4 +161,19 @@
   </bean>
   <!--  authenticator -->
   <bean id="dbAuthenticator" class="org.marketcetera.ors.ws.DBAuthenticator"/>
+  <!-- database migrator -->
+  <bean id="dbMigrator" class="org.marketcetera.migration.VersionMigrator">
+    <property name="datasource" ref="dbMigrationSource"/>
+  </bean>
+  <!-- database migration datasource -->
+  <bean id="dbMigrationSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+    <!-- The class of the database JDBC driver. -->
+    <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+    <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/marketcetera"/>
+    <property name="user" value="marketcetera"/>
+    <property name="password" value="marketcetera"/>
+    <property name="maxPoolSize" value="10"/>
+    <property name="preferredTestQuery" value="select 1"/>
+    <property name="testConnectionOnCheckout" value="true"/>
+  </bean>
 </beans>
