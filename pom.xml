@@ -910,7 +910,6 @@
     <module>util-test</module>
     <module>tools</module>
     <module>packages</module>
-    <module>migration</module>
   </modules>
   <repositories>
     <!--

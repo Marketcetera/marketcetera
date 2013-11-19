@@ -1,4 +1,4 @@
-package org.marketcetera.persist;
+package org.marketcetera.ors.dao;
 
 import java.io.Serializable;
 

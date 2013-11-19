@@ -1,5 +1,6 @@
-package org.marketcetera.persist.impl;
+package org.marketcetera.ors.dao.impl;
 
+import org.marketcetera.ors.dao.*;
 import org.marketcetera.persist.*;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -93,10 +93,12 @@ public interface Messages
             new I18NMessage2P(LOGGER, "invalid_fix_version");   //$NON-NLS-1$
     static final I18NMessage1P UNEXPECTED_ORDER_TYPE =
             new I18NMessage1P(LOGGER, "unexpected_order_type");   //$NON-NLS-1$
-    static final I18NMessage0P ARG_MODE_VALUE =
-            new I18NMessage0P(LOGGER, "arg_mode_value");   //$NON-NLS-1$
-    static final I18NMessage0P ARG_MODE_DESCRIPTION =
-            new I18NMessage0P(LOGGER, "arg_mode_description");   //$NON-NLS-1$
+    static final I18NMessage0P ARG_MODE_VALUE = new I18NMessage0P(LOGGER, "arg_mode_value");   //$NON-NLS-1$
+    static final I18NMessage0P ARG_MODE_DESCRIPTION = new I18NMessage0P(LOGGER, "arg_mode_description");   //$NON-NLS-1$
+    static final I18NMessage0P ARG_USERNAME_VALUE = new I18NMessage0P(LOGGER, "arg_username_value");   //$NON-NLS-1$
+    static final I18NMessage0P ARG_USERNAME_DESCRIPTION = new I18NMessage0P(LOGGER, "arg_username_description");   //$NON-NLS-1$
+    static final I18NMessage0P ARG_PASSWORD_VALUE = new I18NMessage0P(LOGGER, "arg_password_value");   //$NON-NLS-1$
+    static final I18NMessage0P ARG_PASSWORD_DESCRIPTION = new I18NMessage0P(LOGGER, "arg_password_description");   //$NON-NLS-1$
     static final I18NMessage0P ARG_BROKER_VALUE =
             new I18NMessage0P(LOGGER, "arg_broker_value");   //$NON-NLS-1$
     static final I18NMessage0P ARG_BROKER_DESCRIPTION =

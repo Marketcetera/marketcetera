@@ -19,14 +19,14 @@ import org.marketcetera.ors.brokers.Broker;
 import org.marketcetera.ors.brokers.Brokers;
 import org.marketcetera.ors.brokers.Selector;
 import org.marketcetera.ors.config.SpringConfig;
+import org.marketcetera.ors.dao.DatabaseVersionMismatch;
+import org.marketcetera.ors.dao.SystemInfoService;
 import org.marketcetera.ors.history.ReportHistoryServices;
 import org.marketcetera.ors.info.SystemInfo;
 import org.marketcetera.ors.info.SystemInfoImpl;
 import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.marketcetera.ors.ws.ClientSession;
 import org.marketcetera.ors.ws.ClientSessionFactory;
-import org.marketcetera.persist.DatabaseVersionMismatch;
-import org.marketcetera.persist.SystemInfoService;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXVersion;
@@ -42,7 +42,6 @@ import org.marketcetera.util.ws.stateful.SessionManager;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.Lifecycle;
 import org.springframework.jms.listener.SimpleMessageListenerContainer;
 
 import quickfix.DefaultMessageFactory;
@@ -513,42 +512,6 @@ public class OrderRoutingSystem
         brokers = inBrokers;
     }
     /**
-     * Get the migrate value.
-     *
-     * @return a <code>boolean</code> value
-     */
-    public boolean getMigrate()
-    {
-        return migrate;
-    }
-    /**
-     * Sets the migrate value.
-     *
-     * @param inMigrate a <code>boolean</code> value
-     */
-    public void setMigrate(boolean inMigrate)
-    {
-        migrate = inMigrate;
-    }
-    /**
-     * Get the migrator value.
-     *
-     * @return a <code>Lifecycle</code> value
-     */
-    public Lifecycle getMigrator()
-    {
-        return migrator;
-    }
-    /**
-     * Sets the migrator value.
-     *
-     * @param inMigrator a <code>Lifecycle</code> value
-     */
-    public void setMigrator(Lifecycle inMigrator)
-    {
-        migrator = inMigrator;
-    }
-    /**
      * Gets the <code>OrderRoutingSystem</code> value.
      *
      * @return an <code>OrderRoutingSystem</code> value
@@ -578,43 +541,17 @@ public class OrderRoutingSystem
     }
     /**
      * Verifies that the current database version matches the expected value.
-     *
-     * <p>This method will also attempt to migrate the database if so configured.
      */
     private void verifyDatabaseVersion()
     {
         try {
             systemInfoService.verifyDatabaseVersion();
         } catch (DatabaseVersionMismatch e) {
-            SLF4JLoggerProxy.warn(this,
-                                  "Database version {} does not match expected current version {}",
-                                  e.getActualDatabaseVersion(),
-                                  e.getExpectedDatabaseVersion());
-            if(migrate) {
-                SLF4JLoggerProxy.info(this,
-                                      "Beginning migration from {} to {}",
-                                      e.getActualDatabaseVersion(),
-                                      e.getExpectedDatabaseVersion());
-                if(migrator == null) {
-                    SLF4JLoggerProxy.error(this,
-                                           "Migration was indicated in the configuration, but no database migrator was supplied to the ORS. Check the ORS config and try again");
-                    throw e;
-                }
-                try {
-                    migrator.start();
-                } catch (RuntimeException e2) {
-                    SLF4JLoggerProxy.error(this,
-                                           e2,
-                                           "Migration failed! Check the logs, correct any errors, and try again");
-                    throw e2;
-                } finally {
-                    migrator.stop();
-                }
-            } else {
-                SLF4JLoggerProxy.error(this,
-                                      "The system cannot proceed until data is migrated to the new schema. Your database can be automatically migrated by setting the 'metc.database.automigrate' property in ors/conf/user.properties to 'true'");
-                throw e;
-            }
+            SLF4JLoggerProxy.error(this,
+                                   "Database version {} does not match expected current version {}",
+                                   e.getActualDatabaseVersion(),
+                                   e.getExpectedDatabaseVersion());
+            throw e;
         }
     }
     /**
@@ -687,16 +624,8 @@ public class OrderRoutingSystem
      */
     private ReceiveOnlyHandler<OrderEnvelope> requestHandler;
     /**
-     * 
-     */
-    private boolean migrate;
-    /**
      * provides access to system info objects
      */
     @Autowired
     private SystemInfoService systemInfoService;
-    /**
-     * migrates database from one version to another, may be <code>null</code>
-     */
-    private Lifecycle migrator;
 }

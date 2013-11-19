@@ -1,9 +1,10 @@
-package org.marketcetera.persist;
+package org.marketcetera.ors.dao;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
