@@ -7,8 +7,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.persist.DatabaseVersion;
-import org.marketcetera.persist.SystemInfoService;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -229,19 +227,6 @@ public class ApplicationContainer
         } finally {
             running.set(false);
         }
-    }
-    /**
-     * Gets the system database version value.
-     *
-     * @return a <code>DatabaseVersion</code> value
-     */
-    protected DatabaseVersion getDatabaseVersion()
-    {
-        if(context == null) {
-            throw new IllegalStateException();
-        }
-        SystemInfoService systemInfoService = context.getBean(SystemInfoService.class);
-        return systemInfoService.getDatabaseVersion();
     }
     /**
      * Generates the base application context with which to run.

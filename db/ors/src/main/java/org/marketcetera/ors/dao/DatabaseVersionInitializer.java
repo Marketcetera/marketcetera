@@ -1,4 +1,4 @@
-package org.marketcetera.persist;
+package org.marketcetera.ors.dao;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;

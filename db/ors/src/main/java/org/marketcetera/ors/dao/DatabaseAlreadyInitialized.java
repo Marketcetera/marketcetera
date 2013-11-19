@@ -1,4 +1,4 @@
-package org.marketcetera.persist;
+package org.marketcetera.ors.dao;
 
 import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.I18NBoundMessage;

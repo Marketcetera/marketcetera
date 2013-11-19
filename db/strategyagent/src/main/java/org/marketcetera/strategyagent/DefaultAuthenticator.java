@@ -43,7 +43,6 @@ public class DefaultAuthenticator
                                                            clientName,
                                                            inUser));
         }
-        System.out.println("ClientVersion: " + clientVersion + " serverVersion: " + serverVersion);
         if(!compatibleVersions(clientVersion,
                                serverVersion)) {
             throw new I18NException(new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
@@ -66,9 +65,6 @@ public class DefaultAuthenticator
     private static boolean compatibleVersions(String clientVersion,
                                               String serverVersion)
     {
-        System.out.println(ApplicationVersion.DEFAULT_VERSION);
-        System.out.println(serverVersion);
-        System.out.println(ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) + " " + ObjectUtils.equals(clientVersion, serverVersion));
         // If the server's version is unknown, any client is allowed.
         return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) || ObjectUtils.equals(clientVersion, serverVersion));
     }

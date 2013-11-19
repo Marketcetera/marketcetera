@@ -1,6 +1,7 @@
-package org.marketcetera.persist;
+package org.marketcetera.ors.dao;
 
 import org.marketcetera.core.CoreException;
+import org.marketcetera.persist.Messages;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.misc.ClassVersion;
 

@@ -12,18 +12,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
-  <bean id="clientURL" class="java.lang.String">
-    <constructor-arg value="${metc.client.url}"/>
-  </bean>
-  <bean id="clientWSHost" class="java.lang.String">
-    <constructor-arg value="${metc.client.ws.host}"/>
-  </bean>
-  <bean id="clientIDPrefix" class="java.lang.String">
-    <constructor-arg value="${metc.client.idprefix}"/>
-  </bean>
-  <bean id="clientWSPort" class="java.lang.Integer">
-    <constructor-arg value="${metc.client.ws.port}"/>
-  </bean>
   <!-- Orderloader App -->
-  <bean id="orderloaderApp" class="org.marketcetera.orderloader.OrderLoaderMain" init-method="start" destroy-method="stop"/>
+  <bean id="orderloaderApp" class="org.marketcetera.orderloader.OrderLoaderMain" init-method="start" destroy-method="stop">
+    <property name="clientUsername" value="${metc.client.user}"/>
+    <property name="clientPassword" value="${metc.client.password}"/>
+    <property name="clientURL" value="${metc.client.url}"/>
+    <property name="clientWsHost" value="${metc.client.ws.host}"/>
+    <property name="clientWsPort" value="${metc.client.ws.port}"/>
+    <property name="clientIdPrefix" value="${metc.client.idprefix}"/>
+  </bean>
 </beans>

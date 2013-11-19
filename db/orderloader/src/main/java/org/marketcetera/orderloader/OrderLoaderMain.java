@@ -1,46 +1,36 @@
 package org.marketcetera.orderloader;
 
-import static org.marketcetera.core.ApplicationBase.CONF_DIR;
 import static org.marketcetera.orderloader.Messages.*;
-import static org.marketcetera.util.auth.StandardAuthentication.*;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.trade.BrokerID;
-import org.marketcetera.util.auth.OptionsProvider;
-import org.marketcetera.util.auth.StandardAuthentication;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.Lifecycle;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
 
 /* $License$ */
 /**
  * The entry point for running the order loader as an application
  *
  * @author anshul@marketcetera.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
 public class OrderLoaderMain
-        implements Lifecycle, ApplicationContextAware
+        implements Lifecycle
 {
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
@@ -56,9 +46,9 @@ public class OrderLoaderMain
     @Override
     public void start()
     {
-        run(ApplicationContainer.getInstanceArguments());
+        run(getArgs());
         running.set(true);
-        ApplicationContainer.stopInstanceWaiting();
+        exit();
     }
     /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#stop()
@@ -68,29 +58,104 @@ public class OrderLoaderMain
     {
         running.set(false);
     }
-//    /**
-//     * Runs the order loader given the array of command line arguments.
-//     *
-//     * @param inArgs the arguments to the order loader.
-//     */
-//    public static void main(String []inArgs) {
-//        PropertyConfigurator.configureAndWatch
-//            (CONF_DIR + LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
-//        LOG_APP_COPYRIGHT.info(Main.class);
-//        LOG_APP_VERSION_BUILD.info(Main.class,
-//                ApplicationVersion.getVersion(),
-//                ApplicationVersion.getBuildNumber());
-//        Main main = new Main();
-//        run(inArgs, main);
-//    }
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+    /**
+     * Get the clientUsername value.
+     *
+     * @return a <code>String</code> value
      */
-    @Override
-    public void setApplicationContext(ApplicationContext inContext)
-            throws BeansException
+    public String getClientUsername()
     {
-        context = inContext;
+        return clientUsername;
+    }
+    /**
+     * Sets the clientUsername value.
+     *
+     * @param inClientUsername a <code>String</code> value
+     */
+    public void setClientUsername(String inClientUsername)
+    {
+        clientUsername = inClientUsername;
+    }
+    /**
+     * Sets the clientPassword value.
+     *
+     * @param inClientPassword a <code>char[]</code> value
+     */
+    public void setClientPassword(char[] inClientPassword)
+    {
+        clientPassword = inClientPassword;
+    }
+    /**
+     * Get the clientURL value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getClientURL()
+    {
+        return clientURL;
+    }
+    /**
+     * Sets the clientURL value.
+     *
+     * @param inClientURL a <code>String</code> value
+     */
+    public void setClientURL(String inClientURL)
+    {
+        clientURL = inClientURL;
+    }
+    /**
+     * Get the clientWsHost value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getClientWsHost()
+    {
+        return clientWsHost;
+    }
+    /**
+     * Sets the clientWsHost value.
+     *
+     * @param inClientWsHost a <code>String</code> value
+     */
+    public void setClientWsHost(String inClientWsHost)
+    {
+        clientWsHost = inClientWsHost;
+    }
+    /**
+     * Get the clientIdPrefix value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getClientIdPrefix()
+    {
+        return clientIdPrefix;
+    }
+    /**
+     * Sets the clientIdPrefix value.
+     *
+     * @param inClientIdPrefix a <code>String</code> value
+     */
+    public void setClientIdPrefix(String inClientIdPrefix)
+    {
+        clientIdPrefix = inClientIdPrefix;
+    }
+    /**
+     * Get the clientWsPort value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getClientWsPort()
+    {
+        return clientWsPort;
+    }
+    /**
+     * Sets the clientWsPort value.
+     *
+     * @param inClientWsPort a <code>String</code> value
+     */
+    public void setClientWsPort(String inClientWsPort)
+    {
+        clientWsPort = inClientWsPort;
     }
     /**
      * Sets the stream on which all the messages should be printed.
@@ -98,109 +163,49 @@ public class OrderLoaderMain
      * @param inMsgStream the message stream on which all the messages should
      * be printed.
      */
-    protected void setMsgStream(PrintStream inMsgStream) {
+    protected void setMsgStream(PrintStream inMsgStream)
+    {
         mMsgStream = inMsgStream;
     }
-
-    /**
-     * Processes the supplied command line options and configures
-     * the order loader to run per the options.
-     *
-     * @param inArgs the command line arguments.
-     *
-     * @return true if the argument processing succeeded, false if it
-     * did not. Do note the return value only matters for unit testing.
-     * When used by the user, if there's an error, this method will never
-     * return, it will exit the process.
-     */
-    protected boolean processArguments(String[] inArgs)
-    {
-        //Get user name password
-        mAuthentication = new StandardAuthentication(null,
-                                                     null,
-                                                     USER_PROPERTY,
-                                                     PASSWORD_PROPERTY,
-                                                     USER_SHORT,
-                                                     USER_LONG,
-                                                     PASSWORD_SHORT,
-                                                     PASSWORD_LONG,
-                                                     inArgs);
-        mAuthentication.getCliContext().setOptionsProvider(new OptionsProvider() {
-            public void addOptions(Options inOptions)
-            {
-                options(inOptions);
-            }
-        });
-        if(!mAuthentication.setValues()) {
-            usage();
-            return false;
-        }
-        //Check for invalid command line arg syntax.
-        ParseException parseException = mAuthentication.getCliContext().getParseException();
-        if(parseException != null) {
-            printError(parseException);
-            usage();
-            return false;
-        }
-        //Process non-authentication parameters
-        CommandLine cmdLine = mAuthentication.getCliContext().getCommandLine();
-        //Mode of operation
-        mMode = cmdLine.getOptionValue(OPT_MODE);
-        String broker = cmdLine.getOptionValue(OPT_BROKER);
-        //Broker ID
-        mBrokerID = broker == null
-                ? null
-                : new BrokerID(broker);
-        //The input file path
-        inArgs= mAuthentication.getOtherArgs();
-        if (inArgs.length < 1) {
-            printMessage(ERROR_MISSING_FILE.getText());
-            usage();
-            return false;
-        }
-        if (inArgs.length > 1) {
-            printMessage(ERROR_TOO_MANY_ARGUMENTS.getText());
-            usage();
-            return false;
-        }
-        mFileName = inArgs[0];
-        return true;
-    }
-
     /**
      * Exits the current process with the supplied exit code.
-     *
-     * @param inCode the exit code for the process.
      */
-    protected void exit(int inCode) {
+    protected void exit()
+    {
         ApplicationContainer.stopInstanceWaiting();
     }
-
+    /**
+     * 
+     *
+     *
+     * @return
+     */
+    protected String[] getArgs()
+    {
+        return ApplicationContainer.getInstanceArguments();
+    }
     /**
      * Reads the orders from the supplied and sends them to the server.
      *
      * @throws Exception if there were errors.
      */
     protected void doProcessing()
-            throws Exception {
+            throws Exception
+    {
         // create the order processor
-        String clientURL = (String)context.getBean("clientURL");  //$NON-NLS-1$
-        String clientWSHost = (String) context.getBean("clientWSHost");  //$NON-NLS-1$
-        Integer clientWSPort = (Integer) context.getBean("clientWSPort");  //$NON-NLS-1$
-        String clientIDPrefix = (String) context.getBean("clientIDPrefix");  //$NON-NLS-1$
-        ClientParameters parameters = new ClientParameters(mAuthentication.getUser(),
-                                                           mAuthentication.getPassword(),
+        ClientParameters parameters = new ClientParameters(clientUsername,
+                                                           clientPassword,
                                                            clientURL,
-                                                           clientWSHost,
-                                                           clientWSPort,
-                                                           clientIDPrefix);
+                                                           clientWsHost,
+                                                           Integer.parseInt(clientWsPort),
+                                                           clientIdPrefix);
         OrderProcessor processor = createProcessor(parameters);
         // run the order loader and display the summary of results.
         try {
             displaySummary(new OrderLoader(mMode,
                                            mBrokerID,
                                            processor,
-                                           new File(mFileName)));
+                                           new File(mFilename)));
         } finally {
             processor.done();
         }
@@ -218,53 +223,53 @@ public class OrderLoaderMain
      * @throws Exception if there were errors creating the order processor.
      */
     protected OrderProcessor createProcessor(ClientParameters inParameters)
-            throws Exception {
+            throws Exception
+    {
         return new ServerOrderProcessor(inParameters);
     }
-
     /**
-     * Displays the summary of results after the order loader is done
-     * processing.
+     * Displays the summary of results after the order loader is done processing.
      *
      * @param inLoader the order loader instance.
      */
-    protected void displaySummary(OrderLoader inLoader) {
+    protected void displaySummary(OrderLoader inLoader)
+    {
         printMessage(LINE_SUMMARY.getText(inLoader.getNumLines(),
-                inLoader.getNumBlankLines(),
-                inLoader.getNumComments()));
+                                          inLoader.getNumBlankLines(),
+                                          inLoader.getNumComments()));
         printMessage(ORDER_SUMMARY.getText(inLoader.getNumSuccess(),
-                inLoader.getNumFailed()));
+                                           inLoader.getNumFailed()));
         List<FailedOrderInfo> list = inLoader.getFailedOrders();
         if(!list.isEmpty()) {
             printMessage(FAILED_ORDERS.getText());
             for(FailedOrderInfo info: list) {
                 printMessage(FAILED_ORDER.getText(info.getIndex(),
-                        Arrays.toString(info.getRow()),
-                        getExceptionMsg(info.getException())));
+                                                  Arrays.toString(info.getRow()),
+                                                  getExceptionMsg(info.getException())));
             }
         }
     }
-
     /**
      * Prints the message to the output.
      *
      * @param inMessage the message to print.
      */
-    protected void printMessage(String inMessage) {
+    protected void printMessage(String inMessage)
+    {
         mMsgStream.println(inMessage);
     }
-
     /**
      * Prints the supplied exception's message to the output.
      *
      * @param inException the exception whose messages should be
      * printed on the output.
      */
-    protected void printError(Exception inException) {
+    protected void printError(Exception inException)
+    {
         printMessage(getExceptionMsg(inException));
-        SLF4JLoggerProxy.debug(this,inException);
+        SLF4JLoggerProxy.debug(this,
+                               inException);
     }
-
     /**
      * Gets the exception message from the supplied exception.
      *
@@ -272,84 +277,155 @@ public class OrderLoaderMain
      *
      * @return the message from the exception.
      */
-    protected String getExceptionMsg(Exception inException) {
+    protected String getExceptionMsg(Exception inException)
+    {
         if(inException instanceof I18NException) {
             return ((I18NException)inException).getLocalizedDetail();
         } else {
             return inException.getLocalizedMessage();
         }
     }
-
     /**
      * Runs the supplied instance given the arguments.
      *
      * @param inArgs the command line arguments to run.
      */
-    private void run(String[] inArgs) {
+    private void run(String[] inArgs)
+    {
         printMessage(LOG_APP_COPYRIGHT.getText());
         printMessage(LOG_APP_VERSION_BUILD.getText(ApplicationVersion.getVersion(),
                                                    ApplicationVersion.getBuildNumber()));
-        if(processArguments(inArgs)) {
-            try {
-                doProcessing();
-            } catch (Exception e) {
-                printError(e);
-            }
+        try {
+            execute(new GnuParser().parse(options(),
+                                          inArgs));
+        } catch (Exception e) {
+            printError(e);
+            usage();
         }
     }
-
+    /**
+     * Executes the given parsed command line.
+     *
+     * @param inLine a <code>CommandLine</code> value
+     * @throws Exception if an error occurs parsing the command line
+     */
+    private void execute(CommandLine inLine)
+            throws Exception
+    {
+        if(inLine.hasOption(OPT_USERNAME)) {
+            clientUsername = inLine.getOptionValue(OPT_USERNAME);
+        }
+        if(inLine.hasOption(OPT_PASSWORD)) {
+            clientPassword = inLine.getOptionValue(OPT_PASSWORD).toCharArray();
+        }
+        if(inLine.hasOption(OPT_MODE)) {
+            mMode = inLine.getOptionValue(OPT_MODE);
+        }
+        if(inLine.hasOption(OPT_BROKER)) {
+            mBrokerID = new BrokerID(inLine.getOptionValue(OPT_BROKER));
+        }
+        if(inLine.getArgList().isEmpty()) {
+            throw new IllegalArgumentException(ERROR_MISSING_FILE.getText());
+        } else {
+            mFilename = String.valueOf(inLine.getArgList().remove(0));
+        }
+        if(!inLine.getArgList().isEmpty()) {
+            throw new IllegalArgumentException(ERROR_TOO_MANY_ARGUMENTS.getText());
+        }
+        doProcessing();
+    }
+    /**
+     * Constructs the command line options for the orderloader.
+     *
+     * @return an <code>Options</code> value
+     */
+    @SuppressWarnings("static-access")
+    private static Options options()
+    {
+        Options opts = new Options();
+        opts.addOption(OptionBuilder.hasArg().withArgName(ARG_MODE_VALUE.getText()).withDescription(ARG_MODE_DESCRIPTION.getText()).isRequired(false).create(OPT_MODE));
+        opts.addOption(OptionBuilder.hasArg().withArgName(ARG_BROKER_VALUE.getText()).withDescription(ARG_BROKER_DESCRIPTION.getText()).isRequired(false).create(OPT_BROKER));
+        opts.addOption(OptionBuilder.hasArg().withArgName(ARG_USERNAME_VALUE.getText()).withDescription(ARG_USERNAME_DESCRIPTION.getText()).isRequired(false).create(OPT_USERNAME));
+        opts.addOption(OptionBuilder.hasArg().withArgName(ARG_PASSWORD_VALUE.getText()).withDescription(ARG_PASSWORD_DESCRIPTION.getText()).isRequired(false).create(OPT_PASSWORD));
+        return opts;
+    }
     /**
      * Prints the usage to the output.
      */
     private void usage()
     {
-        printMessage(ERROR_USAGE.getText());
-        printMessage("");  //$NON-NLS-1$
-        printMessage(ERROR_EXAMPLE.getText());
-        printMessage("");  //$NON-NLS-1$
-        printMessage(USAGE_LOADER_OPTIONS.getText());
-        printMessage(USAGE_MODE.getText());
-        printMessage(USAGE_BROKER_ID.getText());
-        printMessage("");  //$NON-NLS-1$
-        printMessage(ERROR_AUTHENTICATION.getText());
-        mAuthentication.printUsage(mMsgStream);
-        exit(EXIT_CODE_USAGE);
+        HelpFormatter formatter = new HelpFormatter();
+        PrintWriter pw = new PrintWriter(mMsgStream);
+        pw.append(ERROR_USAGE.getText());
+        pw.println();
+        formatter.printOptions(pw,
+                               HelpFormatter.DEFAULT_WIDTH,
+                               options,
+                               HelpFormatter.DEFAULT_LEFT_PAD,
+                               HelpFormatter.DEFAULT_DESC_PAD);
+        pw.println();
+        pw.flush();
+        exit();
     }
-
     /**
-     * Returns the command line options for the optional arguments.
-     *
-     * @param inOptions the options used for parsing the command line.
+     * options value contains all command line options
      */
-    @SuppressWarnings("static-access")
-    private void options(Options inOptions)
-    {
-        inOptions.addOption(OptionBuilder.hasArg().withArgName(ARG_MODE_VALUE.getText())
-                            .withDescription(ARG_MODE_DESCRIPTION.getText())
-                            .isRequired(false).create(OPT_MODE));
-        inOptions.addOption(OptionBuilder.hasArg().withArgName(ARG_BROKER_VALUE.getText())
-                            .withDescription(ARG_BROKER_DESCRIPTION.getText())
-                            .isRequired(false).create(OPT_BROKER));
-    }
+    private final Options options = options();
+    /**
+     * print stream used to render output
+     */
     private PrintStream mMsgStream = System.err;
-    private StandardAuthentication mAuthentication;
+    /**
+     * FIX mode to use
+     */
     private String mMode;
+    /**
+     * broker ID to use
+     */
     private BrokerID mBrokerID;
-    private String mFileName;
-    private static final String CFG_BASE_FILE_NAME = "file:" + CONF_DIR + "orderloader.xml"; //$NON-NLS-1$ //$NON-NLS-2$
+    /**
+     * filename to parse
+     */
+    private String mFilename;
+    /**
+     * 
+     */
     private static final String OPT_MODE = "m";  //$NON-NLS-1$
+    /**
+     * 
+     */
     private static final String OPT_BROKER = "b";  //$NON-NLS-1$
-    private static final String USER_PROPERTY = "metc.client.user";  //$NON-NLS-1$
-    private static final String PASSWORD_PROPERTY = "metc.client.password";  //$NON-NLS-1$
-    static final int EXIT_CODE_FAILURE = 2;
-    static final int EXIT_CODE_USAGE = 1;
-    static final int EXIT_CODE_SUCCESS = 0;
+    /**
+     * 
+     */
+    private static final String OPT_USERNAME = "u";  //$NON-NLS-1$
+    /**
+     * 
+     */
+    private static final String OPT_PASSWORD = "p";  //$NON-NLS-1$
     /**
      * indicates if the order loader is running or not 
      */
     private final AtomicBoolean running = new AtomicBoolean(false);
+    private String clientUsername;
     /**
-     * application context value
+     * 
      */
-    private ApplicationContext context;
+    private char[] clientPassword;
+    /**
+     * 
+     */
+    private String clientURL;
+    /**
+     * 
+     */
+    private String clientWsHost;
+    /**
+     * 
+     */
+    private String clientIdPrefix;
+    /**
+     * 
+     */
+    private String clientWsPort;
 }
