@@ -33,4 +33,5 @@
       </list>
     </property>
   </bean>
+  <bean id="schemaInitializer" class="org.marketcetera.ors.dao.DatabaseVersionInitializer"/>
 </beans>

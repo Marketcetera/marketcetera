@@ -237,6 +237,11 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>4.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.skife.kasparov</groupId>
         <artifactId>csv</artifactId>
         <version>1.0</version>
@@ -659,7 +664,7 @@
         <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.2</version>
+          <version>2.4</version>
         </plugin>
         <!-- source jar generation -->
         <plugin>
@@ -706,7 +711,7 @@
         <!-- mvn eclipse:* -->
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>20081024</version>
+          <version>2.9</version>
         </plugin>
         <!-- mvn clean -->
         <plugin>
