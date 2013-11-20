@@ -52,8 +52,8 @@
     </property>
     <property name="packagesToScan">
       <list>
-        <value>org.marketcetera.core</value>
-        <value>org.marketcetera.ors</value>
+        <value>org.marketcetera</value>
+        <value>com.marketcetera</value>
       </list>
     </property>
   </bean>
