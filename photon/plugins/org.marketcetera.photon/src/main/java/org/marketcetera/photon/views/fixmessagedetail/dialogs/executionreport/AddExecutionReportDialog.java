@@ -386,7 +386,7 @@ public class AddExecutionReportDialog extends ReportDialog
 				try
 				{
 					int fieldTag = Integer.parseInt(fieldName);
-					return new CustomFixField(fieldName, fieldTag);
+					return new CustomFixField(fieldTag);
 				}
 				catch(NumberFormatException nfe)
 				{

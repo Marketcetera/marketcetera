@@ -112,21 +112,17 @@ public class ExecutionReportContainer
 			executionReportFields.put(new Integer(field.getFieldTag()), field);
 		}
 		
-		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
-                                                      .getFIXDataDictionary();
-		
 		Message message = getMessageFromExecutionReport(executionReport);
 		
 		Iterator<Field<?>> fieldIterator = message.iterator();
 		while (fieldIterator.hasNext()) 
 		{
 			Field<?> field = (Field<?>) fieldIterator.next();
-			String fieldName = fixDictionary.getHumanFieldName(field.getField());
 			Integer fieldTag = new Integer(field.getTag());
 			
 			if(!executionReportFields.containsKey(fieldTag))
 			{
-				ExecutionReportField reportField = new CustomFixField(fieldName, field.getTag());
+				ExecutionReportField reportField = new CustomFixField(field.getTag());
 				reportField.setSelectedValue(field.getObject().toString());
 				executionReportFields.put(fieldTag, reportField);
 			}

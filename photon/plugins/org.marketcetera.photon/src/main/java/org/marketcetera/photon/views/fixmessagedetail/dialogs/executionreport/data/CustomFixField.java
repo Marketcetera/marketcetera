@@ -1,6 +1,8 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
 import org.marketcetera.photon.Messages;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.trade.ExecutionReport;
 
 import quickfix.Message;
@@ -15,27 +17,23 @@ import quickfix.StringField;
  */
 public class CustomFixField extends ExecutionReportField 
 {	
-	/** Custom field number */
-	private final String fFieldName;
-
 	/** Custom field tag */
 	private final int fFieldTag;
 
-	public CustomFixField(String fieldName, int fieldTag)
+	public CustomFixField(int fieldTag)
 	{
-		fFieldName = fieldName;
 		fFieldTag = fieldTag;
 	}
 		
 	@Override
 	public String getFieldName() 
 	{
-		if(fFieldName == null)
-		{
-			return String.valueOf(fFieldTag);
-		}
-		
-		return fFieldName;
+		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
+                .getFIXDataDictionary();
+		String fieldName = fixDictionary.getHumanFieldName(fFieldTag);
+		if(fieldName != null)
+			return fieldName;
+		return String.valueOf(fFieldTag);	
 	}
 
 	@Override
@@ -48,25 +46,18 @@ public class CustomFixField extends ExecutionReportField
 	public void insertField(Message message) 
 	{
         if(fValue != null && fValue != EMPTY_STRING) {
-			message.setField(new StringField(Integer.parseInt(getFieldName()), fValue));
+			message.setField(new StringField(getFieldTag(), fValue));
 		}
 	}
 
 	@Override
 	public boolean validateValue() {
+		
 		if(!super.validateValue())
 		{
 			return false;
 		}
-		try
-		{
-			Integer.parseInt(fFieldName);
-		}
-		catch(NumberFormatException nfe)
-		{
-			return false;
-		}
-		return true;
+		return getFieldTag() > 0;
 	}
 	
 	@Override
