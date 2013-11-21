@@ -101,6 +101,6 @@ public class DatabaseVersion
     /**
      * value used to indicate the current database version
      */
-    public static final DatabaseVersion CURRENT_VERSION = new DatabaseVersion(String.valueOf(5));
+    public static final DatabaseVersion CURRENT_VERSION = new DatabaseVersion(String.valueOf(6));
     private static final long serialVersionUID = 8659422315010966218L;
 }
