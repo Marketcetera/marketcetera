@@ -405,7 +405,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         failIfDisconnected();
         try {
             mService.deleteReport(getServiceContext(),
-                                  inReport);
+            			(ExecutionReportImpl)inReport);
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,
                                           Messages.ERROR_REMOTE_EXECUTION);
@@ -541,7 +541,16 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         failIfClosed();
         failIfDisconnected();
         try {
-            return mService.getOpenOrders(getServiceContext());
+        	List<ReportBaseImpl> oRderList = mService.getOpenOrders(getServiceContext());
+        	List<ReportBase> result = new ArrayList<ReportBase>();
+        	if(oRderList != null)
+        	{
+	        	for (ReportBase report : oRderList) 
+	        	{
+	        		result.add((ReportBase)report);
+				}
+        	}
+            return result;
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,
                                           Messages.ERROR_REMOTE_EXECUTION);
