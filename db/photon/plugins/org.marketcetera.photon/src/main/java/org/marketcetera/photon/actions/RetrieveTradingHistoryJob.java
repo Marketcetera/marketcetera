@@ -20,6 +20,7 @@ import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.*;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -54,7 +55,13 @@ public class RetrieveTradingHistoryJob extends Job {
             final Set<ReportBase> allReports = new LinkedHashSet<ReportBase>();
             TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
             Client client = ClientManager.getInstance();
-            List<ReportBase> openReports = client.getOpenOrders();
+            List<ReportBase> openReports = new ArrayList<ReportBase>();
+            List<ReportBaseImpl> openReportsImpl = client.getOpenOrders();
+            if(openReportsImpl != null){
+            	for(ReportBaseImpl report : openReportsImpl){
+            		openReports.add((ReportBase)report);
+            	}
+            }
             Date positionDate = new Date();
             if(StringUtils.isNotEmpty(timeString)) {
                 TimeOfDay time = TimeOfDay.create(timeString);

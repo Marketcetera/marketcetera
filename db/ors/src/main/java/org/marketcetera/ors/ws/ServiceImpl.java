@@ -1,6 +1,7 @@
 package org.marketcetera.ors.ws;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -732,7 +733,7 @@ public class ServiceImpl
      */
     @Override
     public void deleteReport(final @WebParam(name="context")ClientContext inContext,
-                             final @WebParam(name="report")ExecutionReport inReport)
+                             final @WebParam(name="report")ExecutionReportImpl inReport)
             throws RemoteException
     {
         (new RemoteRunner<ClientSession>(getSessionManager()) {
@@ -766,16 +767,25 @@ public class ServiceImpl
      * @see org.marketcetera.client.Service#getOpenOrders(org.marketcetera.util.ws.stateful.ClientContext)
      */
     @Override
-    public List<ReportBase> getOpenOrders(@WebParam(name = "context")ClientContext inContext)
+    public List<ReportBaseImpl> getOpenOrders(@WebParam(name = "context")ClientContext inContext)
             throws RemoteException
     {
-        return (new RemoteCaller<ClientSession,List<ReportBase>>(getSessionManager()) {
+        return (new RemoteCaller<ClientSession,List<ReportBaseImpl>>(getSessionManager()) {
             @Override
-            protected List<ReportBase> call(ClientContext context,
+            protected List<ReportBaseImpl> call(ClientContext context,
                                             SessionHolder<ClientSession> sessionHolder)
                     throws PersistenceException
             {
-                return getOpenOrders(sessionHolder.getSession());
+            	List<ReportBase> oRderList = getOpenOrders(sessionHolder.getSession());
+            	List<ReportBaseImpl> result = new ArrayList<ReportBaseImpl>();
+            	if(oRderList != null)
+            	{
+                	for (ReportBase report : oRderList) 
+                	{
+                		result.add((ReportBaseImpl)report);
+        			}
+            	}
+                return result;
         }}).execute(inContext);
     }
     /**

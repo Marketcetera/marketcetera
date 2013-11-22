@@ -560,7 +560,7 @@ public interface Client {
      * @param inReport an <code>ExecutionReport</code> value
      * @throws ConnectionException if an error occurs connecting to the server
      */
-    void deleteReport(ExecutionReport inReport)
+    void deleteReport(ExecutionReportImpl inReport)
             throws ConnectionException;
     /**
      * Resolves the given symbol to an <code>Instrument</code>.
@@ -577,6 +577,6 @@ public interface Client {
      * @return a <code>List&lt;ReportBase&gt;</code> value
      * @throws ConnectionException if an error occurs connecting to the server
      */
-    List<ReportBase> getOpenOrders()
+    List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException;
 }

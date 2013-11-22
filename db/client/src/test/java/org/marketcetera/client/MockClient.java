@@ -383,7 +383,7 @@ public class MockClient
      * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
      */
     @Override
-    public void deleteReport(ExecutionReport inReport)
+    public void deleteReport(ExecutionReportImpl inReport)
             throws ConnectionException
     {
         throw new UnsupportedOperationException();
@@ -392,10 +392,15 @@ public class MockClient
      * @see org.marketcetera.client.Client#getOpenOrders()
      */
     @Override
-    public List<ReportBase> getOpenOrders()
+    public List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException
     {
-        return openOrders;
+    	ArrayList<ReportBaseImpl> result = new ArrayList<ReportBaseImpl>();
+    	if(openOrders != null)
+    	for(ReportBase report:openOrders){
+    		result.add((ReportBaseImpl) report);
+    	}
+        return result;
     }
     /**
      * Gets the <code>ClientParameters</code> value used to initialize the client.
