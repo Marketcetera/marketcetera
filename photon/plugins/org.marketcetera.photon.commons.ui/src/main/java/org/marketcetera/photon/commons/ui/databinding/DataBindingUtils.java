@@ -140,12 +140,11 @@ public class DataBindingUtils {
      * @param updater
      *            controls the appearance of the {@link ControlDecoration}
      */
-    @SuppressWarnings("restriction")
     public static void initControlDecorationSupportFor(
             ValidationStatusProvider provider,
             int position,
-            org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater updater) {
-        org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationSupport
+            org.eclipse.jface.databinding.fieldassist.ControlDecorationUpdater updater) {
+        org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport
                 .create(provider, position, null, updater);
     }
 
@@ -166,10 +165,9 @@ public class DataBindingUtils {
      * Captures the control decoration and attaches it to the control.
      */
     @ClassVersion("$Id$")
-    @SuppressWarnings("restriction")
     static class CaptureUpdater
             extends
-            org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationUpdater {
+            org.eclipse.jface.databinding.fieldassist.ControlDecorationUpdater {
 
         @Override
         protected void update(ControlDecoration decoration, IStatus status) {
