@@ -404,7 +404,7 @@ public interface Service
      * @throws RemoteException if an error occurs
      */
     void deleteReport(@WebParam(name="context")ClientContext inContext,
-                      @WebParam(name="report")ExecutionReport inReport)
+                      @WebParam(name="report")ExecutionReportImpl inReport)
             throws RemoteException;
     /**
      * Resolves the given symbol to an instrument.
@@ -424,6 +424,6 @@ public interface Service
      * @return a <code>List&lt;ReportBase&gt;</code> value
      * @throws RemoteException if an error occurs
      */
-    List<ReportBase> getOpenOrders(@WebParam(name="context")ClientContext inContext)
+    List<ReportBaseImpl> getOpenOrders(@WebParam(name="context")ClientContext inContext)
             throws RemoteException;
 }

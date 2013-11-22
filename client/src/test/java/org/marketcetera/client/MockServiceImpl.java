@@ -490,7 +490,7 @@ public class MockServiceImpl
      */
     @Override
     public void deleteReport(ClientContext inContext,
-                             ExecutionReport inReport)
+                             ExecutionReportImpl inReport)
             throws RemoteException
     {
         throw new UnsupportedOperationException();
@@ -511,7 +511,7 @@ public class MockServiceImpl
      * @see org.marketcetera.client.Service#getOpenOrders(org.marketcetera.util.ws.stateful.ClientContext)
      */
     @Override
-    public List<ReportBase> getOpenOrders(@WebParam(name = "context")
+    public List<ReportBaseImpl> getOpenOrders(@WebParam(name = "context")
     ClientContext inContext)
             throws RemoteException
     {
