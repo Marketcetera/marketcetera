@@ -25,6 +25,7 @@ import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 
 /* $License$ */
@@ -424,7 +425,7 @@ public class LiveOrderHistoryManagerTest
             throws Exception
     {
         Set<ReportBase> historicalReports = client.getReports();
-        List<ReportBase> setupOpenOrders = client.getOpenOrders();
+        List<ReportBaseImpl> setupOpenOrders = client.getOpenOrders();
         assertTrue(historicalReports.isEmpty());
         assertTrue(setupOpenOrders.isEmpty());
         // generate a few open orders and a few non-open orders
@@ -447,8 +448,8 @@ public class LiveOrderHistoryManagerTest
         assertFalse(report2.getOrderStatus().isCancellable());
         assertFalse(report3.getOrderStatus().isCancellable());
         assertTrue(report4.getOrderStatus().isCancellable());
-        setupOpenOrders.add(report1);
-        setupOpenOrders.add(report4);
+        setupOpenOrders.add((ReportBaseImpl)report1);
+        setupOpenOrders.add((ReportBaseImpl)report4);
         historicalReports.add(report2);
         historicalReports.add(report3);
         historicalReports.add(report4);

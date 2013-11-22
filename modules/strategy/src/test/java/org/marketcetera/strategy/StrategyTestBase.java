@@ -1114,7 +1114,7 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
          */
         @Override
-        public void deleteReport(ExecutionReport inReport)
+        public void deleteReport(ExecutionReportImpl inReport)
                 throws ConnectionException
         {
             throw new UnsupportedOperationException();
@@ -1143,7 +1143,7 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#getOpenOrders()
          */
         @Override
-        public List<ReportBase> getOpenOrders()
+        public List<ReportBaseImpl> getOpenOrders()
                 throws ConnectionException
         {
             return Collections.emptyList();
