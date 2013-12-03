@@ -458,7 +458,7 @@ public abstract class ExecReportSummaryTestBase<I extends Instrument>
         assertEquals(inReport.getViewerID(),
                      inSummary.getViewerID());
         assertEquals(inRootID,
-                     inSummary.getRootID());
+                     inSummary.getRootOrderID());
         assertCalendarEquals(inSendingTime,
                              inSummary.getSendingTime(),
                              TemporalType.TIMESTAMP);

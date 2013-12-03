@@ -323,10 +323,9 @@ public class PersistentReport
         mReportBase = inReportBase;
     }
     /**
-     * Declared to get JPA to work.
+     * Create a new PersistentReport instance.
      */
-    @SuppressWarnings("unused")
-    private PersistentReport() {}
+    public PersistentReport() {}
     /**
      * order id value
      */

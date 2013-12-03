@@ -38,7 +38,7 @@ public class PersistentDatabaseID
      *
      * @param a <code>long</code> value
      */
-    void setNextAllowedId(long inNextAllowedId)
+    public void setNextAllowedId(long inNextAllowedId)
     {
         nextAllowedId = inNextAllowedId;
     }

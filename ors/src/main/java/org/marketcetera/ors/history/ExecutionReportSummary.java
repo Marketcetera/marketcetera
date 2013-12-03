@@ -70,24 +70,6 @@ public class ExecutionReportSummary
         isOpen = inReport.isCancelable();
     }
     /**
-     * Gets the root id value.
-     *
-     * @return an <code>OrderID</code> value
-     */
-    public OrderID getRootID()
-    {
-        return rootOrderId;
-    }
-    /**
-     * Sets the root id value.
-     *
-     * @param inRootID an <code>OrderID</code> value
-     */
-    public void setRootID(OrderID inRootID)
-    {
-        rootOrderId = inRootID;
-    }
-    /**
      * Gets the order id value.
      *
      * @return an <code>OrderID</code> value
@@ -236,7 +218,7 @@ public class ExecutionReportSummary
      *
      * @return an <code>OrderID</code> value
      */
-    public OrderID getRootOrderId()
+    public OrderID getRootOrderID()
     {
         return rootOrderId;
     }
@@ -245,27 +227,9 @@ public class ExecutionReportSummary
      *
      * @param inRootOrderId an <code>OrderID</code> value
      */
-    public void setRootOrderId(OrderID inRootOrderId)
+    public void setRootOrderID(OrderID inRootOrderId)
     {
         rootOrderId = inRootOrderId;
-    }
-    /**
-     * Get the orderId value.
-     *
-     * @return an <code>OrderID</code> value
-     */
-    public OrderID getOrderId()
-    {
-        return orderId;
-    }
-    /**
-     * Sets the orderId value.
-     *
-     * @param inOrderId an <code>OrderID</code> value
-     */
-    public void setOrderId(OrderID inOrderId)
-    {
-        orderId = inOrderId;
     }
     /**
      * Get the side value.
@@ -475,6 +439,15 @@ public class ExecutionReportSummary
         return report;
     }
     /**
+     * Sets the report value.
+     *
+     * @param inReport a <code>PersistentReport</code> value
+     */
+    public void setReport(PersistentReport inReport)
+    {
+        report = inReport;
+    }
+    /**
      * Gets the viewer ID value.
      *
      * @return a <code>UserID</code> value or <code>null</code>
@@ -489,17 +462,7 @@ public class ExecutionReportSummary
     /**
      * Create a new ExecutionReportSummary instance.
      */
-    @SuppressWarnings("unused")
-    private ExecutionReportSummary() {}
-    /**
-     * Sets the report value.
-     *
-     * @param inReport a <code>PersistentReport</code> value
-     */
-    private void setReport(PersistentReport inReport)
-    {
-        report = inReport;
-    }
+    public ExecutionReportSummary() {}
     /**
      * root order ID value
      */
