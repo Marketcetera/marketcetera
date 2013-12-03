@@ -365,7 +365,7 @@ public class ReportServiceImpl
                                        "Not the first orderID in the chain, using {} for rootID",  //$NON-NLS-1$
                                        rootID);
             }
-            reportSummary.setRootID(rootID);
+            reportSummary.setRootOrderID(rootID);
             reportSummary = executionReportDao.save(reportSummary);
             // update is_open marker on other reports in the family (not sure if this should be run for ERs only or all reports)
             executionReportDao.updateOpenOrders(rootID,
