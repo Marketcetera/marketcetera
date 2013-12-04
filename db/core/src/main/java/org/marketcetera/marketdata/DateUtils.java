@@ -22,19 +22,19 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class DateUtils
 {
-    private static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,
-                                                                                            4).toFormatter();
-    private static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
-    private static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
-    private static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
-    private static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
-    private static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
-    private static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
-    private static final DateTimeFormatter MILLI = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
-    private static final DateTimeFormatter TZ = new DateTimeFormatterBuilder().appendTimeZoneOffset("Z", //$NON-NLS-1$
-                                                                                                    true,
-                                                                                                    2,
-                                                                                                    4).toFormatter();
+    public static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,
+                                                                                           4).toFormatter();
+    public static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
+    public static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
+    public static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
+    public static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
+    public static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
+    public static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
+    public static final DateTimeFormatter MILLI = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
+    public static final DateTimeFormatter TZ = new DateTimeFormatterBuilder().appendTimeZoneOffset("Z", //$NON-NLS-1$
+                                                                                                   true,
+                                                                                                   2,
+                                                                                                   4).toFormatter();
     /**
      * date format to millisecond precision with timezone: <code>yyyyMMdd'T'HHmmssSSSZ</code>
      */
