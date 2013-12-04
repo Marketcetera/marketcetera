@@ -363,7 +363,7 @@ public class PersistentReport
      * broker ID valkue
      */
     @Embedded
-    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_id",nullable=false))})
+    @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_id"))})
     private BrokerID brokerID;
     /**
      * report ID value
@@ -374,7 +374,7 @@ public class PersistentReport
     /**
      * report originator value
      */
-    @Column(name="originator",nullable=false)
+    @Column(name="originator")
     private Originator mOriginator;
     /**
      * root report base value
