@@ -551,7 +551,7 @@ public class ExecutionReportSummary
     /**
      * security type value
      */
-    @Column(name="security_type",nullable=false)
+    @Column(name="security_type")
     private SecurityType securityType;
     /**
      * expiry value, <code>null</code> for non-option types
