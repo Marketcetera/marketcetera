@@ -70,7 +70,7 @@
                     <artifactItem>
                       <groupId>org.marketcetera.photon</groupId>
                       <artifactId>target-platform</artifactId>
-                      <version>3.8.2</version>
+                      <version>${mvn.eclipse.version}</version>
                       <type>zip</type>
                     </artifactItem>
                     <artifactItem>

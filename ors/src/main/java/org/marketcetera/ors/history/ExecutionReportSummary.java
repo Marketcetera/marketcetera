@@ -459,6 +459,25 @@ public class ExecutionReportSummary
         }
         return getViewer().getUserID();
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ExecutionReportSummary [rootOrderId=").append(rootOrderId).append(", orderId=").append(orderId)
+                .append(", origOrderID=").append(origOrderID).append(", symbol=").append(symbol)
+                .append(", strikePrice=").append(strikePrice).append(", side=").append(side).append(", cumQuantity=")
+                .append(cumQuantity).append(", effectiveCumQuantity=").append(effectiveCumQuantity)
+                .append(", avgPrice=").append(avgPrice).append(", lastQuantity=").append(lastQuantity)
+                .append(", lastPrice=").append(lastPrice).append(", orderStatus=").append(orderStatus)
+                .append(", sendingTime=").append(sendingTime).append(", viewer=").append(viewer).append(", actor=")
+                .append(actor).append(", isOpen=").append(isOpen).append(", securityType=").append(securityType)
+                .append(", expiry=").append(expiry).append(", optionType=").append(optionType).append(", account=")
+                .append(account).append(", report=").append(report).append(", getId()=").append(getId()).append("]");
+        return builder.toString();
+    }
     /**
      * Create a new ExecutionReportSummary instance.
      */
@@ -551,7 +570,7 @@ public class ExecutionReportSummary
     /**
      * security type value
      */
-    @Column(name="security_type")
+    @Column(name="security_type",nullable=false)
     private SecurityType securityType;
     /**
      * expiry value, <code>null</code> for non-option types
