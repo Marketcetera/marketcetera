@@ -360,7 +360,7 @@ public class PersistentReport
     @Column(name="report_type",nullable=false)
     private ReportType mReportType;
     /**
-     * broker ID valkue
+     * broker ID value
      */
     @Embedded
     @AttributeOverrides({@AttributeOverride(name="mValue",column=@Column(name="broker_id"))})

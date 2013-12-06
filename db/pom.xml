@@ -40,7 +40,7 @@
     <mvn.spring.version>3.2.4.RELEASE</mvn.spring.version>
     <mvn.cxf.version>2.7.7</mvn.cxf.version>
     <mvn.querydsl.version>3.2.3</mvn.querydsl.version>
-    <mvn.eclipse.version>3.5</mvn.eclipse.version>
+    <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <!-- Build Number. -->
     <mvn.build.number>Development Build</mvn.build.number>
   </properties>
@@ -339,8 +339,8 @@
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
         <version>4.10.0</version>
-	<!-- esper requires cglib-nodep 2.2 which conflicts in principle with cglib 3.0 -->
-	<!-- for now, both are packaged with the SA and Photon :-o -->
+        <!-- esper requires cglib-nodep 2.2 which conflicts in principle with cglib 3.0 -->
+        <!-- for now, both are packaged with the SA and Photon :-o -->
         <!--exclusions>
           <exclusion>
             <groupId>cglib</groupId>
@@ -807,6 +807,13 @@
         </executions>
       </plugin>
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>2.5</version>
+      </extension>
+    </extensions>
   </build>
   <profiles>
     <profile>
