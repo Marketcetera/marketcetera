@@ -232,7 +232,7 @@ public class SimpleUser
         setHashedPassword(hash(getName().toCharArray(),
                                password));
     }
-    private String getHashedPassword() {
+    public String getHashedPassword() {
         return hashedPassword;
     }
     private void setHashedPassword(String hashedPassword) {
