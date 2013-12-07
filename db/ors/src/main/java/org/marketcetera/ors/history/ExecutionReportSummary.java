@@ -164,7 +164,7 @@ public class ExecutionReportSummary
      *
      * @return a <code>BigDecimal</code> value
      */
-    BigDecimal getStrikePrice()
+    public BigDecimal getStrikePrice()
     {
         return strikePrice;
     }
