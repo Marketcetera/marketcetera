@@ -7,7 +7,7 @@ import org.springframework.context.support.StaticApplicationContext;
 /* $License$ */
 
 /**
- *
+ * Provides a test implementation of <code>ApplicationContainer</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
