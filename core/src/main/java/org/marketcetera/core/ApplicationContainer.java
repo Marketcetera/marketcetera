@@ -165,10 +165,9 @@ public class ApplicationContainer
         }
     }
     /**
-     * 
+     * Gets the arguments passed to the application if any.
      *
-     *
-     * @return
+     * @return a <code>String[]</code> value or <code>null</code>
      */
     public static String[] getInstanceArguments()
     {
