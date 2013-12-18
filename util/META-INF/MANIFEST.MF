@@ -8,8 +8,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.thirdparty;visibility:=reexport,
  org.marketcetera.util-test;resolution:=optional,
  org.junit4;resolution:=optional
-Export-Package: org.marketcetera.util.auth,
- org.marketcetera.util.collections,
+Export-Package: org.marketcetera.util.collections,
  org.marketcetera.util.except,
  org.marketcetera.util.exec,
  org.marketcetera.util.file,
