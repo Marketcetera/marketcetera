@@ -65,11 +65,6 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>ors</artifactId>
-        <version>2.4.0</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
         <artifactId>migration</artifactId>
         <version>2.4.0</version>
       </dependency>
@@ -918,7 +913,6 @@
     <module>fork</module>
     <module>modules</module>
     <module>orderloader</module>
-    <module>ors</module>
     <!-- Build strategy agent before photon. -->
     <module>saclient</module>
     <module>strategyagent</module>
