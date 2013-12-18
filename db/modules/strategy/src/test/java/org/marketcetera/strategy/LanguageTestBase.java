@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -2079,7 +2080,7 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("newOrderID",
                                             "");
         runningStrategy.onOther("");
-        assertNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        assertNull(StringUtils.trimToNull(AbstractRunningStrategy.getProperty("newOrderID")));
         // now allow the cancel/replace to succeed
         // make sure the order is open before we begin
         MockRecorderModule.shouldSendExecutionReports = true;

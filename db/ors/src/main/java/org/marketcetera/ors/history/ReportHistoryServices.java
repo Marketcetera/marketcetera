@@ -308,9 +308,9 @@ public interface ReportHistoryServices {
      * Returns the open orders visible to the given user.
      *
      * @param inUser a <code>SimpleUser</code> value
-     * @return a <code>List&lt;ReportBase</code> value
+     * @return a <code>List&lt;ReportBaseImpl</code> value
      * @throws PersistenceException if there were errors retrieving the data
      */
-    public List<ReportBase> getOpenOrders(SimpleUser inUser)
+    public List<ReportBaseImpl> getOpenOrders(SimpleUser inUser)
             throws PersistenceException;
 }

@@ -3,7 +3,7 @@ package org.marketcetera.util.auth;
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.beans.factory.BeanFactory;
 
 /**
  * A setter for a character array holder that obtains the data via
@@ -36,18 +36,27 @@ public class SpringSetterCharArray
     {
         super(holder,usage,propertyName);
     }
-
-
-    // SpringSetter.
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.auth.SpringSetter#setValue(org.springframework.beans.factory.BeanFactory)
+     */
     @Override
-    public void setValue
-        (GenericApplicationContext context)
+    public void setValue(BeanFactory inContext)
     {
-        String value=(String)getPropertyValue(context);
+        String value=(String)getPropertyValue(inContext);
         Holder<char[]> holder=getHolder();
         if (!StringUtils.EMPTY.equals(value)) {
             holder.setValue(value.toCharArray());
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.util.auth.SpringSetter#setValue(java.lang.String)
+     */
+    @Override
+    public void setValue(String inValue)
+    {
+        Holder<char[]> holder=getHolder();
+        if(inValue != null && !StringUtils.EMPTY.equals(inValue)) {
+            holder.setValue(inValue.toCharArray());
         }
     }
 }

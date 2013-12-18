@@ -1,12 +1,14 @@
 package org.marketcetera.util.auth;
 
-import java.io.File;
-import org.junit.Test;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.springframework.context.support.GenericApplicationContext;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import static org.junit.Assert.*;
+import java.io.File;
+
+import org.junit.Test;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.springframework.beans.factory.BeanFactory;
 
 /**
  * @author tlerios@marketcetera.com
@@ -30,6 +32,11 @@ public class SetterContextSpringTest
     private static final String TEST_PROPERTIES_FILES=
         "propertiesFiles";
 
+    public SetterContextSpringTest()
+    {
+        
+    }
+    
     private static class TestSetter<T extends Holder<?>>
         extends SpringSetter<T>
     {
@@ -40,9 +47,20 @@ public class SetterContextSpringTest
         {
             super(holder,usage,propertyName);
         }
-
-        public void setValue
-            (GenericApplicationContext context) {}
+        /* (non-Javadoc)
+         * @see org.marketcetera.util.auth.SpringSetter#setValue(org.springframework.beans.factory.BeanFactory)
+         */
+        @Override
+        public void setValue(BeanFactory inContext)
+        {
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.util.auth.SpringSetter#setValue(java.lang.String)
+         */
+        @Override
+        public void setValue(String inValue)
+        {
+        }
     }
 
     private static <T> void setter
@@ -120,22 +138,20 @@ public class SetterContextSpringTest
     public void setValues()
         throws Exception
     {
-        Holder<String> userHolder=
-            new Holder<String>(Messages.NO_USER);
-        HolderCharArray passwordHolder=
-            new HolderCharArray(Messages.NO_PASSWORD);
+        Holder<String> userHolder = new Holder<String>(Messages.NO_USER);
+        HolderCharArray passwordHolder = new HolderCharArray(Messages.NO_PASSWORD);
+        SpringSetterString userSetter = new SpringSetterString(userHolder,
+                                                               new I18NBoundMessage1P(Messages.USER_SPRING_USAGE,
+                                                                                      "metc.amq.user"),
+                                                               "metc.amq.user");
+        SpringSetterCharArray passwordSetter = new SpringSetterCharArray(passwordHolder,
+                                                                         new I18NBoundMessage1P(Messages.PASSWORD_SPRING_USAGE,
+                                                                                                "metc.amq.password"),
+                                                                         "metc.amq.password");
 
-        SpringSetterString userSetter=new SpringSetterString
-            (userHolder,new I18NBoundMessage1P
-             (Messages.USER_SPRING_USAGE,"metc.amq.user"),
-             "metc.amq.user");
-        SpringSetterCharArray passwordSetter=new SpringSetterCharArray
-            (passwordHolder,new I18NBoundMessage1P
-             (Messages.PASSWORD_SPRING_USAGE,"metc.amq.password"),
-             "metc.amq.password");
-
-        SpringContext context=new SpringContext
-            (false,TEST_ROOT+"auth_none.xml",TEST_PROPERTIES_FILES);
+        SpringContext context = new SpringContext(false,
+                                                  TEST_ROOT+"auth_none.xml",
+                                                  TEST_PROPERTIES_FILES);
         context.add(userSetter);
         context.add(passwordSetter);
         context.setValues();

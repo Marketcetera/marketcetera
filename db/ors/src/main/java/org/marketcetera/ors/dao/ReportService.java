@@ -56,9 +56,9 @@ public interface ReportService
      * Gets the open orders visible to the given user.
      *
      * @param inUser a <code>SimpleUser</code> value
-     * @return a <code>List&lt;ReportBase</code> value
+     * @return a <code>List&lt;ReportBaseImpl</code> value
      */
-    public List<ReportBase> getOpenOrders(SimpleUser inUser);
+    public List<ReportBaseImpl> getOpenOrders(SimpleUser inUser);
     /**
      * Gets all equity positions as of the given date visible to the given user.
      *

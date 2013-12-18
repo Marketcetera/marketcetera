@@ -40,6 +40,7 @@ import org.marketcetera.util.ws.stateless.Node;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
 
+import com.google.common.collect.Maps;
 
 /* $License$ */
 /**
@@ -530,7 +531,6 @@ public class StrategyAgentRemotingTest
      * @throws Exception if there were unexpected errors.
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void strategyLifecycle()
             throws Exception
     {
@@ -572,7 +572,7 @@ public class StrategyAgentRemotingTest
                                         true,
                                         true,
                                         true);
-        Map<String, Object> props = saClient.getProperties(urn);
+        Map<String,String> props = toStringProps(saClient.getProperties(urn));
         assertNotNull(props);
         assertFalse(props.isEmpty());
         assertEquals(props.toString(),
@@ -586,7 +586,7 @@ public class StrategyAgentRemotingTest
                          hasEntry("Language",
                                   Language.RUBY.toString()),
                          hasEntry(STRAT_PROP_ROUTING_ORDERS,
-                                  false),
+                                  String.valueOf(false)),
                          hasEntry("OutputDestination",
                                   RECEIVER_URN.parent().getValue())));
         // start the strategy
@@ -594,7 +594,7 @@ public class StrategyAgentRemotingTest
         // verify properties and state
         assertEquals(ModuleState.STARTED,
                      saClient.getModuleInfo(urn).getState());
-        props = saClient.getProperties(urn);
+        props = toStringProps(saClient.getProperties(urn));
         assertNotNull(props);
         assertEquals(props.toString(),
                      6,
@@ -607,7 +607,7 @@ public class StrategyAgentRemotingTest
                          hasEntry("Language",
                                   Language.RUBY.toString()),
                          hasEntry(STRAT_PROP_ROUTING_ORDERS,
-                                  false),
+                                  String.valueOf(false)),
                          hasEntry("Status",
                                   "RUNNING"),
                          hasEntry("OutputDestination",
@@ -618,53 +618,55 @@ public class StrategyAgentRemotingTest
         assertEquals(ModuleState.STOPPED,
                      saClient.getModuleInfo(urn).getState());
         // change properties
-        props = new HashMap<String, Object>();
+        props = Maps.newHashMap();
         String paramValue = "key1=value1";
         props.put("Parameters",
                   paramValue);
-        props.put(STRAT_PROP_ROUTING_ORDERS,
-                  true);
-        props = saClient.setProperties(urn,
-                                       props);
+        Map<String,Object> actualProps = toObjectProps(props);
+        actualProps.put(STRAT_PROP_ROUTING_ORDERS,
+                        true);
+        props = toStringProps(saClient.setProperties(urn,
+                                                     actualProps));
         assertNotNull(props);
         assertEquals(props.toString(),
                      2,
                      props.size());
         assertThat(props,
                    allOf(hasEntry("Parameters",
-                                  (Object)paramValue),
+                                  String.valueOf(paramValue)),
                          hasEntry(STRAT_PROP_ROUTING_ORDERS,
-                                  true)));
+                                  String.valueOf(true))));
         // verify that the property indeed changed by fetching them again
-        props = saClient.getProperties(urn);
+        props = toStringProps(saClient.getProperties(urn));
         assertNotNull(props);
         assertEquals(props.toString(),
                      6,
                      props.size());
         assertThat(props,
                    allOf(hasEntry("Parameters",
-                                  (Object)paramValue),
+                                  String.valueOf(paramValue)),
                          hasEntry("Name",
                                   "HelloWorld"),
                          hasEntry("Language",
                                   Language.RUBY.toString()),
                          hasEntry(STRAT_PROP_ROUTING_ORDERS,
-                                  true),
+                                  String.valueOf(true)),
                          hasEntry("Status",
                                   "STOPPED"),
                          hasEntry("OutputDestination",
                                   RECEIVER_URN.parent().getValue())));
         props.clear();
-        props.put(STRAT_PROP_ROUTING_ORDERS,
-                  BigDecimal.ONE);
-        props = saClient.setProperties(urn,
-                                       props);
-        assertNotNull(props);
+        actualProps.clear();
+        actualProps.put(STRAT_PROP_ROUTING_ORDERS,
+                        BigDecimal.ONE);
+        actualProps = saClient.setProperties(urn,
+                                             actualProps);
+        assertNotNull(actualProps);
         assertEquals(1,
-                     props.size());
-        assertThat(props,
+                     actualProps.size());
+        assertThat(actualProps,
                    Matchers.hasKey(STRAT_PROP_ROUTING_ORDERS));
-        Object err = props.get(STRAT_PROP_ROUTING_ORDERS);
+        Object err = actualProps.get(STRAT_PROP_ROUTING_ORDERS);
         assertThat(err,
                    Matchers.instanceOf(RemoteProperties.class));
         RemoteProperties prop = (RemoteProperties)err;
@@ -677,6 +679,40 @@ public class StrategyAgentRemotingTest
         instances = saClient.getInstances(STRATEGY_PROVIDER_URN);
         assertTrue(instances.toString(),
                    instances.isEmpty());
+    }
+    /**
+     * Transforms the given map to a map with object values.
+     *
+     * @param inProperties a <code>Map&lt;String,String&gt;</code> value
+     * @return a <code>Map&lt;String,Object&gt;</code> value
+     */
+    private Map<String,Object> toObjectProps(Map<String,String> inProperties)
+    {
+        if(inProperties == null) {
+            return null;
+        }
+        Map<String,Object> output = Maps.newHashMap();
+        for(Map.Entry<String,String> entry : inProperties.entrySet()) {
+            output.put(entry.getKey(),entry.getValue());
+        }
+        return output;
+    }
+    /**
+     * Transforms the given map to a map with string values.
+     *
+     * @param inProperties a <code>Map&lt;String,Object&gt;</code> value
+     * @return a <code>Map&lt;String,String&gt;</code> value
+     */
+    private Map<String,String> toStringProps(Map<String,Object> inProperties)
+    {
+        if(inProperties == null) {
+            return null;
+        }
+        Map<String,String> output = Maps.newHashMap();
+        for(Map.Entry<String,Object> entry : inProperties.entrySet()) {
+            output.put(entry.getKey(),entry.getValue() == null ? null : String.valueOf(entry.getValue()));
+        }
+        return output;
     }
     private void verifyNullURNFailure(final WSOpFailure inTest) throws Exception {
         verifyNestedFailure(Messages.CANNOT_PROCESS_NULL_URN, inTest); }

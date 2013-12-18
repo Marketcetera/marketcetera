@@ -486,7 +486,7 @@ public class MockServiceImpl
         throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Service#deleteReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReport)
+     * @see org.marketcetera.client.Service#deleteReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReportImpl)
      */
     @Override
     public void deleteReport(ClientContext inContext,

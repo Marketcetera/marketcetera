@@ -1,7 +1,6 @@
 package org.marketcetera.ors.ws;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -285,10 +284,10 @@ public class ServiceImpl
      * Returns the open orders visible to the given user.
      *
      * @param inSession a <code>ClientSession</code> value
-     * @return a <code>List&lt;ReportBase&gt;</code> value
+     * @return a <code>List&lt;ReportBaseImpl&gt;</code> value
      * @throws PersistenceException if an error occurs retrieving the order data
      */
-    private List<ReportBase> getOpenOrders(ClientSession inSession)
+    private List<ReportBaseImpl> getOpenOrders(ClientSession inSession)
             throws PersistenceException
     {
         return getHistoryServices().getOpenOrders(inSession.getUser());
@@ -776,16 +775,7 @@ public class ServiceImpl
                                             SessionHolder<ClientSession> sessionHolder)
                     throws PersistenceException
             {
-            	List<ReportBase> oRderList = getOpenOrders(sessionHolder.getSession());
-            	List<ReportBaseImpl> result = new ArrayList<ReportBaseImpl>();
-            	if(oRderList != null)
-            	{
-                	for (ReportBase report : oRderList) 
-                	{
-                		result.add((ReportBaseImpl)report);
-        			}
-            	}
-                return result;
+                return getOpenOrders(sessionHolder.getSession());
         }}).execute(inContext);
     }
     /**

@@ -68,9 +68,13 @@ public class DateUtils
      */
     public static final DateTimeFormatter DAYS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter().withZone(DateTimeZone.UTC);
     /**
-     * date format needed for FIX specifed UTCTimestamp type
+     * date format needed for FIX specified UTCTimestamp type
      */
     public static final DateTimeFormatter FIX = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).appendLiteral('-').append(HOUR).appendLiteral(':').append(MINUTE).appendLiteral(':').append(SECOND).toFormatter();
+    /**
+     * date format needed for FIX specified UTCTimestamp type (with millis)
+     */
+    public static final DateTimeFormatter FIX_MILLIS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).appendLiteral('-').append(HOUR).appendLiteral(':').append(MINUTE).appendLiteral(':').append(SECOND).appendLiteral('.').append(MILLI).toFormatter();
     /**
      * valid date formats
      */

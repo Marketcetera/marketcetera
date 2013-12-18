@@ -55,13 +55,7 @@ public class RetrieveTradingHistoryJob extends Job {
             final Set<ReportBase> allReports = new LinkedHashSet<ReportBase>();
             TradeReportsHistory tradeReportsHistory = PhotonPlugin.getDefault().getTradeReportsHistory();
             Client client = ClientManager.getInstance();
-            List<ReportBase> openReports = new ArrayList<ReportBase>();
-            List<ReportBaseImpl> openReportsImpl = client.getOpenOrders();
-            if(openReportsImpl != null){
-            	for(ReportBaseImpl report : openReportsImpl){
-            		openReports.add((ReportBase)report);
-            	}
-            }
+            List<ReportBaseImpl> openReports = client.getOpenOrders();
             Date positionDate = new Date();
             if(StringUtils.isNotEmpty(timeString)) {
                 TimeOfDay time = TimeOfDay.create(timeString);

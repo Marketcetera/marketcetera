@@ -10,6 +10,8 @@ import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 
+import com.google.common.collect.Lists;
+
 /* $License$ */
 
 /**
@@ -380,7 +382,7 @@ public class MockClient
         throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
+     * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReportImpl)
      */
     @Override
     public void deleteReport(ExecutionReportImpl inReport)
@@ -395,12 +397,7 @@ public class MockClient
     public List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException
     {
-    	ArrayList<ReportBaseImpl> result = new ArrayList<ReportBaseImpl>();
-    	if(openOrders != null)
-    	for(ReportBase report:openOrders){
-    		result.add((ReportBaseImpl) report);
-    	}
-        return result;
+        return openOrders;
     }
     /**
      * Gets the <code>ClientParameters</code> value used to initialize the client.
@@ -603,7 +600,7 @@ public class MockClient
     /**
      * open orders (in addition to existing reports to return)
      */
-    private final List<ReportBase> openOrders = new ArrayList<ReportBase>();
+    private final List<ReportBaseImpl> openOrders = Lists.newArrayList();
     /**
      * orders sent since last {@link #reset()}
      */
