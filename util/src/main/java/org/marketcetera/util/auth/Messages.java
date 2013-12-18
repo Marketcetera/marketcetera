@@ -82,4 +82,5 @@ public interface Messages
         new I18NMessage0P(LOGGER,"password_console_usage"); //$NON-NLS-1$
     static final I18NMessage0P NO_PASSWORD=
         new I18NMessage0P(LOGGER,"no_password"); //$NON-NLS-1$
+    static final I18NMessage2P UNKNOWN_DESCRIPTOR_CONTENTS = new I18NMessage2P(LOGGER,"unknown_descriptor_contents"); //$NON-NLS-1$
 }

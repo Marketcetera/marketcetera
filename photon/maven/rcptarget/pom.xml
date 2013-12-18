@@ -72,6 +72,9 @@
                       <artifactId>target-platform</artifactId>
                       <version>${mvn.eclipse.version}</version>
                       <type>zip</type>
+		      <excludes>
+			eclipse/plugins/org.hamcrest*
+		      </excludes>
                     </artifactItem>
                     <artifactItem>
                       <groupId>org.marketcetera</groupId>

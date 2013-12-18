@@ -111,8 +111,8 @@ public class ORSTestBase
             }
         }
         // Create the administrative client.
-        adminClient = new ORSTestClient(getORS().getAuth().getUser(),
-                                        getORS().getAuth().getPassword());
+        adminClient = new ORSTestClient("admin",
+                                        "admin".toCharArray());
     }
     /**
      * Starts the ORS and keeps it running.

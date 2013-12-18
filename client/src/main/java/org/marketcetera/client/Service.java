@@ -400,7 +400,7 @@ public interface Service
      * <p><em>This will affect reported positions</em></p>.
      *
      * @param inContext a <code>ClientContent</code> value
-     * @param inReport an <code>ExecutionReport</code> value
+     * @param inReport an <code>ExecutionReportImpl</code> value
      * @throws RemoteException if an error occurs
      */
     void deleteReport(@WebParam(name="context")ClientContext inContext,
@@ -421,7 +421,7 @@ public interface Service
      * Gets the list of open orders visible to the current user.
      *
      * @param inContext a <code>ClientContext</code> value
-     * @return a <code>List&lt;ReportBase&gt;</code> value
+     * @return a <code>List&lt;ReportBaseImpl&gt;</code> value
      * @throws RemoteException if an error occurs
      */
     List<ReportBaseImpl> getOpenOrders(@WebParam(name="context")ClientContext inContext)

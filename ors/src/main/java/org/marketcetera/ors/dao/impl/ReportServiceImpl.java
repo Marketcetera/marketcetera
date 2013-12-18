@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.sql.SQLSubQuery;
@@ -118,12 +119,12 @@ public class ReportServiceImpl
      * @see org.marketcetera.ors.dao.ReportService#getOpenOrders(org.marketcetera.ors.security.SimpleUser)
      */
     @Override
-    public List<ReportBase> getOpenOrders(SimpleUser inViewer)
+    public List<ReportBaseImpl> getOpenOrders(SimpleUser inViewer)
     {
-        List<ReportBase> reports = new ArrayList<ReportBase>();
+        List<ReportBaseImpl> reports = Lists.newArrayList();
         List<ExecutionReportSummary> rawReports = executionReportDao.findOpenOrders(inViewer);
         for(ExecutionReportSummary summary : rawReports) {
-            reports.add(summary.getReport().toReport());
+            reports.add((ReportBaseImpl)summary.getReport().toReport());
         }
         return reports;
     }

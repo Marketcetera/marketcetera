@@ -557,7 +557,7 @@ public interface Client {
      * 
      * <p><em>This will affect reported positions</em></p>.
      *
-     * @param inReport an <code>ExecutionReport</code> value
+     * @param inReport an <code>ExecutionReportImpl</code> value
      * @throws ConnectionException if an error occurs connecting to the server
      */
     void deleteReport(ExecutionReportImpl inReport)
@@ -574,7 +574,7 @@ public interface Client {
     /**
      * Gets all open orders visible to the current user.
      *
-     * @return a <code>List&lt;ReportBase&gt;</code> value
+     * @return a <code>List&lt;ReportBaseImpl&gt;</code> value
      * @throws ConnectionException if an error occurs connecting to the server
      */
     List<ReportBaseImpl> getOpenOrders()

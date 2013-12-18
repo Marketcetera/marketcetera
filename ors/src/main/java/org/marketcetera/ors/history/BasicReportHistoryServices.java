@@ -117,7 +117,7 @@ public class BasicReportHistoryServices
      * @see org.marketcetera.ors.history.ReportHistoryServices#getOpenOrders(org.marketcetera.ors.security.SimpleUser)
      */
     @Override
-    public List<ReportBase> getOpenOrders(SimpleUser inUser)
+    public List<ReportBaseImpl> getOpenOrders(SimpleUser inUser)
     {
         return reportService.getOpenOrders(inUser);
     }

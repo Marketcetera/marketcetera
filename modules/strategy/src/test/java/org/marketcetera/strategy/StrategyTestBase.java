@@ -1111,7 +1111,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
+         * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReportImpl)
          */
         @Override
         public void deleteReport(ExecutionReportImpl inReport)

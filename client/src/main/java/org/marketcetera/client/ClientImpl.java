@@ -395,7 +395,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
+     * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReportImpl)
      */
     @Override
     public void deleteReport(ExecutionReportImpl inReport)

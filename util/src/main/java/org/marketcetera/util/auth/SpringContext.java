@@ -1,12 +1,18 @@
 package org.marketcetera.util.auth;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.spring.SpringUtils;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
+
+import com.google.common.collect.Lists;
 
 /**
  * A context for Spring setters ({@link SpringSetter}). This context
@@ -50,13 +56,6 @@ import org.springframework.context.support.GenericApplicationContext;
 public class SpringContext
     extends Context<SpringSetter<?>>
 {
-
-    // CLASS DATA.
-
-    private static final String CONFIGURER_BEAN_NAME=
-        SpringContext.class.getName()+".configurer"; //$NON-NLS-1$
-
-
     // INSTANCE DATA.
 
     private String mConfigLocation;
@@ -78,15 +77,15 @@ public class SpringContext
      * @see Context#Context(I18NBoundMessage,boolean)
      */
 
-    public SpringContext
-        (I18NBoundMessage name,
-         boolean override,
-         String configLocation,
-         String propertiesFilesBean)
+    public SpringContext(I18NBoundMessage name,
+                         boolean override,
+                         String configLocation,
+                         String propertiesFilesBean)
     {
-        super(name,override);
-        mConfigLocation=configLocation;
-        mPropertiesFilesBean=propertiesFilesBean;
+        super(name,
+              override);
+        mConfigLocation = configLocation;
+        mPropertiesFilesBean = propertiesFilesBean;
     }
 
     /**
@@ -103,13 +102,14 @@ public class SpringContext
      * @see Context#Context(I18NBoundMessage,boolean)
      */
 
-    public SpringContext
-        (boolean override,
-         String configLocation,
-         String propertiesFilesBean)
+    public SpringContext(boolean override,
+                         String configLocation,
+                         String propertiesFilesBean)
     {
-        this(Messages.SPRING_NAME,override,
-             configLocation,propertiesFilesBean);
+        this(Messages.SPRING_NAME,
+             override,
+             configLocation,
+             propertiesFilesBean);
     }
 
 
@@ -141,25 +141,37 @@ public class SpringContext
     // Context.
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setValues()
     {
-        GenericApplicationContext context=new GenericApplicationContext
-            (new FileSystemXmlApplicationContext(getConfigLocation()));
-        SpringUtils.addPropertiesConfigurer
-            (context,CONFIGURER_BEAN_NAME,getPropertiesFilesBean());
-        Properties properties=new Properties();
-        int index=0;
-        for (SpringSetter<?> setter:getSetters()) {
-            if (shouldProcess(setter)) {
-                setter.setup(context,properties,index++);
+        Properties beans = new Properties();
+        try(ConfigurableApplicationContext baseContext = new FileSystemXmlApplicationContext(getConfigLocation())) {
+            List<String> filesList = Lists.newArrayList();
+            if(baseContext.containsBeanDefinition("propertiesFiles")) { //$NON-NLS-1$
+                Object rawFilesDescriptor = baseContext.getBean("propertiesFiles"); //$NON-NLS-1$
+                if(rawFilesDescriptor instanceof ArrayList<?>) {
+                    List<String> descriptor = (ArrayList<String>)rawFilesDescriptor;
+                    filesList.addAll(descriptor);
+                } else if(rawFilesDescriptor instanceof String) {
+                    filesList.add((String)rawFilesDescriptor);
+                } else {
+                    throw new UnsupportedOperationException(Messages.UNKNOWN_DESCRIPTOR_CONTENTS.getText(rawFilesDescriptor,rawFilesDescriptor == null ? "null":rawFilesDescriptor.getClass().getName())); //$NON-NLS-1$
+                }
+            }
+            for(String propertyFile : filesList) {
+                Properties subProps = new Properties();
+                try {
+                    System.out.println("Loading file: " + propertyFile.replaceAll("file:",""));
+                    subProps.load(new FileInputStream(new File(propertyFile.replaceAll("file:","")))); //$NON-NLS-1$ //$NON-NLS-2$
+                    beans.putAll(subProps);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
-        ((PropertyPlaceholderConfigurer)context.getBean
-         (CONFIGURER_BEAN_NAME)).setProperties(properties);
-        context.refresh();
-        for (SpringSetter<?> setter:getSetters()) {
-            if (shouldProcess(setter)) {
-                setter.setValue(context);
+        for(SpringSetter<?> setter:getSetters()) {
+            if(shouldProcess(setter)) {
+                setter.setValue(beans.getProperty(setter.getPropertyName()));
             }
         }
     }

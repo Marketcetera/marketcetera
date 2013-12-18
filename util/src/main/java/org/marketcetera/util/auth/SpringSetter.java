@@ -1,11 +1,13 @@
 package org.marketcetera.util.auth;
 
 import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 
 /**
  * A setter that obtains holder data via Spring configuration
@@ -70,7 +72,15 @@ public abstract class SpringSetter<T extends Holder<?>>
     {
         return mPropertyName;
     }
-
+    /**
+     * Get the beanName value.
+     *
+     * @return a <code>String</code> value
+     */
+    public String getBeanName()
+    {
+        return mBeanName;
+    }
     /**
      * Returns the receiver's property value.
      *
@@ -79,8 +89,7 @@ public abstract class SpringSetter<T extends Holder<?>>
      * @return The property value.
      */
 
-    public Object getPropertyValue
-        (GenericApplicationContext context)
+    public Object getPropertyValue(BeanFactory context)
     {
         return context.getBean(mBeanName);
     }
@@ -97,18 +106,28 @@ public abstract class SpringSetter<T extends Holder<?>>
      * @param index The index.
      */
 
-    public void setup
-        (GenericApplicationContext context,
-         Properties properties,
-         int index)
+    public void setup(BeanDefinitionRegistry context,
+                      Properties properties,
+                      int index)
     {
-        mBeanName=PROPERTY_PROXY_BEAN_NAME_PREFIX+index;
-        SpringUtils.addStringBean
-            (context,mBeanName,
-             "${"+getPropertyName()+"}"); //$NON-NLS-1$ //$NON-NLS-2$
-        properties.put(getPropertyName(),StringUtils.EMPTY);
+        mBeanName = PROPERTY_PROXY_BEAN_NAME_PREFIX+index;
+        SpringUtils.addStringBean(context,
+                                  mBeanName,
+                                  "${"+getPropertyName()+"}"); //$NON-NLS-1$ //$NON-NLS-2$
+        properties.put(getPropertyName(),
+                       StringUtils.EMPTY);
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SpringSetter [mBeanName=").append(mBeanName).append(", mPropertyName=").append(mPropertyName)
+                .append("]");
+        return builder.toString();
+    }
     /**
      * Sets the holder's data by obtaining it from the given context
      * via the receiver's proxy bean. This method is called by a
@@ -117,6 +136,6 @@ public abstract class SpringSetter<T extends Holder<?>>
      * @param context The context.
      */
 
-    public abstract void setValue
-        (GenericApplicationContext context);
+    public abstract void setValue(BeanFactory context);
+    public abstract void setValue(String inValue);
 }

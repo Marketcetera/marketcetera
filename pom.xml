@@ -37,15 +37,17 @@
   <properties>
     <mvn.javase.version>7</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>3.2.4.RELEASE</mvn.spring.version>
-    <mvn.cxf.version>2.7.7</mvn.cxf.version>
-    <mvn.querydsl.version>3.2.3</mvn.querydsl.version>
+    <mvn.spring.version>4.0.0.RELEASE</mvn.spring.version>
+    <mvn.cxf.version>2.7.8</mvn.cxf.version>
+    <mvn.querydsl.version>3.2.4</mvn.querydsl.version>
+    <mvn.springdatajpa.version>1.4.3.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
+    <mvn.hibernate.version>4.2.7.Final</mvn.hibernate.version>
     <!-- Build Number. -->
     <mvn.build.number>Development Build</mvn.build.number>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
-       jaxb:  2.2.6
+       jaxb:  2.2.6 (provided by Java7, not CXF)
        asm:   4.0
        cglib: 3.0 -->
   <dependencyManagement>
@@ -162,6 +164,10 @@
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -224,7 +230,7 @@
       <dependency>
         <groupId>org.springframework.data</groupId>
         <artifactId>spring-data-jpa</artifactId>
-        <version>1.4.2.RELEASE</version>
+        <version>${mvn.springdatajpa.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.springframework</groupId>
@@ -238,9 +244,9 @@
       </dependency>
       <!-- Compile: Other -->
       <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>4.0</version>
+	<groupId>org.ow2.asm</groupId>
+	<artifactId>asm</artifactId>
+	<version>4.0</version>
       </dependency>
       <dependency>
         <groupId>org.skife.kasparov</groupId>
@@ -300,7 +306,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
-        <version>4.2.7.Final</version>
+        <version>${mvn.hibernate.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -551,7 +557,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
-        <version>4.2.7.Final</version>
+        <version>${mvn.hibernate.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -563,7 +569,7 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-c3p0</artifactId>
-        <version>4.2.7.Final</version>
+        <version>${mvn.hibernate.version}</version>
         <scope>runtime</scope>
       </dependency>       
       <dependency>
@@ -612,13 +618,6 @@
         <artifactId>spring-test</artifactId>
         <version>${mvn.spring.version}</version>
         <scope>test</scope>
-        <exclusions>
-          <!-- Exclude junit: We want to use junit-dep. -->
-          <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
@@ -634,8 +633,8 @@
       </dependency>
       <dependency>
         <groupId>junit</groupId>
-        <artifactId>junit-dep</artifactId>
-        <version>4.5</version>
+        <artifactId>junit</artifactId>
+        <version>4.11</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -659,7 +658,7 @@
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-library</artifactId>
-        <version>1.1</version>
+        <version>1.3</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
