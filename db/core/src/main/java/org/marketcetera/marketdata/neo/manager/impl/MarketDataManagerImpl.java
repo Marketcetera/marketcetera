@@ -195,7 +195,7 @@ public class MarketDataManagerImpl
         return new ObjectName("org.marketcetera.marketdata.provider:name=" + inProvider.getProviderName());
     }
     /**
-     *
+     * Represents a token used to identify requests.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: MarketDataManagerImpl.java 16454 2013-01-17 01:55:01Z colin $
@@ -266,8 +266,8 @@ public class MarketDataManagerImpl
         /**
          * Create a new Token instance.
          *
-         * @param inSubscriber
-         * @param inRequest
+         * @param inSubscriber an <code>ISubscriber</code> value
+         * @param inRequest a <code>MarketDataRequest</code> value
          */
         private Token(ISubscriber inSubscriber,
                       MarketDataRequest inRequest)
@@ -275,16 +275,43 @@ public class MarketDataManagerImpl
             subscriber = inSubscriber;
             request = inRequest;
         }
+        /**
+         * id which identifies the request
+         */
         private final long id = requestCounter.incrementAndGet();
+        /**
+         * subscriber to whom updated should be delivered
+         */
         private final ISubscriber subscriber;
+        /**
+         * market data request
+         */
         private final MarketDataRequest request;
         private static final long serialVersionUID = 1L;
     }
+    /**
+     * tracks active market data providers by the provider name
+     */
     @GuardedBy("requestLockObject")
     private final Map<String,MarketDataProvider> activeProvidersByName = new HashMap<String,MarketDataProvider>();
+    /**
+     * controls access to class state
+     */
     private final ReadWriteLock requestLockObject = new ReentrantReadWriteLock();
+    /**
+     * tracks market data requests
+     */
     private final Map<Long,MarketDataRequestToken> tokensByTokenId = new HashMap<Long,MarketDataRequestToken>();
+    /**
+     * tracks market data providers by request token
+     */
     private final Multimap<MarketDataRequestToken,MarketDataProvider> providersByToken = HashMultimap.create();
+    /**
+     * uniquely identifies market data requests
+     */
     private final AtomicLong requestCounter = new AtomicLong(0);
+    /**
+     * provides access to the MBean registry
+     */
     private final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 }

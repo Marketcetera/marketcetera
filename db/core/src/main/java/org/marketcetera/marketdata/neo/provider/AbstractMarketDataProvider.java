@@ -8,6 +8,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -35,7 +37,9 @@ import org.marketcetera.marketdata.neo.request.MarketDataRequestToken;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.Lifecycle;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -51,6 +55,7 @@ import com.google.common.collect.Multimap;
  * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
  * @since $Release$
  */
+@Component
 @ThreadSafe
 public abstract class AbstractMarketDataProvider
         implements MarketDataProvider, MarketdataCache
@@ -82,6 +87,7 @@ public abstract class AbstractMarketDataProvider
      * @see org.springframework.context.Lifecycle#start()
      */
     @Override
+    @PostConstruct
     public synchronized void start()
     {
         if(isRunning()) {
@@ -110,6 +116,7 @@ public abstract class AbstractMarketDataProvider
      * @see org.springframework.context.Lifecycle#stop()
      */
     @Override
+    @PreDestroy
     public synchronized void stop()
     {
         if(!isRunning()) {
@@ -806,6 +813,7 @@ public abstract class AbstractMarketDataProvider
     /**
      * provider registry value with which to register/unregister or <code>null</code>
      */
+    @Autowired
     private volatile MarketDataProviderRegistry providerRegistry;
     /**
      * total number of requests submitted
