@@ -49,7 +49,9 @@ public enum Content
     /**
      * dividend data
      */
-    DIVIDEND;
+    DIVIDEND,
+    AGGREGATED_DEPTH,
+    UNAGGREGATED_DEPTH;
     /**
      * Determines if this content is relevant to the given event class.
      * 
