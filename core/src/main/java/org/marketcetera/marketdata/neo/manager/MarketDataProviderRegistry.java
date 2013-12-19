@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.neo.manager;
 
 import org.marketcetera.marketdata.neo.ProviderStatus;
 import org.marketcetera.marketdata.neo.provider.MarketDataProvider;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -12,6 +13,7 @@ import org.marketcetera.marketdata.neo.provider.MarketDataProvider;
  * @version $Id: MarketDataProviderRegistry.java 16422 2013-01-03 19:43:24Z colin $
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface MarketDataProviderRegistry
 {
     /**

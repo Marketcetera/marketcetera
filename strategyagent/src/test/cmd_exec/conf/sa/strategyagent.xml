@@ -89,4 +89,6 @@
   <bean id="wsServerPort" class="java.lang.Integer">
     <constructor-arg value="${metc.sa.ws.port}"/>
   </bean>
+  <!-- neo market data manager -->
+  <bean id="marketDataManager" class="org.marketcetera.marketdata.neo.manager.impl.MarketDataManagerImpl"/>
 </beans>
