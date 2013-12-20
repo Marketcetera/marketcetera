@@ -23,4 +23,12 @@
   <import resource="properties.xml"/>
   <import resource="sa/strategyagent.xml"/>
   <context:component-scan base-package="org.marketcetera,com.marketcetera"/>
+  <!-- symbol resolvers: add additional resolvers as necessary in precedence order -->
+  <bean id="symbolResolverService" class="org.marketcetera.symbol.IterativeSymbolResolver">
+    <property name="symbolResolvers">
+      <list>
+        <bean class="org.marketcetera.symbol.PatternSymbolResolver"/>
+      </list>
+    </property>
+  </bean>
 </beans>

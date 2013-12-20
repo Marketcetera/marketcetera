@@ -1,4 +1,4 @@
-package org.marketcetera.trade.utils;
+package org.marketcetera.symbol;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.options.OptionUtils;
@@ -6,25 +6,25 @@ import org.marketcetera.trade.Currency;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Future;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Provides symbol-to-<code>Instrument</code> resolution services.
+ * Resolves symbols according to patterns.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
-public class SymbolResolver
+@ClassVersion("$Id: ServiceImpl.java 16661 2013-08-22 17:51:57Z colin $")
+public class PatternSymbolResolver
+        implements SymbolResolver
 {
-    /**
-     * Resolves the given symbol to an <code>Instrument</code>.
-     *
-     * @param inSymbol a <code>String</code> value
-     * @return an <code>Instrument</code> value
-     * @throws UnresolvableSymbol if the symbol cannot be resolved
+    /* (non-Javadoc)
+     * @see com.marketcetera.ors.symbol.SymbolResolver#resolveSymbol(java.lang.String)
      */
+    @Override
     public Instrument resolveSymbol(String inSymbol)
     {
         inSymbol = StringUtils.trimToNull(inSymbol);
