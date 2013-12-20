@@ -392,12 +392,33 @@ public abstract class AbstractMarketDataProvider
         }
     }
     /**
-     * 
+     * Returns the instrument mapped to the given symbol.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @return an <code>Instrument</code> value or <code>null</code>
+     */
+    protected Instrument getMappedInstrumentFor(String inSymbol)
+    {
+        Instrument result = null;
+        Lock symbolMappingLock = marketdataLock.readLock();
+        try {
+            symbolMappingLock.lockInterruptibly();
+            result = instrumentsBySymbol.get(inSymbol);
+        } catch (InterruptedException e) {
+            Messages.UNABLE_TO_ACQUIRE_LOCK.error(this);
+            stop();
+        } finally {
+            symbolMappingLock.unlock();
+        }
+        return result;
+    }
+    /**
+     * Maps the given request to the instruments it uses.
      *
      * <p>This method requires an external write-lock on {@link #requestsByInstrument} and
      * an external read-lock on {@link #instrumentsBySymbol}.
      *
-     * @param inToken
+     * @param inToken a <code>MarketDataRequestToken</code> value
      */
     private void mapRequestToInstruments(MarketDataRequestToken inToken)
     {

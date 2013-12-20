@@ -150,4 +150,12 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
     {
         return mPublisher;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#getSubscriptionCount()
+     */
+    @Override
+    public int getSubscriptionCount()
+    {
+        return mPublisher.getSubscriptionCount();
+    }
 }

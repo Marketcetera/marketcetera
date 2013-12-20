@@ -239,6 +239,14 @@ public class StrategyAgent
         }
         moduleManager = inModuleManager;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#getSubscriptionCount()
+     */
+    @Override
+    public int getSubscriptionCount()
+    {
+        return dataPublisher.getSubscriptionCount();
+    }
     /**
      * Get the loader value.
      *
