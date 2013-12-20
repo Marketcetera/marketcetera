@@ -18,6 +18,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventType;
@@ -39,7 +40,6 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.Lifecycle;
-import org.springframework.stereotype.Component;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -55,8 +55,8 @@ import com.google.common.collect.Multimap;
  * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
  * @since $Release$
  */
-@Component
 @ThreadSafe
+@ClassVersion("$Id$")
 public abstract class AbstractMarketDataProvider
         implements MarketDataProvider, MarketdataCache
 {
@@ -625,6 +625,7 @@ public abstract class AbstractMarketDataProvider
          * content value of the request
          */
         private final Content content;
+        private static final long serialVersionUID = 1620417545349201170L;
     }
     /**
      * Processes events returned by the provider and publishes them to interested subscribers.

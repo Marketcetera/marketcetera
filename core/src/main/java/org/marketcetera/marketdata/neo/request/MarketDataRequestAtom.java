@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata.neo.request;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.marketdata.Content;
@@ -17,6 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @XmlRootElement
 @ClassVersion("$Id$")
 public interface MarketDataRequestAtom
+        extends Serializable
 {
     /**
      * Gets the symbol value.
