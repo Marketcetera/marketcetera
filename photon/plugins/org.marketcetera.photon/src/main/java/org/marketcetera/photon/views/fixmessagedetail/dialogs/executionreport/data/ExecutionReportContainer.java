@@ -1,16 +1,20 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionType;
+import org.marketcetera.trade.OrderStatus;
 
 import quickfix.Field;
 import quickfix.Message;
@@ -99,6 +103,88 @@ public class ExecutionReportContainer
 		return nonFixFields.toArray(new ExecutionReportNoneFixField[nonFixFields.size()]);
 	}
 
+	public void fillBreakTradeFromExecutionReport(ExecutionReport executionReport)
+	{
+		Map<Integer, ExecutionReportField> executionReportFields = new HashMap<Integer, ExecutionReportField>();
+
+		ExecutionReportFixFields fixFields = new ExecutionReportFixFields();
+
+		ExecutionReportField[] presetReportFields = fixFields.getExecutionReportFields();
+		for(ExecutionReportField field: presetReportFields)
+		{
+			if(field.getFieldName().equals(Messages.EXECUTION_REPORT_FIELD_CUM_QTY.getText()))
+			{
+				field.setSelectedValue(BigDecimal.ZERO.toPlainString());
+			}
+			else if(field.getFieldName().equals(Messages.EXECUTION_REPORT_FIELD_LAST_QTY.getText()))
+			{
+				field.setSelectedValue(BigDecimal.ZERO.toPlainString());
+			}
+			else if(field.getFieldName().equals(Messages.EXECUTION_REPORT_FIELD_LEAVES_QTY.getText()))
+			{
+				BigDecimal orderQty = executionReport.getOrderQuantity();
+				if(orderQty != null)
+				{
+					field.setSelectedValue(orderQty.toPlainString());
+				}
+				else
+				{
+					field.parseFromReport(executionReport);
+				}
+			}
+			else if(field.getFieldName().equals(Messages.EXECUTION_REPORT_FIELD_EXECUTION_TYPE.getText()))
+			{
+				field.setSelectedValue(ExecutionType.Restated.name());
+			}
+			else if(field.getFieldName().equals(Messages.EXECUTION_REPORT_FIELD_ORDER_STATUS.getText()))
+			{
+				field.setSelectedValue(OrderStatus.Expired.name());
+			}
+			else if(field.getFieldName().equals(Messages.EXECUTION_REPORT_FIELD_SENDING_TIME.getText()))
+			{
+				Date sendingTime = executionReport.getSendingTime();
+				if(sendingTime != null)
+				{
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(sendingTime);
+					cal.add(Calendar.SECOND, 1);
+					field.setSelectedDateValue(cal.getTime());
+				}
+				else
+				{
+					field.parseFromReport(executionReport);	
+				}
+			}
+			else
+			{
+				field.parseFromReport(executionReport);				
+			}
+
+			executionReportFields.put(new Integer(field.getFieldTag()), field);
+		}
+
+		Message message = getMessageFromExecutionReport(executionReport);
+
+		Iterator<Field<?>> fieldIterator = message.iterator();
+		while (fieldIterator.hasNext()) 
+		{
+			Field<?> field = (Field<?>) fieldIterator.next();
+			Integer fieldTag = new Integer(field.getTag());
+
+			if(!executionReportFields.containsKey(fieldTag))
+			{
+				ExecutionReportField reportField = new CustomFixField(field.getTag());
+				reportField.setSelectedValue(field.getObject().toString());
+				executionReportFields.put(fieldTag, reportField);
+			}
+		}
+
+		for(Integer fieldTag: executionReportFields.keySet())
+		{
+			addExecutionReportField(executionReportFields.get(fieldTag));
+		}
+	}
+	
 	public void fillFromExecutionReport(ExecutionReport executionReport) 
 	{
         Map<Integer, ExecutionReportField> executionReportFields = new HashMap<Integer, ExecutionReportField>();
@@ -108,7 +194,7 @@ public class ExecutionReportContainer
 		ExecutionReportField[] presetReportFields = fixFields.getExecutionReportFields();
 		for(ExecutionReportField field: presetReportFields)
 		{
-			field.parseFromReport(executionReport);
+			field.parseFromReport(executionReport);				
 			executionReportFields.put(new Integer(field.getFieldTag()), field);
 		}
 		

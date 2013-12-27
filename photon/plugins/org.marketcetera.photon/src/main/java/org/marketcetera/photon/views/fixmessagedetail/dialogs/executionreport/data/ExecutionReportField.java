@@ -1,5 +1,10 @@
 package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.data;
 
+import java.util.Date;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.ExecutionReport;
@@ -16,6 +21,27 @@ import quickfix.Message;
  */
 public abstract class ExecutionReportField
 {
+	/*YYYYMMDD-HH:MM:SS*/
+	protected static final DateTimeFormatter utc1 = new DateTimeFormatterBuilder().
+			appendYear(4, 4).
+			appendMonthOfYear(2).
+			appendDayOfMonth(2).
+			appendLiteral('-').
+			appendHourOfDay(2).
+			appendLiteral(':').
+			appendMinuteOfHour(2).
+			appendLiteral(':').
+			appendSecondOfMinute(2).
+			toFormatter();
+	/*YYYYMMDD-HH:MM:SS.sss*/
+	protected static final DateTimeFormatter utc2 = new DateTimeFormatterBuilder().
+			append(utc1).
+			appendLiteral('.').
+			appendMillisOfSecond(3).
+			toFormatter();
+	//allowed formats
+	protected String allowedFormats = "YYYYMMDD-HH:MM:SS, YYYYMMDD-HH:MM:SS.sss";
+	
 	protected String fValue;
 	
 	public static final String[] NULL_VALUE = null;
@@ -43,6 +69,12 @@ public abstract class ExecutionReportField
 	public void setSelectedValue(String selectedValue)
 	{
 		fValue = selectedValue;
+	}
+	
+	public void setSelectedDateValue(Date selectedValue)
+	{
+		DateTime dt = new DateTime(selectedValue);
+		fValue = utc2.print(dt); 
 	}
 	
 	public String getSelectedValue()

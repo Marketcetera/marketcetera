@@ -3,8 +3,6 @@ package org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.d
 import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.trade.ExecutionReport;
 
@@ -18,28 +16,7 @@ import quickfix.field.TransactTime;
  *
  */
 public class TransactTimeField extends ExecutionReportField 
-{
-	/*YYYYMMDD-HH:MM:SS*/
-	private static final DateTimeFormatter utc1 = new DateTimeFormatterBuilder().
-			appendYear(4, 4).
-			appendMonthOfYear(2).
-			appendDayOfMonth(2).
-			appendLiteral('-').
-			appendHourOfDay(2).
-			appendLiteral(':').
-			appendMinuteOfHour(2).
-			appendLiteral(':').
-			appendSecondOfMinute(2).
-			toFormatter();
-	/*YYYYMMDD-HH:MM:SS.sss*/
-	private static final DateTimeFormatter utc2 = new DateTimeFormatterBuilder().
-			append(utc1).
-			appendLiteral('.').
-			appendMillisOfSecond(3).
-			toFormatter();
-	//allowed formats
-	private String allowedFormats = "YYYYMMDD-HH:MM:SS, YYYYMMDD-HH:MM:SS.sss";
-	
+{	
 	@Override
 	public String getFieldName() 
 	{

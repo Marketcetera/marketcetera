@@ -365,7 +365,13 @@ public class AddExecutionReportDialog extends ReportDialog
 		// Fill from an execution report
 		fExecutionReportFields.fillFromExecutionReport(executionReport);
 	}
-	
+
+	public void fillBreakTradeFromExecutionReport(ExecutionReport executionReport)
+	{
+		// Break trade from an execution report
+		fExecutionReportFields.fillBreakTradeFromExecutionReport(executionReport);
+	}
+
 	/**
 	 * Check selected combo element, skip selected if 
 	 * element has been typed-in. Skip empty values
