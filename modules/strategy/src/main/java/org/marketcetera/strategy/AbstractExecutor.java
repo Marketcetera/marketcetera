@@ -4,21 +4,23 @@ import static org.marketcetera.strategy.Status.RUNNING;
 import static org.marketcetera.strategy.Status.STARTING;
 import static org.marketcetera.strategy.Status.STOPPED;
 
-import org.marketcetera.core.event.impl.LogEventBuilder;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
 /**
  * Executes a given {@link Strategy}.
  *
- * @version $Id: AbstractExecutor.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 abstract class AbstractExecutor
-        implements Executor
+        implements Executor, Messages
 {
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Executor#start()
@@ -34,10 +36,10 @@ abstract class AbstractExecutor
                        processedScript);
         Object objectReturned = engine.start();
         if(objectReturned == null) {
-            StrategyModule.log(LogEventBuilder.error().withMessage(Messages.STRATEGY_COMPILATION_NULL_RESULT,
+            StrategyModule.log(LogEventBuilder.error().withMessage(STRATEGY_COMPILATION_NULL_RESULT,
                                                                    String.valueOf(getStrategy())).create(),                               
                                getStrategy());                               
-            throw new StrategyException(new I18NBoundMessage1P(Messages.STRATEGY_COMPILATION_NULL_RESULT,
+            throw new StrategyException(new I18NBoundMessage1P(STRATEGY_COMPILATION_NULL_RESULT,
                                                                getStrategy().toString()));
         }
         if(objectReturned instanceof RunningStrategy) {
@@ -70,7 +72,7 @@ abstract class AbstractExecutor
             } catch (Exception e) {
                 // this means that the "onStart" method was never completed so the strategy never started
                 // this will cause a moduleCreationError in StrategyModule, which is what we want
-                StrategyModule.log(LogEventBuilder.error().withMessage(Messages.RUNTIME_ERROR,
+                StrategyModule.log(LogEventBuilder.error().withMessage(RUNTIME_ERROR,
                                                                        getStrategy().toString(),
                                                                        translateMethodName("onStart"), //$NON-NLS-1$
                                                                        interpretRuntimeException(e))
@@ -79,9 +81,9 @@ abstract class AbstractExecutor
                 throw e;
             }
         } else {
-            StrategyModule.log(LogEventBuilder.error().withMessage(Messages.NO_STRATEGY_CLASS).create(),
+            StrategyModule.log(LogEventBuilder.error().withMessage(NO_STRATEGY_CLASS).create(),
                                getStrategy());
-            throw new StrategyException(Messages.NO_STRATEGY_CLASS);
+            throw new StrategyException(NO_STRATEGY_CLASS);
         }
     }
     /* (non-Javadoc)
@@ -104,7 +106,7 @@ abstract class AbstractExecutor
                 runningStrategy.onStop();
                 enclosingStrategy.setStatus(STOPPED);
         } catch (Exception e) {
-            StrategyModule.log(LogEventBuilder.error().withMessage(Messages.RUNTIME_ERROR,
+            StrategyModule.log(LogEventBuilder.error().withMessage(RUNTIME_ERROR,
                                                                    String.valueOf(getStrategy()),
                                                                    translateMethodName("onStop"), //$NON-NLS-1$
                                                                    interpretRuntimeException(e))

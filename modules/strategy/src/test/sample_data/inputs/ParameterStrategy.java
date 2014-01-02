@@ -1,21 +1,22 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.BidEvent;
-import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.core.trade.BrokerID;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.trade.OrderSingle;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderSingle;
 
 import quickfix.Message;
 
 /**
  * Test strategy that exercises a strategy's ability to retrieve parameters.
  *
- * @version $Id: ParameterStrategy.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class ParameterStrategy

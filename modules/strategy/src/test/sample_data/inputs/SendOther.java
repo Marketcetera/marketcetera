@@ -1,7 +1,7 @@
 import java.math.BigDecimal;
 
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.java.Strategy;
 
 /* $License$ */
@@ -9,14 +9,15 @@ import org.marketcetera.strategy.java.Strategy;
 /**
  * Sample strategy to test the ability to send arbitrary data.
  *
- * @version $Id: SendOther.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.0.0
  */
 public class SendOther
         extends Strategy
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.core.event.AskEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
      */
     @Override
     public void onAsk(AskEvent inAsk)

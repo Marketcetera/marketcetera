@@ -1,17 +1,20 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
-import org.marketcetera.core.marketdata.MarketDataFeedToken;
-import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.marketdata.AbstractMarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
 
 /* $License$ */
 
 /**
  * {@link MarketDataFeedToken} implementation for {@link MarketceteraFeed}.
  *
- * @version $Id: MarketceteraFeedToken.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedToken
     extends AbstractMarketDataFeedToken<MarketceteraFeed>
 {

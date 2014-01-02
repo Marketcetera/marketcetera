@@ -1,17 +1,19 @@
 package org.marketcetera.strategy;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.util.log.I18NBoundMessage;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /* $License$ */
 
 /**
  * An exception thrown during execution of a {@link Strategy}.
  *
- * @version $Id: StrategyException.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public class StrategyException
         extends CoreException
 {

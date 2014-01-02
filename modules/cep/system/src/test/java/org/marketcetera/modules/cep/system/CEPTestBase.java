@@ -5,21 +5,52 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.event.impl.LogEventBuilder;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.quickfix.CurrentFIXDataDictionary;
-import org.marketcetera.core.quickfix.FIXDataDictionary;
-import org.marketcetera.core.quickfix.FIXMessageUtilTest;
-import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.*;
-import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.MarketDataEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.module.BlockingSinkDataListener;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowNotFoundException;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleNotFoundException;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXMessageUtilTest;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.Suggestion;
 
 import quickfix.Message;
 import quickfix.field.Symbol;
@@ -29,7 +60,8 @@ import quickfix.field.Text;
  * Base case for CEP test classes - has some basic functionality for
  * running data flows through and checking for output
  *
- * @version $Id: CEPTestBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @author toli@marketcetera.com
+ * @version $Id$
  * @since 1.0.0
  */
 public abstract class CEPTestBase extends ModuleTestBase {
@@ -147,28 +179,20 @@ public abstract class CEPTestBase extends ModuleTestBase {
     @Test
     public void testInvalidDataRequestArgument() throws Exception {
         // send in a null request
-        new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.core.module.Messages.ILLEGAL_REQ_PARM_VALUE,
-                                                          getModuleURN().toString(),
-                                                          null) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(IllegalRequestParameterValue.class,
+                org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE.getText(getModuleURN(), null)) {
+            protected void execute() throws Throwable {
                 sManager.createDataFlow(new DataRequest[] {new DataRequest(getModuleURN(), null)});
             }
-        };
+        }.run();
     }
 
     /** See what happens when you send in a non-string request parameter - should error out */
     @Test(timeout=120000)
     public void testNonStringRequestParameter() throws Exception {
-        new ExpectedFailure<UnsupportedRequestParameterType>(org.marketcetera.core.module.Messages.UNSUPPORTED_REQ_PARM_TYPE,
-                                                             getModuleURN().toString(),
-                                                             Integer.class.getName()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(UnsupportedRequestParameterType.class,
+                org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE.getText(getModuleURN(), Integer.class.getName())) {
+            protected void execute() throws Throwable {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 1 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
@@ -178,7 +202,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
                         new DataRequest(getModuleURN(), 37)  // invalid request param
                 });
             }
-        };
+        }.run();
     }
 
     /** Subclasses should specify the error class that's thrown in case of incorrect syntax for query */
@@ -188,11 +212,8 @@ public abstract class CEPTestBase extends ModuleTestBase {
     @Test(timeout=120000)
     public void testIncorrectQuerySyntax() throws Exception {
         final String query = "man, is this syntax incorrect or what??";
-        new ExpectedFailure<Exception>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(getIncorrectQueryException()) {
+            protected void execute() throws Throwable {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 1 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
@@ -202,7 +223,7 @@ public abstract class CEPTestBase extends ModuleTestBase {
                         new DataRequest(getModuleURN(), query)  // invalid request param
                 });
             }
-        };
+        }.run();
     }
 
     /** Subclasses should implement a test that verifies the right exception is thrown in case of invalid type name in select */
@@ -264,15 +285,11 @@ public abstract class CEPTestBase extends ModuleTestBase {
         assertEquals("didnt' get right size", new BigDecimal("85"), theBid.getPrice());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow1).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flow1);
-        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.core.module.Messages.DATA_FLOW_NOT_FOUND,
-                                                       flow1.toString()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(DataFlowNotFoundException.class, flow1.toString()) {
+            protected void execute() throws Throwable {
                 sManager.getDataFlowInfo(flow1);
             }
-        };
+        }.run();
 
         final DataFlowID flow2 = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> System: send 3 events
@@ -289,15 +306,11 @@ public abstract class CEPTestBase extends ModuleTestBase {
         assertEquals("didnt' get right size", new BigDecimal("300"), theBid.getPrice());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow2).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flow2);
-        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.core.module.Messages.DATA_FLOW_NOT_FOUND,
-                                                       flow2.toString()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(DataFlowNotFoundException.class, flow2.toString()) {
+            protected void execute() throws Throwable {
                 sManager.getDataFlowInfo(flow2);
             }
-        };
+        }.run();
 
         // now subscribe to a totally different set of events, send sme events through and verify that we only get 3rd kind of events
         TradeEvent tradeEvent = EventTestBase.generateEquityTradeEvent(3, 4, new Equity("IBM"), "NYSE", new BigDecimal("85"), new BigDecimal("200"));
@@ -318,44 +331,28 @@ public abstract class CEPTestBase extends ModuleTestBase {
         assertEquals("CEP didn't receive all events", 3, sManager.getDataFlowInfo(flow3).getFlowSteps()[1].getNumReceived());
         assertEquals("CEP sent out extra events", 1, sManager.getDataFlowInfo(flow3).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flow3);
-        new ExpectedFailure<DataFlowNotFoundException>(org.marketcetera.core.module.Messages.DATA_FLOW_NOT_FOUND,
-                                                       flow3.toString()) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(DataFlowNotFoundException.class, flow3.toString()) {
+            protected void execute() throws Throwable {
                 sManager.getDataFlowInfo(flow3);
             }
-        };
+        }.run();
     }
 
     /** Test multiple data flows with same queries but different sinks. Make sure that  
 
-    /** Run all the various event types through */
+    /** Run all the varous event types through */
     @Test(timeout=120000)
-    public void testAsk()
-            throws Exception
-    {
-        flowTestHelperWrapper(CEPDataTypes.ASK,
-                              AskEvent.class.getName(),
-                              (Object[])new Event[] { ask1, ask2 } );
+    public void testAsk() throws Exception {
+        flowTestHelperWrapper(CEPDataTypes.ASK, AskEvent.class.getName(), new Event[] {ask1, ask2});
     }
 
-    public void testBid()
-            throws Exception
-    {
-        flowTestHelperWrapper(CEPDataTypes.BID,
-                              BidEvent.class.getName(),
-                              (Object[])new Event[] { bid1, bid2 } );
+    public void testBid() throws Exception {
+        flowTestHelperWrapper(CEPDataTypes.BID, BidEvent.class.getName(), new Event[] {bid1, bid2});
     }
 
     @Test(timeout=120000)
-    public void testTrade()
-            throws Exception
-    {
-        flowTestHelperWrapper(CEPDataTypes.TRADE,
-                              TradeEvent.class.getName(),
-                              (Object[])new Event[] { trade1, trade2 } );
+    public void testTrade() throws Exception {
+        flowTestHelperWrapper(CEPDataTypes.TRADE, TradeEvent.class.getName(), new Event[] {trade1, trade2});
     }
 
     @Test(timeout=120000)
@@ -439,17 +436,13 @@ public abstract class CEPTestBase extends ModuleTestBase {
     /** Helper to run multiple data types through the flow. We will be matching on 'symbol', or something
      * similar in the particular event type if that's available
      */
-    @SuppressWarnings("rawtypes")
     protected void flowTestHelper(String type, Object[] expectedEvents) throws Exception {
         // verify module not found before data flow is started
-        new ExpectedFailure<ModuleNotFoundException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(ModuleNotFoundException.class) {
+            protected void execute() throws Throwable {
                 sManager.getModuleInfo(getModuleURN());
             }
-        };
+        }.run();
 
         DataFlowID flowID = sManager.createDataFlow(new DataRequest[] {
                 // Copier -> CEP - send all the events in
@@ -479,13 +472,10 @@ public abstract class CEPTestBase extends ModuleTestBase {
         assertEquals("CEP didn't send out right # of events", expectedEvents.length, sManager.getDataFlowInfo(flowID).getFlowSteps()[1].getNumEmitted());
         sManager.cancel(flowID);
         // verify module not found after data flow is started
-        new ExpectedFailure<ModuleNotFoundException>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(ModuleNotFoundException.class) {
+            protected void execute() throws Throwable {
                 sManager.getModuleInfo(getModuleURN());
             }
-        };
+        }.run();
     }
 }

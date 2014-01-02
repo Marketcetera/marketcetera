@@ -5,10 +5,10 @@ import static org.marketcetera.strategy.Messages.PROVIDER_DESCRIPTION;
 import java.io.File;
 import java.util.Properties;
 
-import org.marketcetera.core.module.ModuleCreationException;
-import org.marketcetera.core.module.ModuleFactory;
-import org.marketcetera.core.module.ModuleURN;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleFactory;
+import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 
@@ -37,9 +37,11 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * <tr><th>Module Type:</th><td>{@link StrategyModule}</td></tr>
  * </table>
  *
- * @version $Id: StrategyModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public final class StrategyModuleFactory
         extends ModuleFactory
 {
@@ -65,7 +67,7 @@ public final class StrategyModuleFactory
               ModuleURN.class);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
+     * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
      */
     @Override
     public StrategyModule create(Object... inParameters)

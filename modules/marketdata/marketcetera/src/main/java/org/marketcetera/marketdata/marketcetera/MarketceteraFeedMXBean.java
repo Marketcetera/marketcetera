@@ -2,17 +2,20 @@ package org.marketcetera.marketdata.marketcetera;
 
 import javax.management.MXBean;
 
-import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
-import org.marketcetera.core.module.DisplayName;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.module.DisplayName;
 
 /* $License$ */
 
 /**
  * Defines the set of attributes and operations available from the {@link MarketceteraFeed}.
  *
- * @version $Id: MarketceteraFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 @MXBean(true)
 @DisplayName("Management Interface for Marketcetera Marketdata Feed")
 public interface MarketceteraFeedMXBean

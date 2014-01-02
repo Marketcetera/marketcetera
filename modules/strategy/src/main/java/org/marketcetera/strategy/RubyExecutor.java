@@ -5,16 +5,18 @@ import java.util.Map;
 
 import org.apache.bsf.BSFException;
 import org.jruby.exceptions.RaiseException;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 
 /**
  * {@link Executor} implementation for Ruby strategies.
  *
- * @version $Id: RubyExecutor.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 class RubyExecutor
     extends AbstractExecutor
 {

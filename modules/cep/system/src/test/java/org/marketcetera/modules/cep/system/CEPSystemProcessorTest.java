@@ -9,16 +9,23 @@ import java.util.Date;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.core.event.Event;
-import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.RequestDataException;
+import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
 
 /**
- * @version $Id: CEPSystemProcessorTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author toli@marketcetera.com
+ * @version $Id$
  * @since 1.0.0
  */
 public class CEPSystemProcessorTest extends CEPTestBase {
@@ -76,11 +83,8 @@ public class CEPSystemProcessorTest extends CEPTestBase {
 
     @Test(timeout=120000)
     public void testInvalidStringArrReqeust() throws Exception {
-        new ExpectedFailure<UnsupportedRequestParameterType>() {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(UnsupportedRequestParameterType.class) {
+            protected void execute() throws Exception {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
@@ -92,18 +96,14 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                         new DataRequest(TEST_URN, new String[]{"select * from bob", "select * from fred"})
                 });
             }
-        };
+        }.run();
     }
 
 
     @Test(timeout=120000)
     public void testUnknownAlias() throws Exception {
-        new ExpectedFailure<RequestDataException>(Messages.UNSUPPORTED_TYPE,
-                                                  "bob") {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(RequestDataException.class, Messages.UNSUPPORTED_TYPE.getText("bob")) {
+            protected void execute() throws Exception {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> System: send 3 events
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
@@ -115,6 +115,6 @@ public class CEPSystemProcessorTest extends CEPTestBase {
                         new DataRequest(TEST_URN, "select * from bob")
                 });
             }
-        };
+        }.run();
     }
 }

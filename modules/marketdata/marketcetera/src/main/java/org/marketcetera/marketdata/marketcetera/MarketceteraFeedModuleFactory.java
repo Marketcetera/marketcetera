@@ -2,10 +2,11 @@ package org.marketcetera.marketdata.marketcetera;
 
 import static org.marketcetera.marketdata.marketcetera.Messages.PROVIDER_DESCRIPTION;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.module.ModuleCreationException;
-import org.marketcetera.core.module.ModuleFactory;
-import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleFactory;
+import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 
@@ -23,9 +24,11 @@ import org.marketcetera.core.module.ModuleURN;
  * <tr><th>Module Type:</th><td>{@link MarketceteraFeedModule}</td></tr>
  * </table>
  *
- * @version $Id: MarketceteraFeedModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedModuleFactory
         extends ModuleFactory
 {
@@ -40,7 +43,7 @@ public class MarketceteraFeedModuleFactory
               false);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
+     * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
      */
     @Override
     public MarketceteraFeedModule create(Object... inParameters)

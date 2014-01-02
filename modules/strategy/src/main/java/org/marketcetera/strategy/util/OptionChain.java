@@ -12,11 +12,11 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.event.util.MarketstatEventCache;
+import org.marketcetera.event.*;
+import org.marketcetera.event.util.MarketstatEventCache;
 import org.marketcetera.strategy.util.OptionContractPair.OptionContractPairKey;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.CellStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
@@ -78,10 +78,12 @@ import org.nocrala.tools.texttablefmt.CellStyle.HorizontalAlign;
  * }
  * </pre>
  *
- * @version $Id: OptionChain.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
+@ClassVersion("$Id$")
 public final class OptionChain
 {
     /**

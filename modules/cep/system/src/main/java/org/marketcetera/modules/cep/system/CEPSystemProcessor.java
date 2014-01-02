@@ -1,8 +1,9 @@
 package org.marketcetera.modules.cep.system;
 
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.module.*;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,9 +35,11 @@ import java.util.Map;
  * we pull out all the classes, and remove the emitter subscribed to listen on that event type</li>
  * </ul>
  *
+ * @author anshul@marketcetera.com
  * @since 1.0.0
- * @version $Id: CEPSystemProcessor.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CEPSystemProcessor extends Module
         implements DataReceiver, DataEmitter {
 
@@ -112,7 +115,7 @@ public class CEPSystemProcessor extends Module
 
         // find the type they are requesting (ie select * from <type>)
         String type = query.substring(QUERY_PREFIX.length());
-        Class<?> theClass = getClassForRequest(type);
+        Class theClass = getClassForRequest(type);
         if (theClass == null) {
             throw new RequestDataException(new I18NBoundMessage1P(Messages.UNSUPPORTED_TYPE, type));
         }
@@ -130,9 +133,9 @@ public class CEPSystemProcessor extends Module
     /** Checks to see if we are looking at an alias or a fully-qualified class name.
      * Any known alias or valid FQCN is allowed
      */
-    protected Class<?> getClassForRequest(String className) {
+    protected Class getClassForRequest(String className) {
         // first check to see if it's a known pre-canned type
-        Class<?> theClass = mTypeLookupMap.get(className);
+        Class theClass = mTypeLookupMap.get(className);
         if(theClass != null) return theClass;
 
         try {

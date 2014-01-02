@@ -9,11 +9,11 @@ import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.jruby.exceptions.RaiseException;
-import org.marketcetera.core.event.impl.LogEventBuilder;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.strategy.CompilationFailed.Diagnostic;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -21,9 +21,11 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * {@link ExecutionEngine} implementation which uses <a href="http://jakarta.apache.org/bsf">Apache Bean Scriping Framewok</a>
  * to execute scripts.
  *
- * @version $Id: BeanScriptingFrameworkEngine.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 class BeanScriptingFrameworkEngine
         implements ExecutionEngine
 {

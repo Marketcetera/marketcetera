@@ -5,24 +5,26 @@ import java.math.BigDecimal;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.event.beans.OptionBean;
-import org.marketcetera.core.event.util.MarketstatEventCache;
-import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.event.*;
+import org.marketcetera.event.beans.OptionBean;
+import org.marketcetera.event.util.MarketstatEventCache;
+import org.marketcetera.options.ExpirationType;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Represents an option contract and its most recent market data, if available.
  *
- * @version $Id: OptionContract.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
+@ClassVersion("$Id$")
 public final class OptionContract
 {
     /**

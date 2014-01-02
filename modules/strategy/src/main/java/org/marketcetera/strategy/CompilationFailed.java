@@ -2,20 +2,23 @@ package org.marketcetera.strategy;
 
 import static org.marketcetera.strategy.Messages.COMPILATION_FAILED;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Indicates that a strategy could not be compiled.
  *
- * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public class CompilationFailed
         extends StrategyException
 {
@@ -82,10 +85,12 @@ public class CompilationFailed
     /**
      * Indicates what type of diagnostic was returned from the compiler.
      *
-     * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        public static enum Type
+    @ClassVersion("$Id$")
+    public static enum Type
     {
         /**
          * a compilation warning
@@ -99,10 +104,13 @@ public class CompilationFailed
     /**
      * Diagnostic information provided by the compiler for a compilation error or warning.
      *
-     * @version $Id: CompilationFailed.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        public static class Diagnostic
+    @ClassVersion("$Id$")
+    public static class Diagnostic
+            implements Serializable
     {
         /**
          * Creates a warning diagnostic.
@@ -174,5 +182,6 @@ public class CompilationFailed
                                  type,
                                  message);
         }
+        private static final long serialVersionUID = 1L;
     }
 }

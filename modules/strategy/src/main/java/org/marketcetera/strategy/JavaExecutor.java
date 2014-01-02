@@ -1,15 +1,17 @@
 package org.marketcetera.strategy;
 
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 
 /**
  * {@link Executor} implementation for Java strategies.
  *
- * @version $Id: JavaExecutor.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 class JavaExecutor
     extends AbstractExecutor
 {
@@ -38,7 +40,12 @@ class JavaExecutor
     protected ExecutionEngine getExecutionEngine()
             throws StrategyException
     {
-        return new JavaCompilerExecutionEngine();
+        // need to decide whether to use JavaCompilerExecutionEngine or JavaClasspathExecutionEngine
+        if(getStrategy().getScript() == null) {
+            return new JavaClasspathExecutionEngine();
+        } else {
+            return new JavaCompilerExecutionEngine();
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Executor#interpretRuntimeException(java.lang.Exception)

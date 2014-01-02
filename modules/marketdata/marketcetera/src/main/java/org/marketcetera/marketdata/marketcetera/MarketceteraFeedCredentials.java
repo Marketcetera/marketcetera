@@ -3,18 +3,21 @@ package org.marketcetera.marketdata.marketcetera;
 import static org.marketcetera.marketdata.marketcetera.Messages.TARGET_COMP_ID_REQUIRED;
 import static org.marketcetera.marketdata.marketcetera.Messages.URL_REQUIRED;
 
-import org.marketcetera.core.marketdata.AbstractMarketDataFeed;
-import org.marketcetera.core.marketdata.AbstractMarketDataFeedURLCredentials;
-import org.marketcetera.core.marketdata.FeedException;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.AbstractMarketDataFeedURLCredentials;
+import org.marketcetera.marketdata.FeedException;
 
 /* $License$ */
 
 /**
  * Credentials instance for <code>MarketceteraFeed</code>.
  * 
- * @version $Id: MarketceteraFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 0.6.0
 */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedCredentials
     extends AbstractMarketDataFeedURLCredentials
 {

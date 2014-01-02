@@ -1,10 +1,11 @@
 package org.marketcetera.modules.csv;
 
-import org.marketcetera.core.util.misc.NamedThreadFactory;
-import org.marketcetera.core.util.unicode.UnicodeInputStreamReader;
-import org.marketcetera.core.util.unicode.DecodingStrategy;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.module.*;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.misc.NamedThreadFactory;
+import org.marketcetera.util.unicode.UnicodeInputStreamReader;
+import org.marketcetera.util.unicode.DecodingStrategy;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.module.*;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,7 +56,9 @@ import org.apache.commons.csv.CSVStrategy;
  * <tr><th>Factory</th><td>{@link CSVEmitterFactory}</td></tr>
  * </table>
  *
+ * @author anshul@marketcetera.com
  */
+@ClassVersion("$Id$")
 public class CSVEmitter extends Module implements DataEmitter {
     /**
      * Creates an instance.
@@ -197,7 +200,7 @@ public class CSVEmitter extends Module implements DataEmitter {
          * from the supplied array. The map's size is the same size as
          * the length of the supplied inKeys array.
          */
-        private Map<String,String> createMap(String[] inKeys, String[] inValues) {
+        private Map createMap(String[] inKeys, String[] inValues) {
             HashMap<String, String> map = new HashMap<String, String>();
             for(int i = 0; i < inKeys.length; i++) {
                 map.put(inKeys[i], i < inValues.length? inValues[i]: "");  //$NON-NLS-1$

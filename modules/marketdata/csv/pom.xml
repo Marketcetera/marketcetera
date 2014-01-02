@@ -1,67 +1,102 @@
-<?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.marketcetera.modules</groupId>
-        <artifactId>marketdata</artifactId>
-        <version>1-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>marketdata</artifactId>
+    <version>2.4.0</version>
+  </parent>
 
-    <groupId>org.marketcetera.modules</groupId>
-    <artifactId>marketdata-csv</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+  <artifactId>marketdata-csv</artifactId>
+  <packaging>jar</packaging>
+  <version>2.4.0</version>
 
-    <packaging>jar</packaging>
+  <name>marketdata-csv</name>
 
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPL)v2</name>
-            <url>http://www.fsf.org/licensing/licenses/gpl.txt</url>
-        </license>
-    </licenses>
+  <dependencies>
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.marketcetera.fork</groupId>
+      <artifactId>commons-csv</artifactId>
+    </dependency>
 
-    <name>CSV Marketdata Module</name>
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope>
+    </dependency>
 
-    <dependencies>
-        <!-- compile: local -->
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera.fork</groupId>
-            <artifactId>commons-csv</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-        <!-- test: local -->
-	<dependency>
-	  <groupId>org.marketcetera.core</groupId>
-	  <artifactId>util</artifactId>
-	  <version>3.0.0-SNAPSHOT</version>
-	  <scope>test</scope>
-	  <type>test-jar</type>
-	</dependency>
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera</groupId>
-            <artifactId>util-test</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- runtime: other -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+    <!-- Testing. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>util-test</artifactId>
+    </dependency>
+  </dependencies>
 
-        </dependency>
-    </dependencies>
-</project>
+  <build>
+    <plugins>
+      <!-- Set java source version to 1.6 -->
+      <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.0.2</version>
+          <configuration>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+      </plugin>
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <links>
+            <link>http://commons.apache.org/sandbox/csv/apidocs/</link>
+            <link>http://repo.marketcetera.org/javadoc/1.5.0/platform/</link>
+          </links>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <!-- Maven repositories for downloading various artifacts -->
+    <repository>
+      <id>central</id>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>marketcetera</id>
+      <url>http://repo.marketcetera.org/maven</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories></project>

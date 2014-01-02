@@ -1,18 +1,21 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import org.marketcetera.core.util.log.I18NLoggerProxy;
-import org.marketcetera.core.util.log.I18NMessage0P;
-import org.marketcetera.core.util.log.I18NMessage1P;
-import org.marketcetera.core.util.log.I18NMessageProvider;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessageProvider;
 
 /* $License$ */
 
 /**
  * Internationalization messages for the Marketcetera <em>OpenTick</em> Connector.
  *
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 0.6.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("marketcetera", Messages.class.getClassLoader()); //$NON-NLS-1$

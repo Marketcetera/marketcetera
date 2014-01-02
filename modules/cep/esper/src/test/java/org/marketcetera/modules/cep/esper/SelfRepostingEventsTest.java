@@ -1,21 +1,23 @@
 package org.marketcetera.modules.cep.esper;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.util.log.LoggerConfiguration;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.*;
+import org.marketcetera.trade.Factory;
 
 /**
  * Test having a receiver that reposts events back into Esper
  *
- * @version $Id: SelfRepostingEventsTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author toli kuznets
+ * @version $Id$
  */
 
+@ClassVersion("$Id$")
 public class SelfRepostingEventsTest extends ModuleTestBase {
     protected ModuleManager sManager;
     protected static BlockingSinkDataListener sSink;

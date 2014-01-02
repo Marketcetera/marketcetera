@@ -1,24 +1,39 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.util.HashMap;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MarketceteraTestSuite;
 
 /**
  * Testing the {@link MarketceteraFeed} class.
- * @version $Id: MarketceteraFeedTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author toli
+ * @version $Id$
  */
 
-public class MarketceteraFeedTest
-{
-    @Before
-    public void setUp()
-            throws Exception
-    {
+@ClassVersion("$Id$")
+public class MarketceteraFeedTest extends TestCase {
+//    private MockMarketceteraFeed feed;
+
+    public MarketceteraFeedTest(String inName) {
+        super(inName);
+    }
+
+    public static Test suite() {
+        return new MarketceteraTestSuite(MarketceteraFeedTest.class);
+    }
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        HashMap<String, Object> map = new HashMap<String, Object>();
 //        map.put(MarketceteraFeed.SETTING_SENDER_COMP_ID, "test-sender");
 //        map.put(MarketceteraFeed.SETTING_TARGET_COMP_ID, "test-target");
 //        feed = new MockMarketceteraFeed("FIX.4.4://localhost:1234", null, null, map);
     }
-    @Test
+    
     public void testEmpty()
     {
         

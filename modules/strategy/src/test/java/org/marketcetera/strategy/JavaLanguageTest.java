@@ -3,15 +3,16 @@ package org.marketcetera.strategy;
 import java.io.File;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.module.ModuleException;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleException;
 
 /* $License$ */
 
 /**
  * Tests Java language support.
  *
- * @version $Id: JavaLanguageTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class JavaLanguageTest

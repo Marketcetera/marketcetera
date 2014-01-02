@@ -1,8 +1,9 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.Equity"
-include_class "java.math.BigDecimal"
-include_class "java.lang.System"
-include_class "java.lang.Boolean"
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.trade.Equity
+java_import java.math.BigDecimal
+java_import java.lang.System
+java_import java.lang.Boolean
 
 class SendOther < Strategy
     def on_ask(ask)

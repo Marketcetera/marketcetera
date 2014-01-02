@@ -1,6 +1,10 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Status.*;
+import static org.marketcetera.strategy.Status.COMPILING;
+import static org.marketcetera.strategy.Status.FAILED;
+import static org.marketcetera.strategy.Status.STOPPED;
+import static org.marketcetera.strategy.Status.STOPPING;
+import static org.marketcetera.strategy.Status.UNSTARTED;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,11 +13,15 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.event.impl.LogEventBuilder;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.OrderCancelReject;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
 
 /* $License$ */
 
@@ -35,9 +43,11 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * which is not deterministic.  It is good practice to call {@link #stop()} on each
  * strategy at the appropriate time.
  *
- * @version $Id: StrategyImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 class StrategyImpl
         implements Strategy, Messages
 {
@@ -291,7 +301,11 @@ class StrategyImpl
             parameters = new Properties(inParameters);
         }
         servicesProvider = inServicesProvider;
-        code = fileToString(getSource());
+        if(source == null) {
+            code = null;
+        } else {
+            code = fileToString(getSource());
+        }
         defaultNamespace = inNamespace;
     }
     /**

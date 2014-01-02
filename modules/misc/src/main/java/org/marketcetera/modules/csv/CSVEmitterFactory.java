@@ -1,8 +1,9 @@
 package org.marketcetera.modules.csv;
 
-import org.marketcetera.core.module.ModuleFactory;
-import org.marketcetera.core.module.ModuleCreationException;
-import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.ModuleFactory;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 /**
@@ -20,7 +21,9 @@ import org.marketcetera.core.module.ModuleURN;
  * </table>
  *
  * @see CSVEmitter
+ * @author anshul@marketcetera.com
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class CSVEmitterFactory extends ModuleFactory {
     /**
      * Creates an instance.

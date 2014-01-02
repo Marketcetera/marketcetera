@@ -1,7 +1,7 @@
 package org.marketcetera.strategy;
 
 import static org.junit.Assert.*;
-import static org.marketcetera.core.module.TestMessages.FLOW_REQUESTER_PROVIDER;
+import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 import static org.marketcetera.strategy.Status.FAILED;
 import static org.marketcetera.strategy.Status.RUNNING;
 import static org.marketcetera.strategy.Status.STOPPED;
@@ -38,16 +38,17 @@ import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.event.*;
+import org.marketcetera.event.*;
 import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.TestMessages;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.module.*;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyModule.ClientFactory;
-import org.marketcetera.core.trade.*;
-import org.marketcetera.core.util.log.I18NMessage;
+import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.util.log.I18NMessage;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
@@ -62,7 +63,8 @@ import com.google.common.collect.Multimap;
 /**
  * Base class for <code>Strategy</code> tests.
  *
- * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class StrategyTestBase
@@ -74,7 +76,8 @@ public class StrategyTestBase
     /**
      * Tuple which describes the location and name of a strategy.
      *
-     * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
     public static class StrategyCoordinates
@@ -115,7 +118,8 @@ public class StrategyTestBase
     /**
      * A {@link DataReceiver} implementation that stores the data it receives.
      *
-     * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
     public static class MockRecorderModule
@@ -140,7 +144,7 @@ public class StrategyTestBase
                   false);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.Module#preStart()
+         * @see org.marketcetera.module.Module#preStart()
          */
         @Override
         protected void preStart()
@@ -148,7 +152,7 @@ public class StrategyTestBase
         {
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.Module#preStop()
+         * @see org.marketcetera.module.Module#preStop()
          */
         @Override
         protected void preStop()
@@ -156,7 +160,7 @@ public class StrategyTestBase
         {
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.DataReceiver#receiveData(org.marketcetera.core.module.DataFlowID, java.lang.Object)
+         * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
          */
         @Override
         public void receiveData(DataFlowID inFlowID,
@@ -194,7 +198,7 @@ public class StrategyTestBase
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.DataEmitter#cancel(org.marketcetera.core.module.RequestID)
+         * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
          */
         @Override
         public void cancel(DataFlowID inFlowID,
@@ -205,7 +209,7 @@ public class StrategyTestBase
             }
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.DataEmitter#requestData(org.marketcetera.core.module.DataRequest, org.marketcetera.core.module.DataEmitterSupport)
+         * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
          */
         @Override
         public void requestData(DataRequest inRequest,
@@ -248,7 +252,8 @@ public class StrategyTestBase
         /**
          * The {@link ModuleFactory} implementation for {@link MockRecorderModule}.
          *
-         * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+         * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+         * @version $Id$
          * @since 1.0.0
          */
         public static class Factory
@@ -274,7 +279,7 @@ public class StrategyTestBase
                       false);
             }
             /* (non-Javadoc)
-             * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
+             * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
              */
             @Override
             public Module create(Object... inParameters)
@@ -290,7 +295,8 @@ public class StrategyTestBase
         /**
          * Stores the data received by {@link MockRecorderModule}.
          *
-         * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+         * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+         * @version $Id$
          * @since 1.0.0
          */
         public static class DataReceived
@@ -377,7 +383,8 @@ public class StrategyTestBase
     /**
      * A {@link DataEmitter} implementation that emits each type of data a {@link RunningStrategy} can receive.
      *
-     * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
     public static class StrategyDataEmissionModule
@@ -429,7 +436,7 @@ public class StrategyTestBase
                                                                     new BigDecimal("20000")));
                 dataToSend.add(EventTestBase.generateDividendEvent());
                 Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
-                OrderCancelReject cancel = org.marketcetera.core.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
+                OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
                                                                                                                 null,
                                                                                                                 Originator.Server,
                                                                                                                 null,
@@ -449,7 +456,7 @@ public class StrategyTestBase
                                                                                                   new Equity("Symbol"),
                                                                                                   "account",
                                                                                                   "text");
-                dataToSend.add(org.marketcetera.core.trade.Factory.getInstance().createExecutionReport(executionReport,
+                dataToSend.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
                                                                                                   new BrokerID("some-broker"),
                                                                                                   Originator.Server,
                                                                                                   null,
@@ -469,7 +476,7 @@ public class StrategyTestBase
                   false);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.Module#preStart()
+         * @see org.marketcetera.module.Module#preStart()
          */
         @Override
         protected void preStart()
@@ -477,7 +484,7 @@ public class StrategyTestBase
         {
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.Module#preStop()
+         * @see org.marketcetera.module.Module#preStop()
          */
         @Override
         protected void preStop()
@@ -485,7 +492,7 @@ public class StrategyTestBase
         {
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.DataEmitter#cancel(org.marketcetera.core.module.RequestID)
+         * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
          */
         @Override
         public void cancel(DataFlowID inFlowID, RequestID inRequestID)
@@ -493,7 +500,7 @@ public class StrategyTestBase
             // nothing to do here
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.core.module.DataEmitter#requestData(org.marketcetera.core.module.DataRequest, org.marketcetera.core.module.DataEmitterSupport)
+         * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
          */
         @Override
         public void requestData(DataRequest inRequest,
@@ -529,7 +536,8 @@ public class StrategyTestBase
         /**
          * The {@link ModuleFactory} implementation for {@link StrategyDataEmissionModule}.
          *
-         * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+         * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+         * @version $Id$
          * @since 1.0.0
          */
         public static class Factory
@@ -555,7 +563,7 @@ public class StrategyTestBase
             }
     
             /* (non-Javadoc)
-             * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
+             * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
              */
             @Override
             public Module create(Object... inParameters)
@@ -590,6 +598,16 @@ public class StrategyTestBase
          * indicates whether calls to {@link #getEquityPositionAsOf(Date, Equity)} should fail automatically
          */
         public static boolean getPositionFails = false;
+        /**
+         * Broker status listeners
+         */
+        private final Deque<BrokerStatusListener> mBrokerStatusListeners=
+            new LinkedList<BrokerStatusListener>();
+        /**
+         * indicates whether calls to {@link #addBrokerStatusListener(BrokerStatusListener)} should fail automatically
+         */
+        public static boolean addBrokerStatusListenerFails = false;
+        
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#addExceptionListener(java.beans.ExceptionListener)
          */
@@ -610,9 +628,15 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#addBrokerStatusListener(org.marketcetera.client.BrokerStatusListener)
          */
         @Override
-        public void addBrokerStatusListener(BrokerStatusListener inArg0)
+        public void addBrokerStatusListener (BrokerStatusListener listener)
         {
-            throw new UnsupportedOperationException();
+        	if (addBrokerStatusListenerFails) {
+        		throw new RuntimeException("This exception is expected");
+        	}
+        	
+            synchronized (mBrokerStatusListeners) {
+                mBrokerStatusListeners.addFirst(listener);
+        }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#addServerStatusListener(org.marketcetera.client.ServerStatusListener)
@@ -668,7 +692,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getEquityPositionAsOf(java.util.Date, org.marketcetera.core.trade.Equity)
+         * @see org.marketcetera.client.Client#getEquityPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
          */
         @Override
         public BigDecimal getEquityPositionAsOf(Date inDate,
@@ -783,7 +807,7 @@ public class StrategyTestBase
             return result;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getOptionPositionAsOf(java.util.Date, org.marketcetera.core.trade.Option)
+         * @see org.marketcetera.client.Client#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
          */
         @Override
         public BigDecimal getOptionPositionAsOf(Date inDate,
@@ -831,7 +855,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#getFuturePositionAsOf(java.util.Date, org.marketcetera.core.trade.Future)
+         * @see org.marketcetera.client.Client#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
          */
         @Override
         public BigDecimal getFuturePositionAsOf(Date inDate,
@@ -920,9 +944,11 @@ public class StrategyTestBase
          * @see org.marketcetera.client.Client#removeBrokerStatusListener(org.marketcetera.client.BrokerStatusListener)
          */
         @Override
-        public void removeBrokerStatusListener(BrokerStatusListener inArg0)
+        public void removeBrokerStatusListener (BrokerStatusListener listener)
         {
-            throw new UnsupportedOperationException();
+            synchronized (mBrokerStatusListeners) {
+                mBrokerStatusListeners.removeFirstOccurrence(listener);
+            }
         }
         /* (non-Javadoc)
          * @see org.marketcetera.client.Client#removeServerStatusListener(org.marketcetera.client.ServerStatusListener)
@@ -933,7 +959,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.core.trade.OrderSingle)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderSingle)
          */
         @Override
         public void sendOrder(OrderSingle inArg0)
@@ -942,7 +968,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.core.trade.OrderReplace)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderReplace)
          */
         @Override
         public void sendOrder(OrderReplace inArg0)
@@ -951,7 +977,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.core.trade.OrderCancel)
+         * @see org.marketcetera.client.Client#sendOrder(org.marketcetera.trade.OrderCancel)
          */
         @Override
         public void sendOrder(OrderCancel inArg0)
@@ -960,7 +986,7 @@ public class StrategyTestBase
             throw new UnsupportedOperationException();
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#sendOrderRaw(org.marketcetera.core.trade.FIXOrder)
+         * @see org.marketcetera.client.Client#sendOrderRaw(org.marketcetera.trade.FIXOrder)
          */
         @Override
         public void sendOrderRaw(FIXOrder inArg0)
@@ -1008,11 +1034,126 @@ public class StrategyTestBase
          * if non-null, will be thrown during {@link #getReportsSince(Date)}.
          */
         private volatile ConnectionException getReportsSinceThrows;
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getCurrencyPositionAsOf(java.util.Date, org.marketcetera.trade.Currency)
+         */
+        @Override
+        public BigDecimal getCurrencyPositionAsOf(Date inDate,
+                                          Currency inCurrency)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            Position position = positions.get(inCurrency);
+            if(position == null) {
+                return null;
+            }
+            return position.getPositionAt(inDate);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getAllCurrencyPositionsAsOf(java.util.Date)
+         */
+        @Override
+        public Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
+                throws ConnectionException
+        {
+            if(getPositionFails) {
+                throw new NullPointerException("This exception is expected");
+            }
+            Map<PositionKey<Currency>,BigDecimal> result = new LinkedHashMap<PositionKey<Currency>,BigDecimal>();
+            for(Map.Entry<Instrument,Position> entry : positions.entrySet()) {
+                if(entry.getKey() instanceof Currency) {
+                    final Currency currency = (Currency)entry.getKey();
+                    BigDecimal value = getCurrencyPositionAsOf(inDate,
+                                                       currency);
+                    if(value != null) {
+                        PositionKey<Currency> key = new PositionKey<Currency>() {
+                            @Override
+                            public String getAccount()
+                            {
+                                return null;
+                            }
+                            /* (non-Javadoc)
+                             * @see java.lang.Object#toString()
+                             */
+                            @Override
+                            public String toString()
+                            {
+                                return getInstrument().getSymbol();
+                            }
+                            @Override
+                            public Currency getInstrument()
+                            {
+                                return currency;
+                            }
+                            @Override
+                            public String getTraderId()
+                            {
+                                return null;
+                            }
+                        };
+                        result.put(key,
+                                   value);
+                    }
+                }
+            }
+            return result;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
+         */
+        @Override
+        public void addReport(FIXMessageWrapper inReport,
+                              BrokerID inBrokerID)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReportImpl)
+         */
+        @Override
+        public void deleteReport(ExecutionReportImpl inReport)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /**
+         * Sends the given <code>BrokerStatus</code> to registered broker status listeners.
+         *
+         * @param inBrokerStatus a <code>BrokerStatus</code> value
+         */
+        public void sendToListeners(BrokerStatus inBrokerStatus)
+        {
+            for(BrokerStatusListener brokerStatusListener : mBrokerStatusListeners) {
+            	brokerStatusListener.receiveBrokerStatus(inBrokerStatus);
+    		}
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#resolveSymbol(java.lang.String)
+         */
+        @Override
+        public Instrument resolveSymbol(String inSymbol)
+                throws ConnectionException
+        {
+            throw new UnsupportedOperationException();
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#getOpenOrders()
+         */
+        @Override
+        public List<ReportBaseImpl> getOpenOrders()
+                throws ConnectionException
+        {
+            return Collections.emptyList();
+        }
     }
     /**
      * Compares the sending times of two <code>ReportBase</code> values.
      *
-     * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 2.1.4
      */
     private enum ReportSendingTimeComparator
@@ -1058,7 +1199,8 @@ public class StrategyTestBase
      * of intervals, find the intersection of the desired date (D) and the interval
      * where: D > interval1.getDate() && D < interval2.getDate().
      *
-     * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
     public static class Interval<T>
@@ -1156,7 +1298,8 @@ public class StrategyTestBase
     /**
      * A set of intervals representing the change of the position of a security over time.
      *
-     * @version $Id: StrategyTestBase.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
     public static class Position
@@ -1397,6 +1540,9 @@ public class StrategyTestBase
                                                               DateUtils.DAYS),
                                         EventTestBase.generateDecimalValue(),
                                         OptionType.Put));
+        testInstruments.add(new Currency("USD/GBP"));
+        testInstruments.add(new Currency("USD/JPY"));
+        testInstruments.add(new Currency("USD/INR"));
         roots.putAll("METC",
                      Arrays.asList(new String[] { "METC1", "METC2", "METC3", "METC4" } ));
         underlyings.put("METC1",
@@ -1457,6 +1603,7 @@ public class StrategyTestBase
         brokers = generateBrokersStatus();
         MockClient.getBrokersFails = false;
         MockClient.getPositionFails = false;
+        MockClient.addBrokerStatusListenerFails = false;
         executionReportMultiplicity = 1;
         MockRecorderModule.shouldSendExecutionReports = true;
         MockRecorderModule.shouldFullyFillOrders = true;
@@ -1620,7 +1767,7 @@ public class StrategyTestBase
     {
         List<ExecutionReport> reports = new ArrayList<ExecutionReport>();
         for(Message rawExeReport : generateFixExecutionReports(inOrder)) {
-            reports.add(org.marketcetera.core.trade.Factory.getInstance().createExecutionReport(rawExeReport,
+            reports.add(org.marketcetera.trade.Factory.getInstance().createExecutionReport(rawExeReport,
                                                                                            inOrder.getBrokerID(),
                                                                                            Originator.Broker,
                                                                                            null,
@@ -1722,7 +1869,7 @@ public class StrategyTestBase
         order.setOrderType(OrderType.Limit);
         order.setPrice(new BigDecimal("100.23"));
         order.setQuantity(new BigDecimal("10000"));
-        order.setSide(org.marketcetera.core.trade.Side.Buy);
+        order.setSide(org.marketcetera.trade.Side.Buy);
         order.setInstrument(new Equity("METC"));
         if(inOrderID != null) {
             order.setOrderID(inOrderID);

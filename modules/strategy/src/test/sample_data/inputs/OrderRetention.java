@@ -1,21 +1,22 @@
 import java.math.BigDecimal;
 
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.OrderID;
-import org.marketcetera.core.trade.OrderSingle;
-import org.marketcetera.core.trade.OrderType;
-import org.marketcetera.core.trade.Side;
-import org.marketcetera.core.trade.TimeInForce;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
 
 /* $License$ */
 
 /**
  * Tests the Strategy API open order tracker.
  *
- * @version $Id: OrderRetention.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.0.0
  */
 public class OrderRetention
@@ -37,7 +38,7 @@ public class OrderRetention
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onExecutionReport(org.marketcetera.core.trade.ExecutionReport)
+     * @see org.marketcetera.strategy.java.Strategy#onExecutionReport(org.marketcetera.trade.ExecutionReport)
      */
     @Override
     public void onExecutionReport(ExecutionReport inExecutionReport)

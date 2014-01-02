@@ -3,85 +3,97 @@
 <!--
   - Author: colin@marketcetera.com
   - Since: 1.0.0
-  - Version: $Id: pom.xml 16062 2012-01-31 00:18:43Z colin $
+  - Version: $Id$
   - $License$
   -->
 
 <project
-        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.marketcetera.modules</groupId>
-        <artifactId>modules-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.marketcetera.modules</groupId>
-    <artifactId>strategy</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>modules</artifactId>
+    <version>2.4.0</version>
+  </parent>
+  <artifactId>strategy</artifactId>
+  <packaging>jar</packaging>
 
-    <packaging>jar</packaging>
+  <name>Strategy Module</name>
 
-    <name>Strategy Module</name>
+  <dependencies>
 
-    <dependencies>
-        <!-- compile: local -->
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>bsf</groupId>
-            <artifactId>bsf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>jruby</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera.fork</groupId>
-            <artifactId>texttablefmt</artifactId>
-        </dependency>
-        <!-- runtime: other -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <!-- test: local -->
-        <dependency>
-            <groupId>org.marketcetera.modules</groupId>
-            <artifactId>cep-system</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera.modules</groupId>
-            <artifactId>marketdata-bogus</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.marketcetera</groupId>
-            <artifactId>util-test</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- test: other -->
-        <dependency>
-            <groupId>org.marketcetera</groupId>
-            <artifactId>cep-esper</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.bsf</groupId>
+      <artifactId>com.springsource.org.apache.bsf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.sirocco</groupId>
+      <artifactId>sirocco-text-table-formatter</artifactId>
+    </dependency>
+    
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+
+    <!-- Testing. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cep-esper</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>cep-system</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>util-test</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

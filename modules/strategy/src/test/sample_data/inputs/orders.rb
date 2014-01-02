@@ -1,17 +1,18 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.Factory"
-include_class "org.marketcetera.trade.OrderType"
-include_class "org.marketcetera.trade.OrderID"
-include_class "org.marketcetera.trade.OrderSingle"
-include_class "org.marketcetera.trade.OrderReplace"
-include_class "org.marketcetera.trade.Side"
-include_class "org.marketcetera.trade.TimeInForce"
-include_class "org.marketcetera.trade.Equity"
-include_class "java.math.BigDecimal"
-include_class "java.util.List"
-include_class "java.lang.System"
-include_class "java.lang.Long"
-include_class "java.lang.Boolean"
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.trade.Factory
+java_import org.marketcetera.trade.OrderType
+java_import org.marketcetera.trade.OrderID
+java_import org.marketcetera.trade.OrderSingle
+java_import org.marketcetera.trade.OrderReplace
+java_import org.marketcetera.trade.Side
+java_import org.marketcetera.trade.TimeInForce
+java_import org.marketcetera.trade.Equity
+java_import java.math.BigDecimal
+java_import java.util.List
+java_import java.lang.System
+java_import java.lang.Long
+java_import java.lang.Boolean
 
 class Orders < Strategy
     def on_ask(ask)

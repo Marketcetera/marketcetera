@@ -1,16 +1,19 @@
 package org.marketcetera.marketdata.yahoo;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.marketdata.AbstractMarketDataFeedFactory;
+import org.marketcetera.marketdata.AbstractMarketDataFeedFactory;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Constructs {@link YahooFeed} objects.
  *
- * @version $Id: YahooFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
+@ClassVersion("$Id$")
 public class YahooFeedFactory
         extends AbstractMarketDataFeedFactory<YahooFeed,YahooFeedCredentials>
 {

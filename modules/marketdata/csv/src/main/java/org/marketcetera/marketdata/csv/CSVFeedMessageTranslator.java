@@ -1,23 +1,27 @@
 package org.marketcetera.marketdata.csv;
 
-import static org.marketcetera.core.marketdata.Content.DIVIDEND;
-import static org.marketcetera.core.marketdata.Content.LATEST_TICK;
-import static org.marketcetera.core.marketdata.Content.MARKET_STAT;
-import static org.marketcetera.core.marketdata.Content.TOP_OF_BOOK;
-import static org.marketcetera.core.marketdata.Messages.UNSUPPORTED_REQUEST;
+import static org.marketcetera.marketdata.Content.DIVIDEND;
+import static org.marketcetera.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.Content.MARKET_STAT;
+import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.marketdata.DataRequestTranslator;
-import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.marketdata.DataRequestTranslator;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Translates {@link MarketDataRequest} objects to a format that the {@link CSVFeed} can understand.
  * 
+ * @author toli kuznets
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-public class CSVFeedMessageTranslator
+@ClassVersion("$Id$")
+public class CSVFeedMessageTranslator     
         implements DataRequestTranslator<MarketDataRequest>
 {
     /* (non-Javadoc)

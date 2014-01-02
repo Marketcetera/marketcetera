@@ -1,8 +1,8 @@
 import java.util.HashMap;
 import java.util.Map;
 
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.BidEvent;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
 import org.marketcetera.strategy.java.Strategy;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 
@@ -11,7 +11,8 @@ import org.marketcetera.marketdata.MarketDataRequestBuilder;
 /**
  * Sample strategy that tests processed market data requests.
  *
- * @version $Id: CombinedRequest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class CombinedRequest
@@ -51,7 +52,7 @@ public class CombinedRequest
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.core.event.AskEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
      */
     @Override
     public void onAsk(AskEvent inAsk)
@@ -62,7 +63,7 @@ public class CombinedRequest
                              asks);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onBid(org.marketcetera.core.event.BidEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onBid(org.marketcetera.event.BidEvent)
      */
     @Override
     public void onBid(BidEvent inBid)

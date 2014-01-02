@@ -4,11 +4,12 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.metrics.ThreadedMetric;
-import org.marketcetera.core.event.TimestampCarrier;
-import org.marketcetera.core.module.*;
+import org.marketcetera.metrics.ThreadedMetric;
+import org.marketcetera.event.TimestampCarrier;
+import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 import org.w3c.dom.Node;
 
 import java.io.File;
@@ -57,9 +58,12 @@ import java.util.*;
  * <tr><th>Factory</th><td>{@link CEPEsperFactory}</td></tr>
  * </table>
  *
+ * @author anshul@marketcetera.com
+ * @author toli@marketcetera.com
  * @since 1.0.0
- * @version $Id: CEPEsperProcessor.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CEPEsperProcessor extends Module
         implements DataReceiver, DataEmitter, CEPEsperProcessorMXBean {
 
@@ -116,7 +120,6 @@ public class CEPEsperProcessor extends Module
     /** Need to keep a reference count in case of nested events being sent out of Esper and posted back in
      * Increment the count before, and then decrement after
      */
-    @SuppressWarnings("rawtypes")
     @Override
     public void receiveData(DataFlowID inFlowID, Object inData)
             throws UnsupportedDataTypeException, StopDataFlowException {
@@ -485,7 +488,7 @@ public class CEPEsperProcessor extends Module
          *
          * @param inMap the map of values containing results of the statement.
          */
-        public void update(@SuppressWarnings("rawtypes") Map inMap) {
+        public void update(Map inMap) {
             ThreadedMetric.event("cep-OUT");  //$NON-NLS-1$
             if(inMap != null && inMap.size() == 1) {
                 mSupport.send(inMap.values().iterator().next());

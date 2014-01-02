@@ -7,29 +7,30 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.management.JMX;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.event.Event;
-import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.event.HasInstrument;
-import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.HasInstrument;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.modules.cep.system.CEPTestBase;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
 
 import com.espertech.esper.client.EPStatement;
+import com.google.common.collect.Maps;
 
 /**
  * Test the Esper module functionality
- * @version $Id: EsperModuleTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author toli@marketcetera.com
+ * @version $Id$
  * @since 1.0.0
  */
 public class EsperModuleTest extends CEPTestBase {
@@ -187,12 +188,8 @@ public class EsperModuleTest extends CEPTestBase {
 
     @Test
     public void testUnknownAlias() throws Exception {
-        new ExpectedFailure<IllegalRequestParameterValue>(Messages.ERROR_CREATING_STATEMENTS,
-                                                          Arrays.toString(new String[] { "select * from bob"} )) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(IllegalRequestParameterValue.class, "bob") {
+            protected void execute() throws Throwable {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> Esper
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
@@ -202,7 +199,7 @@ public class EsperModuleTest extends CEPTestBase {
                         new DataRequest(TEST_URN, "select * from bob")
                 });
             }
-        };
+        }.run();
     }
 
     /** Verify that when you send a query of N steps, where a non-first step is invalid, all N statements are cleaned up */
@@ -220,12 +217,8 @@ public class EsperModuleTest extends CEPTestBase {
                 CEPEsperProcessorMXBean.class);
         assertEquals("invalid # of statements"+ Arrays.toString(esperBean.getStatementNames()), 1, esperBean.getStatementNames().length);
 
-        new ExpectedFailure<IllegalRequestParameterValue>(Messages.ERROR_CREATING_STATEMENTS,
-                                                          Arrays.toString(new String[] { "select * from trade", "select * from bob"} )) {
-            @Override
-            protected void run()
-                    throws Exception
-            {
+        new ExpectedTestFailure(IllegalRequestParameterValue.class, "bob") {
+            protected void execute() throws Throwable {
                 sManager.createDataFlow(new DataRequest[] {
                         // Copier -> Esper
                         new DataRequest(CopierModuleFactory.INSTANCE_URN, new Event[] {
@@ -235,7 +228,7 @@ public class EsperModuleTest extends CEPTestBase {
                         new DataRequest(TEST_URN, new String[] {"select * from trade", "select * from bob"})
                 });
             }
-        };
+        }.run();
         assertEquals("invalid # of statements"+ Arrays.toString(esperBean.getStatementNames()), 1, esperBean.getStatementNames().length);
         sManager.cancel(flow);
     }
@@ -293,11 +286,11 @@ public class EsperModuleTest extends CEPTestBase {
      */
     @Test
     public void testDynamicMapProperties() throws Exception {
-        Map<String,String> map1 = new HashMap<String,String>();
+        Map<String,String> map1 = Maps.newHashMap();
         map1.put("name","nap");
         map1.put("game","tap");
 
-        Map<String,String> map2 = new HashMap<String,String>();
+        Map<String,String> map2 = Maps.newHashMap();
         map2.put("name","gap");
         map2.put("game","kebap");
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {

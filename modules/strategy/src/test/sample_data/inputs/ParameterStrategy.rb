@@ -1,8 +1,9 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.Factory"
-include_class "java.math.BigDecimal"
-include_class "org.marketcetera.quickfix.FIXVersion"
-include_class "org.marketcetera.trade.BrokerID"
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.trade.Factory
+java_import java.math.BigDecimal
+java_import org.marketcetera.quickfix.FIXVersion
+java_import org.marketcetera.trade.BrokerID
 
 class ParameterStrategy < Strategy
   def on_ask(ask)

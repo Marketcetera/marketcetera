@@ -1,18 +1,21 @@
 package org.marketcetera.marketdata.yahoo;
 
-import org.marketcetera.core.util.log.I18NLoggerProxy;
-import org.marketcetera.core.util.log.I18NMessage0P;
-import org.marketcetera.core.util.log.I18NMessage1P;
-import org.marketcetera.core.util.log.I18NMessageProvider;
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Messages for Yahoo market data adapter package.
  *
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
+@ClassVersion("$Id$")
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("yahoo", //$NON-NLS-1$
@@ -24,6 +27,10 @@ public interface Messages
                                                                    "unexpected_data"); //$NON-NLS-1$
     static final I18NMessage1P UNEXPECTED_FIELD_CODE = new I18NMessage1P(LOGGER,
                                                                          "unexpected_field_code"); //$NON-NLS-1$
+
+    static final I18NMessage0P UNEXPECTED_VALUE_CODE = new I18NMessage0P(LOGGER,
+            "unexpected_value_code"); //$NON-NLS-1$
+    
     static final I18NMessage0P MISSING_URL = new I18NMessage0P(LOGGER,
                                                                "missing_url"); //$NON-NLS-1$
     static final I18NMessage1P NO_COMPARATOR = new I18NMessage1P(LOGGER,

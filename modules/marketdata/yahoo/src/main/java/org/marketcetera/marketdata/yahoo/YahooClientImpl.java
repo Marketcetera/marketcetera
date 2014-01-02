@@ -11,16 +11,19 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.GuardedBy;
 
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Provides a <code>YahooClient</code> implementation.
  *
- * @version $Id: YahooClientImpl.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
+@ClassVersion("$Id$")
 class YahooClientImpl
         implements Runnable, YahooClient
 {
@@ -77,16 +80,19 @@ class YahooClientImpl
             while(isRunning.get()) {
                 synchronized(requests) {
                     for(YahooRequest request : requests) {
-                        feedServices.doDataReceived(request.getHandle(),
-                                                    submit(request));
+                        try {
+                            feedServices.doDataReceived(request.getHandle(),
+                                                        submit(request));
+                        } catch (IOException e) {
+                            SLF4JLoggerProxy.debug(YahooClientImpl.class,
+                                                   e,
+                                                   "Retrying...");
+                        }
                     }
                 }
                 Thread.sleep(feedServices.getRefreshInterval());
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
     /* (non-Javadoc)
@@ -194,6 +200,17 @@ class YahooClientImpl
      * sentinel value used to separate query tokens
      */
     static final String QUERY_SEPARATOR = "&&/&&"; //$NON-NLS-1$
+
+    /**
+     * sentinel value used to separate query tokens
+     */
+    static final String FIELD_DELIMITER = ","; //$NON-NLS-1$
+
+    /**
+     * sentinel value used to separate query tokens
+     */
+    static final String DELIMITER_SYMBOL = ",?"; //$NON-NLS-1$
+    
     /**
      * Yahoo feed services value
      */

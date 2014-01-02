@@ -1,12 +1,12 @@
 package org.marketcetera.strategy;
 
 import static org.junit.Assert.*;
-import static org.marketcetera.core.event.LogEventLevel.DEBUG;
-import static org.marketcetera.core.event.LogEventLevel.ERROR;
-import static org.marketcetera.core.event.LogEventLevel.INFO;
-import static org.marketcetera.core.event.LogEventLevel.WARN;
-import static org.marketcetera.core.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
-import static org.marketcetera.core.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
+import static org.marketcetera.event.LogEventLevel.DEBUG;
+import static org.marketcetera.event.LogEventLevel.ERROR;
+import static org.marketcetera.event.LogEventLevel.INFO;
+import static org.marketcetera.event.LogEventLevel.WARN;
+import static org.marketcetera.module.Messages.MODULE_NOT_STARTED_STATE_INCORRECT;
+import static org.marketcetera.module.Messages.MODULE_NOT_STOPPED_STATE_INCORRECT;
 import static org.marketcetera.strategy.Status.*;
 
 import java.math.BigDecimal;
@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -22,21 +23,21 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.event.Event;
-import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.event.LogEvent;
-import org.marketcetera.core.event.TradeEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.*;
 import org.marketcetera.marketdata.MarketDataModuleTestBase.DataSink;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.core.module.CopierModule.SynchronousRequest;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.module.CopierModule.SynchronousRequest;
+import org.marketcetera.module.*;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
-import org.marketcetera.core.trade.*;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.util.misc.NamedThreadFactory;
-import org.marketcetera.util.test.UnicodeData;
+import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.NamedThreadFactory;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -48,7 +49,8 @@ import quickfix.field.TransactTime;
  * 
  * <p>Each new script language to support should extend this class.
  * 
- * @version $Id: LanguageTestBase.java 16069 2012-03-24 00:57:05Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public abstract class LanguageTestBase
@@ -193,7 +195,7 @@ public abstract class LanguageTestBase
         };
     }
     /**
-     * Tests a strategy that overrides only {@link RunningStrategy#onAsk(org.marketcetera.core.event.AskEvent)}.
+     * Tests a strategy that overrides only {@link RunningStrategy#onAsk(org.marketcetera.event.AskEvent)}.
      *
      * <p>This test makes sure that a strategy that selectively overrides call-backs does not fail when
      * the non-overridden call-backs are executed.
@@ -1046,7 +1048,7 @@ public abstract class LanguageTestBase
     {
         final StrategyCoordinates strategy = getStrategyCompiles();
         final Properties parameters = new Properties();
-        Date callbackAt = new Date(System.currentTimeMillis()+2000);
+        Date callbackAt = new Date(System.currentTimeMillis()+6000);
         parameters.setProperty("shouldRequestCallbackAt",
                                Long.toString(callbackAt.getTime()));
         verifyPropertyNull("onCallback");
@@ -1060,7 +1062,7 @@ public abstract class LanguageTestBase
         stopStrategy(strategyURN);
         assertTrue("The strategy should have been stopped before the callback - increase the callback delay",
                    System.currentTimeMillis() < callbackAt.getTime());
-        Thread.sleep(2500);
+        Thread.sleep(7500);
         // callback should have happened
         assertTrue(System.currentTimeMillis() > callbackAt.getTime());
         verifyPropertyNull("onCallback");
@@ -1485,11 +1487,6 @@ public abstract class LanguageTestBase
                         null,
                         MESSAGE_1P,
                         "Some statement");
-            verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(6).getData(),
-                        DEBUG,
-                        null,
-                        MESSAGE_1P,
-                        UnicodeData.HOUSE_AR);
             verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(7).getData(),
                         WARN,
                         null,
@@ -1505,11 +1502,6 @@ public abstract class LanguageTestBase
                         null,
                         MESSAGE_1P,
                         "Some statement");
-            verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(10).getData(),
-                        INFO,
-                        null,
-                        MESSAGE_1P,
-                        UnicodeData.HOUSE_AR);
             verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(11).getData(),
                         WARN,
                         null,
@@ -1525,11 +1517,6 @@ public abstract class LanguageTestBase
                         null,
                         MESSAGE_1P,
                         "Some statement");
-            verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(14).getData(),
-                        WARN,
-                        null,
-                        MESSAGE_1P,
-                        UnicodeData.HOUSE_AR);
             verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(15).getData(),
                         WARN,
                         null,
@@ -1545,11 +1532,6 @@ public abstract class LanguageTestBase
                         null,
                         MESSAGE_1P,
                         "Some statement");
-            verifyEvent((LogEvent)notificationSubscriber.getDataReceived().get(18).getData(),
-                        ERROR,
-                        null,
-                        MESSAGE_1P,
-                        UnicodeData.HOUSE_AR);
         } finally {
             Logger.getLogger(Strategy.STRATEGY_MESSAGES).setLevel(startingLevel);
             MockRecorderModule.shouldIgnoreLogMessages = true;
@@ -2098,7 +2080,7 @@ public abstract class LanguageTestBase
         AbstractRunningStrategy.setProperty("newOrderID",
                                             "");
         runningStrategy.onOther("");
-        assertNull(AbstractRunningStrategy.getProperty("newOrderID"));
+        assertNull(StringUtils.trimToNull(AbstractRunningStrategy.getProperty("newOrderID")));
         // now allow the cancel/replace to succeed
         // make sure the order is open before we begin
         MockRecorderModule.shouldSendExecutionReports = true;
@@ -2306,6 +2288,95 @@ public abstract class LanguageTestBase
                        expectedValue);
     }
     /**
+     * Tests {@link AbstractRunningStrategy#getCurrencyPositionAsOf(Date, String)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void currencyPositionAsOf()
+            throws Exception
+    {
+        Instrument validCurrency = null;
+        for(Instrument instrument : positions.keySet()) {
+            if(instrument instanceof Currency) {
+                validCurrency = instrument;
+                break;
+            }
+        }
+        assertNotNull(validCurrency);
+        Position position = positions.get(validCurrency);
+        assertNotNull(position);
+        String invalidSymbol = "there-is-no-position-for-this-symbol-" + System.nanoTime();
+        assertFalse(positions.containsKey(new Currency(invalidSymbol)));
+        // null symbol
+        doCurrencyPositionAsOfTest(null,
+                           new Date(),
+                           null);
+        // invalid symbol
+        doCurrencyPositionAsOfTest(invalidSymbol,
+                           new Date(),
+                           null);
+        // null date
+        doCurrencyPositionAsOfTest(validCurrency.getSymbol(),
+                           null,
+                           null);
+        // call fails
+        MockClient.getPositionFails = true;
+        doCurrencyPositionAsOfTest(validCurrency.getSymbol(),
+                           new Date(),
+                           null);
+        MockClient.getPositionFails = false;
+        getClientFails = true;
+        doCurrencyPositionAsOfTest(validCurrency.getSymbol(),
+                           new Date(),
+                           null);
+        getClientFails = false;
+        // date in the past (before position begins)
+        Interval<BigDecimal> openingBalance = position.getPositionView().get(0);
+        doCurrencyPositionAsOfTest(validCurrency.getSymbol(),
+                           new Date(openingBalance.getDate().getTime() - 1000), // 1s before the open of the position
+                           BigDecimal.ZERO);
+        // date in the past (after position begins)
+        List<Interval<BigDecimal>> view = position.getPositionView(); 
+        int median = view.size() / 2;
+        assertTrue("Position " + position + " contains no data!",
+                   median > 0);
+        Interval<BigDecimal> dataPoint = position.getPositionView().get(median);
+        Date date = dataPoint.getDate();
+        BigDecimal expectedValue = position.getPositionAt(date);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        assertTrue(date.getTime() < System.currentTimeMillis());
+        // found a date somewhere in the middle of the position and earlier than today
+        doCurrencyPositionAsOfTest(validCurrency.getSymbol(),
+                           date,
+                           expectedValue);
+        // date exactly now
+        date = new Date();
+        expectedValue = position.getPositionAt(date);
+        dataPoint = view.get(view.size() - 1);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        doCurrencyPositionAsOfTest(validCurrency.getSymbol(),
+                           date,
+                           expectedValue);
+        // pick a data point two weeks into the future
+        date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+        expectedValue = position.getPositionAt(date);
+        dataPoint = view.get(view.size() - 1);
+        assertEquals("value at " + date + ": " + position,
+                     dataPoint.getValue(),
+                     expectedValue);
+        doCurrencyPositionAsOfTest(validCurrency.getSymbol(),
+                       date,
+                       expectedValue);
+    }
+    
+    
+    
+    /**
      * Tests {@link AbstractRunningStrategy#getAllPositionsAsOf(Date)}.
      *
      * @throws Exception if an unexpected error occurs
@@ -2350,6 +2421,54 @@ public abstract class LanguageTestBase
         doAllPositionsAsOfTest(date,
                                client.getAllEquityPositionsAsOf(date));
     }
+    /**
+     * Tests {@link AbstractRunningStrategy#getAllCurrencyPositionsAsOf(Date)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void allCurrencyPositionsAsOf()
+            throws Exception
+    {
+        // null date
+        doAllCurrencyPositionsAsOfTest(null,
+                               null);
+        // call fails
+        MockClient.getPositionFails = true;
+        doAllCurrencyPositionsAsOfTest(new Date(),
+                               null);
+        MockClient.getPositionFails = false;
+        // the date of the earliest position of all instruments
+        Date date = new Date();
+        for(Position position : positions.values()) {
+            // examine only Currencies to make sure that the position we find is for an Currency
+            if(position.getInstrument() instanceof Currency) {
+                date = new Date(Math.min(date.getTime(),
+                                         position.getPositionView().get(0).getDate().getTime()));
+            }
+        }
+        MockClient client = new MockClient();
+        date = new Date(date.getTime() - 1000);
+        doAllCurrencyPositionsAsOfTest(date, // 1s before the open of the position
+                               client.getAllCurrencyPositionsAsOf(date));
+        // date in the past (after position begins)
+        date = new Date(date.getTime() + 2000); // 1s after the open of the position
+        assertTrue(date.getTime() < System.currentTimeMillis());
+        // found a date somewhere in the middle of the position and earlier than today
+        doAllCurrencyPositionsAsOfTest(date,
+                               client.getAllCurrencyPositionsAsOf(date));
+        // date exactly now
+        date = new Date();
+        doAllCurrencyPositionsAsOfTest(date,
+                               client.getAllCurrencyPositionsAsOf(date));
+        // pick a data point two weeks into the future
+        date = new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 14));
+        doAllCurrencyPositionsAsOfTest(date,
+                               client.getAllCurrencyPositionsAsOf(date));
+    }
+    
+    
+    
     /**
      * Tests {@link AbstractRunningStrategy#getOptionPositionAsOf(Date, String, String, BigDecimal, OptionType)}.
      *
@@ -4640,6 +4759,76 @@ public abstract class LanguageTestBase
         assertNull(AbstractRunningStrategy.getProperty("positionAsOfDuringStop"));
     }
     /**
+     * Executes one iteration of the getCurrencyPositionAsOf test. 
+     *
+     * @param inSymbol a <code>String</code> value
+     * @param inDate a <code>Date</code> value
+     * @param inExpectedPosition a <code>BigDecimal</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doCurrencyPositionAsOfTest(String inSymbol,
+                                    Date inDate,
+                                    BigDecimal inExpectedPosition)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("currencyPositionAsOfDuringStop",
+                                            "not-empty");
+        if(inSymbol != null) {
+            AbstractRunningStrategy.setProperty("symbol",
+                                                inSymbol);
+        }
+        if(inDate != null) {
+            AbstractRunningStrategy.setProperty("date",
+                                                Long.toString(inDate.getTime()));
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedPosition == null ? null : inExpectedPosition.toString()),
+                     AbstractRunningStrategy.getProperty("currencyPositionAsOf"));
+        assertNull(AbstractRunningStrategy.getProperty("currencyPositionAsOfDuringStop"));
+    }
+    
+    
+    /**
+     * Executes one iteration of the <code>getAllCurrencyPositionsAsOf</code> test. 
+     *
+     * @param inDate a <code>Date</code> value
+     * @param inExpectedPositions a <code>Map&lt;PositionKey&lt;Currency&gt;,BigDecimal&gt;</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    private void doAllCurrencyPositionsAsOfTest(Date inDate,
+                                        Map<PositionKey<Currency>,BigDecimal> inExpectedPositions)
+            throws Exception
+    {
+        StrategyCoordinates strategy = getPositionsStrategy();
+        setPropertiesToNull();
+        AbstractRunningStrategy.setProperty("allCurrencyPositionsAsOfDuringStop",
+                                            "not-empty");
+        if(inDate != null) {
+            AbstractRunningStrategy.setProperty("date",
+                                                Long.toString(inDate.getTime()));
+        }
+        verifyStrategyStartsAndStops(strategy.getName(),
+                                     getLanguage(),
+                                     strategy.getFile(),
+                                     null,
+                                     null,
+                                     null);
+        // verify expected results
+        assertEquals((inExpectedPositions == null ? null : inExpectedPositions.toString()),
+                     AbstractRunningStrategy.getProperty("allCurrencyPositionsAsOf"));
+        assertNull(AbstractRunningStrategy.getProperty("allCurrencyPositionsAsOfDuringStop"));
+    }
+    
+    
+    /**
      * Executes one iteration of the <code>getAllPositionsAsOf</code> test. 
      *
      * @param inDate a <code>Date</code> value
@@ -4879,7 +5068,8 @@ public abstract class LanguageTestBase
      * <p>As this annotation becomes more widely used, an appropriate home can be chosen for it.  In the
      * long run, <code>LanguageTestBase</code> is not the right owner.
      *
-     * @version $Id: LanguageTestBase.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
     public @interface PerformanceTest

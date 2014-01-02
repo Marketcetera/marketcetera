@@ -1,8 +1,9 @@
 package org.marketcetera.modules.cep.system;
 
-import org.marketcetera.core.module.ModuleFactory;
-import org.marketcetera.core.module.ModuleCreationException;
-import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.ModuleFactory;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 /**
@@ -19,9 +20,11 @@ import org.marketcetera.core.module.ModuleURN;
  * </table>
  *
  * @see CEPSystemProcessor
+ * @author toli@marketcetera.com
  * @since 1.0.0
- * @version $Id: CEPSystemFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class CEPSystemFactory extends ModuleFactory {
     /**
      * Creates an instance.

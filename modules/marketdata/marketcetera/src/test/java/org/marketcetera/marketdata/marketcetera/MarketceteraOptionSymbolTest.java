@@ -3,7 +3,7 @@ package org.marketcetera.marketdata.marketcetera;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.core.ExpectedTestFailure;
 
 public class MarketceteraOptionSymbolTest
 {
@@ -45,13 +45,11 @@ public class MarketceteraOptionSymbolTest
 		MarketceteraOptionSymbol symbol = new MarketceteraOptionSymbol(symbolString);
 		assertEquals(symbolString, symbol.toString());
 		
-		new ExpectedFailure<IllegalArgumentException>(){
-            @Override
-            protected void run()
-                    throws Exception
-            {
-                new MarketceteraOptionSymbol("IBM+R");
-            }
-		};
+		new ExpectedTestFailure(IllegalArgumentException.class){
+			@Override
+			protected void execute() throws Throwable {
+				new MarketceteraOptionSymbol("IBM+R");
+			}
+		}.run();
 	}
 }

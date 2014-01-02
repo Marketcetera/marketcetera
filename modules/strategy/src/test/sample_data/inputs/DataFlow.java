@@ -3,24 +3,25 @@ package org.marketcetera.strategy;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.BidEvent;
-import org.marketcetera.core.event.DividendEvent;
-import org.marketcetera.core.event.MarketstatEvent;
-import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.core.module.DataFlowID;
-import org.marketcetera.core.module.DataRequest;
-import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.OrderCancelReject;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
 
 /* $License$ */
 
 /**
  * Tests a strategy's ability to create custom data flows.
  *
- * @version $Id: DataFlow.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.0.0
  */
 public class DataFlow
@@ -76,7 +77,7 @@ public class DataFlow
         send(inEvent);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.core.event.AskEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
      */
     @Override
     public void onAsk(AskEvent inAsk)
@@ -84,7 +85,7 @@ public class DataFlow
         send(inAsk);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onBid(org.marketcetera.core.event.BidEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onBid(org.marketcetera.event.BidEvent)
      */
     @Override
     public void onBid(BidEvent inBid)
@@ -108,7 +109,7 @@ public class DataFlow
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onCancelReject(org.marketcetera.core.trade.OrderCancelReject)
+     * @see org.marketcetera.strategy.java.Strategy#onCancelReject(org.marketcetera.trade.OrderCancelReject)
      */
     @Override
     public void onCancelReject(OrderCancelReject inCancel)
@@ -116,7 +117,7 @@ public class DataFlow
         send(inCancel);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onExecutionReport(org.marketcetera.core.trade.ExecutionReport)
+     * @see org.marketcetera.strategy.java.Strategy#onExecutionReport(org.marketcetera.trade.ExecutionReport)
      */
     @Override
     public void onExecutionReport(ExecutionReport inExecutionReport)
@@ -124,7 +125,7 @@ public class DataFlow
         send(inExecutionReport);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onMarketstat(org.marketcetera.core.event.MarketstatEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onMarketstat(org.marketcetera.event.MarketstatEvent)
      */
     @Override
     public void onMarketstat(MarketstatEvent inStatistics)
@@ -132,7 +133,7 @@ public class DataFlow
         send(inStatistics);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onTrade(org.marketcetera.core.event.TradeEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onTrade(org.marketcetera.event.TradeEvent)
      */
     @Override
     public void onTrade(TradeEvent inTrade)
@@ -140,7 +141,7 @@ public class DataFlow
         send(inTrade);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onDividend(org.marketcetera.core.event.DividendEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onDividend(org.marketcetera.event.DividendEvent)
      */
     @Override
     public void onDividend(DividendEvent inDividend)

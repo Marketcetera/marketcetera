@@ -1,17 +1,21 @@
 package org.marketcetera.marketdata.csv;
 
-import org.marketcetera.core.marketdata.AbstractMarketDataFeedFactory;
-import org.marketcetera.core.marketdata.FeedException;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.marketdata.AbstractMarketDataFeedFactory;
+import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
 
 /**
  * Provides instances of {@link CSVFeed}.
  * 
+ * @author toli kuznets
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-public class CSVFeedFactory
+@ClassVersion("$Id$")
+public class CSVFeedFactory  
         extends AbstractMarketDataFeedFactory<CSVFeed,CSVFeedCredentials>
 {
     /**

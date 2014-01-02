@@ -10,8 +10,9 @@ import org.junit.Before;
 /**
  * Base class for test cases.
  * 
+ * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: TestCaseBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
 
 /* $License$ */

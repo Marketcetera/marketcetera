@@ -2,19 +2,22 @@ package org.marketcetera.marketdata.yahoo;
 
 import javax.management.MXBean;
 
-import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
-import org.marketcetera.core.module.DisplayName;
+import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.module.DisplayName;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Provides an MX interface for the Yahoo market data feed.
  *
- * @version $Id: YahooFeedMXBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
 @MXBean(true)
 @DisplayName("Management Interface for the Yahoo Marketdata Feed")
+@ClassVersion("$Id$")
 public interface YahooFeedMXBean
         extends AbstractMarketDataModuleMXBean
 {

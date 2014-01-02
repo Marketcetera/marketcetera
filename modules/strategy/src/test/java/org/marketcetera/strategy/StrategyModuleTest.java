@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.marketcetera.core.module.Messages.*;
+import static org.marketcetera.module.Messages.*;
 import static org.marketcetera.strategy.Language.RUBY;
 import static org.marketcetera.strategy.Status.*;
 
@@ -22,13 +22,12 @@ import javax.management.NotificationEmitter;
 import javax.management.NotificationListener;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
 import org.marketcetera.core.Util;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.module.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
 
 /* $License$ */
@@ -36,7 +35,8 @@ import org.marketcetera.util.test.UnicodeData;
 /**
  * Tests {@link StrategyModule}.
  *
- * @version $Id: StrategyModuleTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class StrategyModuleTest
@@ -104,13 +104,15 @@ public class StrategyModuleTest
         throws Exception
     {
         // create a strategy written to a file that does not compile
-        String badStrategy = "include_class \"org.marketcetera.strategy.ruby.Strategy\"\n" +
-                             "include_class \"java.math.BigDecimal\"\n" +
+        String badStrategy = "require 'java'\n" +
+                             "java_import org.marketcetera.strategy.ruby.Strategy\n" +
+                             "java_import java.math.BigDecimal\n" +
                              "class MyStrategy < Strategy\n" +
-                             "  TEST = BigDecimal.new(1)\n" +
+                             "  this just won't compile\n" +
                              "end\n";
-        String goodStrategy = "include_class \"org.marketcetera.strategy.ruby.Strategy\"\n" +
-                              "include_class \"java.math.BigDecimal\"\n" +
+        String goodStrategy = "require 'java'\n" + 
+                              "java_import org.marketcetera.strategy.ruby.Strategy\n" +
+                              "java_import java.math.BigDecimal\n" +
                               "class MyStrategy < Strategy\n" +
                               "  TEST = BigDecimal.new(\"1\")\n" +
                               "end\n";

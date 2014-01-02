@@ -3,8 +3,9 @@ package org.marketcetera.marketdata.csv;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.event.Event;
-import org.marketcetera.core.event.EventTranslator;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTranslator;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Provides the base implementation of a CSV event translator.
@@ -20,14 +21,17 @@ import org.marketcetera.core.event.EventTranslator;
  * absolutely be stateless.  A single instance of the subclass will be used to translate
  * all lines for all CSV files in the same session, with no concurrency guarantees.
  * 
+ * @author toli kuznets
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
+@ClassVersion("$Id$")
 public class CSVFeedEventTranslator
         implements EventTranslator
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.event.IEventTranslator#translate(java.lang.Object)
+     * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
     public List<Event> toEvent(Object inData,
                                String inHandle)
@@ -36,7 +40,7 @@ public class CSVFeedEventTranslator
         throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.event.IEventTranslator#translate(org.marketcetera.core.event.Event)
+     * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.Event)
      */
     public Object fromEvent(Event inEvent)
             throws CoreException

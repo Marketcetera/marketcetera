@@ -3,14 +3,15 @@ package org.marketcetera.marketdata.marketcetera;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.marketcetera.core.util.l10n.MessageComparator;
+import org.marketcetera.util.l10n.MessageComparator;
 
 /* $License$ */
 
 /**
  * Tests {@link Messages}.
  *
- * @version $Id: MessagesTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class MessagesTest

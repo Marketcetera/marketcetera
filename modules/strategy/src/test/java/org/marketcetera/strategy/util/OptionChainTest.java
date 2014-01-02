@@ -1,24 +1,42 @@
 package org.marketcetera.strategy.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.event.impl.DividendEventBuilder;
-import org.marketcetera.core.event.impl.LogEventBuilder;
-import org.marketcetera.core.event.impl.QuoteEventBuilder;
-import org.marketcetera.core.event.impl.TradeEventBuilder;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.DividendFrequency;
+import org.marketcetera.event.DividendStatus;
+import org.marketcetera.event.DividendType;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.OptionEvent;
+import org.marketcetera.event.QuoteAction;
+import org.marketcetera.event.TestMessages;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.*;
 import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.core.options.ExpirationType;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.options.ExpirationType;
 import org.marketcetera.strategy.util.OptionContractPair.OptionContractPairKey;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
 import org.marketcetera.util.test.EqualityAssert;
 
 /* $License$ */
@@ -26,14 +44,15 @@ import org.marketcetera.util.test.EqualityAssert;
 /**
  * Tests {@link OptionChain}, [@link OptionContractPair}, and {@link OptionContract}.
  *
- * @version $Id: OptionChainTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.0.0
  */
 public class OptionChainTest
         implements TestMessages
 {
     /**
-     * Tests {@link OptionChain#OptionChain(org.marketcetera.core.trade.Instrument)}.
+     * Tests {@link OptionChain#OptionChain(org.marketcetera.trade.Instrument)}.
      *
      * @throws Exception
      */
@@ -530,7 +549,7 @@ public class OptionChainTest
                           Arrays.asList(new OptionContractPair[] { entry }));
     }
     /**
-     * Tests {@link OptionChain#process(org.marketcetera.core.event.Event)}.
+     * Tests {@link OptionChain#process(org.marketcetera.event.Event)}. 
      *
      * <p>Note that this test uses the process capability of {@link OptionContractPair}
      * to prepare the expected data, which means that it merely tests {@link OptionContractPair}'s
@@ -576,7 +595,7 @@ public class OptionChainTest
                           new ArrayList<OptionContractPair>());
     }
     /**
-     * Tests {@link OptionChain#process(org.marketcetera.core.event.Event)} with error conditions.
+     * Tests {@link OptionChain#process(org.marketcetera.event.Event)} with error conditions.
      *
      * @throws Exception if an unexpected error occurs
      */

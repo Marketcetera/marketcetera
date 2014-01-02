@@ -1,8 +1,8 @@
 import java.util.Date;
 
-import org.marketcetera.core.quickfix.FIXVersion;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.java.Strategy;
-import org.marketcetera.core.trade.BrokerID;
+import org.marketcetera.trade.BrokerID;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -10,7 +10,8 @@ import quickfix.field.TransactTime;
 /**
  * Test strategy to send messages via the FIX escape hatch.
  *
- * @version $Id: SendMessage.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class SendMessage

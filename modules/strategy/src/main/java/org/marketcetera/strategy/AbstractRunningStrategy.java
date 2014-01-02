@@ -9,25 +9,27 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.marketcetera.client.ClientInitException;
+import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.OrderValidationException;
 import org.marketcetera.client.Validations;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.utils.LiveOrderHistoryManager;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.event.Event;
-import org.marketcetera.core.event.impl.LogEventBuilder;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.core.module.DataFlowID;
-import org.marketcetera.core.module.DataFlowSupport;
-import org.marketcetera.core.module.DataRequest;
-import org.marketcetera.core.module.ModuleURN;
-import org.marketcetera.core.trade.*;
-import org.marketcetera.core.util.collections.UnmodifiableDeque;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.util.misc.ClassVersion;
-import org.marketcetera.core.util.misc.NamedThreadFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataFlowSupport;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.util.collections.UnmodifiableDeque;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.misc.NamedThreadFactory;
 
 import quickfix.Message;
 
@@ -36,9 +38,11 @@ import quickfix.Message;
 /**
  * Base class for running strategies.
  * 
- * @version $Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public abstract class AbstractRunningStrategy
         implements RunningStrategy
 {
@@ -77,8 +81,10 @@ public abstract class AbstractRunningStrategy
     }
     /**
      * Called when the <code>AbstractRunningStrategy</code> starts.
+     * @throws ClientInitException if an error occurs during start 
      */
     final void start()
+            throws ClientInitException
     {
         synchronized(AbstractRunningStrategy.class) {
             if(orderHistoryManager == null) {
@@ -86,6 +92,9 @@ public abstract class AbstractRunningStrategy
             }
         }
         openOrders = orderHistoryManager.getOpenOrders();
+        
+        // Add the strategy as a broker status listener
+        ClientManager.getInstance().addBrokerStatusListener(this);
     }
     /**
      * Indicates to the <code>AbstractRunningStrategy</code> that it should stop running now.
@@ -96,6 +105,13 @@ public abstract class AbstractRunningStrategy
         callbackService.shutdown();
         // terminate existing callbacks, best effort
         callbackService.shutdownNow();
+        
+        // Delete the strategy as a broker status listener
+        try {
+        	ClientManager.getInstance().removeBrokerStatusListener(this);
+        } catch(ClientInitException e) {
+        	throw new RuntimeException(e);
+        }
     }
     /**
      * Provides a non-overridable route for {@link ExecutionReport} data to
@@ -122,6 +138,22 @@ public abstract class AbstractRunningStrategy
         orderHistoryManager.add(inCancelReject);
         // now notify the strategy
         onCancelReject(inCancelReject);
+    }
+    /**
+     * Supplies a broker status to the strategy.
+     *
+     * @param inStatus The status.
+     */
+    public void receiveBrokerStatus(BrokerStatus inStatus) 
+    {
+    	try {
+    		// notify the strategy
+    		onReceiveBrokerStatus(inStatus);
+    	} catch (Exception e) {
+    		StrategyModule.log(LogEventBuilder.warn().withMessage(BROKER_STATUS_PROCESS_FAILED,
+    				String.valueOf(strategy), String.valueOf(inStatus)).create(),
+    				strategy);
+    	}
     }
     /**
      * Returns the list of open orders created during this session in the order they
@@ -772,6 +804,7 @@ public abstract class AbstractRunningStrategy
         //  not OK to send an invalid BrokerOrderID.
         replaceOrder.setBrokerOrderID(null);
         replaceOrder.setQuantity(inNewOrder.getQuantity());
+        replaceOrder.setDisplayQuantity(inNewOrder.getDisplayQuantity());
         // special case: when replacing a market order, it is absolutely verbotten to specify a price
         if(OrderType.Market.equals(executionReport.getOrderType())) {
             replaceOrder.setPrice(null);
@@ -1133,6 +1166,54 @@ public abstract class AbstractRunningStrategy
         }
     }
     /**
+     * Gets the position in the given <code>Currency</code> at the given point in time.
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @param inSymbol a <code>String</code> value containing the underlying <code>Currency</code> symbol
+     * @return a <code>BigDecimal</code> value or <code>null</code> if no position could be found 
+     */
+    protected final BigDecimal getCurrencyPositionAsOf(Date inDate,
+                                                     String inSymbol)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inDate == null ||
+           inSymbol == null ||
+        		   inSymbol.isEmpty()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_CURRENCY_POSITION_REQUEST,
+                                                                  String.valueOf(strategy),
+                                                                  inDate,
+                                                                  inSymbol).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            BigDecimal result = strategy.getServicesProvider().getCurrencyPositionAsOf(inDate,
+                                                                                     new Currency(inSymbol)); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITION,
+                                                                   String.valueOf(strategy),
+                                                                   result,
+                                                                   inDate,
+                                                                   inSymbol).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_CURRENCY_POSITION,
+                                                                  String.valueOf(strategy),
+                                                                  inSymbol,
+                                                                  inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    
+    
+    /**
      * Gets all open <code>Future</code> positions at the given point in time.
      *
      * @param inDate a <code>Date</code> value indicating the point in time for which to search
@@ -1170,6 +1251,46 @@ public abstract class AbstractRunningStrategy
             return null;
         }
     }
+    /**
+     * Gets all open <code>Currency</code> positions at the given point in time.
+     *
+     * @param inDate a <code>Date</code> value indicating the point in time for which to search
+     * @return a <code>Map&lt;PositionKey&lt;Currency&gt;,BigDecimal&gt;</code> value
+     */
+    protected final Map<PositionKey<Currency>,BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
+    {
+        if(!canReceiveData()) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_REQUEST_DATA,
+                                                                  String.valueOf(strategy),
+                                                                  strategy.getStatus()).create(),
+                               strategy);
+            return null;
+        }
+        if(inDate == null) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_POSITIONS_REQUEST,
+                                                                  String.valueOf(strategy)).create(),
+                               strategy);
+            return null;
+        }
+        try {
+            Map<PositionKey<Currency>,BigDecimal> result = strategy.getServicesProvider().getAllCurrencyPositionsAsOf(inDate); 
+            StrategyModule.log(LogEventBuilder.debug().withMessage(RECEIVED_POSITIONS,
+                                                                   String.valueOf(strategy),
+                                                                   String.valueOf(result),
+                                                                   inDate).create(),
+                               strategy);
+            return result;
+        } catch (Exception e) {
+            StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_RETRIEVE_POSITIONS,
+                                                                  String.valueOf(strategy),
+                                                                  inDate)
+                                                     .withException(e).create(),
+                               strategy);
+            return null;
+        }
+    }
+    
+    
     /**
      * Gets the position in the given <code>Option</code> at the given point in time.
      *
@@ -1650,10 +1771,12 @@ public abstract class AbstractRunningStrategy
     /**
      * Executes a callback to a specific {@link RunningStrategy}.
      * 
-     * @version $Id: AbstractRunningStrategy.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        private static final class Callback
+    @ClassVersion("$Id$")
+    private static final class Callback
             implements Runnable
     {
         /**

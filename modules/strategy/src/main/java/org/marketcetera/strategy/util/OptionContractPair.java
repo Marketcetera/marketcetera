@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.marketcetera.core.event.HasProviderSymbol;
-import org.marketcetera.core.event.OptionEvent;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.event.HasProviderSymbol;
+import org.marketcetera.event.OptionEvent;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -17,10 +17,12 @@ import org.marketcetera.core.util.misc.ClassVersion;
  * 
  * <p>The put and the call in this pair are guaranteed to be for the same symbol, expiry, and strike.
  *
- * @version $Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.0.0
  */
 @ThreadSafe
+@ClassVersion("$Id$")
 public final class OptionContractPair
         implements Comparable<OptionContractPair>
 {
@@ -172,10 +174,12 @@ public final class OptionContractPair
      * Encapsulates the components of an <code>OptionContractPair</code> that correspond to
      * the unique key.
      *
-     * @version $Id: OptionContractPair.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 2.0.0
      */
-        static class OptionContractPairKey
+    @ClassVersion("$Id$")
+    static class OptionContractPairKey
             implements Comparable<OptionContractPairKey>
     {
         /* (non-Javadoc)

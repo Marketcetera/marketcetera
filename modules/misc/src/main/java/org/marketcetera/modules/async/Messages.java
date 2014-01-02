@@ -1,14 +1,17 @@
 package org.marketcetera.modules.async;
 
-import org.marketcetera.core.util.log.*;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.log.*;
 
 /* $License$ */
 /**
  * Internationalized messages for this package.
  *
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @author anshul@marketcetera.com
+ * @version $Id$
  * @since 2.0.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages {
     /**
      * The message provider

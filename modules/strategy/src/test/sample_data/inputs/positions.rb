@@ -1,9 +1,10 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.trade.OptionType"
-include_class "java.lang.Long"
-include_class "java.lang.String"
-include_class "java.math.BigDecimal"
-include_class "java.util.Date"
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.trade.OptionType
+java_import java.lang.Long
+java_import java.lang.String
+java_import java.math.BigDecimal
+java_import java.util.Date
 
 ########################################
 # Tests Strategy API positions methods #
@@ -21,6 +22,8 @@ class Positions < Strategy
         do_get_all_positions_as_of true
         do_get_option_position_as_of true
         do_get_all_option_positions_as_of true
+        do_get_currency_position_as_of true
+        do_get_all_currency_positions_as_of true
         do_get_option_positions_as_of true
         do_get_underlying true
         do_get_option_roots true
@@ -34,6 +37,8 @@ class Positions < Strategy
         do_get_all_positions_as_of false
         do_get_option_position_as_of false
         do_get_all_option_positions_as_of false
+        do_get_currency_position_as_of false
+        do_get_all_currency_positions_as_of false
         do_get_option_positions_as_of false
         do_get_underlying false
         do_get_option_roots false
@@ -53,7 +58,7 @@ class Positions < Strategy
       if result.nil?
           resultString = nil
       else
-          resultString = result.to_s
+          resultString = result.toString
       end
       if duringStart
           set_property "positionAsOf", resultString
@@ -61,6 +66,31 @@ class Positions < Strategy
           set_property "positionAsOfDuringStop", resultString
       end
     end
+    
+    ###############################
+    # Executes get_currency_position_as_of #
+    ###############################
+    def do_get_currency_position_as_of(duringStart)
+      symbol = get_property "symbol"
+      dateString = get_property "date"
+      if dateString.nil?
+          date = nil
+      else
+          date = Date.new Long.parseLong dateString
+      end
+      result = get_currency_position_as_of date, symbol
+      if result.nil?
+          resultString = nil
+      else
+          resultString = result.toString
+      end
+      if duringStart
+          set_property "currencyPositionAsOf", resultString
+      else
+          set_property "currencyPositionAsOfDuringStop", resultString
+      end
+    end
+    
     ####################################
     # Executes get_all_positions_as_of #
     ####################################
@@ -75,7 +105,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-            resultString = result.to_s
+            resultString = result.toString
         end
         if duringStart
             set_property "allPositionsAsOf", resultString
@@ -83,6 +113,30 @@ class Positions < Strategy
             set_property "allPositionsAsOfDuringStop", resultString
         end
     end
+    
+     ####################################
+    # Executes get_all_currency_positions_as_of #
+    ####################################
+    def do_get_all_currency_positions_as_of(duringStart)
+        dateString = get_property "date"
+        if dateString.nil?
+            date = nil
+        else
+            date = Date.new Long.parseLong dateString
+        end
+        result = get_all_currency_positions_as_of date
+        if result.nil?
+            resultString = nil
+        else
+            resultString = result.toString
+        end
+        if duringStart
+            set_property "allCurrencyPositionsAsOf", resultString
+        else
+            set_property "allCurrencyPositionsAsOfDuringStop", resultString
+        end
+    end
+    
     ######################################
     # Executes get_option_position_as_of #
     ######################################
@@ -108,7 +162,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-            resultString = result.to_s
+            resultString = result.toPlainString
         end
         if duringStart
             set_property "optionPositionAsOf",resultString
@@ -129,7 +183,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-            resultString = result.to_s
+            resultString = result.toString
         end
         if duringStart
             set_property "allOptionPositionsAsOf",resultString
@@ -163,7 +217,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-           resultString = result.to_s
+           resultString = result.toString
         end
         if duringStart
             set_property "optionPositionsAsOf",resultString
@@ -197,7 +251,7 @@ class Positions < Strategy
         if result.nil?
             resultString = nil
         else
-            resultString = result.to_s
+            resultString = result.toString
         end
         if duringStart
             set_property "optionRoots",resultString

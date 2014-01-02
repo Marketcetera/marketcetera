@@ -1,24 +1,29 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Status.FAILED;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.junit.Test;
-import org.marketcetera.core.ExpectedFailure;
-import org.marketcetera.core.event.LogEvent;
-import org.marketcetera.core.module.*;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.SinkDataListener;
+import org.marketcetera.module.SinkModuleFactory;
 import org.marketcetera.util.test.SerializableAssert;
+
+import static org.marketcetera.strategy.Status.FAILED;
 
 /* $License$ */
 
 /**
  * Tests Ruby language support.
  * 
- * @version $Id: RubyLanguageTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class RubyLanguageTest

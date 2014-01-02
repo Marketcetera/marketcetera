@@ -14,24 +14,22 @@ import java.util.List;
 
 import org.junit.Test;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.core.marketdata.MarketDataRequestBuilder;
-import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.options.OptionUtils;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.trade.OptionType;
-import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.event.*;
+import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.options.ExpirationType;
+import org.marketcetera.options.OptionUtils;
+import org.marketcetera.trade.*;
 
 /* $License$ */
 
 /**
  * Tests {@link BasicCSVFeedEventTranslator}.
  *
- * @version $Id: BasicCSVFeedEventTranslatorTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.0
  */
 public class BasicCSVFeedEventTranslatorTest
@@ -1946,7 +1944,7 @@ public class BasicCSVFeedEventTranslatorTest
      * option to use for testing
      */
     private final Option option = new Option("symbol",
-                                                 "20120319",
-                                                 BigDecimal.ONE,
-                                                 OptionType.Call);
+                                             "20150319",
+                                             BigDecimal.ONE,
+                                             OptionType.Call);
 }

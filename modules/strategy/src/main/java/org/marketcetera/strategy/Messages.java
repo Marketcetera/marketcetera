@@ -1,24 +1,26 @@
 package org.marketcetera.strategy;
 
-import org.marketcetera.core.util.log.I18NLoggerProxy;
-import org.marketcetera.core.util.log.I18NMessage0P;
-import org.marketcetera.core.util.log.I18NMessage1P;
-import org.marketcetera.core.util.log.I18NMessage2P;
-import org.marketcetera.core.util.log.I18NMessage3P;
-import org.marketcetera.core.util.log.I18NMessage4P;
-import org.marketcetera.core.util.log.I18NMessage5P;
-import org.marketcetera.core.util.log.I18NMessage6P;
-import org.marketcetera.core.util.log.I18NMessageProvider;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
+import org.marketcetera.util.log.I18NMessage3P;
+import org.marketcetera.util.log.I18NMessage4P;
+import org.marketcetera.util.log.I18NMessage5P;
+import org.marketcetera.util.log.I18NMessage6P;
+import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Message keys for the strategy module.
  *
- * @version $Id: Messages.java 16069 2012-03-24 00:57:05Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public interface Messages
 {
     /**
@@ -105,6 +107,8 @@ public interface Messages
                                                                                    "invalid_equity_position_request"); //$NON-NLS-1$
     static final I18NMessage3P INVALID_FUTURE_POSITION_REQUEST = new I18NMessage3P(LOGGER,
                                                                                    "invalid_future_position_request"); //$NON-NLS-1$
+    static final I18NMessage3P INVALID_CURRENCY_POSITION_REQUEST = new I18NMessage3P(LOGGER,
+            																		"invalid_currency_position_request"); //$NON-NLS-1$
     static final I18NMessage2P INVALID_UNDERLYING_REQUEST = new I18NMessage2P(LOGGER,
                                                                               "invalid_underlying_request"); //$NON-NLS-1$
     static final I18NMessage6P INVALID_OPTION_POSITION_REQUEST = new I18NMessage6P(LOGGER,
@@ -121,6 +125,8 @@ public interface Messages
                                                                                    "cannot_retrieve_option_position"); //$NON-NLS-1$
     static final I18NMessage3P CANNOT_RETRIEVE_FUTURE_POSITION = new I18NMessage3P(LOGGER,
                                                                                    "cannot_retrieve_future_position"); //$NON-NLS-1$
+    static final I18NMessage3P CANNOT_RETRIEVE_CURRENCY_POSITION = new I18NMessage3P(LOGGER,
+            																		"cannot_retrieve_currency_position"); //$NON-NLS-1$
     static final I18NMessage2P CANNOT_RETRIEVE_POSITIONS = new I18NMessage2P(LOGGER,
                                                                              "cannot_retrieve_positions"); //$NON-NLS-1$
     static final I18NMessage3P CANNOT_RETRIEVE_POSITIONS_BY_OPTION_ROOTS = new I18NMessage3P(LOGGER,
@@ -245,4 +251,7 @@ public interface Messages
                                                                "null_report"); //$NON-NLS-1$
     static final I18NMessage1P USING_ORDER_HISTORY_ORIGIN = new I18NMessage1P(LOGGER,
                                                                               "using_order_history_origin"); //$NON-NLS-1$
+    
+    static final I18NMessage2P BROKER_STATUS_PROCESS_FAILED = new I18NMessage2P(LOGGER,
+    																		  "broker_status_process_failed"); //$NON-NLS-1$
 }

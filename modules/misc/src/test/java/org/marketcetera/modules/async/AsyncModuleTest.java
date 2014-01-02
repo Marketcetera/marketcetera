@@ -1,36 +1,33 @@
 package org.marketcetera.modules.async;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.*;
+import org.marketcetera.core.LoggerConfiguration;
 import static org.marketcetera.modules.async.SimpleAsyncProcessorFactory.PROVIDER_URN;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.hamcrest.Matchers;
 
-import java.math.BigDecimal;
+import javax.management.*;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.management.*;
-
-import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.util.except.ExpectedFailure;
-import org.marketcetera.core.util.log.LoggerConfiguration;
+import java.math.BigDecimal;
 
 
 /* $License$ */
 /**
  * Tests the {@link SimpleAsyncProcessor} module.
  *
- * @version $Id: AsyncModuleTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author anshul@marketcetera.com
+ * @version $Id$
  * @since 2.0.0
  */
+@ClassVersion("$Id$")
 public class AsyncModuleTest extends ModuleTestBase {
 
     @BeforeClass
@@ -75,7 +72,7 @@ public class AsyncModuleTest extends ModuleTestBase {
         final ModuleURN instanceURN = new ModuleURN(PROVIDER_URN, "mymodule");
         final String requestParm = "not null value";
         new ExpectedFailure<IllegalRequestParameterValue>(
-                org.marketcetera.core.module.Messages.ILLEGAL_REQ_PARM_VALUE,
+                org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
                 instanceURN.getValue(), requestParm) {
             public void run() throws Exception {
                 mManager.createDataFlow(new DataRequest[]{
@@ -399,7 +396,6 @@ public class AsyncModuleTest extends ModuleTestBase {
          * @return number of data items received but not yet retrieved
          * for the flow with the specified flowID.
          */
-        @SuppressWarnings("unused")
         public int sizeFor(DataFlowID inFlowID) {
             BlockingQueue<Object> queue = mFlowData.get(inFlowID);
             return queue == null

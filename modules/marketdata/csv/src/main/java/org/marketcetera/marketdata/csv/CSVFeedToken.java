@@ -1,15 +1,19 @@
 package org.marketcetera.marketdata.csv;
 
-import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
-import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.marketdata.AbstractMarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
 
 /**
  * Token for {@link CSVFeed}.
  * Dummy implementation, we are not doing anything clever in our subscriptions.
  *
+ * @author <a href="mailto:toli@marketcetera.com">Toli Kuznets</a>
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedToken.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
+@ClassVersion("$Id$")
 public class CSVFeedToken
         extends AbstractMarketDataFeedToken<CSVFeed>
 {

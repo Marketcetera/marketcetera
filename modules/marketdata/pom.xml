@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<!--
+  - Author: colin@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.marketcetera.modules</groupId>
-        <artifactId>modules-parent</artifactId>
-        <version>1-SNAPSHOT</version>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.marketcetera.modules</groupId>
-    <artifactId>marketdata</artifactId>
-    <version>1-SNAPSHOT</version>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>modules</artifactId>
+    <version>2.4.0</version>
+  </parent>
+  <artifactId>marketdata</artifactId>
+  <packaging>pom</packaging>
 
-    <packaging>pom</packaging>
+  <name>Marketdata Modules</name>
 
-    <name>Marketdata Modules</name>
-
-    <modules>
-        <module>csv</module>
-        <module>marketcetera</module>
-        <module>yahoo</module>
-    </modules>
+  <modules>
+    <module>bogus</module>
+    <module>marketcetera</module>
+    <module>csv</module>
+    <module>yahoo</module>
+  </modules>
 </project>

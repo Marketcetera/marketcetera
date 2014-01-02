@@ -1,12 +1,15 @@
 package org.marketcetera.modules.csv;
 
-import org.marketcetera.core.util.log.*;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.log.*;
 
 /* $License$ */
 /**
  * Messages
  *
+ * @author anshul@marketcetera.com
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages {
     /**
      * The message provider

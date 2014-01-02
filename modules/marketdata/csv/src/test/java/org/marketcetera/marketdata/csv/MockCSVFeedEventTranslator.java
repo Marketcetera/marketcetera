@@ -7,22 +7,23 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.BidEvent;
-import org.marketcetera.core.event.Event;
-import org.marketcetera.core.event.TradeEvent;
-import org.marketcetera.core.event.impl.QuoteEventBuilder;
-import org.marketcetera.core.event.impl.TradeEventBuilder;
-import org.marketcetera.core.marketdata.Content;
-import org.marketcetera.core.marketdata.DateUtils;
-import org.marketcetera.core.trade.Equity;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.DateUtils;
+import org.marketcetera.trade.Equity;
 
 /* $License$ */
 
 /**
  *
  *
- * @version $Id: MockCSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.0
  */
 public class MockCSVFeedEventTranslator

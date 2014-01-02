@@ -5,18 +5,22 @@ import static org.marketcetera.marketdata.csv.Messages.INVALID_EVENT_TRANSLATOR;
 import java.io.File;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.marketdata.AbstractMarketDataFeedCredentials;
-import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.marketdata.AbstractMarketDataFeedCredentials;
+import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Encapsulates the data necessary to initialize an instance of {@link CSVFeed}.
  * 
+ * @author toli kuznets
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedCredentials.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-public final class CSVFeedCredentials
+@ClassVersion("$Id$")
+public final class CSVFeedCredentials 
 	    extends AbstractMarketDataFeedCredentials
 {
     /* (non-Javadoc)

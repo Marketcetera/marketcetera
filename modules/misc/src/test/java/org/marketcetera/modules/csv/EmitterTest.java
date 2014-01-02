@@ -1,31 +1,29 @@
 package org.marketcetera.modules.csv;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import org.junit.After;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.*;
+import org.marketcetera.core.LoggerConfiguration;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.After;
 import org.junit.Test;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.util.except.ExpectedFailure;
-import org.marketcetera.core.util.log.LoggerConfiguration;
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.regex.Pattern;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /* $License$ */
 /**
  * Tests the {@link CSVEmitter} module.
  *
+ * @author anshul@marketcetera.com
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class EmitterTest extends ModuleTestBase {
 
     @BeforeClass
@@ -40,7 +38,7 @@ public class EmitterTest extends ModuleTestBase {
     @Test
     public void invalidRequests() throws Exception {
         new ExpectedFailure<IllegalRequestParameterValue>(
-                org.marketcetera.core.module.Messages.ILLEGAL_REQ_PARM_VALUE,
+                org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
                 CSVEmitterFactory.INSTANCE_URN.toString(), null){
             protected void run() throws Exception {
                 mManager.createDataFlow(new DataRequest[]{
@@ -50,7 +48,7 @@ public class EmitterTest extends ModuleTestBase {
         };
         final Object invalidParam = new Object();
         new ExpectedFailure<UnsupportedRequestParameterType>(
-                org.marketcetera.core.module.Messages.UNSUPPORTED_REQ_PARM_TYPE,
+                org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE,
                 CSVEmitterFactory.INSTANCE_URN.toString(),
                 invalidParam.getClass().getName()){
             protected void run() throws Exception {
@@ -284,9 +282,9 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @return the map with expected key value pairs.
      */
-    private Map<String,String> createMap(String inDate, String inOpen, String inHigh,
-                                         String inLow, String inClose, String inVolume,
-                                         String inAdjClose) {
+    private Map createMap(String inDate, String inOpen, String inHigh,
+                          String inLow, String inClose, String inVolume,
+                          String inAdjClose) {
         Map<String,String> map = new HashMap<String,String>();
         map.put("Date",inDate);
         map.put("Open",inOpen);

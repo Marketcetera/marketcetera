@@ -1,19 +1,27 @@
 package org.marketcetera.strategy;
 
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.trade.ExecutionReport;
-import org.marketcetera.core.trade.OrderCancelReject;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.client.BrokerStatusListener;
+import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.DividendEvent;
+import org.marketcetera.event.MarketstatEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
 
 /* $License$ */
 
 /**
  * An interface to a running strategy that facilitates communication to the strategy. 
  * 
- * @version $Id: RunningStrategy.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
-public interface RunningStrategy
+@ClassVersion("$Id$")
+public interface RunningStrategy extends BrokerStatusListener
 {
     /**
      * Indicates a <code>TradeEvent</code> has been received.
@@ -57,6 +65,12 @@ public interface RunningStrategy
      * @param inCancelReject an <code>OrderCancelReject</code> value
      */
     public void onCancelReject(OrderCancelReject inCancelReject);
+    /**
+     * Indicates a <code>BrokerStatus</code> has been received.
+     *
+     * @param inStatus a <code>BrokerStatus</code> value
+     */
+    public void onReceiveBrokerStatus(BrokerStatus inStatus);
     /**
      * Indicates an object has been sent that does not fit any of the other callbacks.
      * 

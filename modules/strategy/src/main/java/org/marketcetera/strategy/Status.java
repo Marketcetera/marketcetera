@@ -1,15 +1,17 @@
 package org.marketcetera.strategy;
 
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 
 /**
  * Indicates the status of a running strategy.
  *
- * @version $Id: Status.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public enum Status
 {
     /**

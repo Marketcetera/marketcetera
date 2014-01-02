@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.Util;
@@ -17,19 +18,20 @@ import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
-import org.marketcetera.core.event.Event;
-import org.marketcetera.core.event.LogEvent;
-import org.marketcetera.core.event.LogEventLevel;
-import org.marketcetera.core.event.impl.LogEventBuilder;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.LogEvent;
+import org.marketcetera.event.LogEventLevel;
+import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.core.metrics.ThreadedMetric;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.*;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.core.util.log.I18NBoundMessage3P;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.metrics.ThreadedMetric;
+import org.marketcetera.module.*;
+import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.Message;
 
@@ -53,15 +55,17 @@ import com.google.common.collect.HashBiMap;
  * <tr><th>Factory</th><td>{@link StrategyModuleFactory}</td></tr>
  * </table>
  *
- * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 final class StrategyModule
         extends Module
         implements DataEmitter, DataFlowRequester, DataReceiver, ServicesProvider, StrategyMXBean, NotificationEmitter
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.DataEmitter#cancel(org.marketcetera.core.module.RequestID)
+     * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
      */
     @Override
     public void cancel(DataFlowID inFlowID,
@@ -70,7 +74,7 @@ final class StrategyModule
         unsubscribe(inRequestID);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.DataEmitter#requestData(org.marketcetera.core.module.DataRequest, org.marketcetera.core.module.DataEmitterSupport)
+     * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
      */
     @Override
     public void requestData(DataRequest inRequest,
@@ -109,7 +113,7 @@ final class StrategyModule
                   inSupport);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.DataFlowRequester#setFlowSupport(org.marketcetera.core.module.DataFlowSupport)
+     * @see org.marketcetera.module.DataFlowRequester#setFlowSupport(org.marketcetera.module.DataFlowSupport)
      */
     @Override
     public void setFlowSupport(DataFlowSupport inSupport)
@@ -117,7 +121,7 @@ final class StrategyModule
         dataFlowSupport = inSupport;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.DataReceiver#receiveData(org.marketcetera.core.module.DataFlowID, java.lang.Object)
+     * @see org.marketcetera.module.DataReceiver#receiveData(org.marketcetera.module.DataFlowID, java.lang.Object)
      */
     @Override
     public void receiveData(DataFlowID inFlowID,
@@ -139,7 +143,7 @@ final class StrategyModule
         strategy.dataReceived(inData);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelOrder(org.marketcetera.core.trade.OrderCancel)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelOrder(org.marketcetera.trade.OrderCancel)
      */
     @Override
     public void cancelOrder(OrderCancel inCancel)
@@ -147,7 +151,7 @@ final class StrategyModule
         publish(inCancel);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelReplace(org.marketcetera.core.trade.OrderReplace)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelReplace(org.marketcetera.trade.OrderReplace)
      */
     @Override
     public void cancelReplace(OrderReplace inReplace)
@@ -505,7 +509,7 @@ final class StrategyModule
         publish(inSuggestion);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#sendEvent(org.marketcetera.core.event.EventBase)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#sendEvent(org.marketcetera.event.EventBase)
      */
     @Override
     public void sendEvent(Event inEvent,
@@ -584,7 +588,7 @@ final class StrategyModule
         return clientFactory.getClient().getBrokersStatus().getBrokers();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.InboundServicesProvider#getEquityPositionAsOf(java.util.Date, org.marketcetera.core.trade.Equity)
+     * @see org.marketcetera.strategy.InboundServicesProvider#getEquityPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
      */
     @Override
     public BigDecimal getPositionAsOf(Date inDate,
@@ -613,7 +617,7 @@ final class StrategyModule
         return clientFactory.getClient().getAllFuturePositionsAsOf(inDate);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.core.trade.Future)
+     * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
      */
     @Override
     public BigDecimal getFuturePositionAsOf(Date inDate,
@@ -624,7 +628,27 @@ final class StrategyModule
                                                                inFuture);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.core.trade.Option)
+     * @see org.marketcetera.strategy.ServicesProvider#getAllCurrencyPositionsAsOf(java.util.Date)
+     */
+    @Override
+    public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
+            throws ConnectionException, ClientInitException
+    {
+        return clientFactory.getClient().getAllCurrencyPositionsAsOf(inDate);
+    }    
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getCurrencyPositionAsOf(java.util.Date, org.marketcetera.trade.Currency)
+     */
+    @Override
+    public BigDecimal getCurrencyPositionAsOf(Date inDate,
+                                            Currency inCurrency)
+            throws ConnectionException, ClientInitException
+    {
+        return clientFactory.getClient().getCurrencyPositionAsOf(inDate,
+        														inCurrency);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
      */
     @Override
     public BigDecimal getOptionPositionAsOf(Date inDate,
@@ -740,7 +764,7 @@ final class StrategyModule
         notificationDelegate.removeNotificationListener(inListener);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelDataFlow(org.marketcetera.core.module.DataFlowID)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#cancelDataFlow(org.marketcetera.module.DataFlowID)
      */
     @Override
     public void cancelDataFlow(DataFlowID inDataFlowID)
@@ -752,7 +776,7 @@ final class StrategyModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.OutboundServicesProvider#createDataFlow(org.marketcetera.core.module.DataRequest[], boolean)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#createDataFlow(org.marketcetera.module.DataRequest[], boolean)
      */
     @Override
     public DataFlowID createDataFlow(DataRequest[] inRequests,
@@ -943,25 +967,30 @@ final class StrategyModule
                                                                          inParameters[2].getClass().getName()));
             }
         }
-        // parameter 4 is the strategy source.  the parameter must be of type File, must be non-null, must exist, and must be readable
-        File source;
-        if(inParameters[3] == null) {
+        // parameter 4 is the strategy source. the parameter may be null. if non-null, must be a File which exists and is readable
+        File source = null;
+        if(type == Language.RUBY && inParameters[3] == null) {
             throw new ModuleCreationException(new I18NBoundMessage2P(NULL_PARAMETER_ERROR,
                                                                      4,
                                                                      File.class.getName()));
         }
-        if(inParameters[3] instanceof File) {
-            source = (File)inParameters[3];
-            if(!(source.exists() ||
-                    source.canRead())) {
-                throw new ModuleCreationException(new I18NBoundMessage1P(FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE,
-                                                                         source.getAbsolutePath()));
+        if(inParameters[3] != null) {
+            if(inParameters[3] instanceof File) {
+                source = (File)inParameters[3];
+                if(StringUtils.trimToNull(source.getName()) == null) {
+                    source = null;
+                } else {
+                    if(!(source.exists() || source.canRead())) {
+                        throw new ModuleCreationException(new I18NBoundMessage1P(FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE,
+                                                                                 source.getAbsolutePath()));
+                    }
+                }
+            } else {
+                throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
+                                                                         4,
+                                                                         File.class.getName(),
+                                                                         inParameters[3].getClass().getName()));
             }
-        } else {
-            throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
-                                                                     4,
-                                                                     File.class.getName(),
-                                                                     inParameters[3].getClass().getName()));
         }
         // parameter 5 is a Properties object.  The parameter may be null.  If non-null, these values are made available to the running strategy.
         Properties parameters = null;
@@ -1011,7 +1040,7 @@ final class StrategyModule
                                   outputInstance);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.Module#preStart()
+     * @see org.marketcetera.module.Module#preStart()
      */
     @Override
     protected void preStart()
@@ -1059,7 +1088,7 @@ final class StrategyModule
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.Module#preStop()
+     * @see org.marketcetera.module.Module#preStop()
      */
     @Override
     protected void preStop()
@@ -1225,9 +1254,10 @@ final class StrategyModule
         assert(name != null);
         assert(!name.isEmpty());
         assert(type != null);
-        assert(source != null);
-        assert(source.exists());
-        assert(source.canRead());
+        if(source != null) {
+            assert(source.exists());
+            assert(source.canRead());
+        }
     }
     /**
      * Confirms that the object attributes are in the state they are expected to be in at the beginning of {@link #receiveData(DataFlowID, Object)}.
@@ -1458,10 +1488,12 @@ final class StrategyModule
     /**
      * Request for data that comes from within strategy to strategy.
      *
-     * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        private static class InternalRequest
+    @ClassVersion("$Id$")
+    private static class InternalRequest
     {
         /**
          * the URN of the module that made the original request for data 
@@ -1480,10 +1512,12 @@ final class StrategyModule
     /**
      * Represents a request for a subscription to data this strategy can emit.
      *
-     * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        private class DataRequester
+    @ClassVersion("$Id$")
+    private class DataRequester
         implements ISubscriber
     {
         /**
@@ -1570,10 +1604,12 @@ final class StrategyModule
     /**
      * Constructs a <code>Client</code> connection.
      *
-     * @version $Id: StrategyModule.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 2.1.0
      */
-        static interface ClientFactory
+    @ClassVersion("$Id$")
+    static interface ClientFactory
     {
         /**
          * Returns the <code>Client</code> instance to use to connect to the server. 

@@ -1,21 +1,20 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import static org.marketcetera.core.marketdata.Content.LATEST_TICK;
-import static org.marketcetera.core.marketdata.Content.TOP_OF_BOOK;
-import static org.marketcetera.core.marketdata.Messages.UNSUPPORTED_REQUEST;
+import static org.marketcetera.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.marketdata.DataRequestTranslator;
-import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.marketdata.DataRequestTranslator;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.Message;
 import quickfix.field.SubscriptionRequestType;
@@ -25,7 +24,8 @@ import quickfix.field.SubscriptionRequestType;
 /**
  * Marketcetera feed implementation of {@link DataRequestTranslator}.
  *
- * @version $Id: MarketceteraFeedMessageTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 0.5.0
  */
 public class MarketceteraFeedMessageTranslator

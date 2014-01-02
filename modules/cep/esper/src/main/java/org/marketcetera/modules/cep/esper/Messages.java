@@ -1,14 +1,17 @@
 package org.marketcetera.modules.cep.esper;
 
-import org.marketcetera.core.util.log.*;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.log.*;
 
 /* $License$ */
 /**
  * Internationalized messages for this package. 
  *
+ * @author anshul@marketcetera.com
  * @since 1.0.0
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages {
     /**
      * The message provider

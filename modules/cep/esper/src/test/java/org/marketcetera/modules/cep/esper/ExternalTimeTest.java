@@ -5,29 +5,33 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.management.JMX;
 
-import org.apache.log4j.Level;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.marketcetera.core.event.AskEvent;
-import org.marketcetera.core.event.EventTestBase;
-import org.marketcetera.core.module.*;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Factory;
-import org.marketcetera.core.trade.Suggestion;
-import org.marketcetera.core.util.log.LoggerConfiguration;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.module.*;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.test.LogTestAssist;
+import org.apache.log4j.Level;
 
 /**
  * Test the external time functionality
  *  
- * @version $Id: ExternalTimeTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author toli kuznets
+ * @version $Id$
  */
 
+@ClassVersion("$Id$")
 public class ExternalTimeTest extends ModuleTestBase {
     protected ModuleManager sManager;
     protected static BlockingSinkDataListener sSink;
@@ -156,5 +160,5 @@ public class ExternalTimeTest extends ModuleTestBase {
         sLogAssist.assertNoEvents();
     }
     private static final LogTestAssist sLogAssist = new LogTestAssist(
-            "org.marketcetera.core.module.SyncCoupler", Level.WARN);
+            "org.marketcetera.module.SyncCoupler", Level.WARN);
 }

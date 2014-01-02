@@ -10,20 +10,19 @@ import javax.annotation.concurrent.Immutable;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.event.impl.DividendEventBuilder;
-import org.marketcetera.core.event.impl.MarketstatEventBuilder;
-import org.marketcetera.core.event.impl.QuoteEventBuilder;
-import org.marketcetera.core.event.impl.TradeEventBuilder;
-import org.marketcetera.core.options.ExpirationType;
-import org.marketcetera.core.options.OptionUtils;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.trade.Instrument;
-import org.marketcetera.core.trade.Option;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.util.log.I18NBoundMessage2P;
-import org.marketcetera.core.util.log.I18NBoundMessage3P;
+import org.marketcetera.event.*;
+import org.marketcetera.event.impl.DividendEventBuilder;
+import org.marketcetera.event.impl.MarketstatEventBuilder;
+import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.options.ExpirationType;
+import org.marketcetera.options.OptionUtils;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.Option;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage3P;
 
 /* $License$ */
 
@@ -66,7 +65,8 @@ import org.marketcetera.core.util.log.I18NBoundMessage3P;
  * 
  * <p>This object is stateless.  All subclasses must also be reentrant.
  *
- * @version $Id: BasicCSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.0
  */
 @Immutable
@@ -1173,7 +1173,8 @@ public class BasicCSVFeedEventTranslator
     /**
      * The event type of a CSV event.
      *
-     * @version $Id: BasicCSVFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 2.1.0
      */
     public static enum EventType

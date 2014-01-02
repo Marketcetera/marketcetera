@@ -2,16 +2,18 @@ package org.marketcetera.strategy;
 
 import java.lang.reflect.Constructor;
 
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 
 /**
  * Defines the set of strategy languages available.
  *
- * @version $Id: Language.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public enum Language
 {
     /**

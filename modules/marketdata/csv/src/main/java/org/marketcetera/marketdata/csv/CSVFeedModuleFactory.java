@@ -1,19 +1,22 @@
 package org.marketcetera.marketdata.csv;
 
 import static org.marketcetera.marketdata.csv.Messages.PROVIDER_DESCRIPTION;
-
-import org.marketcetera.core.module.ModuleFactory;
-import org.marketcetera.core.module.ModuleCreationException;
-import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.ModuleFactory;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.core.CoreException;
 
 /**
  * <code>ModuleFactory</code> implementation for the <code>CSVFeed</code> market data provider.
  * 
+ * @author toli kuznets
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 2.1.0
- * @version $Id: CSVFeedModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
-public class CSVFeedModuleFactory
+@ClassVersion("$Id$")
+public class CSVFeedModuleFactory 
         extends ModuleFactory
 {
     /**
@@ -27,7 +30,7 @@ public class CSVFeedModuleFactory
               false);
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.module.ModuleFactory#create(java.lang.Object[])
+     * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
      */
     @Override
     public CSVFeedModule create(Object... inArg0)

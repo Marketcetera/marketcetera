@@ -6,6 +6,7 @@ import static org.marketcetera.strategy.Messages.*;
 import java.math.BigDecimal;
 import java.util.*;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -15,15 +16,17 @@ import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
-import org.marketcetera.core.event.*;
+import org.marketcetera.event.*;
 import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.core.module.DataFlowID;
-import org.marketcetera.core.module.DataRequest;
-import org.marketcetera.core.module.ModuleException;
-import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleException;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.StrategyTestBase.MockClient;
-import org.marketcetera.core.trade.*;
-import org.marketcetera.core.trade.utils.OrderHistoryManagerTest;
+import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 import org.marketcetera.util.test.CollectionAssert;
 
 import quickfix.Message;
@@ -33,7 +36,8 @@ import quickfix.Message;
 /**
  * Tests {@link AbstractRunningStrategy}.
  *
- * @version $Id: AbstractRunningStrategyTest.java 16069 2012-03-24 00:57:05Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
 public class AbstractRunningStrategyTest
@@ -63,12 +67,22 @@ public class AbstractRunningStrategyTest
     public void before()
             throws Exception
     {
+        MockClient.addBrokerStatusListenerFails = false;
         strategy = new MockRunningStrategy();
         strategy.start();
         strategy.setStrategy(new MockStrategy());
         servicesProvider = new MockServicesProvider();
         factory = Factory.getInstance();
         reset();
+    }
+    /**
+     * Run after each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @After
+    public void after() {
+    	strategy.stop();
     }
     /**
      * Tests {@link AbstractRunningStrategy#send(Object)}. 
@@ -492,6 +506,68 @@ public class AbstractRunningStrategyTest
                      strategy.getOrderStatus(report5.getOrderID()));
     }
     /**
+     * Tests that a strategy fails to start when {@link Client#addBrokerStatusListener(BrokerStatusListener)} fails.
+     * @throws Exception 
+     */
+    @Test
+    public void testStrategyFailsToStart() throws Exception {
+    	
+    	new ExpectedFailure<RuntimeException>(){
+            protected void run() throws Exception {
+            	MockClient.addBrokerStatusListenerFails = true;
+            	AbstractRunningStrategy strategy = new MockRunningStrategy();
+                strategy.start();
+            }
+        }; 
+    }
+    /**
+     * Tests {@link AbstractRunningStrategy#onReceiveBrokerStatus(BrokerStatus)}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testOnReceiveBrokerStatus() throws Exception {
+    	//Create broker status and send it to the client listeners
+    	BrokerStatus status = createRandomBrokerStatus();
+    	sendBrokerStatus(status);
+
+    	//Verify the statregy got it.
+    	assertTrue(strategy.brokerStatuses.contains(status));
+    	
+        //Verify strategy logs a warning message when broker status event process fails
+        strategy.onReceiveBrokerStatusFails = true;
+        sendBrokerStatus(status);
+        verifyLoggedEvents(new String[] { BROKER_STATUS_PROCESS_FAILED.getText(String.valueOf(strategy), String.valueOf(status)) });
+
+    	//Now remove the strategy from client's broker status listeners.
+        removeBrokerStatusListener(strategy);
+    	strategy.brokerStatuses.clear();
+
+    	//Send another status
+    	sendBrokerStatus(createRandomBrokerStatus());
+
+    	//Verify that the strategy didn't get it
+    	assertTrue(strategy.brokerStatuses.size() == 0);       
+    }
+    
+    private BrokerStatus createRandomBrokerStatus() {
+    	return new BrokerStatus("status-" + System.nanoTime(),new BrokerID("id-" + System.nanoTime()),true);
+    }
+    
+    private void sendBrokerStatus (BrokerStatus brokerStatus) throws ClientInitException {
+    	Client client = ClientManager.getInstance();
+    	
+    	//Verify client is instance of MockClient (needed to send broker status to listeners manually)
+    	assertTrue(client instanceof MockClient);
+    	
+    	((MockClient)client).sendToListeners(brokerStatus);
+    }
+    
+    private void removeBrokerStatusListener (BrokerStatusListener brokerStatusListener) throws ClientInitException {
+    	ClientManager.getInstance().removeBrokerStatusListener(brokerStatusListener);
+    }
+    
+    /**
      * Resets the test objects as necessary.
      *
      * @throws Exception if an unexpected error occurs
@@ -501,6 +577,7 @@ public class AbstractRunningStrategyTest
     {
         servicesProvider.reset();
         strategy.initializeReportHistoryManager();
+    	strategy.brokerStatuses.clear();
     }
     /**
      * Verifies that the actual objects sent match the given expected objects.
@@ -551,7 +628,8 @@ public class AbstractRunningStrategyTest
     /**
      * Test <code>Strategy</code> implementation.
      *
-     * @version $Id: AbstractRunningStrategyTest.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 2.1.4
      */
     private class MockStrategy
@@ -651,7 +729,8 @@ public class AbstractRunningStrategyTest
     /**
      * Test <code>ServicesProvider</code>.
      *
-     * @version $Id: AbstractRunningStrategyTest.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 2.1.4
      */
     private class MockServicesProvider
@@ -666,7 +745,7 @@ public class AbstractRunningStrategyTest
             sentObjects.add(inData);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#cancelOrder(org.marketcetera.core.trade.OrderCancel)
+         * @see org.marketcetera.strategy.ServicesProvider#cancelOrder(org.marketcetera.trade.OrderCancel)
          */
         @Override
         public void cancelOrder(OrderCancel inCancel)
@@ -674,7 +753,7 @@ public class AbstractRunningStrategyTest
             sentObjects.add(inCancel);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#cancelReplace(org.marketcetera.core.trade.OrderReplace)
+         * @see org.marketcetera.strategy.ServicesProvider#cancelReplace(org.marketcetera.trade.OrderReplace)
          */
         @Override
         public void cancelReplace(OrderReplace inReplace)
@@ -682,7 +761,7 @@ public class AbstractRunningStrategyTest
             sentObjects.add(inReplace);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#sendSuggestion(org.marketcetera.core.trade.Suggestion)
+         * @see org.marketcetera.strategy.ServicesProvider#sendSuggestion(org.marketcetera.trade.Suggestion)
          */
         @Override
         public void sendSuggestion(Suggestion inSuggestion)
@@ -690,7 +769,7 @@ public class AbstractRunningStrategyTest
             sentObjects.add(inSuggestion);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#sendEvent(org.marketcetera.core.event.Event, java.lang.String, java.lang.String)
+         * @see org.marketcetera.strategy.ServicesProvider#sendEvent(org.marketcetera.event.Event, java.lang.String, java.lang.String)
          */
         @Override
         public void sendEvent(Event inEvent,
@@ -708,7 +787,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#log(org.marketcetera.core.event.LogEvent)
+         * @see org.marketcetera.strategy.ServicesProvider#log(org.marketcetera.event.LogEvent)
          */
         @Override
         public void log(LogEvent inMessage)
@@ -761,7 +840,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#sendMessage(quickfix.Message, org.marketcetera.core.trade.BrokerID)
+         * @see org.marketcetera.strategy.ServicesProvider#sendMessage(quickfix.Message, org.marketcetera.trade.BrokerID)
          */
         @Override
         public void sendMessage(Message inMessage,
@@ -779,7 +858,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#createDataFlow(org.marketcetera.core.module.DataRequest[], boolean)
+         * @see org.marketcetera.strategy.ServicesProvider#createDataFlow(org.marketcetera.module.DataRequest[], boolean)
          */
         @Override
         public DataFlowID createDataFlow(DataRequest[] inRequests,
@@ -789,7 +868,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#cancelDataFlow(org.marketcetera.core.module.DataFlowID)
+         * @see org.marketcetera.strategy.ServicesProvider#cancelDataFlow(org.marketcetera.module.DataFlowID)
          */
         @Override
         public void cancelDataFlow(DataFlowID inDataFlowID)
@@ -807,7 +886,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.core.trade.Equity)
+         * @see org.marketcetera.strategy.ServicesProvider#getPositionAsOf(java.util.Date, org.marketcetera.trade.Equity)
          */
         @Override
         public BigDecimal getPositionAsOf(Date inDate,
@@ -826,7 +905,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.core.trade.Future)
+         * @see org.marketcetera.strategy.ServicesProvider#getFuturePositionAsOf(java.util.Date, org.marketcetera.trade.Future)
          */
         @Override
         public BigDecimal getFuturePositionAsOf(Date inDate,
@@ -845,7 +924,26 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.core.trade.Option)
+         * @see org.marketcetera.strategy.ServicesProvider#getCurrencyPositionAsOf(java.util.Date, org.marketcetera.trade.Currency)
+         */
+        @Override
+        public BigDecimal getCurrencyPositionAsOf(Date inDate,
+                                                Currency inCurrency)
+                throws ConnectionException, ClientInitException
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.ServicesProvider#getAllCurrencyPositionsAsOf(java.util.Date)
+         */
+        @Override
+        public Map<PositionKey<Currency>, BigDecimal> getAllCurrencyPositionsAsOf(Date inDate)
+                throws ConnectionException, ClientInitException
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.ServicesProvider#getOptionPositionAsOf(java.util.Date, org.marketcetera.trade.Option)
          */
         @Override
         public BigDecimal getOptionPositionAsOf(Date inDate,
@@ -937,14 +1035,15 @@ public class AbstractRunningStrategyTest
     /**
      * Test <code>AbstractRunningStrategy</code>.
      *
-     * @version $Id: AbstractRunningStrategyTest.java 16069 2012-03-24 00:57:05Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 2.1.4
      */
     private class MockRunningStrategy
             extends AbstractRunningStrategy
     {
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onTrade(org.marketcetera.core.event.TradeEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onTrade(org.marketcetera.event.TradeEvent)
          */
         @Override
         public void onTrade(TradeEvent inTrade)
@@ -952,7 +1051,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onBid(org.marketcetera.core.event.BidEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onBid(org.marketcetera.event.BidEvent)
          */
         @Override
         public void onBid(BidEvent inBid)
@@ -960,7 +1059,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onAsk(org.marketcetera.core.event.AskEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onAsk(org.marketcetera.event.AskEvent)
          */
         @Override
         public void onAsk(AskEvent inAsk)
@@ -968,7 +1067,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onMarketstat(org.marketcetera.core.event.MarketstatEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onMarketstat(org.marketcetera.event.MarketstatEvent)
          */
         @Override
         public void onMarketstat(MarketstatEvent inStatistics)
@@ -976,7 +1075,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onDividend(org.marketcetera.core.event.DividendEvent)
+         * @see org.marketcetera.strategy.RunningStrategy#onDividend(org.marketcetera.event.DividendEvent)
          */
         @Override
         public void onDividend(DividendEvent inDividend)
@@ -984,7 +1083,7 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onExecutionReport(org.marketcetera.core.trade.ExecutionReport)
+         * @see org.marketcetera.strategy.RunningStrategy#onExecutionReport(org.marketcetera.trade.ExecutionReport)
          */
         @Override
         public void onExecutionReport(ExecutionReport inExecutionReport)
@@ -992,12 +1091,24 @@ public class AbstractRunningStrategyTest
             reports.add(inExecutionReport);
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.strategy.RunningStrategy#onCancelReject(org.marketcetera.core.trade.OrderCancelReject)
+         * @see org.marketcetera.strategy.RunningStrategy#onCancelReject(org.marketcetera.trade.OrderCancelReject)
          */
         @Override
         public void onCancelReject(OrderCancelReject inCancelReject)
         {
             rejects.add(inCancelReject);
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.strategy.RunningStrategy#onCancelReject(org.marketcetera.trade.OrderCancelReject)
+         */
+        @Override
+        public void onReceiveBrokerStatus(BrokerStatus inStatus)
+        {
+        	if(onReceiveBrokerStatusFails) {
+        		throw new RuntimeException("This is a expected Exception");
+        	}
+        	
+            brokerStatuses.add(inStatus);
         }
         /* (non-Javadoc)
          * @see org.marketcetera.strategy.RunningStrategy#onOther(java.lang.Object)
@@ -1032,6 +1143,10 @@ public class AbstractRunningStrategyTest
             throw new UnsupportedOperationException(); // TODO
         }
         /**
+         * indicates whether calls to {@link #onReceiveBrokerStatus(BrokerStatus} should fail automatically
+         */
+        private boolean onReceiveBrokerStatusFails = false; 
+        /**
          * stores the reports received
          */
         private final List<ExecutionReport> reports = new ArrayList<ExecutionReport>();
@@ -1039,6 +1154,11 @@ public class AbstractRunningStrategyTest
          * stores the rejects received
          */
         private final List<OrderCancelReject> rejects = new ArrayList<OrderCancelReject>();
+        /**
+         * stores the broker statuses received
+         */
+        private final List<BrokerStatus> brokerStatuses = new ArrayList<BrokerStatus>();
+
     }
     /**
      * test services provider

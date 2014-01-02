@@ -2,20 +2,23 @@ package org.marketcetera.marketdata.marketcetera;
 
 import java.net.URISyntaxException;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.marketdata.AbstractMarketDataFeedFactory;
-import org.marketcetera.core.marketdata.FeedException;
+import org.marketcetera.marketdata.AbstractMarketDataFeedFactory;
+import org.marketcetera.marketdata.FeedException;
 
 /* $License$ */
 
 /**
  * {@link MarketceteraFeed} constructor factory.
  *
- * @version $Id: MarketceteraFeedFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 0.5.0
  */
-public class MarketceteraFeedFactory
+@ClassVersion("$Id$")  //$NON-NLS-1$
+public class MarketceteraFeedFactory 
     extends AbstractMarketDataFeedFactory<MarketceteraFeed,MarketceteraFeedCredentials> 
 {
     private final static MarketceteraFeedFactory sInstance = new MarketceteraFeedFactory();

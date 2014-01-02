@@ -1,16 +1,19 @@
 package org.marketcetera.marketdata.yahoo;
 
-import org.marketcetera.core.marketdata.AbstractMarketDataFeedToken;
-import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.AbstractMarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Token which represents a market data request to the Yahoo market data feed.
  *
- * @version $Id: YahooFeedToken.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
+@ClassVersion("$Id$")
 public class YahooFeedToken
         extends AbstractMarketDataFeedToken<YahooFeed>
 {

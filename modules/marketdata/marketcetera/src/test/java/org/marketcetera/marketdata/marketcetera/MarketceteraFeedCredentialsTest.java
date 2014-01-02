@@ -1,18 +1,19 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import static org.marketcetera.core.marketdata.Messages.NULL_URL;
+import static org.marketcetera.marketdata.Messages.NULL_URL;
 import static org.marketcetera.marketdata.marketcetera.Messages.TARGET_COMP_ID_REQUIRED;
 
 import org.junit.Test;
-import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.core.util.except.ExpectedFailure;
+import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.module.ExpectedFailure;
 
 /* $License$ */
 
 /**
  * Tests {@link MarketceteteraFeedCredentials}.
  *
- * @version $Id: MarketceteraFeedCredentialsTest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class MarketceteraFeedCredentialsTest

@@ -1,12 +1,13 @@
-include_class "org.marketcetera.strategy.ruby.Strategy"
-include_class "org.marketcetera.strategy.OutputType"
-include_class "org.marketcetera.event.impl.TradeEventBuilder"
-include_class "org.marketcetera.marketdata.DateUtils"
-include_class "org.marketcetera.trade.Equity"
-include_class "org.marketcetera.module.DataRequest"
-include_class "java.lang.Long"
-include_class "java.util.Date"
-include_class "java.math.BigDecimal"
+require 'java'
+java_import org.marketcetera.strategy.ruby.Strategy
+java_import org.marketcetera.strategy.OutputType
+java_import org.marketcetera.event.impl.TradeEventBuilder
+java_import org.marketcetera.marketdata.DateUtils
+java_import org.marketcetera.trade.Equity
+java_import org.marketcetera.module.DataRequest
+java_import java.lang.Long
+java_import java.util.Date
+java_import java.math.BigDecimal
 
 class SendEvent < Strategy
     def on_start

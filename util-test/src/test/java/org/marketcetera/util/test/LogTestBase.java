@@ -13,7 +13,8 @@ import static org.junit.Assert.*;
  * overrides that this class uses to perform basic testing of said
  * subclasses.
  *
- * @version $Id: LogTestBase.java 16063 2012-01-31 18:21:55Z colin $
+ * @author tlerios@marketcetera.com
+ * @version $Id$
  * @since 2.0.0
  */
 

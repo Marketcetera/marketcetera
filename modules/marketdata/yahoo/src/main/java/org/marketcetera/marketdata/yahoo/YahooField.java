@@ -3,14 +3,18 @@ package org.marketcetera.marketdata.yahoo;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /* $License$ */
 
 /**
  * Represents a field in a Yahoo market data request. 
  *
- * @version $Id: YahooField.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
+@ClassVersion("$Id$")
 enum YahooField
 {
     ASK("a"), //$NON-NLS-1$

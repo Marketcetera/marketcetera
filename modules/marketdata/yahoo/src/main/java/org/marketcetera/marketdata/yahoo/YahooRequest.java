@@ -1,9 +1,9 @@
 package org.marketcetera.marketdata.yahoo;
 
-import static org.marketcetera.core.marketdata.Content.DIVIDEND;
-import static org.marketcetera.core.marketdata.Content.LATEST_TICK;
-import static org.marketcetera.core.marketdata.Content.MARKET_STAT;
-import static org.marketcetera.core.marketdata.Content.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.Content.DIVIDEND;
+import static org.marketcetera.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.Content.MARKET_STAT;
+import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.yahoo.YahooField.*;
 
 import java.util.Arrays;
@@ -14,8 +14,9 @@ import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.core.marketdata.Content;
-import org.marketcetera.core.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -25,12 +26,15 @@ import com.google.common.collect.Multimap;
 /**
  * Represents a market data request to the Yahoo market data provider.
  *
- * @version $Id: YahooRequest.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
 @ThreadSafe
+@ClassVersion("$Id$")
 class YahooRequest
 {
+	private static final YahooField DELIMITER_FIELD = YahooField.SYMBOL;
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -115,7 +119,8 @@ class YahooRequest
         }
         // add fixed fields (used for every request)
         for(YahooField field : commonFields) {
-            query.append(field.getCode()).append(","); //$NON-NLS-1$
+        	//add s (symbol) for each field as delimiter field, used to ease the issue with , as part of response value for a field.
+            query.append(DELIMITER_FIELD.getCode()).append(field.getCode()).append(","); //$NON-NLS-1$
         }
         return query.toString();
     }
@@ -150,6 +155,8 @@ class YahooRequest
         }
         StringBuilder builder = new StringBuilder();
         for(YahooField field : fields.get(inContent)) {
+        	//add s (symbol) for each field as delimiter field, used to ease the issue with , as part of response value for a field.
+        	builder.append(DELIMITER_FIELD.getCode());
             builder.append(field.getCode()).append(","); //$NON-NLS-1$
         }
         return builder.toString();

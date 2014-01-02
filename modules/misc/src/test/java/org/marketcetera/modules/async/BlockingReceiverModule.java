@@ -1,6 +1,7 @@
 package org.marketcetera.modules.async;
 
-import org.marketcetera.core.module.*;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.*;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
@@ -14,9 +15,11 @@ import java.util.concurrent.Semaphore;
  * Additionally a {@link #getSemaphore()} instance is available to be
  * able to wait until the module about to receive data.
  *
- * @version $Id: BlockingReceiverModule.java 16063 2012-01-31 18:21:55Z colin $
+ * @author anshul@marketcetera.com
+ * @version $Id$
  * @since 2.0.0
  */
+@ClassVersion("$Id$")
 public class BlockingReceiverModule extends Module implements DataReceiver {
     /**
      * Creates an instance.
@@ -48,7 +51,7 @@ public class BlockingReceiverModule extends Module implements DataReceiver {
 
     /**
      * Get the next data item that is being supplied to the module via the
-     * concurrent call to {@link #receiveData(org.marketcetera.core.module.DataFlowID, Object)}.
+     * concurrent call to {@link #receiveData(org.marketcetera.module.DataFlowID, Object)}.
      * If a concurrent call to receiveData() is not executing, this call
      * blocks until receiveData() is called to deliver data.
      *

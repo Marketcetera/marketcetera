@@ -1,6 +1,7 @@
 package org.marketcetera.modules.cep.esper;
 
-import org.marketcetera.core.module.DisplayName;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.module.DisplayName;
 
 import javax.management.MXBean;
 
@@ -8,9 +9,12 @@ import javax.management.MXBean;
 /**
  * The management interface for esper module instances.
  *
- * @version $Id: CEPEsperProcessorMXBean.java 16063 2012-01-31 18:21:55Z colin $
+ * @author anshul@marketcetera.com
+ * @author toli@marketcetera.com
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 @MXBean(true)
 @DisplayName("The Management Interface for Esper Module Instance")
 public interface CEPEsperProcessorMXBean {

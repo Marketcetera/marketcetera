@@ -1,55 +1,54 @@
-<?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8" ?>
 
-    <parent>
-        <groupId>org.marketcetera.modules</groupId>
-        <artifactId>cep</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
-    </parent>
+<!--
+  - Author: toli@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id$
+  - $License$
+  -->
 
-    <groupId>org.marketcetera.modules</groupId>
-    <artifactId>cep-system</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation=
+ "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <packaging>jar</packaging>
+  <modelVersion>4.0.0</modelVersion>
 
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPL)v2</name>
-            <url>http://www.fsf.org/licensing/licenses/gpl.txt</url>
-        </license>
-    </licenses>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>cep</artifactId>
+    <version>2.4.0</version>
+  </parent>
+  <artifactId>cep-system</artifactId>
+  <packaging>jar</packaging>
 
-    <name>CEP System Module</name>
+  <name>CEP System Module</name>
 
-    <dependencies>
-        <!--  compile: local -->
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-        </dependency>
-        <!-- test: local -->
-	<dependency>
-	  <groupId>org.marketcetera.core</groupId>
-	  <artifactId>util</artifactId>
-	  <version>3.0.0-SNAPSHOT</version>
-	  <scope>test</scope>
-	  <type>test-jar</type>
-	</dependency>
-        <dependency>
-            <groupId>org.marketcetera.core</groupId>
-            <artifactId>core</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <!-- test: other -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-    </dependencies>
+  <build>
+    <plugins>
+
+      <!-- Place tests into a jar for use during testing of other packages. -->
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -1,18 +1,21 @@
 package org.marketcetera.modules.async;
 
-import org.marketcetera.core.util.log.I18NMessage0P;
-import org.marketcetera.core.module.ModuleFactory;
-import org.marketcetera.core.module.Module;
-import org.marketcetera.core.module.ModuleCreationException;
-import org.marketcetera.core.module.ModuleURN;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.module.ModuleFactory;
+import org.marketcetera.module.Module;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleURN;
 
 /* $License$ */
 /**
  * Factory for a module that blocks when receiving data.
  *
- * @version $Id: BlockingModuleFactory.java 16063 2012-01-31 18:21:55Z colin $
+ * @author anshul@marketcetera.com
+ * @version $Id$
  * @since 2.0.0
  */
+@ClassVersion("$Id$")
 public class BlockingModuleFactory extends ModuleFactory {
     /**
      * Creates an instance.

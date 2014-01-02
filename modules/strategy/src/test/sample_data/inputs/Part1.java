@@ -1,4 +1,4 @@
-import org.marketcetera.core.event.AskEvent;
+import org.marketcetera.event.AskEvent;
 import org.marketcetera.strategy.java.Strategy;
 
 /* $License$ */
@@ -6,7 +6,8 @@ import org.marketcetera.strategy.java.Strategy;
 /**
  * Test strategy (part one of two parts) that tests what happens when a strategy helper-class is redefined. 
  *
- * @version $Id: Part1.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
 public class Part1
@@ -14,7 +15,7 @@ public class Part1
 {
     private Helper helper;
     /* (non-Javadoc)
-     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.core.event.AskEvent)
+     * @see org.marketcetera.strategy.java.Strategy#onAsk(org.marketcetera.event.AskEvent)
      */
     @Override
     public void onAsk(AskEvent inAsk)

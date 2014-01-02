@@ -5,8 +5,9 @@ import javax.management.AttributeChangeNotification;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.marketdata.AbstractMarketDataModule;
-import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.marketdata.AbstractMarketDataModule;
+import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -25,9 +26,11 @@ import org.marketcetera.core.marketdata.AbstractMarketDataModuleMXBean;
  * whenever {@link #getFeedStatus()} changes. </td></tr>
  * </table>
  *
- * @version $Id: YahooFeedModule.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
+@ClassVersion("$Id$")
 public class YahooFeedModule
         extends AbstractMarketDataModule<YahooFeedToken,YahooFeedCredentials>
         implements YahooFeedMXBean

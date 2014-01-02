@@ -1,15 +1,18 @@
 package org.marketcetera.marketdata.csv;
 
-import org.marketcetera.core.util.log.*;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.*;
 
 /* $License$ */
 
 /**
  * Messages for CSVFeed module.
  *
+ * @author <a href="mailto:colin@marketcetera.com">Toli Kuznets</a>
  * @since 2.1.0
- * @version $Id: Messages.java 16063 2012-01-31 18:21:55Z colin $
+ * @version $Id$
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("csv", Messages.class.getClassLoader());  //$NON-NLS-1$

@@ -7,19 +7,30 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.core.event.*;
-import org.marketcetera.core.event.impl.QuoteEventBuilder;
-import org.marketcetera.core.event.impl.TradeEventBuilder;
-import org.marketcetera.core.marketdata.Content;
-import org.marketcetera.core.marketdata.DateUtils;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTranslator;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.UnsupportedEventException;
+import org.marketcetera.event.impl.QuoteEventBuilder;
+import org.marketcetera.event.impl.TradeEventBuilder;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.marketdata.marketcetera.MarketceteraFeed.Request;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
-import quickfix.field.*;
+import quickfix.field.MDEntryPx;
+import quickfix.field.MDEntrySize;
+import quickfix.field.MDEntryType;
+import quickfix.field.MDMkt;
+import quickfix.field.NoMDEntries;
+import quickfix.field.Symbol;
 import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
 /* $License$ */
@@ -28,9 +39,11 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * Market data feed implementation that connects to Marketcetera's
  * exchange simulator.
  *
- * @version $Id: MarketceteraFeedEventTranslator.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 0.5.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedEventTranslator
     implements EventTranslator, Messages
 {
@@ -44,7 +57,7 @@ public class MarketceteraFeedEventTranslator
     {        
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.event.IEventTranslator#translate(java.lang.Object)
+     * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
     public List<Event> toEvent(Object inData,
                                String inHandle) 
@@ -132,7 +145,7 @@ public class MarketceteraFeedEventTranslator
         return events;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.core.event.IEventTranslator#translate(org.marketcetera.core.event.EventBase)
+     * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
     public Object fromEvent(Event inEvent) 
         throws CoreException

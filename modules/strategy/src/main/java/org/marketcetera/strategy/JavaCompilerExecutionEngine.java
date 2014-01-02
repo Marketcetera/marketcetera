@@ -8,26 +8,43 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.tools.*;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.FileObject;
+import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject.Kind;
 
-import org.marketcetera.core.event.impl.LogEventBuilder;
-import org.marketcetera.core.util.log.I18NBoundMessage1P;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
-import org.marketcetera.core.util.misc.ClassVersion;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.event.impl.LogEventBuilder;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
 /**
  * Executes a Java strategy using the <a href="http://www.jcp.org/en/jsr/detail?id=199">Java Compiler API</code>.
  *
- * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 1.0.0
  */
+@ClassVersion("$Id$")
 public class JavaCompilerExecutionEngine
         implements ExecutionEngine, Messages
 {
@@ -229,10 +246,12 @@ public class JavaCompilerExecutionEngine
     /**
      * Represents the Java source of a strategy containing one or more classes to compile.
      *
-     * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        private static class SourceJavaFileObject
+    @ClassVersion("$Id$")
+    private static class SourceJavaFileObject
         extends SimpleJavaFileObject
     {
         /**
@@ -273,10 +292,12 @@ public class JavaCompilerExecutionEngine
      * Classloader that caches the definitions of some classes in memory and
      * defers to its parent for others.
      *
-     * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        private static class InMemoryClassLoader
+    @ClassVersion("$Id$")
+    private static class InMemoryClassLoader
         extends ClassLoader
     {
         /**
@@ -319,10 +340,12 @@ public class JavaCompilerExecutionEngine
     /**
      * File manager which maintains file contents in memory.
      *
-     * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        private class InMemoryFileManager
+    @ClassVersion("$Id$")
+    private class InMemoryFileManager
         extends ForwardingJavaFileManager<StandardJavaFileManager>
     {
         /**
@@ -451,10 +474,12 @@ public class JavaCompilerExecutionEngine
     /**
      * An in-memory representation of a Java File Object.
      *
-     * @version $Id: JavaCompilerExecutionEngine.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.0.0
      */
-        private static class InMemoryJavaFileObject
+    @ClassVersion("$Id$")
+    private static class InMemoryJavaFileObject
         extends SimpleJavaFileObject
     {
         /**

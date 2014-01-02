@@ -1,40 +1,62 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import static org.marketcetera.core.marketdata.AssetClass.EQUITY;
-import static org.marketcetera.core.marketdata.AssetClass.FUTURE;
-import static org.marketcetera.core.marketdata.AssetClass.OPTION;
-
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
 
+import static org.marketcetera.marketdata.AssetClass.*;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.marketdata.AbstractMarketDataFeed;
-import org.marketcetera.core.marketdata.AssetClass;
-import org.marketcetera.core.marketdata.Capability;
-import org.marketcetera.core.marketdata.FIXCorrelationFieldSubscription;
-import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.core.marketdata.FeedStatus;
-import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.core.marketdata.MarketDataRequest;
-import org.marketcetera.core.quickfix.EventLogFactory;
-import org.marketcetera.core.quickfix.FIXDataDictionary;
-import org.marketcetera.core.quickfix.FIXMessageUtil;
-import org.marketcetera.core.quickfix.FIXVersion;
-import org.marketcetera.core.trade.Equity;
-import org.marketcetera.core.util.log.SLF4JLoggerProxy;
+import org.marketcetera.marketdata.*;
+import org.marketcetera.quickfix.EventLogFactory;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
-import quickfix.*;
+import quickfix.Application;
+import quickfix.DoNotSend;
+import quickfix.FieldNotFound;
+import quickfix.FileLogFactory;
+import quickfix.IncorrectDataFormat;
+import quickfix.IncorrectTagValue;
+import quickfix.Initiator;
+import quickfix.LogFactory;
+import quickfix.MemoryStoreFactory;
+import quickfix.Message;
+import quickfix.MessageStoreFactory;
+import quickfix.RejectLogon;
+import quickfix.Session;
+import quickfix.SessionID;
+import quickfix.SessionNotFound;
+import quickfix.SessionSettings;
+import quickfix.SocketInitiator;
+import quickfix.StringField;
+import quickfix.UnsupportedMessageType;
 import quickfix.Message.Header;
-import quickfix.field.*;
+import quickfix.field.MarketDepth;
+import quickfix.field.MsgType;
+import quickfix.field.NoMDEntryTypes;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
+import quickfix.field.TestMessageIndicator;
 import quickfix.fix44.MessageFactory;
 
 import com.google.common.collect.HashMultimap;
@@ -47,19 +69,22 @@ import com.google.common.collect.SetMultimap;
  *
  * <p>This feed will return random market data for every symbol queried.
  *
+ * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
  * @since 0.5.0
  */
-public class MarketceteraFeed
+@ClassVersion("$Id$")
+public class MarketceteraFeed 
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
-                                       MarketceteraFeedCredentials,
-                                       MarketceteraFeedMessageTranslator,
-                                       MarketceteraFeedEventTranslator,
-                                       MarketceteraFeed.Request,
-                                       MarketceteraFeed>
+                                   MarketceteraFeedCredentials,
+                                   MarketceteraFeedMessageTranslator,
+                                   MarketceteraFeedEventTranslator,
+                                   MarketceteraFeed.Request,
+                                   MarketceteraFeed> 
     implements Application, Messages 
 {
 	private SessionID sessionID;
 	private final IDFactory idFactory;
+	private FeedType feedType;
 	private boolean isRunning = false;
 	private SocketInitiator socketInitiator;
 	private MessageFactory messageFactory;
@@ -72,7 +97,7 @@ public class MarketceteraFeed
     /**
      * static supported asset classes for this data feed
      */
-    private static final Set<AssetClass> assetClasses = Collections.unmodifiableSet(EnumSet.of(EQUITY,OPTION,FUTURE));
+    private static final Set<AssetClass> assetClasses = Collections.unmodifiableSet(EnumSet.of(EQUITY,OPTION,FUTURE,CURRENCY));
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataFeed#getCapabilities()
      */
@@ -188,7 +213,7 @@ public class MarketceteraFeed
 	 * responded, this method throws a <code>FeedException</code>.  This method updates the feed status
 	 * based on the results of the connection attempt.
 	 * 
-	 * @throws org.marketcetera.core.marketdata.FeedException if a connection cannot be made to the server
+	 * @throws FeedException if a connection cannot be made to the server 
 	 */
 	private void connectToServer()
 	    throws Exception
@@ -293,6 +318,14 @@ public class MarketceteraFeed
 		Header header = message.getHeader();
 		String msgType = header.getString(MsgType.FIELD);
 		if (MsgType.LOGON.equals(msgType)) {
+			try {
+				boolean testMessageIndicator = header.getBoolean(TestMessageIndicator.FIELD);
+				// TODO bolt this into the abstract feed parent 
+				feedType = testMessageIndicator ? FeedType.SIMULATED
+				                                : FeedType.LIVE;
+			} catch (FieldNotFound fnf) {
+				feedType = FeedType.LIVE;
+			}
 			setFeedStatus(FeedStatus.AVAILABLE);
 			SLF4JLoggerProxy.debug(this,
 			                       "Marketcetera feed received Logon"); //$NON-NLS-1$
@@ -529,7 +562,7 @@ public class MarketceteraFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(org.marketcetera.marketdata.MarketDataFeedTokenSpec)
      */
     @Override
-    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec inTokenSpec)
+    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec inTokenSpec) 
         throws FeedException
     {
         return MarketceteraFeedToken.getToken(inTokenSpec, 
@@ -590,10 +623,12 @@ public class MarketceteraFeed
     /**
      * Represents a request made to the marketcetera adapter.
      *
-     * @version $Id: MarketceteraFeed.java 16063 2012-01-31 18:21:55Z colin $
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
      * @since 1.5.0
      */
-        static final class Request
+    @ClassVersion("$Id$")
+    static final class Request
     {
         /**
          * the FIX message actually sent to the marketcetera feed

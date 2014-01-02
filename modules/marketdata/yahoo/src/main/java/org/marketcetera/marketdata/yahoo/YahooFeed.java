@@ -1,12 +1,12 @@
 package org.marketcetera.marketdata.yahoo;
 
-import static org.marketcetera.core.marketdata.AssetClass.EQUITY;
-import static org.marketcetera.core.marketdata.AssetClass.FUTURE;
-import static org.marketcetera.core.marketdata.AssetClass.OPTION;
-import static org.marketcetera.core.marketdata.Capability.EVENT_BOUNDARY;
-import static org.marketcetera.core.marketdata.Capability.LATEST_TICK;
-import static org.marketcetera.core.marketdata.Capability.MARKET_STAT;
-import static org.marketcetera.core.marketdata.Capability.TOP_OF_BOOK;
+import static org.marketcetera.marketdata.AssetClass.EQUITY;
+import static org.marketcetera.marketdata.AssetClass.FUTURE;
+import static org.marketcetera.marketdata.AssetClass.OPTION;
+import static org.marketcetera.marketdata.Capability.EVENT_BOUNDARY;
+import static org.marketcetera.marketdata.Capability.LATEST_TICK;
+import static org.marketcetera.marketdata.Capability.MARKET_STAT;
+import static org.marketcetera.marketdata.Capability.TOP_OF_BOOK;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -14,27 +14,26 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.concurrent.GuardedBy;
 
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.marketdata.AbstractMarketDataFeed;
-import org.marketcetera.core.marketdata.AssetClass;
-import org.marketcetera.core.marketdata.Capability;
-import org.marketcetera.core.marketdata.FeedException;
-import org.marketcetera.core.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
  * Market data feed implementation for the Yahoo market data supplier.
  *
- * @version $Id: YahooFeed.java 16063 2012-01-31 18:21:55Z colin $
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
  * @since 2.1.4
  */
+@ClassVersion("$Id$")
 class YahooFeed
         extends AbstractMarketDataFeed<YahooFeedToken,
-                                               YahooFeedCredentials,
-                                               YahooFeedMessageTranslator,
-                                               YahooFeedEventTranslator,
-                                               List<YahooRequest>,
-                                               YahooFeed>
+                                       YahooFeedCredentials,
+                                       YahooFeedMessageTranslator,
+                                       YahooFeedEventTranslator,
+                                       List<YahooRequest>,
+                                       YahooFeed>
         implements YahooFeedServices
 {
     /* (non-Javadoc)
