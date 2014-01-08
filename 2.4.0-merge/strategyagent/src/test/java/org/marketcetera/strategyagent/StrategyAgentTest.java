@@ -1,25 +1,21 @@
 package org.marketcetera.strategyagent;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.marketcetera.strategyagent.JarClassLoaderTest.createJar;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Properties;
 
 import javax.management.JMX;
 import javax.management.ObjectName;
 
-import org.apache.log4j.Level;
+import org.junit.After;
 import org.junit.Test;
 import org.marketcetera.module.*;
 import org.marketcetera.strategyagent.JarClassLoaderTest.JarContents;
-import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -27,238 +23,271 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
-public class StrategyAgentTest extends StrategyAgentTestBase {
-    @Test
-    public void runNoArgs() {
-        run(createAgent(false));
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertNoEventsAbove(Level.INFO);
+public class StrategyAgentTest
+        extends StrategyAgentTestBase
+{
+    @After
+    public void cleanup()
+    {
+        shutdownSa();
     }
+    /**
+     * Tests running the SA with no arguments.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void runInvalidArgs() {
-        run(createAgent(false), "/doesnotexist");
-        assertEquals(StrategyAgent.EXIT_START_ERROR, mRunner.getExitCode());
-        assertLastButXEvent(0, Level.ERROR,
-                StrategyAgent.class.getName(),
-                Messages.LOG_ERROR_CONFIGURE_AGENT);
+    public void runNoArgs()
+            throws Exception
+    {
+        createSaWith();
+        assertTrue(sa.isRunning());
     }
+    /**
+     * Tests running the SA with invalid arguments.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void runInvalidCmdSyntax() throws Exception {
+    public void runInvalidArgs()
+            throws Exception
+    {
+        new ExpectedFailure<RuntimeException>("java.io.FileNotFoundException: /doesnotexist (No such file or directory)") {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                createSaWith("/doesnotexist");
+            }
+        };
+        assertFalse(sa.isRunning());
+    }
+    /**
+     * Tests running the SA with invalid command syntax.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void runInvalidCmdSyntax()
+            throws Exception
+    {
         final String syntax = "this is invalid command syntax";
-        File f = createFileWithText("#comment", syntax,"");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.ERROR,
-                TestAgent.class.getName(),
-                Messages.INVALID_COMMAND_SYNTAX, syntax, 2);
-        assertLastButXEvent(0, Level.ERROR,
-                StrategyAgent.class.getName(),
-                Messages.LOG_COMMAND_PARSE_ERRORS, 1);
+        new ExpectedFailure<RuntimeException>("java.lang.IllegalArgumentException: " + Messages.LOG_COMMAND_PARSE_ERRORS.getText(1)) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                createSaWith(createFileWithText("#comment",
+                                                syntax,
+                                                "").getAbsolutePath());
+            }
+        };
+        assertFalse(sa.isRunning());
+    }
+    /**
+     * Tests running the SA with an invalid command name.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void runInvalidCmdName()
+            throws Exception
+    {
+        new ExpectedFailure<RuntimeException>("java.lang.IllegalArgumentException: " + Messages.LOG_COMMAND_PARSE_ERRORS.getText(1)) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                createSaWith(createFileWithText("badname;this one's bad",
+                                                "#comment",
+                                                "    \t").getAbsolutePath());
+            }
+        };
+        assertFalse(sa.isRunning());
     }
     @Test
-    public void runInvalidCmdName() throws Exception {
-        File f = createFileWithText("badname;this one's bad",
-                "#comment","    \t");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.ERROR,
-                TestAgent.class.getName(),
-                Messages.INVALID_COMMAND_NAME, "badname", 1);
-        assertLastButXEvent(0, Level.ERROR,
-                StrategyAgent.class.getName(),
-                Messages.LOG_COMMAND_PARSE_ERRORS, 1);
-    }
-    @Test
-    public void runWithMultipleErrors() throws Exception {
+    public void runWithMultipleErrors()
+            throws Exception
+    {
         final String syntax = "whoops bad syntax again";
-        File f = createFileWithText("#comment 1",
-                "badname;you give tests a bad name",
-                "",
-                "# comment 2",
-                syntax,
-                " \t ",
-                "# A valid command",
-                "createModule;metc:blah:zoo:gah",
-                "# another bad egg",
-                "createDataFlo;metc:blah:zoo:gah",
-                "# another valid command",
-                "createDataFlow;metc:blah:zoo:gah",
-                "# yet another valid command",
-                "startModule;metc:blah:zoo:gah",
-                "# end");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(StrategyAgent.EXIT_CMD_PARSE_ERROR, mRunner.getExitCode());
-        assertLastButXEvent(3, Level.ERROR,
-                TestAgent.class.getName(),
-                Messages.INVALID_COMMAND_NAME, "badname", 2);
-        assertLastButXEvent(2, Level.ERROR,
-                TestAgent.class.getName(),
-                Messages.INVALID_COMMAND_SYNTAX, syntax,  5);
-        assertLastButXEvent(1, Level.ERROR,
-                TestAgent.class.getName(),
-                Messages.INVALID_COMMAND_NAME, "createDataFlo", 10);
-        assertLastButXEvent(0, Level.ERROR,
-                StrategyAgent.class.getName(),
-                Messages.LOG_COMMAND_PARSE_ERRORS, 3);
-
+        final File f = createFileWithText("#comment 1",
+                                           "badname;you give tests a bad name",
+                                           "",
+                                           "# comment 2",
+                                           syntax,
+                                           " \t ",
+                                           "# A valid command",
+                                           "createModule;metc:blah:zoo:gah",
+                                           "# another bad egg",
+                                           "createDataFlo;metc:blah:zoo:gah",
+                                           "# another valid command",
+                                           "createDataFlow;metc:blah:zoo:gah",
+                                           "# yet another valid command",
+                                           "startModule;metc:blah:zoo:gah",
+                                           "# end");
+        new ExpectedFailure<RuntimeException>("java.lang.IllegalArgumentException: " + Messages.LOG_COMMAND_PARSE_ERRORS.getText(3)) {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                createSaWith(f.getAbsolutePath());
+            }
+        };
+        assertFalse(sa.isRunning());
     }
+    /**
+     * Tests creating a module with a syntax error in the command.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void createModuleSyntaxError() throws Exception {
-        File f = createFileWithText("createModule;metc:blah:zoo:gah");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "createModule",
-                "metc:blah:zoo:gah");
-        assertLastButXEvent(0, Level.WARN,
-                TestAgent.class.getName(),
-                Messages.LOG_ERROR_EXEC_CMD, "createModule",
-                "metc:blah:zoo:gah",1, Messages.CREATE_MODULE_INVALID_SYNTAX.
-                getText("metc:blah:zoo:gah"));
+    public void createModuleSyntaxError()
+            throws Exception
+    {
+        final File f = createFileWithText("createModule;metc:blah:zoo:gah");
+        createSaWith(f.getAbsolutePath());
+        assertTrue(sa.isRunning());
     }
+    /**
+     * Tests running the SA with a valid module start command.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void createModule() throws Exception {
+    public void createModule()
+            throws Exception
+    {
         ModuleURN factoryURN = ProcessorModuleFactory.PROVIDER_URN;
         ModuleURN instanceURN = new ModuleURN(factoryURN, "blah");
         String parameter = factoryURN + ";" + instanceURN;
         File f = createFileWithText("createModule;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "createModule",
-                parameter);
-        assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_COMMAND_RUN_RESULT, "createModule",
-                instanceURN.getValue());
+        createSaWith(f.getAbsolutePath());
+        assertTrue(sa.isRunning());
+        assertFalse(moduleManager.getModuleInfo(instanceURN) == null);
     }
+    /**
+     * Tests running the SA with a valid module create command for an invalid module.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void createModuleError() throws Exception {
+    public void createModuleError()
+            throws Exception
+    {
         ModuleURN factoryURN = new ModuleURN("metc:test:notexist");
-        ModuleURN instanceURN = new ModuleURN(factoryURN, "blah");
+        final ModuleURN instanceURN = new ModuleURN(factoryURN,
+                                                    "blah");
         String parameter = factoryURN + ";" + instanceURN;
         File f = createFileWithText("createModule;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "createModule",
-                parameter);
-        assertLastButXEvent(0, Level.WARN,
-                TestAgent.class.getName(),
-                Messages.LOG_ERROR_EXEC_CMD, "createModule", parameter, 1,
-                org.marketcetera.module.Messages.PROVIDER_NOT_FOUND.getText(
-                        factoryURN.getValue()));
+        createSaWith(f.getAbsolutePath());
+        assertTrue(sa.isRunning());
+        new ExpectedFailure<ModuleNotFoundException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                moduleManager.getModuleInfo(instanceURN);
+            }
+        };
     }
+    /**
+     * Tests running the SA with a valid module start command for an invalid module.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void startModuleError() throws Exception {
+    public void startModuleError()
+            throws Exception
+    {
         File f = createFileWithText("startModule;metc:does:not:exist");
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "startModule",
-                "metc:does:not:exist");
-        assertLastButXEvent(0, Level.WARN,
-                TestAgent.class.getName(),
-                Messages.LOG_ERROR_EXEC_CMD, "startModule",
-                "metc:does:not:exist", 1,
-                org.marketcetera.module.Messages.MODULE_NOT_FOUND.getText(
-                        "metc:does:not:exist"));
+        createSaWith(f.getAbsolutePath());
+        assertTrue(sa.isRunning());
+        new ExpectedFailure<ModuleNotFoundException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                moduleManager.getModuleInfo(new ModuleURN("metc:does:not:exist"));
+            }
+        };
     }
+    /**
+     * Tests running the SA with a valid module start command for a valid module.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void startModule() throws Exception {
-        File f = createFileWithText("startModule;" +
-                SingleModuleFactory.INSTANCE_URN);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "startModule",
-                SingleModuleFactory.INSTANCE_URN);
-        assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_COMMAND_RUN_RESULT, "startModule",
-                true);
+    public void startModule()
+            throws Exception
+    {
+        File f = createFileWithText("startModule;" + SingleModuleFactory.INSTANCE_URN);
+        createSaWith(f.getAbsolutePath());
+        assertTrue(sa.isRunning());
+        ModuleInfo moduleInfo = moduleManager.getModuleInfo(SingleModuleFactory.INSTANCE_URN);
+        assertNotNull(moduleInfo.getStarted());
     }
-
+    /**
+     * Tests running the SA with a valid command that generates a data flow error.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void createDataFlowError() throws Exception {
-        //setup a data flow, that will fail as one of the
-        //modules cannot participate in the data flow.
+    public void createDataFlowError()
+            throws Exception
+    {
+        // setup a data flow, that will fail as one of the modules cannot participate in the data flow
         ModuleURN instanceURN = SingleModuleFactory.INSTANCE_URN;
-
-        String parameter = EmitterModuleFactory.INSTANCE_URN +
-                ";somestring^" + instanceURN;
+        String parameter = EmitterModuleFactory.INSTANCE_URN + ";somestring^" + instanceURN;
         File f = createFileWithText("createDataFlow;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "createDataFlow",
-                parameter);
-        assertLastButXEvent(0, Level.WARN,
-                TestAgent.class.getName(),
-                Messages.LOG_ERROR_EXEC_CMD, "createDataFlow",
-                parameter, 1,
-                org.marketcetera.module.Messages.DATAFLOW_FAILED_PCPT_MODULE_STATE_INCORRECT.
-                        getText(EmitterModuleFactory.INSTANCE_URN,
-                        ModuleState.CREATED, EnumSet.of(ModuleState.STARTED,
-                        ModuleState.STOP_FAILED).toString()));
+        createSaWith(f.getAbsolutePath());
+        assertTrue(sa.isRunning());
+        ModuleInfo moduleInfo = moduleManager.getModuleInfo(instanceURN);
+        assertNull(moduleInfo.getStarted());
     }
+    /**
+     * Tests running the SA with a valid command that generates a valid data flow.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void createDataFlow() throws Exception {
-        //Supply a set of commands to create modules
-        //and setup a data flow between them.
-        //start emitter module
+    public void createDataFlow()
+            throws Exception
+    {
+        // supply a set of commands to create modules and setup a data flow between them
+        // start emitter module
         ModuleURN factoryURN = ProcessorModuleFactory.PROVIDER_URN;
         ModuleURN instanceURN = new ModuleURN(factoryURN, "process");
-        String parameter = EmitterModuleFactory.INSTANCE_URN +
-                        ";somestring^"+instanceURN+";"+String.class.getName();
-        File f = createFileWithText(
-                "startModule;" + EmitterModuleFactory.INSTANCE_URN,
-                "createDataFlow;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertLastButXEvent(3, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "startModule",
-                EmitterModuleFactory.INSTANCE_URN);
-        assertLastButXEvent(2, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_COMMAND_RUN_RESULT, "startModule",
-                true);
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "createDataFlow",
-                parameter);
-        //Get the data flow ID
-        List<DataFlowID> flows = mRunner.getManager().getDataFlows(true);
-        assertEquals(1,flows.size());
-        assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_COMMAND_RUN_RESULT, "createDataFlow",
-                flows.get(0));
+        String parameter = EmitterModuleFactory.INSTANCE_URN + ";somestring^"+instanceURN+";"+String.class.getName();
+        File f = createFileWithText("startModule;" + EmitterModuleFactory.INSTANCE_URN,
+                                    "createDataFlow;" + parameter);
+        createSaWith(f.getAbsolutePath());
+        assertTrue(sa.isRunning());
+        // get the data flow ID
+        List<DataFlowID> flows = moduleManager.getDataFlows(true);
+        assertEquals(1,
+                     flows.size());
     }
+    /**
+     * Tests running the SA with a custom class loader.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void loading() throws Exception {
-        //Create a subclass of ConfigurationProviderTestFactory into a
-        //jar in the jars subdirectory.
+    public void loading()
+            throws Exception
+    {
+        // create a subclass of ConfigurationProviderTestFactory into a jar in the jars subdirectory.
         String newSubclass = getClass().getPackage().getName() + ".ProviderFactory";
-        byte[] classBytes = generateSubclass(MyTestFactory.class,newSubclass);
-        JarContents jc = new JarContents(transformName(newSubclass) + ".class",classBytes);
-        //Create the factory file to load this factory via the service loader
-        createJar("provider.jar",new JarContents[]{
-                jc,
-                new JarContents("META-INF/services/" +
-                        ModuleFactory.class.getName(), newSubclass.getBytes())
-        });
+        byte[] classBytes = generateSubclass(MyTestFactory.class,
+                                             newSubclass);
+        JarContents jc = new JarContents(transformName(newSubclass) + ".class",
+                                         classBytes);
+        // create the factory file to load this factory via the service loader
+        createJar("provider.jar",
+                  new JarContents[] { jc, new JarContents("META-INF/services/" + ModuleFactory.class.getName(), newSubclass.getBytes()) });
         ModuleURN instanceURN = new ModuleURN(MyTestFactory.PROVIDER_URN,
-                "stratocaster");
-        //Create the properties file for testing default parameter setting
+                                              "stratocaster");
+        // create the properties file for testing default parameter setting
         Properties properties = new Properties();
         properties.setProperty("MaxLimit","123456.123456");
         properties.setProperty(".Boolean","true");
@@ -269,95 +298,85 @@ public class StrategyAgentTest extends StrategyAgentTestBase {
         properties.setProperty("wherever.Decimal","34234.234");
         properties.setProperty("String","yes");
         properties.setProperty(".File","/tmp/yes");
-        properties.setProperty(instanceURN.instanceName() +
-                ".FactoryAnnotation","annoDomini");
+        properties.setProperty(instanceURN.instanceName() + ".FactoryAnnotation","annoDomini");
         properties.setProperty("int","312");
         properties.setProperty("whatever.PrimFloat","312");
-        savePropertiesForProvider(instanceURN, properties);
-        String parameter = MyTestFactory.PROVIDER_URN + ";" +
-                instanceURN.getValue();
-        File f = createFileWithText("createModule;" +
-                parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        assertLastButXEvent(1, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_RUNNING_COMMAND, "createModule",
-                parameter);
-        assertLastButXEvent(0, Level.INFO,
-                TestAgent.class.getName(),
-                Messages.LOG_COMMAND_RUN_RESULT, "createModule",
-                instanceURN.getValue());
-        ConfigurationProviderFactoryMXBean factory = JMX.newMXBeanProxy(
-                getMBeanServer(),
-                MyTestFactory.PROVIDER_URN.toObjectName(),
-                ConfigurationProviderFactoryMXBean.class);
-        assertEquals(new BigDecimal("123456.123456"),factory.getMaxLimit());
+        savePropertiesForProvider(instanceURN,
+                                  properties);
+        String parameter = MyTestFactory.PROVIDER_URN + ";" + instanceURN.getValue();
+        File f = createFileWithText("createModule;" + parameter);
+        createSaWith(f.getAbsolutePath());
+        assertTrue(sa.isRunning());
+        ConfigurationProviderFactoryMXBean factory = JMX.newMXBeanProxy(getMBeanServer(),
+                                                                        MyTestFactory.PROVIDER_URN.toObjectName(),
+                                                                        ConfigurationProviderFactoryMXBean.class);
+        assertEquals(new BigDecimal("123456.123456"),
+                     factory.getMaxLimit());
         assertEquals(new BigInteger("1"),factory.getInstances());
         JMXTestModuleMXBean module = JMX.newMXBeanProxy(getMBeanServer(),
-                instanceURN.toObjectName(), JMXTestModuleMXBean.class);
+                                                        instanceURN.toObjectName(),
+                                                        JMXTestModuleMXBean.class);
         //value for all instances
-        assertEquals(true, module.getBoolean());
+        assertEquals(true,
+                     module.getBoolean());
         //specific value for this instance
-        assertEquals(new BigDecimal("123.123"), module.getDecimal());
+        assertEquals(new BigDecimal("123.123"),
+                     module.getDecimal());
         //value set for factory but not for this instance
         assertNull(module.getString());
         //value set for all instances
-        assertEquals("/tmp/yes",module.getFile());
+        assertEquals("/tmp/yes",
+                     module.getFile());
         //value only set for this instance
-        assertEquals("annoDomini", module.getFactoryAnnotation());
+        assertEquals("annoDomini",
+                     module.getFactoryAnnotation());
         //value set but with incorrect property name case
         assertNull(module.getInt());
         //value set for a different instance
-        assertEquals(0.0f, module.getPrimFloat(), 0.0f);
+        assertEquals(0.0f,
+                     module.getPrimFloat(),
+                     0.0f);
         //value not specified in the properties.
         assertNull(module.getURL());
     }
+    /**
+     * Tests running the SA with sample commands.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void checkSample() throws Exception {
-        File input = new File(new File(
-                JarClassLoaderTest.SAMPLE_DATA_DIR, "inputs"),
-                "sampleCommands.txt");
-        assertTrue(input.getAbsolutePath(), input.isFile());
-        run(createAgent(false), input.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
+    public void checkSample()
+            throws Exception
+    {
+        File input = new File(new File(JarClassLoaderTest.SAMPLE_DATA_DIR,
+                                       "inputs"),
+                              "sampleCommands.txt");
+        assertTrue(input.getAbsolutePath(),
+                   input.isFile());
+        createSaWith(input.getAbsolutePath());
+        assertTrue(sa.isRunning());
     }
-
-    @Test(timeout = 5000)
-    public void sinkLogging() throws Exception {
-        //Disable other kinds of logging so that it doesn't interfere
-        //with sink logging.
-        setLevel(TestAgent.class.getName(), Level.ERROR);
-        String parameter = EmitterModuleFactory.INSTANCE_URN +
-                        ";somestring";
-        File f = createFileWithText(
-                "startModule;" + EmitterModuleFactory.INSTANCE_URN,
-                "createDataFlow;" + parameter);
-        run(createAgent(false), f.getAbsolutePath());
-        assertEquals(NO_EXIT, mRunner.getExitCode());
-        //Get the data flow ID
-        List<DataFlowID> flows = mRunner.getManager().getDataFlows(true);
-        assertEquals(1,flows.size());
-        //Wait until we have one event in the log
-        while(getAppender().getEvents().isEmpty()) {
-            Thread.sleep(200);
-        }
-        assertLastButXEvent(0, Level.INFO,
-                StrategyAgent.SINK_DATA,
-                Messages.LOG_SINK_DATA, flows.get(0), 1,
-                String.class.getName(),"somestring");
-    }
+    /**
+     * Tests running the SA where it will fail during init.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
     @Test
-    public void initFail() throws Exception {
-        //Register a bean with MM name to cause init to fail
+    public void initFail()
+            throws Exception
+    {
+        // Register a bean with MM name to cause init to fail
         ObjectName on = new ObjectName(ModuleManager.MODULE_MBEAN_NAME);
-        getMBeanServer().registerMBean(new JMXTestModule(
-                new ModuleURN("metc:blah:goo:gah")), on);
-        run(createAgent(false));
-        assertEquals(StrategyAgent.EXIT_INIT_ERROR, mRunner.getExitCode());
-        assertLastButXEvent(0, Level.ERROR,
-                StrategyAgent.class.getName(),
-                Messages.LOG_ERROR_INITIALIZING_AGENT);
+        getMBeanServer().registerMBean(new JMXTestModule(new ModuleURN("metc:blah:goo:gah")),
+                                       on);
+        new ExpectedFailure<RuntimeException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                createSaWith();
+            }
+        };
+        assertFalse(sa.isRunning());
     }
-
 }

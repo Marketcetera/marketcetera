@@ -395,17 +395,16 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReport)
+     * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReportImpl)
      */
     @Override
-    public void deleteReport(ExecutionReport inReport)
+    public void deleteReport(ExecutionReportImpl inReport)
             throws ConnectionException
     {
         failIfClosed();
         failIfDisconnected();
         try {
-            mService.deleteReport(getServiceContext(),
-                                  inReport);
+            mService.deleteReport(getServiceContext(),inReport);
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,
                                           Messages.ERROR_REMOTE_EXECUTION);
@@ -535,7 +534,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
      * @see org.marketcetera.client.Client#getOpenOrders()
      */
     @Override
-    public List<ReportBase> getOpenOrders()
+    public List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException
     {
         failIfClosed();

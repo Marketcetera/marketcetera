@@ -45,5 +45,5 @@ Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.views.fixmessagedetail,
  org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Eclipse-ExtensibleAPI: true

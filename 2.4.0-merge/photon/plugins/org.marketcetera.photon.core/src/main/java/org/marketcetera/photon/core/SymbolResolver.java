@@ -1,5 +1,6 @@
 package org.marketcetera.photon.core;
 
+import org.marketcetera.symbol.PatternSymbolResolver;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -27,5 +28,5 @@ public class SymbolResolver
     /**
      * delegate symbol resolver from core product
      */
-    private org.marketcetera.trade.utils.SymbolResolver symbolResolver = new org.marketcetera.trade.utils.SymbolResolver();
+    private PatternSymbolResolver symbolResolver = new PatternSymbolResolver();
 }

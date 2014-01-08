@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Main server configuration.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id: server.xml 16725 2013-10-29 20:33:04Z colin $
+  - $License$
+  -->
+
+<!--
+  - See 'README.html' for detailed documentation.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+  <context:component-scan base-package="org.marketcetera.core,org.marketcetera.strategyagent"/>
+  <import resource="properties.xml"/>
+  <!-- Main Strategy Agent Object -->
+  <bean id="sa" class="org.marketcetera.strategyagent.StrategyAgent" destroy-method="stop">
+    <property name="moduleManager" ref="moduleManager"/>
+    <property name="loader" ref="moduleLoader"/>
+  </bean>
+  <!-- This bean is instantiated to get to the class loader instance -->
+  <bean id="class" class="java.lang.Class" factory-method="forName">
+    <constructor-arg value="org.marketcetera.strategyagent.JarClassLoader"/>
+  </bean>
+  <!-- The current classloader -->
+  <bean id="currentLoader" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="class"/>
+    <property name="targetMethod" value="getClassLoader"/>
+  </bean>
+  <!-- info provider that contains info about the running application -->
+  <bean id="saInfoProvider" class="org.marketcetera.strategyagent.StaticStrategyAgentApplicationInfoProvider"/>
+  <!-- The jar class loader to use for loading modules & their configurations -->
+  <bean id="moduleLoader" class="org.marketcetera.strategyagent.JarClassLoader">
+    <constructor-arg ref="saInfoProvider"/>
+    <constructor-arg ref="currentLoader"/>
+  </bean>
+  <!-- The default configuration provider -->
+  <bean id="propertyConfig" class="org.marketcetera.strategyagent.AgentConfigurationProvider">
+    <constructor-arg ref="moduleLoader"/>
+    <!-- load receiver properties-->
+    <property name="receiverProperties">
+      <util:map>
+        <entry key="URL" value="${metc.sa.recv.url}"/>
+        <entry key="LogLevel" value="${metc.sa.recv.logLevel}"/>
+        <entry key="SkipJAASConfiguration" value="${metc.sa.recv.skipJAASConfiguration}"/>
+      </util:map>
+    </property>
+    <!-- load client properties-->
+    <property name="clientProperties">
+      <util:map>
+        <entry key="URL" value="${metc.sa.client.URL}"/>
+        <entry key="Username" value="${metc.sa.client.username}"/>
+        <entry key="Password" value="${metc.sa.client.password}"/>
+        <entry key="Hostname" value="${metc.sa.client.hostname}"/>
+        <entry key="Port" value="${metc.sa.client.port}"/>
+        <entry key="IDPrefix" value="${metc.sa.client.idPrefix}"/>
+      </util:map>
+    </property>
+  </bean>
+  <!-- The module manager instance -->
+  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" destroy-method="stop">
+    <constructor-arg ref="moduleLoader"/>
+    <property name="configurationProvider" ref="propertyConfig"/>
+    <property name="refreshListener" ref="moduleLoader"/>
+  </bean>
+  <bean id="wsServerHost" class="java.lang.String">
+    <constructor-arg value="${metc.sa.ws.host}"/>
+  </bean>
+  <bean id="wsServerPort" class="java.lang.Integer">
+    <constructor-arg value="${metc.sa.ws.port}"/>
+  </bean>
+</beans>

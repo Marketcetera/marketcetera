@@ -96,10 +96,9 @@ public class StatelessRemoteCallTestBase
         context.setLocale(new LocaleWrapper(TEST_LOCALE));
     }
 
-    protected void checkEvents
-        (StatelessClientContext context,
-         StatelessRemoteCall call,
-         boolean success)
+    protected void checkEvents(StatelessClientContext context,
+                               StatelessRemoteCall call,
+                               boolean success)
     {
         String contextStr=context.toString();
         Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
@@ -117,6 +116,7 @@ public class StatelessRemoteCallTestBase
                 (events.next(),Level.DEBUG,call.getClass().getName(),
                  "Remote call ended with failure; context: "+contextStr,
                  TEST_LOCATION);
+            events.next();
         }
         assertFalse(events.hasNext());
         getAppender().clear();

@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.NamedThreadFactory;
  */
 @ClassVersion("$Id$")
 public final class PublisherEngine
-    implements IPublisher
+        implements IPublisher
 {
     /**
      * the queue of subscribers - should be maintained in FIFO order
@@ -148,7 +148,14 @@ public final class PublisherEngine
             synchronizeSubscriberArray();
         }
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#getSubscriptionCount()
+     */
+    @Override
+    public int getSubscriptionCount()
+    {
+        return mSubscribers.size();
+    }
     /**
      * Synchronizes the subscriber array with the list of subscribers.
      * <p>

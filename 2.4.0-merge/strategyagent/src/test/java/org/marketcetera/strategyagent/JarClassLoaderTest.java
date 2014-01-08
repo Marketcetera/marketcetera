@@ -1,22 +1,24 @@
 package org.marketcetera.strategyagent;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.file.Deleter;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.core.Pair;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.*;
-import java.util.Properties;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.jar.JarOutputStream;
-import java.util.jar.JarEntry;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.Pair;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.file.Deleter;
 
 /* $License$ */
 /**
@@ -24,8 +26,8 @@ import java.net.URL;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
-public class JarClassLoaderTest {
+public class JarClassLoaderTest
+{
     /**
      * Cleans up the jars in the testing directory.
      * This method can only be run before the test as attempts to delete
@@ -49,33 +51,63 @@ public class JarClassLoaderTest {
      * @throws Exception if there were unexpected errors.
      */
     @Test
-    public void invalidDirectory() throws Exception {
-        final File f = new File("/doesnotexist");
+    public void invalidDirectory()
+            throws Exception
+    {
+        final StrategyAgentApplicationInfoProvider infoProvider = new StaticStrategyAgentApplicationInfoProvider() {
+            @Override
+            public File getModulesDir()
+            {
+                return new File("/doesnotexist");
+            }
+        };
+        final File f = infoProvider.getModulesDir();
         //Invalid module directory
-        new ExpectedFailure<FileNotFoundException>(
-                Messages.JAR_DIR_DOES_NOT_EXIST.getText(f.getAbsolutePath())){
-            protected void run() throws Exception {
-                new JarClassLoader(f, getClass().getClassLoader());
+        new ExpectedFailure<FileNotFoundException>(Messages.JAR_DIR_DOES_NOT_EXIST.getText(f.getAbsolutePath())){
+            @SuppressWarnings("resource")
+            protected void run()
+                    throws Exception
+            {
+                new JarClassLoader(infoProvider,
+                                   getClass().getClassLoader());
             }
         };
         //Invalid jars directory
-        new ExpectedFailure<FileNotFoundException>(
-                Messages.JAR_DIR_DOES_NOT_EXIST.getText(
-                        new File(JAR_DIR,"jars").getAbsolutePath())){
-            protected void run() throws Exception {
-                new JarClassLoader(JAR_DIR, getClass().getClassLoader());
+        final StrategyAgentApplicationInfoProvider jarsInfo = new StaticStrategyAgentApplicationInfoProvider() {
+
+            /* (non-Javadoc)
+             * @see org.marketcetera.strategyagent.StaticStrategyAgentApplicationInfoProvider#getModulesDir()
+             */
+            @Override
+            public File getModulesDir()
+            {
+                return JAR_DIR;
+            }
+        };
+        new ExpectedFailure<FileNotFoundException>(Messages.JAR_DIR_DOES_NOT_EXIST.getText(new File(JAR_DIR,
+                                                                                                    "jars").getAbsolutePath())) {
+            @SuppressWarnings("resource")
+            protected void run()
+                    throws Exception
+            {
+                new JarClassLoader(jarsInfo,
+                                   getClass().getClassLoader());
             }
         };
         //Create a temporary jars dir in JAR_DIR to get an error for
         //conf sub-directory
-        File jarsDir = new File(JAR_DIR, "jars");
+        File jarsDir = new File(JAR_DIR,
+                                "jars");
         jarsDir.mkdirs();
         assertTrue(jarsDir.isDirectory());
-        new ExpectedFailure<FileNotFoundException>(
-                Messages.JAR_DIR_DOES_NOT_EXIST.getText(
-                        new File(JAR_DIR,"conf").getAbsolutePath())){
-            protected void run() throws Exception {
-                new JarClassLoader(JAR_DIR, getClass().getClassLoader());
+        new ExpectedFailure<FileNotFoundException>(Messages.JAR_DIR_DOES_NOT_EXIST.getText(new File(JAR_DIR,
+                                                                                                    "conf").getAbsolutePath())) {
+            @SuppressWarnings("resource")
+            protected void run()
+                    throws Exception
+            {
+                new JarClassLoader(jarsInfo,
+                                   getClass().getClassLoader());
             }
         };
         //cleanup
@@ -143,8 +175,10 @@ public class JarClassLoaderTest {
                 createProperties("first", "value"));
         //Create another jar but with the wrong suffix.
         final String secondRes = "second.properties";
-        File jar2 = createJar("second.mar", secondRes,
-                createProperties("second","value"));
+        createJar("second.mar",
+                  secondRes,
+                  createProperties("second",
+                                   "value"));
         //Create a third jar for fun
         final String thirdRes = "third.properties";
         final Properties thirdProp = createProperties("third", "value");
@@ -180,8 +214,9 @@ public class JarClassLoaderTest {
         File jar4 = createJar("fourth.jar", fourthRes,
                 createProperties("fourth", "value"));
         //Chose a wrong suffix
-        File jar5 = createJar("fifth.mar", fifthRes,
-                fifthProp);
+        createJar("fifth.mar",
+                  fifthRes,
+                  fifthProp);
         //Create jars to test ordering behavior
         //Cannot override the jars already there before refresh
         File jar1b = createJar("A.jar", firstRes,
@@ -314,8 +349,22 @@ public class JarClassLoaderTest {
      *
      * @throws IOException if there were unexpected errors.
      */
-    private JarClassLoader createLoader() throws IOException {
-        return new JarClassLoader(MODULE_DIR, getClass().getClassLoader());
+    private JarClassLoader createLoader()
+            throws IOException
+    {
+        StrategyAgentApplicationInfoProvider provider = new StaticStrategyAgentApplicationInfoProvider() {
+
+            /* (non-Javadoc)
+             * @see org.marketcetera.strategyagent.StaticStrategyAgentApplicationInfoProvider#getModulesDir()
+             */
+            @Override
+            public File getModulesDir()
+            {
+                return MODULE_DIR;
+            }
+        };
+        return new JarClassLoader(provider,
+                                  getClass().getClassLoader());
     }
 
     /**

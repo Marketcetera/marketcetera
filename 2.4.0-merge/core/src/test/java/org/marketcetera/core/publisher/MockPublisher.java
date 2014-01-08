@@ -45,4 +45,12 @@ public class MockPublisher
     {
         mEngine.publishAndWait(inData);
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#getSubscriptionCount()
+     */
+    @Override
+    public int getSubscriptionCount()
+    {
+        return mEngine.getSubscriptionCount();
+    }
 }

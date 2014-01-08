@@ -53,5 +53,7 @@ public enum Capability
     /**
      * the market data feed is able to identify event boundaries
      */
-    EVENT_BOUNDARY
+    EVENT_BOUNDARY,
+    AGGREGATED_DEPTH,
+    UNAGGREGATED_DEPTH
 }

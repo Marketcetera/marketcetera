@@ -1,6 +1,5 @@
 package org.marketcetera.strategyagent;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.lang.management.ManagementFactory;
@@ -9,39 +8,27 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.log4j.PropertyConfigurator;
-import org.marketcetera.client.ClientManager;
-import org.marketcetera.core.ApplicationBase;
+import org.apache.commons.lang.Validate;
+import org.marketcetera.core.ApplicationContainer;
 import org.marketcetera.core.ApplicationVersion;
-import org.marketcetera.core.Util;
 import org.marketcetera.core.publisher.IPublisher;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.module.*;
-import org.marketcetera.saclient.SAClientVersion;
-import org.marketcetera.saclient.SAService;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage2P;
-import org.marketcetera.util.log.I18NBoundMessage3P;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.unicode.UnicodeFileReader;
 import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.Server;
-import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.context.Lifecycle;
 
 /* $License$ */
 /**
@@ -60,25 +47,10 @@ import org.springframework.context.support.StaticApplicationContext;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class StrategyAgent
-        extends ApplicationBase
-        implements IPublisher
+        implements IPublisher, Lifecycle
 {
-    /**
-     * Creates and runs the application.
-     *
-     * @param args the command line arguments.
-     */
-    public static void main(String[] args) {
-        initializeLogger(LOGGER_CONF_FILE);
-        Messages.LOG_APP_COPYRIGHT.info(StrategyAgent.class);
-        Messages.LOG_APP_VERSION_BUILD.info(StrategyAgent.class,
-                ApplicationVersion.getVersion(),
-                ApplicationVersion.getBuildNumber());
-        //Run the application.
-        run(new StrategyAgent(), args);
-    }
     /**
      * Gets the most recently created <code>StrategyAgent</code> instance in this process.
      *
@@ -104,6 +76,9 @@ public class StrategyAgent
      */
     public void setContextClasses(Class<?>[] inContextClasses)
     {
+        if(isRunning()) {
+            throw new IllegalStateException();
+        }
         contextClasses = inContextClasses;
     }
     /* (non-Javadoc)
@@ -140,59 +115,187 @@ public class StrategyAgent
         dataPublisher.publishAndWait(inData);
     }
     /**
-     * Stops the strategy agent. This method is meant to help with unit testing.
+     * Get the dataPublisher value.
+     *
+     * @return a <code>PublisherEngine</code> value
      */
-    protected void stop() {
-        if(mContext != null) {
-            mContext.destroy();
-            mContext = null;
+    public PublisherEngine getDataPublisher()
+    {
+        return dataPublisher;
+    }
+    /**
+     * Sets the dataPublisher value.
+     *
+     * @param inDataPublisher a <code>PublisherEngine</code> value
+     */
+    public void setDataPublisher(PublisherEngine inDataPublisher)
+    {
+        if(isRunning()) {
+            throw new IllegalStateException();
         }
+        dataPublisher = inDataPublisher;
+    }
+    /**
+     * Get the authenticator value.
+     *
+     * @return an <code>Authenticator</code> value
+     */
+    public Authenticator getAuthenticator()
+    {
+        return authenticator;
+    }
+    /**
+     * Sets the authenticator value.
+     *
+     * @param inAuthenticator an <code>Authenticator</code> value
+     */
+    public void setAuthenticator(Authenticator inAuthenticator)
+    {
+        authenticator = inAuthenticator;
+    }
+    /**
+     * Stops the strategy agent.
+     */
+    public void stop()
+    {
         stopRemoteService();
     }
-
-    /**
-     * Runs the application instance with the supplied set of arguments.
-     *
-     * @param inAgent the application instance
-     * @param args the command line arguments to the instance.
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#isRunning()
      */
-    protected static void run(StrategyAgent inAgent, String[] args) {
+    @Override
+    public boolean isRunning()
+    {
+        return running.get();
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.context.Lifecycle#start()
+     */
+    @Override
+    public void start()
+    {
+        Messages.LOG_APP_VERSION_BUILD.info(this,
+                                            ApplicationVersion.getVersion(),
+                                            ApplicationVersion.getBuildNumber());
+        Validate.notNull(authenticator);
+        if(loader != null) {
+            Thread.currentThread().setContextClassLoader(loader);
+        }
+        if(dataPublisher == null) {
+            dataPublisher = new PublisherEngine();
+        }
         try {
             //Configure the application. If it fails, exit
-            inAgent.configure();
-            if(args.length > 0) {
-                int parseErrors = inAgent.parseCommands(args[0]);
+            String[] args = ApplicationContainer.getInstance().getArguments();
+            if(args != null && args.length > 0) {
+                int parseErrors = parseCommands(args[0]);
                 if(parseErrors > 0) {
-                    Messages.LOG_COMMAND_PARSE_ERRORS.error(
-                            StrategyAgent.class, parseErrors);
-                    inAgent.exit(EXIT_CMD_PARSE_ERROR);
-                    return;
+                    Messages.LOG_COMMAND_PARSE_ERRORS.error(StrategyAgent.class,
+                                                            parseErrors);
+                    throw new IllegalArgumentException(Messages.LOG_COMMAND_PARSE_ERRORS.getText(parseErrors));
                 }
             }
-        } catch (Throwable e) {
+        } catch(Exception e) {
             Messages.LOG_ERROR_CONFIGURE_AGENT.error(StrategyAgent.class,
-                    getMessage(e));
+                                                     getMessage(e));
             Messages.LOG_ERROR_CONFIGURE_AGENT.debug(StrategyAgent.class,
-                    e, getMessage(e));
-            inAgent.exit(EXIT_START_ERROR);
-            return;
+                                                     e,
+                                                     getMessage(e));
+            throw new RuntimeException(e);
         }
-        //Initialize the application. If it fails, exit
+        // initialize the application. If it fails, exit
         try {
-            inAgent.init();
-        } catch (Throwable e) {
+            init();
+        } catch (Exception e) {
             Messages.LOG_ERROR_INITIALIZING_AGENT.error(StrategyAgent.class,
-                    getMessage(e));
+                                                        getMessage(e));
             Messages.LOG_ERROR_INITIALIZING_AGENT.debug(StrategyAgent.class,
-                    e, getMessage(e));
-            inAgent.exit(EXIT_INIT_ERROR);
-            return;
+                                                        e,
+                                                        getMessage(e));
+            throw new RuntimeException(e);
         }
-        //Run the commands, if commands fail, the failure is logged, but
-        //the application doesn't exit.
-        inAgent.executeCommands();
-        //Wait forever, do not exit unless killed.
-        inAgent.startWaitingForever();
+        // run the commands
+        executeCommands();
+        running.set(true);
+    }
+    /**
+     * Get the moduleManager value.
+     *
+     * @return a <code>ModuleManager</code> value
+     */
+    public ModuleManager getModuleManager()
+    {
+        return moduleManager;
+    }
+    /**
+     * Sets the moduleManager value.
+     *
+     * @param inModuleManager a <code>ModuleManager</code> value
+     */
+    public void setModuleManager(ModuleManager inModuleManager)
+    {
+        if(isRunning()) {
+            throw new IllegalStateException();
+        }
+        moduleManager = inModuleManager;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#getSubscriptionCount()
+     */
+    @Override
+    public int getSubscriptionCount()
+    {
+        return dataPublisher.getSubscriptionCount();
+    }
+    /**
+     * Get the loader value.
+     *
+     * @return a <code>ClassLoader</code> value
+     */
+    public ClassLoader getLoader()
+    {
+        return loader;
+    }
+    /**
+     * Sets the loader value.
+     *
+     * @param inLoader a <code>ClassLoader</code> value
+     */
+    public void setLoader(ClassLoader inLoader)
+    {
+        if(isRunning()) {
+            throw new IllegalStateException();
+        }
+        loader = inLoader;
+    }
+    /**
+     * Initializes the module manager.
+     *
+     * @throws ModuleException if there were errors initializing the module
+     * manager.
+     * @throws MalformedObjectNameException if there were errors creating
+     * the object name of the module manager bean.
+     */
+    private void init()
+            throws ModuleException, MalformedObjectNameException
+    {
+        //Initialize the module manager.
+        if(moduleManager != null) {
+            moduleManager.init();
+            //Add the logger sink listener
+            moduleManager.addSinkListener(new SinkDataListener() {
+                public void receivedData(DataFlowID inFlowID, Object inData) {
+                    final boolean isNullData = inData == null;
+                    Messages.LOG_SINK_DATA.info(SINK_DATA, inFlowID,
+                            isNullData ? 0: 1,
+                            isNullData ? null: inData.getClass().getName(),
+                            inData);
+                }
+            });
+            mManagerBean = JMX.newMXBeanProxy(ManagementFactory.getPlatformMBeanServer(),
+                                              new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
+                                              ModuleManagerMXBean.class);
+        }
     }
     /**
      * Create a new StrategyAgent instance.
@@ -201,25 +304,6 @@ public class StrategyAgent
     {
         instance = this;
     }
-    /**
-     * Terminates the process with the supplied exit code.
-     *
-     * @param inExitCode the exit code.
-     */
-    protected void exit(int inExitCode) {
-        System.exit(inExitCode);
-    }
-
-    /**
-     * Returns the module manager.
-     * This method is exposed to aid testing.
-     *
-     * @return the module manager.
-     */
-    protected ModuleManager getManager() {
-        return mManager;
-    }
-
     /**
      * Stops the remote web service.
      */
@@ -248,18 +332,6 @@ public class StrategyAgent
             return inThrowable.getLocalizedMessage();
         }
     }
-
-    /**
-     * Initializes the logger for this application.
-     *
-     * @param logConfig the logger configuration file.
-     */
-    private static void initializeLogger(String logConfig)
-    {
-        PropertyConfigurator.configureAndWatch
-            (ApplicationBase.CONF_DIR+logConfig, LOGGER_WATCH_DELAY);
-    }
-
     /**
      * Parses the commands from the supplied commands file.
      *
@@ -303,76 +375,6 @@ public class StrategyAgent
             reader.close();
         }
     }
-
-
-    /**
-     * Configures the agent. Initializes the spring configuration to get
-     * a properly configured module manager instance.
-     */
-    private void configure() {
-        File modulesDir = new File(APP_DIR,"modules");  //$NON-NLS-1$
-        StaticApplicationContext parentCtx = new StaticApplicationContext();
-        //Provide the module jar directory path to the spring context.
-        SpringUtils.addStringBean(parentCtx,"modulesDir",   //$NON-NLS-1$
-                modulesDir.getAbsolutePath());
-        parentCtx.refresh();
-        mContext = new FileSystemXmlApplicationContext(new String[] {"file:"+CONF_DIR+"strategyagent.xml"}, //$NON-NLS-1$  //$NON-NLS-2$
-                                                       parentCtx);
-        mContext.registerShutdownHook();
-        mManager = (ModuleManager) mContext.getBean("moduleManager",  //$NON-NLS-1$
-                                                    ModuleManager.class);
-        //Set the context classloader to the jar classloader so that
-        //all modules have the thread context classloader set to the same
-        //value as the classloader that loaded them.
-        ClassLoader loader = (ClassLoader) mContext.getBean("moduleLoader",  //$NON-NLS-1$
-                ClassLoader.class);
-        Thread.currentThread().setContextClassLoader(loader);
-        Authenticator authenticator;
-        try {
-            authenticator = mContext.getBean(Authenticator.class);
-            SLF4JLoggerProxy.debug(this,
-                                   "Using custom authenticator {}",
-                                   authenticator);
-        } catch (NoSuchBeanDefinitionException e) {
-            authenticator = new Authenticator() {
-                @Override
-                public boolean shouldAllow(StatelessClientContext context,
-                                           String user,
-                                           char[] password)
-                        throws I18NException
-                {
-                    return authenticate(context,
-                                        user,
-                                        password);
-                }
-            };
-        }
-        //Setup the WS services after setting up the context class loader.
-        String hostname = (String) mContext.getBean("wsServerHost");  //$NON-NLS-1$
-        if (hostname != null && !hostname.trim().isEmpty()) {
-            int port = (Integer) mContext.getBean("wsServerPort");  //$NON-NLS-1$
-            SessionManager<ClientSession> sessionManager= new SessionManager<ClientSession>(new ClientSessionFactory(),
-                                                                                            SessionManager.INFINITE_SESSION_LIFESPAN);
-            mServer = new Server<ClientSession>(hostname,
-                                                port,
-                                                authenticator,
-                                                sessionManager,
-                                                contextClasses);
-            mRemoteService = mServer.publish(new SAServiceImpl(sessionManager,
-                                                               mManager,
-                                                               dataPublisher),
-                                             SAService.class);
-            //Register a shutdown task to shutdown the remote service.
-            Runtime.getRuntime().addShutdownHook(new Thread(){
-                @Override
-                public void run() {
-                    stopRemoteService();
-                }
-            });
-            Messages.LOG_REMOTE_WS_CONFIGURED.info(this, hostname, String.valueOf(port));
-        }
-    }
-
     /**
      * Authenticates a client connection.
      * <p>
@@ -386,55 +388,15 @@ public class StrategyAgent
      *
      * @throws I18NException if the client is incompatible with the server.
      */
-    static boolean authenticate(StatelessClientContext context,
+    boolean authenticate(StatelessClientContext context,
                                 String user,
                                 char[] password)
-            throws I18NException {
-        //Verify client version
-        String serverVersion = ApplicationVersion.getVersion();
-        String clientName = Util.getName(context.getAppId());
-        String clientVersion = Util.getVersion(context.getAppId());
-        if (!compatibleApp(clientName)) {
-            throw new I18NException
-                    (new I18NBoundMessage2P(Messages.APP_MISMATCH,
-                            clientName, user));
-        }
-        if (!compatibleVersions(clientVersion, serverVersion)) {
-            throw new I18NException
-                    (new I18NBoundMessage3P(Messages.VERSION_MISMATCH,
-                            clientVersion, serverVersion, user));
-        }
-        //Use client to carry out authentication.
-        return ClientManager.getInstance().isCredentialsMatch(user, password);
+            throws I18NException
+    {
+        return authenticator.shouldAllow(context,
+                                         user,
+                                         password);
     }
-
-    /**
-     * Initializes the module manager.
-     *
-     * @throws ModuleException if there were errors initializing the module
-     * manager.
-     * @throws MalformedObjectNameException if there were errors creating
-     * the object name of the module manager bean.
-     */
-    private void init() throws ModuleException, MalformedObjectNameException {
-        //Initialize the module manager.
-        mManager.init();
-        //Add the logger sink listener
-        mManager.addSinkListener(new SinkDataListener() {
-            public void receivedData(DataFlowID inFlowID, Object inData) {
-                final boolean isNullData = inData == null;
-                Messages.LOG_SINK_DATA.info(SINK_DATA, inFlowID,
-                        isNullData ? 0: 1,
-                        isNullData ? null: inData.getClass().getName(),
-                        inData);
-            }
-        });
-        mManagerBean = JMX.newMXBeanProxy(
-                ManagementFactory.getPlatformMBeanServer(),
-                new ObjectName(ModuleManager.MODULE_MBEAN_NAME),
-                ModuleManagerMXBean.class);
-    }
-
     /**
      * Executes commands, if any were provided. If any command fails, the
      * failure is logged. Failure of any command doesn't prevent the next
@@ -450,15 +412,15 @@ public class StrategyAgent
                             mManagerBean, c.getParameter());
                     Messages.LOG_COMMAND_RUN_RESULT.info(this,
                             c.getRunner().getName(), result);
-                } catch (Throwable t) {
+                } catch (Exception e) {
                     Messages.LOG_ERROR_EXEC_CMD.warn(this,
                             c.getRunner().getName(),
                             c.getParameter(), c.getLineNum(),
-                            getMessage(t));
-                    Messages.LOG_ERROR_EXEC_CMD.debug(this, t,
+                            getMessage(e));
+                    Messages.LOG_ERROR_EXEC_CMD.debug(this, e,
                             c.getRunner().getName(),
                             c.getParameter(), c.getLineNum(),
-                            getMessage(t));
+                            getMessage(e));
                 }
             }
         }
@@ -472,34 +434,6 @@ public class StrategyAgent
     private static void addRunner(CommandRunner inRunner) {
         sRunners.put(inRunner.getName(), inRunner);
     }
-
-    /**
-     * Checks for compatibility between the given client and server
-     * versions.
-     *
-     * @param clientVersion The client version.
-     * @param serverVersion The server version.
-     * @return True if the two versions are compatible.
-     */
-
-    private static boolean compatibleVersions(String clientVersion, String serverVersion) {
-        // If the server's version is unknown, any client is allowed.
-        return (ApplicationVersion.DEFAULT_VERSION.equals(serverVersion) ||
-                ObjectUtils.equals(clientVersion, serverVersion));
-    }
-
-    /**
-     * Checks if a client with the supplied name is compatible with this server.
-     *
-     * @param clientName The client name.
-     *
-     * @return True if a client with the supplied name is compatible with this
-     * server.
-     */
-    private static boolean compatibleApp(String clientName) {
-        return SAClientVersion.APP_ID_NAME.equals(clientName);
-    }
-
     /**
      * The log category used to log all the data received by the sink module
      */
@@ -532,7 +466,11 @@ public class StrategyAgent
     /**
      * The module manager instance.
      */
-    private ModuleManager mManager;
+    private ModuleManager moduleManager;
+    /**
+     * SA class loader value
+     */
+    private ClassLoader loader;
     /**
      * The module manager mxbean reference.
      */
@@ -540,18 +478,19 @@ public class StrategyAgent
     /**
      * The list of parsed commands.
      */
-    private List<Command> mCommands =
-            new LinkedList<Command>();
+    private List<Command> mCommands = new LinkedList<Command>();
     /**
      * The handle to the remote web service.
      */
     private volatile ServiceInterface mRemoteService;
-    private volatile AbstractApplicationContext mContext;
+    /**
+     * web services provider server
+     */
     private volatile Server<ClientSession> mServer;
     /**
      * used to publish data received to interested subscribers
      */
-    private final PublisherEngine dataPublisher = new PublisherEngine();
+    private volatile PublisherEngine dataPublisher;
     /**
      * extra context classes to add to the server context
      */
@@ -560,4 +499,12 @@ public class StrategyAgent
      * most recent strategy agent instance
      */
     private volatile static StrategyAgent instance;
+    /**
+     * indicates if the SA is running or not
+     */
+    private final AtomicBoolean running = new AtomicBoolean(false);
+    /**
+     * provides authentication services
+     */
+    private Authenticator authenticator = new DefaultAuthenticator();
 }

@@ -11,6 +11,7 @@ import org.marketcetera.client.ConnectionException;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
 import org.marketcetera.trade.utils.OrderHistoryManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -123,7 +124,7 @@ public class LiveOrderHistoryManager
             for(ReportBase report : orderHistory) {
                 tempSnapshotReports.add(report);
             }
-            List<ReportBase> openOrders = client.getOpenOrders();
+            List<ReportBaseImpl> openOrders = client.getOpenOrders();
             if(openOrders != null) {
                 for(ReportBase openOrder : openOrders) {
                     if(!tempSnapshotReports.contains(openOrder)) {

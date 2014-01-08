@@ -5,6 +5,7 @@ import org.marketcetera.util.misc.ClassVersion;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlValue;
+
 import java.io.Serializable;
 import java.beans.ConstructorProperties;
 
@@ -36,8 +37,9 @@ public final class DataFlowID implements Serializable {
      * Constructor for use by JAXB during serialization. It's not meant
      * to be used for any other purpose.
      */
+    @SuppressWarnings("unused")
     private DataFlowID() {
-        this(null);
+        this("");
     }
 
     /**

@@ -22,19 +22,19 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class DateUtils
 {
-    private static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,
-                                                                                            4).toFormatter();
-    private static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
-    private static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
-    private static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
-    private static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
-    private static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
-    private static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
-    private static final DateTimeFormatter MILLI = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
-    private static final DateTimeFormatter TZ = new DateTimeFormatterBuilder().appendTimeZoneOffset("Z", //$NON-NLS-1$
-                                                                                                    true,
-                                                                                                    2,
-                                                                                                    4).toFormatter();
+    public static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,
+                                                                                           4).toFormatter();
+    public static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
+    public static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
+    public static final DateTimeFormatter T = new DateTimeFormatterBuilder().appendLiteral('T').toFormatter();
+    public static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
+    public static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
+    public static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
+    public static final DateTimeFormatter MILLI = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
+    public static final DateTimeFormatter TZ = new DateTimeFormatterBuilder().appendTimeZoneOffset("Z", //$NON-NLS-1$
+                                                                                                   true,
+                                                                                                   2,
+                                                                                                   4).toFormatter();
     /**
      * date format to millisecond precision with timezone: <code>yyyyMMdd'T'HHmmssSSSZ</code>
      */
@@ -68,9 +68,13 @@ public class DateUtils
      */
     public static final DateTimeFormatter DAYS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).toFormatter().withZone(DateTimeZone.UTC);
     /**
-     * date format needed for FIX specifed UTCTimestamp type
+     * date format needed for FIX specified UTCTimestamp type
      */
     public static final DateTimeFormatter FIX = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).appendLiteral('-').append(HOUR).appendLiteral(':').append(MINUTE).appendLiteral(':').append(SECOND).toFormatter();
+    /**
+     * date format needed for FIX specified UTCTimestamp type (with millis)
+     */
+    public static final DateTimeFormatter FIX_MILLIS = new DateTimeFormatterBuilder().append(YEAR).append(MONTH).append(DAY).appendLiteral('-').append(HOUR).appendLiteral(':').append(MINUTE).appendLiteral(':').append(SECOND).appendLiteral('.').append(MILLI).toFormatter();
     /**
      * valid date formats
      */

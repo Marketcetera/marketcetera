@@ -21,10 +21,7 @@ import org.marketcetera.client.MockClient;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.OrderID;
-import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.*;
 import org.marketcetera.trade.utils.OrderHistoryManagerTest;
 
 /* $License$ */
@@ -424,13 +421,13 @@ public class LiveOrderHistoryManagerTest
             throws Exception
     {
         Set<ReportBase> historicalReports = client.getReports();
-        List<ReportBase> setupOpenOrders = client.getOpenOrders();
+        List<ReportBaseImpl> setupOpenOrders = client.getOpenOrders();
         assertTrue(historicalReports.isEmpty());
         assertTrue(setupOpenOrders.isEmpty());
         // generate a few open orders and a few non-open orders
-        ReportBase report1 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
-                                                                             null,
-                                                                             OrderStatus.New);
+        ReportBaseImpl report1 = (ReportBaseImpl)OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                                                                 null,
+                                                                                                 OrderStatus.New);
         Thread.sleep(250);
         ReportBase report2 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
                                                                              null,
@@ -440,9 +437,9 @@ public class LiveOrderHistoryManagerTest
                                                                              null,
                                                                              OrderStatus.Canceled);
         Thread.sleep(250);
-        ReportBase report4 = OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
-                                                                             null,
-                                                                             OrderStatus.PartiallyFilled);
+        ReportBaseImpl report4 = (ReportBaseImpl)OrderHistoryManagerTest.generateExecutionReport("order-" + counter.incrementAndGet(),
+                                                                                                 null,
+                                                                                                 OrderStatus.PartiallyFilled);
         assertTrue(report1.getOrderStatus().isCancellable());
         assertFalse(report2.getOrderStatus().isCancellable());
         assertFalse(report3.getOrderStatus().isCancellable());
