@@ -3,14 +3,20 @@ package org.marketcetera.orderloader;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.auth.StandardAuthentication;
 import org.marketcetera.util.auth.OptionsProvider;
+
 import static org.marketcetera.util.auth.StandardAuthentication.*;
+
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.commons.cli.*;
+
 import static org.marketcetera.core.ApplicationBase.*;
+
 import org.marketcetera.core.ApplicationVersion;
+
 import static org.marketcetera.orderloader.Messages.*;
+
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.client.ClientParameters;
 import org.springframework.context.support.StaticApplicationContext;
@@ -130,26 +136,33 @@ public class Main {
      * @throws Exception if there were errors.
      */
     protected void doProcessing()
-            throws Exception {
+            throws Exception
+    {
         //Create the order processor
-        StaticApplicationContext context =
-            new StaticApplicationContext
-            (new FileSystemXmlApplicationContext(CFG_BASE_FILE_NAME));
-        String clientURL = (String) context.getBean("clientURL");  //$NON-NLS-1$
-        String clientWSHost = (String) context.getBean("clientWSHost");  //$NON-NLS-1$
-        Integer clientWSPort = (Integer) context.getBean("clientWSPort");  //$NON-NLS-1$
-        String clientIDPrefix = (String) context.getBean("clientIDPrefix");  //$NON-NLS-1$
-        ClientParameters parameters = new ClientParameters(
-                mAuthentication.getUser(),
-                mAuthentication.getPassword(),
-                clientURL, clientWSHost, clientWSPort,clientIDPrefix);
-        OrderProcessor processor = createProcessor(parameters);
-        //Run the order loader and display the summary of results.
+        StaticApplicationContext context = new StaticApplicationContext(new FileSystemXmlApplicationContext(CFG_BASE_FILE_NAME));
         try {
-            displaySummary(new OrderLoader(mMode, mBrokerID,
-                    processor, new File(mFileName)));
+            String clientURL = (String) context.getBean("clientURL");  //$NON-NLS-1$
+            String clientWSHost = (String) context.getBean("clientWSHost");  //$NON-NLS-1$
+            Integer clientWSPort = (Integer) context.getBean("clientWSPort");  //$NON-NLS-1$
+            String clientIDPrefix = (String) context.getBean("clientIDPrefix");  //$NON-NLS-1$
+            ClientParameters parameters = new ClientParameters(mAuthentication.getUser(),
+                                                               mAuthentication.getPassword(),
+                                                               clientURL,
+                                                               clientWSHost,
+                                                               clientWSPort,
+                                                               clientIDPrefix);
+            OrderProcessor processor = createProcessor(parameters);
+            //Run the order loader and display the summary of results.
+            try {
+                displaySummary(new OrderLoader(mMode,
+                                               mBrokerID,
+                                               processor,
+                                               new File(mFileName)));
+            } finally {
+                processor.done();
+            }
         } finally {
-            processor.done();
+            context.close();
         }
     }
 
@@ -272,15 +285,11 @@ public class Main {
      *
      * @param inOptions the options used for parsing the command line.
      */
-    private void options(Options inOptions) {
-        inOptions.addOption(OptionBuilder.hasArg().
-                withArgName(ARG_MODE_VALUE.getText()).
-                withDescription(ARG_MODE_DESCRIPTION.getText()).
-                isRequired(false).create(OPT_MODE));
-        inOptions.addOption(OptionBuilder.hasArg().
-                withArgName(ARG_BROKER_VALUE.getText()).
-                withDescription(ARG_BROKER_DESCRIPTION.getText()).
-                isRequired(false).create(OPT_BROKER));
+    @SuppressWarnings("static-access")
+    private void options(Options inOptions)
+    {
+        inOptions.addOption(OptionBuilder.hasArg().withArgName(ARG_MODE_VALUE.getText()).withDescription(ARG_MODE_DESCRIPTION.getText()).isRequired(false).create(OPT_MODE));
+        inOptions.addOption(OptionBuilder.hasArg().withArgName(ARG_BROKER_VALUE.getText()).withDescription(ARG_BROKER_DESCRIPTION.getText()).isRequired(false).create(OPT_BROKER));
     }
     private PrintStream mMsgStream = System.err;
     private StandardAuthentication mAuthentication;

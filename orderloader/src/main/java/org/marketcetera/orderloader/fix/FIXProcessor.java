@@ -166,8 +166,7 @@ public class FIXProcessor extends RowProcessor {
         throws OrderParsingException
     {
         if(inField instanceof CustomField) {
-            return ((CustomField)inField).parseMessageValue(
-                    inValue).toString(); //i18n_number? BigDecimal.toString() might not give the right value
+            return ((CustomField<?>)inField).parseMessageValue(inValue).toString(); //i18n_number? BigDecimal.toString() might not give the right value
         }
 
         switch(inField.getField()) {

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Defines broker algorithms.
+  -
+  - Author: colin@marketcetera.com
+  - Since: $Release$
+  - Version: $Id$
+  - $License$
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+  <bean id="vwapAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
+    <property name="name" value="VWAP"/>
+    <property name="algoTagSpecs">
+      <set>
+        <ref bean="exDestinationTagSpec"/>
+        <ref bean="algoTypeTagSpec"/>
+      </set>
+    </property>
+  </bean>
+  <bean id="participationAlgoSpec" class="org.marketcetera.algo.BrokerAlgoSpec">
+    <property name="name" value="Participation"/>
+    <property name="algoTagSpecs">
+      <set>
+        <ref bean="maxParticipationTagSpec"/>
+        <ref bean="algoModeTagSpec"/>
+      </set>
+    </property>
+  </bean>
+  <bean id="exDestinationTagSpec" class="org.marketcetera.algo.BrokerAlgoTagSpec">
+    <property name="label" value="ExDestination (100)"/>
+    <property name="description" value="Execution destination as defined by institution when order is entered"/>
+    <property name="tag" value="100"/>
+    <property name="isMandatory" value="true"/>
+    <property name="pattern" value="^\w*$"/>
+  </bean>
+  <bean id="maxParticipationTagSpec" class="org.marketcetera.algo.BrokerAlgoTagSpec">
+    <property name="label" value="MaxParticipation (7807)"/>
+    <property name="description" value="Maximum participation"/>
+    <property name="tag" value="7807"/>
+    <property name="isMandatory" value="true"/>
+    <property name="pattern" value="^\d*$"/>
+  </bean>
+  <bean id="algoTypeTagSpec" class="org.marketcetera.algo.BrokerAlgoTagSpec">
+    <property name="label" value="AlgoType (7800)"/>
+    <property name="description" value="Algorithm type as defined by the broker"/>
+    <property name="tag" value="7800"/>
+    <property name="isMandatory" value="true"/>
+    <property name="pattern" value="^[X|Y|Z]$"/>
+  </bean>
+  <bean id="algoModeTagSpec" class="org.marketcetera.algo.BrokerAlgoTagSpec">
+    <property name="label" value="AlgoMode (7803)"/>
+    <property name="description" value="Algorithm mode as defined by the broker"/>
+    <property name="tag" value="7803"/>
+    <property name="isMandatory" value="true"/>
+    <property name="pattern" value="^[2|5|8]$"/>
+    <property name="options">
+        <map>
+          <entry key="Patient" value="2"/>
+          <entry key="Normal" value="5"/>
+          <entry key="Aggressive" value="8"/>
+        </map>
+    </property>
+  </bean>
+</beans>
