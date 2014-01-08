@@ -1,10 +1,9 @@
 package org.marketcetera.persist;
 
-import org.marketcetera.core.ClassVersion;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+
+import org.marketcetera.core.ClassVersion;
 
 /* $License$ */
 /**
@@ -12,8 +11,10 @@ import java.util.Date;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public interface SummaryEntityBase extends Serializable {
+@ClassVersion("$Id$")
+public interface SummaryEntityBase
+        extends Serializable
+{
     /**
      * The Entity ID. This ID uniquely represents an instance
      * of this entity type in the system.
@@ -21,7 +22,6 @@ public interface SummaryEntityBase extends Serializable {
      * @return The entity ID.
      */
     long getId();
-
     /**
      * An Update Count of the number of times this object
      * has been updated. This field is used to prevent dirty
@@ -33,7 +33,6 @@ public interface SummaryEntityBase extends Serializable {
      * @return The update count of the object
      */
     int getUpdateCount();
-
     /**
      * The time last time this object was updated
      * @return  time the object was last modified.

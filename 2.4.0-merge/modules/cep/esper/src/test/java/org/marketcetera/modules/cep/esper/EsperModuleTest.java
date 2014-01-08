@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.management.JMX;
@@ -19,18 +18,14 @@ import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.event.HasInstrument;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.module.CopierModuleFactory;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.IllegalRequestParameterValue;
-import org.marketcetera.module.ModuleTestBase;
-import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.*;
 import org.marketcetera.modules.cep.system.CEPDataTypes;
 import org.marketcetera.modules.cep.system.CEPTestBase;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 
 import com.espertech.esper.client.EPStatement;
+import com.google.common.collect.Maps;
 
 /**
  * Test the Esper module functionality
@@ -291,11 +286,11 @@ public class EsperModuleTest extends CEPTestBase {
      */
     @Test
     public void testDynamicMapProperties() throws Exception {
-        Map map1 = new HashMap();
+        Map<String,String> map1 = Maps.newHashMap();
         map1.put("name","nap");
         map1.put("game","tap");
 
-        Map map2 = new HashMap();
+        Map<String,String> map2 = Maps.newHashMap();
         map2.put("name","gap");
         map2.put("game","kebap");
         DataFlowID flow = sManager.createDataFlow(new DataRequest[] {

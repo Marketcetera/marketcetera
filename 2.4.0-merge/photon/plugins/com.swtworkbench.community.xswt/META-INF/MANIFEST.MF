@@ -24,4 +24,4 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-SymbolicName: com.swtworkbench.community.xswt;singleton:=true
 Bundle-ClassPath: .
 Bundle-Vendor: SWTWorkbench
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

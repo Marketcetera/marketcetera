@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.databinding,
  org.eclipse.jface.databinding,
  org.marketcetera.photon.commons
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.marketcetera.photon.module.ui
 Eclipse-ExtensibleAPI: true

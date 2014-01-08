@@ -4,9 +4,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+
+/* $License$ */
 
 /**
  * A server node for stateless communication.
@@ -15,16 +18,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class StatelessServer
-    extends Node
+        extends Node
 {
-
-    // CONSTRUCTORS.
-
     /**
      * Create a new StatelessServer instance.
      *
@@ -55,20 +52,14 @@ public class StatelessServer
              port,
              (Class<?>[])null);
     }
-
     /**
      * Creates a new server node with the default server host name and
      * port.
      */    
-
     public StatelessServer()
     {
         this(DEFAULT_HOST,DEFAULT_PORT);
     }
-
-
-    // INSTANCE METHODS.
-
     /**
      * Publishes the given service interface, supported by the given
      * implementation, and returns a handle that can be used to stop
@@ -79,14 +70,12 @@ public class StatelessServer
      *
      * @return The handle.
      */
-
-    public <T extends StatelessServiceBase> ServiceInterface publish
-        (T impl,
-         Class<T> iface)
+    public <T extends StatelessServiceBase> ServiceInterface publish(T impl,
+                                                                     Class<T> iface)
     {
-        JaxWsServerFactoryBean f=new JaxWsServerFactoryBean();
-        Map<String,Object> props = f.getProperties(); 
-        if (props == null) {
+        factory = new JaxWsServerFactoryBean();
+        Map<String,Object> props = factory.getProperties();
+        if(props == null) {
             props = new HashMap<String,Object>();
         }
         if(contextClasses != null) {
@@ -96,20 +85,38 @@ public class StatelessServer
             props.put("jaxb.additionalContextClasses",  //$NON-NLS-1$
                       contextClasses);
         }
-        f.setProperties(props); 
-        f.setServiceClass(iface);
-        f.setAddress(getConnectionUrl(iface));
-        f.setServiceBean(impl);
-        return new ServiceInterface(f.create());
+        factory.setProperties(props); 
+        factory.setServiceClass(iface);
+        factory.setAddress(getConnectionUrl(iface));
+        factory.setServiceBean(impl);
+        server = factory.create();
+        return new ServiceInterface(server);
     }
-
     /**
      * Shuts down the receiver.
      */
-
-    public void stop() {}
+    public void stop()
+    {
+        if(server != null) {
+            server.stop();
+            server.destroy();
+            server = null;
+        }
+        if(factory != null) {
+            factory.getBus().shutdown(true);
+            factory = null;
+        }
+    }
     /**
      * context classes to add to the server context, if any
      */
     private final Class<?>[] contextClasses;
+    /**
+     * published server object
+     */
+    private Server server;
+    /**
+     * factory used to create server objects
+     */
+    private JaxWsServerFactoryBean factory;
 }

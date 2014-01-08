@@ -1,5 +1,8 @@
 package org.marketcetera.core;
 
+import java.io.File;
+import java.util.concurrent.Semaphore;
+
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -8,10 +11,6 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.Semaphore;
 
 /**
  * Abstract superclass to all applications
@@ -103,23 +102,29 @@ public class ApplicationBase implements Clock {
         return createApplicationContext(ctxFileNames,null,registerShutdownHook);
     }
 
-    /** Create a semaphor and wait for it forever (noone will ever signal it).
-     * This is to put the app in a loop if the app is written as a "receiver"
-     * You quit the app by either killing the process or pressing Ctrl-C.
+    /**
+     * The application waits until {@link #stopWaitingForever() stopped} or interrupted.
      */
     public void startWaitingForever()
     {
         waitingForever = true;
         try {
             SLF4JLoggerProxy.debug(this, "Starting to wait forever"); //$NON-NLS-1$
-            new Semaphore(0).acquire();
+            waitingSemaphore.acquire();
         } catch (InterruptedException e) {
             SLF4JLoggerProxy.debug(this, e, "Exception in sema wait"); //$NON-NLS-1$
         } finally {
             waitingForever = false;
         }
     }
-
+    /**
+     * Stops the application from waiting forever.
+     */
+    public void stopWaitingForever()
+    {
+        waitingSemaphore.release();
+        waitingForever = false;
+    }
     /**
      * Returns true if the application is running
      * the {@link #startWaitingForever()} method
@@ -155,4 +160,5 @@ public class ApplicationBase implements Clock {
     public ClassPathXmlApplicationContext getAppCtx() {
         return appCtx;
     }
+    private Semaphore waitingSemaphore = new Semaphore(0);
 }
