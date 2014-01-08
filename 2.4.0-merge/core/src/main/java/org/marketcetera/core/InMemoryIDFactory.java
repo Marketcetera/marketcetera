@@ -1,6 +1,5 @@
 package org.marketcetera.core;
 
-import org.marketcetera.util.log.I18NBoundMessage0P;
 
 /**
  * Implementation of IDFactory that provides identifiers unique to this run of the
