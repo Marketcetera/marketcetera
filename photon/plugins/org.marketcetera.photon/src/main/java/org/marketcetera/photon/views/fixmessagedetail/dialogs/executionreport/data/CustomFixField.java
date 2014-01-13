@@ -82,4 +82,23 @@ public class CustomFixField extends ExecutionReportField
 	{
 		return fFieldTag;
 	}
+	
+    @Override
+    public boolean equals(Object obj)
+   {
+       if (this == obj) {
+           return true;
+       }
+       if (obj == null) {
+           return false;
+       }
+       if (!(obj instanceof CustomFixField)) {
+           return false;
+       }
+       CustomFixField other = (CustomFixField) obj;
+       if (fFieldTag != other.fFieldTag) {
+           return false;
+       }
+       return true;
+   }
 }

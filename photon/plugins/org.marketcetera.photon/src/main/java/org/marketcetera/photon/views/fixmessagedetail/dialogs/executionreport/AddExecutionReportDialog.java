@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -64,6 +65,9 @@ public class AddExecutionReportDialog extends ReportDialog
 	/** Value\s for the selected field */
 	private Control fValuesControl;
 	
+	/**Selected non-predefined field**/
+	private IStructuredSelection fCurrentSelection;
+	
 	/** Execution report data */
 	private ExecutionReportContainer fExecutionReportFields = new ExecutionReportContainer();
 
@@ -79,6 +83,15 @@ public class AddExecutionReportDialog extends ReportDialog
 
 		// Execution Report panel
 		createExecutionReportPane(parentComposite);
+		
+		fExecutionReportViewer.addSelectionChangedListener(new ISelectionChangedListener() {		
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection selection = (StructuredSelection)event.getSelection();
+				fCurrentSelection = selection;
+				fFieldCombo.setSelection(selection);
+			}
+		});
 		
 		return parent;
 	}
@@ -171,22 +184,48 @@ public class AddExecutionReportDialog extends ReportDialog
 	private void selectionChangedListener(SelectionChangedEvent event, ExecutionReportFixFields existingFields)
 	{
         IStructuredSelection selection = (IStructuredSelection) event.getSelection();
-        ExecutionReportField reportField = (ExecutionReportField) selection.getFirstElement();
+        ExecutionReportField reportField;
+        if(fCurrentSelection != null){
+        	reportField = (ExecutionReportField)fCurrentSelection.getFirstElement();
+			if(reportField instanceof ExecutionReportNoneFixField){
+	        	fFieldCombo.getCombo().deselectAll();
+	        	fFieldCombo.getCombo().setText(reportField.getFieldName());				
+			}
+			else{
+				if(reportField instanceof CustomFixField){
+		        	fFieldCombo.getCombo().deselectAll();
+					fFieldCombo.getCombo().setText(reportField.getFieldTag() + "");
+				}
+				else{
+					reportField = (ExecutionReportField) fCurrentSelection.getFirstElement();
+				}
+			}
+        	fCurrentSelection = null;
+        }
+        else{
+        	reportField = (ExecutionReportField) selection.getFirstElement();
+        }
 
-        String[] values = reportField.getValues();
+        String[] values = reportField != null? reportField.getValues() : null;
         if(values == ExecutionReportField.NULL_VALUE)
         {
         	if(fValuesControl == null || fValuesControl.isDisposed())
         	{
         		fValuesControl = new Text(fValueComposite, SWT.BORDER);
         		fValuesControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        		((Text) fValuesControl).setText("");
+        		String selectedValue = reportField != null? reportField.getSelectedValue() : null;
+        		if(selectedValue == null )
+        			selectedValue = "";
+        		((Text) fValuesControl).setText(selectedValue);
         		fValueComposite.layout();
         		return;
         	}
         	if(fValuesControl instanceof Text)
         	{
-        		((Text) fValuesControl).setText("");
+        		String selectedValue = reportField != null? reportField.getSelectedValue() : null;
+        		if(selectedValue == null )
+        			selectedValue = "";
+        		((Text) fValuesControl).setText(selectedValue);
         		return;
         	}
         	else
@@ -194,7 +233,10 @@ public class AddExecutionReportDialog extends ReportDialog
         		fValuesControl.dispose();
         		fValuesControl = new Text(fValueComposite, SWT.BORDER);
         		fValuesControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        		((Text) fValuesControl).setText("");
+        		String selectedValue = reportField != null? reportField.getSelectedValue() : null;
+        		if(selectedValue == null )
+        			selectedValue = "";
+        		((Text) fValuesControl).setText(selectedValue);
         		fValueComposite.layout();
         		return;        		
         	}
@@ -205,12 +247,20 @@ public class AddExecutionReportDialog extends ReportDialog
         		fValuesControl = new Combo(fValueComposite, SWT.READ_ONLY);
         		fValuesControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         		((Combo) fValuesControl).setItems(values);
+        		String selectedValue = reportField != null? reportField.getSelectedValue() : null;
+        		if(selectedValue == null )
+        			selectedValue = "";       		
+        		((Combo) fValuesControl).setText(selectedValue);
         		fValueComposite.layout();
         		return;
         	}
         	if(fValuesControl instanceof Combo)
         	{
         		((Combo) fValuesControl).setItems(values);
+        		String selectedValue = reportField != null? reportField.getSelectedValue() : null;
+        		if(selectedValue == null )
+        			selectedValue = "";       		
+        		((Combo) fValuesControl).setText(selectedValue);
         		return;
         	}
         	else
@@ -219,6 +269,10 @@ public class AddExecutionReportDialog extends ReportDialog
         		fValuesControl = new Combo(fValueComposite, SWT.READ_ONLY);
         		fValuesControl.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         		((Combo) fValuesControl).setItems(values);
+        		String selectedValue = reportField != null? reportField.getSelectedValue() : null;
+        		if(selectedValue == null )
+        			selectedValue = "";       		
+        		((Combo) fValuesControl).setText(selectedValue);
         		fValueComposite.layout();
         		return;
         		
