@@ -106,6 +106,7 @@ public class ApplicationContainer
                 System.err.println("Original failure"); //$NON-NLS-1$
                 e.printStackTrace();
             }
+            System.exit(exitCode);
             return;
         }
         Messages.APP_STARTED.info(ApplicationContainer.class);
@@ -129,9 +130,11 @@ public class ApplicationContainer
                 System.err.println("Original failure"); //$NON-NLS-1$
                 e.printStackTrace();
             }
+            System.exit(exitCode);
             return;
         }
         Messages.APP_STOP_SUCCESS.info(ApplicationContainer.class);
+        System.exit(exitCode);
     }
     /**
      * Adds the given shutdown task to the shutdown task collection.
@@ -228,6 +231,15 @@ public class ApplicationContainer
         }
     }
     /**
+     * Sets the exit code that will be returned when the application quits.
+     *
+     * @param inExitCode an <code>int</code> value
+     */
+    public static void setExitCode(int inExitCode)
+    {
+        exitCode = inExitCode;
+    }
+    /**
      * Generates the base application context with which to run.
      *
      * @return a <code>ConfigurableApplicationContext</code> value
@@ -265,4 +277,8 @@ public class ApplicationContainer
      * indicates the name of the context file to use
      */
     private static String contextFilename = "application.xml";
+    /**
+     * exit code to return on exit
+     */
+    protected static int exitCode = 0;
 }
