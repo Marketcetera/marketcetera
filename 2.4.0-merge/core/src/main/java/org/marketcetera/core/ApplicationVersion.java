@@ -2,9 +2,14 @@ package org.marketcetera.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -94,18 +99,27 @@ public class ApplicationVersion
             Properties p = properties.get(inResourceClass.getName());
             if(p == null) {
                 p = new Properties();
-                properties.put(inResourceClass.getName(),
-                               p);
-                try {
-                    InputStream stream = inResourceClass.getResourceAsStream("/META-INF/metc_version.properties");  //$NON-NLS-1$
+//                try {
+//                    InputStream stream = inResourceClass.getResourceAsStream("/META-INF/metc_version.properties");  //$NON-NLS-1$
+//                    if(stream != null) {
+//                        p.load(stream);
+//                        stream.close();
+//                    }
+//                } catch(IOException e) {
+//                    Messages.ERROR_FETCHING_VERSION_PROPERTIES.warn(ApplicationVersion.class,
+//                                                                    e);
+//                }
+                try(InputStream stream = inResourceClass.getResourceAsStream(JarFile.MANIFEST_NAME)) {
                     if(stream != null) {
                         p.load(stream);
-                        stream.close();
                     }
-                } catch(IOException e) {
+                } catch (IOException e) {
                     Messages.ERROR_FETCHING_VERSION_PROPERTIES.warn(ApplicationVersion.class,
                                                                     e);
                 }
+                System.out.println("\n\n\nColin: adding properties " + p + " for " + inResourceClass.getName());
+                properties.put(inResourceClass.getName(),
+                               p);
             }
             return p;
         }
