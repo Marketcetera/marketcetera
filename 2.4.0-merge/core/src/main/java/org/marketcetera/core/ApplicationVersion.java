@@ -149,7 +149,7 @@ public class ApplicationVersion
     /**
      * indicates the filename in the classpath that holds the build values
      */
-    private static final String PROPERTIES_FILENAME = "/revision.txt";   //$NON-NLS-1$
+    private static final String PROPERTIES_FILENAME = "/META-INF/metc_version.properties";   //$NON-NLS-1$
     /**
      * indicates the version number property to read from the classpath filename
      */
