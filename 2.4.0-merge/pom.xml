@@ -44,7 +44,7 @@
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.7.Final</mvn.hibernate.version>
     <!-- Build Number. -->
-    <mvn.build.number>9999</mvn.build.number>
+    <mvn.build.number>Development Build</mvn.build.number>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
        jaxb:  2.2.6 (provided by Java7, not CXF)
@@ -813,6 +813,7 @@
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
       </plugin>
+      <!-- Adds the build number to each JAR -->
       <plugin>
 	<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
 	<artifactId>svn-revision-number-maven-plugin</artifactId>
@@ -827,7 +828,7 @@
 	<configuration>
 	  <entries>
             <entry>
-	      <prefix>prefix</prefix>
+	      <prefix>metc</prefix>
             </entry>
 	  </entries>
 	</configuration>                    

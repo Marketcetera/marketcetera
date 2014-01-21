@@ -2,15 +2,12 @@ package org.marketcetera.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
+import org.joda.time.DateTime;
+import org.marketcetera.marketdata.DateUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -96,33 +93,49 @@ public class ApplicationVersion
     private static Properties getProperties(Class<?> inResourceClass)
     {
         synchronized(properties) {
-            Properties p = properties.get(inResourceClass.getName());
-            if(p == null) {
-                p = new Properties();
-//                try {
-//                    InputStream stream = inResourceClass.getResourceAsStream("/META-INF/metc_version.properties");  //$NON-NLS-1$
-//                    if(stream != null) {
-//                        p.load(stream);
-//                        stream.close();
-//                    }
-//                } catch(IOException e) {
-//                    Messages.ERROR_FETCHING_VERSION_PROPERTIES.warn(ApplicationVersion.class,
-//                                                                    e);
-//                }
-                try(InputStream stream = inResourceClass.getResourceAsStream(JarFile.MANIFEST_NAME)) {
+            Properties propsForClass = properties.get(inResourceClass.getName());
+            if(propsForClass == null) {
+                propsForClass = new Properties();
+                try(InputStream stream = inResourceClass.getResourceAsStream(PROPERTIES_FILENAME)) {
                     if(stream != null) {
-                        p.load(stream);
+                        propsForClass.load(stream);
                     }
-                } catch (IOException e) {
+                } catch(IOException e) {
                     Messages.ERROR_FETCHING_VERSION_PROPERTIES.warn(ApplicationVersion.class,
                                                                     e);
                 }
-                System.out.println("\n\n\nColin: adding properties " + p + " for " + inResourceClass.getName());
                 properties.put(inResourceClass.getName(),
-                               p);
+                               propsForClass);
+                setBuildNumber(propsForClass);
+                setVersionNumber(propsForClass);
             }
-            return p;
+            return propsForClass;
         }
+    }
+    /**
+     * Sets a more informative version number value into the given properties.
+     *
+     * @param inProperties a <code>Properties</code> value
+     */
+    private static void setVersionNumber(Properties inProperties)
+    {
+        StringBuilder versionNumber = new StringBuilder();
+        versionNumber.append(inProperties.getProperty(VERSION_NUMBER,DEFAULT_BUILD));
+        inProperties.put(VERSION_NUMBER,
+                         versionNumber.toString());
+    }
+    /**
+     * Sets a more informative build number value into the given properties.
+     *
+     * @param inProperties a <code>Properties</code> value
+     */
+    private static void setBuildNumber(Properties inProperties)
+    {
+        StringBuilder buildNumber = new StringBuilder();
+        buildNumber.append(inProperties.getProperty(BUILD_NUMBER,DEFAULT_BUILD))
+                   .append(' ').append(inProperties.getProperty(REVISION,DEFAULT_REVISION)).append(' ').append(DateUtils.MILLIS_WITH_TZ.print(new DateTime()));
+        inProperties.put(BUILD_NUMBER,
+                         buildNumber.toString());
     }
     /**
      * properties by owning resource class
@@ -133,25 +146,32 @@ public class ApplicationVersion
      */
     private ApplicationVersion() {
     }
-
+    /**
+     * indicates the filename in the classpath that holds the build values
+     */
+    private static final String PROPERTIES_FILENAME = "/revision.txt";   //$NON-NLS-1$
+    /**
+     * indicates the version number property to read from the classpath filename
+     */
+    private static final String VERSION_NUMBER = "VersionNumber";   //$NON-NLS-1$
+    /**
+     * indicates the build number property to read from the classpath filename
+     */
+    private static final String BUILD_NUMBER = "BuildNumber";   //$NON-NLS-1$
+    /**
+     * indicates the revision number from the source control system to read from the classpath filename
+     */
+    private static final String REVISION = "revision";   //$NON-NLS-1$
+    /**
+     * default build number to show if no build number is available
+     */
     static final String DEFAULT_BUILD = "No Build";   //$NON-NLS-1$
-
-    public static final String DEFAULT_VERSION =
-        "No Version"; //$NON-NLS-1$
-    public static final String VERSION_1_5_0 =
-        "1.5.0"; //$NON-NLS-1$
-    public static final String VERSION_1_5_1 =
-        "1.5.1"; //$NON-NLS-1$
-    public static final String VERSION_1_6_0 =
-        "1.6.0"; //$NON-NLS-1$
-    public static final String VERSION_2_0_0 =
-        "2.0.0"; //$NON-NLS-1$
-    public static final String VERSION_2_1_0 =
-        "2.1.0"; //$NON-NLS-1$
-    public static final String VERSION_2_1_1 = "2.1.1"; //$NON-NLS-1$
-    public static final String VERSION_2_1_2 = "2.1.2"; //$NON-NLS-1$
-    public static final String VERSION_2_1_3 = "2.1.3"; //$NON-NLS-1$
-    public static final String VERSION_2_1_4 = "2.1.4"; //$NON-NLS-1$
-    public static final String VERSION_2_3_0 = "2.3.0"; //$NON-NLS-1$
-    public static final String VERSION_2_4_0 = "2.4.0"; //$NON-NLS-1$
+    /**
+     * revision number to show if no revision number is available
+     */
+    static final String DEFAULT_REVISION = "No Revision";   //$NON-NLS-1$
+    /**
+     * version number to show if version number is available
+     */
+    public static final String DEFAULT_VERSION = "No Version"; //$NON-NLS-1$
 }

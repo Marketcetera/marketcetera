@@ -270,9 +270,9 @@ public class UtilTest
         assertEquals(" x ",Util.getVersion(Util.getAppId(" y "," x ")));
         assertEquals(UnicodeData.COMBO,Util.getVersion(
                 Util.getAppId(UnicodeData.COMBO,UnicodeData.COMBO)));
-        assertEquals(ApplicationVersion.VERSION_1_5_0,
-                Util.getVersion(Util.getAppId("Weird",
-                        ApplicationVersion.VERSION_1_5_0)));
+        assertEquals("1.5.0",
+                     Util.getVersion(Util.getAppId("Weird",
+                                                   "1.5.0")));
     }
 
     /**
@@ -296,6 +296,6 @@ public class UtilTest
         assertEquals(UnicodeData.COMBO, Util.getName(
                 Util.getAppId(UnicodeData.COMBO, UnicodeData.COMBO)));
         assertEquals("MyApp", Util.getName(Util.getAppId("MyApp",
-                ApplicationVersion.VERSION_2_0_0)));
+                                                         "2.0.0")));
     }
 }
