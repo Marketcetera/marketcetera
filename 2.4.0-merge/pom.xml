@@ -44,7 +44,7 @@
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.7.Final</mvn.hibernate.version>
     <!-- Build Number. -->
-    <mvn.build.number>Development Build</mvn.build.number>
+    <mvn.build.number>410</mvn.build.number>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
        jaxb:  2.2.6 (provided by Java7, not CXF)
@@ -847,7 +847,14 @@
 	<filtering>true</filtering>
 	<includes>
 	  <include>**/metc_version.properties</include>
-      </includes>
+	</includes>
+      </resource>
+      <resource>
+	<directory>src/main/resources</directory>
+	<filtering>false</filtering>
+	<excludes>
+	  <exclude>**/metc_version.properties</exclude>
+	</excludes>
       </resource>
     </resources>
   </build>

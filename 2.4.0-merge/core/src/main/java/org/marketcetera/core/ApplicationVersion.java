@@ -96,13 +96,21 @@ public class ApplicationVersion
             Properties propsForClass = properties.get(inResourceClass.getName());
             if(propsForClass == null) {
                 propsForClass = new Properties();
-                try(InputStream stream = inResourceClass.getResourceAsStream(PROPERTIES_FILENAME)) {
+                InputStream stream = null;
+                try {
+                    stream = inResourceClass.getResourceAsStream(PROPERTIES_FILENAME);
                     if(stream != null) {
                         propsForClass.load(stream);
                     }
                 } catch(IOException e) {
                     Messages.ERROR_FETCHING_VERSION_PROPERTIES.warn(ApplicationVersion.class,
                                                                     e);
+                } finally {
+                    if(stream != null) {
+                        try {
+                            stream.close();
+                        } catch (IOException ignored) {}
+                    }
                 }
                 properties.put(inResourceClass.getName(),
                                propsForClass);
