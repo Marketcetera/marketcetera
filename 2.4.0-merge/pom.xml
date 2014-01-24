@@ -43,8 +43,6 @@
     <mvn.springdatajpa.version>1.4.3.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.7.Final</mvn.hibernate.version>
-    <!-- Build Number. -->
-    <mvn.build.number>410</mvn.build.number>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
        jaxb:  2.2.6 (provided by Java7, not CXF)
