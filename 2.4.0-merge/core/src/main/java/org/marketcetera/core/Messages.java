@@ -126,4 +126,5 @@ public interface Messages
     static final I18NMessage0P APP_MISSING_CREDENTIALS = new I18NMessage0P(LOGGER,"app_missing_credentials"); //$NON-NLS-1$
     static final I18NMessage0P APP_NO_ARGS_ALLOWED = new I18NMessage0P(LOGGER,"app_no_args_allowed"); //$NON-NLS-1$
     static final I18NMessage0P APP_NO_CONFIGURATION = new I18NMessage0P(LOGGER,"app_no_configuration"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_VERSION = new I18NMessage1P(LOGGER,"invalid_version"); //$NON-NLS-1$
 }

@@ -25,28 +25,36 @@ public class ApplicationVersion
     /**
      * Returns the application version number.
      *
-     * @return a <code>String</code> value containing the application version number
+     * @return a <code>VersionInfo</code> value
      */
-    public static String getVersion()
+    public static VersionInfo getVersion()
     {
-        return getProperty("VersionNumber", //$NON-NLS-1$
-                           DEFAULT_VERSION,
-                           ApplicationVersion.class);
+        String versionProperty = getProperty("VersionNumber", //$NON-NLS-1$
+                                             DEFAULT_VERSION,
+                                             ApplicationVersion.class);
+        if(VersionInfo.isValid(versionProperty)) {
+            return new VersionInfo(versionProperty);
+        }
+        return VersionInfo.DEFAULT_VERSION;
     }
     /**
      * Returns the application version number.
      *
      * @param inResourceClass a <code>Class&lt;?&gt;</code> value
-     * @return a <code>String</code> value containing the application version number
+     * @return a <code>VersionInfo</code> value
      */
-    public static String getVersion(Class<?> inResourceClass)
+    public static VersionInfo getVersion(Class<?> inResourceClass)
     {
-        return getProperty("VersionNumber", //$NON-NLS-1$
-                           DEFAULT_VERSION,
-                           inResourceClass);
+        String versionProperty = getProperty("VersionNumber", //$NON-NLS-1$
+                                             DEFAULT_VERSION,
+                                             inResourceClass);
+        if(VersionInfo.isValid(versionProperty)) {
+            return new VersionInfo(versionProperty);
+        }
+        return VersionInfo.DEFAULT_VERSION;
     }
     /**
-     * Returns the applicatino build number.
+     * Returns the application build number.
      *
      * @return a <code>String</code> value containing the application build number
      */

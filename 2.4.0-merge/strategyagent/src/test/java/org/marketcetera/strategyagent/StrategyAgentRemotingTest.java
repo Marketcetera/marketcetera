@@ -191,7 +191,7 @@ public class StrategyAgentRemotingTest
             }
         };
         //context with invalid appID
-        ctx.setAppId(Util.getAppId("invalid", ApplicationVersion.getVersion()));
+        ctx.setAppId(Util.getAppId("invalid", ApplicationVersion.getVersion().getVersionInfo()));
         new ExpectedFailure<I18NException>(Messages.APP_MISMATCH,
                 "invalid", DEFAULT_CREDENTIAL){
             @Override
@@ -201,7 +201,7 @@ public class StrategyAgentRemotingTest
             }
         };
         //context with correct name & version number
-        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getVersion()));
+        ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getVersion().getVersionInfo()));
         assertTrue(authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL,
                 DEFAULT_CREDENTIAL.toCharArray()));
         //valid contexts
