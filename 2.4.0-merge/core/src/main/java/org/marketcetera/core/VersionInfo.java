@@ -31,8 +31,7 @@ public class VersionInfo
     public VersionInfo(String inVersionInfo)
     {
         inVersionInfo = StringUtils.trimToNull(inVersionInfo);
-        Validate.isTrue(isValid(inVersionInfo),
-                        Messages.INVALID_VERSION.getText(inVersionInfo));
+        Validate.isTrue(isValid(inVersionInfo));
         versionInfo = inVersionInfo;
         String[] components = inVersionInfo.split("\\."); //$NON-NLS-1$
         major = Integer.parseInt(components[0]);

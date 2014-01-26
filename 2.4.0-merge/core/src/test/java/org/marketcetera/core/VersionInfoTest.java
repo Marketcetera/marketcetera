@@ -30,7 +30,7 @@ public class VersionInfoTest
     public void testConstructor()
             throws Exception
     {
-        new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_VERSION.getText(null)) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -38,7 +38,7 @@ public class VersionInfoTest
                 new VersionInfo(null);
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_VERSION.getText(null)) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception
@@ -46,7 +46,7 @@ public class VersionInfoTest
                 new VersionInfo("");
             }
         };
-        new ExpectedFailure<IllegalArgumentException>(Messages.INVALID_VERSION.getText(null)) {
+        new ExpectedFailure<IllegalArgumentException>() {
             @Override
             protected void run()
                     throws Exception

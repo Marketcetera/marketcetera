@@ -81,7 +81,7 @@ public class ApplicationContainer
         // log application start
         Messages.APP_COPYRIGHT.info(ApplicationContainer.class);
         Messages.APP_VERSION_BUILD.info(ApplicationContainer.class,
-                                        ApplicationVersion.getVersion(),
+                                        ApplicationVersion.getVersion(ApplicationContainer.class),
                                         ApplicationVersion.getBuildNumber());
         Messages.APP_START.info(ApplicationContainer.class);
         // check to see if we're using a different starting context file than the default
