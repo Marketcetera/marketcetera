@@ -6,8 +6,7 @@ Bundle-Name: Marketcetera Utilities
 Bundle-Version: 2.4.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.thirdparty;visibility:=reexport,
- org.marketcetera.util-test;resolution:=optional,
- org.junit4;resolution:=optional
+ org.marketcetera.util-test;resolution:=optional
 Export-Package: org.marketcetera.util.collections,
  org.marketcetera.util.except,
  org.marketcetera.util.exec,

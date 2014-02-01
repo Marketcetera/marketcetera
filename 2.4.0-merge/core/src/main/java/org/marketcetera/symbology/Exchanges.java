@@ -16,7 +16,7 @@ import java.util.*;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class Exchanges {
 
     private static Map<String, Exchange> micMap = new HashMap<String, Exchange>();
@@ -71,7 +71,7 @@ public class Exchanges {
         URL url = Exchanges.class.getClassLoader().getResource("iso-10383.csv"); //$NON-NLS-1$
         InputStream in = url.openStream();
 
-        List items = reader.parse(in);
+        List<?> items = reader.parse(in);
         for (int i = 1; i < items.size(); i++) {
             String [] row = (String[]) items.get(i);
 

@@ -1,27 +1,27 @@
 package org.marketcetera.modules.remote.receiver;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.util.test.TestCaseBase;
-import org.marketcetera.util.misc.RandomStrings;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.client.ClientInitException;
-import org.marketcetera.module.ExpectedFailure;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.junit.After;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import org.apache.log4j.Level;
-import org.apache.commons.lang.ObjectUtils;
-
-import javax.security.auth.callback.*;
-import javax.security.auth.login.*;
 import java.io.IOException;
 import java.util.Arrays;
-
+import javax.security.auth.callback.*;
+import javax.security.auth.login.AccountNotFoundException;
+import javax.security.auth.login.FailedLoginException;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.log4j.Level;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.client.ClientInitException;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.misc.RandomStrings;
+import org.marketcetera.util.test.TestCaseBase;
 import com.sun.security.auth.UserPrincipal;
 
 /* $License$ */

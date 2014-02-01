@@ -112,7 +112,6 @@ public class InstrumentFromMessageTest {
         assertEquals(new ConvertibleBond("US013817AT86"),
                      InstrumentFromMessage.SELECTOR.forValue(msg).extract(msg));
     }
-    @SuppressWarnings("unchecked")
     @Test
     public void option() throws Exception {
         String expectedSymbol = "PQR";
@@ -166,7 +165,6 @@ public class InstrumentFromMessageTest {
         }
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     public void future()
             throws Exception

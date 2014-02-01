@@ -37,17 +37,17 @@
   <properties>
     <mvn.javase.version>7</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>4.0.0.RELEASE</mvn.spring.version>
+    <mvn.spring.version>4.0.1.RELEASE</mvn.spring.version>
     <mvn.cxf.version>2.7.8</mvn.cxf.version>
-    <mvn.querydsl.version>3.2.4</mvn.querydsl.version>
+    <mvn.querydsl.version>3.3.0</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.4.3.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
-    <mvn.hibernate.version>4.2.7.Final</mvn.hibernate.version>
+    <mvn.hibernate.version>4.3.1.Final</mvn.hibernate.version>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
        jaxb:  2.2.6 (provided by Java7, not CXF)
        asm:   4.0
-       cglib: 3.0 -->
+       cglib: 3.1 -->
   <dependencyManagement>
     <dependencies>
       <!-- Compile: local modules -->
@@ -279,7 +279,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.8</version>
+        <version>1.9</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -294,7 +294,7 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.8.3</version>
+        <version>1.9.1</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.javax.persistence</groupId>
@@ -341,13 +341,13 @@
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib</artifactId>
-        <version>3.0</version>
+        <version>3.1</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
-        <version>4.10.0</version>
+        <version>4.11.0</version>
         <!-- esper requires cglib-nodep 2.2 which conflicts in principle with cglib 3.0 -->
         <!-- for now, both are packaged with the SA and Photon :-o -->
         <!--exclusions>
@@ -375,12 +375,12 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>15.0</version>
+        <version>16.0</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j</groupId>
         <artifactId>peaberry</artifactId>
-        <version>1.1.1</version>
+        <version>1.3</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j</groupId>
@@ -395,7 +395,7 @@
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
-        <version>2.0.2</version>
+        <version>2.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.ow2.sirocco</groupId>
@@ -531,13 +531,13 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
-        <version>3.14</version>
+        <version>3.16</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.26</version>
+        <version>5.1.28</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -561,7 +561,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.2-1003-jdbc4</version>
+        <version>9.3-1100-jdbc41</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -638,7 +638,7 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymockclassextension</artifactId>
-        <version>2.3</version>
+        <version>3.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -650,7 +650,7 @@
       <dependency>
         <groupId>org.objenesis</groupId>
         <artifactId>objenesis</artifactId>
-        <version>1.0</version>
+        <version>2.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>

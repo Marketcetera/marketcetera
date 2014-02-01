@@ -3,9 +3,6 @@ package org.marketcetera.trade;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
-
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.marketcetera.util.misc.ClassVersion;
 

@@ -12,8 +12,7 @@ public class MarketceteraOptionSymbol
     extends Equity 
     implements IEquityOptionSymbol, Messages
 {
-
-	static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)"); //$NON-NLS-1$
+    static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)"); //$NON-NLS-1$
 	private char expirationCode;
 	private char strikeCode;
 	private String root;
@@ -54,4 +53,5 @@ public class MarketceteraOptionSymbol
 	}
 
 	
+    private static final long serialVersionUID = 1554959422242754909L;
 }

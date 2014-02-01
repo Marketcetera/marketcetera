@@ -1,9 +1,9 @@
 package org.marketcetera.metrics;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-
-import java.io.*;
 
 /**
  * A factory that summarizes the output onto files created via

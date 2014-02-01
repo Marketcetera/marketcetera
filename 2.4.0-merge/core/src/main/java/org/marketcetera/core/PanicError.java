@@ -5,7 +5,7 @@ package org.marketcetera.core;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class PanicError extends Error
 {
     public PanicError(String message)
@@ -22,4 +22,5 @@ public class PanicError extends Error
     {
         super(message, cause);
     }
+    private static final long serialVersionUID = -403949921663251427L;
 }

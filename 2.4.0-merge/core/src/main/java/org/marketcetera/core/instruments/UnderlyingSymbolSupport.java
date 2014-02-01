@@ -22,8 +22,7 @@ public interface UnderlyingSymbolSupport {
     /**
      * Returns the underlying symbol for the supplied instrument.
      * 
-     * @param instrument
-     *            the instrument
+     * @param instrument the instrument
      * 
      * @return the underlying symbol for the supplied instrument, never null
      */

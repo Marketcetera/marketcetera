@@ -1,14 +1,19 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.ExpectedFailure;
-import org.marketcetera.core.Util;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.*;
-import static org.junit.Assert.*;
-import org.hamcrest.Matchers;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+
+import org.hamcrest.Matchers;
+import org.junit.*;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.Util;
+import org.marketcetera.core.VersionInfo;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -439,7 +444,7 @@ public class SAClientConnectionTest {
     @Test
     public void versionTest() {
         assertEquals(SAClientVersion.APP_ID_VERSION,
-                Util.getVersion(SAClientVersion.APP_ID));
+                     new VersionInfo(Util.getVersion(SAClientVersion.APP_ID)));
     }
 
     @Before

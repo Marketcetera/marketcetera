@@ -2,7 +2,6 @@ package org.marketcetera.photon;
 
 import java.io.PrintStream;
 import java.util.Date;
-
 import org.apache.log4j.Logger;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.SWT;
@@ -36,6 +35,7 @@ import org.marketcetera.photon.ui.PhotonConsole;
  * @version $Id$
  * @since 1.0.0
  */
+@SuppressWarnings("restriction")
 @ClassVersion("$Id$")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor implements Messages {
 

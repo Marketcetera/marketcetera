@@ -1,57 +1,23 @@
 package org.marketcetera.modules.cep.system;
 
-import static junit.framework.Assert.assertSame;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertSame;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import java.util.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.event.AskEvent;
-import org.marketcetera.event.BidEvent;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.event.LogEvent;
-import org.marketcetera.event.MarketDataEvent;
-import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.TradeEvent;
+import org.marketcetera.event.*;
 import org.marketcetera.event.impl.LogEventBuilder;
-import org.marketcetera.module.BlockingSinkDataListener;
-import org.marketcetera.module.CopierModuleFactory;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataFlowNotFoundException;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.IllegalRequestParameterValue;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.ModuleNotFoundException;
-import org.marketcetera.module.ModuleTestBase;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.module.*;
 import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.BrokerID;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.ExecutionReport;
-import org.marketcetera.trade.FIXOrder;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderCancel;
-import org.marketcetera.trade.OrderCancelReject;
-import org.marketcetera.trade.OrderReplace;
-import org.marketcetera.trade.OrderSingle;
-import org.marketcetera.trade.Originator;
-import org.marketcetera.trade.Suggestion;
-
+import org.marketcetera.trade.*;
 import quickfix.Message;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
@@ -343,16 +309,16 @@ public abstract class CEPTestBase extends ModuleTestBase {
     /** Run all the varous event types through */
     @Test(timeout=120000)
     public void testAsk() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.ASK, AskEvent.class.getName(), new Event[] {ask1, ask2});
+        flowTestHelperWrapper(CEPDataTypes.ASK, AskEvent.class.getName(), (Object[])new Event[] {ask1, ask2});
     }
 
     public void testBid() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.BID, BidEvent.class.getName(), new Event[] {bid1, bid2});
+        flowTestHelperWrapper(CEPDataTypes.BID, BidEvent.class.getName(), (Object[])new Event[] {bid1, bid2});
     }
 
     @Test(timeout=120000)
     public void testTrade() throws Exception {
-        flowTestHelperWrapper(CEPDataTypes.TRADE, TradeEvent.class.getName(), new Event[] {trade1, trade2});
+        flowTestHelperWrapper(CEPDataTypes.TRADE, TradeEvent.class.getName(), (Object[])new Event[] {trade1, trade2});
     }
 
     @Test(timeout=120000)
@@ -456,14 +422,14 @@ public abstract class CEPTestBase extends ModuleTestBase {
             if(expectedEvents[i] instanceof Map) {
                 // for some reason, instead of returning the same Map esper re-creates it. so do this the hard way
 
-                Object[] eventKeys = ((Map) event).keySet().toArray();
+                Object[] eventKeys = ((Map<?,?>) event).keySet().toArray();
                 Arrays.sort(eventKeys);
 
-                Object[] expectedKeys = ((Map) expectedEvents[i]).keySet().toArray();
+                Object[] expectedKeys = ((Map<?,?>) expectedEvents[i]).keySet().toArray();
                 Arrays.sort(expectedKeys);
                 assertArrayEquals("keys not equal", eventKeys, expectedKeys);
                 for (Object expectedKey : expectedKeys) {
-                    assertEquals("value for key not the same"+expectedKey, ((Map)expectedEvents[i]).get(expectedKey), ((Map)event).get(expectedKey));
+                    assertEquals("value for key not the same"+expectedKey, ((Map<?,?>)expectedEvents[i]).get(expectedKey), ((Map<?,?>)event).get(expectedKey));
                 }
             } else {
                 assertSame("Wrong event received in["+i+"] " + event, expectedEvents[i], event);

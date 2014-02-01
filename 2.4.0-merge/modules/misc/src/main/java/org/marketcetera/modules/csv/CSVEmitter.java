@@ -200,7 +200,7 @@ public class CSVEmitter extends Module implements DataEmitter {
          * from the supplied array. The map's size is the same size as
          * the length of the supplied inKeys array.
          */
-        private Map createMap(String[] inKeys, String[] inValues) {
+        private Map<String,String> createMap(String[] inKeys, String[] inValues) {
             HashMap<String, String> map = new HashMap<String, String>();
             for(int i = 0; i < inKeys.length; i++) {
                 map.put(inKeys[i], i < inValues.length? inValues[i]: "");  //$NON-NLS-1$

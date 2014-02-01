@@ -579,4 +579,13 @@ public interface Client {
      */
     List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException;
+//    List<ReportBaseImpl> getOpenOrders(int inPage,int inSize);
+    // add pagination:
+    /*
+     * open orders
+     * report history
+     * 
+     * move p&l to server
+     * 
+     */
 }

@@ -73,6 +73,7 @@ public class FIXResponseImpl
      * intended for use by JAXB.
      */
 
+    @SuppressWarnings("unused")
     private FIXResponseImpl()
     {
         mBrokerID=null;

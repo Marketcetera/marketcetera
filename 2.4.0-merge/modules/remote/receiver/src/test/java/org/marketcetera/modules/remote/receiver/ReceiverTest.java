@@ -357,8 +357,8 @@ public class ReceiverTest extends ModuleTestBase {
                 Integer.MAX_VALUE,
                 BigInteger.TEN,
                 BigDecimal.TEN,
-                new LinkedList(),
-                new HashMap()
+                new LinkedList<>(),
+                new HashMap<>()
         };
         CopierModule.SynchronousRequest req = new CopierModule.SynchronousRequest(objs);
         //exhaust all the permits

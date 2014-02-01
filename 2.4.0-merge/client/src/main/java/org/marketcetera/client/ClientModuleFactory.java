@@ -36,7 +36,7 @@ import org.marketcetera.module.ModuleCreationException;
 public class ClientModuleFactory extends ModuleFactory
         implements ClientModuleFactoryMXBean {
     @Override
-    public Module create(Object[] inParameters) throws ModuleCreationException {
+    public Module create(Object...inParameters) throws ModuleCreationException {
         if(getURL() != null && !ClientManager.isInitialized()) {
             ClientParameters parameters = new ClientParameters(getUsername(),
                     getPassword() == null

@@ -386,25 +386,6 @@ public class AsyncModuleTest extends ModuleTestBase {
         }
 
         /**
-         * Returns the number of data items that have been received but not
-         * yet retrieved via {@link #getNextDataFor(DataFlowID)}.
-         * If no items for the specified data flowID have been received, -1
-         * value is returned.
-         *
-         * @param inFlowID the flowID.
-         *
-         * @return number of data items received but not yet retrieved
-         * for the flow with the specified flowID.
-         */
-        public int sizeFor(DataFlowID inFlowID) {
-            BlockingQueue<Object> queue = mFlowData.get(inFlowID);
-            return queue == null
-                    ? -1
-                    : queue.size();
-
-        }
-
-        /**
          * The name of the thread that delivered the first data iterm for
          * the specified flowID.
          *

@@ -55,6 +55,7 @@ public class ExpectedTestFailureTest extends TestCase
     /** Check the case when the exception has a message (toString()) but getMessage() returns null */
     public void testExceptinoHasNoMessageButHasString() throws Exception {
         final Exception ex = new Exception() {
+            private static final long serialVersionUID = 1L;
             public String toString() {
                 return "internal message 32"; //$NON-NLS-1$
             }

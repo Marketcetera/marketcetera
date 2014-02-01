@@ -280,6 +280,7 @@ public class OrderValidationFailureTest {
     private static final Option OPTION_INVALID_EXPIRY = new Option("TEST",
             "20090000", BigDecimal.TEN, OptionType.Call);
     private static final Instrument UNKNOWN_INSTRUMENT = new Instrument() {
+        private static final long serialVersionUID = 1L;
         @Override
         public String getSymbol() {
             return null;

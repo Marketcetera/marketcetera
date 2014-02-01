@@ -32,7 +32,7 @@ public class MMapEntry<K, V> implements Map.Entry<K, V> {
 	if (!(obj instanceof Map.Entry)) {
 	    return false;
 	} else {
-	    Map.Entry entry = (Map.Entry)obj;
+	    Map.Entry<?,?> entry = (Map.Entry<?,?>)obj;
 	    return objEquals(this.getKey(), entry.getKey()) &&
 		objEquals(this.getValue(), entry.getValue());
 	}

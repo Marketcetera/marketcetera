@@ -2,7 +2,6 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 import quickfix.Message;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 /* $License$ */
@@ -14,8 +13,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
 @XmlRootElement
+@ClassVersion("$Id$")
 public class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
 
     @Override
@@ -55,6 +54,7 @@ public class FIXOrderImpl extends FIXMessageWrapper implements FIXOrder {
      * Creates an uninitialized instance. This constructor is meant to be
      * used by JAXB.
      */
+    @SuppressWarnings("unused")
     private FIXOrderImpl() {
     }
 

@@ -21,4 +21,5 @@ public class FIXFieldConverterNotAvailable extends CoreException {
     public FIXFieldConverterNotAvailable(Throwable nested, I18NBoundMessage msg) {
         super(nested, msg);
     }
+    private static final long serialVersionUID = -3276359903285808328L;
 }

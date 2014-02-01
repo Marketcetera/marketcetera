@@ -1,7 +1,6 @@
 package org.marketcetera.photon.ui;
 
 import java.util.Map;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -37,6 +36,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *          will $
  * @since 1.0.0
  */
+@SuppressWarnings("restriction")
 @ClassVersion("$Id$")//$NON-NLS-1$
 public abstract class StatusIndicatorContributionItem extends
 		WorkbenchWindowControlContribution implements IExecutableExtension {

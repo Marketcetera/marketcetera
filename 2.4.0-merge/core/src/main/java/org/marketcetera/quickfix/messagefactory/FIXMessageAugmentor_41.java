@@ -1,20 +1,18 @@
 package org.marketcetera.quickfix.messagefactory;
 
-import org.marketcetera.core.ClassVersion;
-import quickfix.Message;
-import quickfix.StringField;
-import quickfix.FieldNotFound;
-import quickfix.field.*;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
+import org.marketcetera.util.misc.ClassVersion;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.*;
 
 /**
  * @author toli
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
 
     private static String[] TT_APPLICABLE_MESSAGE_CODES = new String[] {
