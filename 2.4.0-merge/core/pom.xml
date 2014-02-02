@@ -118,10 +118,6 @@
       <groupId>com.mysema.querydsl</groupId>
       <artifactId>querydsl-apt</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.mysema.querydsl</groupId>
-      <artifactId>querydsl-jpa</artifactId>
-    </dependency>
   </dependencies>
   <build>
     <plugins>

@@ -42,7 +42,7 @@
     <mvn.querydsl.version>3.3.0</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.4.3.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
-    <mvn.hibernate.version>4.3.1.Final</mvn.hibernate.version>
+    <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
   </properties>
   <!-- Marketcetera uses the following versions of some common libraries:
        jaxb:  2.2.6 (provided by Java7, not CXF)
