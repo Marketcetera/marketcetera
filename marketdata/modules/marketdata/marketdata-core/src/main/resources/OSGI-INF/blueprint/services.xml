@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+  xmlns:cxf="http://cxf.apache.org/blueprint/core"
+  xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                               http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs
+                               http://cxf.apache.org/blueprint/core http://cxf.apache.org/schemas/blueprint/core.xsd">
+  <cxf:bus>
+    <cxf:features>
+      <cxf:logging />
+    </cxf:features>
+  </cxf:bus>
+  <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+      <!-- argument ref="jacksonMapper"/-->
+  </bean>
+  <!-- set up the CXF endpoints for the webservices of this bundle -->
+  <bean id="searchContextProvider" class="org.apache.cxf.jaxrs.ext.search.SearchContextProvider"/>
+  <jaxrs:server id="metcMarketData" address="/metc/marketdata">
+    <jaxrs:serviceBeans>
+      <ref component-id="marketDataWebServiceBean" />
+    </jaxrs:serviceBeans>
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json" />
+      <entry key="xml" value="application/xml" />
+    </jaxrs:extensionMappings>
+    <jaxrs:providers>
+        <ref component-id="jsonProvider"/>
+        <ref component-id="searchContextProvider"/>
+    </jaxrs:providers>
+  </jaxrs:server>
+  <bean id="marketDataWebServiceBean" class="org.marketcetera.marketdata.webservices.impl.MarketDataServiceImpl">
+    <property name="marketDataManager" ref="marketDataManagerBean" />
+  </bean>
+  <bean id="marketDataManagerBean" class="org.marketcetera.marketdata.manager.impl.MarketDataManagerImpl" />
+  <service ref="marketDataManagerBean" interface="org.marketcetera.marketdata.manager.MarketDataManager" />
+  <service ref="marketDataManagerBean" interface="org.marketcetera.marketdata.manager.MarketDataProviderRegistry" />
+</blueprint>
