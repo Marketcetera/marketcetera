@@ -7,8 +7,9 @@ import java.util.Set;
 
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
-import org.marketcetera.marketdata.request.MarketDataRequest;
-import org.marketcetera.marketdata.request.MarketDataRequestAtom;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.core.provider.AbstractMarketDataProvider;
+import org.marketcetera.marketdata.core.request.MarketDataRequestAtom;
 
 /* $License$ */
 

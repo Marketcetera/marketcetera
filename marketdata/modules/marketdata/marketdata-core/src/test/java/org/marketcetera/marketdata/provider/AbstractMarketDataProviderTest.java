@@ -14,17 +14,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.marketdata.Capability;
-import org.marketcetera.marketdata.Content;
-import org.marketcetera.marketdata.Messages;
-import org.marketcetera.marketdata.ProviderStatus;
-import org.marketcetera.marketdata.manager.MarketDataProviderNotAvailable;
-import org.marketcetera.marketdata.manager.MarketDataRequestFailed;
-import org.marketcetera.marketdata.request.MarketDataRequest;
-import org.marketcetera.marketdata.request.MarketDataRequestAtom;
-import org.marketcetera.marketdata.request.MarketDataRequestBuilder;
-import org.marketcetera.marketdata.request.MarketDataRequestToken;
-import org.marketcetera.marketdata.request.impl.MarketDataRequestBuilderImpl;
+import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.core.Messages;
+import org.marketcetera.marketdata.core.ProviderStatus;
+import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
+import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
+import org.marketcetera.marketdata.core.provider.AbstractMarketDataProvider;
+import org.marketcetera.marketdata.core.provider.MarketDataProviderStartFailed;
+import org.marketcetera.marketdata.core.request.MarketDataRequestAtom;
+import org.marketcetera.marketdata.core.request.MarketDataRequestToken;
 import org.marketcetera.module.ExpectedFailure;
 
 /* $License$ */
@@ -111,7 +109,7 @@ public class AbstractMarketDataProviderTest
                      provider.getProviderStatus());
     }
     /**
-     * Tests {@link AbstractMarketDataProvider#requestMarketData(org.marketcetera.marketdata.request.MarketDataRequestToken)}.
+     * Tests {@link AbstractMarketDataProvider#requestMarketData(org.marketcetera.marketdata.core.request.MarketDataRequestToken)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -182,7 +180,7 @@ public class AbstractMarketDataProviderTest
     private MarketDataRequest generateRequest(String[] inSymbols,
                                               Set<Content> inContent)
     {
-        MarketDataRequestBuilder requestBuilder = new MarketDataRequestBuilderImpl();
+        MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
         return requestBuilder.withSymbols(inSymbols)
                              .withContent(inContent).create();
     }

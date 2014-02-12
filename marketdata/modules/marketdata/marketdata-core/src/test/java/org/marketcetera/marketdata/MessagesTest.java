@@ -3,6 +3,7 @@ package org.marketcetera.marketdata;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.util.l10n.MessageComparator;
 
 /* $License$ */
