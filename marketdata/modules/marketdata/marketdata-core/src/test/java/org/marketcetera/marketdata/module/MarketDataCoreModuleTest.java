@@ -11,14 +11,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
-import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.MockMarketDataFeed;
 import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
-import org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl;
 import org.marketcetera.marketdata.core.module.MarketDataCoreModuleFactory;
 import org.marketcetera.module.*;
 
@@ -170,19 +168,19 @@ public class MarketDataCoreModuleTest
         // valid market data request
         String validRequest = "symbols=METC:provider=mock:content=DIVIDEND";
         assertNotNull(MarketDataRequestBuilder.newRequestFromString(validRequest));
-        MarketDataManagerImpl.getInstance().requestMarketData(MarketDataRequestBuilder.newRequestFromString(validRequest),
-                                                              new ISubscriber() {
-                                                                @Override
-                                                                public void publishTo(Object inData)
-                                                                {
-                                                                    System.out.println("Received " + inData);
-                                                                }
-                                                                @Override
-                                                                public boolean isInteresting(Object inData)
-                                                                {
-                                                                    return true;
-                                                                }
-                                                            });
+//        MarketDataManagerImpl.getInstance().requestMarketData(MarketDataRequestBuilder.newRequestFromString(validRequest),
+//                                                              new ISubscriber() {
+//                                                                @Override
+//                                                                public void publishTo(Object inData)
+//                                                                {
+//                                                                    System.out.println("Received " + inData);
+//                                                                }
+//                                                                @Override
+//                                                                public boolean isInteresting(Object inData)
+//                                                                {
+//                                                                    return true;
+//                                                                }
+//                                                            });
 //        DataFlowID flow = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(MarketDataCoreModuleFactory.INSTANCE_URN,
 //                                                                                           validRequest) });
 //        Thread.sleep(5000);

@@ -2,6 +2,7 @@ package org.marketcetera.strategy;
 
 import static org.marketcetera.strategy.Messages.COMPILATION_FAILED;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,6 +110,7 @@ public class CompilationFailed
      */
     @ClassVersion("$Id$")
     public static class Diagnostic
+            implements Serializable
     {
         /**
          * Creates a warning diagnostic.
@@ -180,5 +182,6 @@ public class CompilationFailed
                                  type,
                                  message);
         }
+        private static final long serialVersionUID = 5069557290962979880L;
     }
 }

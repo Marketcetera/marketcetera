@@ -40,15 +40,15 @@ class MarketdataCacheElement
                              inEvents);
                 break;
             case DIVIDEND:
-                if(dividends == null) {
-                    dividends = new ArrayList<DividendEvent>();
-                    for(Event event : inEvents) {
-                        if(event instanceof DividendEvent) {
-                            dividends.add((DividendEvent)event);
-                            results.add(event);
-                        } else {
-                            // TODO warn - skipping event
+                for(Event event : inEvents) {
+                    if(event instanceof DividendEvent) {
+                        if(dividends == null) {
+                            dividends = new ArrayList<DividendEvent>();
                         }
+                        dividends.add((DividendEvent)event);
+                        results.add(event);
+                    } else {
+                        // TODO warn - skipping event
                     }
                 }
                 break;

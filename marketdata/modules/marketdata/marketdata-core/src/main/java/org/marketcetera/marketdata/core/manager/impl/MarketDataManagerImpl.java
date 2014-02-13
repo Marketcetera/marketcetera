@@ -591,7 +591,6 @@ public class MarketDataManagerImpl
                         addSymbolMapping(request.atom.getSymbol(),
                                          hi.getInstrument());
                     }
-                    System.out.println("Publishing " + event + " for " + instrument + " with content " + request.atom.getContent());
                     publishEvents(request.atom.getContent(),
                                   instrument,
                                   event);
