@@ -112,7 +112,7 @@ public class MarketDataCoreModule
     {
     }
     /**
-     *
+     * Represents a request forwarded to the market data manager.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -141,27 +141,27 @@ public class MarketDataCoreModule
         /**
          * Create a new InternalRequest instance.
          *
-         * @param inLiason
+         * @param inLiason a <code>DataEmitterSupport</code> value
          */
         private InternalRequest(DataEmitterSupport inLiason)
         {
             liason = inLiason;
         }
         /**
-         * 
+         * unique identifier assigned to a forwarded request
          */
         private long internalRequestId;
         /**
-         * 
+         * provides access to the module framework for this request
          */
         private final DataEmitterSupport liason;
     }
     /**
-     * 
+     * provides access to the centralized market data manager
      */
     private MarketDataManager marketDataManager;
     /**
-     * 
+     * tracks internal market data requests by module manager request ID
      */
     private final Map<RequestID,InternalRequest> requestsByRequestID = Maps.newHashMap();
 }

@@ -84,6 +84,22 @@ final class DividendEventImpl
         dividend.setSource(inSource);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getProvider()
+     */
+    @Override
+    public String getProvider()
+    {
+        return dividend.getProvider();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#setProvider(java.lang.String)
+     */
+    @Override
+    public void setProvider(String inProvider)
+    {
+        dividend.setProvider(inProvider);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.event.TimestampCarrier#getTimeMillis()
      */
     @Override

@@ -462,7 +462,10 @@ public class MarketDataManagerImpl
         {
             Request request = requestsByAtom.remove(inAtom);
             if(request != null) {
-                moduleManager.cancel(request.flow);
+                try {
+                    moduleManager.getDataFlowInfo(request.flow);
+                    moduleManager.cancel(request.flow);
+                } catch (DataFlowNotFoundException ignored) {}
                 requestsByFlow.remove(request.flow);
             }
         }

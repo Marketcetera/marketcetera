@@ -33,6 +33,20 @@ import org.marketcetera.trade.SecurityType;
 public class EventTestBase
 {
     /**
+     * Generates an <code>AskEvent</code> for the given <code>Equity</code>.
+     *
+     * @param inInstrument an <code>Equity</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateEquityAskEvent(Equity inInstrument)
+    {
+        return QuoteEventBuilder.equityAskEvent().withInstrument(inInstrument)
+                                                 .withExchange(generateExchange())
+                                                 .withPrice(generateDecimalValue())
+                                                 .withSize(generateDecimalValue())
+                                                 .withQuoteDate(generateQuoteDate()).create();
+    }
+    /**
      * Generates an equity <code>AskEvent</code> with the given values.
      *
      * @param inMessageId a <code>long</code> value
@@ -938,6 +952,24 @@ public class EventTestBase
         assertFalse(unsupportedInstrument instanceof Equity);
         assertFalse(unsupportedInstrument instanceof Option);
         return unsupportedInstrument;
+    }
+    /**
+     * Generates a quote date value.
+     *
+     * @return a <code>String</code> value
+     */
+    public static String generateQuoteDate()
+    {
+        return DateUtils.dateToString(new Date());
+    }
+    /**
+     * Generates an exchange value.
+     *
+     * @return a <code>String</code> value
+     */
+    public static String generateExchange()
+    {
+        return "Exchange-"+random.nextInt();
     }
     /**
      * Generates a random value.

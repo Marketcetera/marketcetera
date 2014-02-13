@@ -535,6 +535,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                     // now publish the complete list of events in the proper order
                     for(Event event : actualEvents) {
                         event.setSource(token);
+                        event.setProvider(getProviderName());
                         token.publish(event);
                     }
                 } catch (Exception e) {

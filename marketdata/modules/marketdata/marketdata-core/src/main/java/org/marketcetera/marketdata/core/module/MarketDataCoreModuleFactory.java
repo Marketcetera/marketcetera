@@ -5,16 +5,18 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * Constructs {@link MarketDataCoreModule} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class MarketDataCoreModuleFactory
         extends ModuleFactory
 {

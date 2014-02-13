@@ -673,6 +673,7 @@ public abstract class AbstractMarketDataProvider
                                 //  we don't want a misbehaving subscriber to break the market data mechanism
                                 try {
                                     for(Event outgoingEvent : outgoingEvents) {
+                                        outgoingEvent.setSource(request.getId());
                                         ISubscriber subscriber = request.getSubscriber();
                                         subscriber.publishTo(outgoingEvent);
                                     }
