@@ -52,6 +52,9 @@
     <property name="configurationProvider" ref="propertyConfig"/>
     <property name="refreshListener" ref="moduleLoader"/>
   </bean>
+  <!-- The market data manager instance -->
+  <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl">
+  </bean>
   <!--
     - The properties files: property values in the later ones
     - override those in the earlier ones. 

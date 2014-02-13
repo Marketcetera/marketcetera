@@ -125,6 +125,22 @@ public abstract class AbstractTradeEventImpl
         marketData.setSource(inSource);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#getProvider()
+     */
+    @Override
+    public String getProvider()
+    {
+        return marketData.getProvider();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.Event#setProvider(java.lang.String)
+     */
+    @Override
+    public void setProvider(String inProvider)
+    {
+        marketData.setProvider(inProvider);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketData.TimestampCarrier#getTimeMillis()
      */
     @Override

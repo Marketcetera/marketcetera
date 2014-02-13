@@ -4,6 +4,7 @@ import static org.marketcetera.marketdata.Messages.BEAN_ATTRIBUTE_CHANGED;
 import static org.marketcetera.marketdata.Messages.FEED_STATUS_CHANGED;
 
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -20,6 +21,7 @@ import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
@@ -36,6 +38,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 
 /* $License$ */
 
@@ -66,6 +69,25 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
         extends Module
         implements DataEmitter, AbstractMarketDataModuleMXBean, NotificationEmitter
 {
+    /**
+     * Gets the feed module with the given provider name.
+     *
+     * @param inProviderName a <code>String</code> value
+     * @return an <code>AbstractMarketDataModule&lt;?,?&gt;</code> value or <code>null</code>
+     */
+    public static AbstractMarketDataModule<?,?> getFeedForProviderName(String inProviderName)
+    {
+        return feedsByProviderName.get(inProviderName);
+    }
+    /**
+     * Gets the feed type value.
+     *
+     * @return a <code>FeedType</code> value
+     */
+    public FeedType getFeedType()
+    {
+        return feed.getFeedType();
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#getFeedStatus()
      */
@@ -280,6 +302,8 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                 setFeedStatus(inComponent.getFeedStatus());
             }
         });
+        feedsByProviderName.put(inInstanceURN.providerName(),
+                                this);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStart()
@@ -334,6 +358,10 @@ public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken,
                                                                                oldStatusString,
                                                                                newStatusString));
     }
+    /**
+     * tracks feeds by provider name as the feeds are instantiated (not started) - may not be active
+     */
+    private final static Map<String,AbstractMarketDataModule<?,?>> feedsByProviderName = Maps.newHashMap();
     /**
      * this is the unique instance URN of the module
      */

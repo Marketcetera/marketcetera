@@ -34,4 +34,4 @@ startModule;metc:mdata:bogus:single
 #           request_parameter: is the request parameter for requesting
 #           data from the module instance.
 #
-createDataFlow;metc:mdata:bogus:single;type=marketdata:symbols=AAPL^metc:sink:system
+createDataFlow;metc:mdata:core:single;type=marketdata:symbols=AAPL^metc:sink:system

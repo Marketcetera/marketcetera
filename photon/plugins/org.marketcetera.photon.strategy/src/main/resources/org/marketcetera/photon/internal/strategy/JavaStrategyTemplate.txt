@@ -6,6 +6,7 @@ import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.client.brokers.BrokerStatus;
 
 /**
  * Sample strategy template.

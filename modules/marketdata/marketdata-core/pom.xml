@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>marketdata</artifactId>
+    <version>2.4.0</version>
+  </parent>
+  <groupId>org.marketcetera</groupId>
+  <artifactId>marketdata-core</artifactId>
+  <version>2.4.0</version>
+  <packaging>jar</packaging>
+  <licenses>
+    <license>
+      <name>GNU General Public License (GPL)v2</name>
+      <url>http://www.fsf.org/licensing/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+  <name>Marketcetera Marketdata Core</name>
+  <dependencies>
+    <!-- compile -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>misc</artifactId>
+    </dependency>
+    <!-- test -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit-dep</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+    </dependency>
+  </dependencies>
+</project>
