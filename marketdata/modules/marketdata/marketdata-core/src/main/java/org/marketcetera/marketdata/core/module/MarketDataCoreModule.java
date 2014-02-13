@@ -1,29 +1,38 @@
 package org.marketcetera.marketdata.core.module;
 
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
 import org.marketcetera.marketdata.core.manager.MarketDataManager;
-import org.marketcetera.marketdata.core.manager.MarketDataProviderRegistry;
 import org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl;
 import org.marketcetera.module.*;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.Maps;
 
 /* $License$ */
 
 /**
+ * Provides centralized access to all market data adapters in a single data flow.
  *
+ * <p>Module Features
+ * <table>
+ * <tr><th>Capabilities</th><td>Data Emitter</td></tr>
+ * <tr><th>DataFlow Request Parameters</th><td>{@link MarketDataRequest} or <code>String</code></td></tr>
+ * <tr><th>Stops data flows</th><td>no</td></tr>
+ * <tr><th>Start Operation</th><td>none</td></tr>
+ * <tr><th>Stop Operation</th><td>none</td></tr>
+ * <tr><th>Management Interface</th><td>none</td></tr>
+ * <tr><th>Factory</th><td>{@link MarketDataCoreModuleFactory}</td></tr>
+ * </table>
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class MarketDataCoreModule
         extends Module
         implements DataEmitter
@@ -56,11 +65,7 @@ public class MarketDataCoreModule
             throw new UnsupportedRequestParameterType(MarketDataCoreModuleFactory.INSTANCE_URN,
                                                       requestPayload);
         }
-        SLF4JLoggerProxy.debug(this,
-                               "Received: {}",
-                               request);
-        InternalRequest internalRequest = new InternalRequest(inSupport,
-                                                              request);
+        InternalRequest internalRequest = new InternalRequest(inSupport);
         requestsByRequestID.put(inSupport.getRequestID(),
                                 internalRequest);
         internalRequest.internalRequestId = marketDataManager.requestMarketData(request,
@@ -93,8 +98,10 @@ public class MarketDataCoreModule
     protected void preStart()
             throws ModuleException
     {
-        marketDataManager = new MarketDataManagerImpl();
-        new MarketDataProviderMonitor().run();
+        marketDataManager = MarketDataManagerImpl.getInstance();
+        if(marketDataManager == null) {
+            marketDataManager = new MarketDataManagerImpl();
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -103,7 +110,6 @@ public class MarketDataCoreModule
     protected void preStop()
             throws ModuleException
     {
-        // TODO cancel all market data requests
     }
     /**
      *
@@ -112,6 +118,7 @@ public class MarketDataCoreModule
      * @version $Id$
      * @since $Release$
      */
+    @ClassVersion("$Id$")
     private static class InternalRequest
             implements ISubscriber
     {
@@ -135,42 +142,19 @@ public class MarketDataCoreModule
          * Create a new InternalRequest instance.
          *
          * @param inLiason
-         * @param inOriginalRequest
          */
-        private InternalRequest(DataEmitterSupport inLiason,
-                                MarketDataRequest inOriginalRequest)
+        private InternalRequest(DataEmitterSupport inLiason)
         {
             liason = inLiason;
-            originalRequest = inOriginalRequest;
         }
-        private long internalRequestId;
-        private final DataEmitterSupport liason;
-        private final MarketDataRequest originalRequest;
-    }
-    private class MarketDataProviderMonitor
-            implements Runnable
-    {
-        /* (non-Javadoc)
-         * @see java.lang.Runnable#run()
+        /**
+         * 
          */
-        @Override
-        public void run()
-        {
-            List<ModuleURN> marketDataProviderUrns = ModuleManager.getInstance().getProviders();
-            for(ModuleURN marketDataProviderUrn : marketDataProviderUrns) {
-                if(MDATA_PROVIDER.matcher(marketDataProviderUrn.getValue()).matches()) {
-                    List<ModuleURN> marketDataInstanceUrns = ModuleManager.getInstance().getModuleInstances(marketDataProviderUrn);
-                    for(ModuleURN marketDataInstanceUrn : marketDataInstanceUrns) {
-                        if(ModuleManager.getInstance().getModuleInfo(marketDataInstanceUrn).getState() == ModuleState.STARTED) {
-                            System.out.println(marketDataProviderUrn + " is available");
-                        } else {
-                            System.out.println(marketDataProviderUrn + " is not available");
-                        }
-                    }
-                }
-            }
-        }
-        private final Pattern MDATA_PROVIDER = Pattern.compile("^metc:mdata:\\w+$");
+        private long internalRequestId;
+        /**
+         * 
+         */
+        private final DataEmitterSupport liason;
     }
     /**
      * 

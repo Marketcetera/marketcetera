@@ -3,14 +3,26 @@ package org.marketcetera.marketdata.module;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.EnumSet;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.Event;
+import org.marketcetera.event.EventTestBase;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.MockMarketDataFeed;
+import org.marketcetera.marketdata.MockMarketDataFeedModuleFactory;
+import org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl;
 import org.marketcetera.marketdata.core.module.MarketDataCoreModuleFactory;
 import org.marketcetera.module.*;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -45,6 +57,8 @@ public class MarketDataCoreModuleTest
     {
         moduleManager = new ModuleManager();
         moduleManager.init();
+        MockMarketDataFeed.instance.setCapabilities(EnumSet.allOf(Capability.class));
+        moduleManager.start(MockMarketDataFeedModuleFactory.INSTANCE_URN);
     }
     /**
      * Runs after each test.
@@ -152,13 +166,47 @@ public class MarketDataCoreModuleTest
                                                                                  "this is not a valid market data request") });
             }
         };
+        prepEvents(10);
         // valid market data request
-        String validRequest = "symbols=GOOG,ORCL,MSFT:provider=marketcetera:content=TOP_OF_BOOK";
+        String validRequest = "symbols=METC:provider=mock:content=DIVIDEND";
         assertNotNull(MarketDataRequestBuilder.newRequestFromString(validRequest));
-        DataFlowID flow = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(MarketDataCoreModuleFactory.INSTANCE_URN,
-                                                                                           validRequest) });
-        assertNotNull(flow);
-        moduleManager.cancel(flow);
+        MarketDataManagerImpl.getInstance().requestMarketData(MarketDataRequestBuilder.newRequestFromString(validRequest),
+                                                              new ISubscriber() {
+                                                                @Override
+                                                                public void publishTo(Object inData)
+                                                                {
+                                                                    System.out.println("Received " + inData);
+                                                                }
+                                                                @Override
+                                                                public boolean isInteresting(Object inData)
+                                                                {
+                                                                    return true;
+                                                                }
+                                                            });
+//        DataFlowID flow = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(MarketDataCoreModuleFactory.INSTANCE_URN,
+//                                                                                           validRequest) });
+//        Thread.sleep(5000);
+//        assertNotNull(flow);
+//        moduleManager.cancel(flow);
+        Thread.sleep(5000);
+//        moduleManager.start(MockMarketDataFeedModuleFactory.INSTANCE_URN);
+//        Thread.sleep(5000);
+//        moduleManager.stop(MockMarketDataFeedModuleFactory.INSTANCE_URN);
+//        Thread.sleep(5000);
+    }
+    /**
+     * 
+     *
+     *
+     * @param inEventCount
+     */
+    private void prepEvents(int inEventCount)
+    {
+        List<Event> events = Lists.newArrayList();
+        for(int i=0;i<inEventCount;i++) {
+            events.add(EventTestBase.generateDividendEvent());
+        }
+        MockMarketDataFeed.instance.setEventsToReturn(events);
     }
     /**
      * test module manager value

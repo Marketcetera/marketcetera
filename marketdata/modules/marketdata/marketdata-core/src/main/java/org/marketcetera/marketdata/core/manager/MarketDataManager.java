@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.core.manager;
 
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -12,6 +13,7 @@ import org.marketcetera.marketdata.MarketDataRequest;
  * @version $Id: MarketDataManager.java 16403 2012-12-14 05:04:07Z colin $
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface MarketDataManager
 {
     /**

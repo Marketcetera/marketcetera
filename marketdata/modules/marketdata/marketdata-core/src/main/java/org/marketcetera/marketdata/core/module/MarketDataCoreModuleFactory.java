@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata.core.module;
 
-import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleCreationException;
@@ -26,11 +25,7 @@ public class MarketDataCoreModuleFactory
     public Module create(Object... inParameters)
             throws ModuleCreationException
     {
-        try {
-            return new MarketDataCoreModule();
-        } catch (CoreException e) {
-            throw new ModuleCreationException(e.getI18NBoundMessage());
-        }
+        return new MarketDataCoreModule();
     }
     /**
      * Create a new MarketDataCoreModuleFactory instance.
@@ -42,6 +37,9 @@ public class MarketDataCoreModuleFactory
               false,
               true);
     }
+    /**
+     * human-readable identifier used as the provider name
+     */
     public static final String IDENTIFIER = "core";  //$NON-NLS-1$
     /**
      * unique provider URN for the market data core module
