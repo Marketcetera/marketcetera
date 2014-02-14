@@ -380,7 +380,7 @@
       <dependency>
         <groupId>org.ops4j</groupId>
         <artifactId>peaberry</artifactId>
-        <version>1.3</version>
+        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j</groupId>

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
 import java.util.logging.LogManager;
+
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -126,6 +127,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     /**
      * This method is called upon plug-in activation
      */
+    @SuppressWarnings("unchecked")
     public void start(BundleContext context) throws Exception {
         super.start(context);
         bundleContext = context;
@@ -155,18 +157,18 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         initPhotonController();
         PhotonPlugin.getDefault().getPreferenceStore()
                 .addPropertyChangeListener(this);
-        mMarketDataManagerTracker = new ServiceTracker<>(context,
+        mMarketDataManagerTracker = new ServiceTracker(context,
                 IMarketDataManager.class.getName(), null);
         mMarketDataManagerTracker.open();
-        mCredentialsServiceTracker = new ServiceTracker<>(context,
+        mCredentialsServiceTracker = new ServiceTracker(context,
                 ICredentialsService.class.getName(), null);
         mCredentialsServiceTracker.open();
-        mLogoutServiceTracker = new ServiceTracker<>(context,
+        mLogoutServiceTracker = new ServiceTracker(context,
                 ILogoutService.class.getName(), null);
         mLogoutServiceTracker.open();
-        mSymbolResolverServiceTracker = new ServiceTracker<>(context,
-                                                             ISymbolResolver.class.getName(),
-                                                             null);
+        mSymbolResolverServiceTracker = new ServiceTracker(context,
+                                                           ISymbolResolver.class.getName(),
+                                                           null);
         mSymbolResolverServiceTracker.open();
         context.registerService(UnderlyingSymbolSupport.class.getName(),
                 mUnderlyingSymbolSupport, null);
