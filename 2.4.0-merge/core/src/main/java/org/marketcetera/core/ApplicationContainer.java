@@ -240,6 +240,15 @@ public class ApplicationContainer
         exitCode = inExitCode;
     }
     /**
+     * Get the exitCode value.
+     *
+     * @return an <code>int</code> value
+     */
+    public static int getExitCode()
+    {
+        return exitCode;
+    }
+    /**
      * Generates the base application context with which to run.
      *
      * @return a <code>ConfigurableApplicationContext</code> value

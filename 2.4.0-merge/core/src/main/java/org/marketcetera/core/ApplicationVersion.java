@@ -189,5 +189,5 @@ public class ApplicationVersion
     /**
      * version number to show if version number is available
      */
-    public static final String DEFAULT_VERSION = "No Version"; //$NON-NLS-1$
+    public static final String DEFAULT_VERSION = VersionInfo.DEFAULT_VERSION.getVersionInfo();
 }
