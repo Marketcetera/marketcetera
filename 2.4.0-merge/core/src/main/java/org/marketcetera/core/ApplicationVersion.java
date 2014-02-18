@@ -30,7 +30,7 @@ public class ApplicationVersion
     public static VersionInfo getVersion()
     {
         String versionProperty = getProperty("VersionNumber", //$NON-NLS-1$
-                                             DEFAULT_VERSION,
+                                             DEFAULT_VERSION.getVersionInfo(),
                                              ApplicationVersion.class);
         if(VersionInfo.isValid(versionProperty)) {
             return new VersionInfo(versionProperty);
@@ -46,7 +46,7 @@ public class ApplicationVersion
     public static VersionInfo getVersion(Class<?> inResourceClass)
     {
         String versionProperty = getProperty("VersionNumber", //$NON-NLS-1$
-                                             DEFAULT_VERSION,
+                                             DEFAULT_VERSION.getVersionInfo(),
                                              inResourceClass);
         if(VersionInfo.isValid(versionProperty)) {
             return new VersionInfo(versionProperty);
@@ -189,5 +189,5 @@ public class ApplicationVersion
     /**
      * version number to show if version number is available
      */
-    public static final String DEFAULT_VERSION = VersionInfo.DEFAULT_VERSION.getVersionInfo();
+    public static final VersionInfo DEFAULT_VERSION = VersionInfo.DEFAULT_VERSION;
 }

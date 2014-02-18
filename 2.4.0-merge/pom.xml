@@ -157,6 +157,7 @@
             <groupId>asm</groupId>
             <artifactId>asm</artifactId>
           </exclusion>
+	  <!-- exclude jaxb-impl because it's included with Java 7 -->
           <exclusion>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
@@ -520,6 +521,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
           </exclusion>
+	  <!-- exclude jaxb-impl because it's included with Java 7 -->
+	  <exclusion>
+	    <groupId>com.sun.xml.bind</groupId>
+	    <artifactId>jaxb-impl</artifactId>
+	  </exclusion>
         </exclusions>
       </dependency>
       <dependency>
