@@ -13,8 +13,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.ui.navigator,
  org.marketcetera.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: org.eclipse.jdt.ui_3.5.0.v20090604.jar,
- .,
- org.eclipse.jdt.core_3.5.0.v_963.jar
+Bundle-ClassPath: .,
+ org.eclipse.jdt.core_3.9.1.v20130905-0837.jar,
+ org.eclipse.jdt.ui_3.9.1.v20130820-1427.jar

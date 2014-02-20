@@ -49,7 +49,9 @@ public enum Content
     /**
      * dividend data
      */
-    DIVIDEND;
+    DIVIDEND,
+    AGGREGATED_DEPTH,
+    UNAGGREGATED_DEPTH;
     /**
      * Determines if this content is relevant to the given event class.
      * 
@@ -117,5 +119,5 @@ public enum Content
     /**
      * content types that represent a depth-of-book view
      */
-    private static final Set<Content> depth = EnumSet.of(OPEN_BOOK, TOTAL_VIEW, LEVEL_2, BBO10);
+    private static final Set<Content> depth = EnumSet.of(OPEN_BOOK,TOTAL_VIEW,LEVEL_2,BBO10,AGGREGATED_DEPTH,UNAGGREGATED_DEPTH);
 }

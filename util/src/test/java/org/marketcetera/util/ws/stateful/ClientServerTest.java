@@ -1,6 +1,12 @@
 package org.marketcetera.util.ws.stateful;
 
-import javax.xml.ws.soap.SOAPFaultException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import javax.xml.ws.WebServiceException;
+
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.ws.stateless.ClientServerTestBase;
@@ -8,8 +14,6 @@ import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.stateless.StatelessServer;
 import org.marketcetera.util.ws.tags.SessionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -150,7 +154,7 @@ public class ClientServerTest
         try {
             c.login(TEST_USER,TEST_PASSWORD);
             fail();
-        } catch (SOAPFaultException ex) {
+        } catch (WebServiceException ex) {
             // Desired.
         }
     }

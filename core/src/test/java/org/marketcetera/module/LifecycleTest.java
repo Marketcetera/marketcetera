@@ -1,19 +1,22 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.junit.Test;
-import org.junit.BeforeClass;
-import org.junit.Before;
-import org.junit.AfterClass;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-import java.util.Properties;
 import java.io.File;
-import java.net.URL;
-import java.net.URI;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URL;
+import java.util.Date;
+import java.util.Properties;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /* $License$ */
 /**
@@ -21,7 +24,6 @@ import java.math.BigInteger;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
 public class LifecycleTest extends ModuleTestBase {
     @BeforeClass
     public static void setup() throws Exception {
@@ -34,7 +36,9 @@ public class LifecycleTest extends ModuleTestBase {
         sManager.stop();
     }
     @Before
-    public void clear() throws Exception {
+    public void clear()
+            throws Exception
+    {
         MultipleModule.clearInstances();
     }
 
@@ -665,7 +669,7 @@ public class LifecycleTest extends ModuleTestBase {
     private void assertProviderInfo(
             ModuleURN inURN,
             String[] parameterTypeNames,
-            Class[] parameterTypes, String description,
+            Class<?>[] parameterTypes, String description,
             boolean autoInstantiate,
             boolean multipleInstances) throws Exception {
         assertProviderInfo(sManager, inURN, parameterTypeNames, parameterTypes,

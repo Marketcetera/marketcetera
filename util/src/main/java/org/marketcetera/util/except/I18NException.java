@@ -16,8 +16,8 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$")
 public class I18NException
-    extends RuntimeException
-    implements I18NThrowable
+        extends RuntimeException
+        implements I18NThrowable
 {
 
     // CLASS DATA.

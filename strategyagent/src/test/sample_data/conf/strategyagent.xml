@@ -46,8 +46,7 @@
     </property>
   </bean>
   <!-- The module manager instance -->
-  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager"
-        destroy-method="stop">
+  <bean id="moduleManager" class="org.marketcetera.module.ModuleManager" destroy-method="stop">
     <constructor-arg ref="moduleLoader"/>
     <property name="configurationProvider" ref="propertyConfig"/>
     <property name="refreshListener" ref="moduleLoader"/>

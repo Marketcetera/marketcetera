@@ -1,10 +1,7 @@
 package org.marketcetera.marketdata.marketcetera;
 
-import java.util.HashMap;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
-
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraTestSuite;
 
@@ -28,7 +25,6 @@ public class MarketceteraFeedTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        HashMap<String, Object> map = new HashMap<String, Object>();
 //        map.put(MarketceteraFeed.SETTING_SENDER_COMP_ID, "test-sender");
 //        map.put(MarketceteraFeed.SETTING_TARGET_COMP_ID, "test-target");
 //        feed = new MockMarketceteraFeed("FIX.4.4://localhost:1234", null, null, map);

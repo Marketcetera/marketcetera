@@ -60,7 +60,7 @@ public class LoginDialog
     implements Messages
 {
 
-    private static final String ORS_URL = "href=\"http://www.marketcetera.org/confluence/display/ORS/Authentication\""; //$NON-NLS-1$
+    private static final String ORS_URL = "href=\"http://confluence.marketcetera.com/display/MATPD/Photon+User+Guide#PhotonUserGuide-logginginLoggingIn\""; //$NON-NLS-1$
 
     private Combo userIdText;
 

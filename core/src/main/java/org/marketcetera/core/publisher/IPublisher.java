@@ -2,6 +2,8 @@ package org.marketcetera.core.publisher;
 
 import java.util.concurrent.ExecutionException;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /**
  * Capable of supplying updates to a group of {@link ISubscriber} objects.
  * 
@@ -10,6 +12,7 @@ import java.util.concurrent.ExecutionException;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public interface IPublisher
 {
     /**
@@ -49,4 +52,10 @@ public interface IPublisher
      */
     public void publishAndWait(Object inData) 
             throws InterruptedException, ExecutionException;
+    /**
+     * Gets the number of subscribers.
+     *
+     * @return an <code>int</code> value
+     */
+    public int getSubscriptionCount();
 }

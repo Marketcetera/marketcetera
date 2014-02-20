@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 0.6.0
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public interface Messages
 {
     /**
@@ -44,10 +44,6 @@ public interface Messages
      */
     static final I18NMessage0P ERROR_CANNOT_REGISTER_JMX_BEAN = 
         new I18NMessage0P(LOGGER,"error_cannot_register_jmx_bean"); //$NON-NLS-1$
-    static final I18NMessage0P APP_SHUTDOWN = 
-        new I18NMessage0P(LOGGER,"app_shutdown"); //$NON-NLS-1$
-    static final I18NMessage1P APP_START = 
-        new I18NMessage1P(LOGGER,"app_start"); //$NON-NLS-1$
 
     // General errors
     static final I18NMessage1P ERROR_CONFIG_REASON = 
@@ -125,4 +121,17 @@ public interface Messages
     static final I18NMessage1P IGNORING_EXCEPTION = new I18NMessage1P(LOGGER,"ignoring_exception"); //$NON-NLS-1$
     static final I18NMessage1P INTERRUPTED = new I18NMessage1P(LOGGER,"interrupted"); //$NON-NLS-1$
     static final I18NMessage1P SHUTTING_DOWN_FROM_ERROR = new I18NMessage1P(LOGGER,"shutting_down_from_error"); //$NON-NLS-1$
+    // Application Container
+    static final I18NMessage0P APP_COPYRIGHT = new I18NMessage0P(LOGGER,"app_copyright"); //$NON-NLS-1$
+    static final I18NMessage2P APP_VERSION_BUILD = new I18NMessage2P(LOGGER,"app_version_build");   //$NON-NLS-1$
+    static final I18NMessage0P APP_START = new I18NMessage0P(LOGGER,"app_start"); //$NON-NLS-1$
+    static final I18NMessage0P APP_STARTED = new I18NMessage0P(LOGGER,"app_started"); //$NON-NLS-1$
+    static final I18NMessage0P APP_STOP = new I18NMessage0P(LOGGER,"app_stop"); //$NON-NLS-1$
+    static final I18NMessage0P APP_STOP_SUCCESS = new I18NMessage0P(LOGGER,"app_stop_success"); //$NON-NLS-1$
+    static final I18NMessage0P APP_STOP_ERROR = new I18NMessage0P(LOGGER,"app_stop_error"); //$NON-NLS-1$
+    static final I18NMessage1P APP_USAGE = new I18NMessage1P(LOGGER,"app_usage"); //$NON-NLS-1$
+    static final I18NMessage0P APP_AUTH_OPTIONS = new I18NMessage0P(LOGGER,"app_auth_options"); //$NON-NLS-1$
+    static final I18NMessage0P APP_MISSING_CREDENTIALS = new I18NMessage0P(LOGGER,"app_missing_credentials"); //$NON-NLS-1$
+    static final I18NMessage0P APP_NO_ARGS_ALLOWED = new I18NMessage0P(LOGGER,"app_no_args_allowed"); //$NON-NLS-1$
+    static final I18NMessage0P APP_NO_CONFIGURATION = new I18NMessage0P(LOGGER,"app_no_configuration"); //$NON-NLS-1$
 }

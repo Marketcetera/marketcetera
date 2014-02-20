@@ -13,7 +13,7 @@ import org.eclipse.jface.databinding.swt.ISWTObservable;
 import org.eclipse.jface.databinding.viewers.IViewerObservable;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.internal.databinding.provisional.fieldassist.ControlDecorationSupport;
+import org.eclipse.jface.databinding.fieldassist.ControlDecorationSupport;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.marketcetera.photon.commons.Validate;
@@ -32,7 +32,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@SuppressWarnings("restriction")
 @ClassVersion("$Id$")
 public final class RequiredFieldSupport {
 

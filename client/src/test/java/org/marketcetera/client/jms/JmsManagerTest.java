@@ -8,7 +8,6 @@ import org.marketcetera.trade.TradeMessage;
 import org.marketcetera.util.test.TestCaseBase;
 import org.springframework.jms.core.JmsTemplate;
 import quickfix.Message;
-
 import static org.junit.Assert.*;
 
 /**
@@ -74,6 +73,7 @@ public class JmsManagerTest
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> void single
         (JmsTemplate sender,
          SampleReplyHandler<T> reply,
@@ -86,6 +86,7 @@ public class JmsManagerTest
     }
 
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
     public void simpleMessages()
         throws Exception

@@ -23,7 +23,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @version $Id$
  * @since 0.8.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class NotificationManager
         implements INotificationManager
 {
@@ -92,6 +92,14 @@ public class NotificationManager
     public void publish(Object inData)
     {
         getPublisher().publish(inData);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#getSubscriptionCount()
+     */
+    @Override
+    public int getSubscriptionCount()
+    {
+        return mPublisher.getSubscriptionCount();
     }
     /**
      * Gets the <code>PublisherEngine</code> for this object.

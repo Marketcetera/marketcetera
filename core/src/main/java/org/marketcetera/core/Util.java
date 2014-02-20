@@ -18,7 +18,7 @@ import org.marketcetera.util.ws.tags.AppId;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class Util
 {
     /** Tries to load the named file from a classpath
@@ -57,7 +57,7 @@ public class Util
         while((line = reader.readLine()) != null) {
             result.append(line);
         }
-
+        reader.close();
         return result.toString();
     }
     /**

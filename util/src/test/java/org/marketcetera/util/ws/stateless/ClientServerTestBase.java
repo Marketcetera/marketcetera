@@ -1,8 +1,14 @@
 package org.marketcetera.util.ws.stateless;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
 import java.util.Locale;
+
 import javax.jws.WebService;
-import javax.xml.ws.soap.SOAPFaultException;
+import javax.xml.ws.WebServiceException;
+
 import org.apache.cxf.service.factory.ServiceConstructionException;
 import org.junit.Before;
 import org.marketcetera.util.log.ActiveLocale;
@@ -11,8 +17,6 @@ import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.marketcetera.util.ws.wrappers.RemoteExceptionTest;
 import org.marketcetera.util.ws.wrappers.RemoteProperties;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -158,7 +162,7 @@ public class ClientServerTestBase
         try {
             i1.testCall(client1.getContext());
             fail();
-        } catch (SOAPFaultException ex) {
+        } catch (WebServiceException ex) {
             // Desired.
         }
         assertEquals(contextStr2,i2.testCall(client2.getContext()));
@@ -167,7 +171,7 @@ public class ClientServerTestBase
         try {
             i2.testCall(client2.getContext());
             fail();
-        } catch (SOAPFaultException ex) {
+        } catch (WebServiceException ex) {
             // Desired.
         }
 
@@ -190,7 +194,7 @@ public class ClientServerTestBase
         try {
             i.testCall(badClient.getContext());
             fail();
-        } catch (SOAPFaultException ex) {
+        } catch (WebServiceException ex) {
             // Desired.
         }
 

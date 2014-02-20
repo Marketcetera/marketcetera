@@ -1,8 +1,6 @@
 package org.marketcetera.core.position;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -16,7 +14,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-@Immutable
 public interface PositionKey<T extends Instrument> {
 
     /**

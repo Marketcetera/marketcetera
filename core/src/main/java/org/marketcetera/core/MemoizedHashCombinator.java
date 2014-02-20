@@ -18,28 +18,6 @@ public class MemoizedHashCombinator<T1, T2> extends Pair<T1, T2>{
 		hashString = ""+len1+s1+len2+s2; //$NON-NLS-1$
 		hashCode = hashString.hashCode();
 	}
-
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object arg0) {
-		if (arg0 != null && arg0.getClass().equals(this.getClass())){
-			MemoizedHashCombinator<T1, T2> combinator = (MemoizedHashCombinator<T1, T2>) arg0;
-			return this.hashString.equals(combinator.hashString);
-		}
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return hashCode;
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -47,6 +25,39 @@ public class MemoizedHashCombinator<T1, T2> extends Pair<T1, T2>{
 	public String toString() {
 		return hashString;
 	}
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        return hashCode;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (!(obj instanceof MemoizedHashCombinator)) {
+            return false;
+        }
+        MemoizedHashCombinator<?,?> other = (MemoizedHashCombinator<?,?>) obj;
+        if (hashString == null) {
+            if (other.hashString != null) {
+                return false;
+            }
+        } else if (!hashString.equals(other.hashString)) {
+            return false;
+        }
+        return true;
+    }
 
 
 

@@ -91,8 +91,6 @@ public abstract class AbstractRunningStrategy
                 initializeReportHistoryManager();
             }
         }
-        openOrders = orderHistoryManager.getOpenOrders();
-        
         // Add the strategy as a broker status listener
         ClientManager.getInstance().addBrokerStatusListener(this);
     }
@@ -193,7 +191,7 @@ public abstract class AbstractRunningStrategy
      */
     protected final Set<OrderID> getOpenOrderIDs()
     {
-        return openOrders.keySet();
+        return orderHistoryManager.getOpenOrders().keySet();
     }
     /**
      * Gets the collection of open orders represented by the most recent <code>ExecutionReport</code>.
@@ -202,7 +200,7 @@ public abstract class AbstractRunningStrategy
      */
     protected final Collection<ExecutionReport> getOpenOrders()
     {
-        return openOrders.values();
+        return orderHistoryManager.getOpenOrders().values();
     }
     /**
      * Gets the <code>OrderStatus</code> for the given <code>OrderID</code>.
@@ -697,7 +695,7 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return null;
         }
-        ExecutionReport report = openOrders.get(inOrderID);
+        ExecutionReport report = orderHistoryManager.getOpenOrders().get(inOrderID);
         if(report == null) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_ORDERID,
                                                                   String.valueOf(strategy),
@@ -738,7 +736,7 @@ public abstract class AbstractRunningStrategy
                                                                String.valueOf(strategy)).create(),
                            strategy);
         // gets a copy of the open orders list - iterate over a copy in order to prevent concurrent update problems
-        Set<OrderID> openOrdersCopy = new HashSet<OrderID>(openOrders.keySet());
+        Set<OrderID> openOrdersCopy = new HashSet<OrderID>(orderHistoryManager.getOpenOrders().keySet());
         SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
                                "Found {} open orders to cancel",
                                openOrdersCopy);
@@ -790,7 +788,7 @@ public abstract class AbstractRunningStrategy
                                strategy);
             return null;
         }
-        ExecutionReport executionReport = openOrders.get(inOrderID);
+        ExecutionReport executionReport = orderHistoryManager.getOpenOrders().get(inOrderID);
         if(executionReport == null) {
             StrategyModule.log(LogEventBuilder.warn().withMessage(INVALID_ORDERID,
                                                                   String.valueOf(strategy),
@@ -1756,10 +1754,6 @@ public abstract class AbstractRunningStrategy
      * tracks orders based on execution reports
      */
     private static volatile LiveOrderHistoryManager orderHistoryManager;
-    /**
-     * dynamically updated list of open orders
-     */
-    private volatile Map<OrderID,ExecutionReport> openOrders;
     /**
      * static strategy object of which this object is a running representation
      */

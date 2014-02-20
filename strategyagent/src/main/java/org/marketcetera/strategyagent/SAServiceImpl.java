@@ -35,7 +35,10 @@ import org.marketcetera.util.ws.wrappers.RemoteProperties;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-class SAServiceImpl extends ServiceBaseImpl<ClientSession> implements SAService {
+public class SAServiceImpl
+        extends ServiceBaseImpl<ClientSession>
+        implements SAService
+{
 
     @Override
     public List<ModuleURN> getProviders(ClientContext inCtx)
@@ -297,9 +300,9 @@ class SAServiceImpl extends ServiceBaseImpl<ClientSession> implements SAService 
      * @param inManager the module manager.
      * @param inPublisher an <code>IPublisher</code> value
      */
-    SAServiceImpl(SessionManager<ClientSession> inSessionManager,
-                  ModuleManager inManager,
-                  IPublisher inPublisher)
+    public SAServiceImpl(SessionManager<ClientSession> inSessionManager,
+                         ModuleManager inManager,
+                         IPublisher inPublisher)
     {
         super(inSessionManager);
         mManager = inManager;

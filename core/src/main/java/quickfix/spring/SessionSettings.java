@@ -12,7 +12,7 @@ public class SessionSettings extends quickfix.SessionSettings {
 	public void setSessionDescriptors(List<SessionDescriptor> sessionDescriptors){
         for (SessionDescriptor descriptor : sessionDescriptors) {
             // first, copy the defaults
-            Map defaults = get().toMap();
+            Map<?,?> defaults = get().toMap();
             for (Object oneDefault : defaults.keySet()) {
                 setString(descriptor.getSessionID(), (String) oneDefault, defaults.get(oneDefault).toString());
             }

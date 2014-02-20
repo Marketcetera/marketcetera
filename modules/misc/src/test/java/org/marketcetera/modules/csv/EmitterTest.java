@@ -282,9 +282,9 @@ public class EmitterTest extends ModuleTestBase {
      *
      * @return the map with expected key value pairs.
      */
-    private Map createMap(String inDate, String inOpen, String inHigh,
-                          String inLow, String inClose, String inVolume,
-                          String inAdjClose) {
+    private Map<String,String> createMap(String inDate, String inOpen, String inHigh,
+                                         String inLow, String inClose, String inVolume,
+                                         String inAdjClose) {
         Map<String,String> map = new HashMap<String,String>();
         map.put("Date",inDate);
         map.put("Open",inOpen);

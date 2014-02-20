@@ -106,16 +106,16 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
 
     private SessionStartTimeProvider mSessionStartTimeProvider = new SessionStartTimeProvider();
 
-    private ServiceRegistration mPositionEngineService;
+    private ServiceRegistration<?> mPositionEngineService;
 
-    private ServiceTracker mMarketDataManagerTracker;
+    private ServiceTracker<?,?> mMarketDataManagerTracker;
 
-    private ServiceTracker mCredentialsServiceTracker;
+    private ServiceTracker<?,?> mCredentialsServiceTracker;
     
-    private ServiceTracker mLogoutServiceTracker;
+    private ServiceTracker<?,?> mLogoutServiceTracker;
     
     private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new ClientUnderlyingSymbolSupport();
-    private ServiceTracker mSymbolResolverServiceTracker;
+    private ServiceTracker<?,?> mSymbolResolverServiceTracker;
 
     /**
      * The constructor.
@@ -127,6 +127,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     /**
      * This method is called upon plug-in activation
      */
+    @SuppressWarnings("unchecked")
     public void start(BundleContext context) throws Exception {
         super.start(context);
         bundleContext = context;

@@ -4,7 +4,8 @@
 - Since: 0.5.0
 - Version: $Id$
 - $License$
---><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.sonatype.oss</groupId>
@@ -34,19 +35,22 @@
     </developer>
   </developers>
   <properties>
-    <mvn.javase.version>6</mvn.javase.version>
+    <mvn.javase.version>7</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>3.2.3.RELEASE</mvn.spring.version>
-    <mvn.cxf.version>2.1.2</mvn.cxf.version>
-    <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
-    <mvn.xjc.version>2.1.7</mvn.xjc.version>
-    <mvn.eclipse.version>3.5</mvn.eclipse.version>
-    <!-- Build Number. -->
-    <mvn.build.number>Development Build</mvn.build.number>
+    <mvn.spring.version>4.0.1.RELEASE</mvn.spring.version>
+    <mvn.cxf.version>2.7.8</mvn.cxf.version>
+    <mvn.querydsl.version>3.3.0</mvn.querydsl.version>
+    <mvn.springdatajpa.version>1.4.3.RELEASE</mvn.springdatajpa.version>
+    <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
+    <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
   </properties>
+  <!-- Marketcetera uses the following versions of some common libraries:
+       jaxb:  2.2.6 (provided by Java7, not CXF)
+       asm:   4.0
+       cglib: 3.1 -->
   <dependencyManagement>
     <dependencies>
-      <!-- Compile: local modules. -->
+      <!-- Compile: local modules -->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>client</artifactId>
@@ -55,6 +59,21 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>core</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>migration</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>orderloader</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>strategyagent</artifactId>
         <version>2.4.0</version>
       </dependency>
       <dependency>
@@ -70,6 +89,11 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>marketdata-core</artifactId>
+        <version>2.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>marketdata-marketcetera</artifactId>
         <version>2.4.0</version>
       </dependency>
       <dependency>
@@ -122,36 +146,40 @@
         <artifactId>saclient</artifactId>
         <version>2.4.0</version>
       </dependency>
-
-      <!-- Compile: QuickFIX/J. -->
+      <!-- Compile: QuickFIX/J -->
       <dependency>
         <groupId>quickfixj</groupId>
         <artifactId>quickfixj-all</artifactId>
         <version>1.5.3-bd</version>
       </dependency>
-      <!-- Compile: other. -->
+      <!-- Compile: CXF -->
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
         <version>${mvn.cxf.version}</version>
         <exclusions>
-          <!-- Exclude jaxb-xjc: nonessential and confuses photon bundle. -->
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+	  <!-- exclude jaxb-impl because it's included with Java 7 -->
           <exclusion>
             <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-xjc</artifactId>
+            <artifactId>jaxb-impl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
       <dependency>
-	<groupId>org.creditanalytics</groupId>
-	<artifactId>creditanalytics</artifactId>
-	<version>2.2.2</version>
+        <groupId>org.creditanalytics</groupId>
+        <artifactId>creditanalytics</artifactId>
+        <version>2.2.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http</artifactId>
         <version>${mvn.cxf.version}</version>
       </dependency>
+      <!-- Compile: Spring -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
@@ -169,13 +197,60 @@
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>${mvn.spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-tx</artifactId>
+        <version>${mvn.spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
         <version>${mvn.spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-jms</artifactId>
         <version>${mvn.spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-jpa</artifactId>
+        <version>${mvn.springdatajpa.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- Compile: Other -->
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>4.0</version>
       </dependency>
       <dependency>
         <groupId>org.skife.kasparov</groupId>
@@ -210,7 +285,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.8</version>
+        <version>1.9</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -225,12 +300,17 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>1.8.3</version>
+        <version>1.9.1</version>
       </dependency>
       <dependency>
-        <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
-        <version>1.0.2</version>
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.0-api</artifactId>
+        <version>1.0.1.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${mvn.hibernate.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -255,19 +335,33 @@
         <version>1.2.1</version>
       </dependency>
       <dependency>
-        <groupId>bsf</groupId>
-        <artifactId>bsf</artifactId>
+        <groupId>org.apache.bsf</groupId>
+        <artifactId>com.springsource.org.apache.bsf</artifactId>
         <version>2.4.0</version>
       </dependency>
       <dependency>
         <groupId>org.jruby</groupId>
         <artifactId>jruby</artifactId>
-        <version>1.7.4</version>
+        <version>1.7.8</version>
+      </dependency>
+      <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib</artifactId>
+        <version>3.1</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.espertech</groupId>
         <artifactId>esper</artifactId>
-        <version>4.9.0</version>
+        <version>4.11.0</version>
+        <!-- esper requires cglib-nodep 2.2 which conflicts in principle with cglib 3.0 -->
+        <!-- for now, both are packaged with the SA and Photon :-o -->
+        <!--exclusions>
+            <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            </exclusion>
+            </exclusions-->
       </dependency>
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
@@ -287,7 +381,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>15.0-rc1</version>
+        <version>16.0</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j</groupId>
@@ -307,46 +401,82 @@
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.3</version>
       </dependency>
       <dependency>
-	<groupId>org.ow2.sirocco</groupId>
-	<artifactId>sirocco-text-table-formatter</artifactId>
-	<version>1.0</version>
+        <groupId>org.ow2.sirocco</groupId>
+        <artifactId>sirocco-text-table-formatter</artifactId>
+        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>jparsec</groupId>
         <artifactId>jparsec</artifactId>
         <version>2.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
         <version>2.5.0</version>
       </dependency>
+      <dependency>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-core</artifactId>
+        <version>${mvn.querydsl.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-apt</artifactId>
+        <version>${mvn.querydsl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-jpa</artifactId>
+        <version>${mvn.querydsl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.mysema.querydsl</groupId>
+        <artifactId>querydsl-sql</artifactId>
+        <version>${mvn.querydsl.version}</version>
+      </dependency>
       <!-- Runtime. -->
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-pool</artifactId>
-        <version>5.8.0</version>
+        <version>5.9.0</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-broker</artifactId>
-        <version>5.8.0</version>
+        <version>5.9.0</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-stomp</artifactId>
-        <version>5.8.0</version>
+        <version>5.9.0</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.activemq</groupId>
         <artifactId>activemq-jaas</artifactId>
-        <version>5.8.0</version>
+        <version>5.9.0</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -396,6 +526,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
           </exclusion>
+	  <!-- exclude jaxb-impl because it's included with Java 7 -->
+	  <exclusion>
+	    <groupId>com.sun.xml.bind</groupId>
+	    <artifactId>jaxb-impl</artifactId>
+	  </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -407,20 +542,20 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-spring</artifactId>
-        <version>3.14</version>
+        <version>3.16</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.26</version>
+        <version>5.1.28</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-	<groupId>org.apache.derby</groupId>
-	<artifactId>derby</artifactId>
-	<version>10.10.1.1</version>
-	<scope>runtime</scope>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>10.10.1.1</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>hsqldb</groupId>
@@ -431,40 +566,21 @@
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
-        <version>3.3.2.GA</version>
-        <scope>runtime</scope>
-        <exclusions>
-          <!-- Exclude cglib variant that conflicts with spring. -->
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>cglib</groupId>
-        <artifactId>cglib-nodep</artifactId>
-        <version>2.1_3</version>
+        <version>${mvn.hibernate.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>c3p0</groupId>
-        <artifactId>c3p0</artifactId>
-        <version>0.9.1.2</version>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>9.3-1100-jdbc41</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>2.2.3</version>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-c3p0</artifactId>
+        <version>${mvn.hibernate.version}</version>
         <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm-attrs</artifactId>
-        <version>2.2.3</version>
-        <scope>runtime</scope>
-      </dependency>
+      </dependency>       
       <dependency>
         <groupId>colt</groupId>
         <artifactId>colt</artifactId>
@@ -474,7 +590,7 @@
       <dependency>
         <groupId>org.apache.mina</groupId>
         <artifactId>mina-core</artifactId>
-        <version>1.1.7</version>
+        <version>1.1.7</version> <!-- 2.0.7 held up by QFJ -->
         <scope>runtime</scope>
       </dependency>
       <!-- Testing: local modules. -->
@@ -483,18 +599,6 @@
         <artifactId>core</artifactId>
         <version>2.4.0</version>
         <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>datasources-mysql</artifactId>
-        <version>2.4.0</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>datasources-derby</artifactId>
-        <version>2.4.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -523,13 +627,6 @@
         <artifactId>spring-test</artifactId>
         <version>${mvn.spring.version}</version>
         <scope>test</scope>
-        <exclusions>
-          <!-- Exclude junit: We want to use junit-dep. -->
-          <exclusion>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
@@ -545,43 +642,52 @@
       </dependency>
       <dependency>
         <groupId>junit</groupId>
-        <artifactId>junit-dep</artifactId>
-        <version>4.5</version>
+        <artifactId>junit</artifactId>
+        <version>4.11</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymockclassextension</artifactId>
-        <version>2.3</version>
+        <version>3.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>1.9.0-rc1</version>
+        <version>1.9.5</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.objenesis</groupId>
         <artifactId>objenesis</artifactId>
-        <version>1.0</version>
+        <version>2.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-library</artifactId>
-        <version>1.1</version>
+        <version>1.3</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
+    <!-- **** PLUGIN MANAGEMENT SECTION **** -->
     <pluginManagement>
       <plugins>
         <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.2</version>
+          <version>2.4</version>
+          <executions>
+            <execution>
+              <id>build-test-jar</id>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <!-- source jar generation -->
         <plugin>
@@ -628,7 +734,7 @@
         <!-- mvn eclipse:* -->
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>20081024</version>
+          <version>2.9</version>
         </plugin>
         <!-- mvn clean -->
         <plugin>
@@ -684,12 +790,6 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>2.5</version>
         </plugin>
-        <!-- Database schema generator. -->
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>hibernate3-maven-plugin</artifactId>
-          <version>2.1</version>
-        </plugin>
         <!-- mvn assembly:* -->
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
@@ -700,39 +800,9 @@
             <appendAssemblyId>false</appendAssemblyId>
           </configuration>
         </plugin>
-        <!--
-            - Explicit dependencies are listed here because maven-jaxb2-plugin
-            - uses jaxb 2.1.5 by default, which is different than the xjc
-            - version included with jdk 1.6 (2.1.3 as of 1.6.0_07) and that
-            - required by orFg.apache.cxf.cxf-rt-frontend-jaxws (2.1.7 as of
-            - CXF 2.1.2). We match the CXF one because we use CXF at run-time.
-        -->
-        <plugin>
-          <groupId>org.jvnet.jaxb2.maven2</groupId>
-          <artifactId>maven-jaxb2-plugin</artifactId>
-          <version>0.5</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>generate</goal>
-              </goals>
-            </execution>
-          </executions>
-          <dependencies>
-            <dependency>
-              <groupId>com.sun.xml.bind</groupId>
-              <artifactId>jaxb-xjc</artifactId>
-              <version>${mvn.xjc.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>com.sun.xml.bind</groupId>
-              <artifactId>jaxb-impl</artifactId>
-              <version>${mvn.xjc.version}</version>
-            </dependency>
-          </dependencies>
-        </plugin>
       </plugins>
     </pluginManagement>
+    <!-- **** PLUGINS SECTION **** -->
     <plugins>
       <!-- source jar generation -->
       <plugin>
@@ -748,54 +818,56 @@
           </execution>
         </executions>
       </plugin>
-      <!-- Place tests into a jar for use during testing of other packages. -->
+      <!-- Place tests into a jar for use during testing of other packages -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
+      </plugin>
+      <!-- Adds the build number to each JAR -->
+      <plugin>
+	<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
+	<artifactId>svn-revision-number-maven-plugin</artifactId>
+	<version>1.13</version>
+	<executions>
+	  <execution>
             <goals>
-              <goal>test-jar</goal>
+	      <goal>revision</goal>
             </goals>
-          </execution>
-        </executions>
+	  </execution>
+	</executions>
+	<configuration>
+	  <entries>
+            <entry>
+	      <prefix>svn</prefix>
+            </entry>
+	  </entries>
+	</configuration>                    
       </plugin>
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>2.5</version>
+      </extension>
+    </extensions>
+    <resources>
+      <resource>
+	<directory>src/main/resources</directory>
+	<filtering>true</filtering>
+	<includes>
+	  <include>**/metc_version.properties</include>
+	</includes>
+      </resource>
+      <resource>
+	<directory>src/main/resources</directory>
+	<filtering>false</filtering>
+	<excludes>
+	  <exclude>**/metc_version.properties</exclude>
+	</excludes>
+      </resource>
+    </resources>
   </build>
   <profiles>
-    <profile>
-      <id>safe.compile</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <showDeprecation>true</showDeprecation>
-              <showWarnings>true</showWarnings>
-              <!--
-                  - Path warnings cause maven to fail, hence excluded; see
-                  - http://jira.codehaus.org/browse/MCOMPILER-59
-              -->
-              <compilerArgument>-Xlint:-path</compilerArgument>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>i18n.tests</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>-Duser.language=${mvn.jvm.locale.language} -Duser.country=${mvn.jvm.locale.country}
-              -Duser.variant=${mvn.jvm.locale.variant} ${mvn.test.options}
-              </argLine>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>release-sign-artifacts</id>
       <activation>
@@ -860,7 +932,6 @@
     <module>fork</module>
     <module>modules</module>
     <module>orderloader</module>
-    <module>ors</module>
     <!-- Build strategy agent before photon. -->
     <module>saclient</module>
     <module>strategyagent</module>
@@ -906,6 +977,16 @@
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
+    </repository>
+    <repository>
+      <id>com.springsource.repository.bundles.release</id>
+      <name>EBR Spring Release Repository</name>
+      <url>http://repository.springsource.com/maven/bundles/release</url>
+    </repository>
+    <repository>
+      <id>com.springsource.repository.bundles.external</id>
+      <name>EBR External Release Repository</name>
+      <url>http://repository.springsource.com/maven/bundles/external</url>
     </repository>
     <repository>
       <id>central</id>

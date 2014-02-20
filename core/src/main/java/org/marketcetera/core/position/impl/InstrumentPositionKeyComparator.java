@@ -4,7 +4,6 @@ import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.core.instruments.InstrumentFunctionHandler;
 import org.marketcetera.core.instruments.StaticInstrumentFunctionSelector;
 import org.marketcetera.trade.Instrument;
-
 import java.util.Comparator;
 
 /* $License$ */
@@ -48,6 +47,7 @@ public abstract class InstrumentPositionKeyComparator<I extends Instrument>
      * The factory that provides the handler instance for the specified
      * instrument.
      */
+    @SuppressWarnings("rawtypes")
     public static final StaticInstrumentFunctionSelector<InstrumentPositionKeyComparator> SELECTOR =
             new StaticInstrumentFunctionSelector<InstrumentPositionKeyComparator>(InstrumentPositionKeyComparator.class);
 }

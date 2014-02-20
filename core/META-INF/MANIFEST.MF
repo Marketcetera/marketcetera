@@ -4,7 +4,7 @@ Bundle-SymbolicName: org.marketcetera.core;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Marketcetera Core Library
 Bundle-Version: 2.4.0
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.util;visibility:=reexport,
  org.marketcetera.util-test;resolution:=optional,
  org.marketcetera.test.thirdparty;resolution:=optional
@@ -16,10 +16,12 @@ Export-Package: org.marketcetera.algo,
  org.marketcetera.core.position.impl,
  org.marketcetera.core.publisher,
  org.marketcetera.core.resourcepool,
+ org.marketcetera.core.time,
  org.marketcetera.event,
  org.marketcetera.event.beans,
  org.marketcetera.event.impl,
  org.marketcetera.event.util,
+ org.marketcetera.jms,
  org.marketcetera.marketdata,
  org.marketcetera.messagehistory,
  org.marketcetera.metrics,
@@ -30,6 +32,7 @@ Export-Package: org.marketcetera.algo,
  org.marketcetera.quickfix.cficode,
  org.marketcetera.quickfix.customfields,
  org.marketcetera.quickfix.messagefactory,
+ org.marketcetera.symbol,
  org.marketcetera.symbology,
  org.marketcetera.trade,
  org.marketcetera.trade.utils,

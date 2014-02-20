@@ -16,7 +16,7 @@ package org.marketcetera.core;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class InternalID {
     final String mID;
-    final Class mClass = this.getClass();
+    final Class<?> mClass = this.getClass();
     /**
      * Create a new InternalID object with the given string representation of a unique
      * id.

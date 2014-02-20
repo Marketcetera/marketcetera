@@ -11,7 +11,7 @@
 Version: 2.4.0
 Build: metc.build.number
 
-(c) Copyright Marketcetera Inc 2006-2013.  All rights reserved.
+(c) Copyright Marketcetera Inc 2006-2014.  All rights reserved.
 Visit http://www.marketcetera.org
       </text>
    </aboutInfo>
@@ -46,7 +46,6 @@ Visit http://www.marketcetera.org
 
    <vm>
    </vm>
-
 
    <plugins>
    </plugins>

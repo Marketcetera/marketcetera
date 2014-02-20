@@ -11,7 +11,7 @@ import java.util.Date;
  * @version $Id$
  */
 
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class DateFrom extends UtcTimeStampField {
     public static final int FIELD = 9883;
     public DateFrom() {
@@ -21,4 +21,5 @@ public class DateFrom extends UtcTimeStampField {
     public DateFrom(Date date) {
         super(FIELD, date);
     }
+    private static final long serialVersionUID = -2169346763561325201L;
 }

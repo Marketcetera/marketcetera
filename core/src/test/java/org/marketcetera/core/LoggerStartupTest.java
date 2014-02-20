@@ -2,9 +2,6 @@ package org.marketcetera.core;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-
-import java.util.List;
-
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
@@ -26,7 +23,7 @@ public class LoggerStartupTest extends TestCase {
      * @throws Exception
      */
     public void testLogSomething() throws Exception {
-        ApplicationBase app = new ApplicationBase();
+        new ApplicationBase();
 
         SLF4JLoggerProxy.info(this, "info message coming through"); //$NON-NLS-1$
         SLF4JLoggerProxy.error(this, "not a real error: testing erro message coming through"); //$NON-NLS-1$

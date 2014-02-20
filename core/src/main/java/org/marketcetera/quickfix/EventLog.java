@@ -24,7 +24,6 @@ public class EventLog implements quickfix.Log {
     private FileOutputStream events;
     
     private boolean includeMillis;
-    private boolean includeTimestampForMessages;
     
     EventLog(String path, SessionID sessionID) throws FileNotFoundException {
         String sessionName = sessionID.getBeginString() + "-" + sessionID.getSenderCompID() + "-" //$NON-NLS-1$ //$NON-NLS-2$

@@ -15,7 +15,7 @@ import quickfix.Message;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
+@ClassVersion("$Id$")
 public class MarketceteraFIXException extends CoreException {
     public MarketceteraFIXException(I18NBoundMessage message) {
         super(message);
@@ -38,4 +38,5 @@ public class MarketceteraFIXException extends CoreException {
         String fieldName = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldName(fnf.field);
         return new MarketceteraFIXException(fnf, new I18NBoundMessage2P(Messages.FIX_FNF_MSG, fieldName, message));
     }
+    private static final long serialVersionUID = 5430289756961955558L;
 }

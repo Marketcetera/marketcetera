@@ -49,6 +49,7 @@ public class SpringUtilsTest
     {
         GenericApplicationContext context=new GenericApplicationContext();
         SpringUtils.addStringBean(context,TEST_NAME_BEAN,TEST_VALUE);
+        context.refresh();
         assertEquals(TEST_VALUE,context.getBean(TEST_NAME_BEAN));
     }
 

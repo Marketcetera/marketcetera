@@ -28,7 +28,7 @@ public class OrderSenderModuleFactory extends ModuleFactory {
                 true, false, String.class, Object[].class);
     }
 
-    public Module create(Object[] inParameters) throws ModuleCreationException {
+    public Module create(Object...inParameters) throws ModuleCreationException {
         return new OrderSenderModule(new ModuleURN(PROVIDER_URN,
                 (String)inParameters[0]),
                 (Object[]) inParameters[1]);

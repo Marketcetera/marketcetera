@@ -37,8 +37,8 @@
       <artifactId>client</artifactId>
     </dependency>
     <dependency>
-      <groupId>bsf</groupId>
-      <artifactId>bsf</artifactId>
+      <groupId>org.apache.bsf</groupId>
+      <artifactId>com.springsource.org.apache.bsf</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jruby</groupId>

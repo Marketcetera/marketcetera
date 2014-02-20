@@ -557,10 +557,10 @@ public interface Client {
      * 
      * <p><em>This will affect reported positions</em></p>.
      *
-     * @param inReport an <code>ExecutionReport</code> value
+     * @param inReport an <code>ExecutionReportImpl</code> value
      * @throws ConnectionException if an error occurs connecting to the server
      */
-    void deleteReport(ExecutionReport inReport)
+    void deleteReport(ExecutionReportImpl inReport)
             throws ConnectionException;
     /**
      * Resolves the given symbol to an <code>Instrument</code>.
@@ -574,9 +574,18 @@ public interface Client {
     /**
      * Gets all open orders visible to the current user.
      *
-     * @return a <code>List&lt;ReportBase&gt;</code> value
+     * @return a <code>List&lt;ReportBaseImpl&gt;</code> value
      * @throws ConnectionException if an error occurs connecting to the server
      */
-    List<ReportBase> getOpenOrders()
+    List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException;
+//    List<ReportBaseImpl> getOpenOrders(int inPage,int inSize);
+    // add pagination:
+    /*
+     * open orders
+     * report history
+     * 
+     * move p&l to server
+     * 
+     */
 }

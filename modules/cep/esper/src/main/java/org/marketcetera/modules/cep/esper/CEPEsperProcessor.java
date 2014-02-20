@@ -132,9 +132,9 @@ public class CEPEsperProcessor extends Module
             try {
                 if (inData instanceof Map) {
                     if(fSelfPostedEvent) {
-                        mService.getEPRuntime().route((Map)inData, CEPDataTypes.MAP);
+                        mService.getEPRuntime().route((Map<?,?>)inData, CEPDataTypes.MAP);
                     } else {
-                        mService.getEPRuntime().sendEvent((Map)inData, CEPDataTypes.MAP);
+                        mService.getEPRuntime().sendEvent((Map<?,?>)inData, CEPDataTypes.MAP);
                     }
                 } else if(inData instanceof Node) {
                     if (fSelfPostedEvent) {
@@ -488,7 +488,7 @@ public class CEPEsperProcessor extends Module
          *
          * @param inMap the map of values containing results of the statement.
          */
-        public void update(Map inMap) {
+        public void update(Map<?,?> inMap) {
             ThreadedMetric.event("cep-OUT");  //$NON-NLS-1$
             if(inMap != null && inMap.size() == 1) {
                 mSupport.send(inMap.values().iterator().next());

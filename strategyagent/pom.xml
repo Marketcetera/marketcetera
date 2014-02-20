@@ -1,32 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!--
-  - Author: anshul@marketcetera.com
-  - Since: 0.9.0
-  - Version: $Id$
-  - $License$
-  -->
+- Author: anshul@marketcetera.com
+- Since: 0.9.0
+- Version: $Id$
+- $License$
+-->
 
-<project
- xmlns="http://maven.apache.org/POM/4.0.0"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation=
- "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
-      <groupId>org.marketcetera</groupId>
-      <artifactId>public-parent</artifactId>
-      <version>2.4.0</version>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>public-parent</artifactId>
+    <version>2.4.0</version>
   </parent>
   <artifactId>strategyagent</artifactId>
   <packaging>jar</packaging>
-
   <name>Strategy Agent</name>
-
   <dependencies>
-
     <!-- Compile. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -44,14 +36,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>remote-receiver</artifactId>
     </dependency>
-
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <scope>compile</scope>
     </dependency>
-
     <!-- Runtime. -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
@@ -65,7 +55,6 @@
       <groupId>org.apache.mina</groupId>
       <artifactId>mina-core</artifactId>
     </dependency>
-
     <!-- Testing. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -109,7 +98,15 @@
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
-    </dependency> 
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <resources>
@@ -129,9 +126,7 @@
       </resource>
     </resources>
   </build>
-
   <profiles>
-
     <!-- Command-line execution. -->
     <profile>
       <id>execute</id>
@@ -147,7 +142,7 @@
                   <value>src/test/cmd_exec</value>
                 </systemProperty>
               </systemProperties>
-              <mainClass>org.marketcetera.strategyagent.StrategyAgent</mainClass>
+              <mainClass>org.marketcetera.core.ApplicationContainer</mainClass>
               <arguments>
                 <argument>src/test/cmd_exec/inputs/sampleCommands.txt</argument>
               </arguments>
@@ -174,55 +169,12 @@
                 <argument>-Dorg.marketcetera.appDir=.</argument>
                 <argument>-classpath</argument>
                 <classpath/>
-                <argument>org.marketcetera.strategyagent.StrategyAgent</argument>
+                <argument>org.marketcetera.core.ApplicationContainer</argument>
                 <argument>samples/${language}/inputs/${sampleName}</argument>
               </arguments>
-              <workingDirectory>src/main/sample_data</workingDirectory>
+              <workingDirectory>src/test/cmd_exec</workingDirectory>
               <classpathScope>test</classpathScope>
             </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!-- Assembly. -->
-    <profile>
-      <id>assembly</id>
-      <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>single</goal></goals>
-                        <configuration>
-                            <formats><format>dir</format></formats>
-                            <descriptors>
-                                <descriptor>src/main/assembly/assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>exec</goal></goals>
-                        <configuration>
-                            <executable>${perl.path}</executable>
-                            <arguments>
-                                <argument>../tools/scripts/createScript.pl</argument>
-                                <argument>${project.build.directory}/${project.artifactId}</argument>
-                                <argument>strategyagent</argument>
-                                <argument>org.marketcetera.strategyagent.StrategyAgent</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
           </plugin>
         </plugins>
       </build>

@@ -1,11 +1,9 @@
 package org.marketcetera.modules.cep.system;
 
-import static junit.framework.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
-
+import static org.junit.Assert.assertSame;
 import java.math.BigDecimal;
 import java.util.Date;
-
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,13 +11,7 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventTestBase;
 import org.marketcetera.marketdata.DateUtils;
-import org.marketcetera.module.CopierModuleFactory;
-import org.marketcetera.module.DataFlowID;
-import org.marketcetera.module.DataRequest;
-import org.marketcetera.module.ModuleState;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.RequestDataException;
-import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.module.*;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 

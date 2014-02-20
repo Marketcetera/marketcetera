@@ -38,17 +38,16 @@ import org.marketcetera.util.misc.ClassVersion;
  * orders to order the results by name or description.
  *
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 @MappedSuperclass
-public abstract class NDEntityBase extends EntityBase
-        implements SummaryNDEntityBase {
-    private static final long serialVersionUID = 5752545714007455960L;
-
+@ClassVersion("$Id$")
+public abstract class NDEntityBase
+        extends EntityBase
+        implements SummaryNDEntityBase
+{
     /**
      * The name of this entity
      * @return the name of this entity
      */
-    @Column(name="name",nullable=false)
     public String getName() {
         return name;
     }
@@ -65,7 +64,6 @@ public abstract class NDEntityBase extends EntityBase
      * The description of this entity.
      * @return The description.
      */
-    @Column(name="description",nullable=true)
     public String getDescription() {
         return description;
     }
@@ -92,8 +90,8 @@ public abstract class NDEntityBase extends EntityBase
      * @throws PersistenceException if a problem was encountered
      * when carrying out validation.
      */
-    @PrePersist
     @PreUpdate
+    @PrePersist
     public void validate() throws PersistenceException {
         if(getName() == null || getName().trim().length() < 1) {
             throw new ValidationException(UNSPECIFIED_NAME_ATTRIBUTE);
@@ -103,27 +101,25 @@ public abstract class NDEntityBase extends EntityBase
                     NAME_ATTRIBUTE_TOO_LONG,getName()));
         }
         //Verify that the name can be saved
-        VendorUtils.validateText(getName());
         if(!namePattern.matcher(getName()).matches()) {
             throw new ValidationException(new I18NBoundMessage2P(
                     NAME_ATTRIBUTE_INVALID,getName(),
                     namePattern.toString()));
         }
     }
-
-    /**
-     * The name attribute's name. This value is used in various JPQL queries. 
-     */
-    protected static final String ATTRIBUTE_NAME = "name"; //$NON-NLS-1$
-    /**
-     * The description attribute's name. This value is used in various JPQL queries. 
-     */
-    protected static final String ATTRIBUTE_DESCRIPTION = "description"; //$NON-NLS-1$
     /**
      * The pattern for validating name attribute values
      */
-    static final Pattern namePattern =
-            Pattern.compile("^[\\p{L}\\p{N}- ]{1,255}$"); //$NON-NLS-1$
+    static final Pattern namePattern = Pattern.compile("^[\\p{L}\\p{N}- ]{1,255}$"); //$NON-NLS-1$
+    /**
+     * entity name value
+     */
+    @Column(name="name",nullable=false,unique=true)
     private String name;
+    /**
+     * entity description value
+     */
+    @Column(name="description",nullable=true)
     private String description;
+    private static final long serialVersionUID = 5752545714007455960L;
 }

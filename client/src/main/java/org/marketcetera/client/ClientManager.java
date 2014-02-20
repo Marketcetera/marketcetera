@@ -12,9 +12,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public final class ClientManager {
-
+@ClassVersion("$Id$")
+public final class ClientManager
+{
     /**
      * Initializes the connection to the server. The handle to communicate
      * with the server can be obtained via {@link #getInstance()}.

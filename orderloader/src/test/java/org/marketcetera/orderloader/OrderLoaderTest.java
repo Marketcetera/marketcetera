@@ -91,10 +91,10 @@ public class OrderLoaderTest {
         tmpFile.deleteOnExit();
         CopyCharsUtils.copy(OrderParserTest.arrayToLines(SYSTEM_ORDER_EXAMPLE).toCharArray(),
                 tmpFile.getAbsolutePath());
-        assertLoader(null, null, tmpFile, 25, 5, 5, 4, 10);
-        assertLoader(OrderLoader.MODE_SYSTEM, null, tmpFile, 25, 5, 5, 4, 10);
+        assertLoader(null, null, tmpFile, 28, 6, 6, 5, 10);
+        assertLoader(OrderLoader.MODE_SYSTEM, null, tmpFile, 28, 6, 6, 5, 10);
         assertLoader(OrderLoader.MODE_SYSTEM, new BrokerID("yes"),
-                tmpFile, 25, 5, 5, 4, 10);
+                tmpFile, 28, 6, 6, 5, 10);
         tmpFile.delete();
     }
     private OrderLoader assertLoader(String inMode, BrokerID inBrokerID,
@@ -119,6 +119,9 @@ public class OrderLoaderTest {
             "#ubm equity orders",
             "AC1,,Market,,,11,Buy,ubm,,Day,,,,right",
             "AC1,,Limit,,25.56,32.09,Sell,ubm,,FillOrKill,,,,left",
+            "",
+            "#metc future orders",
+            "AC3,,Limit,,50.02,7,Buy,METC-201412,Future,Day,201412,,,",
             "  ",
             "#Option orders",
             "AC2,Agency,Limit,Open,90,50,SellShort,zoog,Option,AtTheClose,201010,10.00,Call,up",
