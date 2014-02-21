@@ -37,7 +37,7 @@
   <properties>
     <mvn.javase.version>7</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.spring.version>4.0.1.RELEASE</mvn.spring.version>
+    <mvn.spring.version>4.0.2.RELEASE</mvn.spring.version>
     <mvn.cxf.version>2.7.8</mvn.cxf.version>
     <mvn.querydsl.version>3.3.0</mvn.querydsl.version>
     <mvn.springdatajpa.version>1.4.3.RELEASE</mvn.springdatajpa.version>
