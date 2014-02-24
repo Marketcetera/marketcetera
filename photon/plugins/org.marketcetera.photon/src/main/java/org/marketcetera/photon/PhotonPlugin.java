@@ -116,6 +116,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     
     private final UnderlyingSymbolSupport mUnderlyingSymbolSupport = new ClientUnderlyingSymbolSupport();
     private ServiceTracker<?,?> mSymbolResolverServiceTracker;
+    
+    private Job mReconnectMarketDataFeedJob;
 
     /**
      * The constructor.
@@ -231,6 +233,10 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         if (mLogoutServiceTracker != null) {
             mLogoutServiceTracker.close();
             mLogoutServiceTracker = null;
+        }
+        if(mReconnectMarketDataFeedJob != null){
+        	mReconnectMarketDataFeedJob.cancel();
+        	mReconnectMarketDataFeedJob = null;
         }
     }
 
@@ -656,14 +662,32 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
      * Starts a background job to reconnect to the market data feed.
      */
     public void reconnectMarketDataFeed() {
-        new Job(Messages.CONNECTING_TO_MARKET_DATA_JOB_NAME.getText()) {
+    	mReconnectMarketDataFeedJob = new Job(Messages.CONNECTING_TO_MARKET_DATA_JOB_NAME.getText()) {
+        //new Job(Messages.CONNECTING_TO_MARKET_DATA_JOB_NAME.getText()) {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                getMarketDataManager().reconnectFeed();
-                return Status.OK_STATUS;
+             	Thread reconnectThread = new Thread(){
+             		public void run(){
+                         getMarketDataManager().reconnectFeed();
+             		}
+             	};
+             	reconnectThread.start();
+             	while(reconnectThread.getState() == Thread.State.TERMINATED){
+             		if(monitor.isCanceled()){
+             			reconnectThread.interrupt();
+             			return Status.CANCEL_STATUS;
+             		}
+             		try {
+ 						Thread.sleep(5);
+ 					} catch (InterruptedException e){
+ 						return Status.CANCEL_STATUS;
+ 					}
+             	}
+             	return Status.OK_STATUS;
             }
-        }.schedule();
+        };
+        mReconnectMarketDataFeedJob.schedule();
     }
 
     /**

@@ -121,7 +121,10 @@ class DesktopNotificationController implements ISubscriber {
 		mDisposed = true;
 		mNotificationManager.unsubscribe(this);
 		if (mPopupJob != null) {
-			mPopupJob.cancel();
+			mPopupJob.cancelPopupJob();
+			try {
+				mPopupJob.join();
+			} catch (InterruptedException e) {}
 			mPopupJob = null;
 		}
 	}

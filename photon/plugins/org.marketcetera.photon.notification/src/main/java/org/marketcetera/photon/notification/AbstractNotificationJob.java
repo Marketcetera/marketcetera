@@ -85,15 +85,24 @@ public abstract class AbstractNotificationJob extends Job {
 		INotification notification = null;
 		int size = mQueue.size();
 		if (size == 0) {
+			if (monitor.isCanceled()) {
+ 				return Status.CANCEL_STATUS;
+ 			}
 			// Wait a bit before running again
 			delay = FREQUENCY;
 		} else if (size == 1) {
 			// Show popup for the single notification on the queue
+ 			if (monitor.isCanceled()) {
+ 				return Status.CANCEL_STATUS;
+ 			}
 			notification = mQueue.poll();
 			if (notification != null) {
 				showPopup(notification, monitor);
 			}
 		} else {
+			if (monitor.isCanceled()) {
+ 				return Status.CANCEL_STATUS;
+ 			}
 			// Too many notifications, summarize into one
 			Severity max = Severity.LOW;
 			int count = 0;
@@ -215,5 +224,27 @@ public abstract class AbstractNotificationJob extends Job {
 					Severity.HIGH, AbstractNotificationJob.class.toString());
 		}
 	}
+	
+	private boolean canceled;
+	
+	public void cancelPopupJob(){
+		canceled = true;
+		super.cancel();
+		super.getThread().interrupt();
+	}
+	
+	@Override
+	public boolean shouldRun() {
+		if(canceled)
+			return false;
+		return super.shouldRun();
+	}
+
+	@Override
+	public boolean shouldSchedule() {
+		if(canceled)
+			return false;
+		return super.shouldSchedule();
+	}	
 
 }
