@@ -39,8 +39,8 @@
     <mvn.javaee.version>5</mvn.javaee.version>
     <mvn.spring.version>4.0.2.RELEASE</mvn.spring.version>
     <mvn.cxf.version>2.7.8</mvn.cxf.version>
-    <mvn.querydsl.version>3.3.0</mvn.querydsl.version>
-    <mvn.springdatajpa.version>1.4.3.RELEASE</mvn.springdatajpa.version>
+    <mvn.querydsl.version>3.3.1</mvn.querydsl.version>
+    <mvn.springdatajpa.version>1.5.0.RELEASE</mvn.springdatajpa.version>
     <mvn.eclipse.version>3.8.2</mvn.eclipse.version>
     <mvn.hibernate.version>4.2.8.Final</mvn.hibernate.version>
   </properties>
@@ -265,7 +265,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.6</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -381,7 +381,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>16.0</version>
+        <version>16.0.1</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j</groupId>
@@ -488,7 +488,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.6</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -548,7 +548,7 @@
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>5.1.28</version>
+        <version>5.1.29</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -572,7 +572,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>9.3-1100-jdbc41</version>
+        <version>9.3-1101-jdbc41</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
