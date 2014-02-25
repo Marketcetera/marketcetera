@@ -190,7 +190,10 @@ public abstract class QueueProcessor<Clazz>
      * @param inException an <code>Exception</code> value
      * @return a <code>boolean</code> value
      */
-    protected abstract boolean shutdownOnException(Exception inException);
+    protected boolean shutdownOnException(Exception inException)
+    {
+        return inException instanceof InterruptedException;
+    }
     /**
      * Create a new QueueProcessor instance.
      */
