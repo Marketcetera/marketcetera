@@ -96,9 +96,9 @@ public abstract class FIFOResourcePool<ResourceClazz extends Resource>
     /**
      * Determines if the pool contains the given resource.
      * 
-     * @param inResource a <code>Resource</code> value
+     * @param inResource a <code>ResourceClazz</code> value
      */
-    protected boolean poolContains(Resource inResource)
+    protected boolean poolContains(ResourceClazz inResource)
     {
         return resourceHash.contains(inResource);
     }
