@@ -8,6 +8,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.concurrent.ThreadSafe;
@@ -80,6 +82,7 @@ public abstract class AbstractMarketDataProvider
      * @see org.springframework.context.Lifecycle#start()
      */
     @Override
+    @PostConstruct
     public synchronized void start()
     {
         if(isRunning()) {
@@ -108,6 +111,7 @@ public abstract class AbstractMarketDataProvider
      * @see org.springframework.context.Lifecycle#stop()
      */
     @Override
+    @PreDestroy
     public synchronized void stop()
     {
         if(!isRunning()) {
