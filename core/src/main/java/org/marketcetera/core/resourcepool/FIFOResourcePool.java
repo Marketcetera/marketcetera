@@ -1,10 +1,14 @@
 package org.marketcetera.core.resourcepool;
 
-import java.util.HashSet;
+import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Set;
 
 import org.marketcetera.core.Messages;
+import org.marketcetera.util.misc.ClassVersion;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation of {@link ResourcePool} that allocates <code>Resource</code> objects
@@ -17,73 +21,93 @@ import org.marketcetera.core.Messages;
  * @version $Id$
  * @since 0.5.0
  */
-public abstract class FIFOResourcePool
-        extends ResourcePool
+@ClassVersion("$Id$")
+public abstract class FIFOResourcePool<ResourceClazz extends Resource>
+        extends ResourcePool<ResourceClazz>
 {
-    /**
-     * the resource objects are stored here
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ResourcePool#getPoolLock()
      */
-    private final LinkedList<Resource> mResources;
-    /**
-     * this collection should always be in sync with {@link #mResources}
+    @Override
+    protected Object getPoolLock()
+    {
+        return resources;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ResourcePool#getPoolIterator()
      */
-    private final HashSet<Resource> mResourceHash;
-
+    @Override
+    protected Iterator<ResourceClazz> getPoolIterator()
+    {
+        return resources.iterator();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ResourcePool#getNextResource(java.lang.Object)
+     */
+    @Override
+    protected ResourceClazz getNextResource(Object inData)
+            throws ResourcePoolException
+    {
+        try {
+            // inside the parent synchronization lock
+            if(resources.isEmpty()) {
+                // try to add a resource
+                ResourceClazz newResource = createResource(inData);
+                addResourceToPool(newResource);
+            }
+            return allocateNextResource(inData);
+        } catch (Exception e) {
+            throw new ResourcePoolException(e,
+                                            Messages.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ResourcePool#addResourceToPool(org.marketcetera.core.resourcepool.Resource)
+     */
+    @Override
+    public void addResourceToPool(ResourceClazz inResource)
+    {
+        if(inResource == null) {
+            throw new NullPointerException();
+        }
+        resources.add(inResource);
+        resourceHash.add(inResource);
+    }
     /**
      * Create a new <code>FIFOResourcePool</code> object.
      */
     protected FIFOResourcePool()
     {
-        super();
-        mResources = new LinkedList<Resource>();
-        mResourceHash = new HashSet<Resource>();
+        resources = Lists.newLinkedList();
+        resourceHash = Sets.newHashSet();
     }
-    
-    protected Object getPoolLock()
+    /**
+     * Allocates the next resource from the pool.
+     *
+     * @param inData an <code>Object</code> value
+     * @return a <code>ResourceClazz</code> value
+     */
+    protected ResourceClazz allocateNextResource(Object inData)
     {
-        return mResources;
-    }
-    
-    protected Iterator<Resource> getPoolIterator()
-    {
-        return mResources.iterator();
-    }
-    
-    protected void addResourceToPool(Resource inResource)
-    {
-        if(inResource == null) {
-            throw new NullPointerException();
-        }
-        mResources.add(inResource);
-        mResourceHash.add(inResource);
-    }
-    
-    protected Resource allocateNextResource(Object inData)
-    {
-        Resource r = mResources.removeFirst();
-        mResourceHash.remove(r);
+        ResourceClazz r = resources.removeFirst();
+        resourceHash.remove(r);
         return r;
     }
-    
-    protected Resource getNextResource(Object inData)
-        throws ResourcePoolException
-    {
-        try {
-            // inside the parent synchronization lock
-            if(mResources.isEmpty()) {
-                // try to add a resource
-                Resource newResource = createResource(inData);
-                addResourceToPool(newResource);
-            }
-            return allocateNextResource(inData);
-        } catch (Throwable t) {
-            throw new ResourcePoolException(t,
-                                            Messages.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL);
-        }
-    }
-    
+    /**
+     * Determines if the pool contains the given resource.
+     * 
+     * @param inResource a <code>Resource</code> value
+     */
     protected boolean poolContains(Resource inResource)
     {
-        return mResourceHash.contains(inResource);
-    }    
+        return resourceHash.contains(inResource);
+    }
+    /**
+     * the resource objects are stored here
+     */
+    private final Deque<ResourceClazz> resources;
+    /**
+     * this collection should always be in sync with {@link #resources}
+     */
+    private final Set<ResourceClazz> resourceHash;
 }

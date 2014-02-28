@@ -1,164 +1,164 @@
 package org.marketcetera.core.resourcepool;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import static org.junit.Assert.*;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Messages;
-import org.marketcetera.util.log.I18NBoundMessage0P;
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessageProvider;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.log.*;
 
+/* $License$ */
+
+/**
+ * Tests {@link ResourcePool}.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
 public class ResourcePoolTest
-        extends TestCase
 {
-    /*
-     * I18N messaging
+    /**
+     * Runs once before all tests.
+     *
+     * @throws Exception if an unexpected error occurs
      */
-    static final I18NMessageProvider PROVIDER =
-        new I18NMessageProvider("core"); //$NON-NLS-1$
-    static final I18NLoggerProxy LOGGER = 
-        new I18NLoggerProxy(PROVIDER);
-    static final I18NMessage0P I18N_EXPECTED_EXCEPTION_MSG = 
-        new I18NMessage0P(LOGGER, "i18n_expected_exception_msg", "this exception is expected"); //$NON-NLS-1$ //$NON-NLS-2$
-
-    private MockResourcePool mTestPool;
-    
-    public ResourcePoolTest(String inArg0)
-    {
-        super(inArg0);
-    }
-
-    public static Test suite() 
-    {
-        TestSuite suite = new MarketceteraTestSuite(ResourcePoolTest.class);
-//        suite.addTest(new ResourcePoolTest("testRequestResource"));
-        return suite;
-    }    
-
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    protected void setUp()
+    @BeforeClass
+    public static void once()
             throws Exception
     {
-        super.setUp();
-        mTestPool = new MockResourcePool();
+        LoggerConfiguration.logSetup();
     }
-
+    /**
+     * Runs before each test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Before
+    public void setUp()
+            throws Exception
+    {
+        testPool = new MockResourcePool();
+    }
+    /**
+     * Tests {@link ResourcePool#ResourcePool()}.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
     public void testConstructor()
-        throws Exception
+            throws Exception
     {
-        assertEquals(ResourcePool.STATUS.READY,
-                     mTestPool.getStatus());
+        assertEquals(ResourcePool.Status.READY,
+                     testPool.getStatus());
     }
-    
+    /**
+     * Tests shutdown of an empty pool.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
     public void testShutdownEmpty()
-        throws Exception
+            throws Exception
     {
-        assertFalse(mTestPool.getPoolIterator().hasNext());
+        assertFalse(testPool.getPoolIterator().hasNext());
         doShutdownTest();
     }
-    
+    /**
+     * Tests shutdown of a populated pool.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
     public void testShutdownPopulated()
-        throws Exception
+            throws Exception
     {
-        assertFalse(mTestPool.getPoolIterator().hasNext());
-        MockResource r = mTestPool.requestResource(null);
+        assertFalse(testPool.getPoolIterator().hasNext());
+        MockResource r = testPool.requestResource(null);
         assertNotNull(r);
-        mTestPool.returnResource(r);
-        assertTrue(mTestPool.getPoolIterator().hasNext());
-        assertEquals(MockResource.STATE.RETURNED,
+        testPool.returnResource(r);
+        assertTrue(testPool.getPoolIterator().hasNext());
+        assertEquals(MockResource.State.RETURNED,
                      r.getState());
         doShutdownTest();
-        assertEquals(MockResource.STATE.SHUTDOWN,
+        assertEquals(MockResource.State.SHUTDOWN,
                      r.getState());
     }
-    
+    /**
+     * Tests shutdown of a pool during pool stop.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
     public void testShutdownThrowsDuringStop()
-        throws Exception
+            throws Exception
     {
-        MockResource r = mTestPool.requestResource(null);
+        MockResource r = testPool.requestResource(null);
         assertNotNull(r);
-        mTestPool.returnResource(r);
+        testPool.returnResource(r);
         r.setThrowDuringStop(true);
         doShutdownTest();
-        assertEquals(MockResource.STATE.SHUTDOWN,
+        assertEquals(MockResource.State.SHUTDOWN,
                      r.getState());
     }
-
-    protected void doShutdownTest()
-        throws Exception
-    {
-        assertFalse(mTestPool.rejectNewRequests());
-        mTestPool.shutdown();
-        assertTrue(mTestPool.rejectNewRequests());
-        assertEquals(ResourcePool.STATUS.SHUT_DOWN,
-                     mTestPool.getStatus());
-        mTestPool.shutdown();
-    }
-    
+    /**
+     * Tests requesting a resource.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
     public void testRequestResource()
-        throws Exception
+            throws Exception
     {
-        assertFalse(mTestPool.rejectNewRequests());
-        assertNull(mTestPool.getThrowDuringGetNextResource());
+        assertFalse(testPool.rejectNewRequests());
+        assertNull(testPool.getThrowDuringGetNextResource());
         doRequestTest();
-
-        mTestPool.setThrowDuringGetNextResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
+        testPool.setThrowDuringGetNextResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
         new ExpectedTestFailure(ResourcePoolException.class) {
             protected void execute()
-                    throws Throwable
+                    throws Exception
             {
                 doRequestTest();
-            }            
+            }
         }.run();
-
-        mTestPool.setThrowDuringGetNextResource(new NullPointerException("this exception is expected")); //$NON-NLS-1$
+        testPool.setThrowDuringGetNextResource(new NullPointerException("this exception is expected"));
         new ExpectedTestFailure(ResourcePoolException.class) {
             protected void execute()
-                    throws Throwable
+                    throws Exception
             {
                 doRequestTest();
-            }            
+            }
         }.run();
-        mTestPool.setThrowDuringGetNextResource(null);
-        
+        testPool.setThrowDuringGetNextResource(null);
         try {
-            MockResource.setAllocateException(new NullPointerException("This exception is expected")); //$NON-NLS-1$
+            MockResource.setAllocateException(new NullPointerException("This exception is expected"));
             doRequestTest();
         } finally {
             MockResource.setAllocateException(null);
         }
-
-        mTestPool.setThrowDuringGetNextResource(null);
-        mTestPool.shutdown();
-        assertTrue(mTestPool.rejectNewRequests());
+        testPool.setThrowDuringGetNextResource(null);
+        testPool.shutdown();
+        assertTrue(testPool.rejectNewRequests());
         new ExpectedTestFailure(ResourcePoolShuttingDownException.class,
                                 Messages.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getText()) {
             protected void execute()
-                    throws Throwable
+                    throws Exception
             {
                 doRequestTest();
-            }            
-        }.run();        
+            }
+        }.run();
     }
-    
-    protected void doRequestTest()
-        throws Exception
-    {
-        MockResource r1 =  mTestPool.requestResource(null);
-        assertNotNull(r1);
-        MockResource r2 =  mTestPool.requestResource(this);
-        assertNotNull(r2);
-    }
-    
+    /**
+     * Tests returning a resource from the pool.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
     public void testReturnResource()
-        throws Exception
+            throws Exception
     {
         for(int value1=0;value1<=1;value1++) {
             for(int value2=0;value2<=1;value2++) {
@@ -173,7 +173,7 @@ public class ResourcePoolTest
                                 if(value6 == 2) {
                                     addFlag = new Boolean(true);
                                 }
-                                SLF4JLoggerProxy.debug(this, "{} {} {} {} {} {}", value6, value1, value2, value3, value4, value5); //$NON-NLS-1$
+                                SLF4JLoggerProxy.debug(this, "{} {} {} {} {} {}", value6, value1, value2, value3, value4, value5);
                                 doReturnTest(value1==1, 
                                              value2==1, 
                                              value3==1, 
@@ -186,19 +186,17 @@ public class ResourcePoolTest
                 }
             }
         }
-        
-        // test with shutdown        
-        assertEquals(ResourcePool.STATUS.READY,
-                     mTestPool.getStatus());
-        mTestPool.shutdown();
-        assertEquals(ResourcePool.STATUS.SHUT_DOWN,
-                     mTestPool.getStatus());
-        assertTrue(mTestPool.rejectNewRequests());
-        
+        // test with shutdown
+        assertEquals(ResourcePool.Status.READY,
+                     testPool.getStatus());
+        testPool.shutdown();
+        assertEquals(ResourcePool.Status.SHUT_DOWN,
+                     testPool.getStatus());
+        assertTrue(testPool.rejectNewRequests());
         new ExpectedTestFailure(ResourcePoolShuttingDownException.class,
                                 Messages.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getText()) {
             protected void execute()
-                throws Throwable
+                throws Exception
             {
                 doReturnTest(true,
                              false,
@@ -208,281 +206,378 @@ public class ResourcePoolTest
                              false);
             }}.run();
     }
-    
-    void doReturnTest(boolean inResourceFunctional, 
-                      boolean inIsFunctionalThrows, 
-                      boolean inReleaseThrows, 
-                      boolean inReturnedThrows, 
-                      boolean inVerify, 
-                      Boolean inAddToPoolThrows)
-        throws Exception
+    /**
+     * Tests releasing resources.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testReleaseResource()
+            throws Exception
     {
-        assertFalse(mTestPool.getPoolIterator().hasNext());
-        MockResource r1 = mTestPool.requestResource(null);
+        MockResource r1 = testPool.requestResource(null);
         assertNotNull(r1);
-        assertEquals(MockResource.STATE.ALLOCATED,
+        r1.setReleaseException(false);
+        assertEquals(MockResource.State.ALLOCATED,
                      r1.getState());
-        assertFalse(mTestPool.getPoolIterator().hasNext());
+        testPool.releaseResource(r1);
+        assertEquals(MockResource.State.RELEASED,
+                     r1.getState());
+        final MockResource r2 = testPool.requestResource(null);
+        assertNotNull(r2);
+        r2.setReleaseException(true);
+        new ExpectedTestFailure(ReleasedResourceException.class) {
+            protected void execute()
+                throws Exception
+            {
+                testPool.releaseResource(r2);
+            }}.run();
+    }
+    /**
+     * Tests executing a request with a resource.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    @Test
+    public void testExecute()
+            throws Exception
+    {
+        doExecuteTest(new MockExecutable(), 
+                      true);
+        testPool.setThrowDuringGetNextResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
+        new ExpectedTestFailure(ResourcePoolException.class,
+                                Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getText()) {
+            protected void execute()
+                    throws Exception
+            {
+                doExecuteTest(new MockExecutable(), 
+                              true);
+            }
+        }.run();
+        testPool.setThrowDuringGetNextResource(new NullPointerException("This exception is expected"));
+        new ExpectedTestFailure(ResourcePoolException.class,
+                                Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getText()) {
+            protected void execute()
+                    throws Exception
+            {
+                doExecuteTest(new MockExecutable(), 
+                              true);
+            }
+        }.run();
+        testPool.setThrowDuringGetNextResource(null);
+        new ExpectedTestFailure(NullPointerException.class) {
+            protected void execute()
+                    throws Exception
+            {
+                doExecuteTest(null, 
+                              true);
+            }
+        }.run();
+        final MockExecutable block = new MockExecutable();
+        block.setException(new NullPointerException("This exception is expected"));
+        new ExpectedTestFailure(ResourcePoolException.class,
+                                Messages.ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR.getText()) {
+            protected void execute()
+                    throws Exception
+            {
+                doExecuteTest(block, 
+                              true);
+            }
+        }.run();
+        doExecuteTest(new MockExecutable(),
+                      false);
+        testPool.setThrowDuringReturnResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
+        new ExpectedTestFailure(ResourcePoolException.class) {
+            protected void execute()
+                    throws Exception
+            {
+                doExecuteTest(new MockExecutable(),
+                              false);
+            }
+        }.run();
+        testPool.setThrowDuringReturnResource(new NullPointerException("This exception is expected"));
+        new ExpectedTestFailure(ResourcePoolException.class) {
+            protected void execute()
+                    throws Exception
+            {
+                doExecuteTest(new MockExecutable(),
+                              false);
+            }
+        }.run();
+    }
+    /**
+     * Executes a single resource request test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void doRequestTest()
+            throws Exception
+    {
+        MockResource r1 =  testPool.requestResource(null);
+        assertNotNull(r1);
+        MockResource r2 =  testPool.requestResource(this);
+        assertNotNull(r2);
+    }
+    /**
+     * Executes a single shutdown test.
+     *
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void doShutdownTest()
+            throws Exception
+    {
+        assertFalse(testPool.rejectNewRequests());
+        testPool.shutdown();
+        assertTrue(testPool.rejectNewRequests());
+        assertEquals(ResourcePool.Status.SHUT_DOWN,
+                     testPool.getStatus());
+        testPool.shutdown();
+    }
+    /**
+     * Get the testPool value.
+     *
+     * @return a <code>MockResourcePool</code> value
+     */
+    protected MockResourcePool getTestPool()
+    {
+        return testPool;
+    }
+    /**
+     * Executes a single return of resource test.
+     *
+     * @param inResourceFunctional a <code>boolean</code> value
+     * @param inIsFunctionalThrows a <code>boolean</code> value
+     * @param inReleaseThrows a <code>boolean</code> value
+     * @param inReturnedThrows a <code>boolean</code> value
+     * @param inVerify a <code>boolean</code> value
+     * @param inAddToPoolThrows a <code>Boolean</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void doReturnTest(boolean inResourceFunctional, 
+                                boolean inIsFunctionalThrows, 
+                                boolean inReleaseThrows, 
+                                boolean inReturnedThrows, 
+                                boolean inVerify, 
+                                Boolean inAddToPoolThrows)
+            throws Exception
+    {
+        assertFalse(testPool.getPoolIterator().hasNext());
+        MockResource r1 = testPool.requestResource(null);
+        assertNotNull(r1);
+        assertEquals(MockResource.State.ALLOCATED,
+                     r1.getState());
+        assertFalse(testPool.getPoolIterator().hasNext());
         r1.setIsFunctionalException(inIsFunctionalThrows);
         r1.setReleaseException(inReleaseThrows);
-        r1.setState(inResourceFunctional ? r1.getState() : MockResource.STATE.DAMAGED);
+        r1.setState(inResourceFunctional ? r1.getState() : MockResource.State.DAMAGED);
         r1.setReturnException(inReturnedThrows);
-        mTestPool.setThrowDuringVerify(inVerify);
-        mTestPool.setThrowDuringAddToPool(inAddToPoolThrows);
-
-        mTestPool.returnResource(r1);
-
+        testPool.setThrowDuringVerify(inVerify);
+        testPool.setThrowDuringAddToPool(inAddToPoolThrows);
+        testPool.returnResource(r1);
         if(inResourceFunctional) {
             if(inIsFunctionalThrows) {
-                assertFalse(mTestPool.getPoolIterator().hasNext());
-                assertEquals(MockResource.STATE.RELEASED,
+                assertFalse(testPool.getPoolIterator().hasNext());
+                assertEquals(MockResource.State.RELEASED,
                              r1.getState());
             } else {
                 if(inVerify) {
-                    assertFalse(mTestPool.getPoolIterator().hasNext());
-                    assertEquals(MockResource.STATE.RELEASED,
+                    assertFalse(testPool.getPoolIterator().hasNext());
+                    assertEquals(MockResource.State.RELEASED,
                                  r1.getState());
                 } else {
-                    if(inAddToPoolThrows != null &&
-                       inAddToPoolThrows.equals(new Boolean(false))) {
-                        assertTrue(mTestPool.getPoolIterator().hasNext());
-                        assertEquals(MockResource.STATE.RETURNED,
+                    if(inAddToPoolThrows != null && !inAddToPoolThrows) {
+                        assertTrue(testPool.getPoolIterator().hasNext());
+                        assertEquals(MockResource.State.RETURNED,
                                      r1.getState());
                     }
                 }
             }
         } else {
-            assertFalse(mTestPool.getPoolIterator().hasNext());
-            assertEquals(MockResource.STATE.RELEASED,
+            assertFalse(testPool.getPoolIterator().hasNext());
+            assertEquals(MockResource.State.RELEASED,
                          r1.getState());
         }
-        
-        mTestPool.emptyPool();
+        testPool.emptyPool();
     }
-    
-    public void testReleaseResource()
-        throws Exception
-    {
-        MockResource r1 = mTestPool.requestResource(null);
-        assertNotNull(r1);
-        r1.setReleaseException(false);
-        assertEquals(MockResource.STATE.ALLOCATED,
-                     r1.getState());
-        mTestPool.releaseResource(r1);
-        assertEquals(MockResource.STATE.RELEASED,
-                     r1.getState());
-        final MockResource r2 = mTestPool.requestResource(null);
-        assertNotNull(r2);
-        r2.setReleaseException(true);
-        new ExpectedTestFailure(ReleasedResourceException.class) {
-            protected void execute()
-                throws Throwable
-            {
-                mTestPool.releaseResource(r2);
-            }}.run();
-    }
-    
-    public void testExecute()
-        throws Exception
-    {
-        doExecuteTest(new TestExecutable(), 
-                      true);
-        
-        mTestPool.setThrowDuringGetNextResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
-        new ExpectedTestFailure(ResourcePoolException.class,
-                                Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getText()) {
-            protected void execute()
-                throws Throwable
-            {
-                doExecuteTest(new TestExecutable(), 
-                              true);
-            }            
-        }.run();
-
-        mTestPool.setThrowDuringGetNextResource(new NullPointerException("This exception is expected")); //$NON-NLS-1$
-        new ExpectedTestFailure(ResourcePoolException.class,
-                                Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getText()) {
-            protected void execute()
-                throws Throwable
-            {
-                doExecuteTest(new TestExecutable(), 
-                              true);
-            }            
-        }.run();
-        
-        mTestPool.setThrowDuringGetNextResource(null);
-        new ExpectedTestFailure(NullPointerException.class) {
-            protected void execute()
-                throws Throwable
-            {
-                doExecuteTest(null, 
-                              true);
-            }            
-        }.run();
-        
-        final TestExecutable block = new TestExecutable();
-        block.setThrowable(new NullPointerException("This exception is expected")); //$NON-NLS-1$
-        new ExpectedTestFailure(ResourcePoolException.class,
-                                Messages.ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR.getText()) {
-            protected void execute()
-                throws Throwable
-            {
-                doExecuteTest(block, 
-                              true);
-            }            
-        }.run();
-        
-        doExecuteTest(new TestExecutable(),
-                      false);
-        
-        mTestPool.setThrowDuringReturnResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
-        new ExpectedTestFailure(ResourcePoolException.class) {
-            protected void execute()
-                throws Throwable
-            {
-                doExecuteTest(new TestExecutable(),
-                              false);
-            }            
-        }.run();
-        
-        mTestPool.setThrowDuringReturnResource(new NullPointerException("This exception is expected")); //$NON-NLS-1$
-        new ExpectedTestFailure(ResourcePoolException.class) {
-            protected void execute()
-                throws Throwable
-            {
-                doExecuteTest(new TestExecutable(),
-                              false);
-            }            
-        }.run();
-        
-    }
-    
-    protected void doExecuteTest(TestExecutable inBlock, 
+    /**
+     * Executes a single execute test.
+     *
+     * @param inBlock a <code>TestExecutable</code> value
+     * @param inResourceFunctional a <code>boolean</code> value
+     * @throws Exception if an unexpected error occurs
+     */
+    protected void doExecuteTest(MockExecutable inBlock, 
                                  boolean inResourceFunctional)
-        throws Exception
+            throws Exception
     {
         assertNull(inBlock.getResource());
         inBlock.setSabotageResource(!inResourceFunctional);
-        
-        mTestPool.execute(inBlock);
-        
+        testPool.execute(inBlock);
         assertNotNull(inBlock.getResource());
-        assertEquals(inResourceFunctional ? MockResource.STATE.RETURNED : MockResource.STATE.RELEASED,
+        assertEquals(inResourceFunctional ? MockResource.State.RETURNED : MockResource.State.RELEASED,
                      inBlock.getResource().getState());
-        assertEquals(MockResource.STATE.ALLOCATED,
+        assertEquals(MockResource.State.ALLOCATED,
                      inBlock.getInternalState());
-
         inBlock.setResource(null);
         inBlock.setSabotageResource(!inResourceFunctional);
-
-        mTestPool.execute(inBlock,
-                          this);        
-
+        testPool.execute(inBlock,
+                          this);
         assertNotNull(inBlock.getResource());
-        assertEquals(inResourceFunctional ? MockResource.STATE.RETURNED : MockResource.STATE.RELEASED,
+        assertEquals(inResourceFunctional ? MockResource.State.RETURNED : MockResource.State.RELEASED,
                      inBlock.getResource().getState());
-        assertEquals(MockResource.STATE.ALLOCATED,
+        assertEquals(MockResource.State.ALLOCATED,
                      inBlock.getInternalState());
     }
-    
-    static class TestExecutable
-        implements ExecutableBlock
+    /**
+     * Provides a mock {@link ExecutableBlock} implementation for testing.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    protected static class MockExecutable
+            implements ExecutableBlock<MockResource,MockResource>
     {
-        private MockResource mResource;
-        private Throwable mThrowable;
-        private MockResource.STATE mInternalState;
-        private boolean mSabotageResource;
-        
-        TestExecutable()
-        {
-            this(null);
-        }
-
-        TestExecutable(Throwable inThrowable)
-        {
-            setResource(null);
-            setThrowable(inThrowable);
-            setInternalState(null);
-            setSabotageResource(false);
-        }
-        
-        public Object execute(Resource inResource)
-                throws Throwable
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.resourcepool.ExecutableBlock#execute(org.marketcetera.core.resourcepool.Resource)
+         */
+        @Override
+        public MockResource execute(MockResource inResource)
+                throws Exception
         {
             setResource((MockResource)inResource);
             setInternalState(getResource().getState());
             if(getSabotageResource()) {
-                getResource().setState(MockResource.STATE.DAMAGED);
+                getResource().setState(MockResource.State.DAMAGED);
             }
-            Throwable t = getThrowable();
-            if(t != null) {
-                throw t;
+            Exception e = getException();
+            if(e != null) {
+                throw e;
             }
             return inResource;
         }
-
         /**
-         * @return the resource
+         * Create a new MockExecutable instance.
          */
-        MockResource getResource()
+        protected MockExecutable()
         {
-            return mResource;
+            this(null);
         }
-
         /**
-         * @param inResource the resource to set
+         * Create a new MockExecutable instance.
+         *
+         * @param inException an <code>Exception</code> value to throw during execution
          */
-        void setResource(MockResource inResource)
+        protected MockExecutable(Exception inException)
         {
-            mResource = inResource;
+            setResource(null);
+            setException(inException);
+            setInternalState(null);
+            setSabotageResource(false);
         }
-
         /**
-         * @return the throwable
+         * Gets the resource value.
+         *
+         * @return a <code>MockResource</code> value
          */
-        Throwable getThrowable()
+        protected MockResource getResource()
         {
-            return mThrowable;
+            return resource;
         }
-
         /**
-         * @param inThrowable the throwable to set
+         * Sets the resource value.
+         *
+         * @param inResource a <code>MockResource</code> value
          */
-        void setThrowable(Throwable inThrowable)
+        protected void setResource(MockResource inResource)
         {
-            mThrowable = inThrowable;
+            resource = inResource;
         }
-
         /**
-         * @return the internalState
+         * Gets the exception value.
+         *
+         * @return an <code>Exception</code> value
          */
-        MockResource.STATE getInternalState()
+        protected Exception getException()
         {
-            return mInternalState;
+            return exception;
         }
-
         /**
-         * @param inInternalState the internalState to set
+         * Sets the exception value.
+         *
+         * @param inException an <code>Exception</code> value
          */
-        void setInternalState(MockResource.STATE inInternalState)
+        protected void setException(Exception inException)
         {
-            mInternalState = inInternalState;
+            exception = inException;
         }
-
         /**
-         * @return the sabotageResource
+         * Gets the internal state of the resource.
+         *
+         * @return a <code>MockResource.State</code> value
          */
-        boolean getSabotageResource()
+        protected MockResource.State getInternalState()
         {
-            return mSabotageResource;
+            return internalState;
         }
-
         /**
-         * @param inSabotageResource the sabotageResource to set
+         * Sets the internal state of the resource.
+         *
+         * @param inInternalState a <code>MockResource.State</code> value
          */
-        void setSabotageResource(boolean inSabotageResource)
+        protected void setInternalState(MockResource.State inInternalState)
         {
-            mSabotageResource = inSabotageResource;
-        }            
+            internalState = inInternalState;
+        }
+        /**
+         * Gets the sabotage resource value.
+         *
+         * @return a <code>boolean</code> value
+         */
+        protected boolean getSabotageResource()
+        {
+            return sabotageResource;
+        }
+        /**
+         * Sets the sabotage resource value.
+         *
+         * @param inSabotageResource a <code>boolean</code> value
+         */
+        protected void setSabotageResource(boolean inSabotageResource)
+        {
+            sabotageResource = inSabotageResource;
+        }
+        /**
+         * test resource value
+         */
+        private MockResource resource;
+        /**
+         * exception to throw, may be <code>null</code>
+         */
+        private Exception exception;
+        /**
+         * current state of the resource
+         */
+        private MockResource.State internalState;
+        /**
+         * indicates whether to sabotage the resource during testing
+         */
+        private boolean sabotageResource;
     }
+    /**
+     * test message provider
+     */
+    protected static final I18NMessageProvider PROVIDER = new I18NMessageProvider("core");
+    /**
+     * test message logger
+     */
+    protected static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
+    /**
+     * test message
+     */
+    protected static final I18NMessage0P I18N_EXPECTED_EXCEPTION_MSG = new I18NMessage0P(LOGGER, "i18n_expected_exception_msg", "this exception is expected");
+    /**
+     * test resource pool
+     */
+    private MockResourcePool testPool;
 }

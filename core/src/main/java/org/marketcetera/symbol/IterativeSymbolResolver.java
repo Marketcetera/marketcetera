@@ -7,6 +7,8 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.google.common.collect.Lists;
+
 /* $License$ */
 
 /**
@@ -72,5 +74,5 @@ public class IterativeSymbolResolver
     /**
      * list of symbol resolvers
      */
-    private List<SymbolResolver> symbolResolvers;
+    private List<SymbolResolver> symbolResolvers = Lists.newArrayList();
 }

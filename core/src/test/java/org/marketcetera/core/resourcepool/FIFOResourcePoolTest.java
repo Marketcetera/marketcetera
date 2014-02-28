@@ -18,7 +18,7 @@ import org.marketcetera.core.Messages;
  * @version $Id$
  */
 public class FIFOResourcePoolTest 
-	extends TestCase 
+	    extends TestCase 
 {
     protected MockFIFOResourcePool mTestPool;
     protected MockResource mResource1;
@@ -97,7 +97,7 @@ public class FIFOResourcePoolTest
                      mTestPool.getPoolSize());
         assertTrue(mTestPool.poolContains(mResource1));
         assertTrue(mTestPool.poolContains(mResource2));
-        Iterator<Resource> iterator = mTestPool.getPoolIterator();
+        Iterator<MockResource> iterator = mTestPool.getPoolIterator();
         assertEquals(mResource1,
                      iterator.next());
         assertEquals(mResource2,

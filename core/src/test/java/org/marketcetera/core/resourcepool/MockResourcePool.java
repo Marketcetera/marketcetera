@@ -11,14 +11,14 @@ import java.util.LinkedList;
  * @since 0.43-SNAPSHOT
  */
 public class MockResourcePool
-        extends ResourcePool
+        extends ResourcePool<MockResource>
 {
-    private final LinkedList<Resource> mResources;
-    private Throwable mThrowDuringGetNextResource = null;
+    private final LinkedList<MockResource> mResources;
+    private Exception mThrowDuringGetNextResource = null;
     private boolean mThrowDuringVerify = false;
     private Boolean mThrowDuringAddToPool = null;
     private boolean mInReturn = false;
-    private Throwable mThrowDuringReturnResource = null;
+    private Exception mThrowDuringReturnResource = null;
     
     /**
      * Create a new <code>TestResourcePool</code> object.
@@ -26,13 +26,12 @@ public class MockResourcePool
      */
     public MockResourcePool()
     {
-        mResources = new LinkedList<Resource>();        
+        mResources = new LinkedList<MockResource>();
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#addResourceToPool(org.marketcetera.core.resourcepool.Resource)
      */
-    protected void addResourceToPool(Resource inResource)
+    public void addResourceToPool(MockResource inResource)
     {
         // there are 3 values for mThrowDuringAddToPool: null, true, false
         // use these values for a trinary flag - null means don't throw, true means throw before, false means throw after
@@ -55,7 +54,7 @@ public class MockResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#createResource(java.lang.Object)
      */
-    protected Resource createResource(Object inData)
+    protected MockResource createResource(Object inData)
             throws ResourcePoolException
     {
         return new MockResource();
@@ -64,10 +63,10 @@ public class MockResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#getNextResource(java.lang.Object)
      */
-    protected Resource getNextResource(Object inData)
+    protected MockResource getNextResource(Object inData)
             throws ResourcePoolException
     {
-        Throwable t = getThrowDuringGetNextResource();
+        Exception t = getThrowDuringGetNextResource();
         if(t != null) {
             if(t instanceof ResourcePoolException) {
                 throw (ResourcePoolException)t;
@@ -76,7 +75,7 @@ public class MockResourcePool
         }
         if(mResources.isEmpty()) {
             // try to add a resource
-            Resource newResource = createResource(inData);
+            MockResource newResource = createResource(inData);
             addResourceToPool(newResource);
         }
         return mResources.removeFirst();
@@ -85,7 +84,7 @@ public class MockResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#getPoolIterator()
      */
-    protected Iterator<Resource> getPoolIterator()
+    protected Iterator<MockResource> getPoolIterator()
     {
         return mResources.iterator();
     }
@@ -101,7 +100,7 @@ public class MockResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#verifyResourceReturn(org.marketcetera.core.resourcepool.Resource)
      */
-    protected void verifyResourceReturn(Resource inResource)
+    protected void verifyResourceReturn(MockResource inResource)
             throws ResourcePoolException
     {
         if(getThrowDuringVerify()) {
@@ -120,7 +119,7 @@ public class MockResourcePool
     /**
      * @return the throwDuringGetNextResource
      */
-    Throwable getThrowDuringGetNextResource()
+    Exception getThrowDuringGetNextResource()
     {
         return mThrowDuringGetNextResource;
     }
@@ -128,14 +127,14 @@ public class MockResourcePool
     /**
      * @param inThrowDuringGetNextResource the throwDuringGetNextResource to set
      */
-    void setThrowDuringGetNextResource(Throwable inThrowDuringGetNextResource)
+    void setThrowDuringGetNextResource(Exception inThrowDuringGetNextResource)
     {
         mThrowDuringGetNextResource = inThrowDuringGetNextResource;
     }
     
     void emptyPool()
     {
-        Iterator<Resource> iterator = getPoolIterator();
+        Iterator<MockResource> iterator = getPoolIterator();
         while(iterator.hasNext()) {
             iterator.next();
             iterator.remove();
@@ -187,7 +186,7 @@ public class MockResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#poolContains(org.marketcetera.core.resourcepool.Resource)
      */
-    protected boolean poolContains(Resource inResource)
+    protected boolean poolContains(MockResource inResource)
     {
         return mResources.contains(inResource);
     }
@@ -211,11 +210,11 @@ public class MockResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#returnResource(org.marketcetera.core.resourcepool.Resource)
      */
-    protected void returnResource(Resource inResource)
+    protected void returnResource(MockResource inResource)
             throws ResourcePoolException
     {
         setInReturn(true);
-        Throwable t = getThrowDuringReturnResource();
+        Exception t = getThrowDuringReturnResource();
         if(t != null) {
             if(t instanceof ResourcePoolException) {
                 throw (ResourcePoolException)t;
@@ -229,7 +228,7 @@ public class MockResourcePool
     /**
      * @return the throwDuringReturnResource
      */
-    Throwable getThrowDuringReturnResource()
+    Exception getThrowDuringReturnResource()
     {
         return mThrowDuringReturnResource;
     }
@@ -237,7 +236,7 @@ public class MockResourcePool
     /**
      * @param inThrowDuringReturnResource the throwDuringReturnResource to set
      */
-    void setThrowDuringReturnResource(Throwable inThrowDuringReturnResource)
+    void setThrowDuringReturnResource(Exception inThrowDuringReturnResource)
     {
         mThrowDuringReturnResource = inThrowDuringReturnResource;
     }

@@ -19,7 +19,7 @@ import org.springframework.context.Lifecycle;
  * @version $Id$
  */
 public interface Resource
-    extends Lifecycle, InitializingBean
+        extends Lifecycle, InitializingBean
 {
     /**
      * Called when a <code>Resource</code> is issued to a caller.
@@ -29,14 +29,13 @@ public interface Resource
      * <code>Resource</code> from a {@link ResourcePool}, this method
      * is called on the <code>Resource</code> before it is issued.
      *
-     * @throws Throwable if an error occurs - note, throwing an exception
+     * @throws Exception if an error occurs - note, throwing an exception
      *   in this method will cause the {@link ResourcePool} to reject the
      *   request from the caller for a <code>Resource</code>.  The <code>Resource</code>
      *   will subsequently be released by the {@link ResourcePool} (@see {@link #released()}).
      */
     public void allocated()
-        throws Throwable;
-    
+            throws Exception;
     /**
      * Called when a <code>Resource</code> is at the end of service.
      *
@@ -48,11 +47,10 @@ public interface Resource
      *     the <code>Resource</code> is returned to tthe {@link ResourcePool}</li>
      * </ol>
      *
-     * @throws Throwable if an error occurs
+     * @throws Exception if an error occurs
      */
     public void released()
-        throws Throwable;
-    
+            throws Exception;
     /**
      * Determines if the <code>Resource</code> is in a fit state to be used.
      * 
@@ -63,7 +61,6 @@ public interface Resource
      * @return a <code>boolean</code> value
      */
     public boolean isFunctional();
-    
     /**
      * Called when a <code>Resource</code> is returned to the {@link ResourcePool}.
      * 
@@ -76,11 +73,11 @@ public interface Resource
      * <p>This method is called after the <code>Resource</code> has been returned to the pool
      * but before the lock on the pool is released.
      *
-     * @throws Throwable if a <code>Resource</code> throws an exception
+     * @throws Exception if a <code>Resource</code> throws an exception
      *   when it's returned, the <code>Resource</code> is still returned for re-use.  If the intent
      *   is to make the <code>Resource</code> be discarded, make sure {@link Resource#isFunctional()} returns
      *   false when the <code>Resource</code> is returned.
      */
     public void returned()
-        throws Throwable;
+            throws Exception;
 }

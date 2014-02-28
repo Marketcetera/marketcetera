@@ -7,14 +7,14 @@ package org.marketcetera.core.resourcepool;
  * @version $Id$
  */
 public class MockResource
-        implements Resource, Comparable
+        implements Resource, Comparable<MockResource>
 {
-    static enum STATE { UNITIALIZED, INITIALIZED, ALLOCATED, DAMAGED, RETURNED, RELEASED, SHUTDOWN };
+    static enum State { UNITIALIZED, INITIALIZED, ALLOCATED, DAMAGED, RETURNED, RELEASED, SHUTDOWN };
     
-    private STATE mState;
+    private State mState;
     private int mID;
-    private static Throwable sInitializeException = null;
-    private static Throwable sAllocateException = null;
+    private static Exception sInitializeException = null;
+    private static Exception sAllocateException = null;
     private boolean mReturnException = false;
     private boolean mReleaseException = false;
     private boolean mIsFunctionalException = false;
@@ -37,7 +37,7 @@ public class MockResource
     public MockResource(String inUser,
                         String inPassword)
     {
-        setState(STATE.UNITIALIZED);
+        setState(State.UNITIALIZED);
         setID(getNextID());
         setContentionStamp(0);
         setUser(inUser);
@@ -49,7 +49,7 @@ public class MockResource
      * 
      * @return a <code>TestResource.STATE</code> value
      */
-    public STATE getState()
+    public State getState()
     {
         return mState;
     }
@@ -59,18 +59,18 @@ public class MockResource
      * 
      * @param inState a <code>TestResource.STATE</code> value
      */
-    void setState(STATE inState)
+    void setState(State inState)
     {
         mState = inState;
     }
 
     public void allocated()
-        throws Throwable
+        throws Exception
     {
         if(getAllocateException() != null) {
             throw getAllocateException();
         }
-        setState(STATE.ALLOCATED);        
+        setState(State.ALLOCATED);
     }
 
     public boolean isFunctional()
@@ -78,28 +78,28 @@ public class MockResource
         if(getIsFunctionalException()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
-        return !getState().equals(STATE.DAMAGED);
+        return !getState().equals(State.DAMAGED);
     }
 
     public void released()
-        throws Throwable
+        throws Exception
     {
-        setState(STATE.RELEASED);
+        setState(State.RELEASED);
         if(getReleaseException()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
     }
 
     public void returned()
-        throws Throwable
+        throws Exception
     {
-        setState(STATE.RETURNED);
+        setState(State.RETURNED);
         if(getReturnException()) {
             throw new NullPointerException();
         }
     }
 
-    public int compareTo(Object inOther)
+    public int compareTo(MockResource inOther)
     {
         final int BEFORE = -1;
         final int EQUAL = 0;
@@ -165,7 +165,7 @@ public class MockResource
     /**
      * @return the initializeException
      */
-    private static Throwable getInitializeException()
+    private static Exception getInitializeException()
     {
         return sInitializeException;
     }
@@ -173,7 +173,7 @@ public class MockResource
     /**
      * @param inInitializeException the initializeException to set
      */
-    static void setInitializeException(Throwable inInitializeException)
+    static void setInitializeException(Exception inInitializeException)
     {
         sInitializeException = inInitializeException;
     }
@@ -181,7 +181,7 @@ public class MockResource
     /**
      * @return the allocateException
      */
-    private static Throwable getAllocateException()
+    private static Exception getAllocateException()
     {
         return sAllocateException;
     }
@@ -189,7 +189,7 @@ public class MockResource
     /**
      * @param inAllocateException the allocateException to set
      */
-    static void setAllocateException(Throwable inAllocateException)
+    static void setAllocateException(Exception inAllocateException)
     {
         sAllocateException = inAllocateException;
     }
@@ -290,9 +290,9 @@ public class MockResource
 
     public boolean isRunning()
     {
-        return getState().equals(STATE.ALLOCATED) ||
-               getState().equals(STATE.INITIALIZED) ||
-               getState().equals(STATE.RETURNED);
+        return getState().equals(State.ALLOCATED) ||
+               getState().equals(State.INITIALIZED) ||
+               getState().equals(State.RETURNED);
     }
 
     public void start()
@@ -300,12 +300,12 @@ public class MockResource
         if(getInitializeException() != null) {
             throw new NullPointerException();
         }
-        setState(STATE.INITIALIZED);
+        setState(State.INITIALIZED);
     }
 
     public void stop()
     {
-        setState(STATE.SHUTDOWN);
+        setState(State.SHUTDOWN);
         if(getThrowDuringStop()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }

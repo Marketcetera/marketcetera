@@ -24,8 +24,8 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-public abstract class ReservationResourcePool
-        extends ResourcePool
+public abstract class ReservationResourcePool<ResourceClazz extends Resource>
+        extends ResourcePool<ResourceClazz>
 {
     /**
      * a collection of all existing resources, either ALLOCATED or READY, keyed
@@ -35,7 +35,7 @@ public abstract class ReservationResourcePool
     /**
      * Collection of pool resources
      */
-    private final LinkedHashSet<Resource> mResources;
+    private final LinkedHashSet<ResourceClazz> mResources;
 
     /**
      * Create a new <code>ReservationResourcePool</code> object.
@@ -44,7 +44,7 @@ public abstract class ReservationResourcePool
     {
         super();
         mResourceReservations = new Hashtable<Object,ReservationEntry>();
-        mResources = new LinkedHashSet<Resource>();
+        mResources = new LinkedHashSet<ResourceClazz>();
     }
     
     /**
@@ -70,9 +70,9 @@ public abstract class ReservationResourcePool
      * @param inResource a <code>Resource</code> value
      * @return an <code>Object</code> value
      */
-    protected abstract Object renderReservationKey(Resource inResource);
+    protected abstract Object renderReservationKey(ResourceClazz inResource);
 
-    protected void addResourceToPool(Resource inResource)
+    public void addResourceToPool(ResourceClazz inResource)
     {
         SLF4JLoggerProxy.debug(this, "Adding {} to resource pool", inResource); //$NON-NLS-1$
 
@@ -139,10 +139,10 @@ public abstract class ReservationResourcePool
      * Adds the given <code>Resource</code> to the reservation book, keyed by the given key.
      * 
      * @param inKey an <code>Object</code> value
-     * @param inResource a <code>Resource</code> value
+     * @param inResource a <code>ResourceClazz</code> value
      */
     protected void addToReservationBook(Object inKey,
-                                        Resource inResource)
+                                        ResourceClazz inResource)
     {
         if(inKey == null || 
            inResource == null) {
@@ -165,10 +165,10 @@ public abstract class ReservationResourcePool
      * very expensive.  Every effort must be made to make sure that {@link #renderReservationKey(Resource)}
      * returns a non-null value and never throws an exception.
      * 
-     * @param inResource a <code>Resource</code> value
+     * @param inResource a <code>ResourceClazz</code> value
      * @return an <code>Object</code> value
      */
-    protected Object getReservationKey(Resource inResource)
+    protected Object getReservationKey(ResourceClazz inResource)
     {
         Object key = null;
         try {
@@ -192,10 +192,10 @@ public abstract class ReservationResourcePool
      * <p>This method should be used only as a last resort.  Worst-case performance for this algorithm
      * is O(n + (n * c)): you've been warned.
      * 
-     * @param inResource a <code>Resource</code> value
+     * @param inResource a <code>ResourceClazz</code> value
      * @return an <code>Object</code> value containing the key that matches the given <code>Resource</code> or null if no match was found
      */
-    private Object manualSearchForResourceWrapper(Resource inResource)
+    private Object manualSearchForResourceWrapper(ResourceClazz inResource)
     {
         SLF4JLoggerProxy.debug(this, "Executing manual reservation traverse for resource {}", inResource); //$NON-NLS-1$
 
@@ -211,16 +211,14 @@ public abstract class ReservationResourcePool
         return null;
     }
 
-    protected Resource getNextResource(Object inData)
+    protected ResourceClazz getNextResource(Object inData)
             throws ResourcePoolException
     {
         SLF4JLoggerProxy.debug(this, "{} received request for resource with the following credentials: {}", this, inData); //$NON-NLS-1$
         // there are two kinds of resource requests we can process here:
         //  1) inData is null - this is a request for "any old resource"
         //  2) inData is non-null - this is a request for the specific resource implied by inData
-
-        Resource desiredResource = null;
-
+        ResourceClazz desiredResource = null;
         try {
             if(inData == null) {
                 SLF4JLoggerProxy.debug(this, "Credentials are null, assigning next available resource"); //$NON-NLS-1$
@@ -302,11 +300,11 @@ public abstract class ReservationResourcePool
      * resource contention may not be handled properly.
      * 
      * @param inReservationEntry a <code>ReservationEntry</code> value
-     * @return a <code>Resource</code> value containing the <code>Resource</code> to return
+     * @return a <code>ResourceClazz</code> value containing the <code>Resource</code> to return
      * @throws ResourcePoolException
      */
-    protected Resource resourceContention(ReservationEntry inReservationEntry) 
-        throws ResourcePoolException
+    protected ResourceClazz resourceContention(ReservationEntry inReservationEntry) 
+            throws ResourcePoolException
     {
         // add ourselves in the queue waiting for this resource
         inReservationEntry.addRequester(this);
@@ -317,7 +315,7 @@ public abstract class ReservationResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#requestResource(java.lang.Object)
      */
-    protected Resource requestResource(Object inData)
+    protected ResourceClazz requestResource(Object inData)
             throws ResourcePoolException
     {
         // this method is overridden in order to allow the pool to process requests for ALLOCATED resources
@@ -338,7 +336,8 @@ public abstract class ReservationResourcePool
                         wait();
                     }
                     // woken up from waiting
-                    Object key = getReservationKey(e.getResource());
+                    @SuppressWarnings("unchecked")
+                    Object key = getReservationKey((ResourceClazz)e.getResource());
                     ReservationEntry entry = getReservationByKey(key);
                     if(entry.getCanceled()) {
                         throw new ResourcePoolException(Messages.ERROR_RESOURCE_POOL_RESERVATION_CANCELLED);
@@ -353,11 +352,10 @@ public abstract class ReservationResourcePool
     /**
      * Removes the given <code>Resource</code> from the pool to be assigned.
      * 
-     * @param inResource a <code>Resource</code> value or null if the given <code>Resource</code>
-     *   is not in the pool
-     * @return a <code>Resource</code> value
+     * @param inResource a <code>Resource</code> value or null if the given <code>Resource</code> is not in the pool
+     * @return a <code>ResourceClazz</code> value
      */
-    protected Resource allocateResource(Resource inResource)
+    protected ResourceClazz allocateResource(ResourceClazz inResource)
     {
         if(mResources.remove(inResource)) {
             return inResource;
@@ -370,17 +368,17 @@ public abstract class ReservationResourcePool
      * 
      * <p>The <code>Resource</code> to be allocated is the next resource in FIFO order.
      * 
-     * @return a <code>Resource</code> value
+     * @return a <code>ResourceClazz</code> value
      */
-    protected Resource allocateResource()
+    protected ResourceClazz allocateResource()
     {
-        Iterator<Resource> iterator = mResources.iterator();
-        Resource r = iterator.next();
+        Iterator<ResourceClazz> iterator = mResources.iterator();
+        ResourceClazz r = iterator.next();
         iterator.remove();
         return r;
     }
 
-    protected Iterator<Resource> getPoolIterator()
+    protected Iterator<ResourceClazz> getPoolIterator()
     {
         return mResources.iterator();
     }
@@ -398,7 +396,7 @@ public abstract class ReservationResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#releaseResource(org.marketcetera.core.resourcepool.Resource)
      */
-    protected void releaseResource(Resource inResource)
+    protected void releaseResource(ResourceClazz inResource)
             throws ReleasedResourceException
     {
         // a resource is about to be released - this happens if the resource is unusable        
@@ -422,7 +420,7 @@ public abstract class ReservationResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#returnResource(org.marketcetera.core.resourcepool.Resource)
      */
-    protected void returnResource(Resource inResource)
+    protected void returnResource(ResourceClazz inResource)
             throws ResourcePoolException
     {
         // a resource is about to be returned
@@ -454,16 +452,16 @@ public abstract class ReservationResourcePool
      * @version $Id$
      * @since 0.43-SNAPSHOT
      */
-    static class ReservationEntry
+    class ReservationEntry
     {
         /**
          * the resource for which reservations are stored
          */
-        private Resource mResource;
+        private ResourceClazz mResource;
         /**
          * FIFO queue of requesters for this resource
          */
-        private LinkedList<ReservationResourcePool> mRequesters;
+        private LinkedList<ReservationResourcePool<ResourceClazz>> mRequesters;
         /**
          * indicates if reservations should be canceled upon notify
          */
@@ -472,9 +470,9 @@ public abstract class ReservationResourcePool
         /**
          * Creates a new <code>ReservationEntry</code> instance.
          *
-         * @param inResource a <code>Resource</code> value
+         * @param inResource a <code>ResourceClazz</code> value
          */
-        private ReservationEntry(Resource inResource)
+        private ReservationEntry(ResourceClazz inResource)
         {
             setResource(inResource);
             setCanceled(false);
@@ -485,10 +483,10 @@ public abstract class ReservationResourcePool
          * 
          * @param inRequester a <code>ReservationResourcePool</code> value
          */
-        private synchronized void addRequester(ReservationResourcePool inRequester)
+        private synchronized void addRequester(ReservationResourcePool<ResourceClazz> inRequester)
         {
             if(mRequesters == null) {
-                mRequesters = new LinkedList<ReservationResourcePool>();
+                mRequesters = new LinkedList<ReservationResourcePool<ResourceClazz>>();
             }
             mRequesters.addLast(inRequester);
         }
@@ -498,7 +496,7 @@ public abstract class ReservationResourcePool
          * 
          * @return a <code>ReservationResourcePool</code> value or null if no requesters are waiting for this resource
          */
-        private synchronized ReservationResourcePool getNextRequester()
+        private synchronized ReservationResourcePool<ResourceClazz> getNextRequester()
         {
             if(mRequesters == null ||
                     mRequesters.size() == 0) {
@@ -510,9 +508,9 @@ public abstract class ReservationResourcePool
         /**
          * Gets <code>Resource</code> for which reservations are stored.
          * 
-         * @return a <code>Resource</code> value
+         * @return a <code>ResourceClazz</code> value
          */
-        Resource getResource()
+        ResourceClazz getResource()
         {
             return mResource;
         }
@@ -520,9 +518,9 @@ public abstract class ReservationResourcePool
         /**
          * Sets the <code>Resource</code> for which reservations are stored.
          * 
-         * @param inResource a <code>Resource</code> value
+         * @param inResource a <code>ResourceClazz</code> value
          */
-        private void setResource(Resource inResource)
+        private void setResource(ResourceClazz inResource)
         {
             mResource = inResource;
         }
@@ -550,13 +548,13 @@ public abstract class ReservationResourcePool
          * @param inCanceller a <code>ReservationResourcePool</code> value which initiates the cancel
          * @throws Throwable if an error occurs while cancelling reservations
          */
-        private synchronized void cancelReservation(ReservationResourcePool inCanceller) 
+        private synchronized void cancelReservation(ReservationResourcePool<ResourceClazz> inCanceller) 
             throws Throwable
         {
             SLF4JLoggerProxy.debug(this, "cancelling all reservations for {}", getResource()); //$NON-NLS-1$
             setCanceled(true);
             if(mRequesters != null) {
-                for(ReservationResourcePool r : mRequesters) {
+                for(ReservationResourcePool<ResourceClazz> r : mRequesters) {
                     SLF4JLoggerProxy.debug(this, "Notifying {} of cancellation", r); //$NON-NLS-1$
                     synchronized(r) {
                         r.notify();
@@ -567,7 +565,7 @@ public abstract class ReservationResourcePool
         
         private void notifyNextRequester()
         {
-            ReservationResourcePool requester = getNextRequester();
+            ReservationResourcePool<ResourceClazz> requester = getNextRequester();
             if(requester != null) {
                 synchronized(requester) {
                     requester.notify();

@@ -3,7 +3,7 @@ package org.marketcetera.core.resourcepool;
 import java.util.Iterator;
 
 class MockFIFOResourcePool
-    extends FIFOResourcePool 
+        extends FIFOResourcePool<MockResource> 
 {
     private boolean mThrowDuringCreateResource = false;
     private boolean mThrowDuringAddResource = false;
@@ -28,7 +28,7 @@ class MockFIFOResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.FIFOResourcePool#addResourceToPool(org.marketcetera.core.resourcepool.Resource)
      */
-    protected void addResourceToPool(Resource inResource)
+    public void addResourceToPool(MockResource inResource)
     {
         if(getThrowDuringAddResource()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
@@ -39,7 +39,7 @@ class MockFIFOResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.FIFOResourcePool#allocateNextResource(java.lang.Object)
      */
-    protected Resource allocateNextResource(Object inData)
+    protected MockResource allocateNextResource(Object inData)
     {
         if(getEmptyPoolBeforeAllocation()) {
             synchronized(getPoolLock()) {
@@ -56,7 +56,7 @@ class MockFIFOResourcePool
 
     int getPoolSize()
     {
-        Iterator<Resource> iterator = getPoolIterator();
+        Iterator<MockResource> iterator = getPoolIterator();
         int counter = 0;
         while(iterator.hasNext()) {
             iterator.next();
@@ -133,7 +133,7 @@ class MockFIFOResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.FIFOResourcePool#poolContains(org.marketcetera.core.resourcepool.Resource)
      */
-    protected boolean poolContains(Resource inResource)
+    protected boolean poolContains(MockResource inResource)
     {
         if(getThrowDuringPoolContains()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$

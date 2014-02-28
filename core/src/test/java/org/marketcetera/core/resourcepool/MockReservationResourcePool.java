@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 
 public class MockReservationResourcePool
-        extends ReservationResourcePool
+        extends ReservationResourcePool<MockResource>
 {
     private boolean mRenderThrows = false;
     private boolean mRenderReturnsNull = false;
@@ -38,7 +38,7 @@ public class MockReservationResourcePool
         return resource;
     }
 
-    protected ReservationData renderReservationKey(Resource inResource)
+    protected ReservationData renderReservationKey(MockResource inResource)
     {
         if(getRenderThrows()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
@@ -150,7 +150,7 @@ public class MockReservationResourcePool
     {
         synchronized(getPoolLock()) {
             int counter = 0;
-            Iterator<Resource> iterator = getPoolIterator();
+            Iterator<MockResource> iterator = getPoolIterator();
             while(iterator.hasNext()) {
                 iterator.next();
                 counter += 1;
@@ -251,7 +251,7 @@ public class MockReservationResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ReservationResourcePool#addResourceToPool(org.marketcetera.core.resourcepool.Resource)
      */
-    protected void addResourceToPool(Resource inResource)
+    public void addResourceToPool(MockResource inResource)
     {
         if(getAddResourceThrows()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
@@ -278,7 +278,7 @@ public class MockReservationResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ReservationResourcePool#allocateResource(org.marketcetera.core.resourcepool.Resource)
      */
-    protected MockResource allocateResource(Resource inResource)
+    protected MockResource allocateResource(MockResource inResource)
     {
         return (MockResource)super.allocateResource(inResource);
     }
@@ -325,7 +325,7 @@ public class MockReservationResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ReservationResourcePool#releaseResource(org.marketcetera.core.resourcepool.Resource)
      */
-    protected void releaseResource(Resource inResource)
+    protected void releaseResource(MockResource inResource)
             throws ReleasedResourceException
     {
         if(getReleaseResourceThrows()) {
