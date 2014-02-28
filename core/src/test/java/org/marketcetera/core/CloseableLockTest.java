@@ -124,6 +124,9 @@ public class CloseableLockTest
                                        "Unlocking test lock");
                 lock.unlock();
                 isLocked.set(false);
+                synchronized(isLocked) {
+                    isLocked.notifyAll();
+                }
             }
         };
         Thread locker = new Thread(locked);
@@ -190,6 +193,11 @@ public class CloseableLockTest
             }
         }
         assertTrue(otherLockSucceeded.get());
+        while(isLocked.get()) {
+            synchronized(isLocked) {
+                isLocked.wait(250);
+            }
+        }
         assertFalse(isLocked.get());
         // clean up
         locker.interrupt();
