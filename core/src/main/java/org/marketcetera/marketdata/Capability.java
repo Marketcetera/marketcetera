@@ -51,9 +51,19 @@ public enum Capability
      */
     DIVIDEND,
     /**
+     * the market data feed is able to return national best bid and offer
+     */
+    NBBO,
+    /**
      * the market data feed is able to identify event boundaries
      */
     EVENT_BOUNDARY,
+    /**
+     * the market data feed is able to return price level depth of book of an unspecified type
+     */
     AGGREGATED_DEPTH,
+    /**
+     * the market data feed is able to return order level depth of book of an unspecified type
+     */
     UNAGGREGATED_DEPTH
 }
