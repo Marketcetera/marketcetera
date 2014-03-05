@@ -6,6 +6,7 @@ import org.marketcetera.core.Pair;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.module.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.common.collect.Maps;
@@ -53,6 +54,10 @@ public class ReceiverModule
                             Object inData)
             throws ReceiveDataException
     {
+        SLF4JLoggerProxy.trace(this,
+                               "Receiver module received {} for {}", //$NON-NLS-1$
+                               inData,
+                               inFlowID);
         publisher.publish(Pair.create(inFlowID,inData));
     }
     /**

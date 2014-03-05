@@ -233,10 +233,9 @@ public class MarketDataManagerImpl
         return activeProvidersByName.get(inProviderName);
     }
     /**
-     * 
+     * Gets the currently active market data providers.
      *
-     *
-     * @return
+     * @return a <code>Collection&lt;MarketDataProvider&gt;</code> value
      */
     private Collection<MarketDataProvider> getActiveMarketDataProviders()
     {
@@ -244,9 +243,7 @@ public class MarketDataManagerImpl
         return activeProvidersByName.values();
     }
     /**
-     * 
-     *
-     *
+     * Populates the provider list with provider proxys that are implemented as old school modules.
      */
     private void populateProviderList()
     {
@@ -272,7 +269,7 @@ public class MarketDataManagerImpl
         }
     }
     /**
-     *
+     * Identifies a particular market data request.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: MarketDataManagerImpl.java 16454 2013-01-17 01:55:01Z colin $
@@ -354,15 +351,15 @@ public class MarketDataManagerImpl
             request = inRequest;
         }
         /**
-         * 
+         * unique identifier for this token
          */
         private final long id = requestCounter.incrementAndGet();
         /**
-         * 
+         * subscriber to which updates should be sent
          */
         private final ISubscriber subscriber;
         /**
-         * 
+         * request object indicating what data is desired
          */
         private final MarketDataRequest request;
         private static final long serialVersionUID = 1L;
@@ -462,11 +459,8 @@ public class MarketDataManagerImpl
         {
             Request request = requestsByAtom.remove(inAtom);
             if(request != null) {
-                try {
-                    moduleManager.getDataFlowInfo(request.flow);
-                    moduleManager.cancel(request.flow);
-                } catch (DataFlowNotFoundException ignored) {}
                 requestsByFlow.remove(request.flow);
+                request.cancel();
             }
         }
         /* (non-Javadoc)
@@ -483,9 +477,14 @@ public class MarketDataManagerImpl
                                request);
             requestsByFlow.put(request.flow,
                                request);
+            SLF4JLoggerProxy.debug(this,
+                                   "{} created {} for {}",
+                                   this,
+                                   request,
+                                   inRequestAtom);
         }
         /**
-         *
+         * Represents a market data request submitted to a proxy market data provider.
          *
          * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id$
@@ -496,27 +495,63 @@ public class MarketDataManagerImpl
                 implements ISubscriber
         {
             /* (non-Javadoc)
+             * @see java.lang.Object#toString()
+             */
+            @Override
+            public String toString()
+            {
+                return new StringBuilder().append("proxy request for ").append(atom).append(" via flow ").append(flow).toString();
+            }
+            /* (non-Javadoc)
              * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
              */
             @Override
             public boolean isInteresting(Object inData)
             {
-                return true;
+                if(inData instanceof Pair<?,?>) {
+                    Pair<?,?> data = (Pair<?,?>)inData;
+                    if(data.getFirstMember() instanceof DataFlowID) {
+                        DataFlowID dataFlowID = (DataFlowID)data.getFirstMember();
+                        if(dataFlowID.equals(flow)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
             /* (non-Javadoc)
              * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
              */
-            @SuppressWarnings("unchecked")
             @Override
             public void publishTo(Object inData)
             {
-                processor.add((Pair<DataFlowID,Event>)inData);
+                if(inData instanceof Pair<?,?>) {
+                    Pair<?,?> pairData = (Pair<?,?>)inData;
+                    Object secondMember = pairData.getSecondMember();
+                    if(secondMember instanceof Event) {
+                        Pair<MarketDataRequestAtom,Event> toProcess = Pair.create(atom,(Event)secondMember);
+                        processor.add(toProcess);
+                        return;
+                    }
+                }
+                throw new UnsupportedOperationException();
+            }
+            /**
+             * Cancels this request.
+             */
+            private void cancel()
+            {
+                receiver.unsubscribe(this);
+                try {
+                    moduleManager.getDataFlowInfo(flow);
+                    moduleManager.cancel(flow);
+                } catch (DataFlowNotFoundException ignored) {}
             }
             /**
              * Create a new Request instance.
              *
-             * @param inAtom
-             * @param inCompleteRequest
+             * @param inAtom a <code>MarketDataRequestAtom</code> value
+             * @param inCompleteRequest a <code>MarketDataRequest</code> value
              */
             private Request(MarketDataRequestAtom inAtom,
                             MarketDataRequest inCompleteRequest)
@@ -526,12 +561,11 @@ public class MarketDataManagerImpl
                 flow = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(feed.getURN(),generateRequestFromAtom(inAtom,inCompleteRequest)),new DataRequest(receiver.getURN()) });
             }
             /**
-             * 
+             * Generates a <code>MarktDataRequest</code> from the given request atom.
              *
-             *
-             * @param inAtom
-             * @param inCompleteRequest
-             * @return
+             * @param inAtom a <code>MarketDataRequestAtom</code> value
+             * @param inCompleteRequest a <code>MarketDataRequest</code> value
+             * @return a <code>MarketDataRequest</code> value
              */
             private MarketDataRequest generateRequestFromAtom(MarketDataRequestAtom inAtom,
                                                               MarketDataRequest inCompleteRequest)
@@ -539,11 +573,11 @@ public class MarketDataManagerImpl
                 return MarketDataRequestBuilder.newRequest().withAssetClass(inCompleteRequest.getAssetClass()).withSymbols(inAtom.getSymbol()).withContent(inAtom.getContent()).withExchange(inAtom.getExchange()).create();
             }
             /**
-             * 
+             * data flow for this request
              */
             private final DataFlowID flow;
             /**
-             * 
+             * data requested
              */
             private final MarketDataRequestAtom atom;
         }
@@ -556,45 +590,26 @@ public class MarketDataManagerImpl
          */
         @ClassVersion("$Id$")
         private class Processor
-                extends QueueProcessor<Pair<DataFlowID,Event>>
+                extends QueueProcessor<Pair<MarketDataRequestAtom,Event>>
         {
-            private Processor()
-            {
-                super(providerName+"ProxyProcessor");
-            }
-            /**
-             * 
-             *
-             *
-             * @param inData
-             */
-            private void add(Pair<DataFlowID,Event> inData)
-            {
-                super.getQueue().add(inData);
-            }
             /* (non-Javadoc)
              * @see org.marketcetera.core.QueueProcessor#processData(java.lang.Object)
              */
             @Override
-            protected void processData(Pair<DataFlowID,Event> inData)
+            protected void processData(Pair<MarketDataRequestAtom,Event> inData)
                     throws Exception
             {
-                Request request = null;
-                while(request == null) {
-                    // wait until the data flow has been mapped before proceeding - should be minimal delay
-                    Thread.sleep(100);
-                    request = requestsByFlow.get(inData.getFirstMember());
-                }
-                Event event = (Event)inData.getSecondMember();
+                MarketDataRequestAtom atom = inData.getFirstMember();
+                Event event = inData.getSecondMember();
                 Instrument instrument = null;
                 if(event instanceof HasInstrument) {
                     HasInstrument hi = (HasInstrument)event;
                     instrument = hi.getInstrument();
-                    if(mappedSymbols.add(request.atom.getSymbol())) {
-                        addSymbolMapping(request.atom.getSymbol(),
+                    if(mappedSymbols.add(atom.getSymbol())) {
+                        addSymbolMapping(atom.getSymbol(),
                                          hi.getInstrument());
                     }
-                    publishEvents(request.atom.getContent(),
+                    publishEvents(atom.getContent(),
                                   instrument,
                                   event);
                 }
@@ -608,70 +623,86 @@ public class MarketDataManagerImpl
                 return !(inException instanceof InterruptedException);
             }
             /**
-             * 
+             * Create a new Processor instance.
+             */
+            private Processor()
+            {
+                super(providerName+"ProxyProcessor");
+            }
+            /**
+             * Adds data to the processing queue to be processed.
+             *
+             * @param inData a <code>Pair&lt;MarketDataRequestAtom,Event&gt;</code> value
+             */
+            private void add(Pair<MarketDataRequestAtom,Event> inData)
+            {
+                getQueue().add(inData);
+            }
+            /**
+             * symbols that have already been mapped
              */
             private final Set<String> mappedSymbols = Sets.newHashSet();
         }
         /**
-         * 
+         * processing queue for market data
          */
         private final Processor processor;
         /**
-         * 
+         * market data requests by the atom being requested
          */
         private final Map<MarketDataRequestAtom,Request> requestsByAtom = Maps.newHashMap();
         /**
-         * 
+         * market data requests by data flow associated with a request
          */
         private final Map<DataFlowID,Request> requestsByFlow = Maps.newHashMap();
         /**
-         * 
+         * receiver module for this proxied provider
          */
         private ReceiverModule receiver;
         /**
-         * 
+         * module manager object used to create data flows
          */
         private final ModuleManager moduleManager;
         /**
-         * 
+         * provider name
          */
         private final String providerName;
         /**
-         * 
+         * provider description
          */
         private final String description;
         /**
-         * 
+         * underlying feed module to which requests are sent
          */
         private final AbstractMarketDataModule<?,?> feed;
     }
     /**
-     * 
+     * static instance used to provide access to non-Spring objects
      */
     private static MarketDataManagerImpl instance;
     /**
-     * 
+     * tracks all active providers by provider name
      */
     @GuardedBy("requestLockObject")
     private final Map<String,MarketDataProvider> activeProvidersByName = new HashMap<String,MarketDataProvider>();
     /**
-     * 
+     * used to control access to critical data
      */
     private final ReadWriteLock requestLockObject = new ReentrantReadWriteLock();
     /**
-     * 
+     * tracks market data tokens by token id
      */
     private final Map<Long,MarketDataRequestToken> tokensByTokenId = new HashMap<Long,MarketDataRequestToken>();
     /**
-     * 
+     * associates each request token to the provider or providers to which it was directed
      */
     private final Multimap<MarketDataRequestToken,MarketDataProvider> providersByToken = HashMultimap.create();
     /**
-     * 
+     * used to generate unique ids
      */
     private final AtomicLong requestCounter = new AtomicLong(0);
     /**
-     * 
+     * used to set up MX interfaces
      */
     private final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
 }

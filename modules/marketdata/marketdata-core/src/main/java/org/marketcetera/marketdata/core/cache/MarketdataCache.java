@@ -3,6 +3,7 @@ package org.marketcetera.marketdata.core.cache;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -13,6 +14,7 @@ import org.marketcetera.trade.Instrument;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface MarketdataCache
 {
     /**

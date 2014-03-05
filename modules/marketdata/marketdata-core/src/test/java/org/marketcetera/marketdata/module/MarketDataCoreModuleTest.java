@@ -3,7 +3,6 @@ package org.marketcetera.marketdata.module;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -13,16 +12,15 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.Event;
-import org.marketcetera.event.EventTestBase;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
+import org.marketcetera.marketdata.core.module.MarketDataCoreModule;
 import org.marketcetera.marketdata.core.module.MarketDataCoreModuleFactory;
 import org.marketcetera.module.*;
-import org.marketcetera.module.Messages;
 import org.marketcetera.modules.receiver.ReceiverModule;
 import org.marketcetera.modules.receiver.ReceiverModuleFactory;
-import org.marketcetera.trade.Equity;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Lists;
@@ -60,8 +58,7 @@ public class MarketDataCoreModuleTest
     {
         moduleManager = new ModuleManager();
         moduleManager.init();
-        MockMarketDataFeed.instance.setCapabilities(EnumSet.allOf(Capability.class));
-        moduleManager.start(MockMarketDataFeedModuleFactory.INSTANCE_URN);
+        moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
         receiver = new EventReceiver();
         receiverUrn = moduleManager.createModule(ReceiverModuleFactory.PROVIDER_URN,
                                                  "receiver");
@@ -183,9 +180,8 @@ public class MarketDataCoreModuleTest
                                                                                  "symbols=METC:provider=notaprovider:content=TOP_OF_BOOK") });
             }
         };
-        prepEvents(10);
         // valid market data request
-        String validRequest = "symbols=METC:provider=mock:content=TOP_OF_BOOK";
+        String validRequest = "symbols=METC:provider=bogus:content=TOP_OF_BOOK";
         assertNotNull(MarketDataRequestBuilder.newRequestFromString(validRequest));
         DataFlowID flow = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(MarketDataCoreModuleFactory.INSTANCE_URN,
                                                                                            validRequest),
@@ -195,13 +191,13 @@ public class MarketDataCoreModuleTest
             public Boolean call()
                     throws Exception
             {
-                return receiver.data.size() >= 10;
+                return receiver.data.size() >= 2;
             }
         });
         moduleManager.cancel(flow);
         // try again with a MarketDataRequest object
         receiver.data.clear();
-        prepEvents(10);
+        validRequest = "symbols=GOOG:provider=bogus:content=TOP_OF_BOOK";
         flow = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(MarketDataCoreModuleFactory.INSTANCE_URN,
                                                                                 MarketDataRequestBuilder.newRequestFromString(validRequest)),
                                                                 new DataRequest(receiverUrn) });
@@ -210,23 +206,10 @@ public class MarketDataCoreModuleTest
             public Boolean call()
                     throws Exception
             {
-                return receiver.data.size() >= 10;
+                return receiver.data.size() >= 2;
             }
         });
         moduleManager.cancel(flow);
-    }
-    /**
-     * Generates test events and seeds the mock market data feed with them.
-     *
-     * @param inEventCount an <code>int</code> value
-     */
-    private void prepEvents(int inEventCount)
-    {
-        List<Event> events = Lists.newArrayList();
-        for(int i=0;i<inEventCount;i++) {
-            events.add(EventTestBase.generateEquityAskEvent(equity));
-        }
-        MockMarketDataFeed.instance.setEventsToReturn(events);
     }
     /**
      * Receives test events.
@@ -274,8 +257,4 @@ public class MarketDataCoreModuleTest
      * test module manager value
      */
     private ModuleManager moduleManager;
-    /**
-     * test equity used to generate market data events
-     */
-    private Equity equity = new Equity("METC");
 }

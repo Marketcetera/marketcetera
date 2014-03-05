@@ -31,6 +31,11 @@
     <!-- test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>

@@ -35,6 +35,7 @@ import org.marketcetera.marketdata.core.request.MarketDataRequestToken;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
 
 import com.google.common.collect.HashMultimap;
@@ -52,6 +53,7 @@ import com.google.common.collect.Multimap;
  * @since $Release$
  */
 @ThreadSafe
+@ClassVersion("$Id$")
 public abstract class AbstractMarketDataProvider
         implements MarketDataProvider, MarketdataCache
 {
@@ -666,6 +668,7 @@ public abstract class AbstractMarketDataProvider
                         } finally {
                             requestLock.unlock();
                         }
+                        // TODO set event type: snapshot or update?
                         SLF4JLoggerProxy.trace("events.publishing",
                                                "Publishing {} to {}",
                                                outgoingEvents,
