@@ -30,7 +30,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@WebService(targetNamespace = "http://marketcetera.org/services")
+@WebService(targetNamespace="client")
 @ClassVersion("$Id$")
 @XmlSeeAlso({PositionKeyImpl.class,Equity.class})
 public interface Service

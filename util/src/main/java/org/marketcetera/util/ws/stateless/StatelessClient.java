@@ -1,6 +1,5 @@
 package org.marketcetera.util.ws.stateless;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +10,7 @@ import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;
@@ -37,7 +37,7 @@ public class StatelessClient
     /**
      * context classes to add to the client context, if any
      */
-    private final Class<?>[] contextClasses;
+    private final ContextClassProvider contextClassProvider;
     
     // CONSTRUCTORS.
     
@@ -47,17 +47,17 @@ public class StatelessClient
      * @param inHost a <code>String</code> value
      * @param inPort an <code>int</code> value
      * @param inAppId an <code>AppId</code> value
-     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value
+     * @param inContextClasses a <code>ContextClassProvider</code> value
      */
     public StatelessClient(String inHost,
                            int inPort,
                            AppId inAppId,
-                           Class<?>...inContextClasses)
+                           ContextClassProvider inContextClasses)
     {
         super(inHost,
               inPort);
         mAppId=inAppId;
-        contextClasses = inContextClasses;
+        contextClassProvider = inContextClasses;
     }
     /**
      * Creates a new client node with the given server host name,
@@ -68,15 +68,14 @@ public class StatelessClient
      * @param appId The application ID, which may be null.
      */    
 
-    public StatelessClient
-        (String host,
-         int port,
-         AppId appId)
+    public StatelessClient(String host,
+                           int port,
+                           AppId appId)
     {
         this(host,
              port,
              appId,
-             (Class<?>[])null);
+             null);
     }
 
     /**
@@ -166,12 +165,12 @@ public class StatelessClient
         if (props == null) {
             props = new HashMap<String,Object>();
         }
-        if(contextClasses != null) {
+        if(contextClassProvider != null) {
             SLF4JLoggerProxy.debug(this,
                                    "Using additional context: {}", //$NON-NLS-1$
-                                   Arrays.toString(contextClasses));
+                                   contextClassProvider);
             props.put("jaxb.additionalContextClasses",  //$NON-NLS-1$
-                      contextClasses);
+                      contextClassProvider.getContextClasses());
         }
         f.setProperties(props); 
         T service=(T)(f.create());

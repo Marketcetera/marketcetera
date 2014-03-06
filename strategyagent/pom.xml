@@ -44,6 +44,11 @@
     </dependency>
     <!-- Runtime. -->
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>marketdata-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
     </dependency>
@@ -64,11 +69,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>marketdata-bogus</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>marketdata-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

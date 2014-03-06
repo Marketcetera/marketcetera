@@ -1,26 +1,28 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.SessionManager;
-import org.marketcetera.util.ws.stateful.Server;
-import org.marketcetera.util.ws.stateful.Authenticator;
-import org.marketcetera.util.ws.stateless.StatelessClientContext;
-import org.marketcetera.util.ws.stateless.ServiceInterface;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.MockConfigProvider;
-import org.marketcetera.modules.remote.receiver.ReceiverFactory;
-import org.marketcetera.modules.remote.receiver.ClientLoginModule;
-import org.marketcetera.client.MockServer;
+import java.util.Collections;
+import java.util.HashMap;
+
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
+
+import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.MockLoginModule;
-import org.apache.commons.lang.ObjectUtils;
-
-import javax.security.auth.login.Configuration;
-import javax.security.auth.login.AppConfigurationEntry;
-import java.util.Collections;
-import java.util.HashMap;
+import org.marketcetera.client.MockServer;
+import org.marketcetera.module.MockConfigProvider;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.modules.remote.receiver.ClientLoginModule;
+import org.marketcetera.modules.remote.receiver.ReceiverFactory;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.ContextClassProvider;
+import org.marketcetera.util.ws.stateful.Authenticator;
+import org.marketcetera.util.ws.stateful.Server;
+import org.marketcetera.util.ws.stateful.SessionManager;
+import org.marketcetera.util.ws.stateless.ServiceInterface;
+import org.marketcetera.util.ws.stateless.StatelessClientContext;
 
 /* $License$ */
 /**
@@ -65,18 +67,18 @@ class MockStrategyAgent {
     /**
      * Get the contextClasses value.
      *
-     * @return a <code>Class&lt;?&gt;[]</code> value
+     * @return a <code>ContextClassProvider</code> value
      */
-    public static Class<?>[] getContextClasses()
+    public static ContextClassProvider getContextClassProvider()
     {
         return contextClasses;
     }
     /**
      * Sets the contextClasses value.
      *
-     * @param a <code>Class&lt;?&gt;...</code> value
+     * @param a <code>ContextClassProvider</code> value
      */
-    public static void setContextClasses(Class<?>...inContextClasses)
+    public static void setContextClassProvider(ContextClassProvider inContextClasses)
     {
         contextClasses = inContextClasses;
     }
@@ -202,5 +204,5 @@ class MockStrategyAgent {
     private volatile ModuleManager mManager;
     private volatile ServiceInterface mRemoteService;
     private final MockSAServiceImpl mService;
-    private static Class<?>[] contextClasses;
+    private static ContextClassProvider contextClasses;
 }

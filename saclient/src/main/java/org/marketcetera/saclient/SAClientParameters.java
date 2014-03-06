@@ -1,10 +1,11 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.apache.commons.lang.ObjectUtils;
-
 import java.beans.ConstructorProperties;
 import java.util.Arrays;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.ContextClassProvider;
 
 /* $License$ */
 /**
@@ -65,9 +66,9 @@ public class SAClientParameters {
         return mHostname;
     }
     
-    public Class<?>[] getContextClasses()
+    public ContextClassProvider getContextClassProvider()
     {
-        return contextClasses;
+        return contextClassProvider;
     }
 
     @Override
@@ -79,7 +80,7 @@ public class SAClientParameters {
 
         return ObjectUtils.equals(mPort, that.mPort)&&
                 Arrays.equals(mPassword, that.mPassword) &&
-                Arrays.equals(contextClasses, that.contextClasses) &&
+                ObjectUtils.equals(contextClassProvider, that.contextClassProvider) &&
                 ObjectUtils.equals(mURL, that.mURL) &&
                 ObjectUtils.equals(mUsername, that.mUsername) &&
                 ObjectUtils.equals(mHostname, that.mHostname);
@@ -89,7 +90,7 @@ public class SAClientParameters {
     public int hashCode() {
         return ObjectUtils.hashCode(mUsername) +
                 Arrays.hashCode(mPassword) +
-                Arrays.hashCode(contextClasses) +
+                ObjectUtils.hashCode(contextClassProvider) +
                 ObjectUtils.hashCode(mHostname) +
                 ObjectUtils.hashCode(mPort) +
                 ObjectUtils.hashCode(mURL);
@@ -117,7 +118,7 @@ public class SAClientParameters {
              inURL,
              inHostname,
              inPort,
-             (Class<?>[])null);
+             null);
     }
     /**
      * Create a new SAClientParameters instance.
@@ -127,7 +128,7 @@ public class SAClientParameters {
      * @param inURL a <code>String</code> value
      * @param inHostname a <code>String</code> value
      * @param inPort an <code>int</code> value
-     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value
+     * @param contextClassProvider a <code>ContextClassProvider</code> value
      */
     @ConstructorProperties({ "username","password","URL","hostname","port","contextClasses" })
     public SAClientParameters(String inUsername,
@@ -135,7 +136,7 @@ public class SAClientParameters {
                               String inURL,
                               String inHostname,
                               int inPort,
-                              Class<?>...inContextClasses)
+                              ContextClassProvider inContextClassProvider)
     {
         mUsername = inUsername;
         mPassword = inPassword == null
@@ -144,7 +145,7 @@ public class SAClientParameters {
         mURL = inURL;
         mHostname = inHostname;
         mPort = inPort;
-        contextClasses = inContextClasses;
+        contextClassProvider = inContextClassProvider;
     }
 
     @Override
@@ -163,5 +164,5 @@ public class SAClientParameters {
     private final String mHostname;
     private final int mPort;
     private final String mURL;
-    private final Class<?>[] contextClasses;
+    private final ContextClassProvider contextClassProvider;
 }

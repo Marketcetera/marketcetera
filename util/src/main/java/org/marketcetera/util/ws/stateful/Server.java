@@ -1,8 +1,11 @@
 package org.marketcetera.util.ws.stateful;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessServer;
+
+/* $License$ */
 
 /**
  * A server node for stateful communication. Its (optional)
@@ -13,23 +16,10 @@ import org.marketcetera.util.ws.stateless.StatelessServer;
  * @since 1.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
-public class Server<T>
-    extends StatelessServer
+public class Server<SessionClazz>
+        extends StatelessServer
 {
-
-    // INSTANCE DATA.
-
-    private final Authenticator mAuthenticator;
-    private final SessionManager<T> mSessionManager;
-    private final ServiceInterface mAuthService;
-
-
-    // CONSTRUCTORS.
-
     /**
      * Creates a new server node with the given server host name,
      * port, authenticator, and session manager.
@@ -38,19 +28,17 @@ public class Server<T>
      * @param port The port.
      * @param authenticator The authenticator, which may be null.
      * @param sessionManager The session manager, which may be null.
-     */    
-
-    public Server
-        (String host,
-         int port,
-         Authenticator authenticator,
-         SessionManager<T> sessionManager)
+     */
+    public Server(String host,
+                  int port,
+                  Authenticator authenticator,
+                  SessionManager<SessionClazz> sessionManager)
     {
         this(host,
              port,
              authenticator,
              sessionManager,
-             (Class<?>[])null);
+             null);
     }
     /**
      * Create a new Server instance.
@@ -59,17 +47,17 @@ public class Server<T>
      * @param inPort an <code>int</code> value
      * @param inAuthenticator an <code>Authenticator</code> value or <code>null</code>
      * @param inSessionManager a <code>SessionManager&lt;T&gt;</code> value or <code>null</code>
-     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value or <code>null</code>
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value or <code>null</code>
      */
     public Server(String inHost,
                   int inPort,
                   Authenticator inAuthenticator,
-                  SessionManager<T> inSessionManager,
-                  Class<?>...inContextClasses)
+                  SessionManager<SessionClazz> inSessionManager,
+                  ContextClassProvider inContextClassProvider)
     {
         super(inHost,
               inPort,
-              inContextClasses);
+              inContextClassProvider);
         mAuthenticator = inAuthenticator;
         mSessionManager = inSessionManager;
         if(getSessionManager() != null) {
@@ -78,7 +66,7 @@ public class Server<T>
         if(getAuthenticator() == null) {
             mAuthService=null;
         } else {
-            mAuthService = publish(new AuthServiceImpl<T>(getAuthenticator(),
+            mAuthService = publish(new AuthServiceImpl<SessionClazz>(getAuthenticator(),
                                    getSessionManager()),
                                    AuthService.class);
         }
@@ -93,7 +81,7 @@ public class Server<T>
 
     public Server
         (Authenticator authenticator,
-         SessionManager<T> sessionManager)
+         SessionManager<SessionClazz> sessionManager)
     {
         this(DEFAULT_HOST,DEFAULT_PORT,authenticator,sessionManager);
     }
@@ -128,7 +116,7 @@ public class Server<T>
      * @return The session manager, which may be null.
      */
 
-    public SessionManager<T> getSessionManager()
+    public SessionManager<SessionClazz> getSessionManager()
     {
         return mSessionManager;
     }   
@@ -155,4 +143,7 @@ public class Server<T>
             getAuthService().stop();
         }
     }
+    private final Authenticator mAuthenticator;
+    private final SessionManager<SessionClazz> mSessionManager;
+    private final ServiceInterface mAuthService;
 }

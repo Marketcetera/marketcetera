@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.ContextClassProvider;
 
 /* $License$ */
 /**
@@ -35,7 +36,7 @@ public class SAClientTestBase {
     public void before()
             throws Exception
     {
-        MockStrategyAgent.setContextClasses(getContextClasses());
+        MockStrategyAgent.setContextClassProvider(getContextClassProvider());
         MockStrategyAgent.startServerAndClient();
         startAgent();
         SAClientParameters defaultParams = MockStrategyAgent.DEFAULT_PARAMETERS;
@@ -44,7 +45,7 @@ public class SAClientTestBase {
                                                                    defaultParams.getURL(),
                                                                    defaultParams.getHostname(),
                                                                    defaultParams.getPort(),
-                                                                   getContextClasses());
+                                                                   getContextClassProvider());
         sClient = MockStrategyAgent.connectTo(modifiedParams);
     }
     /**
@@ -69,9 +70,9 @@ public class SAClientTestBase {
      * <p>Subclasses may override this method to provide additional context classes. The default
      * behavior is to return no additional context classes.
      *
-     * @return a <code>Class&lt;?&gt;</code> value
+     * @return a <code>ContextClassProvider</code> value
      */
-    protected Class<?>[] getContextClasses()
+    protected ContextClassProvider getContextClassProvider()
     {
         return null;
     }

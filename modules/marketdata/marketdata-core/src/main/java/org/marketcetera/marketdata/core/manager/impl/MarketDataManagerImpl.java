@@ -247,22 +247,24 @@ public class MarketDataManagerImpl
      */
     private void populateProviderList()
     {
-        List<ModuleURN> providerUrns = ModuleManager.getInstance().getProviders();
-        for(ModuleURN providerUrn : providerUrns) {
-            String providerName = providerUrn.providerName();
-            if(providerUrn.providerType().equals("mdata") && !providerName.equals(MarketDataCoreModuleFactory.IDENTIFIER) && !activeProvidersByName.containsKey(providerName)) {
-                List<ModuleURN> instanceUrns = ModuleManager.getInstance().getModuleInstances(providerUrn);
-                if(!instanceUrns.isEmpty()) {
-                    ModuleURN instanceUrn = instanceUrns.get(0);
-                    ModuleInfo info = ModuleManager.getInstance().getModuleInfo(instanceUrn);
-                    if(info.getState() == ModuleState.STARTED) {
-                        ModuleProvider provider = new ModuleProvider(providerName,
-                                                                     AbstractMarketDataModule.getFeedForProviderName(providerName));
-                        SLF4JLoggerProxy.debug(this,
-                                               "Creating market data provider proxy for {}",
-                                               providerName);
-                        activeProvidersByName.put(providerName,
-                                                  provider);
+        if(ModuleManager.getInstance() != null) {
+            List<ModuleURN> providerUrns = ModuleManager.getInstance().getProviders();
+            for(ModuleURN providerUrn : providerUrns) {
+                String providerName = providerUrn.providerName();
+                if(providerUrn.providerType().equals("mdata") && !providerName.equals(MarketDataCoreModuleFactory.IDENTIFIER) && !activeProvidersByName.containsKey(providerName)) {
+                    List<ModuleURN> instanceUrns = ModuleManager.getInstance().getModuleInstances(providerUrn);
+                    if(!instanceUrns.isEmpty()) {
+                        ModuleURN instanceUrn = instanceUrns.get(0);
+                        ModuleInfo info = ModuleManager.getInstance().getModuleInfo(instanceUrn);
+                        if(info.getState() == ModuleState.STARTED) {
+                            ModuleProvider provider = new ModuleProvider(providerName,
+                                                                         AbstractMarketDataModule.getFeedForProviderName(providerName));
+                            SLF4JLoggerProxy.debug(this,
+                                                   "Creating market data provider proxy for {}",
+                                                   providerName);
+                            activeProvidersByName.put(providerName,
+                                                      provider);
+                        }
                     }
                 }
             }

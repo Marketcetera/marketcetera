@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.*;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -25,6 +26,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.1.0
  */
 @ThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name="marketDataRequestBean")
 @ClassVersion("$Id$")
 public final class MarketDataRequestBean
         implements Serializable, Cloneable
@@ -359,30 +362,37 @@ public final class MarketDataRequestBean
     /**
      * the symbols for which to request data
      */
+    @XmlElementWrapper(name="symbols")
     private final Set<String> symbols = new LinkedHashSet<String>();
     /**
      * the underlying symbols for which to request data
      */
+    @XmlElementWrapper(name="underlyingSymbols")
     private final Set<String> underlyingSymbols = new LinkedHashSet<String>();
     /**
      * the map of custom request parameters 
      */
+    @XmlElementWrapper(name="parameters")
     private final Map<String,String> parameters = new HashMap<String, String>();
     /**
      * the request content
      */
+    @XmlElementWrapper(name="content")
     private final Set<Content> content = new LinkedHashSet<Content>();
     /**
      * the provider key from which to request data
      */
+    @XmlAttribute
     private volatile String provider;
     /**
      * the exchange from which to request data
      */
+    @XmlAttribute
     private volatile String exchange;
     /**
      * the asset class
      */
+    @XmlAttribute
     private volatile AssetClass assetClass;
     private static final long serialVersionUID = 1L;
 }

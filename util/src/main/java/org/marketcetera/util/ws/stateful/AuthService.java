@@ -17,7 +17,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
 
 /* $License$ */
 
-@WebService(targetNamespace="http://marketcetera.org/services")
+@WebService(targetNamespace="authentication")
 @ClassVersion("$Id$")
 public interface AuthService
     extends ServiceBase

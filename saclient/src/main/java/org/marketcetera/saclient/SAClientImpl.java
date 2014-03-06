@@ -281,7 +281,7 @@ class SAClientImpl implements SAClient, EmitterAdapter {
             mServiceClient = new Client(inParameters.getHostname(),
                                         inParameters.getPort(),
                                         SAClientVersion.APP_ID,
-                                        inParameters.getContextClasses());
+                                        inParameters.getContextClassProvider());
             mServiceClient.login(inParameters.getUsername(),
                                  inParameters.getPassword());
             mSAService = mServiceClient.getService(SAService.class);

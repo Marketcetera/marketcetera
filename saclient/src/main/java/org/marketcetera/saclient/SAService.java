@@ -24,7 +24,7 @@ import java.util.List;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-@WebService(targetNamespace = "http://marketcetera.org/services")
+@WebService(targetNamespace="strategyengine")
 public interface SAService extends ServiceBase {
     /**
      * Returns the list of providers available at the strategy agent.

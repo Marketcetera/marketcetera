@@ -2,6 +2,7 @@ package org.marketcetera.util.ws.stateful;
 
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.ws.ContextClassProvider;
 import org.marketcetera.util.ws.stateless.StatelessClient;
 import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.SessionId;
@@ -38,17 +39,17 @@ public class Client
      * @param inHost a <code>String</code> value
      * @param inPort an <code>int</code> value
      * @param inAppId an <code>AppId</code> value
-     * @param inContextClasses a <code>Class&lt;?&gt;...</code> value
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
      */
     public Client(String inHost,
                   int inPort,
                   AppId inAppId,
-                  Class<?>...inContextClasses)
+                  ContextClassProvider inContextClassProvider)
     {
         super(inHost,
               inPort,
               inAppId,
-              inContextClasses);
+              inContextClassProvider);
     }
     /**
      * Creates a new client node with the given server host name,

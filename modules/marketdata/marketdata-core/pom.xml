@@ -28,6 +28,11 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>misc</artifactId>
     </dependency>
+    <!-- runtime -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId> <!-- use cxf-rt-transports-local or common? -->
+    </dependency>
     <!-- test -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -38,6 +43,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

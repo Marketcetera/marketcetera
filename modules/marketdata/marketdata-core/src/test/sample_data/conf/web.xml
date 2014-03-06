@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+  <!--  authenticator -->
+  <bean id="authenticator" class="org.marketcetera.marketdata.core.webservice.impl.MockAuthenticator"/>
+  <!-- session factory -->
+  <bean id="clientSessionFactory" class="org.marketcetera.marketdata.core.webservice.impl.MockSessionFactory"/>
+  <!--  session manager -->
+  <bean id="sessionManager" class="org.marketcetera.util.ws.stateful.SessionManager">
+    <constructor-arg ref="clientSessionFactory"/>
+    <constructor-arg value="-1"/> <!-- Session life in ms, -1 for unlimited -->
+  </bean>
+  <bean id="server" class="org.marketcetera.marketdata.core.webservice.impl.MockServer" init-method="start" destroy-method="stop">
+    <property name="authenticator" ref="authenticator"/>
+    <property name="sessionManager" ref="sessionManager"/>
+  </bean>
+  <!-- The market data manager instance -->
+  <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl"/>
+  <!-- market data web service -->
+  <bean id="marketdataWebService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataWebServiceImpl" init-method="start" destroy-method="stop">
+    <constructor-arg ref="sessionManager"/>
+  </bean>
+</beans>

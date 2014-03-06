@@ -9,6 +9,10 @@ import java.io.Serializable;
 import java.util.*;
 
 import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -27,6 +31,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  */
 @Immutable
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name="marketDataRequest")
 @ClassVersion("$Id$")
 public class MarketDataRequest
         implements Serializable
@@ -38,7 +44,7 @@ public class MarketDataRequest
      */
     public Set<String> getSymbols()
     {
-        return marketdata.getSymbols();
+        return request.getSymbols();
     }
     /**
      * Get the underlying symbols value.
@@ -47,7 +53,7 @@ public class MarketDataRequest
      */
     public Set<String> getUnderlyingSymbols()
     {
-        return marketdata.getUnderlyingSymbols();
+        return request.getUnderlyingSymbols();
     }
     /**
      * Get the provider value.
@@ -56,7 +62,7 @@ public class MarketDataRequest
      */
     public String getProvider()
     {
-        return marketdata.getProvider();
+        return request.getProvider();
     }
     /**
      * Get the exchange value.
@@ -65,7 +71,7 @@ public class MarketDataRequest
      */
     public String getExchange()
     {
-        return marketdata.getExchange();
+        return request.getExchange();
     }
     /**
      * Get the content value.
@@ -74,7 +80,7 @@ public class MarketDataRequest
      */
     public Set<Content> getContent()
     {
-        return marketdata.getContent();
+        return request.getContent();
     }
     /**
      * Get the map of parameter names and values.
@@ -83,7 +89,7 @@ public class MarketDataRequest
      */
     public Map<String,String> getParameters()
     {
-        return marketdata.getParameters();
+        return request.getParameters();
     }
     /**
      * Get the asset class value.
@@ -92,7 +98,7 @@ public class MarketDataRequest
      */
     public AssetClass getAssetClass()
     {
-        return marketdata.getAssetClass();
+        return request.getAssetClass();
     }
     /**
      * Determines if the request is valid apropos the given capabilities.
@@ -102,7 +108,7 @@ public class MarketDataRequest
      */
     public boolean validateWithCapabilities(Content...inCapabilities)
     {
-        Set<Content> results = new HashSet<Content>(marketdata.getContent());
+        Set<Content> results = new HashSet<Content>(request.getContent());
         results.removeAll(Arrays.asList(inCapabilities));
         return results.isEmpty();
     }
@@ -113,7 +119,7 @@ public class MarketDataRequest
     public int hashCode()
     {
         return new HashCodeBuilder(13,
-                                   31).append(marketdata).toHashCode();
+                                   31).append(request).toHashCode();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -131,8 +137,8 @@ public class MarketDataRequest
           return false;
         }
         MarketDataRequest rhs = (MarketDataRequest)obj;
-        return new EqualsBuilder().append(marketdata,
-                                          rhs.marketdata).isEquals();
+        return new EqualsBuilder().append(request,
+                                          rhs.request).isEquals();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -140,7 +146,7 @@ public class MarketDataRequest
     @Override
     public String toString()
     {
-        return marketdata.toString();
+        return request.toString();
     }
     /**
      * Create a new MarketDataRequest instance.
@@ -150,12 +156,20 @@ public class MarketDataRequest
     MarketDataRequest(MarketDataRequestBean inMarketDataRequestBean)
     {
         try {
-            marketdata = inMarketDataRequestBean.clone();
+            request = inMarketDataRequestBean.clone();
         } catch (CloneNotSupportedException e) {
             throw new UnsupportedOperationException(e);
         }
         setDefaults();
         validate();
+    }
+    /**
+     * Create a new MarketDataRequest instance.
+     */
+    @SuppressWarnings("unused")
+    private MarketDataRequest()
+    {
+        request = new MarketDataRequestBean();
     }
     /**
      * Validates the <code>MarketDataRequest</code>.
@@ -182,11 +196,11 @@ public class MarketDataRequest
      */
     private void setDefaults()
     {
-        if(marketdata.getContent().isEmpty()) {
-            marketdata.setContent(EnumSet.of(TOP_OF_BOOK));
+        if(request.getContent().isEmpty()) {
+            request.setContent(EnumSet.of(TOP_OF_BOOK));
         }
-        if(marketdata.getAssetClass() == null) {
-            marketdata.setAssetClass(EQUITY);
+        if(request.getAssetClass() == null) {
+            request.setAssetClass(EQUITY);
         }
     }
     /**
@@ -325,6 +339,7 @@ public class MarketDataRequest
     /**
      * the request data 
      */
-    private final MarketDataRequestBean marketdata;
-    private static final long serialVersionUID = 2L;
+    @XmlElement(name="request")
+    private final MarketDataRequestBean request;
+    private static final long serialVersionUID = 3L;
 }
