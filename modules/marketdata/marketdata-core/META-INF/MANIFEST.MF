@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.marketcetera.modules.mdata.core;singleton:=true
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Name: Core Marketdata Module
+Bundle-Version: 2.4.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Bundle: org.marketcetera.core,
+ org.marketcetera.core.tests;resolution:=optional
+Eclipse-RegisterBuddy: org.marketcetera.core
+Export-Package: org.marketcetera.marketdata,
+ org.marketcetera.marketdata.core,
+ org.marketcetera.marketdata.core.cache,
+ org.marketcetera.marketdata.core.manager,
+ org.marketcetera.marketdata.core.manager.impl,
+ org.marketcetera.marketdata.core.module,
+ org.marketcetera.marketdata.core.provider,
+ org.marketcetera.marketdata.core.request,
+ org.marketcetera.marketdata.core.webservice,
+ org.marketcetera.marketdata.core.webservice.impl,
+ org.marketcetera.marketdata.module,
+ org.marketcetera.marketdata.provider

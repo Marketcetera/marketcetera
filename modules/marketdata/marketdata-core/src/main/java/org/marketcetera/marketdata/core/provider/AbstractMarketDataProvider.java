@@ -22,10 +22,12 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.HasEventType;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.Capability;
+import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.MarketDataProvider;
 import org.marketcetera.marketdata.core.ProviderStatus;
-import org.marketcetera.marketdata.core.cache.MarketdataCache;
+import org.marketcetera.marketdata.core.cache.MarketDataCache;
 import org.marketcetera.marketdata.core.manager.MarketDataException;
 import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.core.manager.MarketDataProviderRegistry;
@@ -55,7 +57,7 @@ import com.google.common.collect.Multimap;
 @ThreadSafe
 @ClassVersion("$Id$")
 public abstract class AbstractMarketDataProvider
-        implements MarketDataProvider, MarketdataCache
+        implements MarketDataProvider,MarketDataCache
 {
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.cache.MarketdataCache#getSnapshot(org.marketcetera.core.trade.Instrument, org.marketcetera.marketdata.Content)
@@ -63,7 +65,7 @@ public abstract class AbstractMarketDataProvider
     @Override
     public Event getSnapshot(Instrument inInstrument,
                              Content inContent)
-    {
+{
         Lock snapshotLock = marketdataLock.readLock();
         try {
             snapshotLock.lockInterruptibly();
@@ -191,7 +193,9 @@ public abstract class AbstractMarketDataProvider
                             SLF4JLoggerProxy.debug(this,
                                                    "Sending snapshot: {}",
                                                    snapshotEvent);
-                            inRequestToken.getSubscriber().publishTo(snapshotEvent);
+                            if(inRequestToken.getSubscriber() != null) {
+                                inRequestToken.getSubscriber().publishTo(snapshotEvent);
+                            }
                         } else {
                             SLF4JLoggerProxy.debug(this,
                                                    "No snapshot for {}",
@@ -630,6 +634,7 @@ public abstract class AbstractMarketDataProvider
      * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
      * @since $Release$
      */
+    @ClassVersion("$Id$")
     private class EventNotifier
             implements Runnable, Lifecycle
     {
@@ -673,22 +678,25 @@ public abstract class AbstractMarketDataProvider
                                                "Publishing {} to {}",
                                                outgoingEvents,
                                                requests);
-                        for(MarketDataRequestToken request : requests) {
+                        for(MarketDataRequestToken requestToken : requests) {
                             // for each subscriber, determine if the request contents justifies the update
-                            if(request.getRequest().getContent().contains(notification.content)) {
+                            if(requestToken.getRequest().getContent().contains(notification.content)) {
                                 // enclose the "publishTo" in a try/catch because we're ceding control to unknown code and
                                 //  we don't want a misbehaving subscriber to break the market data mechanism
                                 try {
                                     for(Event outgoingEvent : outgoingEvents) {
-                                        outgoingEvent.setSource(request.getId());
-                                        ISubscriber subscriber = request.getSubscriber();
-                                        subscriber.publishTo(outgoingEvent);
+                                        outgoingEvent.setSource(requestToken.getId());
+                                        outgoingEvent.setProvider(getProviderName());
+                                        ISubscriber subscriber = requestToken.getSubscriber();
+                                        if(subscriber != null) {
+                                            subscriber.publishTo(outgoingEvent);
+                                        }
                                     }
                                 } catch (Exception e) {
                                     org.marketcetera.marketdata.core.Messages.EVENT_NOTIFICATION_FAILED.warn(AbstractMarketDataProvider.this,
                                                                                                              e,
                                                                                                              outgoingEvents,
-                                                                                                             request.getSubscriber());
+                                                                                                             requestToken.getSubscriber());
                                 }
                             }
                         }
@@ -762,6 +770,7 @@ public abstract class AbstractMarketDataProvider
      * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
      * @since $Release$
      */
+    @ClassVersion("$Id$")
     private static class EventNotification
     {
         /* (non-Javadoc)
@@ -875,6 +884,8 @@ public abstract class AbstractMarketDataProvider
         capabilities.put(Content.OPEN_BOOK,Capability.OPEN_BOOK);
         capabilities.put(Content.TOP_OF_BOOK,Capability.TOP_OF_BOOK);
         capabilities.put(Content.TOTAL_VIEW,Capability.TOTAL_VIEW);
+        capabilities.put(Content.AGGREGATED_DEPTH,Capability.AGGREGATED_DEPTH);
+        capabilities.put(Content.UNAGGREGATED_DEPTH,Capability.UNAGGREGATED_DEPTH);
         necessaryCapabilities = Collections.unmodifiableMap(capabilities);
     }
 }

@@ -6,6 +6,7 @@ import java.util.*;
 
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.client.users.UserInfo;
+import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;

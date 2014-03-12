@@ -15,10 +15,9 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface ContextClassProvider
 {
     /**
-     * 
+     * Gets the context classes used to marshal/unmarshal objects.
      *
-     *
-     * @return
+     * @return a <code>Class&lt;?&gt;[]</code> value
      */
     Class<?>[] getContextClasses();
 }

@@ -1,7 +1,10 @@
 package org.marketcetera.marketdata.core.manager;
 
 import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -25,7 +28,7 @@ public interface MarketDataManager
      * TODO what is the behavior if the same request is submitted multiple times with the same subscriber?
      *
      * @param inRequest a <code>MarketDataRequest</code> value
-     * @param inSubscriber an <code>ISubscriber</code>
+     * @param inSubscriber an <code>ISubscriber</code> value or <code>null</code> if no update events are required
      * @return a <code>long</code> value that identifies the request
      * @throws MarketDataRequestFailed if the request could not be executed
      * @throws MarketDataProviderNotAvailable if a specifically requested provider is not available
@@ -34,6 +37,18 @@ public interface MarketDataManager
      */
     public long requestMarketData(MarketDataRequest inRequest,
                                   ISubscriber inSubscriber);
+    /**
+     * 
+     *
+     *
+     * @param inInstrument
+     * @param inContent
+     * @param inProvider
+     * @return
+     */
+    public Event requestMarketDataSnapshot(Instrument inInstrument,
+                                           Content inContent,
+                                           String inProvider);
     /**
      * Cancels all market data requests for the given subscriber.
      *

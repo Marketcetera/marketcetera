@@ -3,8 +3,6 @@ package org.marketcetera.photon.internal.marketdata;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.misc.ClassVersion;
@@ -21,7 +19,9 @@ import com.google.common.collect.Sets;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class DepthOfBookKey extends Key {
+public class DepthOfBookKey
+        extends Key
+{
 
 	public static final Set<Content> VALID_PRODUCTS = Sets.immutableEnumSet(Content.LEVEL_2,Content.TOTAL_VIEW,Content.OPEN_BOOK,Content.BBO10);
 	private final Content mProduct;
@@ -52,20 +52,4 @@ public class DepthOfBookKey extends Key {
 	public Content getProduct() {
 		return mProduct;
 	}
-
-	@Override
-	protected void enhanceHashCode(final HashCodeBuilder builder) {
-		builder.append(mProduct);
-	}
-
-    @Override
-    protected void refineEquals(final EqualsBuilder builder, final Key otherKey) {
-        /*
-         * The super class guarantees this assert so we can safely cast to
-         * DepthOfBookKey below.
-         */
-        assert getClass() == otherKey.getClass();
-        builder.append(mProduct, ((DepthOfBookKey) otherKey).mProduct);
-    }
-
 }

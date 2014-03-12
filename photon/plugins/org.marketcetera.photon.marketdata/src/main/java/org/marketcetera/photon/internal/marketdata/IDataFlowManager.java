@@ -24,8 +24,8 @@ import org.marketcetera.util.misc.ClassVersion;
  *            the key that identifies a unique data request
  */
 @ClassVersion("$Id$")
-public interface IDataFlowManager<T, K extends Key> {
-
+public interface IDataFlowManager<T, K extends Key>
+{
 	/**
 	 * Returns a data item for the given key. The item will not have any data unless
 	 * {@link #startFlow(Key)} is called (or has already been called).

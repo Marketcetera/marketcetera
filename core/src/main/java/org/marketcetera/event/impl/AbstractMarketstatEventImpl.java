@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
@@ -24,6 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 abstract class AbstractMarketstatEventImpl
         implements MarketstatEvent, HasEventBean
@@ -301,8 +305,18 @@ abstract class AbstractMarketstatEventImpl
         marketstat.validate();
     }
     /**
+     * Create a new AbstractMarketstatEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    protected AbstractMarketstatEventImpl()
+    {
+        marketstat = new MarketstatBean();
+    }
+    /**
      * the marketstat attributes
      */
+    @XmlElement
     private final MarketstatBean marketstat;
     private static final long serialVersionUID = 1L;
 }

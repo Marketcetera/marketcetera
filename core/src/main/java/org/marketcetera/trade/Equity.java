@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.marketcetera.util.misc.ClassVersion;
@@ -19,61 +21,54 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Equity extends Instrument {
-
-    private final String mSymbol;
-
+@ClassVersion("$Id$")
+public class Equity
+        extends Instrument
+{
     /**
-     * Constructor.
-     * 
-     * @param symbol
-     *            symbol
-     * @throws IllegalArgumentException
-     *             if symbol is null or whitespace
+     * Create a new Equity instance.
+     *
+     * @param inSymbol a <code>String</code> value
+     * @throws IllegalArgumentException if symbol is null or empty
      */
-    public Equity(String symbol) {
-        symbol = StringUtils.trimToNull(symbol);
-        Validate.notNull(symbol);
-        mSymbol = symbol;
+    public Equity(String inSymbol)
+    {
+        inSymbol = StringUtils.trimToNull(inSymbol);
+        Validate.notNull(inSymbol);
+        symbol = inSymbol;
     }
-
-    /**
-     * Parameterless constructor for use only by JAXB.
-     */
-    protected Equity() {
-        mSymbol = null;
-    }
-
-    /**
-     * Returns equity symbol.
-     * 
-     * @return the equity symbol, never null
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Instrument#getSymbol()
      */
     @Override
-    public String getSymbol() {
-        return mSymbol;
+    public String getSymbol()
+    {
+        return symbol;
     }
-
-    /**
-     * Always returns {@link SecurityType#CommonStock}.
-     * 
-     * @return {@link SecurityType#CommonStock}
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.Instrument#getSecurityType()
      */
     @Override
-    public SecurityType getSecurityType() {
+    public SecurityType getSecurityType()
+    {
         return SecurityType.CommonStock;
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
-    public int hashCode() {
-        return  mSymbol.hashCode();
+    public int hashCode()
+    {
+        return new HashCodeBuilder().append(symbol).toHashCode();
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if (this == obj) {
             return true;
         }
@@ -84,14 +79,27 @@ public class Equity extends Instrument {
             return false;
         }
         Equity other = (Equity) obj;
-        return mSymbol.equals(other.mSymbol);
+        return new EqualsBuilder().append(symbol,other.symbol).isEquals();
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("symbol", mSymbol) //$NON-NLS-1$
-                .toString();
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("symbol", symbol).toString(); //$NON-NLS-1$
     }
+    /**
+     * Create a new Equity instance.
+     */
+    @SuppressWarnings("unused")
+    private Equity()
+    {
+        symbol = null;
+    }
+    /**
+     * symbol value
+     */
+    private final String symbol;
     private static final long serialVersionUID = 1L;
 }

@@ -3,6 +3,10 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.ConvertibleBondEvent;
 import org.marketcetera.event.MarketstatEvent;
@@ -21,8 +25,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.1.0
  */
 @ThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name="convertibleBondTrade")
 @ClassVersion("$Id$")
-class ConvertibleBondMarketstatEventImpl
+public class ConvertibleBondMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements ConvertibleBondEvent
 {
@@ -274,8 +280,19 @@ class ConvertibleBondMarketstatEventImpl
         bond.validate();
     }
     /**
+     * Create a new ConvertibleBondMarketstatEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private ConvertibleBondMarketstatEventImpl()
+    {
+        bond = new ConvertibleBondBean();
+    }
+    /**
      * the Bond attributes 
      */
+    @XmlElement
     private final ConvertibleBondBean bond;
     private static final long serialVersionUID = 1L;
 }

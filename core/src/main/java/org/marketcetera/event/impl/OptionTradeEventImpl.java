@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-final class OptionTradeEventImpl
+public class OptionTradeEventImpl
         extends AbstractTradeEventImpl
         implements OptionEvent
 {
@@ -106,6 +106,16 @@ final class OptionTradeEventImpl
     protected String getDescription()
     {
         return description;
+    }
+    /**
+     * Create a new OptionTradeEventImpl instance.
+     * 
+     * <p>This constructor is intended to be used by JAXB.
+     */
+    @SuppressWarnings("unused")
+    private OptionTradeEventImpl()
+    {
+        option = new OptionBean();
     }
     /**
      * provides a human-readable description of this event type (does not need to be localized)

@@ -57,16 +57,17 @@ public class MarketdataCacheElement
             case LATEST_TICK:
                 return trade;
             case TOP_OF_BOOK:
-                OrderBook orderbook = orderbooks.get(inContent);
-                return orderbook == null ? null : orderbook.getTopOfBook();
+            case NBBO:
+                return getOrderBookFor(inContent).getTopOfBook();
             case AGGREGATED_DEPTH:
             case BBO10:
-            case DIVIDEND:
             case LEVEL_2:
-            case NBBO:
             case OPEN_BOOK:
             case TOTAL_VIEW:
             case UNAGGREGATED_DEPTH:
+                return getOrderBookFor(inContent).getDepthOfBook();
+            case DIVIDEND:
+                // TODO we actually need to return multiple events here
             default:
                 throw new UnsupportedOperationException();
         }
@@ -148,12 +149,7 @@ public class MarketdataCacheElement
                               Collection<Event> inoutResults,
                               Event...inEvents)
     {
-        OrderBook orderbook = orderbooks.get(inContent);
-        if(orderbook == null) {
-            orderbook = new OrderBook(instrument);
-            orderbooks.put(inContent,
-                           orderbook);
-        }
+        OrderBook orderbook = getOrderBookFor(inContent);
         for(Event event : inEvents) {
             if(event instanceof QuoteEvent) {
                 QuoteEvent quoteEvent = (QuoteEvent)event;
@@ -189,6 +185,23 @@ public class MarketdataCacheElement
                 throw new IllegalArgumentException(Messages.CONTENT_REQUIRES_QUOTE_EVENTS.getText(inContent,event.getClass().getName()));
             }
         }
+    }
+    /**
+     * 
+     *
+     *
+     * @param inContent
+     * @return
+     */
+    private OrderBook getOrderBookFor(Content inContent)
+    {
+        OrderBook book = orderbooks.get(inContent);
+        if(book == null) {
+            book = new OrderBook(instrument);
+            orderbooks.put(inContent,
+                           book);
+        }
+        return book;
     }
     /**
      * instrument for which market data is cached

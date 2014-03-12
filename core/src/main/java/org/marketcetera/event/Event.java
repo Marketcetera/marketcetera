@@ -3,6 +3,8 @@ package org.marketcetera.event;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -28,6 +30,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
+@XmlJavaTypeAdapter(AnyTypeAdapter.class)
 @ClassVersion("$Id$")
 public interface Event
         extends TimestampCarrier, Serializable, Messages

@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id: CurrencyTradeEventImpl.java")
-final class CurrencyTradeEventImpl
+public class CurrencyTradeEventImpl
         extends AbstractTradeEventImpl
         implements CurrencyEvent
 {
@@ -60,6 +60,16 @@ final class CurrencyTradeEventImpl
     protected String getDescription()
     {
         return description;
+    }
+    /**
+     * Create a new CurrencyTradeEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private CurrencyTradeEventImpl()
+    {
+        currency = new CurrencyBean();
     }
     /**
      * provides a human-readable description of this event type (does not need to be localized)

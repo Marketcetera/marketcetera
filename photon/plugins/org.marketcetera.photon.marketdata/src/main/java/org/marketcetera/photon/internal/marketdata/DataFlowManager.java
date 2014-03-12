@@ -4,7 +4,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -25,6 +24,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.inject.BindingAnnotation;
 
@@ -42,32 +42,28 @@ import com.google.inject.BindingAnnotation;
  * associated MDItem starts getting data.
  * 
  * @see IDataFlowManager
- * @param <T>
- *            the model object type being managed
- * @param <K>
- *            the request key being managed
+ * @param <DataType> the model object type being managed
+ * @param <KeyType> the request key being managed
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-abstract class DataFlowManager<T, K extends Key> implements
-        IDataFlowManager<T, K> {
-
+abstract class DataFlowManager<DataType,KeyType extends Key>
+        implements IDataFlowManager<DataType,KeyType>
+{
     /**
      * Identifies the {@link Executor} used by this class for Guice binding.
      */
+    @BindingAnnotation
     @Retention(RetentionPolicy.RUNTIME)
     @Target( { ElementType.PARAMETER })
-    @BindingAnnotation
-    @interface MarketDataExecutor {
-    }
-
+    @interface MarketDataExecutor {}
     private final ModuleManager mModuleManager;
-    private final Map<K,ModuleURN> mSubscribers = new HashMap<K, ModuleURN>();
-    private final LoadingCache<K,T> mItems = CacheBuilder.newBuilder().build(new CacheLoader<K,T>() {
+    private final Map<KeyType,IMarketDataSubscriber> mSubscribers = Maps.newHashMap();
+    private final LoadingCache<KeyType,DataType> mItems = CacheBuilder.newBuilder().build(new CacheLoader<KeyType,DataType>() {
         @Override
-        public T load(K from)
+        public DataType load(KeyType from)
                 throws Exception
         {
             return createItem(from);
@@ -76,37 +72,31 @@ abstract class DataFlowManager<T, K extends Key> implements
     private final Executor mMarketDataExecutor;
     private final IMarketDataRequestSupport mMarketDataRequestSupport;
     private ModuleURN mSourceModule;
-
     /**
      * Constructor.
      * 
-     * @param moduleManager
-     *            the module manager
-     * @param requiredCapabilities
-     *            the capabilities this manager requires, cannot be empty
-     * @param marketDataExecutor
-     *            an executor for long running module operations that
-     *            <strong>must</strong> execute tasks sequentially
-     * @param marketDataRequestSupport
-     *            supports generating market data requests
-     * @throws IllegalArgumentException
-     *             if any parameter is null, or if requiredCapabilities is empty
+     * @param moduleManager the module manager
+     * @param requiredCapabilities the capabilities this manager requires, cannot be empty
+     * @param marketDataExecutor an executor for long running module operations that <strong>must</strong> execute tasks sequentially
+     * @param marketDataRequestSupport supports generating market data requests
+     * @throws IllegalArgumentException if any parameter is null, or if requiredCapabilities is empty
      */
     protected DataFlowManager(final ModuleManager moduleManager,
-            final Set<Capability> requiredCapabilities,
-            final Executor marketDataExecutor,
-            IMarketDataRequestSupport marketDataRequestSupport) {
+                              final Set<Capability> requiredCapabilities,
+                              final Executor marketDataExecutor,
+                              IMarketDataRequestSupport marketDataRequestSupport)
+    {
         Validate.noNullElements(new Object[] { moduleManager,
-                requiredCapabilities, marketDataExecutor,
-                marketDataRequestSupport });
+                                               requiredCapabilities,
+                                               marketDataExecutor,
+                                               marketDataRequestSupport });
         mModuleManager = moduleManager;
         mRequiredCapabilities = Sets.immutableEnumSet(requiredCapabilities);
         mMarketDataExecutor = marketDataExecutor;
         mMarketDataRequestSupport = marketDataRequestSupport;
     }
-
     @Override
-    public final T getItem(final K key) {
+    public final DataType getItem(final KeyType key) {
         Validate.notNull(key);
         try {
             return mItems.get(key);
@@ -116,47 +106,50 @@ abstract class DataFlowManager<T, K extends Key> implements
     }
 
     @Override
-    public final synchronized void setSourceFeed(final IMarketDataFeed feed) {
-        /*
-         * This method restarts all modules even if the feed has not changed, in
-         * case anything went wrong the previous time.
-         */
-        ModuleURN module = feed == null ? null : feed.getURN();
-        if (mSourceModule != null) {
-            for (ModuleURN subscriber : mSubscribers.values()) {
-                stopModule(subscriber, false);
-            }
-        }
-        for (K key : mItems.asMap().keySet()) {
-            resetItem(key);
-        }
-        mSourceModule = null;
-        if (feed != null) {
-            Set<Capability> capabilities = feed.getCapabilities();
-            if (capabilities.containsAll(mRequiredCapabilities)) {
-                mSourceModule = module;
-                for (ModuleURN subscriber : mSubscribers.values()) {
-                    startModule(subscriber);
-                }
-            } else {
-                Messages.DATA_FLOW_MANAGER_CAPABILITY_UNSUPPORTED.info(this,
-                        feed.getName(), capabilities, mRequiredCapabilities);
-            }
-        }
+    public final synchronized void setSourceFeed(final IMarketDataFeed feed)
+    {
+        // TODO
+        throw new UnsupportedOperationException();
+//        /*
+//         * This method restarts all modules even if the feed has not changed, in
+//         * case anything went wrong the previous time.
+//         */
+//        ModuleURN module = feed == null ? null : feed.getURN();
+//        if(mSourceModule != null) {
+//            for(ModuleURN subscriber : mSubscribers.values()) {
+//                stopModule(subscriber, false);
+//            }
+//        }
+//        for (KeyType key : mItems.asMap().keySet()) {
+//            resetItem(key);
+//        }
+//        mSourceModule = null;
+//        if (feed != null) {
+//            Set<Capability> capabilities = feed.getCapabilities();
+//            if (capabilities.containsAll(mRequiredCapabilities)) {
+//                mSourceModule = module;
+//                for (ModuleURN subscriber : mSubscribers.values()) {
+//                    startModule(subscriber);
+//                }
+//            } else {
+//                Messages.DATA_FLOW_MANAGER_CAPABILITY_UNSUPPORTED.info(this,
+//                        feed.getName(), capabilities, mRequiredCapabilities);
+//            }
+//        }
     }
 
-    private void startModule(final ModuleURN module) {
-        assert module != null;
-        mMarketDataExecutor.execute(new ReportingRunnable() {
-            @Override
-            public void doRun() throws Exception {
-                if (!mModuleManager.getModuleInfo(module).getState()
-                        .isStarted()) {
-                    mModuleManager.start(module);
-                }
-            }
-        });
-    }
+//    private void startModule(final ModuleURN module) {
+//        assert module != null;
+//        mMarketDataExecutor.execute(new ReportingRunnable() {
+//            @Override
+//            public void doRun() throws Exception {
+//                if (!mModuleManager.getModuleInfo(module).getState()
+//                        .isStarted()) {
+//                    mModuleManager.start(module);
+//                }
+//            }
+//        });
+//    }
 
     private void stopModule(final ModuleURN module, final boolean delete) {
         assert module != null;
@@ -173,7 +166,7 @@ abstract class DataFlowManager<T, K extends Key> implements
         });
     }
 
-    private void resetItem(final K key) {
+    private void resetItem(final KeyType key) {
         assert key != null;
         /*
          * This goes into the queue as well since it depends on earlier
@@ -186,11 +179,11 @@ abstract class DataFlowManager<T, K extends Key> implements
             }
         });
     }
-
     @Override
-    public final synchronized void startFlow(final K key) {
+    public final synchronized void startFlow(final KeyType key)
+    {
         Validate.notNull(key);
-        if (mSubscribers.containsKey(key)) {
+        if(mSubscribers.containsKey(key)) {
             return;
         }
         IMarketDataSubscriber subscriber = createSubscriber(key);
@@ -203,12 +196,27 @@ abstract class DataFlowManager<T, K extends Key> implements
              * As a side effect, it allows assertion errors to be reported
              * immediately
              */
-            ModuleURN subscriberURN = mModuleManager.createModule(
-                    MarketDataReceiverFactory.PROVIDER_URN, subscriber);
-            if (mSourceModule != null) {
-                startModule(subscriberURN);
+            MarketDataRequestBuilder requestBuilder = MarketDataRequestBuilder.newRequest();
+            requestBuilder.withAssetClass(subscriber.getRequest().getAssetClass())
+                .withContent(subscriber.getRequest().getContent())
+                .withExchange(subscriber.getRequest().getExchange())
+                .withProvider(subscriber.getRequest().getProvider())
+                .withSymbols(subscriber.getRequest().getSymbols())
+                .withUnderlyingSymbols(subscriber.getRequest().getUnderlyingSymbols());
+            if(subscriber.getRequest().getParameters() != null) {
+                for(Map.Entry<String,String> entry : subscriber.getRequest().getParameters().entrySet()) {
+                    requestBuilder.withParameter(entry.getKey(),
+                                                 entry.getValue());
+                }
             }
-            mSubscribers.put(key, subscriberURN);
+//            key.setRequestId(getMarketDataClient().request(requestBuilder.create()));
+//            ModuleURN subscriberURN = mModuleManager.createModule(MarketDataReceiverFactory.PROVIDER_URN,
+//                                                                  subscriber);
+//            if (mSourceModule != null) {
+//                startModule(subscriberURN);
+//            }
+            mSubscribers.put(key,
+                             subscriber);
         } catch (InvalidURNException e) {
             // the provider URN should never be invalid
             throw new AssertionError(e);
@@ -222,29 +230,38 @@ abstract class DataFlowManager<T, K extends Key> implements
             // something went wrong creating the module, throw runtime exception
             // since no error handling is supported at this point
             throw new IllegalStateException(e);
+//        } catch (RemoteException e) {
+//            throw new AssertionError(e);
         }
     }
 
     @Override
-    public final synchronized void stopFlow(final K key) {
-        Validate.notNull(key);
-        ModuleURN subscriberURN = mSubscribers.remove(key);
-        if (subscriberURN == null) {
-            return;
+    public final synchronized void stopFlow(final KeyType inKey)
+    {
+        Validate.notNull(inKey);
+        IMarketDataSubscriber subscriber = mSubscribers.remove(inKey);
+        if(subscriber != null) {
+            try {
+//                marketDataClient.cancel(inKey.getRequestId());
+//            } catch (RemoteException e) {
+//                throw new RuntimeException(e);
+            } finally {
+                resetItem(inKey);
+            }
         }
-        stopModule(subscriberURN, true);
-        resetItem(key);
     }
 
     @Override
-    public final synchronized void restartFlow(final K key) {
-        Validate.notNull(key);
-        ModuleURN subscriberURN = mSubscribers.get(key);
-        if (subscriberURN == null) {
-            return;
-        }
-        stopModule(subscriberURN, false);
-        startModule(subscriberURN);
+    public final synchronized void restartFlow(final KeyType inKey)
+    {
+        throw new UnsupportedOperationException();
+//        Validate.notNull(inKey);
+//        ModuleURN subscriberURN = mSubscribers.get(inKey);
+//        if (subscriberURN == null) {
+//            return;
+//        }
+//        stopModule(subscriberURN, false);
+//        startModule(subscriberURN);
     }
 
     /**
@@ -266,7 +283,7 @@ abstract class DataFlowManager<T, K extends Key> implements
      *            the data key, will not be null
      * @return a data item that will reflect the market data
      */
-    abstract protected T createItem(K key);
+    abstract protected DataType createItem(KeyType key);
 
     /**
      * Hook for subclasses to reset data items to their initial state since the
@@ -277,7 +294,7 @@ abstract class DataFlowManager<T, K extends Key> implements
      * @param item
      *            the item to reset
      */
-    abstract protected void resetItem(K key, T item);
+    abstract protected void resetItem(KeyType key, DataType item);
 
     /**
      * Hook for subclasses to provide a custom subscriber to handle market data.
@@ -288,7 +305,7 @@ abstract class DataFlowManager<T, K extends Key> implements
      *            the data key, will not be null
      * @return a subscriber that will handle the market data
      */
-    abstract protected Subscriber createSubscriber(K key);
+    abstract protected Subscriber createSubscriber(KeyType key);
 
     private abstract static class ReportingRunnable implements Runnable {
         @Override

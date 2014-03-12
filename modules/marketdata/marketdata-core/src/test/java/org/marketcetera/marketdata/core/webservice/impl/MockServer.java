@@ -184,7 +184,7 @@ public class MockServer
     /**
      * 
      */
-    private String hostname = "0.0.0.0";
+    private String hostname = "127.0.0.1";
     /**
      * 
      */

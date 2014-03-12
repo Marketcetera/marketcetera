@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id: CurrencyMarketstatEventImpl.java")
-class CurrencyMarketstatEventImpl
+public class CurrencyMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements CurrencyEvent
 {
@@ -60,6 +60,16 @@ class CurrencyMarketstatEventImpl
         super(inMarketstat);
         currency = inCurrency;
         currency.validate();
+    }
+    /**
+     * Create a new CurrencyMarketstatEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private CurrencyMarketstatEventImpl()
+    {
+        currency = new CurrencyBean();
     }
     /**
      * the currency attributes 

@@ -18,6 +18,7 @@ import org.marketcetera.client.jms.ReceiveOnlyHandler;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.Util;
+import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.*;
@@ -555,7 +556,9 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
      * @throws ConnectionException if there were errors connecting
      * to the server.
      */
-    ClientImpl(ClientParameters inParameters) throws ConnectionException {
+    ClientImpl(ClientParameters inParameters)
+            throws ConnectionException
+    {
         setParameters(inParameters);
         connect();
     }
@@ -863,98 +866,89 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             }
         }
     }
-
-    private void connect() throws ConnectionException {
-        if(mParameters.getURL() == null || mParameters.getURL().
-                trim().isEmpty()) {
+    /**
+     * Connects the client to the server.
+     *
+     * @throws ConnectionException if an error occurs connecting to the server
+     */
+    private void connect()
+            throws ConnectionException
+    {
+        if(mParameters.getURL() == null || mParameters.getURL().trim().isEmpty()) {
             throw new ConnectionException(Messages.CONNECT_ERROR_NO_URL);
         }
-        if(mParameters.getUsername() == null || mParameters.getUsername().
-                trim().isEmpty()) {
+        if(mParameters.getUsername() == null || mParameters.getUsername().trim().isEmpty()) {
             throw new ConnectionException(Messages.CONNECT_ERROR_NO_USERNAME);
         }
         if(mParameters.getHostname() == null || mParameters.getHostname().trim().isEmpty()) {
             throw new ConnectionException(Messages.CONNECT_ERROR_NO_HOSTNAME);
         }
         if(mParameters.getPort() < 1 || mParameters.getPort() > 0xFFFF) {
-            throw new ConnectionException(new I18NBoundMessage1P(
-                    Messages.CONNECT_ERROR_INVALID_PORT, mParameters.getPort()));
+            throw new ConnectionException(new I18NBoundMessage1P(Messages.CONNECT_ERROR_INVALID_PORT,
+                                                                 mParameters.getPort()));
         }
         try {
             StaticApplicationContext parentCtx = new StaticApplicationContext();
-            SpringUtils.addStringBean(parentCtx, "brokerURL",  //$NON-NLS-1$
-                    mParameters.getURL());
-            SpringUtils.addStringBean(parentCtx,
-                    "runtimeUsername", mParameters.getUsername());  //$NON-NLS-1$
-            SpringUtils.addStringBean(parentCtx,
-                    "runtimePassword", mParameters == null    //$NON-NLS-1$
-                    ? null
-                    : String.valueOf(mParameters.getPassword()));
+            SpringUtils.addStringBean(parentCtx,"brokerURL",mParameters.getURL());  //$NON-NLS-1$
+            SpringUtils.addStringBean(parentCtx,"runtimeUsername",mParameters.getUsername());  //$NON-NLS-1$
+            SpringUtils.addStringBean(parentCtx,"runtimePassword",mParameters==null?null: String.valueOf(mParameters.getPassword()));    //$NON-NLS-1$
             parentCtx.refresh();
             AbstractApplicationContext ctx;
             try {
-                ctx = new FileSystemXmlApplicationContext(new String[] {"file:"+ApplicationBase.CONF_DIR+"client.xml"}, //$NON-NLS-1$
+                ctx = new FileSystemXmlApplicationContext(new String[] { "file:"+ApplicationBase.CONF_DIR+"client.xml" }, //$NON-NLS-1$
                                                           parentCtx);
             } catch (BeansException e) {
-                ctx = new ClassPathXmlApplicationContext(new String[] {"client.xml"},  //$NON-NLS-1$
+                ctx = new ClassPathXmlApplicationContext(new String[] { "client.xml" },  //$NON-NLS-1$
                                                          parentCtx);
             }
             ctx.registerShutdownHook();
             ctx.start();
             setContext(ctx);
-            SpringConfig cfg=SpringConfig.getSingleton();
-            if (cfg==null) {
-                throw new ConnectionException
-                    (Messages.CONNECT_ERROR_NO_CONFIGURATION);
+            SpringConfig cfg = SpringConfig.getSingleton();
+            if(cfg == null) {
+                throw new ConnectionException(Messages.CONNECT_ERROR_NO_CONFIGURATION);
             }
-
-            mServiceClient = new org.marketcetera.util.ws.stateful.Client
-                (mParameters.getHostname(), mParameters.getPort(),
-                 ClientVersion.APP_ID);
+            mServiceClient = new org.marketcetera.util.ws.stateful.Client(mParameters.getHostname(),
+                                                                          mParameters.getPort(),
+                                                                          ClientVersion.APP_ID);
             mServiceClient.login(mParameters.getUsername(),
                                  mParameters.getPassword());
             mService = mServiceClient.getService(Service.class);
-
-            mJmsMgr=new JmsManager
-                (cfg.getIncomingConnectionFactory(),
-                 cfg.getOutgoingConnectionFactory(),this);
+            mJmsMgr = new JmsManager(cfg.getIncomingConnectionFactory(),
+                                     cfg.getOutgoingConnectionFactory(),
+                                     this);
             startJms();
-            mServerAlive=true;
+            mServerAlive = true;
             notifyServerStatus(true);
-
             mHeart = new Heart();
             mHeart.start();
-
-            ClientIDFactory idFactory = new ClientIDFactory(
-                    mParameters.getIDPrefix(), this);
+            ClientIDFactory idFactory = new ClientIDFactory(mParameters.getIDPrefix(),
+                                                            this);
             idFactory.init();
             Factory.getInstance().setOrderIDFactory(idFactory);
-        } catch (Throwable t) {
+        } catch(Exception e) {
             internalClose();
-            ExceptUtils.interrupt(t);
-            if (t.getCause() instanceof RemoteProxyException) {
-                RemoteProxyException ex=(RemoteProxyException)t.getCause();
-                if (IncompatibleComponentsException.class.getName().equals
-                    (ex.getServerName())) {
-                    throw new ConnectionException
-                        (t,new I18NBoundMessage1P
-                         (Messages.ERROR_CONNECT_INCOMPATIBLE_DEDUCED,
-                          ex.getMessage()));
+            ExceptUtils.interrupt(e);
+            if(e.getCause() instanceof RemoteProxyException) {
+                RemoteProxyException ex = (RemoteProxyException)e.getCause();
+                if(IncompatibleComponentsException.class.getName().equals(ex.getServerName())) {
+                    throw new ConnectionException(e,
+                                                  new I18NBoundMessage1P(Messages.ERROR_CONNECT_INCOMPATIBLE_DEDUCED,
+                                                                         ex.getMessage()));
                 }
-            } else if (t.getCause() instanceof
-                       IncompatibleComponentsException) {
-                IncompatibleComponentsException ex=
-                    (IncompatibleComponentsException)t.getCause();
-                throw new ConnectionException
-                    (t,new I18NBoundMessage2P
-                     (Messages.ERROR_CONNECT_INCOMPATIBLE_DIRECT,
-                      ClientVersion.APP_ID,
-                      ex.getServerVersion()));
+            } else if(e.getCause() instanceof IncompatibleComponentsException) {
+                IncompatibleComponentsException ex = (IncompatibleComponentsException)e.getCause();
+                throw new ConnectionException(e,
+                                              new I18NBoundMessage2P(Messages.ERROR_CONNECT_INCOMPATIBLE_DIRECT,
+                                                                     ClientVersion.APP_ID,
+                                                                     ex.getServerVersion()));
             }
-            throw new ConnectionException(t, new I18NBoundMessage4P(
-                    Messages.ERROR_CONNECT_TO_SERVER, mParameters.getURL(),
-                    mParameters.getUsername(), mParameters.getHostname(),
-                    mParameters.getPort()));
+            throw new ConnectionException(e,
+                                          new I18NBoundMessage4P(Messages.ERROR_CONNECT_TO_SERVER,
+                                                                 mParameters.getURL(),
+                                                                 mParameters.getUsername(),
+                                                                 mParameters.getHostname(),
+                                                                 mParameters.getPort()));
         }
         mLastConnectTime = new Date();
     }
@@ -1068,26 +1062,28 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             }
         }
     }
-
+    /**
+     * Starts the JMS connection.
+     *
+     * @throws JAXBException if an error occurs starting the JMS connection
+     */
     private void startJms()
-        throws JAXBException
+            throws JAXBException
     {
-        if (mToServer!=null) {
+        if(mToServer != null) {
             return;
-        } 
-        mTradeMessageListener =
-            mJmsMgr.getIncomingJmsFactory().registerHandlerTMX
-            (new TradeMessageReceiver(),
-             JmsUtils.getReplyTopicName(getSessionId()),true);
-	mTradeMessageListener.start();
-        mBrokerStatusListener =
-            mJmsMgr.getIncomingJmsFactory().registerHandlerBSX
-            (new BrokerStatusReceiver(),Service.BROKER_STATUS_TOPIC,true);
-	mBrokerStatusListener.start();
-        mToServer=mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX
-            (Service.REQUEST_QUEUE,false);
+        }
+        mTradeMessageListener = mJmsMgr.getIncomingJmsFactory().registerHandlerTMX(new TradeMessageReceiver(),
+                                                                                   JmsUtils.getReplyTopicName(getSessionId()),
+                                                                                   true);
+        mTradeMessageListener.start();
+        mBrokerStatusListener = mJmsMgr.getIncomingJmsFactory().registerHandlerBSX(new BrokerStatusReceiver(),
+                                                                                   Service.BROKER_STATUS_TOPIC,
+                                                                                   true);
+        mBrokerStatusListener.start();
+        mToServer = mJmsMgr.getOutgoingJmsFactory().createJmsTemplateX(Service.REQUEST_QUEUE,
+                                                                       false);
    }
-
     /**
      * Sets the server connection status. If the status changed, the
      * registered callbacks are invoked.

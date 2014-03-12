@@ -13,14 +13,22 @@
     <constructor-arg ref="clientSessionFactory"/>
     <constructor-arg value="-1"/> <!-- Session life in ms, -1 for unlimited -->
   </bean>
+  <!-- Identifies context classes needed for market data events -->
+  <bean id="marketDataContextProvider" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider"/>
+  <!-- Provides client connections -->
+  <bean id="clientFactory" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceClientFactoryImpl">
+    <property name="contextClassProvider" ref="marketDataContextProvider"/>
+  </bean>
+  <!-- test server to provide the services -->
   <bean id="server" class="org.marketcetera.marketdata.core.webservice.impl.MockServer" init-method="start" destroy-method="stop">
     <property name="authenticator" ref="authenticator"/>
     <property name="sessionManager" ref="sessionManager"/>
+    <property name="contextClassProvider" ref="marketDataContextProvider"/>
   </bean>
   <!-- The market data manager instance -->
   <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl"/>
   <!-- market data web service -->
-  <bean id="marketdataWebService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataWebServiceImpl" init-method="start" destroy-method="stop">
+  <bean id="marketdataService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceImpl" init-method="start" destroy-method="stop">
     <constructor-arg ref="sessionManager"/>
   </bean>
 </beans>

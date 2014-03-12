@@ -2,9 +2,6 @@ package org.marketcetera.photon.notification;
 
 import java.util.Queue;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.INotificationManager;
@@ -81,16 +78,6 @@ class DesktopNotificationController implements ISubscriber {
 		if (!mDisposed) {
 			if (mPopupJob == null) {
 				mPopupJob = createJob();
-				mPopupJob.addJobChangeListener(new JobChangeAdapter() {
-					@Override
-					public void done(IJobChangeEvent event) {
-						if (event.getResult().getSeverity() == IStatus.CANCEL) {
-							// if the job is canceled, notifications
-							// will no longer be processed
-							dispose();
-						}
-					}
-				});
 				mPopupJob.schedule();
 			}
 			mPopupJob.enqueueNotification((INotification) inData);

@@ -16,7 +16,6 @@ package org.marketcetera.photon.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.IProduct;
@@ -33,16 +32,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.branding.IProductConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.marketcetera.photon.Messages;
@@ -62,7 +52,7 @@ public class LoginDialog
 
     private static final String ORS_URL = "href=\"http://confluence.marketcetera.com/display/MATPD/Photon+User+Guide#PhotonUserGuide-logginginLoggingIn\""; //$NON-NLS-1$
 
-    private Combo userIdText;
+    private Text userIdText;
 
 	private Text passwordText;
 
@@ -140,7 +130,7 @@ public class LoginDialog
 		userIdLabel.setLayoutData(new GridData(GridData.END, GridData.CENTER,
 				false, false));
 
-		userIdText = new Combo(composite, SWT.BORDER);
+		userIdText = new Text(composite, SWT.BORDER);
 		GridData gridData = new GridData(GridData.FILL, GridData.FILL, true,
 				false);
 		gridData.widthHint = convertHeightInCharsToPixels(20);
@@ -199,12 +189,8 @@ public class LoginDialog
 	}
 
 	protected void initializeUsers(String defaultUser) {
-		userIdText.removeAll();
+		userIdText.setText(""); //$NON-NLS-1$
 		passwordText.setText(""); //$NON-NLS-1$
-		for (Iterator<String> it = savedDetails.keySet().iterator(); it.hasNext();)
-			userIdText.add(it.next());
-		int index = Math.max(userIdText.indexOf(defaultUser), 0);
-		userIdText.select(index);
 	}
 
 	protected void okPressed() {

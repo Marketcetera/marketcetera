@@ -2,6 +2,11 @@ package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.ConvertibleBondEvent;
 import org.marketcetera.event.beans.ConvertibleBondBean;
@@ -19,8 +24,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id: ConvertibleBondAskEventImpl.java 16598 2013-06-25 13:27:58Z colin $
  * @since $Release$
  */
+@XmlRootElement(name="convertibleBondAsk")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-class ConvertibleBondAskEventImpl
+public class ConvertibleBondAskEventImpl
         extends AbstractQuoteEventImpl
         implements ConvertibleBondEvent, AskEvent
 {
@@ -278,12 +285,23 @@ class ConvertibleBondAskEventImpl
         return description;
     }
     /**
+     * Create a new ConvertibleBondAskEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private ConvertibleBondAskEventImpl()
+    {
+        bond = new ConvertibleBondBean();
+    }
+    /**
      * provides a human-readable description of this event type (does not need to be localized)
      */
     private static final String description = "Convertible Bond Ask"; //$NON-NLS-1$
     /**
      * the convertible bond attributes 
      */
+    @XmlElement
     private final ConvertibleBondBean bond;
     private static final long serialVersionUID = 1L;
 

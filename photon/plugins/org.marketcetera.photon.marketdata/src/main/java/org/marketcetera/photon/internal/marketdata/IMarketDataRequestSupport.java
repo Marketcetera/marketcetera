@@ -16,19 +16,17 @@ import com.google.inject.ImplementedBy;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
 @ImplementedBy(MarketDataRequestSupport.class)
-public interface IMarketDataRequestSupport {
-
+@ClassVersion("$Id$")
+public interface IMarketDataRequestSupport
+{
     /**
      * Initializes a {@link MarketDataRequestBuilder} for the provided instrument.
      * 
-     * @param instrument
-     *            the instrument
+     * @param instrument the instrument
      * @return a {@link MarketDataRequestBuilder} with instrument information
      */
     MarketDataRequestBuilder initializeRequest(Instrument instrument);
-
     /**
      * Returns whether fine grained market data is supported for options.
      * 

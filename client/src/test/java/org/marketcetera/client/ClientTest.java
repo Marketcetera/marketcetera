@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.*;
 import static org.marketcetera.trade.TypesTestBase.*;
+
 import java.beans.ExceptionListener;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.log4j.Level;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -23,6 +25,7 @@ import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
+import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.position.PositionKey;
 import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.module.ExpectedFailure;
@@ -34,6 +37,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.ws.stateless.Node;
+
 import quickfix.field.BusinessRejectReason;
 import quickfix.field.ClOrdID;
 import quickfix.field.OrdStatus;

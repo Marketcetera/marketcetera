@@ -13,7 +13,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -31,6 +33,7 @@ import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
+import org.marketcetera.photon.marketdata.ui.ReconnectMarketDataJob;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.views.*;
 import org.marketcetera.quickfix.*;
@@ -129,7 +132,6 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
     /**
      * This method is called upon plug-in activation
      */
-    @SuppressWarnings("unchecked")
     public void start(BundleContext context) throws Exception {
         super.start(context);
         bundleContext = context;
@@ -138,8 +140,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
 
         mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
 
-        new DefaultScope()
-                .getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true); //$NON-NLS-1$ //$NON-NLS-2$
+        new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true); //$NON-NLS-1$ //$NON-NLS-2$
 
         String level = getPreferenceStore().getString(
                 PhotonPreferences.CONSOLE_LOG_LEVEL);
@@ -149,31 +150,32 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         // Needed because the version of JRuby we're using doesn't play well
         // with mutliple threads
         // TODO: is this still needed??
-        System
-                .setProperty(
-                        "org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
         initMessageFactory();
         initTradeReportsHistory();
 
         initPhotonController();
-        PhotonPlugin.getDefault().getPreferenceStore()
-                .addPropertyChangeListener(this);
-        mMarketDataManagerTracker = new ServiceTracker(context,
-                IMarketDataManager.class.getName(), null);
+        PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+        mMarketDataManagerTracker = new ServiceTracker<Object,Object>(context,
+                                                                      IMarketDataManager.class.getName(),
+                                                                      null);
         mMarketDataManagerTracker.open();
-        mCredentialsServiceTracker = new ServiceTracker(context,
-                ICredentialsService.class.getName(), null);
+        mCredentialsServiceTracker = new ServiceTracker<Object,Object>(context,
+                                                                       ICredentialsService.class.getName(),
+                                                                       null);
         mCredentialsServiceTracker.open();
-        mLogoutServiceTracker = new ServiceTracker(context,
-                ILogoutService.class.getName(), null);
+        mLogoutServiceTracker = new ServiceTracker<Object,Object>(context,
+                                                                  ILogoutService.class.getName(),
+                                                                  null);
         mLogoutServiceTracker.open();
-        mSymbolResolverServiceTracker = new ServiceTracker(context,
-                                                           ISymbolResolver.class.getName(),
-                                                           null);
+        mSymbolResolverServiceTracker = new ServiceTracker<Object,Object>(context,
+                                                                          ISymbolResolver.class.getName(),
+                                                                          null);
         mSymbolResolverServiceTracker.open();
         context.registerService(UnderlyingSymbolSupport.class.getName(),
-                mUnderlyingSymbolSupport, null);
+                                mUnderlyingSymbolSupport,
+                                null);
     }
     public void initOrderTickets() {
         stockOrderTicketModel = new StockOrderTicketModel();
@@ -222,7 +224,9 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         super.stop(context);
         plugin = null;
         mPositionEngine = null;
-        if (mMarketDataManagerTracker != null) {
+        if(mMarketDataManagerTracker != null) {
+            IMarketDataManager marketDataManager = getMarketDataManager();
+            marketDataManager.close();
             mMarketDataManagerTracker.close();
             mMarketDataManagerTracker = null;
         }
@@ -235,8 +239,8 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
             mLogoutServiceTracker = null;
         }
         if(mReconnectMarketDataFeedJob != null){
-        	mReconnectMarketDataFeedJob.cancel();
-        	mReconnectMarketDataFeedJob = null;
+            mReconnectMarketDataFeedJob.cancel();
+            mReconnectMarketDataFeedJob = null;
         }
     }
 
@@ -504,8 +508,16 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
      * 
      * @return the {@link IMarketDataManager} service
      */
-    public IMarketDataManager getMarketDataManager() {
-        return (IMarketDataManager) mMarketDataManagerTracker.getService();
+    public IMarketDataManager getMarketDataManager()
+    {
+        IMarketDataManager marketDataManager = (IMarketDataManager)mMarketDataManagerTracker.getService();
+        if(marketDataManager != null) {
+            marketDataManager.setCredentialsService(getCredentialsService());
+            ScopedPreferenceStore prefs = getPreferenceStore();
+            marketDataManager.setHostname(prefs.getString(PhotonPreferences.NEXUS_WEB_SERVICE_HOST));
+            marketDataManager.setPort(prefs.getInt(PhotonPreferences.NEXUS_WEB_SERVICE_PORT));
+        }
+        return (IMarketDataManager)mMarketDataManagerTracker.getService();
     }
 
     /**
@@ -657,39 +669,15 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
         }
         return mBrokerManager;
     }
-
     /**
      * Starts a background job to reconnect to the market data feed.
      */
-    public void reconnectMarketDataFeed() {
-    	mReconnectMarketDataFeedJob = new Job(Messages.CONNECTING_TO_MARKET_DATA_JOB_NAME.getText()) {
-        //new Job(Messages.CONNECTING_TO_MARKET_DATA_JOB_NAME.getText()) {
-
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-             	Thread reconnectThread = new Thread(){
-             		public void run(){
-                         getMarketDataManager().reconnectFeed();
-             		}
-             	};
-             	reconnectThread.start();
-             	while(reconnectThread.getState() == Thread.State.TERMINATED){
-             		if(monitor.isCanceled()){
-             			reconnectThread.interrupt();
-             			return Status.CANCEL_STATUS;
-             		}
-             		try {
- 						Thread.sleep(5);
- 					} catch (InterruptedException e){
- 						return Status.CANCEL_STATUS;
- 					}
-             	}
-             	return Status.OK_STATUS;
-            }
-        };
-        mReconnectMarketDataFeedJob.schedule();
+    public void reconnectMarketDataFeed()
+    {
+        ReconnectMarketDataJob marketDataJob = new ReconnectMarketDataJob();
+        marketDataJob.setMarketDataManager(getMarketDataManager());
+        marketDataJob.schedule();
     }
-
     /**
      * Returns an object that provides the currently effective session start
      * time. Unlike the PhotonPreferences.TRADING_HISTORY_START_TIME preference

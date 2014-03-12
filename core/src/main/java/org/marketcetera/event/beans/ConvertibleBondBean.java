@@ -3,6 +3,8 @@ package org.marketcetera.event.beans;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import javax.xml.bind.annotation.*;
+
 import org.marketcetera.event.ConvertibleBondEvent;
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.util.EventServices;
@@ -19,6 +21,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id: ConvertibleBondBean.java 16598 2013-06-25 13:27:58Z colin $
  * @since $Release$
  */
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name="convertibleBond")
 @ClassVersion("$Id$")
 public class ConvertibleBondBean
         implements Serializable
@@ -671,114 +675,142 @@ public class ConvertibleBondBean
     /**
      * the instrument value
      */
+    @XmlElement
     private Instrument instrument;
     /**
      * parity value
      */
+    @XmlAttribute
     private BigDecimal parity;
     /**
      * underlying equity value
      */
+    @XmlElement
     private Equity underlyingEquity;
     /**
      * maturity value
      */
+    @XmlAttribute
     private String maturity;
     /**
      * yield value
      */
+    @XmlAttribute
     private BigDecimal yield;
     /**
      * amount outstanding value
      */
+    @XmlAttribute
     private BigDecimal amountOutstanding;
     /**
      * value date value
      */
+    @XmlAttribute
     private String valueDate;
     /**
      * trace report time value
      */
+    @XmlAttribute
     private String traceReportTime;
     /**
      * conversion price value
      */
+    @XmlAttribute
     private BigDecimal conversionPrice;
     /**
      * conversion ratio value
      */
+    @XmlAttribute
     private BigDecimal conversionRatio;
     /**
      * accrued interest value
      */
+    @XmlAttribute
     private BigDecimal accruedInterest;
     /**
      * issue price value
      */
+    @XmlAttribute
     private BigDecimal issuePrice;
     /**
      * conversion premium value
      */
+    @XmlAttribute
     private BigDecimal conversionPremium;
     /**
      * theoretical delta value
      */
+    @XmlAttribute
     private BigDecimal theoreticalDelta;
     /**
      * issue date value
      */
+    @XmlAttribute
     private String issueDate;
     /**
      * issuer domicile value
      */
+    @XmlAttribute
     private String issuerDomicile;
     /**
      * currency value
      */
+    @XmlAttribute
     private String currency;
     /**
      * bond currency value
      */
+    @XmlAttribute
     private String bondCurrency;
     /**
      * coupon rate value
      */
+    @XmlAttribute
     private BigDecimal couponRate;
     /**
      * payment frequency value
      */
+    @XmlAttribute
     private String paymentFrequency;
     /**
      * exchange code value
      */
+    @XmlAttribute
     private String exchangeCode;
     /**
      * company name value
      */
+    @XmlAttribute
     private String companyName;
     /**
      * rating value
      */
+    @XmlAttribute
     private String rating;
     /**
      * rating ID value
      */
+    @XmlAttribute
     private String ratingID;
     /**
      * par value
      */
+    @XmlAttribute
     private BigDecimal parValue;
     /**
      * isin value
      */
+    @XmlAttribute
     private String isin;
     /**
      * cusip value
      */
+    @XmlAttribute
     private String cusip;
     /**
      * Estimated trade size Indicator
      */
+    @XmlAttribute
     private String estimatedSizeInd;
     private static final long serialVersionUID = -6504290148975073754L;
 }

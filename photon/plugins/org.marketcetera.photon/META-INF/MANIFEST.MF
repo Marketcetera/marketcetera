@@ -33,7 +33,8 @@ Require-Bundle: org.marketcetera.core,
  org.eclipse.core.expressions,
  org.marketcetera.photon.commons.ui,
  org.marketcetera.photon.commons,
- com.ibm.icu
+ com.ibm.icu,
+ org.marketcetera.modules.mdata.core
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
  org.marketcetera.photon.parser,

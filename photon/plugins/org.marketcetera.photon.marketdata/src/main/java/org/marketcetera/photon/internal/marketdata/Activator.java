@@ -56,10 +56,8 @@ public class Activator extends Plugin {
     public final void start(final BundleContext context) throws Exception {
         synchronized (getClass()) {
             super.start(context);
-            final boolean useFineGrainedMarketDataForOptions = new InstanceScope()
-                    .getNode(MarketDataConstants.PLUGIN_ID)
-                    .getBoolean(USE_FINE_GRAINED_MARKET_DATA_FOR_OPTIONS_KEY,
-                            false);
+            final boolean useFineGrainedMarketDataForOptions = new InstanceScope().getNode(MarketDataConstants.PLUGIN_ID).getBoolean(USE_FINE_GRAINED_MARKET_DATA_FOR_OPTIONS_KEY,
+                                                                                                                                     false);
             mMarketDataExecutor = Executors.newSingleThreadExecutor();
             final Module module = new AbstractModule() {
                 @Override
@@ -78,10 +76,11 @@ public class Activator extends Plugin {
                 }
             };
             mMarketDataManager = Guice.createInjector(osgiModule(context),
-                    module).getInstance(MarketDataManager.class);
+                                                      module).getInstance(MarketDataManager.class);
             // service is unregistered during stop
             context.registerService(IMarketDataManager.class.getName(),
-                    mMarketDataManager, null);
+                                    mMarketDataManager,
+                                    null);
             sInstance = this;
         }
     }

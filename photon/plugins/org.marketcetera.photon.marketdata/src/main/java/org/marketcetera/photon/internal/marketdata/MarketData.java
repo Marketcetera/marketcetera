@@ -1,401 +1,977 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import java.util.EnumSet;
+import java.util.Deque;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Map.Entry;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
-import org.marketcetera.marketdata.Capability;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.marketcetera.event.*;
+import org.marketcetera.marketdata.AssetClass;
 import org.marketcetera.marketdata.Content;
+import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.MarketDataRequestBuilder;
+import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
+import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
+import org.marketcetera.marketdata.core.manager.MarketDataRequestTimedOut;
+import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
+import org.marketcetera.marketdata.core.webservice.PageRequest;
 import org.marketcetera.photon.marketdata.IMarketData;
-import org.marketcetera.photon.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.*;
-import org.marketcetera.trade.Currency;
-import org.marketcetera.trade.Equity;
-import org.marketcetera.trade.Future;
+import org.marketcetera.photon.model.marketdata.impl.*;
 import org.marketcetera.trade.Instrument;
-import org.marketcetera.trade.Option;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
 /* $License$ */
 
 /**
- * This class is the central manager of market data. Individual sub-managers are
- * used for each data type, but all requests come through this class. Market
- * data is returned in the form of a reference that can be disposed when no
- * longer needed. This allow data flows to be shared so at most one is active
- * for any given data request. Data flows are started after the first request
+ * This class is the central manager of market data.
+ * 
+ * <p>All requests come through this class. Market data is returned in the form of a reference that can be disposed when no
+ * longer needed. This allow data flows to be shared so at most one is active for any given data request. Data flows are started after the first request
  * and stopped after the last reference is disposed.
- * <p>
- * The sub-managers all extend {@link DataFlowManager}:
- * <ul>
- * <li>{@link LatestTickManager} - for latest tick data</li>
- * <li>{@link TopOfBookManager} - for top of book data</li>
- * <li>{@link MarketstatManager} - for market statistic data</li>
- * <li>{@link DepthOfBookManager} - for depth of book data (separate instances
- * manages each of Level 2, TotalView, and OpenBook data)</li>
- * <li>{@link SharedOptionLatestTickManager} - for option latest tick data when
- * fine grained market data is unavailable</li>
- * </ul>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class MarketData implements IMarketData {
-
-    private final Multiset<Key> mReferences = HashMultiset.create();
-    private final ILatestTickManager mLatestTickManager;
-    private final ITopOfBookManager mTopOfBookManager;
-    private final IMarketstatManager mMarketstatManager;
-    private final IDepthOfBookManager mLevel2Manager;
-    private final IDepthOfBookManager mTotalViewManager;
-    private final IDepthOfBookManager mOpenBookManager;
-    private final IDepthOfBookManager mBbo10Manager;
-    private final ISharedOptionLatestTickManager mSharedOptionLatestTickManager;
-    private final ISharedOptionMarketstatManager mSharedOptionMarketstatManager;
-    private final Map<Content, IDepthOfBookManager> mContentToDepthManager;
-    private final boolean mUseFineGrainedMarketDataForOptions;
-    private final Provider<UnderlyingSymbolSupport> mUnderlyingSymbolSupport;
-
+public class MarketData
+        implements IMarketData
+{
     /**
-     * Constructor.
-     * 
-     * @param latestTickManager
-     *            the manager for latest tick requests
-     * @param topOfBookManager
-     *            the manager for top of book requests
-     * @param marketstatManager
-     *            the manager for statistic requests
-     * @param depthOfBookManagerFactory
-     *            the factory for creating market depth managers
-     * @param sharedOptionLatestTickManager
-     *            the manager for shared option latest tick data
-     * @param sharedOptionMarketstatManager
-     *            the manager for shared option marketstat data
-     * @param marketDataRequestAdapter
-     *            controls whether fine grained market data is available for
-     *            options
-     * @param underlyingSymbolSupport
-     *            enables lookup of underlying symbol for options
-     * @throws IllegalArgumentException
-     *             if any parameter is null, or if the depth of book factory
-     *             returns null for a needed capability set
+     * Create a new MarketData instance.
+     *
+     * @param inMarketDataClientProvider an <code>IMarketDataClientProvider</code> value
      */
     @Inject
-    public MarketData(final ILatestTickManager latestTickManager,
-                      final ITopOfBookManager topOfBookManager,
-                      final IMarketstatManager marketstatManager,
-                      final IDepthOfBookManager.Factory depthOfBookManagerFactory,
-                      final ISharedOptionLatestTickManager sharedOptionLatestTickManager,
-                      final ISharedOptionMarketstatManager sharedOptionMarketstatManager,
-                      final IMarketDataRequestSupport marketDataRequestAdapter,
-                      final Provider<UnderlyingSymbolSupport> underlyingSymbolSupport)
+    public MarketData(final IMarketDataClientProvider inMarketDataClientProvider)
     {
-        Validate.noNullElements(new Object[] { latestTickManager,topOfBookManager,marketstatManager,depthOfBookManagerFactory,sharedOptionLatestTickManager,sharedOptionMarketstatManager,
-                marketDataRequestAdapter, underlyingSymbolSupport });
-        mLatestTickManager = latestTickManager;
-        mTopOfBookManager = topOfBookManager;
-        mMarketstatManager = marketstatManager;
-        mLevel2Manager = depthOfBookManagerFactory.create(EnumSet.of(Capability.LEVEL_2));
-        mTotalViewManager = depthOfBookManagerFactory.create(EnumSet.of(Capability.TOTAL_VIEW));
-        mOpenBookManager = depthOfBookManagerFactory.create(EnumSet.of(Capability.OPEN_BOOK));
-        mBbo10Manager = depthOfBookManagerFactory.create(EnumSet.of(Capability.BBO10));
-        mSharedOptionLatestTickManager = sharedOptionLatestTickManager;
-        mSharedOptionMarketstatManager = sharedOptionMarketstatManager;
-        Validate.noNullElements(new Object[] { mLevel2Manager,mTotalViewManager,mOpenBookManager });
-        mContentToDepthManager = ImmutableMap.of(Content.LEVEL_2,mLevel2Manager,
-                                                 Content.TOTAL_VIEW,mTotalViewManager,
-                                                 Content.OPEN_BOOK,mOpenBookManager,
-                                                 Content.BBO10,mBbo10Manager);
-        mUseFineGrainedMarketDataForOptions = marketDataRequestAdapter
-                .useFineGrainedMarketDataForOptions();
-        mUnderlyingSymbolSupport = underlyingSymbolSupport;
+        Validate.notNull(inMarketDataClientProvider);
+        marketDataClientProvider = inMarketDataClientProvider;
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketData#reset()
+     */
+    @Override
+    public void reset()
+    {
+//        requests.clear();
+        if(marketDataRefreshExecutor != null) {
+            marketDataRefreshExecutor.shutdownNow();
+        }
+        marketDataRefreshExecutor = Executors.newScheduledThreadPool(10);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketData#resubmit()
+     */
+    @Override
+    public void resubmit()
+    {
+        // TODO don't do anything if the reconnect button was pressed but no connection was lost to the server
+        for(Entry<MarketDataReferenceKey,MarketDataDetails<?,?>> entry : requests.entrySet()) {
+            MarketDataDetails<?,?> marketDataDetails = entry.getValue();
+            marketDataDetails.disconnect();
+            marketDataDetails.connect();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketData#getLatestTick(org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public IMarketDataReference<MDLatestTick> getLatestTick(Instrument inInstrument)
+    {
+        return getMarketDataReference(inInstrument,
+                                      Content.LATEST_TICK,
+                                      latestTickFactory,
+                                      latestTickUpdater,
+                                      TOP_UPDATE_FREQUENCY);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketData#getTopOfBook(org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public IMarketDataReference<MDTopOfBook> getTopOfBook(Instrument inInstrument)
+    {
+        return getMarketDataReference(inInstrument,
+                                      Content.TOP_OF_BOOK,
+                                      topOfBookFactory,
+                                      topOfBookUpdater,
+                                      TOP_UPDATE_FREQUENCY);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketData#getMarketstat(org.marketcetera.trade.Instrument)
+     */
+    @Override
+    public IMarketDataReference<MDMarketstat> getMarketstat(Instrument inInstrument)
+    {
+        return getMarketDataReference(inInstrument,
+                                      Content.MARKET_STAT,
+                                      marketstatFactory,
+                                      marketstatUpdater,
+                                      TOP_UPDATE_FREQUENCY);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketData#getDepthOfBook(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content)
+     */
+    @Override
+    public IMarketDataReference<MDDepthOfBook> getDepthOfBook(Instrument inInstrument,
+                                                              Content inProduct)
+    {
+        switch(inProduct) {
+            case AGGREGATED_DEPTH:
+                return getMarketDataReference(inInstrument,
+                                              Content.AGGREGATED_DEPTH,
+                                              depthOfBookFactory,
+                                              aggregatedDepthUpdater,
+                                              DEPTH_UPDATE_FREQUENCY);
+            case BBO10:
+                return getMarketDataReference(inInstrument,
+                                              Content.BBO10,
+                                              depthOfBookFactory,
+                                              bbo10DepthUpdater,
+                                              DEPTH_UPDATE_FREQUENCY);
+            case LEVEL_2:
+                return getMarketDataReference(inInstrument,
+                                              Content.LEVEL_2,
+                                              depthOfBookFactory,
+                                              level2DepthUpdater,
+                                              DEPTH_UPDATE_FREQUENCY);
+            case OPEN_BOOK:
+                return getMarketDataReference(inInstrument,
+                                              Content.OPEN_BOOK,
+                                              depthOfBookFactory,
+                                              openBookDepthUpdater,
+                                              DEPTH_UPDATE_FREQUENCY);
+            case TOTAL_VIEW:
+                return getMarketDataReference(inInstrument,
+                                              Content.TOTAL_VIEW,
+                                              depthOfBookFactory,
+                                              totalViewDepthUpdater,
+                                              DEPTH_UPDATE_FREQUENCY);
+            case UNAGGREGATED_DEPTH:
+                return getMarketDataReference(inInstrument,
+                                              Content.UNAGGREGATED_DEPTH,
+                                              depthOfBookFactory,
+                                              unaggregatedDepthUpdater,
+                                              DEPTH_UPDATE_FREQUENCY);
+            case MARKET_STAT:
+            case NBBO:
+            case TOP_OF_BOOK:
+            case DIVIDEND:
+            case LATEST_TICK:
+            default :
+                throw new UnsupportedOperationException();
+        }
+    }
     /**
-     * Sets the source for all data.
      * 
-     * @param feed
-     *            the source feed
-     * @throws IllegalArgumentException
-     *             if feed is null
+     *
+     *
+     * @param inInstrument
+     * @param inContent
+     * @param inFactory
+     * @param inUpdater
+     * @param inUpdateFrequency
+     * @return
      */
-    public void setSourceFeed(final IMarketDataFeed feed) {
-        mLatestTickManager.setSourceFeed(feed);
-        mTopOfBookManager.setSourceFeed(feed);
-        mMarketstatManager.setSourceFeed(feed);
-        mLevel2Manager.setSourceFeed(feed);
-        mTotalViewManager.setSourceFeed(feed);
-        mOpenBookManager.setSourceFeed(feed);
-        mBbo10Manager.setSourceFeed(feed);
-        mSharedOptionLatestTickManager.setSourceFeed(feed);
-        mSharedOptionMarketstatManager.setSourceFeed(feed);
+    @SuppressWarnings("unchecked")
+    private <MDType extends MDItem,MDMutableType extends MDType> IMarketDataReference<MDType> getMarketDataReference(final Instrument inInstrument,
+                                                                                                                     final Content inContent,
+                                                                                                                     ItemFactory<MDMutableType> inFactory,
+                                                                                                                     final ItemUpdater<MDMutableType> inUpdater,
+                                                                                                                     final long inUpdateFrequency)
+    {
+        Validate.notNull(inInstrument);
+        Validate.notNull(inContent);
+        final MarketDataReferenceKey key = new MarketDataReferenceKey(inInstrument,
+                                                                      inContent);
+        MarketDataDetails<?,?> existingMarketDataDetails = requests.get(key);
+        if(existingMarketDataDetails != null) {
+            // somebody has already asked for this data, simply return the existing reference
+            existingMarketDataDetails.incrementReferenceCount();
+            return (IMarketDataReference<MDType>)existingMarketDataDetails.getReference();
+        }
+        // this is a new reference
+        MarketDataRequestBuilder builder = MarketDataRequestBuilder.newRequest()
+            .withAssetClass(AssetClass.getFor(inInstrument.getSecurityType()))
+            .withSymbols(inInstrument.getFullSymbol())
+            .withContent(inContent);
+        MarketDataRequest request = builder.create();
+        MDMutableType item = inFactory.create();
+        MarketDataDetails<MDType,MDMutableType> newMarketDataDetails = new MarketDataDetails<>(inInstrument,
+                                                                                               inContent,
+                                                                                               request,
+                                                                                               item,
+                                                                                               key,
+                                                                                               inUpdater,
+                                                                                               inUpdateFrequency);
+        newMarketDataDetails.incrementReferenceCount();
+        requests.put(key,
+                     newMarketDataDetails);
+        newMarketDataDetails.connect();
+        return newMarketDataDetails.getReference();
     }
-
     /**
-     * If true, we can request a separate flow for the instrument. If false, the
-     * instrument is an Option and we must use sift out data from the shared
-     * flow for the underlying.
-     */
-    private boolean canRequestFineGrainedMarketData(Instrument instrument) {
-        return (instrument instanceof Equity ||
-                instrument instanceof Future ||
-                instrument instanceof Currency)
-                || mUseFineGrainedMarketDataForOptions;
-    }
-
-    @Override
-    public IMarketDataReference<MDLatestTick> getLatestTick(
-            final Instrument instrument) {
-        Validate.notNull(instrument);
-        if (canRequestFineGrainedMarketData(instrument)) {
-            return new Reference<MDLatestTick, LatestTickKey>(
-                    mLatestTickManager, new LatestTickKey(instrument));
-        } else {
-            final Option option = (Option) instrument;
-            return getSharedReference(new SharedOptionLatestTickKey(
-                    getUnderlying(option)), new LatestTickKey(option),
-                    mSharedOptionLatestTickManager);
-        }
-    }
-
-    private <T extends MDItem, I extends T, S extends Key, K extends Key, M extends IDataFlowManager<Map<Option, I>, S>> IMarketDataReference<T> getSharedReference(
-            final S sharedKey, K individualKey, final M manager) {
-        /*
-         * The shared data case is complex. All shared option data items for the
-         * same underlying equity share the same data flow (since fine grained
-         * requests are not possible). Two reference counters are used.
-         * 
-         * One is for the actual market data flow keyed by the underlying equity
-         * (S). Every request increments this counter and once the final
-         * reference is disposed, the data flow can be terminated.
-         * 
-         * The second is for the market data item tied to a particular option
-         * (K). While there are active references for this key, the shared
-         * manager will update the market data item from the shared data flow.
-         * Once the final reference is disposed, the shared data manager will
-         * ignore those updates.
-         * 
-         * For example, if latest tick has been requested once for IBMoption1
-         * and twice for IBMoption2, there will be three references for the IBM
-         * SharedOptionLatestTickKey, one for the IBMoption1 LatestTickKey, and
-         * two for the IBMoption2 LatestTickKey.
-         */
-        Option option = (Option) individualKey.getInstrument();
-        Map<Option, I> map = manager.getItem(sharedKey);
-        /*
-         * Unfortunately, we need to restart the flow each time a new
-         * reference is created. When a flow is started, market data
-         * providers send a snapshot of the current state and we need
-         * to make sure we get it for the new option (we already got it
-         * once but discarded it because we were not paying attention to
-         * it).
-         */
-        synchronized(mReferences) {
-            if (!mReferences.contains(individualKey)) {
-                if (!mReferences.contains(sharedKey)) {
-                    manager.startFlow(sharedKey);
-                } else {
-                    manager.restartFlow(sharedKey);
-                }
-            }
-        }
-        /*
-         * This will create a new data item the first time, but reuse the
-         * existing one on successive invocations.
-         */
-        final T item = map.get(option);
-        /*
-         * Create the shared reference using the shared key.
-         */
-        final IMarketDataReference<Map<Option, I>> shared = new AbstractReference<Map<Option, I>, S>(sharedKey, 
-                map) {
-            @Override
-            protected void referenceDisposed(S key, boolean lastOne) {
-                if (lastOne) {
-                    manager.stopFlow(key);
-                }
-            }
-        };
-        /*
-         * Create the individual option reference using the individual key.
-         */
-        return new AbstractReference<T, K>(individualKey, item) {
-            @Override
-            protected void referenceDisposed(K key, boolean lastOne) {
-                if (lastOne) {
-                    /*
-                     * Cleans up the data item for this particular option.
-                     */
-                    shared.get().remove(key.getInstrument());
-                }
-                /*
-                 * Always decrement the shared data flow reference count.
-                 */
-                shared.dispose();
-            }
-        };
-    }
-
-    private Equity getUnderlying(Option option) {
-        UnderlyingSymbolSupport underlyingSymbolSupport = mUnderlyingSymbolSupport
-                .get();
-        if (underlyingSymbolSupport != null) {
-            return new Equity(underlyingSymbolSupport.getUnderlying(option));
-        } else {
-            return new Equity(option.getSymbol());
-        }
-    }
-
-    @Override
-    public IMarketDataReference<MDTopOfBook> getTopOfBook(
-            final Instrument instrument) {
-        Validate.notNull(instrument);
-        return new Reference<MDTopOfBook, TopOfBookKey>(mTopOfBookManager,
-                new TopOfBookKey(instrument));
-    }
-
-    @Override
-    public IMarketDataReference<MDMarketstat> getMarketstat(
-            final Instrument instrument) {
-        Validate.notNull(instrument);
-        if (canRequestFineGrainedMarketData(instrument)) {
-            return new Reference<MDMarketstat, MarketstatKey>(
-                    mMarketstatManager, new MarketstatKey(instrument));
-        } else {
-            final Option option = (Option) instrument;
-            return getSharedReference(new SharedOptionMarketstatKey(
-                    getUnderlying(option)), new MarketstatKey(option),
-                    mSharedOptionMarketstatManager);
-        }
-    }
-
-    @Override
-    public IMarketDataReference<MDDepthOfBook> getDepthOfBook(
-            final Instrument instrument, final Content product) {
-        Validate.noNullElements(new Object[] { instrument, product });
-        Validate.isTrue(DepthOfBookKey.VALID_PRODUCTS.contains(product));
-        IDepthOfBookManager manager = mContentToDepthManager.get(product);
-        return new Reference<MDDepthOfBook, DepthOfBookKey>(manager,
-                new DepthOfBookKey(instrument, product));
-    }
-
-    /**
-     * A reference to a market data item connected to a data flow.
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
      */
     @ClassVersion("$Id$")
-    private class Reference<T, K extends Key> implements
-            IMarketDataReference<T> {
-
-        private final IMarketDataReference<T> mWrappedReference;
-
-        public Reference(final IDataFlowManager<? extends T, K> manager,
-                final K key) {
-            assert manager != null && key != null;
-            mWrappedReference = new AbstractReference<T, K>(key, manager
-                    .getItem(key)) {
-                @Override
-                public void firstReferenceCreated(K key) {
-                    manager.startFlow(key);
+    private class SubscriptionRefreshJob<MDType extends MDItem,MDMutableType extends MDType>
+            implements Runnable
+    {
+        /**
+         * Create a new SubscriptionRefreshJob instance.
+         *
+         * @param inInstrument
+         * @param inContent
+         * @param inId
+         * @param inUpdater
+         * @param inItem
+         */
+        private SubscriptionRefreshJob(Instrument inInstrument,
+                                       Content inContent,
+                                       long inId,
+                                       ItemUpdater<MDMutableType> inUpdater,
+                                       MDMutableType inItem)
+        {
+            instrument = inInstrument;
+            content = inContent;
+            id = inId;
+            updater = inUpdater;
+            item = inItem;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run()
+        {
+            try {
+                if(marketDataClientProvider.getMarketDataClient() == null || !marketDataClientProvider.getMarketDataClient().isRunning()) {
+                    updater.clear(item);
+                    cancel();
+                    return;
                 }
-
-                @Override
-                protected void referenceDisposed(K key, boolean lastOne) {
-                    if (lastOne) {
-                        manager.stopFlow(key);
+                long updateTimestamp = marketDataClientProvider.getMarketDataClient().getLastUpdate(id);
+                if(updateTimestamp > lastUpdate) {
+                    // TODO switch to get snapshot page
+                    PageRequest page = new PageRequest(1,
+                                                       Integer.MAX_VALUE);
+                    Deque<Event> events = marketDataClientProvider.getMarketDataClient().getSnapshotPage(instrument,
+                                                                                                         content,
+                                                                                                         null,
+                                                                                                         page);
+                    if(events == null || events.isEmpty()) {
+                        return;
                     }
+                    updater.update(item,
+                                   events);
+                    lastUpdate = updateTimestamp;
                 }
-            };
+            } catch (Exception e) {
+                // this is an exception that occurred during update - must be caught or it kills the scheduled executor - log it and report a problem to the user
+                updater.clear(item);
+                SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                       "A problem occurred updating market data for {} {} [{}]",
+                                       content,
+                                       instrument,
+                                       id);
+                SLF4JLoggerProxy.error(MarketData.this,
+                                       e);
+            }
         }
-
-        @Override
-        public T get() {
-            return mWrappedReference.get();
+        /**
+         * Cancels this job from being run again.
+         */
+        private void cancel()
+        {
+            if(refreshJobToken != null) {
+                refreshJobToken.cancel(true);
+                refreshJobToken = null;
+            }
         }
-
-        @Override
-        public void dispose() {
-            mWrappedReference.dispose();
-        }
+        /**
+         * 
+         */
+        private final Instrument instrument;
+        /**
+         * 
+         */
+        private final Content content;
+        /**
+         * 
+         */
+        private final long id;
+        /**
+         * 
+         */
+        private final ItemUpdater<MDMutableType> updater;
+        /**
+         * 
+         */
+        private final MDMutableType item;
+        /**
+         * 
+         */
+        private Future<?> refreshJobToken;
+        /**
+         * tracks the last update time
+         */
+        private long lastUpdate = 0;
     }
-
     /**
-     * A abstract {@link IMarketDataReference} implementation.
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
      */
     @ClassVersion("$Id$")
-    private abstract class AbstractReference<T, K extends Key> implements
-            IMarketDataReference<T> {
-
-        private final T mItem;
-        private final K mKey;
-        private final AtomicBoolean mDisposed = new AtomicBoolean();
-
-        public AbstractReference(final K key, final T item) {
-            assert key != null;
-            synchronized (mReferences) {
-                if (!mReferences.contains(key)) {
-                    firstReferenceCreated(key);
-                }
-                mReferences.add(key);
+    private static class MarketDataReferenceKey
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            return new HashCodeBuilder().append(content).append(instrument).toHashCode();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) {
+                return true;
             }
-            mKey = key;
-            mItem = item;
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof MarketDataReferenceKey)) {
+                return false;
+            }
+            MarketDataReferenceKey other = (MarketDataReferenceKey) obj;
+            return new EqualsBuilder().append(other.content,content).append(other.instrument,instrument).isEquals();
         }
-
         /**
-         * Called if the reference is the first for the key.
-         * 
-         * @param key
-         *            the key for which the reference was created
+         * Create a new MarketDataReferenceKey instance.
+         *
+         * @param inInstrument
+         * @param inContent
          */
-        protected void firstReferenceCreated(K key) {
+        private MarketDataReferenceKey(Instrument inInstrument,
+                                       Content inContent)
+        {
+            instrument = inInstrument;
+            content = inContent;
         }
-
         /**
-         * Called when the reference is disposed.
-         * 
-         * @param key
-         *            the key for which the reference was created
-         * @param lastOne
-         *            true if this is the final reference for the key
+         * market data instrument requested
          */
-        protected void referenceDisposed(K key, boolean lastOne) {
-        }
-
+        private final Instrument instrument;
+        /**
+         * market data content requested
+         */
+        private final Content content;
+    }
+    /**
+     * Contains the market data reference for an instrument-content tuple.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private class MarketDataDetails<MDType extends MDItem,MDMutableItemType extends MDType>
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
         @Override
-        public final T get() {
-            return mDisposed.get() ? null : mItem;
+        public String toString()
+        {
+            return new StringBuilder().append(instrument.getFullSymbol()).append(" - ").append(content).append(" ").append(referenceCount.get()).append(" use(s) [").append(requestId).append("]").toString();
         }
-
-        @Override
-        public final void dispose() {
-            if (mDisposed.getAndSet(true)) {
+        /**
+         * Disconnects this market data unit from the market data nexus while preserving the underlying reference.
+         * 
+         * <p>This market data unit may be reconnected later and all existing users
+         * of the underlying reference will transparently pick up the new market data deliveries.
+         */
+        private void disconnect()
+        {
+            updater.clear(item);
+            if(refreshJob != null) {
+                refreshJob.cancel();
+                refreshJob = null;
+            }
+            // do NOT change the reference count because there are still some number of users of the underlying reference
+            try {
+                marketDataClientProvider.getMarketDataClient().cancel(requestId);
+                requestId = -1;
+            } catch (Exception ignored) {}
+        }
+        /**
+         * Render this market data unit no longer usable.
+         */
+        private void dispose()
+        {
+            requests.remove(key);
+            disconnect();
+        }
+        /**
+         * Connects this market data unit to the market data nexus without affecting the underlying resource.
+         */
+        private void connect()
+        {
+            if(marketDataClientProvider.getMarketDataClient() == null || !marketDataClientProvider.getMarketDataClient().isRunning()) {
+                // we could connect at a later time
                 return;
             }
-            synchronized (mReferences) {
-                if (!mReferences.remove(mKey)) {
-                    /*
-                     * Should always be able to remove the reference if not yet
-                     * disposed.
-                     */
-                    throw new AssertionError();
+            try {
+                requestId = marketDataClientProvider.getMarketDataClient().request(request,
+                                                                                   false);
+            } catch (NoMarketDataProvidersAvailable | MarketDataProviderNotAvailable | MarketDataRequestTimedOut e) {
+                SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                       "Request for {} - {} failed because no market data providers are available that can honor the request",
+                                       content,
+                                       instrument);
+                SLF4JLoggerProxy.error(this,
+                                       e,
+                                       "Request for {} - {} failed because no market data providers are available that can honor the request",
+                                       content,
+                                       instrument);
+                return;
+            } catch (MarketDataRequestFailed e) {
+                SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                       "Request for {} - {} failed because there was a problem with the request",
+                                       content,
+                                       instrument);
+                SLF4JLoggerProxy.error(this,
+                                       e,
+                                       "Request for {} - {} failed because there was a problem with the request",
+                                       content,
+                                       instrument);
+                return;
+            } catch (Exception e) {
+                SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                       "Request for {} - {} failed",
+                                       content,
+                                       instrument);
+                SLF4JLoggerProxy.error(this,
+                                       e,
+                                       "Request for {} - {} failed",
+                                       content,
+                                       instrument);
+                throw new RuntimeException(e);
+            }
+            refreshJob = new SubscriptionRefreshJob<>(instrument,
+                                                      content,
+                                                      requestId,
+                                                      updater,
+                                                      item);
+            refreshJob.refreshJobToken = marketDataRefreshExecutor.scheduleAtFixedRate(refreshJob,
+                                                                                       1000,
+                                                                                       updateFrequency,
+                                                                                       TimeUnit.MILLISECONDS);
+        }
+        /**
+         * Increments and returns the reference count.
+         *
+         * @return an <code>int</code> value containing the updated reference count
+         */
+        private int incrementReferenceCount()
+        {
+            return referenceCount.incrementAndGet();
+        }
+        /**
+         * Decrements and returns the reference count.
+         *
+         * @return an <code>int</code> value containing the updated the reference count
+         */
+        private int decrementReferenceCount()
+        {
+            int updatedCount = referenceCount.decrementAndGet();
+            if(updatedCount <= 0) {
+                updatedCount = 0;
+                referenceCount.set(0);
+                dispose();
+            }
+            return updatedCount;
+        }
+        /**
+         * Get the reference value.
+         *
+         * @return an <code>IMarketDataReference<TypeClazz></code> value
+         */
+        private IMarketDataReference<MDType> getReference()
+        {
+            return reference;
+        }
+        /**
+         * Create a new MarketDataDetails instance.
+         *
+         * @param inInstrument
+         * @param inContent
+         * @param inRequest
+         * @param inItem
+         * @param inKey
+         * @param inUpdater
+         * @param inUpdateFrequency
+         */
+        private MarketDataDetails(Instrument inInstrument,
+                                  Content inContent,
+                                  MarketDataRequest inRequest,
+                                  final MDMutableItemType inItem,
+                                  final MarketDataReferenceKey inKey,
+                                  ItemUpdater<MDMutableItemType> inUpdater,
+                                  long inUpdateFrequency)
+        {
+            instrument = inInstrument;
+            content = inContent;
+            request = inRequest;
+            item = inItem;
+            updater = inUpdater;
+            updateFrequency = inUpdateFrequency;
+            key = inKey;
+            reference = new IMarketDataReference<MDType>() {
+                @Override
+                public MDType get()
+                {
+                    return item;
                 }
-                if (!mReferences.contains(mKey)) {
-                    referenceDisposed(mKey, true);
+                @Override
+                public void dispose()
+                {
+                    // this method is called if a consumer of the reference no longer needs it
+                    decrementReferenceCount();
+                }
+                /* (non-Javadoc)
+                 * @see java.lang.Object#toString()
+                 */
+                @Override
+                public String toString()
+                {
+                    return new StringBuilder().append("Ref-").append(id).append(" ").append(content).append(" for ").append(instrument).append(" [").append(requestId).append("]").toString();
+                }
+                /**
+                 * 
+                 */
+                private long id = System.nanoTime();
+            };
+        }
+        /**
+         * 
+         */
+        private final long updateFrequency;
+        /**
+         * 
+         */
+        private final ItemUpdater<MDMutableItemType> updater;
+        /**
+         * 
+         */
+        private final MDMutableItemType item;
+        /**
+         * 
+         */
+        private volatile long requestId;
+        /**
+         * 
+         */
+        private final MarketDataRequest request;
+        /**
+         * 
+         */
+        private volatile SubscriptionRefreshJob<MDType,MDMutableItemType> refreshJob;
+        /**
+         * tracks active user count
+         */
+        private final AtomicInteger referenceCount = new AtomicInteger(0);
+        /**
+         * market data instrument requested
+         */
+        private final Instrument instrument;
+        /**
+         * market data content requested
+         */
+        private final Content content;
+        /**
+         * 
+         */
+        private final MarketDataReferenceKey key;
+        /**
+         * 
+         */
+        private final IMarketDataReference<MDType> reference;
+    }
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private interface ItemFactory<MDType extends MDItem>
+    {
+        /**
+         * 
+         *
+         *
+         * @return
+         */
+        MDType create();
+    }
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private interface ItemUpdater<MDType extends MDItem>
+    {
+        /**
+         * 
+         *
+         *
+         * @param inItem
+         * @param inEvents
+         */
+        void update(MDType inItem,
+                    Deque<Event> inEvents);
+        /**
+         * 
+         *
+         *
+         * @param inItem
+         */
+        void clear(MDType inItem);
+    }
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private abstract static class AbstractDepthUpdater
+            implements ItemUpdater<MDDepthOfBookImpl>
+    {
+        /* (non-Javadoc)
+         * @see org.marketcetera.photon.internal.marketdata.MarketData.ItemUpdater#update(org.marketcetera.photon.model.marketdata.MDItem, java.util.Deque)
+         */
+        @Override
+        public void update(final MDDepthOfBookImpl inItem,
+                           final Deque<Event> inEvents)
+        {
+            inItem.setInstrument(inItem.getInstrument());
+            inItem.setProduct(getContent());
+            final List<AskEvent> newAsks = Lists.newArrayList();
+            final List<BidEvent> newBids = Lists.newArrayList();
+            for(Event event : inEvents) {
+                if(event instanceof BidEvent) {
+                    newBids.add((BidEvent)event);
+                } else if(event instanceof AskEvent) {
+                    newAsks.add((AskEvent)event);
                 } else {
-                    referenceDisposed(mKey, false);
+                    throw new UnsupportedOperationException();
+                }
+            }
+            // TODO measure difference only
+            if(!newAsks.isEmpty()) {
+                inItem.getAsks().doWriteOperation(new Callable<Void>() {
+                    @Override
+                    public Void call()
+                            throws Exception
+                    {
+                        inItem.getAsks().clear();
+                        for(AskEvent ask : newAsks) {
+                            MDQuoteImpl quoteItem = new MDQuoteImpl();
+                            quoteItem.setPrice(ask.getPrice());
+                            quoteItem.setSize(ask.getSize());
+                            quoteItem.setSource(String.valueOf(ask.getSource()));
+                            quoteItem.setTime(ask.getTimeMillis());
+                            inItem.getAsks().add(quoteItem);
+                        }
+                        return null;
+                    }
+                });
+            }
+            if(!newBids.isEmpty()) {
+                inItem.getBids().doWriteOperation(new Callable<Void>() {
+                    @Override
+                    public Void call()
+                            throws Exception
+                    {
+                        inItem.getBids().clear();
+                        for(BidEvent bid : newBids) {
+                            MDQuoteImpl quoteItem = new MDQuoteImpl();
+                            quoteItem.setPrice(bid.getPrice());
+                            quoteItem.setSize(bid.getSize());
+                            quoteItem.setSource(String.valueOf(bid.getSource()));
+                            quoteItem.setTime(bid.getTimeMillis());
+                            inItem.getBids().add(quoteItem);
+                        }
+                        return null;
+                    }
+                });
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.photon.internal.marketdata.MarketData.ItemUpdater#clear(org.marketcetera.photon.model.marketdata.MDItem)
+         */
+        @Override
+        public void clear(MDDepthOfBookImpl inItem)
+        {
+            inItem.getBids().clear();
+            inItem.getAsks().clear();
+        }
+        /**
+         * 
+         *
+         *
+         * @return
+         */
+        protected abstract Content getContent();
+    }
+    /**
+     * 
+     */
+    private ItemFactory<MDLatestTickImpl> latestTickFactory = new ItemFactory<MDLatestTickImpl>() {
+        @Override
+        public MDLatestTickImpl create()
+        {
+            return new MDLatestTickImpl();
+        }
+    };
+    /**
+     * 
+     */
+    private ItemFactory<MDTopOfBookImpl> topOfBookFactory = new ItemFactory<MDTopOfBookImpl>() {
+        @Override
+        public MDTopOfBookImpl create()
+        {
+            return new MDTopOfBookImpl();
+        }
+    };
+    /**
+     * 
+     */
+    private ItemFactory<MDMarketstatImpl> marketstatFactory = new ItemFactory<MDMarketstatImpl>() {
+
+        @Override
+        public MDMarketstatImpl create()
+        {
+            return new MDMarketstatImpl();
+        }
+    };
+    /**
+     * 
+     */
+    private ItemFactory<MDDepthOfBookImpl> depthOfBookFactory = new ItemFactory<MDDepthOfBookImpl>() {
+
+        @Override
+        public MDDepthOfBookImpl create()
+        {
+            return new MDDepthOfBookImpl();
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDLatestTickImpl> latestTickUpdater = new ItemUpdater<MDLatestTickImpl>() {
+        @Override
+        public void update(MDLatestTickImpl inItem,
+                           Deque<Event> inEvents)
+        {
+            Event mostRecentEvent = inEvents.getFirst();
+            if(mostRecentEvent instanceof TradeEvent) {
+                TradeEvent trade = (TradeEvent)mostRecentEvent;
+                inItem.setInstrument(trade.getInstrument());
+                inItem.setPrice(trade.getPrice());
+                inItem.setSize(trade.getSize());
+            }
+        }
+        @Override
+        public void clear(MDLatestTickImpl inItem)
+        {
+            inItem.setPrice(null);
+            inItem.setSize(null);
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDTopOfBookImpl> topOfBookUpdater = new ItemUpdater<MDTopOfBookImpl>() {
+        @Override
+        public void update(MDTopOfBookImpl inItem,
+                           Deque<Event> inEvents)
+        {
+            // traverse the list from front to back, stopping when we have one each of bid and ask
+            boolean askFound = false;
+            boolean bidFound = false;
+            for(Event event : inEvents) {
+                if(event instanceof AskEvent) {
+                    AskEvent ask = (AskEvent)event;
+                    askFound = true;
+                    inItem.setInstrument(ask.getInstrument());
+                    inItem.setAskPrice(ask.getPrice());
+                    inItem.setAskSize(ask.getSize());
+                } else if(event instanceof BidEvent) {
+                    BidEvent bid = (BidEvent)event;
+                    bidFound = true;
+                    inItem.setInstrument(bid.getInstrument());
+                    inItem.setBidPrice(bid.getPrice());
+                    inItem.setBidSize(bid.getSize());
+                }
+                if(askFound && bidFound) {
+                    break;
                 }
             }
         }
-    }
+        @Override
+        public void clear(MDTopOfBookImpl inItem)
+        {
+            inItem.setAskPrice(null);
+            inItem.setAskSize(null);
+            inItem.setBidPrice(null);
+            inItem.setBidSize(null);
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDMarketstatImpl> marketstatUpdater = new ItemUpdater<MDMarketstatImpl>() {
+        @Override
+        public void update(MDMarketstatImpl inItem,
+                           Deque<Event> inEvents)
+        {
+            Event mostRecentEvent = inEvents.getFirst();
+            if(mostRecentEvent instanceof MarketstatEvent) {
+                MarketstatEvent statEvent = (MarketstatEvent)mostRecentEvent;
+                inItem.setInstrument(statEvent.getInstrument());
+                inItem.setCloseDate(statEvent.getCloseDate());
+                inItem.setClosePrice(statEvent.getClose());
+                inItem.setHighPrice(statEvent.getHigh());
+                inItem.setLowPrice(statEvent.getLow());
+                inItem.setOpenPrice(statEvent.getOpen());
+                inItem.setPreviousCloseDate(statEvent.getPreviousCloseDate());
+                inItem.setPreviousClosePrice(statEvent.getPreviousClose());
+                inItem.setVolumeTraded(statEvent.getVolume());
+            }
+        }
+        @Override
+        public void clear(MDMarketstatImpl inItem)
+        {
+            inItem.setCloseDate(null);
+            inItem.setClosePrice(null);
+            inItem.setHighPrice(null);
+            inItem.setLowPrice(null);
+            inItem.setOpenPrice(null);
+            inItem.setPreviousCloseDate(null);
+            inItem.setPreviousClosePrice(null);
+            inItem.setVolumeTraded(null);
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDDepthOfBookImpl> aggregatedDepthUpdater = new AbstractDepthUpdater() {
+        @Override
+        protected Content getContent()
+        {
+            return Content.AGGREGATED_DEPTH;
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDDepthOfBookImpl> unaggregatedDepthUpdater = new AbstractDepthUpdater() {
+        @Override
+        protected Content getContent()
+        {
+            return Content.UNAGGREGATED_DEPTH;
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDDepthOfBookImpl> bbo10DepthUpdater = new AbstractDepthUpdater() {
+        @Override
+        protected Content getContent()
+        {
+            return Content.BBO10;
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDDepthOfBookImpl> level2DepthUpdater = new AbstractDepthUpdater() {
+        @Override
+        protected Content getContent()
+        {
+            return Content.LEVEL_2;
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDDepthOfBookImpl> openBookDepthUpdater = new AbstractDepthUpdater() {
+        @Override
+        protected Content getContent()
+        {
+            return Content.OPEN_BOOK;
+        }
+    };
+    /**
+     * 
+     */
+    private ItemUpdater<MDDepthOfBookImpl> totalViewDepthUpdater = new AbstractDepthUpdater() {
+        @Override
+        protected Content getContent()
+        {
+            return Content.TOTAL_VIEW;
+        }
+    };
+    /**
+     * 
+     */
+    private final Map<MarketDataReferenceKey,MarketDataDetails<?,?>> requests = Maps.newHashMap();
+    /**
+     * 
+     */
+    private ScheduledExecutorService marketDataRefreshExecutor = Executors.newScheduledThreadPool(10);
+    /**
+     * 
+     */
+    private final IMarketDataClientProvider marketDataClientProvider;
+    /**
+     * 
+     */
+    private static final long TOP_UPDATE_FREQUENCY = 1000;
+    /**
+     * 
+     */
+    private static final long DEPTH_UPDATE_FREQUENCY = 3000;
 }

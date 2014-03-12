@@ -1,10 +1,7 @@
 package org.marketcetera.photon.marketdata;
 
-import java.util.Collection;
-import java.util.Set;
-
-import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -36,74 +33,70 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public interface IMarketDataManager {
-
+public interface IMarketDataManager
+{
 	/**
 	 * Provides access to market data.
 	 * 
 	 * @return the associated IMarketData interface entry point to market data
 	 */
 	IMarketData getMarketData();
-
-	/**
-	 * Returns an unmodifiable list of the registered market data providers. This list is build
-	 * during plug-in initialization and does not change during the plug-in lifetime.
-	 * 
-	 * @return an unmodifiable list of the registered market data providers
-	 */
-	Collection<? extends IMarketDataFeed> getProviders();
-
 	/**
 	 * Attempts to reconnect to the default active market data feed. Active feed status listeners
 	 * will be notified of changes resulting from this operation.
 	 * 
-	 * @throws IllegalStateException
-	 *             if the module framework is in an unexpected state, or if an unrecoverable error
-	 *             occurs
+	 * @throws IllegalStateException if the module framework is in an unexpected state, or if an unrecoverable error occurs
 	 */
 	void reconnectFeed();
-
 	/**
 	 * Adds a listener to the manager to tracks the status of the active feed. This operation does
 	 * nothing if the listener is already registered.
 	 * 
-	 * @param listener
-	 *            to be notified when the active feed status changes
+	 * @param listener to be notified when the active feed status changes
 	 */
 	void addActiveFeedStatusChangedListener(IFeedStatusChangedListener listener);
-
 	/**
 	 * Removes the listener. This operation does nothing if the listener is not registered.
 	 * 
-	 * @param listener
-	 *            listener to remove
+	 * @param listener listener to remove
 	 */
 	void removeActiveFeedStatusChangedListener(IFeedStatusChangedListener listener);
-
 	/**
-	 * Returns the human readable name of the active market data feed. If there is no active feed,
-	 * <code>null</code> will be returned.
+	 * Returns the status of the market data nexus connection.
 	 * 
-	 * @return the human readable name of the active market data feed or <code>null</code> if none
-	 *         exists
+	 * @return a <code>FeedStatus</code> value
 	 */
-	String getActiveFeedName();
-
+	FeedStatus getFeedStatus();
 	/**
-	 * Returns the status of the active market data feed. If there is no active feed,
-	 * <code>FeedStatus.OFFLINE</code> will be returned.
 	 * 
-	 * @return the status of the active market data feed or <code>FeedStatus.OFFLINE</code> if none
-	 *         exists
+	 *
+	 *
+	 * @param inCredentialsService
 	 */
-	FeedStatus getActiveFeedStatus();
-
+	void setCredentialsService(ICredentialsService inCredentialsService);
 	/**
-	 * Returns the capabilities supported by the active market data feed.
 	 * 
-	 * @return the supported capabilities, will not be <code>null</code> but may be empty set if
-	 *         there is no active feed (or it has no capabilities)
+	 *
+	 *
+	 * @param inHostname
 	 */
-	Set<Capability> getActiveFeedCapabilities();
-
+	void setHostname(String inHostname);
+	/**
+	 * 
+	 *
+	 *
+	 * @param inPort
+	 */
+	void setPort(int inPort);
+    /**
+     * Indicates if the market data connection is ready.
+     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isRunning();
+    /**
+     *
+     *
+     */
+    void close();
 }

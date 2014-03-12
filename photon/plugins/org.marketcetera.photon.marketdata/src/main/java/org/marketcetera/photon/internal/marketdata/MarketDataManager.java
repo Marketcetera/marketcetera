@@ -1,33 +1,28 @@
 package org.marketcetera.photon.internal.marketdata;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.management.AttributeChangeNotification;
 import javax.management.NotificationEmitter;
 
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.core.runtime.Platform;
+import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.marketdata.AbstractMarketDataModule;
 import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
-import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.module.ModuleException;
-import org.marketcetera.module.ModuleManager;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.internal.marketdata.MarketDataFeed.FeedStatusEvent;
+import org.marketcetera.marketdata.core.webservice.ConnectionException;
+import org.marketcetera.marketdata.core.webservice.CredentialsException;
+import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
+import org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider;
+import org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceClientFactoryImpl;
+import org.marketcetera.photon.core.ICredentials;
+import org.marketcetera.photon.core.ICredentialsService;
+import org.marketcetera.photon.core.ICredentialsService.IAuthenticationHelper;
 import org.marketcetera.photon.marketdata.IFeedStatusChangedListener;
-import org.marketcetera.photon.marketdata.IMarketData;
-import org.marketcetera.photon.marketdata.IMarketDataFeed;
-import org.marketcetera.photon.marketdata.IMarketDataManager;
-import org.marketcetera.photon.marketdata.MarketDataConstants;
 import org.marketcetera.photon.marketdata.IFeedStatusChangedListener.IFeedStatusEvent;
+import org.marketcetera.photon.marketdata.IMarketData;
+import org.marketcetera.photon.marketdata.IMarketDataManager;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import com.google.inject.Inject;
@@ -72,145 +67,122 @@ import com.google.inject.Inject;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public final class MarketDataManager implements IMarketDataManager {
-
-    private static final String USER_MSG_CATEGORY = org.marketcetera.core.Messages.USER_MSG_CATEGORY;
-
-    private final ModuleManager mModuleManager;
-    private final ListenerList mActiveFeedListeners = new ListenerList();
-    private final AtomicBoolean mReconnecting = new AtomicBoolean(false);
-
-    private final AtomicReference<Map<String, MarketDataFeed>> mFeeds = new AtomicReference<Map<String, MarketDataFeed>>();
-    private volatile MarketDataFeed mActiveFeed;
-
-    private final IFeedStatusChangedListener mFeedStatusChangesListener = new IFeedStatusChangedListener() {
-        @Override
-        public void feedStatusChanged(final IFeedStatusEvent event) {
-            if (event.getSource() == mActiveFeed) {
-                notifyListeners(event);
-            }
-        }
-    };
-    private final MarketData mMarketData;
-
+public final class MarketDataManager
+        implements IMarketDataManager,IMarketDataClientProvider,ServerStatusListener
+{
     /**
-     * Constructor.
-     * 
-     * @param moduleManager
-     *            the module manager to use
+     * Create a new MarketDataManager instance.
+     *
      * @param marketData
-     *            the MarketData instance
      */
     @Inject
-    public MarketDataManager(final ModuleManager moduleManager,
-            final MarketData marketData) {
-        mModuleManager = moduleManager;
+    public MarketDataManager(final MarketData marketData)
+    {
         mMarketData = marketData;
     }
-
-    /*
-     * Lazy initialization. This is necessary since the module manager is not
-     * guaranteed to be fully initialized when this object is constructed in the
-     * bundle activator.
+    /**
+     * Gets a <code>MarketDataServiceClient</code>, creating one if necessary.
+     *
+     * @return a <code>MarketDataServiceClient</code> value
      */
-    private Map<String, MarketDataFeed> getFeeds() {
-        Map<String, MarketDataFeed> feeds = mFeeds.get();
-        if (feeds != null) {
-            return feeds;
-        }
-        feeds = new HashMap<String, MarketDataFeed>();
-        List<ModuleURN> providers = mModuleManager.getProviders();
-        for (ModuleURN providerURN : providers) {
-            if (providerURN.providerType().equals(
-                    MarketDataFeed.MARKET_DATA_PROVIDER_TYPE)) {
-                try {
-                    MarketDataFeed feed = new MarketDataFeed(providerURN);
-                    feed
-                            .addFeedStatusChangedListener(mFeedStatusChangesListener);
-                    feeds.put(providerURN.toString(), feed);
-                } catch (Exception e) {
-                    Messages.MARKET_DATA_MANAGER_IGNORING_PROVIDER.warn(this,
-                            e, providerURN);
-                }
-            }
-        }
-        if (mFeeds.compareAndSet(null, feeds)) {
-            return feeds;
-        }
-        return mFeeds.get();
+    public MarketDataServiceClient getMarketDataClient()
+    {
+        return marketDataClient;
     }
-
     @Override
-    public IMarketData getMarketData() {
+    public IMarketData getMarketData()
+    {
         return mMarketData;
     }
-
-    @Override
-    public Collection<? extends IMarketDataFeed> getProviders() {
-        return Collections.unmodifiableCollection(getFeeds().values());
-    }
-
-    @Override
-    public void reconnectFeed() {
-        reconnectFeed(getDefaultActiveFeed());
-    }
-
-    /**
-     * Private implementation method, only public for testing purposes.
-     * <p>
-     * TODO: Refactor for better encapsulation
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.notifications.ServerStatusListener#receiveServerStatus(boolean)
      */
-    public void reconnectFeed(final String providerId) {
-        if (!mReconnecting.compareAndSet(false, true)) {
+    @Override
+    public void receiveServerStatus(boolean inStatus)
+    {
+        FeedStatusNotification update = new FeedStatusNotification(getFeedStatus(),
+                                                                   FeedStatus.UNKNOWN);
+        if(inStatus) {
+            update.newFeedStatus = FeedStatus.AVAILABLE;
+        } else {
+            update.newFeedStatus = FeedStatus.ERROR;
+            if(mMarketData != null) {
+                mMarketData.reset();
+            }
+            if(marketDataClient != null) {
+                try {
+                    marketDataClient.stop();
+                } catch (Exception ignored) {}
+                marketDataClient = null;
+            }
+        }
+        notifyListeners(update);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketDataManager#setCredentialsService(org.marketcetera.photon.core.ICredentialsService)
+     */
+    @Override
+    public void setCredentialsService(ICredentialsService inCredentialsService)
+    {
+        credentialsService = inCredentialsService;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketDataManager#close()
+     */
+    @Override
+    public void close()
+    {
+        if(marketDataClient != null) {
+            try {
+                marketDataClient.stop();
+            } catch (Exception ignored) {}
+            marketDataClient = null;
+        }
+    }
+    @Override
+    public void reconnectFeed()
+    {
+        if(!mReconnecting.compareAndSet(false,
+                                        true)) {
             return;
         }
         try {
-            synchronized (this) {
-                final MarketDataFeed oldFeed = mActiveFeed;
-                mActiveFeed = getFeeds().get(providerId);
-                if (mActiveFeed == null && oldFeed == null) {
-                    // mReconnecting is reset in the finally block
-                    return;
-                }
-                if (mActiveFeed != null) {
-                    try {
-                        if (!mModuleManager.getModuleInfo(mActiveFeed.getURN())
-                                .getState().isStarted()) {
-                            mModuleManager.start(mActiveFeed.getURN());
-                        } else {
-                            mActiveFeed.reconnect();
-                        }
-                    } catch (ModuleException e) {
-                        // TODO: May be better to propagate the exception so
-                        // there can be dialog boxes, etc
-                        Messages.MARKET_DATA_MANAGER_FEED_START_FAILED.error(
-                                USER_MSG_CATEGORY, mActiveFeed.getName());
-                    } catch (UnsupportedOperationException e) {
-                        // TODO: May be better to propagate the exception so
-                        // there can be dialog boxes, etc
-                        Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED
-                                .error(USER_MSG_CATEGORY, e, mActiveFeed
-                                        .getName());
-                    }
-                }
-                mMarketData.setSourceFeed(mActiveFeed);
-                final FeedStatusEvent event;
-                final FeedStatus oldStatus = oldFeed == null ? FeedStatus.OFFLINE
-                        : oldFeed.getStatus();
-                if (mActiveFeed == null) {
-                    event = oldFeed.createFeedStatusEvent(oldStatus,
-                            FeedStatus.OFFLINE);
-                } else {
-                    event = mActiveFeed.createFeedStatusEvent(oldStatus,
-                            mActiveFeed.getStatus());
-                }
-                notifyListeners(event);
+            if(marketDataClient != null) {
+                marketDataClient.stop();
+                marketDataClient = null;
             }
+            connect();
+            mMarketData.resubmit();
+            if(marketDataClient != null && marketDataClient.isRunning()) {
+                SLF4JLoggerProxy.info(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                      "Market Data Nexus connection established");
+            }
+        } catch (ConnectionException e) {
+            SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                   "Cannot connect to the Market Data Nexus at {}:{}",
+                                   hostname,
+                                   port);
+            SLF4JLoggerProxy.error(this,
+                                   e,
+                                   "Cannot connect to the Market Data Nexus at {}:{}",
+                                   e.getHostname(),
+                                   e.getPort());
+        } catch (CredentialsException e) {
+            SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                   "The Market Data Nexus rejected the login attempt as {}",
+                                   e.getUsername());
+            SLF4JLoggerProxy.error(this,
+                                   e,
+                                   "The Market Data Nexus rejected the login attempt as {}",
+                                   e.getUsername());
+        } catch (Exception e) {
+            SLF4JLoggerProxy.error(this,
+                                   e);
+            throw new RuntimeException(e);
         } finally {
             mReconnecting.set(false);
         }
     }
-
     @Override
     public void addActiveFeedStatusChangedListener(
             final IFeedStatusChangedListener listener) {
@@ -222,43 +194,173 @@ public final class MarketDataManager implements IMarketDataManager {
             final IFeedStatusChangedListener listener) {
         mActiveFeedListeners.remove(listener);
     }
-
-    private void notifyListeners(final IFeedStatusEvent event) {
-        Object[] listeners = mActiveFeedListeners.getListeners();
-        for (Object object : listeners) {
-            ((IFeedStatusChangedListener) object).feedStatusChanged(event);
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketDataManager#setHostname(java.lang.String)
+     */
+    @Override
+    public void setHostname(String inHostname)
+    {
+        hostname = inHostname;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketDataManager#setPort(int)
+     */
+    @Override
+    public void setPort(int inPort)
+    {
+        port = inPort;
+    }
+    /**
+     * Indicates if the market data connection is ready.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isRunning()
+    {
+        if(marketDataClient == null || !marketDataClient.isRunning()) {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Connects to the market data server, if necessary.
+     */
+    private void connect()
+    {
+        if(marketDataClient == null || !marketDataClient.isRunning()) {
+            notifyListeners(new FeedStatusNotification(getFeedStatus(),
+                                                       FeedStatus.UNKNOWN));
+            FeedStatusNotification update = new FeedStatusNotification(getFeedStatus(),
+                                                                       FeedStatus.UNKNOWN);
+            try {
+                boolean success = credentialsService.authenticateWithCredentials(new IAuthenticationHelper() {
+                    @Override
+                    public boolean authenticate(ICredentials inCredentials)
+                    {
+                        marketDataClient = new MarketDataServiceClientFactoryImpl().create(inCredentials.getUsername(),
+                                                                                           inCredentials.getPassword(),
+                                                                                           hostname,
+                                                                                           port,
+                                                                                           new MarketDataContextClassProvider());
+                        marketDataClient.addServerStatusListener(MarketDataManager.this);
+                        marketDataClient.start();
+                        return marketDataClient.isRunning();
+                    }
+                });
+                update.newFeedStatus = success ? FeedStatus.AVAILABLE : FeedStatus.OFFLINE;
+            } catch (ConnectionException | CredentialsException e) {
+                update.newFeedStatus = FeedStatus.ERROR;
+                throw e;
+            } catch (RuntimeException e) {
+                update.newFeedStatus = FeedStatus.ERROR;
+                throw e;
+            } finally {
+                notifyListeners(update);
+            }
         }
     }
-
     /**
-     * Returns the default active feed to use (saved in plug-in preferences).
-     * 
-     * @return returns the default active feed
+     * Notifies listeners of a feed status change event.
+     *
+     * @param inEvent an <code>IFeedStatusEvent</code> value
      */
-    private String getDefaultActiveFeed() {
-        return Platform.getPreferencesService().getString(
-                MarketDataConstants.PLUGIN_ID,
-                MarketDataConstants.DEFAULT_ACTIVE_MARKETDATA_PROVIDER, "", //$NON-NLS-1$
-                null);
+    private void notifyListeners(final IFeedStatusEvent inEvent)
+    {
+        Object[] listeners = mActiveFeedListeners.getListeners();
+        for(Object object : listeners) {
+            ((IFeedStatusChangedListener)object).feedStatusChanged(inEvent);
+        }
     }
-
     @Override
-    public String getActiveFeedName() {
-        IMarketDataFeed feed = mActiveFeed;
-        return feed == null ? null : feed.getName();
+    public FeedStatus getFeedStatus()
+    {
+        if(marketDataClient == null) {
+            return FeedStatus.OFFLINE;
+        }
+        return marketDataClient.isRunning() ? FeedStatus.AVAILABLE : FeedStatus.ERROR;
     }
-
-    @Override
-    public FeedStatus getActiveFeedStatus() {
-        MarketDataFeed feed = mActiveFeed;
-        return feed == null ? FeedStatus.OFFLINE : feed.getStatus();
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private class FeedStatusNotification
+            implements IFeedStatusEvent
+    {
+        /**
+         * Create a new FeedStatusNotification instance.
+         *
+         * @param inOldStatus
+         * @param inNewStatus
+         */
+        private FeedStatusNotification(FeedStatus inOldStatus,
+                                       FeedStatus inNewStatus)
+        {
+            oldFeedStatus = inOldStatus;
+            newFeedStatus = inNewStatus;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.photon.marketdata.IFeedStatusChangedListener.IFeedStatusEvent#getSource()
+         */
+        @Override
+        public Object getSource()
+        {
+            return this;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.photon.marketdata.IFeedStatusChangedListener.IFeedStatusEvent#getOldStatus()
+         */
+        @Override
+        public FeedStatus getOldStatus()
+        {
+            return oldFeedStatus;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.photon.marketdata.IFeedStatusChangedListener.IFeedStatusEvent#getNewStatus()
+         */
+        @Override
+        public FeedStatus getNewStatus()
+        {
+            return newFeedStatus;
+        }
+        /**
+         * 
+         */
+        private FeedStatus oldFeedStatus = FeedStatus.UNKNOWN;
+        /**
+         * 
+         */
+        private FeedStatus newFeedStatus = FeedStatus.UNKNOWN;
     }
-
-    @Override
-    public Set<Capability> getActiveFeedCapabilities() {
-        Set<Capability> emptySet = Collections.emptySet();
-        IMarketDataFeed feed = mActiveFeed;
-        return feed == null ? emptySet : feed.getCapabilities();
-    }
-
+    /**
+     * 
+     */
+    private String hostname;
+    /**
+     * 
+     */
+    private int port;
+    /**
+     * 
+     */
+    private final ListenerList mActiveFeedListeners = new ListenerList();
+    /**
+     * 
+     */
+    private final AtomicBoolean mReconnecting = new AtomicBoolean(false);
+    /**
+     * 
+     */
+    private final MarketData mMarketData;
+    /**
+     * 
+     */
+    private MarketDataServiceClient marketDataClient;
+    /**
+     * 
+     */
+    private ICredentialsService credentialsService;
 }

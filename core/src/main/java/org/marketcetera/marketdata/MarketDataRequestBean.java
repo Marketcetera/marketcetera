@@ -362,22 +362,22 @@ public final class MarketDataRequestBean
     /**
      * the symbols for which to request data
      */
-    @XmlElementWrapper(name="symbols")
+    @XmlElementWrapper(name="symbolList")
     private final Set<String> symbols = new LinkedHashSet<String>();
     /**
      * the underlying symbols for which to request data
      */
-    @XmlElementWrapper(name="underlyingSymbols")
+    @XmlElementWrapper(name="underlyingSymbolList")
     private final Set<String> underlyingSymbols = new LinkedHashSet<String>();
     /**
      * the map of custom request parameters 
      */
-    @XmlElementWrapper(name="parameters")
+    @XmlElementWrapper(name="parameterist")
     private final Map<String,String> parameters = new HashMap<String, String>();
     /**
      * the request content
      */
-    @XmlElementWrapper(name="content")
+    @XmlElementWrapper(name="contentList")
     private final Set<Content> content = new LinkedHashSet<Content>();
     /**
      * the provider key from which to request data

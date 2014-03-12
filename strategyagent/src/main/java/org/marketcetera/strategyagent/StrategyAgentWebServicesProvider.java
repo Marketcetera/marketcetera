@@ -197,19 +197,19 @@ public class StrategyAgentWebServicesProvider
         contextClassProvider = inContextClassProvider;
     }
     /**
-     * 
+     * manages client sessions
      */
     private SessionManager<ClientSession> sessionManager;
     /**
-     * 
+     * hostname at which to connect
      */
     private String hostname;
     /**
-     * 
+     * port on which to connect
      */
     private int port;
     /**
-     * 
+     * authenticator used to authenticate users
      */
     private Authenticator authenticator;
     /**
@@ -217,19 +217,19 @@ public class StrategyAgentWebServicesProvider
      */
     private ServiceInterface remoteService;
     /**
-     * 
+     * server object representing the server on which to provider services
      */
     private Server<ClientSession> server;
     /**
-     * 
+     * service provider
      */
     private SAService serviceProvider;
     /**
-     * 
+     * provides context classes to aid in marshaling/unmarshaling
      */
     private ContextClassProvider contextClassProvider;
     /**
-     * 
+     * indicates if the provider is running or not
      */
     private final AtomicBoolean running = new AtomicBoolean(false);
 }

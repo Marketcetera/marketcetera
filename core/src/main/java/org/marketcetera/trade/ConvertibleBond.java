@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
@@ -220,22 +221,30 @@ public class ConvertibleBond
      */
     @SuppressWarnings("unused")
     private ConvertibleBond() {}
+    /**
+     * symbol value
+     */
+    @XmlAttribute
     private String symbol;
     /**
      * ticker value
      */
+    @XmlAttribute
     private String ticker;
     /**
      * rate value
      */
+    @XmlAttribute
     private BigDecimal couponRate;
     /**
      * maturity value
      */
+    @XmlAttribute
     private String maturity;
     /**
      * cusip value
      */
+    @XmlAttribute
     private String cusip;
     /**
      * isin regex

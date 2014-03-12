@@ -16,11 +16,14 @@ import org.marketcetera.core.position.ImmutablePositionSupport;
 import org.marketcetera.core.position.PositionEngine;
 import org.marketcetera.core.position.PositionEngineFactory;
 import org.marketcetera.core.position.PositionKey;
+import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
 import org.marketcetera.messagehistory.ReportHolder;
 import org.marketcetera.messagehistory.TradeReportsHistory;
 import org.marketcetera.photon.*;
+import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
@@ -37,8 +40,9 @@ import com.google.common.collect.Maps;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class RetrieveTradingHistoryJob extends Job {
-
+public class RetrieveTradingHistoryJob
+        extends Job
+{
 	/**
 	 * Constructor.
 	 */
@@ -98,7 +102,22 @@ public class RetrieveTradingHistoryJob extends Job {
                 positions.putAll(ClientManager.getInstance().getAllCurrencyPositionsAsOf(positionDate));
                 EventList<ReportHolder> messages = tradeReportsHistory.getAllMessagesList();
                 ImmutablePositionSupport positionSupport = new ImmutablePositionSupport(positions);
-                PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(PhotonPlugin.getDefault().getMarketDataManager().getMarketData());
+                IMarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+                if(!marketDataManager.isRunning()) {
+                    long startTime = System.currentTimeMillis();
+                    while(!marketDataManager.isRunning()) {
+                        Thread.sleep(250);
+                        if(System.currentTimeMillis()-30000>startTime) {
+                            // forget it, I (kinda) quietly give up
+                            SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                                  "Position market data unavailable from the Market Data Nexus");
+                            SLF4JLoggerProxy.warn(this,
+                                                  "Position market data unavailable from the Market Data Nexus");
+                            break;
+                        }
+                    }
+                }
+                PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(marketDataManager.getMarketData());
                 UnderlyingSymbolSupport underlyingSymbolSupport = PhotonPlugin.getDefault().getUnderlyingSymbolSupport();
                 PositionEngine engine = PositionEngineFactory.createFromReportHolders(messages,
                                                                                       positionSupport,
@@ -107,9 +126,14 @@ public class RetrieveTradingHistoryJob extends Job {
                 PhotonPlugin.getDefault().registerPositionEngine(engine);
             }
         } catch (Exception e) {
-            Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this, e);
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
+            Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY);
+            Messages.RETRIEVE_TRADING_HISTORY_JOB_ERROR.error(this,
+                                                              e);
+            if(e instanceof NoMarketDataProvidersAvailable) {
+                return Status.CANCEL_STATUS;
+            }
+            if(e instanceof RuntimeException) {
+                throw (RuntimeException)e;
             } else {
                 // The callable above doesn't throw checked exceptions
                 throw new RuntimeException(e);

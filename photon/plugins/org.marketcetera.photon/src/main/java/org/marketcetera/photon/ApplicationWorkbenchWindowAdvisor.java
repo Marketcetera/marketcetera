@@ -2,6 +2,7 @@ package org.marketcetera.photon;
 
 import java.io.PrintStream;
 import java.util.Date;
+
 import org.apache.log4j.Logger;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.SWT;
@@ -100,7 +101,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 		if (PlatformUI.getTestableObject().getTestHarness() == null) {
 		    startClient();
 		}
-		PhotonPlugin.getDefault().reconnectMarketDataFeed();
 		initStatusLine();
 	}
 
@@ -112,11 +112,17 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor im
 				getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
 		statusline.setMessage(ApplicationWorkbenchWindowAdvisor_OnlineLabel.getText());
 	}
-
-	private void startClient() {
-		new ReconnectServerJob().schedule();
+    /**
+     * 
+     *
+     *
+     */
+    private void startClient()
+    {
+        ReconnectServerJob serverJob = new ReconnectServerJob();
+        serverJob.setReconnectMarketData(true);
+        serverJob.schedule();
 	}
-
 	@Override
 	public void createWindowContents(Shell shell) {
 		super.createWindowContents(shell);

@@ -57,6 +57,8 @@ public interface Messages {
 	public static I18NMessage0P MARKET_DEPTH_VIEW_OPEN_BOOK_LABEL = new I18NMessage0P(
 			LOGGER, "market_depth_view.open_book.label"); //$NON-NLS-1$
     public static I18NMessage0P MARKET_DEPTH_VIEW_BBO10_LABEL = new I18NMessage0P(LOGGER, "market_depth_view.bbo10.label"); //$NON-NLS-1$
+    public static I18NMessage0P MARKET_DEPTH_VIEW_AGGREGATED_DEPTH_LABEL = new I18NMessage0P(LOGGER, "market_depth_view.aggregateddepth.label"); //$NON-NLS-1$
+    public static I18NMessage0P MARKET_DEPTH_VIEW_UNAGGREGATED_DEPTH_LABEL = new I18NMessage0P(LOGGER, "market_depth_view.unaggregateddepth.label"); //$NON-NLS-1$
 
 	/*
 	 * Log Messages

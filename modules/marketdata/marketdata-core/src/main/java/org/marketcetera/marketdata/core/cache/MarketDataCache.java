@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public interface MarketdataCache
+public interface MarketDataCache
 {
     /**
      * Gets a snapshot of the given content for the given instrument, if available.

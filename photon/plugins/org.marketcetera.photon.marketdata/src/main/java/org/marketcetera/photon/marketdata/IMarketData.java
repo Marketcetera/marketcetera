@@ -47,10 +47,10 @@ import com.google.inject.ImplementedBy;
  * @version $Id$
  * @since 1.5.0
  */
-@ClassVersion("$Id$")
 @ImplementedBy(MarketData.class)
-public interface IMarketData {
-
+@ClassVersion("$Id$")
+public interface IMarketData
+{
     /**
      * Returns a reference to the latest tick data for the given instrument. If
      * the data does not exist, it will be created and wired up. The
@@ -67,7 +67,6 @@ public interface IMarketData {
      *             unrecoverable error occurs
      */
     IMarketDataReference<MDLatestTick> getLatestTick(Instrument instrument);
-
     /**
      * Returns a reference to the top of book data for the given instrument. If
      * the data does not exist, it will be created and wired up. The
@@ -84,7 +83,6 @@ public interface IMarketData {
      *             unrecoverable error occurs
      */
     IMarketDataReference<MDTopOfBook> getTopOfBook(Instrument instrument);
-
     /**
      * Returns a reference to the market statistic data for the given
      * instrument. If the data does not exist, it will be created and wired up.
@@ -101,7 +99,6 @@ public interface IMarketData {
      *             unrecoverable error occurs
      */
     IMarketDataReference<MDMarketstat> getMarketstat(Instrument instrument);
-
     /**
      * Returns a reference to the market depth data for the given instrument and
      * product. If the data does not exist, it will be created and wired up. The
@@ -121,5 +118,12 @@ public interface IMarketData {
      *             unrecoverable error occurs
      */
     IMarketDataReference<MDDepthOfBook> getDepthOfBook(Instrument instrument,
-            Content product);
+                                                       Content product);
+    /**
+     * 
+     *
+     *
+     */
+    void reset();
+    void resubmit();
 }

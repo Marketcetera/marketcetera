@@ -67,8 +67,8 @@ public class MarketDataStatusIndicator extends StatusIndicatorContributionItem {
 	}
 
 	private void updateLabel() {
-		FeedStatus newStatus = mMarketDataManager.getActiveFeedStatus();
-		String name = mMarketDataManager.getActiveFeedName();
+		FeedStatus newStatus = mMarketDataManager.getFeedStatus();
+		String name = "Market Data Nexus";//mMarketDataManager.getActiveFeedName();
 		Image image;
 		I18NMessage1P tooltip;
 		switch (newStatus) {
@@ -92,5 +92,4 @@ public class MarketDataStatusIndicator extends StatusIndicatorContributionItem {
 			imageLabel.setToolTipText(tooltip.getText(name));
 		}
 	}
-
 }

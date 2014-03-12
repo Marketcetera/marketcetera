@@ -35,10 +35,10 @@ import com.google.inject.Inject;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class DepthOfBookManager extends
-        DataFlowManager<MDDepthOfBookImpl, DepthOfBookKey> implements
-        IDepthOfBookManager {
-
+public class DepthOfBookManager
+        extends DataFlowManager<MDDepthOfBookImpl,DepthOfBookKey>
+        implements IDepthOfBookManager
+{
     /**
      * Creates instances of this class.
      */
@@ -50,31 +50,28 @@ public class DepthOfBookManager extends
         private final Executor mMarketDataExecutor;
 
         private IMarketDataRequestSupport mMarketDataRequestSupport;
-
         /**
          * Constructor.
          * 
-         * @param moduleManager
-         *            the module manager
-         * @param marketDataExecutor
-         *            an executor for long running module operations that
-         *            <strong>must</strong> execute tasks sequentially
-         * @param marketDataRequestSupport
-         *            supports generating market data requests
+         * @param moduleManager the module manager
+         * @param marketDataExecutor an executor for long running module operations that <strong>must</strong> execute tasks sequentially
+         * @param marketDataRequestSupport supports generating market data requests
          */
         @Inject
         public FactoryImpl(final ModuleManager moduleManager,
-                @MarketDataExecutor final Executor marketDataExecutor,
-                IMarketDataRequestSupport marketDataRequestSupport) {
+                           @MarketDataExecutor final Executor marketDataExecutor,
+                           IMarketDataRequestSupport marketDataRequestSupport)
+        {
             mModuleManager = moduleManager;
             mMarketDataExecutor = marketDataExecutor;
             mMarketDataRequestSupport = marketDataRequestSupport;
         }
-
         @Override
         public IDepthOfBookManager create(final Set<Capability> capabilities) {
-            return new DepthOfBookManager(mModuleManager, capabilities,
-                    mMarketDataExecutor, mMarketDataRequestSupport);
+            return new DepthOfBookManager(mModuleManager,
+                                          capabilities,
+                                          mMarketDataExecutor,
+                                          mMarketDataRequestSupport);
         }
     }
 
@@ -103,11 +100,13 @@ public class DepthOfBookManager extends
      *             if moduleManager is null
      */
     public DepthOfBookManager(final ModuleManager moduleManager,
-            final Set<Capability> requiredCapabilities,
-            final Executor marketDataExecutor,
-            IMarketDataRequestSupport marketDataRequestSupport) {
-        super(moduleManager, requiredCapabilities, marketDataExecutor,
-                marketDataRequestSupport);
+                              final Set<Capability> requiredCapabilities,
+                              final Executor marketDataExecutor,
+                              IMarketDataRequestSupport marketDataRequestSupport) {
+        super(moduleManager,
+              requiredCapabilities,
+              marketDataExecutor,
+              marketDataRequestSupport);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.marketcetera.event.beans;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.*;
 
 import org.marketcetera.event.*;
 import org.marketcetera.event.util.EventServices;
@@ -19,6 +20,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @NotThreadSafe
+@XmlRootElement(name="dividend")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public final class DividendBean
         extends EventBean
@@ -383,30 +386,30 @@ public final class DividendBean
     {
         super.validate();
         if(equity == null) {
-            EventServices.error(VALIDATION_NULL_EQUITY);
+            EventServices.error(Messages.VALIDATION_NULL_EQUITY);
         }
         if(amount == null) {
-            EventServices.error(VALIDATION_NULL_AMOUNT);
+            EventServices.error(Messages.VALIDATION_NULL_AMOUNT);
         }
         if(currency == null ||
            currency.isEmpty()) {
-            EventServices.error(VALIDATION_NULL_CURRENCY);
+            EventServices.error(Messages.VALIDATION_NULL_CURRENCY);
         }
         if(executionDate == null ||
            executionDate.isEmpty()) {
-            EventServices.error(VALIDATION_NULL_EXECUTION_DATE);
+            EventServices.error(Messages.VALIDATION_NULL_EXECUTION_DATE);
         }
         if(frequency == null) {
-            EventServices.error(VALIDATION_NULL_FREQUENCY);
+            EventServices.error(Messages.VALIDATION_NULL_FREQUENCY);
         }
         if(status == null) {
-            EventServices.error(VALIDATION_NULL_STATUS);
+            EventServices.error(Messages.VALIDATION_NULL_STATUS);
         }
         if(type == null) {
-            EventServices.error(VALIDATION_NULL_TYPE);
+            EventServices.error(Messages.VALIDATION_NULL_TYPE);
         }
         if(eventType == null) {
-            EventServices.error(VALIDATION_NULL_META_TYPE);
+            EventServices.error(Messages.VALIDATION_NULL_META_TYPE);
         }
     }
     /* (non-Javadoc)
@@ -457,46 +460,57 @@ public final class DividendBean
     /**
      * the equity for which the dividend was or will be issued 
      */
+    @XmlElement
     private Equity equity;
     /**
      * the amount in which the dividend was or will be issued 
      */
+    @XmlAttribute
     private BigDecimal amount;
     /**
      * the currency in which the dividend was or will be issued 
      */
+    @XmlAttribute
     private String currency;
     /**
      * the declare date on which the dividend was or will be issued - the format is dependent on the market data provider 
      */
+    @XmlAttribute
     private String declareDate;
     /**
      * the execution date on which the dividend was or will be issued - the format is dependent on the market data provider 
      */
+    @XmlAttribute
     private String executionDate;
     /**
      * the payment date on which the dividend was or will be issued - the format is dependent on the market data provider 
      */
+    @XmlAttribute
     private String paymentDate;
     /**
      * the record date on which the dividend was or will be issued - the format is dependent on the market data provider 
      */
+    @XmlAttribute
     private String recordDate;
     /**
      * the frequency in which the dividend was or will be issued 
      */
+    @XmlAttribute
     private DividendFrequency frequency;
     /**
      * the status of the dividend that was or will be issued 
      */
+    @XmlAttribute
     private DividendStatus status;
     /**
      * the type of the dividend that was or will be issued 
      */
+    @XmlAttribute
     private DividendType type;
     /**
      * the event meta-type
      */
+    @XmlAttribute
     private EventType eventType = EventType.UNKNOWN;
     private static final long serialVersionUID = 1L;
 }

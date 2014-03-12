@@ -339,7 +339,7 @@ public class MarketDataRequest
     /**
      * the request data 
      */
-    @XmlElement(name="request")
+    @XmlElement(name="requestBody")
     private final MarketDataRequestBean request;
     private static final long serialVersionUID = 3L;
 }

@@ -30,7 +30,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-final class TopOfBookEventImpl
+public class TopOfBookEventImpl
         implements TopOfBookEvent, HasEventBean
 {
     /* (non-Javadoc)

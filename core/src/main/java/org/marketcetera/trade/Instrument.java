@@ -1,11 +1,14 @@
 package org.marketcetera.trade;
 
 import java.io.Serializable;
+
 import javax.annotation.concurrent.Immutable;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
+
 /**
  * A financial instrument.
  * <p>
@@ -20,12 +23,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
 @Immutable
-public abstract class Instrument implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
+@XmlSeeAlso({ Equity.class,Option.class,Future.class,Currency.class,ConvertibleBond.class })
+@ClassVersion("$Id$")
+public abstract class Instrument
+        implements Serializable
+{
 	/**
 	 * Returns the symbol value.
 	 * 
@@ -47,4 +50,5 @@ public abstract class Instrument implements Serializable {
 	{
 	    return getSymbol();
 	}
+    private static final long serialVersionUID = 1L;
 }

@@ -1,12 +1,13 @@
-package org.marketcetera.client;
+package org.marketcetera.core.notifications;
 
 import org.marketcetera.util.misc.ClassVersion;
+
+/* $License$ */
 
 /**
  * A receiver of server connection status changes. Objects which need
  * to receive server connection status changes must implement this
- * interface, as well as register themselves with a client via {@link
- * Client#addServerStatusListener(ServerStatusListener)}.
+ * interface, as well as register themselves with a compatible server.
  *
  * <p>It's expected that listeners will take a short time to return
  * because all listeners are invoked sequentially.  If a listener
@@ -17,9 +18,6 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 1.5.0
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public interface ServerStatusListener
 {
@@ -29,7 +27,5 @@ public interface ServerStatusListener
      * @param status The status: true means the server connection is
      * alive.
      */
-
-    void receiveServerStatus
-        (boolean status);
+    void receiveServerStatus(boolean status);
 }

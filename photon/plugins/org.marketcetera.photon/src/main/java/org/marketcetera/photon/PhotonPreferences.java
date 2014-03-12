@@ -14,16 +14,19 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public interface PhotonPreferences {
 
-	public static final String TRADING_HISTORY_START_TIME = "TRADING_HISTORY_START_TIME"; //$NON-NLS-1$
+    public static final String TRADING_HISTORY_START_TIME = "TRADING_HISTORY_START_TIME"; //$NON-NLS-1$
 
-	public static final String CONSOLE_LOG_LEVEL = "CONSOLE_LOG_LEVEL"; //$NON-NLS-1$
+    public static final String CONSOLE_LOG_LEVEL = "CONSOLE_LOG_LEVEL"; //$NON-NLS-1$
 
-	public static final String JMS_URL = "JMS_URL"; //$NON-NLS-1$
+    public static final String JMS_URL = "JMS_URL"; //$NON-NLS-1$
 
-	public static final String WEB_SERVICE_HOST = "WEB_SERVICE_HOST"; //$NON-NLS-1$
+    public static final String WEB_SERVICE_HOST = "WEB_SERVICE_HOST"; //$NON-NLS-1$
 
-	public static final String WEB_SERVICE_PORT = "WEB_SERVICE_PORT"; //$NON-NLS-1$
+    public static final String WEB_SERVICE_PORT = "WEB_SERVICE_PORT"; //$NON-NLS-1$
+    public static final String NEXUS_WEB_SERVICE_HOST = "NEXUS_WEB_SERVICE_HOST"; //$NON-NLS-1$
 
-	public static final String ORDER_ID_PREFIX = "ORDER_ID_PREFIX"; //$NON-NLS-1$
+    public static final String NEXUS_WEB_SERVICE_PORT = "NEXUS_WEB_SERVICE_PORT"; //$NON-NLS-1$
+
+    public static final String ORDER_ID_PREFIX = "ORDER_ID_PREFIX"; //$NON-NLS-1$
 
 }

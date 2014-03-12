@@ -7,15 +7,9 @@ import java.util.List;
 
 import javax.management.MBeanAttributeInfo;
 
-import org.eclipse.jface.preference.IPreferenceNode;
-import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IStartup;
-import org.eclipse.ui.PlatformUI;
 import org.marketcetera.module.ModuleURN;
-import org.marketcetera.photon.marketdata.IMarketDataFeed;
-import org.marketcetera.photon.module.ModuleSupport;
 import org.marketcetera.photon.module.ui.ModuleAttributePreferencePage;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -32,54 +26,54 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public class FeedPreferencePageInitializer implements IStartup {
 
-	private static final String ROOT_NODE = "org.marketcetera.photon.marketdata.ui.MarketDataPreferencePage"; //$NON-NLS-1$
+//	private static final String ROOT_NODE = "org.marketcetera.photon.marketdata.ui.MarketDataPreferencePage"; //$NON-NLS-1$
 
 	@Override
 	public void earlyStartup() {
-		List<IMarketDataFeed> providers = new ArrayList<IMarketDataFeed>(
-				Activator.getMarketDataManager().getProviders());
-		Collections.sort(providers, new Comparator<IMarketDataFeed>() {
-			@Override
-			public int compare(IMarketDataFeed o1, IMarketDataFeed o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
-		PreferenceManager preferenceManager = PlatformUI.getWorkbench()
-				.getPreferenceManager();
-		IPreferenceNode rootNode = preferenceManager.find(ROOT_NODE);
-		for (IMarketDataFeed provider : providers) {
-			final ModuleURN urn = provider.getURN();
-			try {
-				MBeanAttributeInfo[] attributes = ModuleSupport
-						.getMBeanServerConnection().getMBeanInfo(
-								urn.toObjectName()).getAttributes();
-				final List<MBeanAttributeInfo> writableAttributes = new ArrayList<MBeanAttributeInfo>();
-				for (MBeanAttributeInfo attribute : attributes) {
-					if (attribute.isWritable()) {
-						writableAttributes.add(attribute);
-					}
-				}
-				if (writableAttributes.size() > 0) {
-					final String label = provider.getName();
-					rootNode.add(new PreferenceNode(
-							"org.marketcetera.photon.marketdata.ui." //$NON-NLS-1$
-									+ provider.getId(), label, null, null) {
-						@Override
-						public void createPage() {
-							setPage(new GenericAttributePreferencePage(
-									urn,
-									writableAttributes
-											.toArray(new MBeanAttributeInfo[writableAttributes
-													.size()]), label));
-						}
-					});
-				}
-			} catch (Exception e) {
-				Messages.FEED_PREFERENCE_PAGE_INITIALIZER_MODULE_ERROR.error(
-						this, e);
-			}
-
-		}
+//		List<IMarketDataFeed> providers = new ArrayList<IMarketDataFeed>(
+//				Activator.getMarketDataManager().getProviders());
+//		Collections.sort(providers, new Comparator<IMarketDataFeed>() {
+//			@Override
+//			public int compare(IMarketDataFeed o1, IMarketDataFeed o2) {
+//				return o1.getName().compareTo(o2.getName());
+//			}
+//		});
+//		PreferenceManager preferenceManager = PlatformUI.getWorkbench()
+//				.getPreferenceManager();
+//		IPreferenceNode rootNode = preferenceManager.find(ROOT_NODE);
+//		for (IMarketDataFeed provider : providers) {
+//			final ModuleURN urn = provider.getURN();
+//			try {
+//				MBeanAttributeInfo[] attributes = ModuleSupport
+//						.getMBeanServerConnection().getMBeanInfo(
+//								urn.toObjectName()).getAttributes();
+//				final List<MBeanAttributeInfo> writableAttributes = new ArrayList<MBeanAttributeInfo>();
+//				for (MBeanAttributeInfo attribute : attributes) {
+//					if (attribute.isWritable()) {
+//						writableAttributes.add(attribute);
+//					}
+//				}
+//				if (writableAttributes.size() > 0) {
+//					final String label = provider.getName();
+//					rootNode.add(new PreferenceNode(
+//							"org.marketcetera.photon.marketdata.ui." //$NON-NLS-1$
+//									+ provider.getId(), label, null, null) {
+//						@Override
+//						public void createPage() {
+//							setPage(new GenericAttributePreferencePage(
+//									urn,
+//									writableAttributes
+//											.toArray(new MBeanAttributeInfo[writableAttributes
+//													.size()]), label));
+//						}
+//					});
+//				}
+//			} catch (Exception e) {
+//				Messages.FEED_PREFERENCE_PAGE_INITIALIZER_MODULE_ERROR.error(
+//						this, e);
+//			}
+//
+//		}
 	}
 
 	/**

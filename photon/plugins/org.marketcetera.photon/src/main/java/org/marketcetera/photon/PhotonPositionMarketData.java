@@ -128,30 +128,34 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 		return cached == NULL ? null : cached;
 	}
 
-	@Override
-	public void addInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
-		Validate.noNullElements(new Object[] { instrument, listener });
-		synchronized (mListeners) {
-			if (mDisposed.get()) return;
-			IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(instrument);
-			if (ref == null) {
-				ref = mMarketData.getLatestTick(instrument);
-				if(ref != null && ref.get() != null) {
-	                mLatestTickReferences.put(instrument, ref);
-	                ref.get().eAdapters().add(mLatestTickAdapter);
-				}
-			}
-			IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(instrument);
-			if (statRef == null) {
-				statRef = mMarketData.getMarketstat(instrument);
-				mStatReferences.put(instrument, statRef);
-				if(statRef != null && statRef.get() != null) {
-	                statRef.get().eAdapters().add(mClosingPriceAdapter);
-				}
-			}
-			mListeners.put(instrument, listener);
-		}
-	}
+    @Override
+    public void addInstrumentMarketDataListener(Instrument inInstrument,
+                                                InstrumentMarketDataListener inListener)
+    {
+        Validate.noNullElements(new Object[] { inInstrument, inListener });
+        synchronized(mListeners) {
+            if(mDisposed.get()) return;
+            IMarketDataReference<MDLatestTick> ref = mLatestTickReferences.get(inInstrument);
+            if(ref == null) {
+                ref = mMarketData.getLatestTick(inInstrument);
+                if(ref != null && ref.get() != null) {
+                    mLatestTickReferences.put(inInstrument,
+                                              ref);
+                    ref.get().eAdapters().add(mLatestTickAdapter);
+                }
+            }
+            IMarketDataReference<MDMarketstat> statRef = mStatReferences.get(inInstrument);
+            if(statRef == null) {
+                statRef = mMarketData.getMarketstat(inInstrument);
+                mStatReferences.put(inInstrument,
+                                    statRef);
+                if(statRef != null && statRef.get() != null) {
+                    statRef.get().eAdapters().add(mClosingPriceAdapter);
+                }
+            }
+            mListeners.put(inInstrument, inListener);
+        }
+    }
 
 	@Override
 	public void removeInstrumentMarketDataListener(Instrument instrument, InstrumentMarketDataListener listener) {
@@ -183,11 +187,11 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 				}
 			}
 		}
-		// dispose outside of the lock to avoid deadlock
-		for (IMarketDataReference<?> ref : toDispose) {
-			ref.dispose();
-		}
-	}
+        // dispose outside of the lock to avoid deadlock
+        for(IMarketDataReference<?> ref : toDispose) {
+            ref.dispose();
+        }
+    }
 
 	private void fireSymbolTraded(final MDLatestTick item) {
 	    Instrument instrument = item.getInstrument();
@@ -243,18 +247,20 @@ public class PhotonPositionMarketData implements MarketDataSupport {
 	        }
         }
     }
-	
-	/**
-	 * Updates an internal cache and returns whether the value changed.
-	 */
-	private boolean updateCache(final Instrument instrument, BigDecimal newValue,
-            final ConcurrentMap<Instrument, BigDecimal> cache) {
-	    BigDecimal oldValue = cache.put(instrument, newValue == null ? NULL : newValue);
-        if (oldValue == NULL) {
+    /**
+     * Updates an internal cache and returns whether the value changed.
+     */
+    private boolean updateCache(final Instrument instrument,
+                                BigDecimal newValue,
+                                final ConcurrentMap<Instrument,BigDecimal> cache)
+    {
+        BigDecimal oldValue = cache.put(instrument,
+                                        newValue == null ? NULL : newValue);
+        if(oldValue == NULL) {
             oldValue = null;
         }
         // only notify if the value changed
-        if (oldValue == null && newValue == null) {
+        if(oldValue == null && newValue == null) {
             return false;
         } else if (oldValue != null && newValue != null && oldValue.compareTo(newValue) == 0) {
             return false;

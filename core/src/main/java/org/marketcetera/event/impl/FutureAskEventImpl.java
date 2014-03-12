@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-class FutureAskEventImpl
+public class FutureAskEventImpl
         extends AbstractQuoteEventImpl
         implements AskEvent, FutureEvent
 {
@@ -107,6 +107,16 @@ class FutureAskEventImpl
     protected String getDescription()
     {
         return description;
+    }
+    /**
+     * Create a new FutureAskEventImpl instance.
+     * 
+     * <p>This constructor is intended to be used by JAXB.
+     */
+    @SuppressWarnings("unused")
+    private FutureAskEventImpl()
+    {
+        future = new FutureBean();
     }
     /**
      * provides a human-readable description of this event type (does not need to be localized)

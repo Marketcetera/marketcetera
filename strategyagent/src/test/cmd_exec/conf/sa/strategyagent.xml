@@ -75,11 +75,14 @@
     <property name="authenticator" ref="saAuthenticator"/>
     <property name="sessionManager" ref="saSessionManager"/>
     <property name="serviceProvider" ref="saWebServicesProvider"/>
+    <property name="contextClasses">
+      <bean class="org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider"/>
+    </property>
   </bean>
   <!-- The market data manager instance -->
   <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl"/>
   <!-- market data web service -->
-  <bean id="marketdataWebService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataWebServiceImpl" init-method="start" destroy-method="stop" depends-on="saWebServicesServer">
+  <bean id="marketdataWebService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceImpl" init-method="start" destroy-method="stop" depends-on="saWebServicesServer">
     <constructor-arg ref="saSessionManager"/>
   </bean>
   <!-- The module manager instance -->

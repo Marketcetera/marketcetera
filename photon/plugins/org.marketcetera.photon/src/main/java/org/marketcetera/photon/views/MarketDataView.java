@@ -1,8 +1,11 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -40,11 +43,13 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commons.ui.workbench.ChooseColumnsMenu.IColumnProvider;
 import org.marketcetera.photon.commons.ui.workbench.ColumnState;
+import org.marketcetera.photon.marketdata.IFeedStatusChangedListener;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.model.marketdata.MDPackage;
 import org.marketcetera.photon.ui.TextContributionItem;
@@ -56,6 +61,9 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import quickfix.field.*;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 /* $License$ */
 
 /**
@@ -66,53 +74,25 @@ import quickfix.field.*;
  * @since 1.0.0
  */
 @ClassVersion("$Id$")
-public final class MarketDataView extends ViewPart implements IMSymbolListener,
-        IColumnProvider, Messages {
-
-    /**
-     * The view ID.
-     */
-    public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
-
-    private Map<Instrument, MarketDataViewItem> mItemMap = new LinkedHashMap<Instrument, MarketDataViewItem>();
-
-    private TextContributionItem mSymbolEntryText;
-
-    private final IMarketDataManager mMarketDataManager = PhotonPlugin
-            .getDefault().getMarketDataManager();
-
-    private TableViewer mViewer;
-
-    private WritableList mItems;
-
-    private IMemento mViewState;
-
-    private Clipboard mClipboard;
-
-    private final static String INSTRUMENT_LIST = "Instrument_List"; //$NON-NLS-1$
-
-    public static enum MD_TABLE_COLUMNS {
-        MD_SYMBOL, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
-    }
-    // default FX *100 size
-    /**
-     * Constructor.
-     */
-    public MarketDataView() {
-    }
-
+public final class MarketDataView
+        extends ViewPart
+        implements IMSymbolListener,IColumnProvider
+{
     @Override
-    public void init(IViewSite site, IMemento memento) throws PartInitException {
+    public void init(IViewSite site,
+                     IMemento memento)
+            throws PartInitException
+    {
         super.init(site);
         mViewState = memento;
     }
-
     /**
      * Returns the clipboard for this view.
      * 
      * @return the clipboard for this view
      */
-    public Clipboard getClipboard() {
+    public Clipboard getClipboard()
+    {
         if (mClipboard == null) {
             mClipboard = new Clipboard(mViewer.getControl().getDisplay());
         }
@@ -125,19 +105,24 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
     }
 
     @Override
-    public void createPartControl(Composite parent) {
+    public void createPartControl(Composite parent)
+    {
         final IActionBars actionBars = getViewSite().getActionBars();
         IToolBarManager toolbar = actionBars.getToolBarManager();
         mSymbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
         toolbar.add(mSymbolEntryText);
         toolbar.add(new AddSymbolAction(mSymbolEntryText, this));
-
-        final Table table = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION
-                | SWT.V_SCROLL | SWT.BORDER);
+        PhotonPlugin.getDefault().getMarketDataManager().addActiveFeedStatusChangedListener(new IFeedStatusChangedListener() {
+            @Override
+            public void feedStatusChanged(IFeedStatusEvent inEvent)
+            {
+                mSymbolEntryText.setEnabled(inEvent.getNewStatus() == FeedStatus.AVAILABLE);
+            }
+        });
+        final Table table = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
         table.setHeaderVisible(true);
         mViewer = new TableViewer(table);
         GridDataFactory.defaultsFor(table).applyTo(table);
-
         final MarketDataItemComparator comparator = new MarketDataItemComparator();
         mViewer.setComparator(comparator);
         SelectionListener listener = new SelectionAdapter() {
@@ -161,73 +146,84 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
             }
         };
 
-        // create columns, using FIXFieldLocalizer to preserve backwards
-        // compatibility
+        // create columns, using FIXFieldLocalizer to preserve backwards compatibility
         TableViewerColumn symbolColumn = new TableViewerColumn(mViewer,
-                createColumn(table,
-                        FIXFieldLocalizer.getLocalizedFIXFieldName(Symbol.class
-                                .getSimpleName()), SWT.LEFT, listener));
+                                                               createColumn(table,
+                                                                            FIXFieldLocalizer.getLocalizedFIXFieldName(Symbol.class.getSimpleName()),
+                                                                            SWT.LEFT,
+                                                                            listener));
         symbolColumn.setEditingSupport(new SymbolEditingSupport());
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(LastPx.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(LastPx.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(LastQty.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(LastQty.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(BidSize.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(BidSize.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(BidPx.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(BidPx.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(OfferPx.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(OfferPx.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(OfferSize.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(OfferSize.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(PrevClosePx.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(PrevClosePx.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(OpenClose.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(OpenClose.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(HighPx.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(HighPx.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(LowPx.class
-                        .getSimpleName()), SWT.RIGHT, listener);
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(LowPx.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         createColumn(table,
-                FIXFieldLocalizer.getLocalizedFIXFieldName(TradeVolume.class
-                        .getSimpleName()), SWT.RIGHT, listener);
-
+                     FIXFieldLocalizer.getLocalizedFIXFieldName(TradeVolume.class.getSimpleName()),
+                     SWT.RIGHT,
+                     listener);
         // restore table state if it exists
-        if (mViewState != null) {
+        if(mViewState != null) {
             ColumnState.restore(table, mViewState);
-            for (TableColumn column : table.getColumns()) {
-                if (column.getWidth() == 0) {
+            for(TableColumn column : table.getColumns()) {
+                if(column.getWidth() == 0) {
                     column.setResizable(false);
                 }
             }
         }
-
         registerContextMenu();
         getSite().setSelectionProvider(mViewer);
-
         ObservableListContentProvider content = new ObservableListContentProvider();
         mViewer.setContentProvider(content);
         IObservableSet domain = content.getKnownElements();
         IObservableMap[] maps = new IObservableMap[] {
-                BeansObservables.observeMap(domain, MarketDataViewItem.class,
-                        "symbol"), //$NON-NLS-1$
-                createCompositeMap(domain,
-                        "latestTick", MDPackage.Literals.MD_LATEST_TICK__PRICE), //$NON-NLS-1$
-                createCompositeMap(domain,
-                        "latestTick", MDPackage.Literals.MD_LATEST_TICK__SIZE), //$NON-NLS-1$
-                createCompositeMap(
-                        domain,
-                        "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_SIZE), //$NON-NLS-1$
+            BeansObservables.observeMap(domain,
+                                        MarketDataViewItem.class,
+                                        "symbol"), //$NON-NLS-1$
+            createCompositeMap(domain,
+                               "latestTick", //$NON-NLS-1$
+                               MDPackage.Literals.MD_LATEST_TICK__PRICE),
+            createCompositeMap(domain,
+                               "latestTick", //$NON-NLS-1$
+                               MDPackage.Literals.MD_LATEST_TICK__SIZE),
+            createCompositeMap(domain,
+                               "topOfBook", //$NON-NLS-1$
+                               MDPackage.Literals.MD_TOP_OF_BOOK__BID_SIZE),
                 createCompositeMap(
                         domain,
                         "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_PRICE), //$NON-NLS-1$
@@ -239,7 +235,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
                         "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__ASK_SIZE), //$NON-NLS-1$
                 createCompositeMap(
                         domain,
-                        "marketStat", MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE), //$NON-NLS-1$							
+                        "marketStat", MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE), //$NON-NLS-1$
                 createCompositeMap(
                         domain,
                         "marketStat", MDPackage.Literals.MD_MARKETSTAT__OPEN_PRICE), //$NON-NLS-1$
@@ -252,19 +248,22 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
                 createCompositeMap(domain,
                         "marketStat", MDPackage.Literals.MD_MARKETSTAT__VOLUME) //$NON-NLS-1$
         };
-
         mViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
         mViewer.setUseHashlookup(true);
         mItems = WritableList.withElementType(MarketDataViewItem.class);
         mViewer.setInput(mItems);
-        if (mViewState != null ) {
-            IMemento[] symbList = mViewState.getChildren(INSTRUMENT_LIST);
-            if (symbList != null)
-                for (IMemento symbolMemo : symbList) {
-                    addSymbol(InstrumentFromMemento.restore(symbolMemo));
+        if(mViewState != null ) {
+            IMemento[] instrumentList = mViewState.getChildren(INSTRUMENT_LIST);
+            if(instrumentList != null) {
+                for(IMemento symbolMemo : instrumentList) {
+                    instrumentsToAdd.add(InstrumentFromMemento.restore(symbolMemo));
                 }
+                addInstrumentJobToken = addInstrumentService.scheduleAtFixedRate(new AddInstrumentAgent(),
+                                                                                 1000,
+                                                                                 1000,
+                                                                                 TimeUnit.MILLISECONDS);
+            }
         }
-
         table.addListener(SWT.MouseDoubleClick, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -306,9 +305,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
                 }
             }
         });
-
     }
-
     private void newOrder(final MarketDataViewItem mdi, final Side side,
             final BigDecimal Px, final BigDecimal ordSz) {
         busyRun(new Runnable() {
@@ -332,12 +329,10 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
                     PhotonPlugin.getDefault().showOrderInTicket(newOrder);
                 } catch (WorkbenchException e) {
                     SLF4JLoggerProxy.error(this, e);
-                    ErrorDialog.openError(
-                            null,
-                            null,
-                            null,
-                            new Status(IStatus.ERROR, PhotonPlugin.ID, e
-                                    .getLocalizedMessage()));
+                    ErrorDialog.openError(null,
+                                          null,
+                                          null,
+                                          new Status(IStatus.ERROR,PhotonPlugin.ID,e.getLocalizedMessage()));
                 }
             }
         });
@@ -373,15 +368,21 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
         Menu menu = contextMenu.createContextMenu(control);
         control.setMenu(menu);
     }
-
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+     */
     @Override
-    public void saveState(IMemento memento) {
-        ColumnState.save(getColumnWidget(), memento);
-        if (memento != null)
-            for (Instrument instr : mItemMap.keySet()) {
-                IMemento smyb = memento.createChild(INSTRUMENT_LIST);
-                InstrumentToMemento.save(instr, smyb);
+    public void saveState(IMemento inMemento)
+    {
+        ColumnState.save(getColumnWidget(),
+                         inMemento);
+        if(inMemento != null) {
+            for(Instrument instrument : mItemMap.keySet()) {
+                IMemento instrumentMemento = inMemento.createChild(INSTRUMENT_LIST);
+                InstrumentToMemento.save(instrument,
+                                         instrumentMemento);
             }
+        }
     }
 
     @Override
@@ -401,33 +402,34 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
     }
 
     /**
-     * Adds a new row in the view for the given symbol (if one does not already
-     * exist).
+     * Adds a new row in the view for the given instrument (if one does not already exist).
      * 
-     * @param symbol
-     *            symbol to add to view
+     * @param inInstrument an <code>Instrument</code> value
      */
-    public void addSymbol(final Instrument instrument) {
-        if (mItemMap.containsKey(instrument)) {
-            PhotonPlugin.getMainConsoleLogger().warn(
-                    DUPLICATE_SYMBOL.getText(instrument));
+    public void addSymbol(final Instrument inInstrument)
+    {
+        if (mItemMap.containsKey(inInstrument)) {
+            PhotonPlugin.getMainConsoleLogger().warn(Messages.DUPLICATE_SYMBOL.getText(inInstrument));
         } else {
             busyRun(new Runnable() {
                 @Override
-                public void run() {
-                    MarketDataViewItem item = new MarketDataViewItem(
-                            mMarketDataManager.getMarketData(), instrument);
-                    // change to request ID
-                    mItemMap.put(instrument, item);
+                public void run()
+                {
+                    // the item was generated by the passed instrument and will generate multiple market data requests to fulfill it
+                    // the symbol resolver should be deterministic, so we can use the instrument as the key for the items collection
+                    MarketDataViewItem item = new MarketDataViewItem(mMarketDataManager.getMarketData(),
+                                                                     inInstrument);
+                    mItemMap.put(inInstrument,
+                                 item);
                     mItems.add(item);
                 }
             });
         }
     }
-
-    private void busyRun(Runnable runnable) {
-        BusyIndicator
-                .showWhile(getViewSite().getShell().getDisplay(), runnable);
+    private void busyRun(Runnable runnable)
+    {
+        BusyIndicator.showWhile(getViewSite().getShell().getDisplay(),
+                                runnable);
     }
 
     private void remove(final MarketDataViewItem item) {
@@ -612,30 +614,31 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
      * @version $Id$
      * @since 1.0.0
      */
-    @ClassVersion("$Id$")//$NON-NLS-1$
-    private final class SymbolEditingSupport extends EditingSupport {
-
+    @ClassVersion("$Id$")
+    private final class SymbolEditingSupport
+            extends EditingSupport
+    {
         private final TextCellEditor mTextCellEditor;
-
         private SymbolEditingSupport() {
             super(mViewer);
             this.mTextCellEditor = new TextCellEditor(mViewer.getTable());
         }
 
         @Override
-        protected void setValue(Object element, Object value) {
-            if (StringUtils.isBlank(value.toString()))
+        protected void setValue(Object inElement,
+                                Object inValue)
+        {
+            if(StringUtils.isBlank(inValue.toString())) {
                 return;
-            final MarketDataViewItem item = (MarketDataViewItem) element;
+            }
+            final MarketDataViewItem item = (MarketDataViewItem) inElement;
             final Instrument instrument = item.getInstrument();
-            if (instrument.getSymbol().equals(value))
+            if(instrument.getSymbol().equals(inValue)) {
                 return;
-
-            final Instrument newInstrument = PhotonPlugin.getDefault()
-                    .getSymbolResolver().resolveSymbol(value.toString());
-            if (mItemMap.containsKey(newInstrument)) {
-                PhotonPlugin.getMainConsoleLogger().warn(
-                        DUPLICATE_SYMBOL.getText(newInstrument.getSymbol()));
+            }
+            final Instrument newInstrument = PhotonPlugin.getDefault().getSymbolResolver().resolveSymbol(inValue.toString());
+            if(mItemMap.containsKey(newInstrument)) {
+                PhotonPlugin.getMainConsoleLogger().warn(Messages.DUPLICATE_SYMBOL.getText(newInstrument.getSymbol()));
                 return;
             }
             busyRun(new Runnable() {
@@ -643,7 +646,8 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
                 public void run() {
                     mItemMap.remove(instrument);
                     item.setInstrument(newInstrument);
-                    mItemMap.put(newInstrument, item);
+                    mItemMap.put(newInstrument,
+                                 item);
                 }
             });
         }
@@ -845,5 +849,82 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
             return null;
         }
     }
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    private class AddInstrumentAgent
+            implements Runnable
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run()
+        {
+            if(!mMarketDataManager.isRunning()) {
+                return;
+            }
+            try {
+                if(instrumentsToAdd.isEmpty()) {
+                    return;
+                }
+                Display.getDefault().asyncExec(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        Iterator<Instrument> instrumentToAddIterator = instrumentsToAdd.iterator();
+                        while(instrumentToAddIterator.hasNext()) {
+                            Instrument instrumentToAdd = instrumentToAddIterator.next();
+                            try {
+                                addSymbol(instrumentToAdd);
+                            } catch (Exception e) {
+                                SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                                       "A problem occurred restoring market data for {}",
+                                                       instrumentToAdd);
+                                SLF4JLoggerProxy.error(MarketDataView.this,
+                                                       e);
+                            }
+                            instrumentToAddIterator.remove();
+                        }
+                    }
+                });
+            } finally {
+                addInstrumentJobToken.cancel(true);
+                addInstrumentJobToken = null;
+            }
+        }
+    }
+    /**
+     * 
+     */
+    private ScheduledExecutorService addInstrumentService = Executors.newScheduledThreadPool(1);
+    /**
+     * The view ID.
+     */
+    public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
 
+    private Map<Instrument,MarketDataViewItem> mItemMap = Maps.newLinkedHashMap();
+    private final java.util.List<Instrument> instrumentsToAdd = Lists.newArrayList();
+    private java.util.concurrent.Future<?> addInstrumentJobToken; 
+    private TextContributionItem mSymbolEntryText;
+
+    private final IMarketDataManager mMarketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
+
+    private TableViewer mViewer;
+
+    private WritableList mItems;
+
+    private IMemento mViewState;
+
+    private Clipboard mClipboard;
+
+    private final static String INSTRUMENT_LIST = "Instrument_List"; //$NON-NLS-1$
+
+    public static enum MD_TABLE_COLUMNS {
+        MD_SYMBOL, LAST_PX, LAST_SZ, BID_SZ, BID_PX, OFFER_PX, OFFER_SZ, PREV_CLOSE, OPEN_PX, HIGH_PX, LOW_PX, TRD_VOLUME,
+    }
 }

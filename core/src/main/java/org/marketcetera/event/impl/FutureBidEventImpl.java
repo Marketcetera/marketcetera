@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-class FutureBidEventImpl
+public class FutureBidEventImpl
         extends AbstractQuoteEventImpl
         implements BidEvent, FutureEvent
 {
@@ -107,6 +107,16 @@ class FutureBidEventImpl
     protected String getDescription()
     {
         return description;
+    }
+    /**
+     * Create a new FutureBidEventImpl instance.
+     * 
+     * <p>This constructor is intended to be used by JAXB.
+     */
+    @SuppressWarnings("unused")
+    private FutureBidEventImpl()
+    {
+        future = new FutureBean();
     }
     /**
      * provides a human-readable description of this event type (does not need to be localized)

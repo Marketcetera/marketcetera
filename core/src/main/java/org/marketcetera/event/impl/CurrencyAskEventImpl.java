@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id: CurrencyAskEventImpl.java 16154 2012-07-14 16:34:05Z colin $")
-class CurrencyAskEventImpl
+public class CurrencyAskEventImpl
         extends AbstractQuoteEventImpl
         implements AskEvent, CurrencyEvent
 {
@@ -64,6 +64,16 @@ class CurrencyAskEventImpl
         super(inQuote);
         currency = CurrencyBean.copy(inCurrency);
         currency.validate();
+    }
+    /**
+     * Create a new CurrencyAskEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private CurrencyAskEventImpl()
+    {
+        currency = new CurrencyBean();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractQuoteEventImpl#getDescription()

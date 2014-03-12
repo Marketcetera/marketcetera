@@ -5,9 +5,7 @@ import org.marketcetera.client.ClientManager;
 import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.VersionInfo;
-import org.marketcetera.saclient.SAClientVersion;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.stateful.Authenticator;
@@ -37,16 +35,10 @@ public class DefaultAuthenticator
     {
         // Verify client version
         VersionInfo serverVersion = ApplicationVersion.getVersion();
-        String clientName = Util.getName(inContext.getAppId());
         VersionInfo clientVersion = VersionInfo.DEFAULT_VERSION;
         String version = Util.getVersion(inContext.getAppId());
         if(version != null) {
             clientVersion =  new VersionInfo(Util.getVersion(inContext.getAppId()));
-        }
-        if(!compatibleApp(clientName)) {
-            throw new I18NException(new I18NBoundMessage2P(Messages.APP_MISMATCH,
-                                                           clientName,
-                                                           inUser));
         }
         if(!compatibleVersions(clientVersion,
                                serverVersion)) {
@@ -72,17 +64,5 @@ public class DefaultAuthenticator
     {
         // If the server's version is unknown, any client is allowed.
         return (VersionInfo.DEFAULT_VERSION.equals(serverVersion) || VersionInfo.DEFAULT_VERSION.equals(clientVersion) || ObjectUtils.equals(clientVersion, serverVersion));
-    }
-    /**
-     * Checks if a client with the supplied name is compatible with this server.
-     *
-     * @param clientName The client name.
-     *
-     * @return True if a client with the supplied name is compatible with this
-     * server.
-     */
-    private static boolean compatibleApp(String clientName)
-    {
-        return SAClientVersion.APP_ID_NAME.equals(clientName);
     }
 }

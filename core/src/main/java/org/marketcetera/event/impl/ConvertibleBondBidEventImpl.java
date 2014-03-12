@@ -2,6 +2,11 @@ package org.marketcetera.event.impl;
 
 import java.math.BigDecimal;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.ConvertibleBondEvent;
 import org.marketcetera.event.beans.ConvertibleBondBean;
@@ -19,8 +24,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id: ConvertibleBondBidEventImpl.java 16598 2013-06-25 13:27:58Z colin $
  * @since $Release$
  */
+@XmlRootElement(name="convertibleBondBid")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
-class ConvertibleBondBidEventImpl
+public class ConvertibleBondBidEventImpl
         extends AbstractQuoteEventImpl
         implements ConvertibleBondEvent, BidEvent
 {
@@ -38,7 +45,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getParity()
     {
-        return Bond.getParity();
+        return bond.getParity();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getUnderlyingEquity()
@@ -46,7 +53,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public Equity getUnderlyingEquity()
     {
-        return Bond.getUnderlyingEquity();
+        return bond.getUnderlyingEquity();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getMaturity()
@@ -54,7 +61,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getMaturity()
     {
-        return Bond.getMaturity();
+        return bond.getMaturity();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getYield()
@@ -62,7 +69,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getYield()
     {
-        return Bond.getYield();
+        return bond.getYield();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getAmountOutstanding()
@@ -70,7 +77,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getAmountOutstanding()
     {
-        return Bond.getAmountOutstanding();
+        return bond.getAmountOutstanding();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getValueDate()
@@ -78,7 +85,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getValueDate()
     {
-        return Bond.getValueDate();
+        return bond.getValueDate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getTraceReportTime()
@@ -86,7 +93,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getTraceReportTime()
     {
-        return Bond.getTraceReportTime();
+        return bond.getTraceReportTime();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getConversionPrice()
@@ -94,7 +101,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getConversionPrice()
     {
-        return Bond.getConversionPrice();
+        return bond.getConversionPrice();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getConversionRatio()
@@ -102,7 +109,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getConversionRatio()
     {
-        return Bond.getConversionRatio();
+        return bond.getConversionRatio();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getAccruedInterest()
@@ -110,7 +117,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getAccruedInterest()
     {
-        return Bond.getAccruedInterest();
+        return bond.getAccruedInterest();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getIssuePrice()
@@ -118,7 +125,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getIssuePrice()
     {
-        return Bond.getIssuePrice();
+        return bond.getIssuePrice();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getConversionPremium()
@@ -126,7 +133,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getConversionPremium()
     {
-        return Bond.getConversionPremium();
+        return bond.getConversionPremium();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getTheoreticalDelta()
@@ -134,7 +141,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getTheoreticalDelta()
     {
-        return Bond.getTheoreticalDelta();
+        return bond.getTheoreticalDelta();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getIssueDate()
@@ -142,7 +149,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getIssueDate()
     {
-        return Bond.getIssueDate();
+        return bond.getIssueDate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getIssuerDomicile()
@@ -150,7 +157,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getIssuerDomicile()
     {
-        return Bond.getIssuerDomicile();
+        return bond.getIssuerDomicile();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getCurrency()
@@ -158,7 +165,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getCurrency()
     {
-        return Bond.getCurrency();
+        return bond.getCurrency();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getBondCurrency()
@@ -166,7 +173,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getBondCurrency()
     {
-        return Bond.getBondCurrency();
+        return bond.getBondCurrency();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getCouponRate()
@@ -174,7 +181,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getCouponRate()
     {
-        return Bond.getCouponRate();
+        return bond.getCouponRate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getPaymentFrequency()
@@ -182,7 +189,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getPaymentFrequency()
     {
-        return Bond.getPaymentFrequency();
+        return bond.getPaymentFrequency();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getExchangeCode()
@@ -190,7 +197,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getExchangeCode()
     {
-        return Bond.getExchangeCode();
+        return bond.getExchangeCode();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getCompanyName()
@@ -198,7 +205,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getCompanyName()
     {
-        return Bond.getCompanyName();
+        return bond.getCompanyName();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getRating()
@@ -206,7 +213,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getRating()
     {
-        return Bond.getRating();
+        return bond.getRating();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getRatingID()
@@ -214,7 +221,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getRatingID()
     {
-        return Bond.getRatingID();
+        return bond.getRatingID();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getParValue()
@@ -222,7 +229,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public BigDecimal getParValue()
     {
-        return Bond.getParValue();
+        return bond.getParValue();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getIsin()
@@ -230,7 +237,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getIsin()
     {
-        return Bond.getIsin();
+        return bond.getIsin();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getCusip()
@@ -238,7 +245,7 @@ class ConvertibleBondBidEventImpl
     @Override
     public String getCusip()
     {
-        return Bond.getCusip();
+        return bond.getCusip();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.event.ConvertibleBondEvent#getEstimatedSizeInd()
@@ -246,7 +253,7 @@ class ConvertibleBondBidEventImpl
 	@Override
 	public String getEstimatedSizeInd() 
 	{
-		return Bond.getEstimatedSizeInd();
+		return bond.getEstimatedSizeInd();
 	}
     /**
      * Create a new ConvertibleBondBidEventImpl instance.
@@ -265,8 +272,8 @@ class ConvertibleBondBidEventImpl
                                 ConvertibleBondBean inConvertibleBond)
     {
         super(inQuote);
-        Bond = ConvertibleBondBean.copy(inConvertibleBond);
-        Bond.validate();
+        bond = ConvertibleBondBean.copy(inConvertibleBond);
+        bond.validate();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.impl.AbstractQuoteEventImpl#getDescription()
@@ -277,12 +284,23 @@ class ConvertibleBondBidEventImpl
         return description;
     }
     /**
+     * Create a new ConvertibleBondBidEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    @SuppressWarnings("unused")
+    private ConvertibleBondBidEventImpl()
+    {
+        bond = new ConvertibleBondBean();
+    }
+    /**
      * provides a human-readable description of this event type (does not need to be localized)
      */
     private static final String description = "Convertible Bond Bid"; //$NON-NLS-1$
     /**
      * the convertible Bond attributes 
      */
-    private final ConvertibleBondBean Bond;
+    @XmlElement
+    private final ConvertibleBondBean bond;
     private static final long serialVersionUID = 1L;
 }

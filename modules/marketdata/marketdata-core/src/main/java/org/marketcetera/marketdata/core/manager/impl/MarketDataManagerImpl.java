@@ -15,6 +15,7 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
+import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.core.Pair;
@@ -56,7 +57,7 @@ import com.google.common.collect.Sets;
 @ThreadSafe
 @ClassVersion("$Id$")
 public class MarketDataManagerImpl
-        implements MarketDataManager, MarketDataProviderRegistry
+        implements MarketDataManager,MarketDataProviderRegistry
 {
     /**
      * Gets the singleton instance of this class.
@@ -209,6 +210,37 @@ public class MarketDataManagerImpl
             cancelLock.unlock();
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.manager.MarketDataManager#requestMarketDataSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     */
+    @Override
+    public Event requestMarketDataSnapshot(Instrument inInstrument,
+                                           Content inContent,
+                                           String inProvider)
+    {
+        if(inProvider == null) {
+            SortedSet<Pair<FeedType,Event>> snapshotCandidates = Sets.newTreeSet(SnapshotComparator.INSTANCE);
+            for(MarketDataProvider provider : getActiveMarketDataProviders()) {
+                Event snapshotCandidate = provider.getSnapshot(inInstrument,
+                                                               inContent);
+                if(snapshotCandidate != null) {
+                    snapshotCandidates.add(Pair.create(provider.getFeedType(),
+                                                       snapshotCandidate));
+                }
+            }
+            if(snapshotCandidates.isEmpty()) {
+                return null;
+            }
+            return snapshotCandidates.first().getSecondMember();
+        } else {
+            MarketDataProvider provider = getMarketDataProviderForName(inProvider);
+            if(provider == null) {
+                throw new MarketDataProviderNotAvailable();
+            }
+            return provider.getSnapshot(inInstrument,
+                                        inContent);
+        }
+    }
     /**
      * Constructs a unique <code>ObjectName</code> for the given provider.
      *
@@ -247,6 +279,7 @@ public class MarketDataManagerImpl
      */
     private void populateProviderList()
     {
+        // TODO is this working right the second request?
         if(ModuleManager.getInstance() != null) {
             List<ModuleURN> providerUrns = ModuleManager.getInstance().getProviders();
             for(ModuleURN providerUrn : providerUrns) {
@@ -433,7 +466,7 @@ public class MarketDataManagerImpl
         protected void doStart()
         {
             processor.start();
-            String receiverInstanceName = "MDMPROXY" + requestCounter.incrementAndGet();
+            String receiverInstanceName = "MDMPROXY_" + providerName;
             moduleManager.createModule(ReceiverModuleFactory.PROVIDER_URN,
                                        receiverInstanceName);
             receiver = ReceiverModule.getModuleForInstanceName(receiverInstanceName);
@@ -677,6 +710,40 @@ public class MarketDataManagerImpl
          * underlying feed module to which requests are sent
          */
         private final AbstractMarketDataModule<?,?> feed;
+    }
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private static class SnapshotComparator
+            implements Comparator<Pair<FeedType,Event>>
+    {
+        /* (non-Javadoc)
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare(Pair<FeedType,Event> inLeft,
+                           Pair<FeedType,Event> inRight)
+        {
+            if(inLeft.getFirstMember() == FeedType.LIVE) {
+                if(inRight.getFirstMember() != FeedType.LIVE) {
+                    return -1;
+                }
+            } else {
+                if(inRight.getFirstMember() == FeedType.LIVE) {
+                    return 1;
+                }
+            }
+            return new CompareToBuilder().append(inLeft.getSecondMember().getTimeMillis(),inRight.getSecondMember().getTimeMillis()).toComparison();
+        }
+        /**
+         * static, threadsafe instance
+         */
+        private static final SnapshotComparator INSTANCE = new SnapshotComparator();
     }
     /**
      * static instance used to provide access to non-Spring objects

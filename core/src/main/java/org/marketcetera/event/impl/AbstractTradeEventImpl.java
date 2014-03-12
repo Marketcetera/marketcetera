@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.TradeEvent;
@@ -211,6 +212,15 @@ public abstract class AbstractTradeEventImpl
         marketData.validate();
     }
     /**
+     * Create a new AbstractTradeEventImpl instance.
+     *
+     * <p>This constructor is intended to be used by JAXB only.
+     */
+    protected AbstractTradeEventImpl()
+    {
+        marketData = new MarketDataBean();
+    }
+    /**
      * Gets a description of the type of event.
      *
      * @return a <code>String</code> value
@@ -219,6 +229,7 @@ public abstract class AbstractTradeEventImpl
     /**
      * market data attributes
      */
+    @XmlElement
     private final MarketDataBean marketData;
     private static final long serialVersionUID = 1L;
 }

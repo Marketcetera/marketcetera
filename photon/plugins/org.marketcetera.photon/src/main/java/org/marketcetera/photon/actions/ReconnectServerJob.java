@@ -19,11 +19,11 @@ import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.ServerStatusListener;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationManager;
+import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.photon.BrokerManager;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
@@ -49,7 +49,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public class ReconnectServerJob extends UIJob {
+public class ReconnectServerJob
+        extends UIJob
+{
 
     private static final AtomicBoolean sScheduled = new AtomicBoolean();
 
@@ -85,7 +87,8 @@ public class ReconnectServerJob extends UIJob {
     };
 
     @Override
-    public IStatus runInUIThread(IProgressMonitor monitor) {
+    public IStatus runInUIThread(IProgressMonitor monitor)
+    {
         try {
             // load connection properties
             ScopedPreferenceStore prefs = PhotonPlugin.getDefault().getPreferenceStore();
@@ -109,8 +112,9 @@ public class ReconnectServerJob extends UIJob {
                     IRunnableWithProgress op = new IRunnableWithProgress() {
                         @Override
                         public void run(IProgressMonitor monitor)
-                                throws InvocationTargetException,InterruptedException {
-                             // Invalidate position engine, it will be recreated if trading history is retrieved.
+                                throws InvocationTargetException,InterruptedException
+                        {
+                            // Invalidate position engine, it will be recreated if trading history is retrieved.
                             PhotonPlugin.getDefault().disposePositionEngine();
                             ServerStatusIndicator.setDisconnected();
                             PhotonPlugin.getDefault().setSessionStartTime(null);
@@ -189,12 +193,33 @@ public class ReconnectServerJob extends UIJob {
                     }
                 }
             });
+            // reconnect market data, too, if so requested
+            if(reconnectMarketData) {
+                PhotonPlugin.getDefault().reconnectMarketDataFeed();
+            }
             return success ? Status.OK_STATUS : Status.CANCEL_STATUS;
         } finally {
             sScheduled.set(false);
         }
     }
-
+    /**
+     * Get the reconnectMarketData value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean getReconnectMarketData()
+    {
+        return reconnectMarketData;
+    }
+    /**
+     * Sets the reconnectMarketData value.
+     *
+     * @param inReconnectMarketData a <code>boolean</code> value
+     */
+    public void setReconnectMarketData(boolean inReconnectMarketData)
+    {
+        reconnectMarketData = inReconnectMarketData;
+    }
     private static void asyncUpdateBrokers(final BrokersStatus brokersStatus) {
         PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
             @Override
@@ -250,7 +275,7 @@ public class ReconnectServerJob extends UIJob {
      * Handles server status updates.
      */
     @ClassVersion("$Id$")
-    static final class ServerNotificationListener
+    private class ServerNotificationListener
             implements ServerStatusListener
     {
         @Override
@@ -273,10 +298,9 @@ public class ReconnectServerJob extends UIJob {
                 // notifications are not necessary if the reconnect job is
                 // running
                 if (!sScheduled.get()) {
-                    NotificationManager.getNotificationManager()
-                            .publish(
-                                    Notification.high(text, text, getClass()
-                                            .getName()));
+                    NotificationManager.getNotificationManager().publish(Notification.high(text,
+                                                                                           text,
+                                                                                           getClass().getName()));
                 }
             } catch (Exception e) {
                 Messages.SERVER_NOTIFICATION_SERVER_ERROR_OCCURRED.error(this,
@@ -284,4 +308,8 @@ public class ReconnectServerJob extends UIJob {
             }
         }
     }
+    /**
+     * 
+     */
+    private boolean reconnectMarketData = false;
 }

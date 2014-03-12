@@ -26,8 +26,9 @@ public final class ClientManager
      * @throws ClientInitException if the client is already initialized.
      */
     public static synchronized void init(ClientParameters inParameter)
-            throws ConnectionException, ClientInitException {
-        if (!isInitialized()) {
+            throws ConnectionException, ClientInitException
+    {
+        if(!isInitialized()) {
             mClient = mClientFactory.getClient(inParameter);
         } else {
             throw new ClientInitException(Messages.CLIENT_ALREADY_INITIALIZED);
@@ -89,10 +90,11 @@ public final class ClientManager
     /**
      * the <code>ClientFactory</code> to use to create the <code>Client</code> object 
      */
-    private volatile static ClientFactory mClientFactory = new ClientFactory() {
+    private volatile static ClientFactory mClientFactory = new ClientFactory()
+    {
         @Override
         public Client getClient(ClientParameters inParameters)
-                throws ClientInitException, ConnectionException
+                throws ClientInitException,ConnectionException
         {
             return new ClientImpl(inParameters);
         }

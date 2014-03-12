@@ -15,24 +15,22 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public interface ICredentialsService {
-
+public interface ICredentialsService
+{
     /**
      * Interface for clients of the {@link ICredentialsService} to perform the
      * authentication.
      */
-    interface IAuthenticationHelper {
-
+    interface IAuthenticationHelper
+    {
         /**
          * Attempts to authenticate with the provided credentials.
          * 
-         * @param credentials
-         *            the credentials to use
+         * @param credentials the credentials to use
          * @return true if authentication succeeded, false otherwise
          */
         boolean authenticate(ICredentials credentials);
     }
-
     /**
      * Runs an authentication operation, providing credentials that may be
      * cached. The first time authentication succeeds for a given
@@ -44,7 +42,6 @@ public interface ICredentialsService {
      * @return true if authentication succeeded
      */
     boolean authenticateWithCredentials(IAuthenticationHelper helper);
-
     /**
      * Invalidates any cached credentials. After this has been called, the next
      * request to {@link #authenticateWithCredentials(IAuthenticationHelper)}

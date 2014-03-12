@@ -182,24 +182,15 @@ public class StrategyAgentRemotingTest
         final StatelessClientContext ctx = new StatelessClientContext();
         assertNull(ctx.getAppId());
         //context without appID
-        new ExpectedFailure<I18NException>(Messages.APP_MISMATCH,
-                null, DEFAULT_CREDENTIAL){
-            @Override
-            protected void run() throws Exception {
-               authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL, 
-                       DEFAULT_CREDENTIAL.toCharArray());
-            }
-        };
+        assertTrue(authenticator.shouldAllow(ctx,
+                                             DEFAULT_CREDENTIAL, 
+                                             DEFAULT_CREDENTIAL.toCharArray()));
         //context with invalid appID
-        ctx.setAppId(Util.getAppId("invalid", ApplicationVersion.getVersion().getVersionInfo()));
-        new ExpectedFailure<I18NException>(Messages.APP_MISMATCH,
-                "invalid", DEFAULT_CREDENTIAL){
-            @Override
-            protected void run() throws Exception {
-               authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL,
-                       DEFAULT_CREDENTIAL.toCharArray());
-            }
-        };
+        ctx.setAppId(Util.getAppId("invalid",
+                                   ApplicationVersion.getVersion().getVersionInfo()));
+        assertTrue(authenticator.shouldAllow(ctx,
+                                             DEFAULT_CREDENTIAL, 
+                                             DEFAULT_CREDENTIAL.toCharArray()));
         //context with correct name & version number
         ctx.setAppId(Util.getAppId(SAClientVersion.APP_ID_NAME, ApplicationVersion.getVersion().getVersionInfo()));
         assertTrue(authenticator.shouldAllow(ctx, DEFAULT_CREDENTIAL,

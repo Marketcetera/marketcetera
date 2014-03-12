@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-class OptionBidEventImpl
+public class OptionBidEventImpl
         extends AbstractQuoteEventImpl
         implements BidEvent, OptionEvent
 {
@@ -106,6 +106,16 @@ class OptionBidEventImpl
     protected String getDescription()
     {
         return description;
+    }
+    /**
+     * Create a new OptionBidEventImpl instance.
+     * 
+     * <p>This constructor is intended to be used by JAXB.
+     */
+    @SuppressWarnings("unused")
+    private OptionBidEventImpl()
+    {
+        option = new OptionBean();
     }
     /**
      * provides a human-readable description of this event type (does not need to be localized)

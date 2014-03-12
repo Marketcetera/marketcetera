@@ -12,8 +12,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  */
 @ClassVersion("$Id$")
-public interface IMarketDataReference<T> {
-
+public interface IMarketDataReference<T>
+{
 	/**
 	 * Returns an instance of the the market data item that reflects dynamically updated market
 	 * data. Clients should not modify the returned item except to add/remove adapters.
@@ -21,7 +21,6 @@ public interface IMarketDataReference<T> {
 	 * @return the market data item, null if this reference has been disposed
 	 */
 	public T get();
-
 	/**
 	 * Disposes the reference. After this is called, {@link #get()} will return null and any cached
 	 * references to the market data item are not guaranteed to reflect the latest data.

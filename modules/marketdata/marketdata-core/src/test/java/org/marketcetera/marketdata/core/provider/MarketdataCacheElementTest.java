@@ -62,7 +62,10 @@ public class MarketdataCacheElementTest
             throws Exception
     {
         // top of book is currently empty
-        assertNull(equityCache.getSnapshot(Content.TOP_OF_BOOK));
+        verifyTopOfBook(generateTopOfBook(equity,
+                                          null,
+                                          null),
+                        (TopOfBookEvent)equityCache.getSnapshot(Content.TOP_OF_BOOK));
         AskEvent ask1 = generateAsk(equity);
         BidEvent bid1 = generateBid(equity);
         AskEvent ask2 = generateAsk(equity);
@@ -125,11 +128,27 @@ public class MarketdataCacheElementTest
         } else if(inAsk != null) {
             instrument = inAsk.getInstrument();
         }
-        if(instrument == null) {
-            return null;
-        }
+        return generateTopOfBook(instrument,
+                                 inBid,
+                                 inAsk);
+    }
+    /**
+     * 
+     *
+     *
+     * @param inInstrument
+     * @param inBid
+     * @param inAsk
+     * @return
+     * @throws Exception
+     */
+    private TopOfBookEvent generateTopOfBook(Instrument inInstrument,
+                                             BidEvent inBid,
+                                             AskEvent inAsk)
+            throws Exception
+    {
         TopOfBookEventBuilder builder = TopOfBookEventBuilder.topOfBookEvent()
-                .withInstrument(instrument)
+                .withInstrument(inInstrument)
                 .withAsk(inAsk)
                 .withBid(inBid);
         return builder.create();

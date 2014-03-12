@@ -102,8 +102,7 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
     @Override
     public void connect() throws Exception {
         final AtomicReference<ConnectionException> exception = new AtomicReference<ConnectionException>();
-        if (!mCredentialsService
-                .authenticateWithCredentials(new IAuthenticationHelper() {
+        if (!mCredentialsService.authenticateWithCredentials(new IAuthenticationHelper() {
                     @Override
                     public boolean authenticate(ICredentials credentials) {
                         try {

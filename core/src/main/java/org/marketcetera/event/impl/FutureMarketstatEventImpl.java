@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-class FutureMarketstatEventImpl
+public class FutureMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements FutureEvent
 {
@@ -94,6 +94,16 @@ class FutureMarketstatEventImpl
         super(inMarketstat);
         future = inFuture;
         future.validate();
+    }
+    /**
+     * Create a new FutureMarketstatEventImpl instance.
+     * 
+     * <p>This constructor is intended to be used by JAXB.
+     */
+    @SuppressWarnings("unused")
+    private FutureMarketstatEventImpl()
+    {
+        future = new FutureBean();
     }
     /**
      * the future attributes 

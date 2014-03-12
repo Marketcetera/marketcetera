@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
+import org.marketcetera.marketdata.core.cache.MarketDataCache;
 import org.marketcetera.marketdata.core.request.MarketDataRequestToken;
 import org.springframework.context.Lifecycle;
 
@@ -17,7 +18,7 @@ import org.springframework.context.Lifecycle;
  * @since $Release$
  */
 public interface MarketDataProvider
-        extends MarketDataProviderMBean
+        extends MarketDataProviderMBean,MarketDataCache
 {
     /**
      * Requests market data as indicated in the given request token.

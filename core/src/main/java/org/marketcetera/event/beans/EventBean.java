@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -37,9 +40,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @NotThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public class EventBean
-        implements Serializable, Messages
+        implements Serializable
 {
     /**
      * Creates a shallow copy of the given <code>EventBean</code>.
@@ -153,11 +157,11 @@ public class EventBean
     public void validate()
     {
         if(messageId < 0) {
-            EventServices.error(new I18NBoundMessage1P(VALIDATION_INVALID_MESSAGEID,
-                                                                 messageId));
+            EventServices.error(new I18NBoundMessage1P(Messages.VALIDATION_INVALID_MESSAGEID,
+                                                       messageId));
         }
         if(timestamp == null) {
-            EventServices.error(VALIDATION_NULL_TIMESTAMP);
+            EventServices.error(Messages.VALIDATION_NULL_TIMESTAMP);
         }
     }
     /**
@@ -230,10 +234,12 @@ public class EventBean
     /**
      * the event messageId
      */
+    @XmlAttribute
     private long messageId = Long.MIN_VALUE;
     /**
      * the event timestamp
      */
+    @XmlAttribute
     private Date timestamp = null;
     /**
      * the event source
@@ -242,6 +248,7 @@ public class EventBean
     /**
      * event provider value
      */
+    @XmlAttribute
     private String provider;
     /**
      * counter used to assign default values

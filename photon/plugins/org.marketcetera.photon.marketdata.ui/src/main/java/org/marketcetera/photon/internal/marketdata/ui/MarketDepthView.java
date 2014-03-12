@@ -196,7 +196,10 @@ public class MarketDepthView extends ViewPart {
 	@Override
 	public void dispose() {
 		super.dispose();
-		mDataItem.dispose();
+		if(mDataItem != null) {
+	        mDataItem.dispose();
+	        mDataItem = null;
+		}
 	}
 
 	private Composite createHeading(Composite parent) {
@@ -219,24 +222,31 @@ public class MarketDepthView extends ViewPart {
 		composite.setLayout(new MigLayout());
 		return composite;
 	}
-
-	private String getProductLabel(Content product) {
-		switch (product) {
-		case LEVEL_2:
-			return Messages.MARKET_DEPTH_VIEW_LEVEL_2_LABEL.getText();
-		case TOTAL_VIEW:
-			return Messages.MARKET_DEPTH_VIEW_TOTAL_VIEW_LABEL.getText();
-		case OPEN_BOOK:
-			return Messages.MARKET_DEPTH_VIEW_OPEN_BOOK_LABEL.getText();
-		case BBO10:
-		    return Messages.MARKET_DEPTH_VIEW_BBO10_LABEL.getText();
-		default:
-			// new type needs new label
-			assert false : product;
-			// we can just return the enum name
-			return mProduct.toString();
-		}
-	}
+    /**
+     * Gets the product label to display for the given content.
+     *
+     * @param inProduct a <code>Content</code> value
+     * @return a <code>String</code> value
+     */
+    private String getProductLabel(Content inProduct)
+    {
+        switch (inProduct) {
+            case AGGREGATED_DEPTH:
+                return Messages.MARKET_DEPTH_VIEW_AGGREGATED_DEPTH_LABEL.getText();
+            case BBO10:
+                return Messages.MARKET_DEPTH_VIEW_BBO10_LABEL.getText();
+            case LEVEL_2:
+                return Messages.MARKET_DEPTH_VIEW_LEVEL_2_LABEL.getText();
+            case OPEN_BOOK:
+                return Messages.MARKET_DEPTH_VIEW_OPEN_BOOK_LABEL.getText();
+            case TOTAL_VIEW:
+                return Messages.MARKET_DEPTH_VIEW_TOTAL_VIEW_LABEL.getText();
+            case UNAGGREGATED_DEPTH:
+                return Messages.MARKET_DEPTH_VIEW_UNAGGREGATED_DEPTH_LABEL.getText();
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
 
 	private TableSupport createTableSupport(ColumnConfiguration[] bidColumns) {
 		return TableSupport.create(TableConfiguration.defaults().tableStyle(
