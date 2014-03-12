@@ -18,9 +18,9 @@ import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.core.module.MarketDataCoreModule;
 import org.marketcetera.marketdata.core.module.MarketDataCoreModuleFactory;
+import org.marketcetera.marketdata.core.module.ReceiverModule;
+import org.marketcetera.marketdata.core.module.ReceiverModuleFactory;
 import org.marketcetera.module.*;
-import org.marketcetera.modules.receiver.ReceiverModule;
-import org.marketcetera.modules.receiver.ReceiverModuleFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import com.google.common.collect.Lists;

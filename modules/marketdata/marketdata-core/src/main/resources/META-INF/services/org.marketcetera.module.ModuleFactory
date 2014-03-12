@@ -1,2 +1,3 @@
 #Names of module factory implementations
 org.marketcetera.marketdata.core.module.MarketDataCoreModuleFactory
+org.marketcetera.marketdata.core.module.ReceiverModuleFactory

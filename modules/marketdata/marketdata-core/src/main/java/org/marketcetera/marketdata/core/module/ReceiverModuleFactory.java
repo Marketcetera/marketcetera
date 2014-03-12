@@ -1,4 +1,4 @@
-package org.marketcetera.modules.receiver;
+package org.marketcetera.marketdata.core.module;
 
 import org.apache.commons.lang.StringUtils;
 import org.marketcetera.module.Module;

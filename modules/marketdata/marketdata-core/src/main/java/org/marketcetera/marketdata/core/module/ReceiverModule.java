@@ -1,4 +1,4 @@
-package org.marketcetera.modules.receiver;
+package org.marketcetera.marketdata.core.module;
 
 import java.util.Map;
 

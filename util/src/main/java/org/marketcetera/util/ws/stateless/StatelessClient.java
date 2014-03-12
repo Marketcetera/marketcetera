@@ -151,16 +151,17 @@ public class StatelessClient
      * Retrieves the client-side proxy for the given service
      * interface.
      *
-     * @param iface The interface class.
+     * @param inInterface The interface class.
      */
 
     @SuppressWarnings("unchecked")
-    public <T extends StatelessServiceBase> T getService
-        (Class<T> iface)
+    public <T extends StatelessServiceBase> T getService(Class<T> inInterface)
     {
-        JaxWsProxyFactoryBean f=new JaxWsProxyFactoryBean();
-        f.setServiceClass(iface);
-        f.setAddress(getConnectionUrl(iface));
+        System.setProperty("com.sun.bind.v2.runtime.JAXBContextImpl.fastBoot", "true");
+        System.setProperty("com.sun.xml.internal.bind.v2.runtime.JAXBContextImpl.fastBoot", "true");
+        JaxWsProxyFactoryBean f = new JaxWsProxyFactoryBean();
+        f.setServiceClass(inInterface);
+        f.setAddress(getConnectionUrl(inInterface));
         Map<String,Object> props = f.getProperties(); 
         if (props == null) {
             props = new HashMap<String,Object>();
@@ -174,8 +175,7 @@ public class StatelessClient
         }
         f.setProperties(props); 
         T service=(T)(f.create());
-        HTTPConduit http=(HTTPConduit)
-            ClientProxy.getClient(service).getConduit();
+        HTTPConduit http=(HTTPConduit)ClientProxy.getClient(service).getConduit();
         HTTPClientPolicy httpClientPolicy=new HTTPClientPolicy();
         httpClientPolicy.setConnectionTimeout(0);
         httpClientPolicy.setReceiveTimeout(0);

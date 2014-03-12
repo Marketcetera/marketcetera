@@ -1,4 +1,4 @@
-package org.marketcetera.modules.receiver;
+package org.marketcetera.marketdata.core.module;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.*;
