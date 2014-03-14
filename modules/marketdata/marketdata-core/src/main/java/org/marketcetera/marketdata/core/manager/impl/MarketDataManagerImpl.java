@@ -40,10 +40,7 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 
 /* $License$ */
 
@@ -92,14 +89,13 @@ public class MarketDataManagerImpl
             statusUpdateLock.lockInterruptibly();
             if(inStatus == ProviderStatus.AVAILABLE) {
                 // TODO check for duplicate provider name and warn
-                activeProvidersByName.put(inProvider.getProviderName(),
-                                          inProvider);
+                addProvider(inProvider);
                 if(!mbeanServer.isRegistered(providerObjectName)) {
                     mbeanServer.registerMBean((MarketDataProviderMBean)inProvider,
                                               providerObjectName); 
                 }
             } else {
-                activeProvidersByName.remove(inProvider.getProviderName());
+                removeProvider(inProvider);
             }
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
@@ -143,14 +139,24 @@ public class MarketDataManagerImpl
             }
             successfulProviders.add(provider);
         } else {
+            boolean liveRequestSubmitted = false;
             for(MarketDataProvider provider : getActiveMarketDataProviders()) {
+                if(liveRequestSubmitted && provider.getFeedType() != FeedType.LIVE) {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Request has been submitted to all live feeds, no more requests will be issued");
+                    break;
+                }
                 try {
                     SLF4JLoggerProxy.debug(this,
-                                           "Submitting {} to {}",
+                                           "Submitting {} to {} [{}]",
                                            token,
-                                           provider);
+                                           provider,
+                                           provider.getFeedType());
                     provider.requestMarketData(token);
                     successfulProviders.add(provider);
+                    if(provider.getFeedType() == FeedType.LIVE) {
+                        liveRequestSubmitted = true;
+                    }
                 } catch (RuntimeException e) {
                     SLF4JLoggerProxy.warn(this,
                                           e,
@@ -272,7 +278,30 @@ public class MarketDataManagerImpl
     private Collection<MarketDataProvider> getActiveMarketDataProviders()
     {
         populateProviderList();
-        return activeProvidersByName.values();
+        return providersByPriority;
+    }
+    /**
+     * 
+     *
+     *
+     * @param inProvider
+     */
+    private void removeProvider(MarketDataProvider inProvider)
+    {
+        activeProvidersByName.remove(inProvider.getProviderName());
+        providersByPriority.remove(inProvider);
+    }
+    /**
+     * 
+     *
+     *
+     * @param inProvider
+     */
+    private void addProvider(MarketDataProvider inProvider)
+    {
+        activeProvidersByName.put(inProvider.getProviderName(),
+                                  inProvider);
+        providersByPriority.add(inProvider);
     }
     /**
      * Populates the provider list with provider proxys that are implemented as old school modules.
@@ -295,8 +324,7 @@ public class MarketDataManagerImpl
                             SLF4JLoggerProxy.debug(this,
                                                    "Creating market data provider proxy for {}",
                                                    providerName);
-                            activeProvidersByName.put(providerName,
-                                                      provider);
+                            addProvider(provider);
                         }
                     }
                 }
@@ -745,6 +773,43 @@ public class MarketDataManagerImpl
          */
         private static final SnapshotComparator INSTANCE = new SnapshotComparator();
     }
+    /**
+     *
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private static class ProviderComparator
+            implements Comparator<MarketDataProvider>
+    {
+        /* (non-Javadoc)
+         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+         */
+        @Override
+        public int compare(MarketDataProvider inLeft,
+                           MarketDataProvider inRight)
+        {
+            if(inLeft.getFeedType() == FeedType.LIVE) {
+                if(inRight.getFeedType() != FeedType.LIVE) {
+                    return -1;
+                }
+            }
+            if(inRight.getFeedType() == FeedType.LIVE) {
+                return 1;
+            }
+            return new CompareToBuilder().append(inLeft.getProviderName(),inRight.getProviderName()).toComparison();
+        }
+        /**
+         * static, threadsafe instance
+         */
+        private static final ProviderComparator INSTANCE = new ProviderComparator();
+    }
+    /**
+     * 
+     */
+    private SortedSet<MarketDataProvider> providersByPriority = Sets.newTreeSet(ProviderComparator.INSTANCE);
     /**
      * static instance used to provide access to non-Spring objects
      */

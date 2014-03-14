@@ -222,7 +222,7 @@ public class MarketDataServiceClientImpl
                     heartbeatError(e);
                 }
             }
-        },1000,1000,TimeUnit.MILLISECONDS);
+        },10000,10000,TimeUnit.MILLISECONDS);
         running.set(true);
     }
     /* (non-Javadoc)
