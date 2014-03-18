@@ -38,13 +38,18 @@ public interface MarketDataManager
     public long requestMarketData(MarketDataRequest inRequest,
                                   ISubscriber inSubscriber);
     /**
+     * Gets the most pertinent snapshot for the given Instrument - Content tuple.
      * 
-     *
-     *
-     * @param inInstrument
-     * @param inContent
-     * @param inProvider
-     * @return
+     * <p>This method will return the most recent market data for the given criteria. This call
+     * assumes that other calls will have retrieved and maintained the market data in the market data
+     * cache. If no previous calls have requested the relevant market data, no market data will be
+     * available. This call does not retrieve market data from the actual provider.
+     * 
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inContent a <code>Content</code> value
+     * @param inProvider a <code>String</code> value
+     * @return an <code>Event</code> value or <code>null</code> if market data for the given criteria is not available
+     * @throws MarketDataRequestFailed if the request could not be executed
      */
     public Event requestMarketDataSnapshot(Instrument inInstrument,
                                            Content inContent,

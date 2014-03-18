@@ -1,6 +1,7 @@
 package org.marketcetera.marketdata.core.manager;
 
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -11,6 +12,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * @version $Id: MarketDataRequestFailed.java 16375 2012-11-19 21:02:22Z colin $
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class MarketDataRequestFailed
         extends MarketDataException
 {

@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.core.manager;
 
 import org.marketcetera.marketdata.core.MarketDataProvider;
 import org.marketcetera.marketdata.core.ProviderStatus;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -12,6 +13,7 @@ import org.marketcetera.marketdata.core.ProviderStatus;
  * @version $Id: MarketDataProviderRegistry.java 16422 2013-01-03 19:43:24Z colin $
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface MarketDataProviderRegistry
 {
     /**

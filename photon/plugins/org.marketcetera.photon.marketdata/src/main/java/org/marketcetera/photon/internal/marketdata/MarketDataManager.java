@@ -102,21 +102,24 @@ public final class MarketDataManager
     {
         FeedStatusNotification update = new FeedStatusNotification(getFeedStatus(),
                                                                    FeedStatus.UNKNOWN);
-        if(inStatus) {
-            update.newFeedStatus = FeedStatus.AVAILABLE;
-        } else {
-            update.newFeedStatus = FeedStatus.ERROR;
-            if(mMarketData != null) {
-                mMarketData.reset();
+        try {
+            if(inStatus) {
+                update.newFeedStatus = FeedStatus.AVAILABLE;
+            } else {
+                update.newFeedStatus = FeedStatus.ERROR;
+                if(mMarketData != null) {
+                    mMarketData.reset();
+                }
+                if(marketDataClient != null) {
+                    try {
+                        marketDataClient.stop();
+                    } catch (Exception ignored) {}
+                    marketDataClient = null;
+                }
             }
-            if(marketDataClient != null) {
-                try {
-                    marketDataClient.stop();
-                } catch (Exception ignored) {}
-                marketDataClient = null;
-            }
+        } finally {
+            notifyListeners(update);
         }
-        notifyListeners(update);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.marketdata.IMarketDataManager#setCredentialsService(org.marketcetera.photon.core.ICredentialsService)
@@ -280,7 +283,7 @@ public final class MarketDataManager
         return marketDataClient.isRunning() ? FeedStatus.AVAILABLE : FeedStatus.ERROR;
     }
     /**
-     *
+     * Manages notifications for feed status subscribers.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -293,8 +296,8 @@ public final class MarketDataManager
         /**
          * Create a new FeedStatusNotification instance.
          *
-         * @param inOldStatus
-         * @param inNewStatus
+         * @param inOldStatus a <code>FeedStatus</code> value
+         * @param inNewStatus a <code>FeedStatus</code> value
          */
         private FeedStatusNotification(FeedStatus inOldStatus,
                                        FeedStatus inNewStatus)
@@ -327,11 +330,11 @@ public final class MarketDataManager
             return newFeedStatus;
         }
         /**
-         * 
+         * old feed status value
          */
         private FeedStatus oldFeedStatus = FeedStatus.UNKNOWN;
         /**
-         * 
+         * new feed status value
          */
         private FeedStatus newFeedStatus = FeedStatus.UNKNOWN;
     }

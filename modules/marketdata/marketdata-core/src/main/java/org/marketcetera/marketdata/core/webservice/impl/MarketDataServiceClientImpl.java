@@ -222,7 +222,7 @@ public class MarketDataServiceClientImpl
                     heartbeatError(e);
                 }
             }
-        },10000,10000,TimeUnit.MILLISECONDS);
+        },heartbeatInterval,heartbeatInterval,TimeUnit.MILLISECONDS);
         running.set(true);
     }
     /* (non-Javadoc)
@@ -356,17 +356,36 @@ public class MarketDataServiceClientImpl
         password = inPassword;
     }
     /**
-     * 
+     * Get the heartbeatInterval value.
      *
+     * @return a <code>long</code> value
+     */
+    public long getHeartbeatInterval()
+    {
+        return heartbeatInterval;
+    }
+    /**
+     * Sets the heartbeatInterval value.
      *
+     * @param inHeartbeatInterval a <code>long</code> value
+     */
+    public void setHeartbeatInterval(long inHeartbeatInterval)
+    {
+        heartbeatInterval = inHeartbeatInterval;
+    }
+    /**
+     * Checks that the connection is up and running.
+     *
+     * @throws IllegalArgumentException if the connection is not running
      */
     private void checkConnection()
     {
         Validate.isTrue(isRunning());
     }
     /**
+     * Indicates that an error occurred during a heartbeat request or response.
      * 
-     *
+     * <p>Attempts to make an orderly shutdown of the connection.
      *
      * @param inE an <code>Exception</code> value
      */
@@ -381,10 +400,9 @@ public class MarketDataServiceClientImpl
         } catch (Exception ignored) {}
     }
     /**
-     * 
+     * Processes updated status from the server.
      *
-     *
-     * @param inUpdatedStatus
+     * @param inUpdatedStatus a <code>boolean</code> value
      */
     private void reportServerStatus(boolean inUpdatedStatus)
     {
@@ -394,7 +412,7 @@ public class MarketDataServiceClientImpl
         }
     }
     /**
-     *
+     * Subscribes to service status changes.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -453,68 +471,72 @@ public class MarketDataServiceClientImpl
         /**
          * Create a new ServerStatusSubscriber instance.
          *
-         * @param inListener
+         * @param inListener a <code>ServerStatusListener</code> value
          */
         private ServerStatusSubscriber(ServerStatusListener inListener)
         {
             listener = inListener;
         }
         /**
-         * 
+         * listener value to which to announce server updates
          */
         private final ServerStatusListener listener;
     }
     /**
-     * 
+     * tracks the last reported status value reported, may be <code>null</code>, indicating that status has not yet been reported
      */
     private volatile Boolean lastReportedStatus = null;
     /**
-     * 
+     * tracks subscribers to and manages publications about server status changes
      */
     private PublisherEngine serverStatusPublisher = new PublisherEngine();
     /**
-     * 
+     * username with which to connect to the market data service
      */
     private String username;
     /**
-     * 
+     * password with which to connect to the market data service
      */
     private String password;
     /**
-     * 
+     * hostname at which to connect to the market data service
      */
     private String hostname;
     /**
-     * 
+     * port at which to connect to the market data service
      */
     private int port;
     /**
-     * 
+     * interval at which heartbeats are executed
+     */
+    private long heartbeatInterval;
+    /**
+     * provides context classes for marshal/unmarshal
      */
     private ContextClassProvider contextClassProvider;
     /**
-     * 
+     * market data service connection
      */
     private MarketDataService marketDataService;
     /**
-     * 
+     * provides access to the service client
      */
     private Client serviceClient;
     /**
-     * 
+     * represents the job responsible for sending and receiving heartbeats to the server
      */
     private ScheduledFuture<?> heartbeatToken;
     /**
-     * 
+     * indicates if the client connection is up and running or not
      */
     private final AtomicBoolean running = new AtomicBoolean(false);
     /**
-     * 
+     * application ID used to verify credentials with the market data nexus
      */
     private static final AppId APP_ID = Util.getAppId("MDClient",
                                                       ApplicationVersion.getVersion().getVersionInfo());
     /**
-     * 
+     * executes heartbeat jobs
      */
     private static final ScheduledExecutorService heartbeatExecutor = Executors.newScheduledThreadPool(1);
 }

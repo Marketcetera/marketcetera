@@ -18,6 +18,7 @@ import javax.management.ObjectName;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.QueueProcessor;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -40,7 +41,10 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 
-import com.google.common.collect.*;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -79,10 +83,9 @@ public class MarketDataManagerImpl
     public void setStatus(MarketDataProvider inProvider,
                           ProviderStatus inStatus)
     {
-        SLF4JLoggerProxy.info(this,
-                              "Market data provider {} reports status {}", // TODO
-                              inProvider.getProviderName(),
-                              inStatus);
+        Messages.PROVIDER_REPORTS_STATUS.info(this,
+                                              inProvider.getProviderName(),
+                                              inStatus);
         Lock statusUpdateLock = requestLockObject.writeLock();
         try {
             ObjectName providerObjectName = getObjectNameFor(inProvider);
@@ -98,12 +101,11 @@ public class MarketDataManagerImpl
                 removeProvider(inProvider);
             }
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+            throw new MarketDataRequestFailed(e);
         } catch (JMException e) {
-            SLF4JLoggerProxy.warn(this,
-                                  e,
-                                  "Unable to register/unregister JMX interface for {} market data provider", // TODO
-                                  inProvider.getProviderName());
+            Messages.JMX_REGISTRATION_ERROR.warn(this,
+                                                 e,
+                                                 inProvider.getProviderName());
         } finally {
             statusUpdateLock.unlock();
         }
@@ -158,11 +160,10 @@ public class MarketDataManagerImpl
                         liveRequestSubmitted = true;
                     }
                 } catch (RuntimeException e) {
-                    SLF4JLoggerProxy.warn(this,
-                                          e,
-                                          "Unable to request market data {} from {}", // TODO
-                                          inRequest,
-                                          provider.getProviderName());
+                    Messages.UNABLE_TO_REQUEST_MARKETDATA.warn(this,
+                                                               e,
+                                                               inRequest,
+                                                               provider.getProviderName());
                     // continue to try from the next provider
                 }
             }
@@ -180,9 +181,8 @@ public class MarketDataManagerImpl
             tokensByTokenId.put(token.getId(),
                                 token);
         } catch (InterruptedException e) {
-            SLF4JLoggerProxy.warn(this,
-                                  "Market data request {} interrupted", // TODO
-                                  inRequest);
+            Messages.MARKETDATA_REQUEST_INTERRUPTED.warn(this,
+                                                         inRequest);
             throw new MarketDataRequestTimedOut(e);
         } finally {
             requestLock.unlock();
@@ -281,10 +281,9 @@ public class MarketDataManagerImpl
         return providersByPriority;
     }
     /**
-     * 
+     * Removes the provider from the collection of active providers.
      *
-     *
-     * @param inProvider
+     * @param inProvider a <code>MarketDataProvider</code> value
      */
     private void removeProvider(MarketDataProvider inProvider)
     {
@@ -292,10 +291,9 @@ public class MarketDataManagerImpl
         providersByPriority.remove(inProvider);
     }
     /**
-     * 
+     * Adds the given provider to the collection of active providers.
      *
-     *
-     * @param inProvider
+     * @param inProvider a <code>MarketDataProvider</code> value
      */
     private void addProvider(MarketDataProvider inProvider)
     {
@@ -313,7 +311,7 @@ public class MarketDataManagerImpl
             List<ModuleURN> providerUrns = ModuleManager.getInstance().getProviders();
             for(ModuleURN providerUrn : providerUrns) {
                 String providerName = providerUrn.providerName();
-                if(providerUrn.providerType().equals("mdata") && !providerName.equals(MarketDataCoreModuleFactory.IDENTIFIER) && !activeProvidersByName.containsKey(providerName)) {
+                if(providerUrn.providerType().equals(MDATA) && !providerName.equals(MarketDataCoreModuleFactory.IDENTIFIER) && !activeProvidersByName.containsKey(providerName)) {
                     List<ModuleURN> instanceUrns = ModuleManager.getInstance().getModuleInstances(providerUrn);
                     if(!instanceUrns.isEmpty()) {
                         ModuleURN instanceUrn = instanceUrns.get(0);
@@ -460,7 +458,7 @@ public class MarketDataManagerImpl
             feed = inFeed;
             moduleManager = ModuleManager.getInstance();
             processor = new Processor();
-            // TODO register a feed status listener
+            // TODO register a feed status listener to detect starts and stops and update status
             start();
         }
         /* (non-Javadoc)
@@ -510,7 +508,10 @@ public class MarketDataManagerImpl
                 try {
                     moduleManager.stop(receiver.getURN());
                     moduleManager.deleteModule(receiver.getURN());
-                } catch (RuntimeException ignored) {}
+                } catch (RuntimeException ignored) {
+                } finally {
+                    removeProvider(this);
+                }
                 receiver = null;
             }
         }
@@ -740,7 +741,7 @@ public class MarketDataManagerImpl
         private final AbstractMarketDataModule<?,?> feed;
     }
     /**
-     *
+     * Compares two snapshots to determine the precedence.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -774,7 +775,7 @@ public class MarketDataManagerImpl
         private static final SnapshotComparator INSTANCE = new SnapshotComparator();
     }
     /**
-     *
+     * Compares two providers to determine which is the preferred.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -807,7 +808,7 @@ public class MarketDataManagerImpl
         private static final ProviderComparator INSTANCE = new ProviderComparator();
     }
     /**
-     * 
+     * stores active providers by their desirability
      */
     private SortedSet<MarketDataProvider> providersByPriority = Sets.newTreeSet(ProviderComparator.INSTANCE);
     /**
@@ -839,4 +840,8 @@ public class MarketDataManagerImpl
      * used to set up MX interfaces
      */
     private final MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+    /**
+     * provider name for market data provider modules
+     */
+    private static final String MDATA = "mdata";
 }

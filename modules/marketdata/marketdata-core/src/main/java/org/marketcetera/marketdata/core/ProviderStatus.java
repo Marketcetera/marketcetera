@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata.core;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /* $License$ */
 
 /**
@@ -9,6 +11,7 @@ package org.marketcetera.marketdata.core;
  * @version $Id: FeedStatus.java 16325 2012-10-25 23:13:12Z colin $
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public enum ProviderStatus
 {
     /**

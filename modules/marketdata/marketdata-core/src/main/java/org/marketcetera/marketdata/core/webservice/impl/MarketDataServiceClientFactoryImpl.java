@@ -34,6 +34,7 @@ public class MarketDataServiceClientFactoryImpl
         client.setPassword(inPassword);
         client.setPort(inPort);
         client.setUsername(inUsername);
+        client.setHeartbeatInterval(heartbeatInterval);
         return client;
     }
     /* (non-Javadoc)
@@ -69,6 +70,28 @@ public class MarketDataServiceClientFactoryImpl
     {
         contextClassProvider = inContextClassProvider;
     }
+    /**
+     * Get the heartbeatInterval value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getHeartbeatInterval()
+    {
+        return heartbeatInterval;
+    }
+    /**
+     * Sets the heartbeatInterval value.
+     *
+     * @param inHeartbeatInterval a <code>long</code> value
+     */
+    public void setHeartbeatInterval(long inHeartbeatInterval)
+    {
+        heartbeatInterval = inHeartbeatInterval;
+    }
+    /**
+     * interval at which heartbeats are executed
+     */
+    private long heartbeatInterval = 10000;
     /**
      * default context class provider value, may be <code>null</code>
      */

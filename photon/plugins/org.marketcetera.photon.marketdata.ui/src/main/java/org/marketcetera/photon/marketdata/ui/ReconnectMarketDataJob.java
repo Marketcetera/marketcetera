@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * Reconnects the market data connection.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -54,20 +54,20 @@ public class ReconnectMarketDataJob
         }
     }
     /**
+     * Sets the market data manager value.
      *
-     *
-     * @param inMarketDataManager
+     * @param inMarketDataManager an <code>IMarketDataManager</code> value
      */
     public void setMarketDataManager(IMarketDataManager inMarketDataManager)
     {
         marketDataManager = inMarketDataManager;
     }
     /**
-     * 
+     * market data manager value
      */
     private IMarketDataManager marketDataManager;
     /**
-     * 
+     * indicates if a current reconnection job is scheduled or not
      */
     private static final AtomicBoolean sScheduled = new AtomicBoolean();
 }

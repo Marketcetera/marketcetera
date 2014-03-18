@@ -1,6 +1,7 @@
 package org.marketcetera.marketdata.core;
 
 import org.marketcetera.util.log.*;
+import org.marketcetera.util.misc.ClassVersion;
 
 
 /* $License$ */
@@ -11,6 +12,7 @@ import org.marketcetera.util.log.*;
  * @version $Id: Messages.java 82324 2012-04-09 20:56:08Z colin $
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface Messages
 {
     /**
@@ -34,4 +36,8 @@ public interface Messages
     static final I18NMessage0P NO_CONTENT = new I18NMessage0P(LOGGER,"no_content"); //$NON-NLS-1$
     static final I18NMessage0P PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,"provider_description"); //$NON-NLS-1$
     static final I18NMessage2P CONTENT_REQUIRES_QUOTE_EVENTS = new I18NMessage2P(LOGGER,"content_requires_quote_events"); //$NON-NLS-1$
+    static final I18NMessage2P PROVIDER_REPORTS_STATUS = new I18NMessage2P(LOGGER,"provider_reports_status"); //$NON-NLS-1$
+    static final I18NMessage1P JMX_REGISTRATION_ERROR = new I18NMessage1P(LOGGER,"jmx_registration_error"); //$NON-NLS-1$
+    static final I18NMessage2P UNABLE_TO_REQUEST_MARKETDATA = new I18NMessage2P(LOGGER,"unable_to_request_marketdata"); //$NON-NLS-1$
+    static final I18NMessage1P MARKETDATA_REQUEST_INTERRUPTED = new I18NMessage1P(LOGGER,"marketdata_request_interrupted"); //$NON-NLS-1$
 }

@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /* $License$ */
 
 /**
@@ -14,6 +16,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  * @version $Id$
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public class MapAdapter
         extends XmlAdapter<MapElements[],Map<String,String>>
 {

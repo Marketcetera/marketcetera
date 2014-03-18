@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.core;
 
 import javax.management.MXBean;
 
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
 
 /* $License$ */
@@ -14,6 +15,7 @@ import org.springframework.context.Lifecycle;
  * @since $Release$
  */
 @MXBean(true)
+@ClassVersion("$Id$")
 public interface MarketDataProviderMBean
         extends Lifecycle
 {

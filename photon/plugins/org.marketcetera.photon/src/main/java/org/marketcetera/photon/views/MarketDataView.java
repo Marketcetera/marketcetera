@@ -114,9 +114,15 @@ public final class MarketDataView
         toolbar.add(new AddSymbolAction(mSymbolEntryText, this));
         PhotonPlugin.getDefault().getMarketDataManager().addActiveFeedStatusChangedListener(new IFeedStatusChangedListener() {
             @Override
-            public void feedStatusChanged(IFeedStatusEvent inEvent)
+            public void feedStatusChanged(final IFeedStatusEvent inEvent)
             {
-                mSymbolEntryText.setEnabled(inEvent.getNewStatus() == FeedStatus.AVAILABLE);
+                Display.getDefault().asyncExec(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        mSymbolEntryText.setEnabled(inEvent.getNewStatus() == FeedStatus.AVAILABLE);
+                    }
+                });
             }
         });
         final Table table = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);

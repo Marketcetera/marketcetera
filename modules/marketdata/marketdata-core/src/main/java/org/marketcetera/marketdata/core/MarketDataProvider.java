@@ -6,6 +6,7 @@ import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.core.cache.MarketDataCache;
 import org.marketcetera.marketdata.core.request.MarketDataRequestToken;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.context.Lifecycle;
 
 /* $License$ */
@@ -17,6 +18,7 @@ import org.springframework.context.Lifecycle;
  * @version $Id: MarketDataProvider.java 16422 2013-01-03 19:43:24Z colin $
  * @since $Release$
  */
+@ClassVersion("$Id$")
 public interface MarketDataProvider
         extends MarketDataProviderMBean,MarketDataCache
 {

@@ -4,6 +4,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.marketcetera.util.misc.ClassVersion;
+
 /* $License$ */
 
 /**
@@ -14,6 +16,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @since $Release$
  */
 @XmlAccessorType(XmlAccessType.NONE)
+@ClassVersion("$Id$")
 public class MapElements
 {
     /**
