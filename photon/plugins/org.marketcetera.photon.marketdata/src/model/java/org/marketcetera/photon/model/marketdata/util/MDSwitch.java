@@ -26,10 +26,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.model.marketdata.MDPackage
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class MDSwitch<T> {
+public class MDSwitch<T>
+{
     /**
      * The cached model package
      * <!-- begin-user-doc -->
@@ -44,7 +45,8 @@ public class MDSwitch<T> {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDSwitch() {
+    public MDSwitch()
+    {
         if (modelPackage == null) {
             modelPackage = MDPackage.eINSTANCE;
         }
@@ -57,8 +59,10 @@ public class MDSwitch<T> {
      * @return the first non-null result returned by a <code>caseXXX</code> call.
      * @generated
      */
-    public T doSwitch(EObject theEObject) {
-        return doSwitch(theEObject.eClass(), theEObject);
+    public T doSwitch(EObject theEObject)
+    {
+        return doSwitch(theEObject.eClass(),
+                        theEObject);
     }
 
     /**
@@ -68,13 +72,16 @@ public class MDSwitch<T> {
      * @return the first non-null result returned by a <code>caseXXX</code> call.
      * @generated
      */
-    protected T doSwitch(EClass theEClass, EObject theEObject) {
+    protected T doSwitch(EClass theEClass,
+                         EObject theEObject)
+    {
         if (theEClass.eContainer() == modelPackage) {
-            return doSwitch(theEClass.getClassifierID(), theEObject);
+            return doSwitch(theEClass.getClassifierID(),
+                            theEObject);
         } else {
             List<EClass> eSuperTypes = theEClass.getESuperTypes();
-            return eSuperTypes.isEmpty() ? defaultCase(theEObject) : doSwitch(
-                    eSuperTypes.get(0), theEObject);
+            return eSuperTypes.isEmpty() ? defaultCase(theEObject) : doSwitch(eSuperTypes.get(0),
+                                                                              theEObject);
         }
     }
 
@@ -85,60 +92,64 @@ public class MDSwitch<T> {
      * @return the first non-null result returned by a <code>caseXXX</code> call.
      * @generated
      */
-    protected T doSwitch(int classifierID, EObject theEObject) {
+    protected T doSwitch(int classifierID,
+                         EObject theEObject)
+    {
         switch (classifierID) {
-        case MDPackage.MD_ITEM: {
-            MDItem mdItem = (MDItem) theEObject;
-            T result = caseMDItem(mdItem);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case MDPackage.MD_LATEST_TICK: {
-            MDLatestTick mdLatestTick = (MDLatestTick) theEObject;
-            T result = caseMDLatestTick(mdLatestTick);
-            if (result == null)
-                result = caseMDItem(mdLatestTick);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case MDPackage.MD_TOP_OF_BOOK: {
-            MDTopOfBook mdTopOfBook = (MDTopOfBook) theEObject;
-            T result = caseMDTopOfBook(mdTopOfBook);
-            if (result == null)
-                result = caseMDItem(mdTopOfBook);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case MDPackage.MD_MARKETSTAT: {
-            MDMarketstat mdMarketstat = (MDMarketstat) theEObject;
-            T result = caseMDMarketstat(mdMarketstat);
-            if (result == null)
-                result = caseMDItem(mdMarketstat);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case MDPackage.MD_DEPTH_OF_BOOK: {
-            MDDepthOfBook mdDepthOfBook = (MDDepthOfBook) theEObject;
-            T result = caseMDDepthOfBook(mdDepthOfBook);
-            if (result == null)
-                result = caseMDItem(mdDepthOfBook);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        case MDPackage.MD_QUOTE: {
-            MDQuote mdQuote = (MDQuote) theEObject;
-            T result = caseMDQuote(mdQuote);
-            if (result == null)
-                result = defaultCase(theEObject);
-            return result;
-        }
-        default:
-            return defaultCase(theEObject);
+            case MDPackage.MD_ITEM: {
+                MDItem mdItem = (MDItem) theEObject;
+                T result = caseMDItem(mdItem);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case MDPackage.MD_LATEST_TICK: {
+                MDLatestTick mdLatestTick = (MDLatestTick) theEObject;
+                T result = caseMDLatestTick(mdLatestTick);
+                if (result == null)
+                    result = caseMDItem(mdLatestTick);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case MDPackage.MD_TOP_OF_BOOK: {
+                MDTopOfBook mdTopOfBook = (MDTopOfBook) theEObject;
+                T result = caseMDTopOfBook(mdTopOfBook);
+                if (result == null)
+                    result = caseMDItem(mdTopOfBook);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case MDPackage.MD_MARKETSTAT: {
+                MDMarketstat mdMarketstat = (MDMarketstat) theEObject;
+                T result = caseMDMarketstat(mdMarketstat);
+                if (result == null)
+                    result = caseMDItem(mdMarketstat);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case MDPackage.MD_DEPTH_OF_BOOK: {
+                MDDepthOfBook mdDepthOfBook = (MDDepthOfBook) theEObject;
+                T result = caseMDDepthOfBook(mdDepthOfBook);
+                if (result == null)
+                    result = caseMDItem(mdDepthOfBook);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            case MDPackage.MD_QUOTE: {
+                MDQuote mdQuote = (MDQuote) theEObject;
+                T result = caseMDQuote(mdQuote);
+                if (result == null)
+                    result = caseMDItem(mdQuote);
+                if (result == null)
+                    result = defaultCase(theEObject);
+                return result;
+            }
+            default:
+                return defaultCase(theEObject);
         }
     }
 
@@ -153,7 +164,8 @@ public class MDSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseMDItem(MDItem object) {
+    public T caseMDItem(MDItem object)
+    {
         return null;
     }
 
@@ -168,7 +180,8 @@ public class MDSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseMDLatestTick(MDLatestTick object) {
+    public T caseMDLatestTick(MDLatestTick object)
+    {
         return null;
     }
 
@@ -183,7 +196,8 @@ public class MDSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseMDTopOfBook(MDTopOfBook object) {
+    public T caseMDTopOfBook(MDTopOfBook object)
+    {
         return null;
     }
 
@@ -198,7 +212,8 @@ public class MDSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseMDMarketstat(MDMarketstat object) {
+    public T caseMDMarketstat(MDMarketstat object)
+    {
         return null;
     }
 
@@ -213,7 +228,8 @@ public class MDSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseMDDepthOfBook(MDDepthOfBook object) {
+    public T caseMDDepthOfBook(MDDepthOfBook object)
+    {
         return null;
     }
 
@@ -228,7 +244,8 @@ public class MDSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseMDQuote(MDQuote object) {
+    public T caseMDQuote(MDQuote object)
+    {
         return null;
     }
 
@@ -243,7 +260,8 @@ public class MDSwitch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject)
      * @generated
      */
-    public T defaultCase(EObject object) {
+    public T defaultCase(EObject object)
+    {
         return null;
     }
 

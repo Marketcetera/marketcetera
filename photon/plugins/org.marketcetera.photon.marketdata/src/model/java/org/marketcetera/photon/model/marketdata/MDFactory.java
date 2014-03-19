@@ -18,18 +18,19 @@ import org.marketcetera.util.misc.ClassVersion;
  * <!-- end-user-doc -->
  * @see org.marketcetera.photon.model.marketdata.MDPackage
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public interface MDFactory extends EFactory {
+public interface MDFactory
+        extends EFactory
+{
     /**
      * The singleton instance of the factory.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    MDFactory eINSTANCE = org.marketcetera.photon.model.marketdata.impl.MDFactoryImpl
-            .init();
+    MDFactory eINSTANCE = org.marketcetera.photon.model.marketdata.impl.MDFactoryImpl.init();
 
     /**
      * Returns a new object of class '<em>Latest Tick</em>'.

@@ -230,9 +230,9 @@ public final class MarketDataView
             createCompositeMap(domain,
                                "topOfBook", //$NON-NLS-1$
                                MDPackage.Literals.MD_TOP_OF_BOOK__BID_SIZE),
-                createCompositeMap(
-                        domain,
-                        "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__BID_PRICE), //$NON-NLS-1$
+            createCompositeMap(domain,
+                               "topOfBook", //$NON-NLS-1$
+                               MDPackage.Literals.MD_TOP_OF_BOOK__BID_PRICE),
                 createCompositeMap(
                         domain,
                         "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__ASK_PRICE), //$NON-NLS-1$
@@ -312,16 +312,17 @@ public final class MarketDataView
             }
         });
     }
-    private void newOrder(final MarketDataViewItem mdi, final Side side,
-            final BigDecimal Px, final BigDecimal ordSz) {
+    private void newOrder(final MarketDataViewItem mdi,
+                          final Side side,
+                          final BigDecimal Px,
+                          final BigDecimal ordSz)
+    {
         busyRun(new Runnable() {
             public void run() {
-                BigDecimal defaultOrderSize = getDefaultOrderSize(
-                        mdi.getInstrument(), Px);
-
+                BigDecimal defaultOrderSize = getDefaultOrderSize(mdi.getInstrument(),
+                                                                  Px);
                 Instrument instrument = mdi.getInstrument();
-                OrderSingle newOrder = Factory.getInstance()
-                        .createOrderSingle();
+                OrderSingle newOrder = Factory.getInstance().createOrderSingle();
                 newOrder.setInstrument(instrument);
                 newOrder.setOrderType(OrderType.Limit);
                 newOrder.setSide(side);

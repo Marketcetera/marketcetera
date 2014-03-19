@@ -34,10 +34,13 @@ import org.marketcetera.util.misc.ClassVersion;
  * </p>
  *
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class MDQuoteImpl extends EObjectImpl implements MDQuote {
+public class MDQuoteImpl
+        extends MDItemImpl
+        implements MDQuote
+{
     /**
      * The default value of the '{@link #getPrice() <em>Price</em>}' attribute.
      * <!-- begin-user-doc -->
@@ -123,7 +126,8 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDQuoteImpl() {
+    public MDQuoteImpl()
+    {
         super();
     }
 
@@ -133,7 +137,8 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * @generated
      */
     @Override
-    protected EClass eStaticClass() {
+    protected EClass eStaticClass()
+    {
         return MDPackage.Literals.MD_QUOTE;
     }
 
@@ -142,7 +147,8 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getPrice() {
+    public BigDecimal getPrice()
+    {
         return price;
     }
 
@@ -151,12 +157,16 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setPrice(BigDecimal newPrice) {
+    public void setPrice(BigDecimal newPrice)
+    {
         BigDecimal oldPrice = price;
         price = newPrice;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_QUOTE__PRICE, oldPrice, price));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_QUOTE__PRICE,
+                                          oldPrice,
+                                          price));
     }
 
     /**
@@ -164,7 +174,8 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public BigDecimal getSize() {
+    public BigDecimal getSize()
+    {
         return size;
     }
 
@@ -173,12 +184,16 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setSize(BigDecimal newSize) {
+    public void setSize(BigDecimal newSize)
+    {
         BigDecimal oldSize = size;
         size = newSize;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_QUOTE__SIZE, oldSize, size));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_QUOTE__SIZE,
+                                          oldSize,
+                                          size));
     }
 
     /**
@@ -186,7 +201,8 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public String getSource() {
+    public String getSource()
+    {
         return source;
     }
 
@@ -195,12 +211,16 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setSource(String newSource) {
+    public void setSource(String newSource)
+    {
         String oldSource = source;
         source = newSource;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_QUOTE__SOURCE, oldSource, source));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_QUOTE__SOURCE,
+                                          oldSource,
+                                          source));
     }
 
     /**
@@ -208,7 +228,8 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public long getTime() {
+    public long getTime()
+    {
         return time;
     }
 
@@ -217,12 +238,16 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * <!-- end-user-doc -->
      * @generated
      */
-    public void setTime(long newTime) {
+    public void setTime(long newTime)
+    {
         long oldTime = time;
         time = newTime;
         if (eNotificationRequired())
-            eNotify(new ENotificationImpl(this, Notification.SET,
-                    MDPackage.MD_QUOTE__TIME, oldTime, time));
+            eNotify(new ENotificationImpl(this,
+                                          Notification.SET,
+                                          MDPackage.MD_QUOTE__TIME,
+                                          oldTime,
+                                          time));
     }
 
     /**
@@ -231,18 +256,23 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * @generated
      */
     @Override
-    public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    public Object eGet(int featureID,
+                       boolean resolve,
+                       boolean coreType)
+    {
         switch (featureID) {
-        case MDPackage.MD_QUOTE__PRICE:
-            return getPrice();
-        case MDPackage.MD_QUOTE__SIZE:
-            return getSize();
-        case MDPackage.MD_QUOTE__SOURCE:
-            return getSource();
-        case MDPackage.MD_QUOTE__TIME:
-            return getTime();
+            case MDPackage.MD_QUOTE__PRICE:
+                return getPrice();
+            case MDPackage.MD_QUOTE__SIZE:
+                return getSize();
+            case MDPackage.MD_QUOTE__SOURCE:
+                return getSource();
+            case MDPackage.MD_QUOTE__TIME:
+                return getTime();
         }
-        return super.eGet(featureID, resolve, coreType);
+        return super.eGet(featureID,
+                          resolve,
+                          coreType);
     }
 
     /**
@@ -251,22 +281,25 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * @generated
      */
     @Override
-    public void eSet(int featureID, Object newValue) {
+    public void eSet(int featureID,
+                     Object newValue)
+    {
         switch (featureID) {
-        case MDPackage.MD_QUOTE__PRICE:
-            setPrice((BigDecimal) newValue);
-            return;
-        case MDPackage.MD_QUOTE__SIZE:
-            setSize((BigDecimal) newValue);
-            return;
-        case MDPackage.MD_QUOTE__SOURCE:
-            setSource((String) newValue);
-            return;
-        case MDPackage.MD_QUOTE__TIME:
-            setTime((Long) newValue);
-            return;
+            case MDPackage.MD_QUOTE__PRICE:
+                setPrice((BigDecimal) newValue);
+                return;
+            case MDPackage.MD_QUOTE__SIZE:
+                setSize((BigDecimal) newValue);
+                return;
+            case MDPackage.MD_QUOTE__SOURCE:
+                setSource((String) newValue);
+                return;
+            case MDPackage.MD_QUOTE__TIME:
+                setTime((Long) newValue);
+                return;
         }
-        super.eSet(featureID, newValue);
+        super.eSet(featureID,
+                   newValue);
     }
 
     /**
@@ -275,20 +308,21 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * @generated
      */
     @Override
-    public void eUnset(int featureID) {
+    public void eUnset(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_QUOTE__PRICE:
-            setPrice(PRICE_EDEFAULT);
-            return;
-        case MDPackage.MD_QUOTE__SIZE:
-            setSize(SIZE_EDEFAULT);
-            return;
-        case MDPackage.MD_QUOTE__SOURCE:
-            setSource(SOURCE_EDEFAULT);
-            return;
-        case MDPackage.MD_QUOTE__TIME:
-            setTime(TIME_EDEFAULT);
-            return;
+            case MDPackage.MD_QUOTE__PRICE:
+                setPrice(PRICE_EDEFAULT);
+                return;
+            case MDPackage.MD_QUOTE__SIZE:
+                setSize(SIZE_EDEFAULT);
+                return;
+            case MDPackage.MD_QUOTE__SOURCE:
+                setSource(SOURCE_EDEFAULT);
+                return;
+            case MDPackage.MD_QUOTE__TIME:
+                setTime(TIME_EDEFAULT);
+                return;
         }
         super.eUnset(featureID);
     }
@@ -299,19 +333,17 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * @generated
      */
     @Override
-    public boolean eIsSet(int featureID) {
+    public boolean eIsSet(int featureID)
+    {
         switch (featureID) {
-        case MDPackage.MD_QUOTE__PRICE:
-            return PRICE_EDEFAULT == null ? price != null : !PRICE_EDEFAULT
-                    .equals(price);
-        case MDPackage.MD_QUOTE__SIZE:
-            return SIZE_EDEFAULT == null ? size != null : !SIZE_EDEFAULT
-                    .equals(size);
-        case MDPackage.MD_QUOTE__SOURCE:
-            return SOURCE_EDEFAULT == null ? source != null : !SOURCE_EDEFAULT
-                    .equals(source);
-        case MDPackage.MD_QUOTE__TIME:
-            return time != TIME_EDEFAULT;
+            case MDPackage.MD_QUOTE__PRICE:
+                return PRICE_EDEFAULT == null ? price != null : !PRICE_EDEFAULT.equals(price);
+            case MDPackage.MD_QUOTE__SIZE:
+                return SIZE_EDEFAULT == null ? size != null : !SIZE_EDEFAULT.equals(size);
+            case MDPackage.MD_QUOTE__SOURCE:
+                return SOURCE_EDEFAULT == null ? source != null : !SOURCE_EDEFAULT.equals(source);
+            case MDPackage.MD_QUOTE__TIME:
+                return time != TIME_EDEFAULT;
         }
         return super.eIsSet(featureID);
     }
@@ -322,7 +354,8 @@ public class MDQuoteImpl extends EObjectImpl implements MDQuote {
      * @generated
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
         if (eIsProxy())
             return super.toString();
 

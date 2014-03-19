@@ -26,17 +26,21 @@ import org.marketcetera.util.misc.ClassVersion;
  * An implementation of the model <b>Factory</b>.
  * <!-- end-user-doc -->
  * @generated
- * @since 2.0.0
+ * @since 2.1.0
  */
 @ClassVersion("$Id$")
-public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
+public class MDFactoryImpl
+        extends EFactoryImpl
+        implements MDFactory
+{
     /**
      * Creates the default factory implementation.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    public static MDFactory init() {
+    public static MDFactory init()
+    {
         try {
             MDFactory theMDFactory = (MDFactory) EPackage.Registry.INSTANCE
                     .getEFactory("http://www.marketcetera.org/models/marketdata"); //$NON-NLS-1$ 
@@ -55,7 +59,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDFactoryImpl() {
+    public MDFactoryImpl()
+    {
         super();
     }
 
@@ -65,21 +70,21 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * @generated
      */
     @Override
-    public EObject create(EClass eClass) {
+    public EObject create(EClass eClass)
+    {
         switch (eClass.getClassifierID()) {
-        case MDPackage.MD_LATEST_TICK:
-            return createMDLatestTick();
-        case MDPackage.MD_TOP_OF_BOOK:
-            return createMDTopOfBook();
-        case MDPackage.MD_MARKETSTAT:
-            return createMDMarketstat();
-        case MDPackage.MD_DEPTH_OF_BOOK:
-            return createMDDepthOfBook();
-        case MDPackage.MD_QUOTE:
-            return createMDQuote();
-        default:
-            throw new IllegalArgumentException(
-                    "The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
+            case MDPackage.MD_LATEST_TICK:
+                return createMDLatestTick();
+            case MDPackage.MD_TOP_OF_BOOK:
+                return createMDTopOfBook();
+            case MDPackage.MD_MARKETSTAT:
+                return createMDMarketstat();
+            case MDPackage.MD_DEPTH_OF_BOOK:
+                return createMDDepthOfBook();
+            case MDPackage.MD_QUOTE:
+                return createMDQuote();
+            default:
+                throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -89,15 +94,18 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * @generated
      */
     @Override
-    public Object createFromString(EDataType eDataType, String initialValue) {
+    public Object createFromString(EDataType eDataType,
+                                   String initialValue)
+    {
         switch (eDataType.getClassifierID()) {
-        case MDPackage.DEPTH_OF_BOOK_PRODUCT:
-            return createDepthOfBookProductFromString(eDataType, initialValue);
-        case MDPackage.INSTRUMENT:
-            return createInstrumentFromString(eDataType, initialValue);
-        default:
-            throw new IllegalArgumentException(
-                    "The datatype '" + eDataType.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
+            case MDPackage.DEPTH_OF_BOOK_PRODUCT:
+                return createDepthOfBookProductFromString(eDataType,
+                                                          initialValue);
+            case MDPackage.INSTRUMENT:
+                return createInstrumentFromString(eDataType,
+                                                  initialValue);
+            default:
+                throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -107,15 +115,18 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * @generated
      */
     @Override
-    public String convertToString(EDataType eDataType, Object instanceValue) {
+    public String convertToString(EDataType eDataType,
+                                  Object instanceValue)
+    {
         switch (eDataType.getClassifierID()) {
-        case MDPackage.DEPTH_OF_BOOK_PRODUCT:
-            return convertDepthOfBookProductToString(eDataType, instanceValue);
-        case MDPackage.INSTRUMENT:
-            return convertInstrumentToString(eDataType, instanceValue);
-        default:
-            throw new IllegalArgumentException(
-                    "The datatype '" + eDataType.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
+            case MDPackage.DEPTH_OF_BOOK_PRODUCT:
+                return convertDepthOfBookProductToString(eDataType,
+                                                         instanceValue);
+            case MDPackage.INSTRUMENT:
+                return convertInstrumentToString(eDataType,
+                                                 instanceValue);
+            default:
+                throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -124,7 +135,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDLatestTick createMDLatestTick() {
+    public MDLatestTick createMDLatestTick()
+    {
         MDLatestTickImpl mdLatestTick = new MDLatestTickImpl();
         return mdLatestTick;
     }
@@ -134,7 +146,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDTopOfBook createMDTopOfBook() {
+    public MDTopOfBook createMDTopOfBook()
+    {
         MDTopOfBookImpl mdTopOfBook = new MDTopOfBookImpl();
         return mdTopOfBook;
     }
@@ -144,7 +157,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDMarketstat createMDMarketstat() {
+    public MDMarketstat createMDMarketstat()
+    {
         MDMarketstatImpl mdMarketstat = new MDMarketstatImpl();
         return mdMarketstat;
     }
@@ -154,7 +168,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDDepthOfBook createMDDepthOfBook() {
+    public MDDepthOfBook createMDDepthOfBook()
+    {
         MDDepthOfBookImpl mdDepthOfBook = new MDDepthOfBookImpl();
         return mdDepthOfBook;
     }
@@ -164,7 +179,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDQuote createMDQuote() {
+    public MDQuote createMDQuote()
+    {
         MDQuoteImpl mdQuote = new MDQuoteImpl();
         return mdQuote;
     }
@@ -175,8 +191,10 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * @generated
      */
     public Content createDepthOfBookProductFromString(EDataType eDataType,
-            String initialValue) {
-        return (Content) super.createFromString(eDataType, initialValue);
+                                                      String initialValue)
+    {
+        return (Content) super.createFromString(eDataType,
+                                                initialValue);
     }
 
     /**
@@ -185,8 +203,10 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * @generated
      */
     public String convertDepthOfBookProductToString(EDataType eDataType,
-            Object instanceValue) {
-        return super.convertToString(eDataType, instanceValue);
+                                                    Object instanceValue)
+    {
+        return super.convertToString(eDataType,
+                                     instanceValue);
     }
 
     /**
@@ -195,8 +215,10 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * @generated
      */
     public Instrument createInstrumentFromString(EDataType eDataType,
-            String initialValue) {
-        return (Instrument) super.createFromString(eDataType, initialValue);
+                                                 String initialValue)
+    {
+        return (Instrument) super.createFromString(eDataType,
+                                                   initialValue);
     }
 
     /**
@@ -205,8 +227,10 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * @generated
      */
     public String convertInstrumentToString(EDataType eDataType,
-            Object instanceValue) {
-        return super.convertToString(eDataType, instanceValue);
+                                            Object instanceValue)
+    {
+        return super.convertToString(eDataType,
+                                     instanceValue);
     }
 
     /**
@@ -214,7 +238,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * <!-- end-user-doc -->
      * @generated
      */
-    public MDPackage getMDPackage() {
+    public MDPackage getMDPackage()
+    {
         return (MDPackage) getEPackage();
     }
 
@@ -225,7 +250,8 @@ public class MDFactoryImpl extends EFactoryImpl implements MDFactory {
      * @generated
      */
     @Deprecated
-    public static MDPackage getPackage() {
+    public static MDPackage getPackage()
+    {
         return MDPackage.eINSTANCE;
     }
 

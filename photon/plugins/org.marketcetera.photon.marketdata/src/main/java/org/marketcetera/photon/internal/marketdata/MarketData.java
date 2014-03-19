@@ -176,15 +176,14 @@ public class MarketData
         }
     }
     /**
-     * 
+     * Gets a market data reference for the given attributes.
      *
-     *
-     * @param inInstrument
-     * @param inContent
-     * @param inFactory
-     * @param inUpdater
-     * @param inUpdateFrequency
-     * @return
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inContent a <code>Content</code> value
+     * @param inFactory an <code>ItemFactory&lt;MDMutableType&gt;</code> value
+     * @param inUpdater an <code>ItemUpdated&lt;MDMutableType&gt;</code> value
+     * @param inUpdateFrequency a <code>long</code> value
+     * @return an <code>IMarketDataReference&lt;MDType&gt;</code> value
      */
     @SuppressWarnings("unchecked")
     private <MDType extends MDItem,MDMutableType extends MDType> IMarketDataReference<MDType> getMarketDataReference(final Instrument inInstrument,
@@ -224,7 +223,7 @@ public class MarketData
         return newMarketDataDetails.getReference();
     }
     /**
-     *
+     * Manages a market data subscription and applies updates.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -237,11 +236,11 @@ public class MarketData
         /**
          * Create a new SubscriptionRefreshJob instance.
          *
-         * @param inInstrument
-         * @param inContent
-         * @param inId
-         * @param inUpdater
-         * @param inItem
+         * @param inInstrument an <code>Instrument</code> value
+         * @param inContent a <code>Content</code> value
+         * @param inId a <code>long</code> value
+         * @param inUpdater an <code>ItemUpdater&lt;MDMutableType&gt;</code> value
+         * @param inItem an <code>MDMutableType</code> value
          */
         private SubscriptionRefreshJob(Instrument inInstrument,
                                        Content inContent,
@@ -306,27 +305,27 @@ public class MarketData
             }
         }
         /**
-         * 
+         * market data request instrument
          */
         private final Instrument instrument;
         /**
-         * 
+         * market data request content
          */
         private final Content content;
         /**
-         * 
+         * server request id
          */
         private final long id;
         /**
-         * 
+         * updater which updates {@link #item} when new events come in
          */
         private final ItemUpdater<MDMutableType> updater;
         /**
-         * 
+         * item to update when new events come in
          */
         private final MDMutableType item;
         /**
-         * 
+         * reference token for the scheduled market data refresh job, if <code>null</code>, no job is scheduled
          */
         private Future<?> refreshJobToken;
         /**
@@ -335,7 +334,7 @@ public class MarketData
         private long lastUpdate = 0;
     }
     /**
-     *
+     * Uniquely identifies the contents of a market data request.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -528,13 +527,13 @@ public class MarketData
         /**
          * Create a new MarketDataDetails instance.
          *
-         * @param inInstrument
-         * @param inContent
-         * @param inRequest
-         * @param inItem
-         * @param inKey
-         * @param inUpdater
-         * @param inUpdateFrequency
+         * @param inInstrument an <code>Instrument</code> value
+         * @param inContent a <code>Content</code> value
+         * @param inRequest a <code>MarketDataRequest</code> value
+         * @param inItem an <code>MDMutableItemType</code> value
+         * @param inKey a <code>MarketDataReferenceKey</code> value
+         * @param inUpdater an <code>ItemUpdated&lt;MDMutableItemType&gt;</code> value
+         * @param inUpdateFrequency a <code>long</code> value
          */
         private MarketDataDetails(Instrument inInstrument,
                                   Content inContent,
@@ -572,33 +571,33 @@ public class MarketData
                     return new StringBuilder().append("Ref-").append(id).append(" ").append(content).append(" for ").append(instrument).append(" [").append(requestId).append("]").toString();
                 }
                 /**
-                 * 
+                 * id assigned to this market data reference, used to uniquely identify a reference, not really used for anything else
                  */
                 private long id = System.nanoTime();
             };
         }
         /**
-         * 
+         * indicates how frequently (in ms) to check for updates
          */
         private final long updateFrequency;
         /**
-         * 
+         * updates {@link #item} when new events arrive
          */
         private final ItemUpdater<MDMutableItemType> updater;
         /**
-         * 
+         * item to update when market data changes arrive
          */
         private final MDMutableItemType item;
         /**
-         * 
+         * market data request ID returned from the nexus
          */
         private volatile long requestId;
         /**
-         * 
+         * market data request used to create this reference
          */
         private final MarketDataRequest request;
         /**
-         * 
+         * job responsible for updating the market data contents of this reference
          */
         private volatile SubscriptionRefreshJob<MDType,MDMutableItemType> refreshJob;
         /**
@@ -614,16 +613,16 @@ public class MarketData
          */
         private final Content content;
         /**
-         * 
+         * market data key which uniquely identifies the reference contents
          */
         private final MarketDataReferenceKey key;
         /**
-         * 
+         * market data source
          */
         private final IMarketDataReference<MDType> reference;
     }
     /**
-     *
+     * Creates a market data type value.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -633,15 +632,14 @@ public class MarketData
     private interface ItemFactory<MDType extends MDItem>
     {
         /**
-         * 
+         * Creates a new market data type value.
          *
-         *
-         * @return
+         * @return an <code>MDType</code> value
          */
         MDType create();
     }
     /**
-     *
+     * Updates an item with new events.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -651,24 +649,22 @@ public class MarketData
     private interface ItemUpdater<MDType extends MDItem>
     {
         /**
-         * 
+         * Updates the given item based on the given events, sorted most recent to least recent.
          *
-         *
-         * @param inItem
-         * @param inEvents
+         * @param inItem an <code>MDType</code> value
+         * @param inEvents a <code>Deque&lt;Event&gt;</code> value
          */
         void update(MDType inItem,
                     Deque<Event> inEvents);
         /**
-         * 
+         * Clears the given item.
          *
-         *
-         * @param inItem
+         * @param inItem an <code>MDType</code> value
          */
         void clear(MDType inItem);
     }
     /**
-     *
+     * Updates depth-of-book items.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -708,6 +704,7 @@ public class MarketData
                         inItem.getAsks().clear();
                         for(AskEvent ask : newAsks) {
                             MDQuoteImpl quoteItem = new MDQuoteImpl();
+                            quoteItem.setInstrument(ask.getInstrument());
                             quoteItem.setPrice(ask.getPrice());
                             quoteItem.setSize(ask.getSize());
                             quoteItem.setSource(String.valueOf(ask.getSource()));
@@ -727,6 +724,7 @@ public class MarketData
                         inItem.getBids().clear();
                         for(BidEvent bid : newBids) {
                             MDQuoteImpl quoteItem = new MDQuoteImpl();
+                            quoteItem.setInstrument(bid.getInstrument());
                             quoteItem.setPrice(bid.getPrice());
                             quoteItem.setSize(bid.getSize());
                             quoteItem.setSource(String.valueOf(bid.getSource()));
@@ -748,15 +746,14 @@ public class MarketData
             inItem.getAsks().clear();
         }
         /**
-         * 
+         * Gets the content type of this market data updater.
          *
-         *
-         * @return
+         * @return a <code>Content</code> value
          */
         protected abstract Content getContent();
     }
     /**
-     * 
+     * creates a latest-execution item
      */
     private ItemFactory<MDLatestTickImpl> latestTickFactory = new ItemFactory<MDLatestTickImpl>() {
         @Override
@@ -766,7 +763,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * creates a top-of-book item
      */
     private ItemFactory<MDTopOfBookImpl> topOfBookFactory = new ItemFactory<MDTopOfBookImpl>() {
         @Override
@@ -776,7 +773,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * creates a marketstat item
      */
     private ItemFactory<MDMarketstatImpl> marketstatFactory = new ItemFactory<MDMarketstatImpl>() {
 
@@ -787,7 +784,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * creates a depth-of-book item
      */
     private ItemFactory<MDDepthOfBookImpl> depthOfBookFactory = new ItemFactory<MDDepthOfBookImpl>() {
 
@@ -798,7 +795,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages latest execution updates
      */
     private ItemUpdater<MDLatestTickImpl> latestTickUpdater = new ItemUpdater<MDLatestTickImpl>() {
         @Override
@@ -821,7 +818,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages top-of-book updates
      */
     private ItemUpdater<MDTopOfBookImpl> topOfBookUpdater = new ItemUpdater<MDTopOfBookImpl>() {
         @Override
@@ -860,7 +857,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages market stat updates
      */
     private ItemUpdater<MDMarketstatImpl> marketstatUpdater = new ItemUpdater<MDMarketstatImpl>() {
         @Override
@@ -895,7 +892,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages aggregated depth updates
      */
     private ItemUpdater<MDDepthOfBookImpl> aggregatedDepthUpdater = new AbstractDepthUpdater() {
         @Override
@@ -905,7 +902,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages unaggregated depth updates
      */
     private ItemUpdater<MDDepthOfBookImpl> unaggregatedDepthUpdater = new AbstractDepthUpdater() {
         @Override
@@ -915,7 +912,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages bbo10 depth updates
      */
     private ItemUpdater<MDDepthOfBookImpl> bbo10DepthUpdater = new AbstractDepthUpdater() {
         @Override
@@ -925,7 +922,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages level II depth updates
      */
     private ItemUpdater<MDDepthOfBookImpl> level2DepthUpdater = new AbstractDepthUpdater() {
         @Override
@@ -935,7 +932,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages open book depth updates
      */
     private ItemUpdater<MDDepthOfBookImpl> openBookDepthUpdater = new AbstractDepthUpdater() {
         @Override
@@ -945,7 +942,7 @@ public class MarketData
         }
     };
     /**
-     * 
+     * manages total view depth updates
      */
     private ItemUpdater<MDDepthOfBookImpl> totalViewDepthUpdater = new AbstractDepthUpdater() {
         @Override
@@ -955,23 +952,23 @@ public class MarketData
         }
     };
     /**
-     * 
+     * contains market data active requests by reference key (for reuse)
      */
     private final Map<MarketDataReferenceKey,MarketDataDetails<?,?>> requests = Maps.newHashMap();
     /**
-     * 
+     * schedules market data refresh jobs
      */
     private ScheduledExecutorService marketDataRefreshExecutor = Executors.newScheduledThreadPool(10);
     /**
-     * 
+     * provides access to the market data client
      */
     private final IMarketDataClientProvider marketDataClientProvider;
     /**
-     * 
+     * indicates how frequently to check for top-of-book market data updates (in ms)
      */
     private static final long TOP_UPDATE_FREQUENCY = 1000;
     /**
-     * 
+     * indicates how frequently to check for market data depth updates (in ms)
      */
     private static final long DEPTH_UPDATE_FREQUENCY = 3000;
 }
