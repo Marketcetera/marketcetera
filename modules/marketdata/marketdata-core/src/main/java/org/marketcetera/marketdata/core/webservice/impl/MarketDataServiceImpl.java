@@ -16,8 +16,10 @@ import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.manager.MarketDataManager;
+import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.MarketDataService;
 import org.marketcetera.marketdata.core.webservice.PageRequest;
+import org.marketcetera.marketdata.core.webservice.UnknownRequestException;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -74,7 +76,7 @@ public class MarketDataServiceImpl
                                        "{} requesting {}",
                                        inContext.getSessionId(),
                                        inRequest);
-                Validate.isTrue(isRunning());
+                checkConnection();
                 ServiceSubscriber subscriber = new ServiceSubscriber(inStreamEvents);
                 long requestId = marketDataManager.requestMarketData(inRequest,
                                                                      subscriber);
@@ -107,7 +109,7 @@ public class MarketDataServiceImpl
                                        "{} requesting events for {}",
                                        inContext.getSessionId(),
                                        inRequestIds);
-                Validate.isTrue(isRunning());
+                checkConnection();
                 Map<Long,LinkedList<Event>> eventsToReturn = Maps.newLinkedHashMap();
                 for(Long requestId : inRequestIds) {
                     LinkedList<Event> events = Lists.newLinkedList(doGetEvents(requestId));
@@ -136,7 +138,7 @@ public class MarketDataServiceImpl
                                        "{} requesting events for {}",
                                        inContext.getSessionId(),
                                        inRequestId);
-                Validate.isTrue(isRunning());
+                checkConnection();
                 Deque<Event> eventsToReturn = doGetEvents(inRequestId);
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {} for {}",
@@ -165,10 +167,10 @@ public class MarketDataServiceImpl
                                        "{} requesting update timestamp for {}",
                                        inContext.getSessionId(),
                                        inRequestId);
-                Validate.isTrue(isRunning());
+                checkConnection();
                 ServiceSubscriber subscriber = subscribersByRequestId.get(inRequestId);
                 if(subscriber == null) {
-                    throw new IllegalArgumentException(inRequestId + " is not a valid request"); // TODO message and exception
+                    throw new UnknownRequestException(inRequestId);
                 }
                 long timestamp = subscriber.getUpdateTimestamp();
                 SLF4JLoggerProxy.debug(this,
@@ -219,7 +221,7 @@ public class MarketDataServiceImpl
                                        inContent,
                                        inInstrument,
                                        inProvider);
-                Validate.isTrue(isRunning());
+                checkConnection();
                 Event event = marketDataManager.requestMarketDataSnapshot(inInstrument,
                                                                           inContent,
                                                                           inProvider);
@@ -260,7 +262,7 @@ public class MarketDataServiceImpl
                                        inContent,
                                        inInstrument,
                                        inProvider);
-                Validate.isTrue(isRunning());
+                checkConnection();
                 Event event = marketDataManager.requestMarketDataSnapshot(inInstrument,
                                                                           inContent,
                                                                           inProvider);
@@ -389,6 +391,17 @@ public class MarketDataServiceImpl
             throw new IllegalArgumentException(inRequestId + " is not a valid request"); // TODO message and exception
         }
         return subscriber.getEvents();
+    }
+    /**
+     * 
+     *
+     *
+     */
+    private void checkConnection()
+    {
+        if(!isRunning()) {
+            throw new ConnectionException();
+        }
     }
     /**
      * Manages a request subscription.

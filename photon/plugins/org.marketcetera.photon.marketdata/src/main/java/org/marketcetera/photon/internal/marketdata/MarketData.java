@@ -19,7 +19,9 @@ import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestTimedOut;
 import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
+import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.PageRequest;
+import org.marketcetera.marketdata.core.webservice.UnknownRequestException;
 import org.marketcetera.photon.marketdata.IMarketData;
 import org.marketcetera.photon.marketdata.IMarketDataReference;
 import org.marketcetera.photon.model.marketdata.*;
@@ -282,6 +284,17 @@ public class MarketData
                                    events);
                     lastUpdate = updateTimestamp;
                 }
+            } catch (UnknownRequestException e) {
+                // this is likely a transient problem, which will sort itself out shortly
+                SLF4JLoggerProxy.warn(MarketData.this,
+                                      e);
+                cancel();
+            } catch (ConnectionException e) {
+                // exception caused by a lost connection - cancel this request
+                SLF4JLoggerProxy.error(MarketData.this,
+                                       e);
+                updater.clear(item);
+                cancel();
             } catch (Exception e) {
                 // this is an exception that occurred during update - must be caught or it kills the scheduled executor - log it and report a problem to the user
                 updater.clear(item);

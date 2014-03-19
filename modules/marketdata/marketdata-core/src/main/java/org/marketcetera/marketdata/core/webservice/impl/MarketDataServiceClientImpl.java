@@ -25,6 +25,7 @@ import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.core.Messages;
 import org.marketcetera.marketdata.core.manager.MarketDataProviderNotAvailable;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
 import org.marketcetera.marketdata.core.manager.MarketDataRequestTimedOut;
@@ -64,22 +65,8 @@ public class MarketDataServiceClientImpl
             return marketDataService.request(serviceClient.getContext(),
                                              inRequest,
                                              inStreamEvents);
-        } catch (RemoteException e) {
-            if(e.getCause() != null) {
-                if(e.getCause() instanceof NoMarketDataProvidersAvailable) {
-                    throw (NoMarketDataProvidersAvailable)e.getCause();
-                }
-                if(e.getCause() instanceof MarketDataProviderNotAvailable) {
-                    throw (MarketDataProviderNotAvailable)e.getCause();
-                }
-                if(e.getCause() instanceof MarketDataRequestFailed) {
-                    throw (MarketDataRequestFailed)e.getCause();
-                }
-                if(e.getCause() instanceof MarketDataRequestTimedOut) {
-                    throw (MarketDataRequestTimedOut)e.getCause();
-                }
-            }
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw handleException(e);
         }
     }
     /* (non-Javadoc)
@@ -92,8 +79,8 @@ public class MarketDataServiceClientImpl
             checkConnection();
             return marketDataService.getLastUpdate(serviceClient.getContext(),
                                                    inRequestId);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw handleException(e);
         }
     }
     /* (non-Javadoc)
@@ -106,8 +93,8 @@ public class MarketDataServiceClientImpl
             checkConnection();
             marketDataService.cancel(serviceClient.getContext(),
                                      inRequestId);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw handleException(e);
         }
     }
     /* (non-Javadoc)
@@ -120,8 +107,8 @@ public class MarketDataServiceClientImpl
             checkConnection();
             return marketDataService.getEvents(serviceClient.getContext(),
                                                inRequestId);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw handleException(e);
         }
     }
     /* (non-Javadoc)
@@ -134,8 +121,8 @@ public class MarketDataServiceClientImpl
             checkConnection();
             return marketDataService.getAllEvents(serviceClient.getContext(),
                                                   inRequestIds);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw handleException(e);
         }
     }
     /* (non-Javadoc)
@@ -152,8 +139,8 @@ public class MarketDataServiceClientImpl
                                                  inInstrument,
                                                  inContent,
                                                  inProvider);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw handleException(e);
         }
     }
     /* (non-Javadoc)
@@ -172,8 +159,8 @@ public class MarketDataServiceClientImpl
                                                      inContent,
                                                      inProvider,
                                                      inPage);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw handleException(e);
         }
     }
     /* (non-Javadoc)
@@ -214,6 +201,7 @@ public class MarketDataServiceClientImpl
             throw new RuntimeException(e);
         }
         marketDataService = serviceClient.getService(MarketDataService.class);
+        // do one test heartbeat to catch a bad (lazy-loaded) connection exception here
         try {
             marketDataService.heartbeat(serviceClient.getContext());
         } catch (RemoteException | WebServiceException e) {
@@ -387,6 +375,46 @@ public class MarketDataServiceClientImpl
         heartbeatInterval = inHeartbeatInterval;
     }
     /**
+     * Rethrows an exception thrown by the remote connection and delivers the pertinent cause, if any.
+     * 
+     * <p>It's not obvious from the method signature, but this method actually throws the exception,
+     * not returns it. The signature is written this way to prevent a compilation error in the caller
+     * if a method doesn't return a value after calling this method (which always throws an exception). 
+     *
+     * @param inException an <code>Exception</code> value
+     * @return a <code>RuntimeException</code> value
+     */
+    private RuntimeException handleException(Exception inException)
+    {
+        if(inException.getCause() != null) {
+            if(inException.getCause() instanceof NoMarketDataProvidersAvailable) {
+                throw (NoMarketDataProvidersAvailable)inException.getCause();
+            }
+            if(inException.getCause() instanceof MarketDataProviderNotAvailable) {
+                throw (MarketDataProviderNotAvailable)inException.getCause();
+            }
+            if(inException.getCause() instanceof MarketDataRequestFailed) {
+                throw (MarketDataRequestFailed)inException.getCause();
+            }
+            if(inException.getCause() instanceof MarketDataRequestTimedOut) {
+                throw (MarketDataRequestTimedOut)inException.getCause();
+            }
+            if(inException.getCause() instanceof ConnectionException) {
+                throw (ConnectionException)inException.getCause();
+            }
+            if(inException.getCause() instanceof WebServiceException) {
+                throw (WebServiceException)inException.getCause();
+            }
+            if(inException.getCause() instanceof ConnectException) {
+                throw new ConnectionException(inException.getCause());
+            }
+            if(inException.getCause() instanceof UnknownRequestException) {
+                throw (UnknownRequestException)inException.getCause();
+            }
+        }
+        throw new RuntimeException(inException);
+    }
+    /**
      * Checks that the connection is up and running.
      *
      * @throws IllegalArgumentException if the connection is not running
@@ -404,9 +432,9 @@ public class MarketDataServiceClientImpl
      */
     private void heartbeatError(Exception inE)
     {
-        SLF4JLoggerProxy.error(this,
-                               inE,
-                               "Heartbeat failure");
+        Messages.MARKETDATA_NEXUS_CONNECTION_LOST.error(this,
+                                                        inE);
+        Messages.MARKETDATA_NEXUS_CONNECTION_LOST.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY);
         reportServerStatus(false);
         try {
             stop();
