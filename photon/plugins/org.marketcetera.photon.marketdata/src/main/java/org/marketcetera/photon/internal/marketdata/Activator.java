@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.module.ModuleManager;
-import org.marketcetera.photon.internal.marketdata.DataFlowManager.MarketDataExecutor;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.marketdata.MarketDataConstants;
 import org.marketcetera.photon.module.ModuleSupport;
@@ -64,9 +63,6 @@ public class Activator extends Plugin {
                 protected void configure() {
                     bind(ModuleManager.class).toInstance(
                             ModuleSupport.getModuleManager());
-                    bind(Executor.class)
-                            .annotatedWith(MarketDataExecutor.class)
-                            .toInstance(mMarketDataExecutor);
                     bind(IMarketDataRequestSupport.class).toInstance(
                             new MarketDataRequestSupport(
                                     useFineGrainedMarketDataForOptions));

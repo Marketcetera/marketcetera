@@ -2,13 +2,8 @@ package org.marketcetera.photon.internal.marketdata;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.management.AttributeChangeNotification;
-import javax.management.NotificationEmitter;
-
 import org.eclipse.core.runtime.ListenerList;
 import org.marketcetera.core.notifications.ServerStatusListener;
-import org.marketcetera.marketdata.AbstractMarketDataModule;
-import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.CredentialsException;
@@ -32,36 +27,6 @@ import com.google.inject.Inject;
 
 /**
  * Internal implementation of {@link IMarketDataManager}.
- * 
- * <h4>Market Data Module Abstraction</h4>
- * 
- * This class discovers available market data modules that follow the following
- * conventions:
- * <ol>
- * <li>Have a module provider type of "mdata"</li>
- * <li>Are singleton modules</li>
- * <li>Implement the {@link AbstractMarketDataModuleMXBean} interface</li>
- * <li>Implement the {@link NotificationEmitter} interface</li>
- * </ol>
- * Modules that don't adhere to these conventions will not be supported.
- * Additionally, although it is not validated, the module must send
- * {@link AttributeChangeNotification attribute change notifications} for the
- * "FeedStatus" attribute when the feed's status changes in order for this class
- * to function properly. Typically, all market data modules will extend
- * {@link AbstractMarketDataModule}, which provides much of the needed
- * functionality.
- * <p>
- * Each market data module is proxied by a {@link MarketDataFeed} instance that
- * handles the interactions with the underlying modules.
- * 
- * <h4>Active Feed Management</h4>
- * 
- * The current market data UI paradigm associates all market data display with a
- * single feed. This class supports this model by maintaining an active feed and
- * delegating all requests to that feed. It also has an internal
- * {@link IFeedStatusChangedListener} that listens to feed status changes on all
- * its feeds and directs notifications from the active feed to listeners
- * registered with this class.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
