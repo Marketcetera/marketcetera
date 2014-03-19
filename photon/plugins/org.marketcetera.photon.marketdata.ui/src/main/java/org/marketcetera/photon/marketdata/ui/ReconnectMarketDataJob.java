@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.progress.UIJob;
+import org.eclipse.core.runtime.jobs.Job;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class ReconnectMarketDataJob
-        extends UIJob
+        extends Job
 {
     /**
      * Create a new ReconnectMarketDataJob instance.
@@ -28,8 +28,6 @@ public class ReconnectMarketDataJob
     public ReconnectMarketDataJob()
     {
         super("Connecting to Market Data Nexus");
-        setUser(true);
-        setSystem(true);
     }
     /* (non-Javadoc)
      * @see org.eclipse.core.runtime.jobs.Job#shouldSchedule()
@@ -41,14 +39,16 @@ public class ReconnectMarketDataJob
                                         true);
     }
     /* (non-Javadoc)
-     * @see org.eclipse.ui.progress.UIJob#runInUIThread(org.eclipse.core.runtime.IProgressMonitor)
+     * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
      */
     @Override
-    public IStatus runInUIThread(IProgressMonitor inMonitor)
+    protected IStatus run(IProgressMonitor inArg0)
     {
         try {
             marketDataManager.reconnectFeed();
             return Status.OK_STATUS;
+        } catch (Exception e) {
+            return Status.CANCEL_STATUS;
         } finally {
             sScheduled.set(false);
         }

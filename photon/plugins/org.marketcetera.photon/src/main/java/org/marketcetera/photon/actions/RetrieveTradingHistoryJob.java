@@ -103,19 +103,21 @@ public class RetrieveTradingHistoryJob
                 EventList<ReportHolder> messages = tradeReportsHistory.getAllMessagesList();
                 ImmutablePositionSupport positionSupport = new ImmutablePositionSupport(positions);
                 IMarketDataManager marketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
-                if(!marketDataManager.isRunning()) {
+                if(!marketDataManager.isRunning() && marketDataManager.isReconnecting()) {
                     long startTime = System.currentTimeMillis();
                     while(!marketDataManager.isRunning()) {
                         Thread.sleep(250);
                         if(System.currentTimeMillis()-30000>startTime) {
                             // forget it, I (kinda) quietly give up
-                            SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
-                                                  "Position market data unavailable from the Market Data Nexus");
-                            SLF4JLoggerProxy.warn(this,
-                                                  "Position market data unavailable from the Market Data Nexus");
                             break;
                         }
                     }
+                }
+                if(!marketDataManager.isRunning()) {
+                    SLF4JLoggerProxy.warn(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                          "Position market data unavailable from the Market Data Nexus");
+                    SLF4JLoggerProxy.warn(this,
+                                          "Position market data unavailable from the Market Data Nexus");
                 }
                 PhotonPositionMarketData positionMarketData = new PhotonPositionMarketData(marketDataManager.getMarketData());
                 UnderlyingSymbolSupport underlyingSymbolSupport = PhotonPlugin.getDefault().getUnderlyingSymbolSupport();

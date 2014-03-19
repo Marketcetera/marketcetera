@@ -13,6 +13,7 @@ import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.CredentialsException;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
+import org.marketcetera.marketdata.core.webservice.UnknownHostException;
 import org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider;
 import org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceClientFactoryImpl;
 import org.marketcetera.photon.core.ICredentials;
@@ -145,8 +146,8 @@ public final class MarketDataManager
     @Override
     public void reconnectFeed()
     {
-        if(!mReconnecting.compareAndSet(false,
-                                        true)) {
+        if(!reconnecting.compareAndSet(false,
+                                       true)) {
             return;
         }
         try {
@@ -170,6 +171,16 @@ public final class MarketDataManager
                                    "Cannot connect to the Market Data Nexus at {}:{}",
                                    e.getHostname(),
                                    e.getPort());
+        } catch (UnknownHostException e) {
+            SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
+                                   "Cannot connect to the Market Data Nexus at {}:{}",
+                                   hostname,
+                                   port);
+            SLF4JLoggerProxy.error(this,
+                                   e,
+                                   "Cannot connect to the Market Data Nexus at {}:{}",
+                                   e.getHostname(),
+                                   e.getPort());
         } catch (CredentialsException e) {
             SLF4JLoggerProxy.error(org.marketcetera.core.Messages.USER_MSG_CATEGORY,
                                    "The Market Data Nexus rejected the login attempt as {}",
@@ -183,7 +194,7 @@ public final class MarketDataManager
                                    e);
             throw new RuntimeException(e);
         } finally {
-            mReconnecting.set(false);
+            reconnecting.set(false);
         }
     }
     @Override
@@ -225,6 +236,14 @@ public final class MarketDataManager
         }
         return true;
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketDataManager#isReconnecting()
+     */
+    @Override
+    public boolean isReconnecting()
+    {
+        return reconnecting.get();
+    }
     /**
      * Connects to the market data server, if necessary.
      */
@@ -251,7 +270,7 @@ public final class MarketDataManager
                     }
                 });
                 update.newFeedStatus = success ? FeedStatus.AVAILABLE : FeedStatus.OFFLINE;
-            } catch (ConnectionException | CredentialsException e) {
+            } catch (ConnectionException | CredentialsException | UnknownHostException e) {
                 update.newFeedStatus = FeedStatus.ERROR;
                 throw e;
             } catch (RuntimeException e) {
@@ -339,31 +358,31 @@ public final class MarketDataManager
         private FeedStatus newFeedStatus = FeedStatus.UNKNOWN;
     }
     /**
-     * 
+     * market data nexus hostname
      */
     private String hostname;
     /**
-     * 
+     * market data nexus port
      */
     private int port;
     /**
-     * 
+     * contains everybody who has expressed an interest in feed status
      */
     private final ListenerList mActiveFeedListeners = new ListenerList();
     /**
-     * 
+     * indicates if the manager is current reconnecting
      */
-    private final AtomicBoolean mReconnecting = new AtomicBoolean(false);
+    private final AtomicBoolean reconnecting = new AtomicBoolean(false);
     /**
-     * 
+     * market data flow manager
      */
     private final MarketData mMarketData;
     /**
-     * 
+     * connection to the market data service
      */
     private MarketDataServiceClient marketDataClient;
     /**
-     * 
+     * provides access to the credentials used to connect to the server
      */
     private ICredentialsService credentialsService;
 }

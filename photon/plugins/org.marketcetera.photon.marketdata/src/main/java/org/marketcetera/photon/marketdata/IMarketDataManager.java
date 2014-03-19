@@ -7,28 +7,17 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Provides access to all services of this plug-in.
  * 
- * <h4>Feed Management</h4>
- * 
- * When the plug-in starts, it queries the module framework for available market data feed
- * providers. These can be obtained via {@link #getProviders()}. There can be multiple feeds, but
- * there is always at most one "active" feed. Information about the active feed can be obtained from
- * the <code>
- * getActiveFeedXXX</code> methods. If the feed goes down for some reason, the
+ * <p>When the plug-in starts, it starts a connection to the Market Data Nexus. If the connection goes down for some reason, the
  * {@link #reconnectFeed()} operation can be used to attempt a reconnect. Clients can also subscribe
  * to be notified when the active feed changes by registering a listener using
  * {@link #addActiveFeedStatusChangedListener(IFeedStatusChangedListener)}.
- * <p>
- * The default active feed is stored in plug-in preferences. To change the active feed, you must set
- * the {@link MarketDataConstants#DEFAULT_ACTIVE_MARKETDATA_PROVIDER associated preference} and then
- * call {@link #reconnectFeed()}.
  * 
  * <h4>Market Data</h4>
  * 
  * Market data is accessed with {@link #getMarketData()}. See {@link IMarketData} for more details.
- * Note that the provided market data objects always correspond to the data being streamed from the
- * active feed.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 1.5.0
  */
@@ -68,24 +57,21 @@ public interface IMarketDataManager
 	 */
 	FeedStatus getFeedStatus();
 	/**
-	 * 
+	 * Sets the credentials service value.
 	 *
-	 *
-	 * @param inCredentialsService
+	 * @param inCredentialsService an <code>ICredentialsService</code> value
 	 */
 	void setCredentialsService(ICredentialsService inCredentialsService);
 	/**
-	 * 
+	 * Sets the market data nexus host.
 	 *
-	 *
-	 * @param inHostname
+	 * @param inHostname a <code>String</code> value
 	 */
 	void setHostname(String inHostname);
 	/**
-	 * 
+	 * Sets the market data nexus port.
 	 *
-	 *
-	 * @param inPort
+	 * @param inPort an <code>int</code> value
 	 */
 	void setPort(int inPort);
     /**
@@ -95,8 +81,13 @@ public interface IMarketDataManager
      */
     boolean isRunning();
     /**
+     * Indicates if the market data connection is currently being reconnected.
      *
-     *
+     * @return a <code>boolean</code> value
+     */
+    boolean isReconnecting();
+    /**
+     * Closes the market data manager connections.
      */
     void close();
 }
