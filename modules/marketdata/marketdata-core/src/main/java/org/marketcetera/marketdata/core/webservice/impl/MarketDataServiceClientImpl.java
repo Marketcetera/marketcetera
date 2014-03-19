@@ -65,17 +65,19 @@ public class MarketDataServiceClientImpl
                                              inRequest,
                                              inStreamEvents);
         } catch (RemoteException e) {
-            if(e.getCause() != null && e.getCause() instanceof NoMarketDataProvidersAvailable) {
-                throw (NoMarketDataProvidersAvailable)e.getCause();
-            }
-            if(e.getCause() != null && e.getCause() instanceof MarketDataProviderNotAvailable) {
-                throw (MarketDataProviderNotAvailable)e.getCause();
-            }
-            if(e.getCause() != null && e.getCause() instanceof MarketDataRequestFailed) {
-                throw (MarketDataRequestFailed)e.getCause();
-            }
-            if(e.getCause() != null && e.getCause() instanceof MarketDataRequestTimedOut) {
-                throw (MarketDataRequestTimedOut)e.getCause();
+            if(e.getCause() != null) {
+                if(e.getCause() instanceof NoMarketDataProvidersAvailable) {
+                    throw (NoMarketDataProvidersAvailable)e.getCause();
+                }
+                if(e.getCause() instanceof MarketDataProviderNotAvailable) {
+                    throw (MarketDataProviderNotAvailable)e.getCause();
+                }
+                if(e.getCause() instanceof MarketDataRequestFailed) {
+                    throw (MarketDataRequestFailed)e.getCause();
+                }
+                if(e.getCause() instanceof MarketDataRequestTimedOut) {
+                    throw (MarketDataRequestTimedOut)e.getCause();
+                }
             }
             throw new RuntimeException(e);
         }
@@ -212,6 +214,17 @@ public class MarketDataServiceClientImpl
             throw new RuntimeException(e);
         }
         marketDataService = serviceClient.getService(MarketDataService.class);
+        try {
+            marketDataService.heartbeat(serviceClient.getContext());
+        } catch (RemoteException | WebServiceException e) {
+            if(e.getCause() != null) {
+                if(e.getCause() instanceof java.net.UnknownHostException) {
+                    throw new UnknownHostException(hostname,
+                                                   port);
+                }
+            }
+            throw new RuntimeException(e);
+        }
         heartbeatToken = heartbeatExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run()
