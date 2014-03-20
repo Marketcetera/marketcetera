@@ -1,6 +1,9 @@
 package org.marketcetera.marketdata.core.webservice.impl;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -13,6 +16,7 @@ import org.marketcetera.core.CloseableLock;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.AggregateEvent;
 import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.manager.MarketDataManager;
@@ -47,7 +51,6 @@ public class MarketDataServiceImpl
         extends ServiceBaseImpl<Object>
         implements MarketDataService,Lifecycle
 {
-    // TODO add subscription reaper
     /**
      * Create a new MarketDataWebServiceImpl instance.
      *
@@ -56,6 +59,27 @@ public class MarketDataServiceImpl
     public MarketDataServiceImpl(SessionManager<Object> inSessionManager)
     {
         super(inSessionManager);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.webservice.MarketDataService#getAvailableCapability(org.marketcetera.util.ws.stateful.ClientContext)
+     */
+    @Override
+    public Set<Capability> getAvailableCapability(ClientContext inContext)
+            throws RemoteException
+    {
+        return new RemoteCaller<Object,Set<Capability>>(getSessionManager()) {
+            @Override
+            protected Set<Capability> call(ClientContext inContext,
+                                           SessionHolder<Object> inSessionHolder)
+                    throws Exception
+            {
+                SLF4JLoggerProxy.debug(this,
+                                       "{} requesting market data capabilities",
+                                       inContext.getSessionId());
+                checkConnection();
+                return marketDataManager.getAvailableCapability();
+            }
+        }.execute(inContext);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataService#request(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.marketdata.MarketDataRequest, boolean)
@@ -80,6 +104,7 @@ public class MarketDataServiceImpl
                 ServiceSubscriber subscriber = new ServiceSubscriber(inStreamEvents);
                 long requestId = marketDataManager.requestMarketData(inRequest,
                                                                      subscriber);
+                subscriber.setRequestId(requestId);
                 subscribersByRequestId.put(requestId,
                                            subscriber);
                 SLF4JLoggerProxy.debug(this,
@@ -294,11 +319,7 @@ public class MarketDataServiceImpl
                                 SessionHolder<Object> inSessionHolder)
                     throws Exception
             {
-                ServiceSubscriber subscriber = subscribersByRequestId.remove(inRequestId);
-                if(subscriber != null) {
-                    marketDataManager.cancelMarketDataRequest(inRequestId);
-                    subscriber.cancel();
-                }
+                doCancel(inRequestId);
                 return null;
             }
         }.execute(inContext);
@@ -322,6 +343,11 @@ public class MarketDataServiceImpl
         }
         Validate.notNull(marketDataManager);
         Validate.notNull(serverProvider);
+        reaper = Executors.newScheduledThreadPool(1);
+        reaper.scheduleAtFixedRate(new Reaper(),
+                                   reaperInterval,
+                                   reaperInterval,
+                                   TimeUnit.MILLISECONDS);
         remoteService = serverProvider.getServer().publish(this,
                                                            MarketDataService.class);
         running.set(true);
@@ -332,6 +358,10 @@ public class MarketDataServiceImpl
     @Override
     public void stop()
     {
+        if(reaper != null) {
+            reaper.shutdownNow();
+            reaper = null;
+        }
         try {
             remoteService.stop();
         } catch (RuntimeException ignored) {
@@ -378,19 +408,68 @@ public class MarketDataServiceImpl
         marketDataManager = inMarketDataManager;
     }
     /**
+     * Get the reaperInterval value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getReaperInterval()
+    {
+        return reaperInterval;
+    }
+    /**
+     * Sets the reaperInterval value.
+     *
+     * @param inReaperInterval a <code>long</code> value
+     */
+    public void setReaperInterval(long inReaperInterval)
+    {
+        reaperInterval = inReaperInterval;
+    }
+    /**
+     * Get the maxSubscriptionInterval value.
+     *
+     * @return a <code>long</code> value
+     */
+    public long getMaxSubscriptionInterval()
+    {
+        return maxSubscriptionInterval;
+    }
+    /**
+     * Sets the maxSubscriptionInterval value.
+     *
+     * @param inMaxSubscriptionInterval a <code>long</code> value
+     */
+    public void setMaxSubscriptionInterval(long inMaxSubscriptionInterval)
+    {
+        maxSubscriptionInterval = inMaxSubscriptionInterval;
+    }
+    /**
      * Retrieves the events for the given request.
      *
      * @param inRequestId a <code>long</code> value
      * @return a <code>Deque&lt;Event&gt;</code> value
-     * @throws IllegalArgumentException if the given request is invalid
+     * @throws UnknownRequestException if the given request is invalid
      */
     private Deque<Event> doGetEvents(long inRequestId)
     {
         ServiceSubscriber subscriber = subscribersByRequestId.get(inRequestId);
         if(subscriber == null) {
-            throw new IllegalArgumentException(inRequestId + " is not a valid request"); // TODO message and exception
+            throw new UnknownRequestException(inRequestId);
         }
         return subscriber.getEvents();
+    }
+    /**
+     * Cancels the market data request with the given id.
+     *
+     * @param inRequestId a <code>long</code> value
+     */
+    private void doCancel(long inRequestId)
+    {
+        ServiceSubscriber subscriber = subscribersByRequestId.remove(inRequestId);
+        if(subscriber != null) {
+            marketDataManager.cancelMarketDataRequest(inRequestId);
+            subscriber.cancel();
+        }
     }
     /**
      * Checks that the connection is active.
@@ -418,7 +497,7 @@ public class MarketDataServiceImpl
         /**
          * Create a new ServiceSubscriber instance.
          *
-         * @param inStreamEvents
+         * @param inStreamEvents a <code>boolean</code> value
          */
         public ServiceSubscriber(boolean inStreamEvents)
         {
@@ -479,6 +558,7 @@ public class MarketDataServiceImpl
          */
         private Deque<Event> getEvents()
         {
+            retrieveTimestamp = System.currentTimeMillis();
             Deque<Event> eventsToReturn = Lists.newLinkedList();
             try(CloseableLock getEventLock = CloseableLock.create(lock.writeLock())) {
                 getEventLock.lock();
@@ -497,6 +577,32 @@ public class MarketDataServiceImpl
             return updateTimestamp;
         }
         /**
+         * Get the requestId value.
+         *
+         * @return a <code>long</code> value
+         */
+        private long getRequestId()
+        {
+            return requestId;
+        }
+        /**
+         * Sets the requestId value.
+         *
+         * @param inRequestId a <code>long</code> value
+         */
+        private void setRequestId(long inRequestId)
+        {
+            requestId = inRequestId;
+        }
+        /**
+         * market data request id
+         */
+        private volatile long requestId;
+        /**
+         * last time this subscription was harvested
+         */
+        private volatile long retrieveTimestamp = System.currentTimeMillis();
+        /**
          * indicates whether the subscriber should store updates or not
          */
         private final boolean storeEvents;
@@ -514,6 +620,55 @@ public class MarketDataServiceImpl
         @GuardedBy("lock")
         private final Deque<Event> events = Lists.newLinkedList();
     }
+    /**
+     * Retires market data subscriptions that have not been checked in a while.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private class Reaper
+            implements Runnable
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run()
+        {
+            try {
+                // we're accessing this list concurrently, so the contents might change. let's use a copy of the list
+                Collection<ServiceSubscriber> subscribers = Lists.newArrayList(subscribersByRequestId.values());
+                SLF4JLoggerProxy.debug(MarketDataServiceImpl.this,
+                                       "Reaper examining {} subscription(s)",
+                                       subscribers.size());
+                for(ServiceSubscriber subscriber : subscribers) {
+                    if(subscriber.storeEvents && subscriber.retrieveTimestamp < System.currentTimeMillis()-maxSubscriptionInterval) {
+                        SLF4JLoggerProxy.debug(MarketDataServiceImpl.this,
+                                               "Reaper canceling {}",
+                                               subscriber);
+                        doCancel(subscriber.getRequestId());
+                    }
+                }
+            } catch (Exception e) {
+                SLF4JLoggerProxy.warn(MarketDataServiceImpl.this,
+                                      e);
+            }
+        }
+    }
+    /**
+     * interval at which subscriptions are checked
+     */
+    private long reaperInterval = 10000;
+    /**
+     * max life of a subscription that has not been harvested
+     */
+    private long maxSubscriptionInterval = 10000;
+    /**
+     * executes repear jobs
+     */
+    private ScheduledExecutorService reaper;
     /**
      * handle to the remote web service.
      */

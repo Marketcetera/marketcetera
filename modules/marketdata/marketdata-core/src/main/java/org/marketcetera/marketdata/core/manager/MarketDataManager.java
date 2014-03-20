@@ -1,7 +1,10 @@
 package org.marketcetera.marketdata.core.manager;
 
+import java.util.Set;
+
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.trade.Instrument;
@@ -60,4 +63,10 @@ public interface MarketDataManager
      * @param inRequestId a <code>long</code> value
      */
     public void cancelMarketDataRequest(long inRequestId);
+    /**
+     * Gets the available capabilities of active market data providers.
+     *
+     * @return a <code>Set&lt;Capability&gt;</code> value
+     */
+    public Set<Capability> getAvailableCapability();
 }

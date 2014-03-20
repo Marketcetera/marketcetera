@@ -247,6 +247,26 @@ public class MarketDataManagerImpl
                                         inContent);
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.manager.MarketDataManager#getAvailableCapability()
+     */
+    @Override
+    public Set<Capability> getAvailableCapability()
+    {
+        Set<Capability> capabilities = Sets.newHashSet();
+        boolean includesLiveData = false;
+        for(MarketDataProvider provider : getActiveMarketDataProviders()) {
+            if(provider.getFeedType() == FeedType.LIVE) {
+                includesLiveData = true;
+            }
+            if(includesLiveData && provider.getFeedType() != FeedType.LIVE) {
+                // we've looked at at least one live provider and providers are non-live from here on, so quite
+                break;
+            }
+            capabilities.addAll(provider.getCapabilities());
+        }
+        return capabilities;
+    }
     /**
      * Constructs a unique <code>ObjectName</code> for the given provider.
      *

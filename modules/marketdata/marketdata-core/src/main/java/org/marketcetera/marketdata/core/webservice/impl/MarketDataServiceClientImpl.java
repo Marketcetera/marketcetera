@@ -1,10 +1,7 @@
 package org.marketcetera.marketdata.core.webservice.impl;
 
 import java.net.ConnectException;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,6 +20,7 @@ import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.Event;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.Messages;
@@ -159,6 +157,19 @@ public class MarketDataServiceClientImpl
                                                      inContent,
                                                      inProvider,
                                                      inPage);
+        } catch (Exception e) {
+            throw handleException(e);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getAvailableCapability()
+     */
+    @Override
+    public Set<Capability> getAvailableCapability()
+    {
+        try {
+            checkConnection();
+            return marketDataService.getAvailableCapability(serviceClient.getContext());
         } catch (Exception e) {
             throw handleException(e);
         }

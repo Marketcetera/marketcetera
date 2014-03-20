@@ -1,9 +1,12 @@
 package org.marketcetera.photon.internal.marketdata;
 
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.ListenerList;
 import org.marketcetera.core.notifications.ServerStatusListener;
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.CredentialsException;
@@ -59,6 +62,18 @@ public final class MarketDataManager
     public IMarketData getMarketData()
     {
         return mMarketData;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.marketdata.IMarketDataManager#getAvailabilityCapability()
+     */
+    @Override
+    public Set<Capability> getAvailabilityCapability()
+    {
+        MarketDataServiceClient client = getMarketDataClient();
+        if(client == null) {
+            return Collections.emptySet();
+        }
+        return client.getAvailableCapability();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.notifications.ServerStatusListener#receiveServerStatus(boolean)

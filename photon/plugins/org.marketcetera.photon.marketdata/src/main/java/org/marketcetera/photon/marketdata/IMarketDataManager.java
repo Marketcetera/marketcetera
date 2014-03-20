@@ -1,5 +1,8 @@
 package org.marketcetera.photon.marketdata;
 
+import java.util.Set;
+
+import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.util.misc.ClassVersion;
@@ -90,4 +93,10 @@ public interface IMarketDataManager
      * Closes the market data manager connections.
      */
     void close();
+    /**
+     * Gets the available capabilities;
+     *
+     * @return a <code>Set&lt;Capability&gt;</code> value
+     */
+    Set<Capability> getAvailabilityCapability();
 }
