@@ -10,7 +10,8 @@ Require-Bundle: org.marketcetera.core,
  org.marketcetera.modules.mdata.bogus;resolution:=optional,
  org.marketcetera.client,
  org.marketcetera.modules.cep.esper,
- org.marketcetera.modules.cep.system
+ org.marketcetera.modules.cep.system,
+ org.marketcetera.modules.mdata.core
 Eclipse-RegisterBuddy: org.marketcetera.core
 Export-Package: org.marketcetera.strategy,
  org.marketcetera.strategy.java

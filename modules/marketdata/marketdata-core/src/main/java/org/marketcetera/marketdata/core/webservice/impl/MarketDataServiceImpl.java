@@ -393,9 +393,9 @@ public class MarketDataServiceImpl
         return subscriber.getEvents();
     }
     /**
-     * 
+     * Checks that the connection is active.
      *
-     *
+     * @throws ConnectionException if the connection is not active
      */
     private void checkConnection()
     {

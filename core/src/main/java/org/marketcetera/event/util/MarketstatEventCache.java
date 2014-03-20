@@ -62,9 +62,10 @@ public class MarketstatEventCache
         }
         receivedData = true;
         // these values should always be transferred
-        builder.withMessageId(inEvent.getMessageId());
-        builder.withTimestamp(inEvent.getTimestamp());
-        builder.withSource(inEvent.getSource());
+        builder.withMessageId(inEvent.getMessageId())
+               .withTimestamp(inEvent.getTimestamp())
+               .withSource(inEvent.getSource())
+               .withEventType(inEvent.getEventType());
         // these values should be transferred only if non-null
         if(inEvent.getClose() != null) {
             builder.withClosePrice(inEvent.getClose());

@@ -638,7 +638,7 @@ public abstract class LanguageTestBase
             setPropertiesToNull();
             // set the indicators back in the properties to tell the script what to cancel
             properties.setProperty("shouldCancel",
-            "true");
+                                   "true");
             properties.setProperty("requestID",
                                    Long.toString(id));
             // execute the onCallback method in the running strategy to force the market data

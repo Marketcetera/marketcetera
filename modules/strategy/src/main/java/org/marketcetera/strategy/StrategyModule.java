@@ -7,12 +7,19 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.annotation.concurrent.GuardedBy;
 import javax.management.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.marketcetera.client.*;
 import org.marketcetera.client.brokers.BrokerStatus;
+import org.marketcetera.core.ApplicationContainer;
+import org.marketcetera.core.CloseableLock;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.position.PositionKey;
@@ -23,6 +30,7 @@ import org.marketcetera.event.LogEvent;
 import org.marketcetera.event.LogEventLevel;
 import org.marketcetera.event.impl.LogEventBuilder;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.core.manager.MarketDataManager;
 import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.module.*;
 import org.marketcetera.trade.*;
@@ -32,11 +40,13 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
 
 import quickfix.Message;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /* $License$ */
 
@@ -71,7 +81,12 @@ final class StrategyModule
     public void cancel(DataFlowID inFlowID,
                        RequestID inRequestID)
     {
-        unsubscribe(inRequestID);
+        synchronized(subscribers) {
+            DataRequester requester = subscribers.remove(inRequestID);
+            if(requester != null) {
+                requester.unsubscribe();
+            }
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
@@ -136,9 +151,8 @@ final class StrategyModule
                                inData);
         if(inData instanceof Event) {
             Event event = (Event)inData;
-            synchronized(dataFlows) {
-                event.setSource(dataFlows.get(inFlowID));
-            }
+            setEventSource(event,
+                           inFlowID);
         }
         strategy.dataReceived(inData);
     }
@@ -171,30 +185,7 @@ final class StrategyModule
                                strategy);
             return 0;
         }
-        int requestID = counter.incrementAndGet();
-        try {
-            ModuleURN marketDataURN = constructMarketDataUrn(inRequest.getProvider());
-            SLF4JLoggerProxy.debug(StrategyModule.class,
-                                   "{} received a market data request {} for data from {}", //$NON-NLS-1$
-                                   strategy,
-                                   inRequest,
-                                   marketDataURN);
-            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(marketDataURN,
-                                                                                                       inRequest),
-                                                                                       new DataRequest(getURN()) },
-                                                                   false);
-            synchronized(dataFlows) {
-                dataFlows.put(dataFlowID,
-                              requestID);
-            }
-        } catch (Exception e) {
-            StrategyModule.log(LogEventBuilder.warn().withMessage(MARKET_DATA_REQUEST_FAILED,
-                                                                  inRequest)
-                                                     .withException(e).create(),
-                               strategy);
-            return 0;
-        }
-        return requestID;
+        return doMarketDataRequest(inRequest);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServicesProvider#requestMarketDataWithCEP(org.marketcetera.marketdata.MarketDataRequest, java.lang.String, java.lang.String[], java.lang.String, java.lang.String)
@@ -233,17 +224,17 @@ final class StrategyModule
                                    inRequest,
                                    marketDataURN,
                                    cepDataURN);
-            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(marketDataURN,
-                                                                                                       inRequest),
-                                                                                       new DataRequest(cepDataURN,
-                                                                                                       determineCepStatements(inCEPSource,
-                                                                                                                              inStatements)),
-                                                                                       new DataRequest(getURN()) },
-                                                                   false);
-            // add request to both counters
-            synchronized(dataFlows) {
-                dataFlows.put(dataFlowID,
-                              requestID);
+            try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+                closeableLock.lock();
+                DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(marketDataURN,
+                                                                                                           inRequest),
+                                                                                           new DataRequest(cepDataURN,
+                                                                                                           determineCepStatements(inCEPSource,
+                                                                                                                                  inStatements)),
+                                                                                           new DataRequest(getURN()) },
+                                                                       false);
+                new RequestContainer(dataFlowID,
+                                     requestID);
             }
             return requestID;
         } catch (Exception e) {
@@ -263,16 +254,22 @@ final class StrategyModule
     @Override
     public void cancelAllDataRequests()
     {
-        synchronized(dataFlows) {
-            // create a copy of the list because the cancel call is going to modify the collection
-            List<Integer> activeRequests = new ArrayList<Integer>(dataFlows.inverse().keySet());
-            for(int request : activeRequests) {
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
+            Set<RequestContainer> requests = Sets.newHashSet();
+            requests.addAll(requestsByDataFlowId.values());
+            requests.addAll(requestsByInternalId.values());
+            for(RequestContainer container : requests) {
                 try {
-                    cancelDataRequest(request);
+                    container.cancel();
                 } catch (Exception e) {
+                    SLF4JLoggerProxy.warn(this,
+                                          e,
+                                          Messages.UNABLE_TO_CANCEL_DATA_REQUEST.getText(strategy,
+                                                                                         container));
                     StrategyModule.log(LogEventBuilder.warn().withMessage(UNABLE_TO_CANCEL_DATA_REQUEST,
                                                                           String.valueOf(strategy),
-                                                                          request)
+                                                                          String.valueOf(container))
                                                              .withException(e).create(),
                                        strategy);
                 }
@@ -285,23 +282,17 @@ final class StrategyModule
     @Override
     public void cancelDataRequest(int inDataRequestID)
     {
-        synchronized(dataFlows) {
-            if(!dataFlows.inverse().containsKey(inDataRequestID)) {
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
+            RequestContainer container = getDataRequestBy(inDataRequestID);
+            if(container == null) {
                 StrategyModule.log(LogEventBuilder.warn().withMessage(NO_DATA_HANDLE,
                                                                       String.valueOf(strategy),
                                                                       inDataRequestID).create(),
                                    strategy);
                 return;
             }
-            try {
-                doCancelDataRequest(inDataRequestID);
-            } catch (Exception e) {
-                StrategyModule.log(LogEventBuilder.warn().withMessage(UNABLE_TO_CANCEL_DATA_REQUEST,
-                                                                      String.valueOf(strategy),
-                                                                      inDataRequestID)
-                                                         .withException(e).create(),
-                                   strategy);
-            }
+            container.cancel();
         }
     }
     /* (non-Javadoc)
@@ -325,25 +316,26 @@ final class StrategyModule
         int requestID = counter.incrementAndGet();
         ModuleURN providerURN = constructCepUrn(inSource,
                                                 inNamespace);
-        try {
-            synchronized(dataFlows) {
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
+            try {
                 DataFlowID flowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
                                                                                                        determineCepStatements(inSource,
                                                                                                                               inStatements)),
                                                                                        new DataRequest(getURN()) },
-                                                                   false); 
-                dataFlows.put(flowID,
-                              requestID);
+                                                                   false);
+                new RequestContainer(flowID,
+                                     requestID);
+            } catch (Exception e) {
+                StrategyModule.log(LogEventBuilder.warn().withMessage(CEP_REQUEST_FAILED,
+                                                                      Arrays.toString(inStatements),
+                                                                      inSource)
+                                                         .withException(e).create(),
+                                   strategy);
+                return 0;
             }
-        } catch (Exception e) {
-            StrategyModule.log(LogEventBuilder.warn().withMessage(CEP_REQUEST_FAILED,
-                                                                  Arrays.toString(inStatements),
-                                                                  inSource)
-                                                     .withException(e).create(),
-                               strategy);
-            return 0;
+            return requestID;
         }
-        return requestID;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.StrategyMXBean#setOrdersDestination(java.lang.String)
@@ -768,11 +760,16 @@ final class StrategyModule
      */
     @Override
     public void cancelDataFlow(DataFlowID inDataFlowID)
-        throws ModuleException
+            throws ModuleException
     {
-        synchronized(dataFlows) {
-            dataFlowSupport.cancel(inDataFlowID);
-            dataFlows.remove(inDataFlowID);
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
+            RequestContainer container = getDataRequestBy(inDataFlowID);
+            if(container != null) {
+                container.cancel();
+            } else {
+                dataFlowSupport.cancel(inDataFlowID);
+            }
         }
     }
     /* (non-Javadoc)
@@ -781,14 +778,15 @@ final class StrategyModule
     @Override
     public DataFlowID createDataFlow(DataRequest[] inRequests,
                                      boolean inAppendDataSink)
-        throws ModuleException
+            throws ModuleException
     {
-        synchronized(dataFlows) {
-            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(inRequests,
-                                                                   inAppendDataSink); 
-            dataFlows.put(dataFlowID,
-                          counter.incrementAndGet());
-            return dataFlowID;
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
+            DataFlowID dataFlowId = dataFlowSupport.createDataFlow(inRequests,
+                                                                   inAppendDataSink);
+            new RequestContainer(dataFlowId,
+                                 counter.incrementAndGet());
+            return dataFlowId;
         }
     }
     /* (non-Javadoc)
@@ -1048,29 +1046,41 @@ final class StrategyModule
     {
         assertStateForPreStart();
         // add destination data flows, if specified by the object parameters
-        synchronized(dataFlows) {
-            if(outputDestination != null) {
-                createDataFlow(new DataRequest[] { new DataRequest(getURN(),
-                                                                   OutputType.ALL),
-                                                   new DataRequest(outputDestination) },
-                               false);
-            }
-            // set the connection to the ORS to the correct value
-            if(routeOrdersToORS) {
-                establishORSRouting();
-            } else {
-                disconnectORSRouting();
-            }
-            // request execution reports from the ORS client
+        if(outputDestination != null) {
+            createDataFlow(new DataRequest[] { new DataRequest(getURN(),
+                                                               OutputType.ALL),
+                                                               new DataRequest(outputDestination) },
+                                                               false);
+        }
+        // set the connection to the ORS to the correct value
+        if(routeOrdersToORS) {
+            establishORSRouting();
+        } else {
+            disconnectORSRouting();
+        }
+        // request execution reports from the ORS client
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
             try {
-                dataFlows.put(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(ClientModuleFactory.INSTANCE_URN),
-                                                                                 new DataRequest(getURN()) },
-                                                                false),
-                              counter.incrementAndGet());
+                DataFlowID reportsDataFlow = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(ClientModuleFactory.INSTANCE_URN),
+                                                                                            new DataRequest(getURN()) },
+                                                                        false);
+                new RequestContainer(reportsDataFlow,
+                                     counter.incrementAndGet());
             } catch (Exception e) {
                 EXECUTION_REPORT_REQUEST_FAILED.warn(StrategyModule.class,
                                                      name,
                                                      ClientModuleFactory.INSTANCE_URN);
+            }
+        }
+        @SuppressWarnings("resource")
+        ApplicationContext context = ApplicationContainer.getInstance()==null?null:ApplicationContainer.getInstance().getContext();
+        if(context != null) {
+            try {
+                marketDataManager = context.getBean(MarketDataManager.class);
+            } catch (NoSuchBeanDefinitionException e) {
+                SLF4JLoggerProxy.debug(this,
+                                       "No market data manager, falling back on market data module framework"); //$NON-NLS-1$
             }
         }
         try {
@@ -1225,19 +1235,19 @@ final class StrategyModule
         // see if we have a connection to this module already
         DataEmitterSupport establishedConnection = internalDataFlows.get(inCEPModule);
         if(establishedConnection == null) {
-            synchronized(dataFlows) {
+            try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+                closeableLock.lock();
                 // no connection exists yet to the CEP module.  create one.
-                dataFlows.put(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
-                                                                                                 new InternalRequest(inCEPModule)),
-                                                                                 new DataRequest(inCEPModule) },
-                                                             false),
-                              counter.incrementAndGet());
+                DataFlowID cepFlow = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),new InternalRequest(inCEPModule)),new DataRequest(inCEPModule) },
+                                                                    false);
+                new RequestContainer(cepFlow,
+                                     counter.incrementAndGet());
                 establishedConnection = internalDataFlows.get(inCEPModule);
                 if(establishedConnection == null) {
                     StrategyModule.log(LogEventBuilder.warn().withMessage(CANNOT_CREATE_CONNECTION,
                                                                           String.valueOf(strategy),
                                                                           inCEPModule).create(),
-                                       strategy);
+                                                                          strategy);
                     return;
                 }
             }
@@ -1266,20 +1276,6 @@ final class StrategyModule
     {
         assertStateForPreStart();
         assert(strategy != null);
-    }
-    /**
-     * Unsubscribes the given requester from any subscribed flows.
-     *
-     * @param inRequestID
-     */
-    private void unsubscribe(RequestID inRequestID)
-    {
-        synchronized(subscribers) {
-            DataRequester requester = subscribers.remove(inRequestID);
-            if(requester != null) {
-                requester.unsubscribe();
-            }
-        }
     }
     /**
      * Subscribes the given data requester to the data flow indicated by the request type.
@@ -1324,19 +1320,100 @@ final class StrategyModule
         allPublisher.publish(inObject);
     }
     /**
-     * Cancels the given request whether it's a market data request, a cep request,
-     * or both.
+     * Requests market data according to the given request.
      *
-     * @param inRequest an <code>int</code> value containing a request handle
-     * @throws ModuleException if an error occurs
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @return an <code>int</code> value
      */
-    private void doCancelDataRequest(int inRequest)
-        throws ModuleException
+    private int doMarketDataRequest(MarketDataRequest inRequest)
     {
-        DataFlowID dataFlowID = dataFlows.inverse().remove(inRequest);
-        if(dataFlowID != null) {
-            dataFlowSupport.cancel(dataFlowID);
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
+            // this is the internal request ID that we pass back to the requester so it knows how to refer to this request
+            final int internalRequestId = counter.incrementAndGet();
+            // there are two ways to request market data: the first (and preferable) is to use the marketDataManager, if available. if not available, the second method
+            //  is to use the module framework
+            try {
+                if(marketDataManager != null) {
+                    // hooray, we've got option #1 working for us, let's do that
+                    long marketDataManagerRequestId = marketDataManager.requestMarketData(inRequest,
+                                                                                          new ISubscriber() {
+                        @Override
+                        public boolean isInteresting(Object inData)
+                        {
+                            return true;
+                        }
+                        @Override
+                        public void publishTo(Object inData)
+                        {
+                            if(inData instanceof Event) {
+                                ((Event)inData).setSource(internalRequestId);
+                            }
+                            strategy.dataReceived(inData);
+                        }
+                    });
+                    new RequestContainer(marketDataManagerRequestId,
+                                         internalRequestId);
+                } else {
+                    ModuleURN marketDataURN = constructMarketDataUrn(inRequest.getProvider());
+                    SLF4JLoggerProxy.debug(StrategyModule.class,
+                                           "{} received a market data request {} for data from {}", //$NON-NLS-1$
+                                           strategy,
+                                           inRequest,
+                                           marketDataURN);
+                    DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(marketDataURN,
+                                                                                                               inRequest),
+                                                                                               new DataRequest(getURN()) },
+                                                                                                               false);
+                    new RequestContainer(dataFlowID,
+                                         internalRequestId);
+                }
+            } catch (Exception e) {
+                StrategyModule.log(LogEventBuilder.warn().withMessage(MARKET_DATA_REQUEST_FAILED,
+                                                                      inRequest)
+                                                                      .withException(e).create(),
+                                                                      strategy);
+                return 0;
+            }
+            return internalRequestId;
         }
+    }
+    /**
+     * Sets the event source on the given event.
+     *
+     * @param inEvent an <code>Event</code> value
+     * @param inFlowID a <code>DataFlowID</code> value
+     */
+    private void setEventSource(Event inEvent,
+                                DataFlowID inFlowID)
+    {
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.readLock())) {
+            closeableLock.lock();
+            RequestContainer request = getDataRequestBy(inFlowID);
+            if(request != null) {
+                inEvent.setSource(request.getInternalRequestId());
+            }
+        }
+    }
+    /**
+     * Gets the request container for the given data flow id.
+     *
+     * @param inDataFlowId a <code>DataFlowID</code> value
+     * @return a <code>RequestContainer</code> value or <code>null</code>
+     */
+    private RequestContainer getDataRequestBy(DataFlowID inDataFlowId)
+    {
+        return requestsByDataFlowId.get(inDataFlowId);
+    }
+    /**
+     * Gets the request container for the given internal request id.
+     *
+     * @param inInternalRequestId an <code>int</code> value
+     * @return a <code>RequestContainer</code> value or <code>null</code>
+     */
+    private RequestContainer getDataRequestBy(int inInternalRequestId)
+    {
+        return requestsByInternalId.get(inInternalRequestId);
     }
     /**
      * Disconnects the strategy from the ORS, if necessary.
@@ -1346,23 +1423,25 @@ final class StrategyModule
      * @throws ModuleException if the data flow cannot be disconnected
      */
     private void disconnectORSRouting()
-        throws ModuleException
+            throws ModuleException
     {
         SLF4JLoggerProxy.debug(this,
                                "Breaking connection to ORS"); //$NON-NLS-1$
-        synchronized(dataFlows) {
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
             if(orsFlow != null) {
-                try {
-                    dataFlowSupport.cancel(orsFlow);
-                } catch (Exception e) {
-                    SLF4JLoggerProxy.debug(StrategyModule.class,
-                                           e,
-                                           "Unable to cancel dataflow {} - continuing", //$NON-NLS-1$
-                                           orsFlow);
+                RequestContainer container = getDataRequestBy(orsFlow);
+                if(container != null) {
+                    container.cancel();
                 }
-                dataFlows.remove(orsFlow);
-                orsFlow = null;
             }
+        } catch (Exception e) {
+            SLF4JLoggerProxy.debug(StrategyModule.class,
+                                   e,
+                                   "Unable to cancel dataflow {} - continuing", //$NON-NLS-1$
+                                   orsFlow);
+        } finally {
+            orsFlow = null;
         }
     }
     /**
@@ -1377,114 +1456,19 @@ final class StrategyModule
     {
         SLF4JLoggerProxy.debug(this,
                                "Establishing connection to ORS"); //$NON-NLS-1$
-        synchronized(dataFlows) {
+        try(CloseableLock closeableLock = CloseableLock.create(dataFlowLock.writeLock())) {
+            closeableLock.lock();
             if(orsFlow == null) {
                 // no current routing, establish one
                 orsFlow = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
                                                                                              OutputType.ORDERS),
-                                                                             new DataRequest(ClientModuleFactory.INSTANCE_URN) },
-                                                         false);
-                dataFlows.put(orsFlow,
-                              counter.incrementAndGet());
+                                                                                             new DataRequest(ClientModuleFactory.INSTANCE_URN) },
+                                                                                             false);
+                new RequestContainer(orsFlow,
+                                     counter.incrementAndGet());
             }
         }
     }
-    /**
-     * the name of the strategy being run - this name is chosen by the module caller and has no mandatory correlation 
-     * to the contents of the strategy
-     */
-    private final String name;
-    /**
-     * the language type of the strategy being run - this is asserted by the module caller
-     */
-    private final Language type;
-    /**
-     * the contents of the strategy - contains the code to be executed
-     */
-    private final File source;
-    /**
-     * indicates if orders should be routed to the ORS client or not
-     */
-    private boolean routeOrdersToORS;
-    /**
-     * the parameters to present to the strategy, may be empty or null.  may be null or empty.
-     */
-    private Properties parameters;
-    /**
-     * the instanceURN of a destination for outputs, may be null.  if non-null, the object contract is to plumb a route from this object to the instance contained herein for all outputs before start.
-     */
-    private ModuleURN outputDestination;
-    /**
-     * the publishing engine for orders
-     */
-    private final PublisherEngine ordersPublisher = new PublisherEngine(true);
-    /**
-     * the publishing engine for suggestions
-     */
-    private final PublisherEngine suggestionsPublisher = new PublisherEngine(true);
-    /**
-     * the publishing engine for events
-     */
-    private final PublisherEngine eventsPublisher = new PublisherEngine(true);
-    /**
-     * the publishing engine for notification objects
-     */
-    private final PublisherEngine notificationsPublisher = new PublisherEngine(true);
-    /**
-     * the publishing engine for log output
-     */
-    private final PublisherEngine logPublisher = new PublisherEngine(true);
-    /**
-     * the publishing engine for all objects
-     */
-    private final PublisherEngine allPublisher = new PublisherEngine(true);
-    /**
-     * tracks subscriber objects by requestIDs
-     */
-    private final Map<RequestID,DataRequester> subscribers = new HashMap<RequestID,DataRequester>();
-    /**
-     * the strategy object that represents the actual running strategy
-     */
-    private StrategyImpl strategy;
-    /**
-     * services for data flow creation
-     */
-    private DataFlowSupport dataFlowSupport;
-    /**
-     * the data flow ID of the route to the ORS, if extant
-     */
-    private DataFlowID orsFlow;
-    /**
-     * default method for connecting to the client
-     */
-    static volatile ClientFactory clientFactory = new ClientFactory() {
-        @Override
-        public Client getClient()
-                throws ClientInitException
-        {
-            return ClientManager.getInstance();
-        }
-    };
-    /**
-     * counter used to guarantee unique identifiers
-     */
-    private static final AtomicInteger counter = new AtomicInteger();
-    /**
-     * active data requests for this strategy 
-     */
-    private final BiMap<DataFlowID,Integer> dataFlows = HashBiMap.create();
-    /**
-     * the collection of data flows created to send data to a specific URN
-     */
-    private final Map<ModuleURN,DataEmitterSupport> internalDataFlows = new HashMap<ModuleURN,DataEmitterSupport>();
-    /**
-     * provides JMX notification support 
-     */
-    private final NotificationBroadcasterSupport notificationDelegate;
-    /**
-     * counter used for JMX notifications
-     */
-    private final AtomicLong jmxNotificationCounter = new AtomicLong();
     /**
      * Request for data that comes from within strategy to strategy.
      *
@@ -1510,6 +1494,135 @@ final class StrategyModule
         }
     }
     /**
+     * Encapsulates a market data request.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private class RequestContainer
+    {
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("DataRequest [internalRequestId=").append(internalRequestId); //$NON-NLS-1$
+            if(dataFlowId == null) {
+                builder.append(", dataFlowId=").append(dataFlowId); //$NON-NLS-1$
+            } else {
+                builder.append(", marketDataRequestId=").append(marketDataRequestId); //$NON-NLS-1$
+            }
+            builder.append("]"); //$NON-NLS-1$
+            return builder.toString();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#hashCode()
+         */
+        @Override
+        public int hashCode()
+        {
+            return new HashCodeBuilder().append(internalRequestId).toHashCode();
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof RequestContainer)) {
+                return false;
+            }
+            RequestContainer other = (RequestContainer) obj;
+            return new EqualsBuilder().append(internalRequestId,other.internalRequestId).isEquals();
+        }
+        /**
+         * Create a new RequestContainer instance.
+         *
+         * @param inDataFlowId a <code>DataFlowID</code> value
+         * @param inInternalRequestId an <code>int</code> value
+         */
+        private RequestContainer(DataFlowID inDataFlowId,
+                                 int inInternalRequestId)
+        {
+            dataFlowId = inDataFlowId;
+            marketDataRequestId = null;
+            internalRequestId = inInternalRequestId;
+            requestsByDataFlowId.put(inDataFlowId,
+                                     this);
+            requestsByInternalId.put(internalRequestId,
+                                     this);
+        }
+        /**
+         * Create a new RequestContainer instance.
+         *
+         * @param inMarketDataRequestId a <code>long</code> value
+         * @param inInternalRequestId an <code>int</code> value
+         */
+        private RequestContainer(long inMarketDataRequestId,
+                                 int inInternalRequestId)
+        {
+            dataFlowId = null;
+            marketDataRequestId = inMarketDataRequestId;
+            internalRequestId = inInternalRequestId;
+            requestsByInternalId.put(internalRequestId,
+                                     this);
+        }
+        /**
+         * Cancels the market data request and removes it from the request collections.
+         * 
+         * <p>This method requires an external lock.
+         */
+        private void cancel()
+        {
+            if(dataFlowId != null) {
+                try {
+                    dataFlowSupport.cancel(dataFlowId);
+                } finally {
+                    requestsByDataFlowId.remove(dataFlowId);
+                }
+            } else {
+                try {
+                    if(marketDataManager != null) {
+                        marketDataManager.cancelMarketDataRequest(marketDataRequestId);
+                    }
+                } finally {
+                    requestsByInternalId.remove(internalRequestId);
+                }
+            }
+        }
+        /**
+         * Get the internalRequestId value.
+         *
+         * @return an <code>int</code> value
+         */
+        private int getInternalRequestId()
+        {
+            return internalRequestId;
+        }
+        /**
+         * module framework data flow ID or <code>null</code>
+         */
+        private final DataFlowID dataFlowId;
+        /**
+         * market data manager market data request ID or <code>null</code>
+         */
+        private final Long marketDataRequestId;
+        /**
+         * internal request ID value
+         */
+        private final int internalRequestId;
+    }
+    /**
      * Represents a request for a subscription to data this strategy can emit.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
@@ -1518,7 +1631,7 @@ final class StrategyModule
      */
     @ClassVersion("$Id$")
     private class DataRequester
-        implements ISubscriber
+            implements ISubscriber
     {
         /**
          * the subscriber
@@ -1620,4 +1733,115 @@ final class StrategyModule
         Client getClient()
                 throws ClientInitException;
     }
+    /**
+     * the name of the strategy being run - this name is chosen by the module caller and has no mandatory correlation 
+     * to the contents of the strategy
+     */
+    private final String name;
+    /**
+     * the language type of the strategy being run - this is asserted by the module caller
+     */
+    private final Language type;
+    /**
+     * the contents of the strategy - contains the code to be executed
+     */
+    private final File source;
+    /**
+     * indicates if orders should be routed to the ORS client or not
+     */
+    private boolean routeOrdersToORS;
+    /**
+     * the parameters to present to the strategy, may be empty or null.  may be null or empty.
+     */
+    private Properties parameters;
+    /**
+     * the instanceURN of a destination for outputs, may be null.  if non-null, the object contract is to plumb a route from this object to the instance contained herein for all outputs before start.
+     */
+    private ModuleURN outputDestination;
+    /**
+     * the publishing engine for orders
+     */
+    private final PublisherEngine ordersPublisher = new PublisherEngine(true);
+    /**
+     * the publishing engine for suggestions
+     */
+    private final PublisherEngine suggestionsPublisher = new PublisherEngine(true);
+    /**
+     * the publishing engine for events
+     */
+    private final PublisherEngine eventsPublisher = new PublisherEngine(true);
+    /**
+     * the publishing engine for notification objects
+     */
+    private final PublisherEngine notificationsPublisher = new PublisherEngine(true);
+    /**
+     * the publishing engine for log output
+     */
+    private final PublisherEngine logPublisher = new PublisherEngine(true);
+    /**
+     * the publishing engine for all objects
+     */
+    private final PublisherEngine allPublisher = new PublisherEngine(true);
+    /**
+     * tracks subscriber objects by requestIDs
+     */
+    private final Map<RequestID,DataRequester> subscribers = new HashMap<RequestID,DataRequester>();
+    /**
+     * the strategy object that represents the actual running strategy
+     */
+    private StrategyImpl strategy;
+    /**
+     * services for data flow creation
+     */
+    private DataFlowSupport dataFlowSupport;
+    /**
+     * the data flow ID of the route to the ORS, if extant
+     */
+    @GuardedBy("dataFlowLock")
+    private DataFlowID orsFlow;
+    /**
+     * default method for connecting to the client
+     */
+    static volatile ClientFactory clientFactory = new ClientFactory() {
+        @Override
+        public Client getClient()
+                throws ClientInitException
+        {
+            return ClientManager.getInstance();
+        }
+    };
+    /**
+     * counter used to guarantee unique identifiers
+     */
+    private static final AtomicInteger counter = new AtomicInteger();
+    /**
+     * the collection of data flows created to send data to a specific URN
+     */
+    private final Map<ModuleURN,DataEmitterSupport> internalDataFlows = new HashMap<ModuleURN,DataEmitterSupport>();
+    /**
+     * provides JMX notification support 
+     */
+    private final NotificationBroadcasterSupport notificationDelegate;
+    /**
+     * counter used for JMX notifications
+     */
+    private final AtomicLong jmxNotificationCounter = new AtomicLong();
+    /**
+     * provides access to new market data services
+     */
+    private MarketDataManager marketDataManager;
+    /**
+     * guards access to data flow structures
+     */
+    private final ReadWriteLock dataFlowLock = new ReentrantReadWriteLock();
+    /**
+     * module framework requests by data flow ID
+     */
+    @GuardedBy("dataFlowLock")
+    private final Map<DataFlowID,RequestContainer> requestsByDataFlowId = Maps.newHashMap();
+    /**
+     * market data requests by internal request ID
+     */
+    @GuardedBy("dataFlowLock")
+    private final Map<Integer,RequestContainer> requestsByInternalId = Maps.newHashMap();
 }

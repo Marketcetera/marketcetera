@@ -103,7 +103,6 @@ public abstract class AbstractRunningStrategy
         callbackService.shutdown();
         // terminate existing callbacks, best effort
         callbackService.shutdownNow();
-        
         // Delete the strategy as a broker status listener
         try {
         	ClientManager.getInstance().removeBrokerStatusListener(this);

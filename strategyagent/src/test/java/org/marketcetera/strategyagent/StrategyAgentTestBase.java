@@ -57,9 +57,7 @@ public class StrategyAgentTestBase
         initParams();
     }
     /**
-     * 
-     *
-     *
+     * Initializes the params used for SA tests.
      */
     protected static void initParams()
     {
@@ -70,9 +68,7 @@ public class StrategyAgentTestBase
         buildJmsUrl();
     }
     /**
-     * 
-     *
-     *
+     * Shuts down the SA used for tests.
      */
     protected static void shutdownSa()
     {
