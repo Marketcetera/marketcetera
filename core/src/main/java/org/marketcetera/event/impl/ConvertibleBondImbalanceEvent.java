@@ -9,9 +9,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.ConvertibleBondEvent;
-import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.beans.ConvertibleBondBean;
-import org.marketcetera.event.beans.MarketstatBean;
+import org.marketcetera.event.beans.ImbalanceBean;
 import org.marketcetera.trade.ConvertibleBond;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.util.misc.ClassVersion;
@@ -19,19 +18,33 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Provides a ConvertibleBond implementation of {@link MarketstatEvent}.
+ * Provides an <code>ImbalanceEvent</code> implementation for a <code>ConvertibleBond</code> instrument.
  *
- * @version $Id: ConvertibleBondMarketstatEventImpl.java 16598 2013-06-25 13:27:58Z colin $
- * @since 2.1.0
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
  */
 @ThreadSafe
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name="convertibleBondMarketstat")
+@XmlRootElement(name="convertibleBondImbalance")
 @ClassVersion("$Id$")
-public class ConvertibleBondMarketstatEventImpl
-        extends AbstractMarketstatEventImpl
+public class ConvertibleBondImbalanceEvent
+        extends AbstractImbalanceEvent
         implements ConvertibleBondEvent
 {
+    /**
+     * Create a new ConvertibleBondImbalanceEvent instance.
+     *
+     * @param inImbalance an <code>ImbalanceBean</code> value
+     * @param inBond a <code>ConvertibleBondBean</code> value
+     */
+    public ConvertibleBondImbalanceEvent(ImbalanceBean inImbalance,
+                                         ConvertibleBondBean inBond)
+    {
+        super(inImbalance);
+        bond = inBond;
+        bond.validate();
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.event.HasConvertibleBond#getInstrument()
      */
@@ -256,36 +269,11 @@ public class ConvertibleBondMarketstatEventImpl
     {
         return bond.getEstimatedSizeInd();
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString()
-    {
-        return "ConvertibleBondMarketstatEventImpl [" + getMessageId() + " " + getEventType() + " " + bond + "]";
-    }
     /**
-     * Create a new ConvertibleBondMarketstatEventImpl instance.
-     *
-     * @param inMarketstatBean a <code>MarketstatBean</code> value
-     * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
-     * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
-     * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
-     */
-    ConvertibleBondMarketstatEventImpl(MarketstatBean inMarketstat,
-                                       ConvertibleBondBean inConvertibleBond)
-    {
-        super(inMarketstat);
-        bond = inConvertibleBond;
-        bond.validate();
-    }
-    /**
-     * Create a new ConvertibleBondMarketstatEventImpl instance.
-     *
-     * <p>This constructor is intended to be used by JAXB only.
+     * Create a new ConvertibleBondImbalanceEvent instance.
      */
     @SuppressWarnings("unused")
-    private ConvertibleBondMarketstatEventImpl()
+    private ConvertibleBondImbalanceEvent()
     {
         bond = new ConvertibleBondBean();
     }
@@ -294,5 +282,5 @@ public class ConvertibleBondMarketstatEventImpl
      */
     @XmlElement
     private final ConvertibleBondBean bond;
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5062544938821078157L;
 }

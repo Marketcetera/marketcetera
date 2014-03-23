@@ -1,6 +1,10 @@
 package org.marketcetera.event.impl;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.CurrencyEvent;
 import org.marketcetera.event.MarketstatEvent;
@@ -17,7 +21,9 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  */
 @ThreadSafe
-@ClassVersion("$Id: CurrencyMarketstatEventImpl.java")
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlRootElement(name="currencyMarketstat")
+@ClassVersion("$Id$")
 public class CurrencyMarketstatEventImpl
         extends AbstractMarketstatEventImpl
         implements CurrencyEvent
@@ -55,7 +61,7 @@ public class CurrencyMarketstatEventImpl
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
      */
     CurrencyMarketstatEventImpl(MarketstatBean inMarketstat,
-    							CurrencyBean inCurrency)
+                                CurrencyBean inCurrency)
     {
         super(inMarketstat);
         currency = inCurrency;
@@ -74,6 +80,7 @@ public class CurrencyMarketstatEventImpl
     /**
      * the currency attributes 
      */
+    @XmlElement
     private final CurrencyBean currency;
     private static final long serialVersionUID = 1L;
 }

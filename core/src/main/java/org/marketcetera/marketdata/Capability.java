@@ -65,5 +65,9 @@ public enum Capability
     /**
      * the market data feed is able to return order level depth of book of an unspecified type
      */
-    UNAGGREGATED_DEPTH
+    UNAGGREGATED_DEPTH,
+    /**
+     * the market data feed is able to return imbalance events
+     */
+    IMBALANCE
 }

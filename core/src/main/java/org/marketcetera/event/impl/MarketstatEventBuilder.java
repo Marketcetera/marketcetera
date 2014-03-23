@@ -209,6 +209,17 @@ public abstract class MarketstatEventBuilder
         return this;
     }
     /**
+     * Sets the provider value to use with the new event.
+     *
+     * @param inProvider an <code>Object</code> value or <code>null</code>
+     * @return a <code>TradeEventBuilder</code> value
+     */
+    public MarketstatEventBuilder withProvider(String inProvider)
+    {
+        marketstat.setProvider(inProvider);
+        return this;
+    }
+    /**
      * Sets the instrument value.
      *
      * @param inInstrument an <code>Instrument</code> value or <code>null</code>

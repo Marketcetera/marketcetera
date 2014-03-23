@@ -7,27 +7,26 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.FutureEvent;
-import org.marketcetera.event.MarketstatEvent;
 import org.marketcetera.event.beans.FutureBean;
-import org.marketcetera.event.beans.MarketstatBean;
+import org.marketcetera.event.beans.ImbalanceBean;
 import org.marketcetera.trade.*;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Provides a Future implementation of {@link MarketstatEvent}.
+ * Provides an <code>ImbalanceEvent</code> implementation for a <code>Future</code> instrument.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 2.1.0
+ * @since $Release$
  */
 @ThreadSafe
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name="futureMarketstat")
+@XmlRootElement(name="futureImbalance")
 @ClassVersion("$Id$")
-public class FutureMarketstatEventImpl
-        extends AbstractMarketstatEventImpl
+public class FutureImbalanceEvent
+        extends AbstractImbalanceEvent
         implements FutureEvent
 {
     /* (non-Javadoc)
@@ -87,27 +86,27 @@ public class FutureMarketstatEventImpl
         return future.getContractSize();
     }
     /**
-     * Create a new FutureMarketstatEventImpl instance.
+     * Create a new FutureImbalanceEvent instance.
      *
-     * @param inMarketstatBean a <code>MarketstatBean</code> value
+     * @param inImbalanceBean a <code>ImbalanceBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0
      * @throws IllegalArgumentException if <code>Timestamp</code> is <code>null</code>
      * @throws IllegalArgumentException if <code>Instrument</code> is <code>null</code>
      */
-    FutureMarketstatEventImpl(MarketstatBean inMarketstat,
-                              FutureBean inFuture)
+    FutureImbalanceEvent(ImbalanceBean inImbalance,
+                         FutureBean inFuture)
     {
-        super(inMarketstat);
+        super(inImbalance);
         future = inFuture;
         future.validate();
     }
     /**
-     * Create a new FutureMarketstatEventImpl instance.
+     * Create a new FutureImbalanceEvent instance.
      * 
      * <p>This constructor is intended to be used by JAXB.
      */
     @SuppressWarnings("unused")
-    private FutureMarketstatEventImpl()
+    private FutureImbalanceEvent()
     {
         future = new FutureBean();
     }

@@ -78,4 +78,10 @@
   <bean id="wsServerPort" class="java.lang.Integer">
     <constructor-arg value="${metc.sa.ws.port}"/>
   </bean>
+  <!-- The market data manager instance -->
+  <bean id="marketDataManager" class="org.marketcetera.marketdata.core.manager.impl.MarketDataManagerImpl"/>
+  <!-- market data web service -->
+  <bean id="marketdataWebService" class="org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceImpl" init-method="start" destroy-method="stop" depends-on="saWebServicesServer">
+    <constructor-arg ref="saSessionManager"/>
+  </bean>
 </beans>

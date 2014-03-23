@@ -10,7 +10,6 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.EventType;
 import org.marketcetera.event.MarketstatEvent;
-import org.marketcetera.event.beans.EventBean;
 import org.marketcetera.event.beans.HasEventBean;
 import org.marketcetera.event.beans.MarketstatBean;
 import org.marketcetera.event.util.EventServices;
@@ -36,7 +35,7 @@ abstract class AbstractMarketstatEventImpl
      * @see org.marketcetera.event.beans.HasEventBean#getEventBean()
      */
     @Override
-    public EventBean getEventBean()
+    public MarketstatBean getEventBean()
     {
         return marketstat;
     }
@@ -291,7 +290,7 @@ abstract class AbstractMarketstatEventImpl
                                          obj);
     }
     /**
-     * Create a new EquityMarketstatEventImpl instance.
+     * Create a new AbstractMarketstatEventImpl instance.
      *
      * @param inMarketstatBean a <code>MarketstatBean</code> value
      * @throws IllegalArgumentException if <code>MessageId</code> &lt; 0

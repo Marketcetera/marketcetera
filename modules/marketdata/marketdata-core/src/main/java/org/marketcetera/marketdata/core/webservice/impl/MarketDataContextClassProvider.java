@@ -61,10 +61,10 @@ public class MarketDataContextClassProvider
      * list of event classes
      */
     private static final Class<?>[] EVENT_CLASSES = new Class<?>[] {
-        ConvertibleBondAskEventImpl.class,ConvertibleBondBidEventImpl.class,ConvertibleBondMarketstatEventImpl.class,ConvertibleBondTradeEventImpl.class,
-        CurrencyAskEventImpl.class,CurrencyBidEventImpl.class,CurrencyMarketstatEventImpl.class,CurrencyTradeEventImpl.class,
-        EquityAskEventImpl.class,EquityBidEventImpl.class,EquityMarketstatEventImpl.class,EquityTradeEventImpl.class,
-        FutureAskEventImpl.class,FutureBidEventImpl.class,FutureMarketstatEventImpl.class,FutureTradeEventImpl.class,
-        OptionAskEventImpl.class,OptionBidEventImpl.class,OptionMarketstatEventImpl.class,OptionTradeEventImpl.class,
+        ConvertibleBondAskEventImpl.class,ConvertibleBondBidEventImpl.class,ConvertibleBondMarketstatEventImpl.class,ConvertibleBondTradeEventImpl.class,ConvertibleBondImbalanceEvent.class,
+        CurrencyAskEventImpl.class,CurrencyBidEventImpl.class,CurrencyMarketstatEventImpl.class,CurrencyTradeEventImpl.class,CurrencyImbalanceEvent.class,
+        EquityAskEventImpl.class,EquityBidEventImpl.class,EquityMarketstatEventImpl.class,EquityTradeEventImpl.class,EquityImbalanceEvent.class,
+        FutureAskEventImpl.class,FutureBidEventImpl.class,FutureMarketstatEventImpl.class,FutureTradeEventImpl.class,FutureImbalanceEvent.class,
+        OptionAskEventImpl.class,OptionBidEventImpl.class,OptionMarketstatEventImpl.class,OptionTradeEventImpl.class,OptionImbalanceEvent.class,
         DividendEventImpl.class };
 }
