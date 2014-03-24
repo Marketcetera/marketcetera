@@ -42,6 +42,7 @@ public class MarketdataCacheElement
         instrument = inInstrument;
         marketstatCache = new MarketstatEventCache(inInstrument);
         trade = null;
+        imbalance = null;
     }
     /**
      * Gets the latest snapshot for the given content.
@@ -56,6 +57,8 @@ public class MarketdataCacheElement
                 return marketstatCache.get();
             case LATEST_TICK:
                 return trade;
+            case IMBALANCE:
+                return imbalance;
             case TOP_OF_BOOK:
             case NBBO:
                 return getOrderBookFor(inContent).getTopOfBook();
@@ -119,6 +122,15 @@ public class MarketdataCacheElement
                     }
                 }
                 break;
+            case IMBALANCE:
+                for(Event event : inEvents) {
+                    if(event instanceof ImbalanceEvent) {
+                        imbalance = (ImbalanceEvent)event;
+                        results.add(event);
+                    } else {
+                        // TODO warn - skipping event
+                    }
+                }
             case MARKET_STAT:
                 for(Event event : inEvents) {
                     if(event instanceof MarketstatEvent) {
@@ -187,11 +199,10 @@ public class MarketdataCacheElement
         }
     }
     /**
-     * 
+     * Gets the order book for the given content.
      *
-     *
-     * @param inContent
-     * @return
+     * @param inContent a <code>Content</code> value
+     * @return an <code>OrderBook</code> value
      */
     private OrderBook getOrderBookFor(Content inContent)
     {
@@ -223,6 +234,10 @@ public class MarketdataCacheElement
      * most recent trade
      */
     private TradeEvent trade;
+    /**
+     * most recent imbalance
+     */
+    private ImbalanceEvent imbalance;
     /**
      * most recent top-of-book
      */

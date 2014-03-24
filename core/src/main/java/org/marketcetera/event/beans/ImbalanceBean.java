@@ -43,13 +43,6 @@ public class ImbalanceBean
         return newBean;
     }
     /**
-     * Create a new ImbalanceBean instance.
-     */
-    public ImbalanceBean()
-    {
-        throw new UnsupportedOperationException();
-    }
-    /**
      * Get the auctionType value.
      *
      * @return an <code>AuctionType</code> value

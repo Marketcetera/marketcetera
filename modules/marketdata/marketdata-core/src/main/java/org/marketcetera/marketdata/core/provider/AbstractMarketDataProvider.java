@@ -886,6 +886,7 @@ public abstract class AbstractMarketDataProvider
         capabilities.put(Content.TOTAL_VIEW,Capability.TOTAL_VIEW);
         capabilities.put(Content.AGGREGATED_DEPTH,Capability.AGGREGATED_DEPTH);
         capabilities.put(Content.UNAGGREGATED_DEPTH,Capability.UNAGGREGATED_DEPTH);
+        capabilities.put(Content.IMBALANCE,Capability.IMBALANCE);
         necessaryCapabilities = Collections.unmodifiableMap(capabilities);
     }
 }
