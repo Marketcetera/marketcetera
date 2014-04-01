@@ -580,4 +580,12 @@ public interface Client {
      */
     List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException;
+    /**
+     * 
+     *
+     *
+     * @param inOrderID
+     * @return
+     */
+    public OrderID findRootOrderIdFor(OrderID inOrderID);
 }

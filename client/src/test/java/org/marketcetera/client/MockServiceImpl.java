@@ -517,4 +517,14 @@ public class MockServiceImpl
     {
         return Collections.emptyList();
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#findRootOrderIdFor(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public OrderID findRootOrderIdFor(ClientContext inServiceContext,
+                                      OrderID inOrderID)
+            throws RemoteException
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
 }

@@ -1149,6 +1149,14 @@ public class StrategyTestBase
         {
             return Collections.emptyList();
         }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#findRootOrderIdFor(org.marketcetera.trade.OrderID)
+         */
+        @Override
+        public OrderID findRootOrderIdFor(OrderID inOrderID)
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
     }
     /**
      * Compares the sending times of two <code>ReportBase</code> values.

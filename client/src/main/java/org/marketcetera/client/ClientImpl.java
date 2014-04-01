@@ -547,6 +547,22 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                                           Messages.ERROR_REMOTE_EXECUTION);
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#findRootOrderIdFor(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public OrderID findRootOrderIdFor(OrderID inOrderID)
+    {
+        failIfClosed();
+        failIfDisconnected();
+        try {
+            return mService.findRootOrderIdFor(getServiceContext(),
+                                               inOrderID);
+        } catch (RemoteException ex) {
+            throw new ConnectionException(ex,
+                                          Messages.ERROR_REMOTE_EXECUTION);
+        }
+    }
     /**
      * Creates an instance given the parameters and connects to the server.
      *

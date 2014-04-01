@@ -273,7 +273,6 @@ public class MockClient
     @Override
     public void close()
     {
-        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#reconnect()
@@ -390,6 +389,14 @@ public class MockClient
             throws ConnectionException
     {
         throw new UnsupportedOperationException();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Client#findRootOrderIdFor(org.marketcetera.trade.OrderID)
+     */
+    @Override
+    public OrderID findRootOrderIdFor(OrderID inOrderID)
+    {
+        throw new UnsupportedOperationException(); // TODO
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.Client#getOpenOrders()

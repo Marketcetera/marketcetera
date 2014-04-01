@@ -426,4 +426,15 @@ public interface Service
      */
     List<ReportBaseImpl> getOpenOrders(@WebParam(name="context")ClientContext inContext)
             throws RemoteException;
+    /**
+     *
+     *
+     * @param inServiceContext
+     * @param inOrderID
+     * @return
+     * @throws RemoteException 
+     */
+    OrderID findRootOrderIdFor(@WebParam(name="context")ClientContext inServiceContext,
+                               @WebParam(name="orderId")OrderID inOrderID)
+            throws RemoteException;
 }

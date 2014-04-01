@@ -52,18 +52,20 @@ public class TimeFactoryImpl
         return new DateTime(inValue).toDateTime(DateTimeZone.UTC);
     }
     private static final Pattern SECONDS_PATTERN = Pattern.compile("^([0-9]{1,2}){0,1}(:[0-9]{1,2}){0,1}(:[0-9]{1,2}){0,1}$");
-    private static final DateTimeZone ZONE = DateTimeZone.UTC;
-    private static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,4).toFormatter();
-    private static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
-    private static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
-    private static final DateTimeFormatter DASH = new DateTimeFormatterBuilder().appendLiteral('-').toFormatter();
-    private static final DateTimeFormatter COLON = new DateTimeFormatterBuilder().appendLiteral(':').toFormatter();
-    private static final DateTimeFormatter SLASH = new DateTimeFormatterBuilder().appendLiteral('/').toFormatter();
-    private static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
-    private static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
-    private static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
+    public static final DateTimeZone ZONE = DateTimeZone.UTC;
+    public static final DateTimeFormatter YEAR = new DateTimeFormatterBuilder().appendYear(4,4).toFormatter();
+    public static final DateTimeFormatter MONTH = new DateTimeFormatterBuilder().appendMonthOfYear(2).toFormatter();
+    public static final DateTimeFormatter DAY = new DateTimeFormatterBuilder().appendDayOfMonth(2).toFormatter();
+    public static final DateTimeFormatter DASH = new DateTimeFormatterBuilder().appendLiteral('-').toFormatter();
+    public static final DateTimeFormatter COLON = new DateTimeFormatterBuilder().appendLiteral(':').toFormatter();
+    public static final DateTimeFormatter PERIOD = new DateTimeFormatterBuilder().appendLiteral('.').toFormatter();
+    public static final DateTimeFormatter SLASH = new DateTimeFormatterBuilder().appendLiteral('/').toFormatter();
+    public static final DateTimeFormatter HOUR = new DateTimeFormatterBuilder().appendHourOfDay(2).toFormatter();
+    public static final DateTimeFormatter MINUTE = new DateTimeFormatterBuilder().appendMinuteOfHour(2).toFormatter();
+    public static final DateTimeFormatter SECOND = new DateTimeFormatterBuilder().appendSecondOfMinute(2).toFormatter();
     public static final DateTimeFormatter US_DATE = new DateTimeFormatterBuilder().append(DAY).append(SLASH).append(MONTH).append(SLASH).append(YEAR).toFormatter();
     public static final DateTimeFormatter INTL_DATE = new DateTimeFormatterBuilder().append(MONTH).append(SLASH).append(DAY).append(SLASH).append(YEAR).toFormatter();
+    public static final DateTimeFormatter MILLISECOND = new DateTimeFormatterBuilder().appendMillisOfSecond(3).toFormatter();
     /**
      * full seconds: YYYYMMDD-HH:MM:SS
      */
@@ -72,12 +74,15 @@ public class TimeFactoryImpl
     /**
      * wallclock seconds: HH:MM:SS
      */
-    private static final DateTimeFormatter WALLCLOCK_SECONDS = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
-            .append(COLON).append(SECOND).toFormatter().withZone(ZONE);
+    private static final DateTimeFormatter WALLCLOCK_SECONDS = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).append(COLON).append(SECOND).toFormatter().withZone(ZONE);
+    /**
+     * wallclock milliseconds: HH:MM:SS.sss
+     */
+    public static final DateTimeFormatter WALLCLOCK_MILLISECONDS = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
+            .append(COLON).append(SECOND).append(PERIOD).append(MILLISECOND).toFormatter().withZone(ZONE);
     /**
      * wallclock minutes: HH:MM
      */
-    private static final DateTimeFormatter WALLCLOCK_MINUTES = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE)
-            .toFormatter().withZone(ZONE);
+    private static final DateTimeFormatter WALLCLOCK_MINUTES = new DateTimeFormatterBuilder().append(HOUR).append(COLON).append(MINUTE).toFormatter().withZone(ZONE);
     private static final DateTimeFormatter[] FORMATTERS = new DateTimeFormatter[] { FULL_SECONDS,WALLCLOCK_SECONDS,WALLCLOCK_MINUTES,US_DATE,INTL_DATE };
 }
