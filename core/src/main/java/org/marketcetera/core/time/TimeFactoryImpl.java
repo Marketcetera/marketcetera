@@ -9,6 +9,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
+import org.springframework.stereotype.Component;
 
 /* $License$ */
 
@@ -19,6 +20,7 @@ import org.joda.time.format.DateTimeFormatterBuilder;
  * @version $Id: TimeFactoryImpl.java 83355 2013-06-26 18:21:12Z colin $
  * @since $Release$
  */
+@Component
 public class TimeFactoryImpl
         implements TimeFactory
 {

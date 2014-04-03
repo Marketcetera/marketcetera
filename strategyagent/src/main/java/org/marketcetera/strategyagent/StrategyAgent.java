@@ -28,6 +28,9 @@ import org.marketcetera.util.ws.stateful.Authenticator;
 import org.marketcetera.util.ws.stateful.Server;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.Lifecycle;
 
 /* $License$ */
@@ -49,7 +52,7 @@ import org.springframework.context.Lifecycle;
  */
 @ClassVersion("$Id$")
 public class StrategyAgent
-        implements IPublisher, Lifecycle
+        implements IPublisher,Lifecycle,ApplicationContextAware
 {
     /**
      * Gets the most recently created <code>StrategyAgent</code> instance in this process.
@@ -238,6 +241,24 @@ public class StrategyAgent
             throw new IllegalStateException();
         }
         moduleManager = inModuleManager;
+    }
+    /* (non-Javadoc)
+     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     */
+    @Override
+    public void setApplicationContext(ApplicationContext inApplicationContext)
+            throws BeansException
+    {
+        applicationContext = inApplicationContext;
+    }
+    /**
+     * Get the applicationContext value.
+     *
+     * @return an <code>ApplicationContext</code> value
+     */
+    public ApplicationContext getApplicationContext()
+    {
+        return applicationContext;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.publisher.IPublisher#getSubscriptionCount()
@@ -507,4 +528,8 @@ public class StrategyAgent
      * provides authentication services
      */
     private Authenticator authenticator = new DefaultAuthenticator();
+    /**
+     * application context
+     */
+    private ApplicationContext applicationContext;
 }
