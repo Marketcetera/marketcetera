@@ -521,7 +521,7 @@ public class MockServiceImpl
      * @see org.marketcetera.client.Service#findRootOrderIdFor(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.OrderID)
      */
     @Override
-    public OrderID findRootOrderIdFor(ClientContext inServiceContext,
+    public OrderID getRootOrderIdFor(ClientContext inServiceContext,
                                       OrderID inOrderID)
             throws RemoteException
     {

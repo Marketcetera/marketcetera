@@ -427,14 +427,14 @@ public interface Service
     List<ReportBaseImpl> getOpenOrders(@WebParam(name="context")ClientContext inContext)
             throws RemoteException;
     /**
+     * Gets the order ID of the root order in the given order chain.
      *
-     *
-     * @param inServiceContext
-     * @param inOrderID
-     * @return
-     * @throws RemoteException 
+     * @param inServiceContext a <code>ClientContext</code> value
+     * @param inOrderID an <code>OrderID</code> value
+     * @return an <code>OrderID</code> value
+     * @throws RemoteException if an error occurs 
      */
-    OrderID findRootOrderIdFor(@WebParam(name="context")ClientContext inServiceContext,
-                               @WebParam(name="orderId")OrderID inOrderID)
+    OrderID getRootOrderIdFor(@WebParam(name="context")ClientContext inServiceContext,
+                              @WebParam(name="orderId")OrderID inOrderID)
             throws RemoteException;
 }

@@ -688,7 +688,7 @@ public abstract class AbstractMarketDataProvider
                                         outgoingEvent.setSource(requestToken.getId());
                                         outgoingEvent.setProvider(getProviderName());
                                         ISubscriber subscriber = requestToken.getSubscriber();
-                                        if(subscriber != null) {
+                                        if(subscriber != null && subscriber.isInteresting(outgoingEvent)) {
                                             subscriber.publishTo(outgoingEvent);
                                         }
                                     }

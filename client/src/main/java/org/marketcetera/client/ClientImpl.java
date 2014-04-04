@@ -556,7 +556,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         failIfClosed();
         failIfDisconnected();
         try {
-            return mService.findRootOrderIdFor(getServiceContext(),
+            return mService.getRootOrderIdFor(getServiceContext(),
                                                inOrderID);
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,
