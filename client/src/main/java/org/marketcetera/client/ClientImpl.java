@@ -24,6 +24,7 @@ import org.marketcetera.metrics.ThreadedMetric;
 import org.marketcetera.trade.*;
 import org.marketcetera.trade.Currency;
 import org.marketcetera.util.except.ExceptUtils;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage4P;
@@ -757,7 +758,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
                     return;
                 }
                 try {
-                    mService.heartbeat(getServiceContext());
+                    heartbeat();
                     setServerAlive(true);
                 } catch (Exception ex) {
                     setServerAlive(false);
@@ -883,6 +884,34 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
         }
     }
     /**
+     * 
+     *
+     *
+     * @throws I18NException
+     * @throws RemoteException
+     */
+    protected void connectWebServices()
+            throws I18NException, RemoteException
+    {
+        mServiceClient = new org.marketcetera.util.ws.stateful.Client(mParameters.getHostname(),
+                                                                      mParameters.getPort(),
+                                                                      ClientVersion.APP_ID);
+        mServiceClient.login(mParameters.getUsername(),
+                             mParameters.getPassword());
+        mService = mServiceClient.getService(Service.class);
+    }
+    /**
+     * 
+     *
+     *
+     * @throws RemoteException
+     */
+    protected void heartbeat()
+            throws RemoteException
+    {
+        mService.heartbeat(getServiceContext());
+    }
+    /**
      * Connects the client to the server.
      *
      * @throws ConnectionException if an error occurs connecting to the server
@@ -924,12 +953,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
             if(cfg == null) {
                 throw new ConnectionException(Messages.CONNECT_ERROR_NO_CONFIGURATION);
             }
-            mServiceClient = new org.marketcetera.util.ws.stateful.Client(mParameters.getHostname(),
-                                                                          mParameters.getPort(),
-                                                                          ClientVersion.APP_ID);
-            mServiceClient.login(mParameters.getUsername(),
-                                 mParameters.getPassword());
-            mService = mServiceClient.getService(Service.class);
+            connectWebServices();
             mJmsMgr = new JmsManager(cfg.getIncomingConnectionFactory(),
                                      cfg.getOutgoingConnectionFactory(),
                                      this);
@@ -1131,7 +1155,7 @@ class ClientImpl implements Client, javax.jms.ExceptionListener {
     private volatile SimpleMessageListenerContainer mTradeMessageListener;
     private volatile SimpleMessageListenerContainer mBrokerStatusListener;
     private volatile JmsOperations mToServer;
-    private volatile ClientParameters mParameters;
+    protected volatile ClientParameters mParameters;
     private volatile boolean mClosed = false;
     private volatile boolean mServerAlive = false;
     private final Deque<ReportListener> mReportListeners =

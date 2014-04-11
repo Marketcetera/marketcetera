@@ -19,6 +19,7 @@ import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
 import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.RpcClientFactory;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
 import org.marketcetera.core.notifications.Notification;
@@ -30,8 +31,8 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonPreferences;
 import org.marketcetera.photon.core.ICredentials;
 import org.marketcetera.photon.core.ICredentialsService;
-import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.core.ICredentialsService.IAuthenticationHelper;
+import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.ui.ServerStatusIndicator;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NMessage;
@@ -126,6 +127,8 @@ public class ReconnectServerJob
                                     ClientManager.getInstance().reconnect(parameters);
                                     client = ClientManager.getInstance();
                                 } else {
+//                                    // switch us to use the RPC client instead of the WS client
+//                                    ClientManager.setClientFactory(new RpcClientFactory());
                                     // first time initialization
                                     ClientManager.init(parameters);
                                     client = ClientManager.getInstance();

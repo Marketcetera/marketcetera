@@ -60,8 +60,7 @@ public class PositionKeyFactory {
     }
     
     /**
-     * Creates a future position key. Note that account and traderId are
-     * converted to null if they only contain whitespace.
+     * Creates a future position key. Note that account and traderId are converted to <code>null</code> if they only contain whitespace.
      * 
      * @param inSymbol a <code>String</code> value
      * @param inExpiry a <code>String</code> value
@@ -102,27 +101,28 @@ public class PositionKeyFactory {
                 inTraderId);
     }
     /**
-     * Creates an option position key. Note that account and traderId are
-     * converted to null if they only contain whitespace.
+     * Creates an option position key. Note that account and traderId are converted to null if they only contain whitespace.
      * 
-     * @param symbol
-     *            the option symbol
-     * @param expiry
-     *            the option expiry
-     * @param strikePrice
-     *            the option strike price
-     * @param type
-     *            the option type
-     * @throws IllegalArgumentException
-     *             if any argument is null, or if symbol or expiry is whitespace
+     * @param inSymbol a <code>String</code> value
+     * @param inExpiry a <code>String</code> value
+     * @param inStrikePrice a <code>BigDecimal</code> value
+     * @param inType an <code>OptionType</code> value
+     * @throws IllegalArgumentException if any argument is <code>null</code>, or if symbol or expiry is whitespace
      */
-    public static PositionKey<Option> createOptionKey(String symbol,
-            String expiry, BigDecimal strikePrice, OptionType type,
-            @Nullable String account, @Nullable String traderId) {
-        return createKey(new Option(symbol, expiry, strikePrice, type),
-                account, traderId);
+    public static PositionKey<Option> createOptionKey(String inSymbol,
+                                                      String inExpiry,
+                                                      BigDecimal inStrikePrice,
+                                                      OptionType inType,
+                                                      @Nullable String inAccount,
+                                                      @Nullable String inTraderId)
+    {
+        return createKey(new Option(inSymbol,
+                                    inExpiry,
+                                    inStrikePrice,
+                                    inType),
+                         inAccount,
+                         inTraderId);
     }
-
     /**
      * Creates a position key for an arbitrary Instrument. Note that account and
      * traderId are converted to null if they only contain whitespace.

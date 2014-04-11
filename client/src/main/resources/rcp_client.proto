@@ -1,0 +1,243 @@
+// protoc -I=src/main/resources --java_out=src/main/java src/main/resources/rcp_client.proto
+option java_generic_services = true;
+
+option java_package = "org.marketcetera.client";
+option java_outer_classname = "RpcClient";
+
+message LoginRequest {
+    required string appId = 1;
+    required string clientId = 2;
+    required Locale locale = 3;
+    required string versionId = 4;
+    required string username = 5;
+    required string password = 6;
+}
+
+message LoginResponse {
+    required string sessionId = 1;
+}
+
+message LogoutRequest {
+    required string sessionId = 1;
+}
+
+message LogoutResponse {
+    required bool status = 1;
+}
+
+message NextOrderIdRequest {
+    required string sessionId = 1;
+}
+
+message NextOrderIdResponse {
+    required string orderId = 1;
+}
+
+message Locale {
+    required string country = 1;
+    required string language = 2;
+    optional string variant = 3;
+}
+
+message BrokersStatusRequest {
+    required string sessionId = 1;
+}
+
+message BrokersStatusResponse {
+    required BrokersStatus brokersStatus = 1;
+}
+
+message BrokersStatus {
+    repeated BrokerStatus brokers = 1;
+}
+
+message BrokerStatus {
+    required string name = 1;
+    required string brokerId = 2;
+    required bool loggedOn = 3;
+    repeated BrokerAlgoSpec brokerAlgos = 4;
+}
+
+message BrokerAlgoSpec {
+    required string name = 1;
+    repeated BrokerAlgoTagSpec algoTagSpecs = 2;
+}
+
+message BrokerAlgoTagSpec {
+    required int32 tag = 1;
+    required string label = 2;
+    optional string description = 3;
+    required bool mandatory = 4;
+    optional string pattern = 5;
+    optional string options = 6;
+}
+
+message OpenOrdersRequest {
+    required string sessionId = 1;
+}
+
+message OpenOrdersResponse {
+    required ReportList reports = 1;
+}
+
+message ReportsSinceRequest {
+    required string sessionId = 1;
+    required int64 origin = 2;
+}
+
+message ReportsSinceResponse {
+    required ReportList reports = 1;
+}
+message ReportList {
+    repeated string reports = 1;
+}
+
+message PositionRequest {
+    required string sessionId = 1;
+    required InstrumentType instrumentType = 2;
+    optional Instrument instrument = 3;
+    required int64 origin = 4 [default = -1];
+    repeated string root = 5;
+}
+
+message PositionResponse {
+    repeated PositionKey keys = 1;
+    repeated string values = 2;
+}
+
+message HeartbeatRequest {
+    required string sessionId = 1;
+    required int64 id = 2;
+}
+
+message HeartbeatResponse {
+    required int64 id = 1;
+}
+
+enum InstrumentType {
+    EQUITY = 0;
+    OPTION = 1;
+    FUTURE = 2;
+    CURRENCY = 3;
+}
+
+message Position {
+    required Instrument instrument = 1;
+    required string position = 2;
+}
+
+message PositionKey {
+    required Instrument instrument = 1;
+    optional string account = 2;
+    required string traderId = 3;
+}
+
+message Instrument {
+    required string payload = 1;
+}
+
+message UserInfoRequest {
+    required string sessionId = 1;
+    required int64 id = 2;
+}
+
+message UserInfoResponse {
+    required UserInfo userInfo = 1;
+}
+
+message UserInfo {
+    required string name = 1;
+    required int64 id = 2;
+    required bool active = 3;
+    required bool superuser = 4;
+    optional string userdata = 5;
+}
+
+message UnderlyingRequest {
+    required string sessionId = 1;
+    required string symbol = 2;
+}
+
+message UnderlyingResponse {
+    required string symbol = 1;
+}
+
+message OptionRootsRequest {
+    required string sessionId = 1;
+    required string symbol = 2;
+}
+
+message OptionRootsResponse {
+    repeated string symbol = 1;
+}
+
+message ResolveSymbolRequest {
+    required string sessionId = 1;
+    required string symbol = 2;
+}
+
+message ResolveSymbolResponse {
+    required Instrument instrument = 1;
+}
+
+message RootOrderIdRequest {
+    required string sessionId = 1;
+    required string orderId = 2;
+}
+
+message RootOrderIdResponse {
+    required string orderId = 1;
+}
+
+message GetUserDataRequest {
+    required string sessionId = 1;
+}
+
+message GetUserDataResponse {
+    optional string userData = 1;
+}
+
+message SetUserDataRequest {
+    required string sessionId = 1;
+    optional string userData = 2;
+}
+
+message SetUserDataResponse {
+}
+
+message AddReportRequest {
+    required string sessionId = 1;
+    required string brokerId = 2;
+    required string message = 3;
+}
+
+message AddReportResponse {
+}
+
+message DeleteReportRequest {
+    required string sessionId = 1;
+    required string message = 2;
+}
+
+message DeleteReportResponse {
+}
+
+service RpcClientService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc getNextOrderID(NextOrderIdRequest) returns (NextOrderIdResponse);
+    rpc getBrokersStatus(BrokersStatusRequest) returns (BrokersStatusResponse);
+    rpc getOpenOrders(OpenOrdersRequest) returns (OpenOrdersResponse);
+    rpc getReportsSince(ReportsSinceRequest) returns (ReportsSinceResponse);
+    rpc getPositions(PositionRequest) returns (PositionResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc getUserInfo(UserInfoRequest) returns (UserInfoResponse);
+    rpc getUnderlying(UnderlyingRequest) returns (UnderlyingResponse);
+    rpc getOptionRoots(OptionRootsRequest) returns (OptionRootsResponse);
+    rpc resolveSymbol(ResolveSymbolRequest) returns (ResolveSymbolResponse);
+    rpc getRootOrderIdFor(RootOrderIdRequest) returns (RootOrderIdResponse);
+    rpc getUserData(GetUserDataRequest) returns (GetUserDataResponse);
+    rpc setUserData(SetUserDataRequest) returns (SetUserDataResponse);
+    rpc addReport(AddReportRequest) returns (AddReportResponse);
+    rpc deleteReport(DeleteReportRequest) returns (DeleteReportResponse);
+}

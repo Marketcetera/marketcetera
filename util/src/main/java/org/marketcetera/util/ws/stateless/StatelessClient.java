@@ -1,13 +1,8 @@
 package org.marketcetera.util.ws.stateless;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cxf.common.logging.LogUtils;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
@@ -161,7 +156,6 @@ public class StatelessClient
     @SuppressWarnings("unchecked")
     public <T extends StatelessServiceBase> T getService(Class<T> inInterface)
     {
-        executeEclipseWorkaround();
         JaxWsProxyFactoryBean f = new JaxWsProxyFactoryBean();
         f.setServiceClass(inInterface);
         f.setAddress(getConnectionUrl(inInterface));
@@ -184,27 +178,5 @@ public class StatelessClient
         httpClientPolicy.setReceiveTimeout(0);
         http.setClient(httpClientPolicy);
         return service;
-    }
-    /**
-     * Marginally reduces the time it takes the context to be created within Eclipse.
-     */
-    private void executeEclipseWorkaround()
-    {
-        System.setProperty("com.sun.bind.v2.runtime.JAXBContextImpl.fastBoot", "true");
-        System.setProperty("com.sun.xml.internal.bind.v2.runtime.JAXBContextImpl.fastBoot", "true");
-        //        System.setProperty("org.apache.cxf.JDKBugHacks.defaultUsesCaches","true");
-        // Grab a logger from CXF to force CXF to install its workarounds
-        LogUtils.getL7dLogger(getClass());
-        // Create a dummy URL connection so we can change the default value
-        URLConnection urlConnection;
-        try {
-            urlConnection = new URLConnection(new URL("jar:file://dummy.jar!/")) {
-                @Override
-                public void connect() throws IOException {
-                    // Do nothing
-                }
-            };
-            urlConnection.setDefaultUseCaches(true);
-        } catch (MalformedURLException ignored) {}
     }
 }

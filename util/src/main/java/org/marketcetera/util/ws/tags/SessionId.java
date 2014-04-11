@@ -3,6 +3,8 @@ package org.marketcetera.util.ws.tags;
 import java.util.UUID;
 import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
 /**
  * A session ID. Each stateful client connection to a server has a
  * unique ID during a session delineated by a login and a logout. New
@@ -12,51 +14,31 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class SessionId
-    extends Tag
+        extends Tag
 {
-
-    // CLASS DATA.
-
-    private static final long serialVersionUID=1L;
-
-
-    // CONSTRUCTORS.
-
     /**
-     * Creates a new session ID with the given ID value.
+     * Create a new SessionId instance.
      *
-     * @param value The ID value.
+     * @param inValue a <code>String</code> value
      */
-
-    private SessionId
-        (String value)
+    public SessionId(String inValue)
     {
-        super(value);
+        super(inValue);
     }
-
-    /**
-     * Creates a new session ID. This empty constructor is intended
-     * for use by JAXB.
-     */
-
-    protected SessionId() {}
-
-
-    // CLASS METHODS.
-
     /**
      * Returns a new, unique session ID.
      *
-     * @return The ID.
+     * @return a <code>SessionId</code> value
      */
-
     public static SessionId generate()
     {
         return new SessionId(UUID.randomUUID().toString());
     }
+    /**
+     * Create a new SessionId instance.
+     */
+    protected SessionId() {}
+    private static final long serialVersionUID=1L;
 }

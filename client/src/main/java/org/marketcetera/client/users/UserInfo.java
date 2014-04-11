@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.marketcetera.trade.UserID;
 import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
 /**
  * The web service representation of a user's information.
  *
@@ -17,11 +19,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.5.0
  * @version $Id$
  */
-
-/* $License$ */
-
-@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 @ClassVersion("$Id$")
 public class UserInfo
     implements Serializable
@@ -54,12 +53,11 @@ public class UserInfo
      * @param systemdata The system data
      */
 
-    public UserInfo
-        (String name,
-         UserID id,
-         boolean active,
-         boolean superuser,
-         Properties userdata)
+    public UserInfo(String name,
+                    UserID id,
+                    boolean active,
+                    boolean superuser,
+                    Properties userdata)
     {
         mName=name;
         mId=id;

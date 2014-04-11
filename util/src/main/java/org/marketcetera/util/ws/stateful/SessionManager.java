@@ -253,19 +253,18 @@ public class SessionManager<T>
      * @param id The session ID.
      * @param holder The holder.
      */
-
-    public void put
-        (SessionId id,
-         SessionHolder<T> holder)
+    public void put(SessionId id,
+                    SessionHolder<T> holder)
     {
         synchronized (getMap()) {
             holder.markAccess();
-            if (getSessionFactory()!=null) {
-                holder.setSession
-                    (getSessionFactory().createSession
-                     (holder.getCreationContext(),holder.getUser(),id));
+            if(getSessionFactory()!=null) {
+                holder.setSession(getSessionFactory().createSession(holder.getCreationContext(),
+                                                                    holder.getUser(),
+                                                                    id));
             }
-            getMap().put(id,holder);
+            getMap().put(id,
+                         holder);
         }
     }
 

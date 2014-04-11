@@ -1,7 +1,10 @@
 package org.marketcetera.util.ws.tags;
 
 import java.util.UUID;
+
 import org.marketcetera.util.misc.ClassVersion;
+
+/* $License$ */
 
 /**
  * A node ID. Each communication endpoint (client or server class
@@ -12,51 +15,31 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class NodeId
-    extends Tag
+        extends Tag
 {
-
-    // CLASS DATA.
-
-    private static final long serialVersionUID=1L;
-
-
-    // CONSTRUCTORS.
-
     /**
      * Creates a new node ID with the given ID value.
      *
-     * @param value The ID value.
+     * @param inValue a <code>String</code> value
      */
-
-    private NodeId
-        (String value)
+    public NodeId(String inValue)
     {
-        super(value);
+        super(inValue);
     }
-
-    /**
-     * Creates a new node ID. This empty constructor is intended for
-     * use by JAXB.
-     */
-
-    protected NodeId() {}
-
-
-    // CLASS METHODS.
-
     /**
      * Returns a new, unique node ID.
      *
-     * @return The ID.
+     * @return a <code>NodeId</code> value
      */
-
     public static NodeId generate()
     {
         return new NodeId(UUID.randomUUID().toString());
     }
+    /**
+     * Create a new NodeId instance.
+     */
+    protected NodeId() {}
+    private static final long serialVersionUID=1L;
 }
