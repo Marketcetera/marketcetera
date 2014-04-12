@@ -32,22 +32,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.googlecode.protobuf-rpc-pro</groupId>
-      <artifactId>protobuf-streamer-pro</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.protobuf-rpc-pro</groupId>
-      <artifactId>protobuf-rpc-pro-duplex</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.jcraft</groupId>
-      <artifactId>jzlib</artifactId>
-    </dependency>
 
     <!-- Runtime. -->
     <dependency>

@@ -2,6 +2,8 @@ package org.marketcetera.util.ws.tags;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
 /**
  * A version ID. Each set of collaborating web service classes has a
  * unique version ID, covering all services together. Accordingly, one
@@ -15,44 +17,28 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 1.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @ClassVersion("$Id$")
 public class VersionId
-    extends Tag
+        extends Tag
 {
-
-    // CLASS DATA.
-
-    private static final long serialVersionUID=1L;
-
-    /**
-     * The JVM-wide version ID.
-     */
-
-    public static final VersionId SELF=
-        new VersionId("1.0.0"); //$NON-NLS-1$
-
-
-    // CONSTRUCTORS.
-
     /**
      * Creates a new version ID with the given ID value.
      *
-     * @param value The ID value.
+     * @param value a <code>String</code> value
      */
-
-    private VersionId
-        (String value)
+    public VersionId(String value)
     {
         super(value);
     }
-
     /**
-     * Creates a new version ID. This empty constructor is intended
-     * for use by JAXB.
+     * Create a new VersionId instance.
+     * 
+     * This empty constructor is intended for use by JAXB.
      */
-
     protected VersionId() {}
+    /**
+     * The JVM-wide version ID.
+     */
+    public static final VersionId SELF = new VersionId("1.0.0"); //$NON-NLS-1$
+    private static final long serialVersionUID=1L;
 }

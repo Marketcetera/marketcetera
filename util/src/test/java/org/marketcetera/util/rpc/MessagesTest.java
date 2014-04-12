@@ -1,4 +1,4 @@
-package org.marketcetera.client.rpc;
+package org.marketcetera.util.rpc;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.rpc.Messages;
