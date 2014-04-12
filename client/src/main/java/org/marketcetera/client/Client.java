@@ -581,11 +581,10 @@ public interface Client {
     List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException;
     /**
-     * 
+     * Find the root order ID for the order chain of the given order ID.
      *
-     *
-     * @param inOrderID
-     * @return
+     * @param inOrderID an <code>OrderID</code> value
+     * @return an <code>OrderID</code> value
      */
     public OrderID findRootOrderIdFor(OrderID inOrderID);
 }

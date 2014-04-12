@@ -13,6 +13,7 @@ Export-Package: org.marketcetera.client,
  org.marketcetera.client.config,
  org.marketcetera.client.instruments,
  org.marketcetera.client.jms,
+ org.marketcetera.client.rpc,
  org.marketcetera.client.users,
  org.marketcetera.client.utils
 Import-Package: junit.framework;resolution:=optional,

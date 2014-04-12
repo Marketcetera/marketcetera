@@ -1091,7 +1091,7 @@ public class BrokerAlgoTest
      *
      * @return a <code>BrokerAlgoSpec</code> value
      */
-    private BrokerAlgoSpec generateAlgoSpec()
+    public static BrokerAlgoSpec generateAlgoSpec()
     {
         Set<BrokerAlgoTagSpec> tagSpecs = new HashSet<BrokerAlgoTagSpec>();
         Map<String,String> options = new HashMap<String,String>();
@@ -1110,7 +1110,7 @@ public class BrokerAlgoTest
      * @param inTagSpecs a <code>BrokerAlgoTagSpec[]</code> value
      * @return a <code>BrokerAlgoSpec</code> value
      */
-    private BrokerAlgoSpec generateAlgoSpec(BrokerAlgoTagSpec...inTagSpecs)
+    public static BrokerAlgoSpec generateAlgoSpec(BrokerAlgoTagSpec...inTagSpecs)
     {
         BrokerAlgoSpec spec = new BrokerAlgoSpec();
         spec.setName("Test broker algo-" + counter.incrementAndGet());
@@ -1125,7 +1125,7 @@ public class BrokerAlgoTest
      *
      * @return a <code>BrokerAlgoTagSpec</code> value
      */
-    private BrokerAlgoTagSpec generateTagSpec()
+    public static BrokerAlgoTagSpec generateTagSpec()
     {
         return generateTagSpec(tagValidator,
                                null);
@@ -1137,8 +1137,8 @@ public class BrokerAlgoTest
      * @param inOptions a <code>Map&lt;String,String&gt;</code> value
      * @return a <code>BrokerAlgoTagSpec</code> value
      */
-    private BrokerAlgoTagSpec generateTagSpec(Validator<BrokerAlgoTag> inValidator,
-                                              Map<String,String> inOptions)
+    public static BrokerAlgoTagSpec generateTagSpec(Validator<BrokerAlgoTag> inValidator,
+                                                    Map<String,String> inOptions)
     {
         BrokerAlgoTagSpec spec = new BrokerAlgoTagSpec();
         spec.setDescription("Test broker algo tag spec-" + counter.incrementAndGet());
@@ -1152,7 +1152,7 @@ public class BrokerAlgoTest
     /**
      * no-op broker algo validator
      */
-    private Validator<BrokerAlgo> algoValidator = new Validator<BrokerAlgo>() {
+    private static Validator<BrokerAlgo> algoValidator = new Validator<BrokerAlgo>() {
         @Override
         public void validate(BrokerAlgo inData)
         {
@@ -1161,7 +1161,7 @@ public class BrokerAlgoTest
     /**
      * no-op broker algo tag validator
      */
-    private Validator<BrokerAlgoTag> tagValidator = new Validator<BrokerAlgoTag>() {
+    private static Validator<BrokerAlgoTag> tagValidator = new Validator<BrokerAlgoTag>() {
         @Override
         public void validate(BrokerAlgoTag inData)
         {

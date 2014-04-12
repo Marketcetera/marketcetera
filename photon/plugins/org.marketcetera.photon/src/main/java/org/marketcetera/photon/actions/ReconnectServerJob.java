@@ -17,11 +17,11 @@ import org.marketcetera.client.BrokerStatusListener;
 import org.marketcetera.client.Client;
 import org.marketcetera.client.ClientInitException;
 import org.marketcetera.client.ClientManager;
-import org.marketcetera.client.ClientParameters;
 import org.marketcetera.client.ConnectionException;
-import org.marketcetera.client.RpcClientFactory;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.client.rpc.RpcClientFactory;
+import org.marketcetera.client.rpc.RpcClientParameters;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.notifications.ServerStatusListener;
@@ -104,12 +104,12 @@ public class ReconnectServerJob
             boolean success = credentialsService.authenticateWithCredentials(new IAuthenticationHelper() {
                 @Override
                 public boolean authenticate(ICredentials credentials) {
-                    final ClientParameters parameters = new ClientParameters(credentials.getUsername(),
-                                                                             credentials.getPassword() == null ? null : credentials.getPassword().toCharArray(),
-                                                                             url,
-                                                                             hostname,
-                                                                             port,
-                                                                             idPrefix);
+                    final RpcClientParameters parameters = new RpcClientParameters(credentials.getUsername(),
+                                                                                   credentials.getPassword() == null ? null : credentials.getPassword().toCharArray(),
+                                                                                   url,
+                                                                                   hostname,
+                                                                                   port,
+                                                                                   idPrefix);
                     IRunnableWithProgress op = new IRunnableWithProgress() {
                         @Override
                         public void run(IProgressMonitor monitor)
@@ -127,8 +127,8 @@ public class ReconnectServerJob
                                     ClientManager.getInstance().reconnect(parameters);
                                     client = ClientManager.getInstance();
                                 } else {
-//                                    // switch us to use the RPC client instead of the WS client
-//                                    ClientManager.setClientFactory(new RpcClientFactory());
+                                    // switch us to use the RPC client instead of the WS client
+                                    ClientManager.setClientFactory(new RpcClientFactory());
                                     // first time initialization
                                     ClientManager.init(parameters);
                                     client = ClientManager.getInstance();

@@ -1,4 +1,4 @@
-package org.marketcetera.client;
+package org.marketcetera.client.rpc;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelOption;
@@ -9,34 +9,43 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang.Validate;
-import org.marketcetera.client.RpcClient.BrokersStatusRequest;
-import org.marketcetera.client.RpcClient.BrokersStatusResponse;
-import org.marketcetera.client.RpcClient.Locale;
-import org.marketcetera.client.RpcClient.LoginRequest;
-import org.marketcetera.client.RpcClient.LoginResponse;
-import org.marketcetera.client.RpcClient.LogoutRequest;
-import org.marketcetera.client.RpcClient.NextOrderIdRequest;
-import org.marketcetera.client.RpcClient.NextOrderIdResponse;
-import org.marketcetera.client.RpcClient.OpenOrdersRequest;
-import org.marketcetera.client.RpcClient.OpenOrdersResponse;
-import org.marketcetera.client.RpcClient.ReportsSinceRequest;
-import org.marketcetera.client.RpcClient.ReportsSinceResponse;
-import org.marketcetera.client.RpcClient.RpcClientService;
-import org.marketcetera.client.RpcClient.RpcClientService.BlockingInterface;
+import org.marketcetera.client.Client;
+import org.marketcetera.client.ClientImpl;
+import org.marketcetera.client.ClientParameters;
+import org.marketcetera.client.ClientVersion;
+import org.marketcetera.client.ConnectionException;
+import org.marketcetera.client.Messages;
 import org.marketcetera.client.brokers.BrokerStatus;
 import org.marketcetera.client.brokers.BrokersStatus;
+import org.marketcetera.client.rpc.RpcClient.BrokersStatusRequest;
+import org.marketcetera.client.rpc.RpcClient.BrokersStatusResponse;
+import org.marketcetera.client.rpc.RpcClient.Locale;
+import org.marketcetera.client.rpc.RpcClient.LoginRequest;
+import org.marketcetera.client.rpc.RpcClient.LoginResponse;
+import org.marketcetera.client.rpc.RpcClient.LogoutRequest;
+import org.marketcetera.client.rpc.RpcClient.NextOrderIdRequest;
+import org.marketcetera.client.rpc.RpcClient.NextOrderIdResponse;
+import org.marketcetera.client.rpc.RpcClient.OpenOrdersRequest;
+import org.marketcetera.client.rpc.RpcClient.OpenOrdersResponse;
+import org.marketcetera.client.rpc.RpcClient.ReportsSinceRequest;
+import org.marketcetera.client.rpc.RpcClient.ReportsSinceResponse;
+import org.marketcetera.client.rpc.RpcClient.RpcClientService;
+import org.marketcetera.client.rpc.RpcClient.RpcClientService.BlockingInterface;
 import org.marketcetera.client.users.UserInfo;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.position.PositionKey;
@@ -73,12 +82,16 @@ import com.googlecode.protobuf.pro.duplex.execute.ThreadPoolCallExecutor;
 /* $License$ */
 
 /**
- *
+ * Provides an RPC implementation of {@link Client}.
+ * 
+ * <p>This client replaces the web services component of the standard client,
+ * not the JMS component.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since $Release$
  */
+@ThreadSafe
 @ClassVersion("$Id: UserInfo.java 16488 2013-02-26 02:54:25Z colin $")
 public class RpcClientImpl
         extends ClientImpl
@@ -228,16 +241,24 @@ public class RpcClientImpl
     public Instrument resolveSymbol(String inSymbol)
             throws ConnectionException
     {
-        // TODO test Equity
-        // TODO test Option
-        // TODO test Future
-        // TODO test Currency
         try {
+            SLF4JLoggerProxy.debug(this,
+                                   "Resolving {}",
+                                   inSymbol);
             RpcClient.ResolveSymbolResponse response = clientService.resolveSymbol(controller,
                                                                                    RpcClient.ResolveSymbolRequest.newBuilder().setSessionId(sessionId.getValue()).setSymbol(inSymbol).build());
-            synchronized(reportUnmarshaller) {
-                return (Instrument)reportUnmarshaller.unmarshal(new StringReader(response.getInstrument().getPayload()));
+            Instrument instrument = null;
+            if(response.hasInstrument()) {
+                synchronized(contextLock) {
+                    Unmarshaller unmarshaller = getUnmarshaller();
+                    instrument = (Instrument)unmarshaller.unmarshal(new StringReader(response.getInstrument().getPayload()));
+                }
+                SLF4JLoggerProxy.debug(this,
+                                       "Resolved {} to {}",
+                                       inSymbol,
+                                       instrument);
             }
+            return instrument;
         } catch (ServiceException | JAXBException e) {
             throw new ConnectionException(e,
                                           Messages.ERROR_REMOTE_EXECUTION);
@@ -268,11 +289,13 @@ public class RpcClientImpl
     {
         StringWriter output = new StringWriter();
         try {
-            synchronized(reportMarshaller) {
-                reportMarshaller.marshal(inReport,
-                                         output);
+            synchronized(contextLock) {
+                Marshaller marshaller = getMarshaller();
+                marshaller.marshal(inReport,
+                                   output);
             }
             RpcClient.AddReportRequest request = RpcClient.AddReportRequest.newBuilder()
+                    .setSessionId(sessionId.getValue())
                     .setBrokerId(inBrokerID.getValue())
                     .setMessage(output.toString()).build();
             SLF4JLoggerProxy.debug(this,
@@ -297,8 +320,9 @@ public class RpcClientImpl
     {
         StringWriter output = new StringWriter();
         try {
-            synchronized(reportMarshaller) {
-                reportMarshaller.marshal(inReport,
+            synchronized(contextLock) {
+                Marshaller marshaller = getMarshaller();
+                marshaller.marshal(inReport,
                                          output);
             }
             RpcClient.DeleteReportRequest request = RpcClient.DeleteReportRequest.newBuilder()
@@ -393,19 +417,22 @@ public class RpcClientImpl
     public ReportBase[] getReportsSince(Date inDate)
             throws ConnectionException
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Requesting reports since {}",
+                               inDate);
         ReportsSinceRequest request = RpcClient.ReportsSinceRequest.newBuilder().setSessionId(sessionId.getValue()).setOrigin(inDate.getTime()).build(); 
         try {
             ReportsSinceResponse response = clientService.getReportsSince(controller,
                                                                           request);
             List<ReportBase> reports = Lists.newArrayList();
             for(String report : response.getReports().getReportsList()) {
-                synchronized(reportUnmarshaller) {
-                    reports.add((ReportBase)reportUnmarshaller.unmarshal(new StringReader(report)));
+                synchronized(contextLock) {
+                    reports.add((ReportBase)getUnmarshaller().unmarshal(new StringReader(report)));
                 }
             }
-            // TODO test ER
-            // TODO test order cancel reject
-            // TODO test empty
+            SLF4JLoggerProxy.debug(this,
+                                   "Retrieved reports: {}",
+                                   reports);
             return reports.toArray(new ReportBase[reports.size()]);
         } catch (ServiceException | JAXBException e) {
             throw new ConnectionException(e,
@@ -419,17 +446,21 @@ public class RpcClientImpl
     public List<ReportBaseImpl> getOpenOrders()
             throws ConnectionException
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Requesting open orders");
         OpenOrdersRequest request = RpcClient.OpenOrdersRequest.newBuilder().setSessionId(sessionId.getValue()).build(); 
         try {
             OpenOrdersResponse response = clientService.getOpenOrders(controller,
                                                                       request);
             List<ReportBaseImpl> reports = Lists.newArrayList();
             for(String report : response.getReports().getReportsList()) {
-                synchronized(reportUnmarshaller) {
-                    reports.add((ReportBaseImpl)reportUnmarshaller.unmarshal(new StringReader(report)));
+                synchronized(contextLock) {
+                    reports.add((ReportBaseImpl)getUnmarshaller().unmarshal(new StringReader(report)));
                 }
             }
-            // TODO test order cancel reject
+            SLF4JLoggerProxy.debug(this,
+                                   "Retrieved open orders: {}",
+                                   reports);
             return reports;
         } catch (ServiceException | JAXBException e) {
             throw new ConnectionException(e,
@@ -468,35 +499,16 @@ public class RpcClientImpl
     @Override
     public synchronized void close()
     {
-        super.close();
         try {
-            try {
-                clientService.logout(controller,
-                                     LogoutRequest.newBuilder().setSessionId(sessionId.getValue()).build());
-            } catch (Exception ignored) {}
-            if(executor != null) {
-                try {
-                    executor.shutdownNow();
-                } catch (Exception ignored) {}
-            }
-            if(channel != null) {
-                try {
-                    channel.close();
-                } catch (Exception ignored) {}
-            }
-        } finally {
-            executor = null;
-            controller = null;
-            clientService = null;
-            channel = null;
-            sessionId = null;
-        }
+            super.close();
+        } catch (Exception ignored) {}
+        stopRpcServices();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.client.ClientImpl#getNextServerID()
      */
     @Override
-    String getNextServerID()
+    protected String getNextServerID()
             throws RemoteException
     {
         NextOrderIdRequest nextOrderIdRequest = NextOrderIdRequest.newBuilder().setSessionId(sessionId.getValue()).build();
@@ -515,12 +527,12 @@ public class RpcClientImpl
     protected void heartbeat()
             throws RemoteException
     {
-        RpcClient.HeartbeatRequest heartbeatRequest = RpcClient.HeartbeatRequest.newBuilder().setSessionId(sessionId.getValue()).setId(System.nanoTime()).build();
+        RpcClient.HeartbeatRequest request = RpcClient.HeartbeatRequest.newBuilder().setId(System.nanoTime()).build();
         try {
-            Validate.notNull(clientService.heartbeat(controller,
-                                                     heartbeatRequest));
+            clientService.heartbeat(controller,
+                                    request);
             return;
-        } catch (ServiceException e) {
+        } catch (Exception e) {
             throw new RemoteException(e);
         }
     }
@@ -528,7 +540,7 @@ public class RpcClientImpl
      * @see org.marketcetera.client.ClientImpl#getSessionId()
      */
     @Override
-    SessionId getSessionId()
+    protected SessionId getSessionId()
     {
         return sessionId;
     }
@@ -539,6 +551,10 @@ public class RpcClientImpl
     protected void connectWebServices()
             throws I18NException, RemoteException
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Connecting to RPC server at {}:{}",
+                               mParameters.getHostname(),
+                               mParameters.getPort());
         PeerInfo server = new PeerInfo(mParameters.getHostname(),
                                        mParameters.getPort());
         DuplexTcpClientPipelineFactory clientFactory = new DuplexTcpClientPipelineFactory();
@@ -564,11 +580,15 @@ public class RpcClientImpl
                                              bootstrap);
             clientService = RpcClientService.newBlockingStub(channel);
             controller = channel.newRpcController();
+            java.util.Locale currentLocale = java.util.Locale.getDefault();
             LoginRequest loginRequest = LoginRequest.newBuilder()
-                    .setAppId("Client/2.4.0") // TODO
-                    .setVersionId("1.0.0")
+                    .setAppId(ClientVersion.APP_ID.getValue())
+                    .setVersionId(ClientVersion.APP_ID_VERSION.getVersionInfo())
                     .setClientId(NodeId.generate().getValue())
-                    .setLocale(Locale.newBuilder().setCountry("US").setLanguage("en").build()) // TODO
+                    .setLocale(Locale.newBuilder()
+                               .setCountry(currentLocale.getCountry()==null?"":currentLocale.getCountry())
+                               .setLanguage(currentLocale.getLanguage()==null?"":currentLocale.getLanguage())
+                               .setVariant(currentLocale.getVariant()==null?"":currentLocale.getVariant()).build())
                     .setUsername(mParameters.getUsername())
                     .setPassword(new String(mParameters.getPassword())).build();
             LoginResponse loginResponse = clientService.login(controller,
@@ -578,13 +598,97 @@ public class RpcClientImpl
             throw new RemoteException(e);
         }
     }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.ClientImpl#reconnectWebServices()
+     */
+    @Override
+    protected void reconnectWebServices()
+            throws RemoteException
+    {
+        try {
+            stopRpcServices();
+        } catch (Exception ignored) {
+        }
+        connectWebServices();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.ClientImpl#closeWebServices()
+     */
+    @Override
+    protected void closeWebServices()
+            throws RemoteException
+    {
+        stopRpcServices();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.ClientImpl#connectJms()
+     */
+    @Override
+    protected void connectJms()
+            throws JAXBException
+    {
+        if(useJms()) {
+            super.connectJms();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.ClientImpl#startJms()
+     */
+    @Override
+    protected void startJms()
+            throws JAXBException
+    {
+        if(useJms()) {
+            super.startJms();
+        }
+    }
     /**
-     * 
+     * Indicates if the client should active JMS or not.
      *
+     * @return a <code>boolean</code> value
+     */
+    private boolean useJms()
+    {
+        if(mParameters instanceof RpcClientParameters) {
+            RpcClientParameters rpcParms = (RpcClientParameters)mParameters;
+            return rpcParms.getUseJms();
+        }
+        return true;
+    }
+    /**
+     * Stops RPC services.
+     */
+    private void stopRpcServices()
+    {
+        try {
+            try {
+                clientService.logout(controller,
+                                     LogoutRequest.newBuilder().setSessionId(sessionId.getValue()).build());
+            } catch (Exception ignored) {}
+            if(executor != null) {
+                try {
+                    executor.shutdownNow();
+                } catch (Exception ignored) {}
+            }
+            if(channel != null) {
+                try {
+                    channel.close();
+                } catch (Exception ignored) {}
+            }
+        } finally {
+            executor = null;
+            controller = null;
+            clientService = null;
+            channel = null;
+            sessionId = null;
+        }
+    }
+    /**
+     * Gets the position of the given instrument at the given point in time.
      *
-     * @param inDate
-     * @param inInstrument
-     * @return
+     * @param inDate a <code>Date</code> value
+     * @param inInstrument an <code>InstrumentClazz</code> value
+     * @return a <code>BigDecimal</code> value
      */
     private <InstrumentClazz extends Instrument> BigDecimal getInstrumentPositionAsOf(Date inDate,
                                                                                       InstrumentClazz inInstrument)
@@ -599,12 +703,12 @@ public class RpcClientImpl
         return positionMap.values().iterator().next();
     }
     /**
-     * 
+     * Gets the positions of all instruments of the given type at the given point in time.
      *
-     *
-     * @param inDate
-     * @param inInstrumentType
-     * @return
+     * @param inDate a <code>Date</code> value
+     * @param inInstrumentType an <code>RpcClient.InstrumentType</code> value or <code>null</code>
+     * @return a <code>Map&lt;PositionKey&lt;InstrumentClazz&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
      */
     private <InstrumentClazz extends Instrument> Map<PositionKey<InstrumentClazz>,BigDecimal> getAllInstrumentPositionsAsOf(Date inDate,
                                                                                                                             RpcClient.InstrumentType inInstrumentType)
@@ -614,12 +718,12 @@ public class RpcClientImpl
                                           null);
     }
     /**
-     * 
+     * Gets the positions of all options of the given roots at the given point in time.
      *
-     *
-     * @param inDate
-     * @param inOptionRoots
-     * @return
+     * @param inDate a <code>Date</code> value
+     * @param inOptionRoots a <code>String...</code> value
+     * @return a <code>Map&lt;PositionKey&lt;InstrumentClazz&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
      */
     private <InstrumentClazz extends Instrument> Map<PositionKey<InstrumentClazz>,BigDecimal> getAllInstrumentPositionsAsOf(Date inDate,
                                                                                                                             String...inOptionRoots)
@@ -630,20 +734,27 @@ public class RpcClientImpl
                                           inOptionRoots);
     }
     /**
-     * 
+     * Gets the positions of instrument or instruments as described by the parameters.
      *
-     *
-     * @param inDate
-     * @return
-     * @throws ConnectionException
+     * @param inDate a <code>Date</code> value
+     * @param inInstrumentType an <code>RpcClient.InstrumentType</code> value or <code>null</code>
+     * @param inInstrument an <code>Instrument</code> value or <code>null</code>
+     * @param inOptionRoots a <code>String...</code> value, may be empty
+     * @return a <code>Map&lt;PositionKey&lt;InstrumentClazz&gt;,BigDecimal&gt;</code> value
+     * @throws ConnectionException if an error occurs connecting to the server
      */
     @SuppressWarnings("unchecked")
     private <InstrumentClazz extends Instrument> Map<PositionKey<InstrumentClazz>,BigDecimal> getInstrumentPositionsAsOf(Date inDate,
                                                                                                                          RpcClient.InstrumentType inInstrumentType,
                                                                                                                          Instrument inInstrument,
                                                                                                                          String...inOptionRoots)
-            throws ConnectionException
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Getting instrument position as of {} for {}/{}/{}",
+                               inDate,
+                               inInstrumentType,
+                               inInstrument,
+                               inOptionRoots == null?"":Arrays.toString(inOptionRoots));
         try {
             RpcClient.PositionRequest request; 
             if(inInstrument == null) {
@@ -659,9 +770,9 @@ public class RpcClientImpl
             } else {
                 StringWriter output = new StringWriter();
                 try {
-                    synchronized(reportMarshaller) {
-                        reportMarshaller.marshal(inInstrument,
-                                                 output);
+                    synchronized(contextLock) {
+                        getMarshaller().marshal(inInstrument,
+                                                output);
                     }
                 } catch (JAXBException e) {
                     throw new ServiceException(e);
@@ -681,8 +792,8 @@ public class RpcClientImpl
                 String rpcAccount = rpcKey.getAccount();
                 String rpcTraderId = rpcKey.getTraderId();
                 Instrument instrument;
-                synchronized(reportUnmarshaller) {
-                    instrument = (Instrument)reportUnmarshaller.unmarshal(new StringReader(rpcInstrument.getPayload()));
+                synchronized(contextLock) {
+                    instrument = (Instrument)getUnmarshaller().unmarshal(new StringReader(rpcInstrument.getPayload()));
                 }
                 PositionKey<? extends Instrument> positionKey = null;
                 if(instrument instanceof Equity) {
@@ -714,13 +825,9 @@ public class RpcClientImpl
                 positions.put((PositionKey<InstrumentClazz>)positionKey,
                               new BigDecimal(response.getValues(index)));
             }
-            // TODO test equity position
-            // TODO test future position
-            // TODO test currency position
-            // TODO test option position
-            // TODO test no positions
-            // TODO test one position
-            // TODO test multiple positions
+            SLF4JLoggerProxy.debug(this,
+                                   "Returning positions: {}",
+                                   positions);
             return positions;
         } catch (ServiceException | JAXBException e) {
             throw new ConnectionException(e,
@@ -728,49 +835,103 @@ public class RpcClientImpl
         }
     }
     /**
-     * 
+     * Gets the list of context classes to use with the JAXB context.
+     *
+     * @return a <code>Class&lt;?&gt;[]</code> value
+     */
+    private Class<?>[] getContextClasses()
+    {
+        if(mParameters instanceof RpcClientParameters) {
+            RpcClientParameters params = (RpcClientParameters)mParameters;
+            if(params.getContextClassProvider() != null) {
+                return params.getContextClassProvider().getContextClasses();
+            }
+        }
+        return new Class<?>[0];
+    }
+    /**
+     * Gets the context marshaller.
+     *
+     * @return a <code>Marshaller</code> value
+     * @throws JAXBException if an error occurs creating the marshaller 
+     */
+    private Marshaller getMarshaller()
+            throws JAXBException
+    {
+        synchronized(contextLock) {
+            if(context == null) {
+                initContext();
+            }
+            return marshaller;
+        }
+    }
+    /**
+     * Gets the context unmarshaller.
+     *
+     * @return an <code>Unmarshaller</code> value
+     * @throws JAXBException if an error occurs creating the unmarshaller 
+     */
+    private Unmarshaller getUnmarshaller()
+            throws JAXBException
+    {
+        synchronized(contextLock) {
+            if(context == null) {
+                initContext();
+            }
+            return unmarshaller;
+        }
+    }
+    /**
+     * Initializes the marshalling/unmarshalling context.
+     *
+     * @throws JAXBException if an error occurs creating the unmarshaller 
+     */
+    private void initContext()
+            throws JAXBException
+    {
+        synchronized(contextLock) {
+            context = JAXBContext.newInstance(getContextClasses());
+            marshaller = context.createMarshaller();
+            unmarshaller = context.createUnmarshaller();
+        }
+    }
+    /**
+     * controller responsible for the RPC connection
      */
     private RpcController controller;
     /**
-     * 
+     * session ID value for this connection, may be <code>null</code> if the connection is inactive
      */
     private SessionId sessionId;
     /**
-     * 
+     * provides access to RPC services
      */
     private BlockingInterface clientService;
     /**
-     * 
+     * executes the nitty-gritty of the calls
      */
     private RpcServerCallExecutor executor;
     /**
-     * 
+     * channel over which calls are made
      */
     private RpcClientChannel channel;
     /**
-     * 
+     * guards access to JAXB context objects
      */
-    private static final JAXBContext reportContext;
+    private final Object contextLock = new Object();
     /**
-     * 
+     * context used to serialize and unserialize messages as necessary
      */
-    private static final Marshaller reportMarshaller;
+    @GuardedBy("contextLock")
+    private JAXBContext context;
     /**
-     * 
+     * marshals messages
      */
-    private static final Unmarshaller reportUnmarshaller;
+    @GuardedBy("contextLock")
+    private Marshaller marshaller;
     /**
-     * performs static initialization
+     * unmarshals messages
      */
-    static {
-        try {
-            reportContext = JAXBContext.newInstance(ReportBaseImpl.class,Instrument.class);
-            reportMarshaller = reportContext.createMarshaller();
-            reportUnmarshaller = reportContext.createUnmarshaller();
-        } catch (JAXBException e) {
-            SLF4JLoggerProxy.error(RpcClientImpl.class,
-                                   e);
-            throw new RuntimeException(e);
-        }
-    }
+    @GuardedBy("contextLock")
+    private Unmarshaller unmarshaller;
 }

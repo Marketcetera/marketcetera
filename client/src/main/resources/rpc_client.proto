@@ -1,7 +1,7 @@
-// protoc -I=src/main/resources --java_out=src/main/java src/main/resources/rcp_client.proto
+// protoc -I=src/main/resources --java_out=src/main/java src/main/resources/rpc_client.proto
 option java_generic_services = true;
 
-option java_package = "org.marketcetera.client";
+option java_package = "org.marketcetera.client.rpc";
 option java_outer_classname = "RpcClient";
 
 message LoginRequest {
@@ -94,7 +94,7 @@ message ReportList {
 
 message PositionRequest {
     required string sessionId = 1;
-    required InstrumentType instrumentType = 2;
+    optional InstrumentType instrumentType = 2;
     optional Instrument instrument = 3;
     required int64 origin = 4 [default = -1];
     repeated string root = 5;
@@ -106,8 +106,7 @@ message PositionResponse {
 }
 
 message HeartbeatRequest {
-    required string sessionId = 1;
-    required int64 id = 2;
+    required int64 id = 1;
 }
 
 message HeartbeatResponse {
@@ -129,7 +128,7 @@ message Position {
 message PositionKey {
     required Instrument instrument = 1;
     optional string account = 2;
-    required string traderId = 3;
+    optional string traderId = 3;
 }
 
 message Instrument {
@@ -177,7 +176,7 @@ message ResolveSymbolRequest {
 }
 
 message ResolveSymbolResponse {
-    required Instrument instrument = 1;
+    optional Instrument instrument = 1;
 }
 
 message RootOrderIdRequest {
