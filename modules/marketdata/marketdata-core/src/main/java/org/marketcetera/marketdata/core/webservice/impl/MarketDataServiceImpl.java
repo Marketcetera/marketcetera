@@ -1,6 +1,11 @@
 package org.marketcetera.marketdata.core.webservice.impl;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +25,7 @@ import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.manager.MarketDataManager;
+import org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.MarketDataService;
 import org.marketcetera.marketdata.core.webservice.PageRequest;
@@ -27,7 +33,12 @@ import org.marketcetera.marketdata.core.webservice.UnknownRequestException;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateful.*;
+import org.marketcetera.util.ws.stateful.ClientContext;
+import org.marketcetera.util.ws.stateful.RemoteCaller;
+import org.marketcetera.util.ws.stateful.ServerProvider;
+import org.marketcetera.util.ws.stateful.ServiceBaseImpl;
+import org.marketcetera.util.ws.stateful.SessionHolder;
+import org.marketcetera.util.ws.stateful.SessionManager;
 import org.marketcetera.util.ws.stateless.ServiceInterface;
 import org.marketcetera.util.ws.wrappers.RemoteException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +60,7 @@ import com.google.common.collect.Maps;
 @ClassVersion("$Id$")
 public class MarketDataServiceImpl
         extends ServiceBaseImpl<Object>
-        implements MarketDataService,Lifecycle
+        implements MarketDataService,Lifecycle,MarketDataServiceAdapter
 {
     /**
      * Create a new MarketDataWebServiceImpl instance.
@@ -101,12 +112,8 @@ public class MarketDataServiceImpl
                                        inContext.getSessionId(),
                                        inRequest);
                 checkConnection();
-                ServiceSubscriber subscriber = new ServiceSubscriber(inStreamEvents);
-                long requestId = marketDataManager.requestMarketData(inRequest,
-                                                                     subscriber);
-                subscriber.setRequestId(requestId);
-                subscribersByRequestId.put(requestId,
-                                           subscriber);
+                long requestId = doRequest(inRequest,
+                                           inStreamEvents);
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {} for {}",
                                        inContext,
@@ -115,6 +122,16 @@ public class MarketDataServiceImpl
                 return requestId;
             }
         }.execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#request(org.marketcetera.marketdata.MarketDataRequest, boolean)
+     */
+    @Override
+    public long request(MarketDataRequest inRequest,
+                        boolean inStreamEvents)
+    {
+        return doRequest(inRequest,
+                         inStreamEvents);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataService#getAllEvents(org.marketcetera.util.ws.stateful.ClientContext, java.util.List)
@@ -175,6 +192,14 @@ public class MarketDataServiceImpl
         }.execute(inContext);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getEvents(long)
+     */
+    @Override
+    public Deque<Event> getEvents(long inRequestId)
+    {
+        return doGetEvents(inRequestId);
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataService#getLastUpdate(org.marketcetera.util.ws.stateful.ClientContext, long)
      */
     @Override
@@ -193,11 +218,7 @@ public class MarketDataServiceImpl
                                        inContext.getSessionId(),
                                        inRequestId);
                 checkConnection();
-                ServiceSubscriber subscriber = subscribersByRequestId.get(inRequestId);
-                if(subscriber == null) {
-                    throw new UnknownRequestException(inRequestId);
-                }
-                long timestamp = subscriber.getUpdateTimestamp();
+                long timestamp = doGetLastUpdate(inRequestId);
                 SLF4JLoggerProxy.debug(this,
                                        "{} returning {} for {}",
                                        inContext.getSessionId(),
@@ -206,6 +227,14 @@ public class MarketDataServiceImpl
                 return timestamp;
             }
         }.execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getLastUpdate(long)
+     */
+    @Override
+    public long getLastUpdate(long inId)
+    {
+        return doGetLastUpdate(inId);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataService#heartbeat(org.marketcetera.util.ws.stateful.ClientContext)
@@ -325,6 +354,14 @@ public class MarketDataServiceImpl
         }.execute(inContext);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#cancel(long)
+     */
+    @Override
+    public void cancel(long inRequestId)
+    {
+        doCancel(inRequestId);
+    }
+    /* (non-Javadoc)
      * @see org.springframework.context.Lifecycle#isRunning()
      */
     @Override
@@ -442,6 +479,41 @@ public class MarketDataServiceImpl
     public void setMaxSubscriptionInterval(long inMaxSubscriptionInterval)
     {
         maxSubscriptionInterval = inMaxSubscriptionInterval;
+    }
+    /**
+     * 
+     *
+     *
+     * @param inRequest
+     * @param inStreamEvents
+     * @return
+     */
+    private long doRequest(MarketDataRequest inRequest,
+                           boolean inStreamEvents)
+    {
+        ServiceSubscriber subscriber = new ServiceSubscriber(inStreamEvents);
+        long requestId = marketDataManager.requestMarketData(inRequest,
+                                                             subscriber);
+        subscriber.setRequestId(requestId);
+        subscribersByRequestId.put(requestId,
+                                   subscriber);
+        return requestId;
+    }
+    /**
+     * 
+     *
+     *
+     * @param inRequestId
+     * @return
+     */
+    private long doGetLastUpdate(long inRequestId)
+    {
+        ServiceSubscriber subscriber = subscribersByRequestId.get(inRequestId);
+        if(subscriber == null) {
+            throw new UnknownRequestException(inRequestId);
+        }
+        long timestamp = subscriber.getUpdateTimestamp();
+        return timestamp;
     }
     /**
      * Retrieves the events for the given request.

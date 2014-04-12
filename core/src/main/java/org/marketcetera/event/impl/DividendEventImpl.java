@@ -27,7 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
-@XmlRootElement(name="dividend")
+@XmlRootElement(name="dividendEvent")
 @XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public class DividendEventImpl

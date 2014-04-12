@@ -1,0 +1,101 @@
+// protoc -I=src/main/resources --java_out=src/main/java src/main/resources/rpc_mdata.proto
+option java_generic_services = true;
+
+option java_package = "org.marketcetera.marketdata.core.rpc";
+option java_outer_classname = "RpcMarketdata";
+
+message LoginRequest {
+    required string appId = 1;
+    required string clientId = 2;
+    required Locale locale = 3;
+    required string versionId = 4;
+    required string username = 5;
+    required string password = 6;
+}
+
+message Locale {
+    required string country = 1;
+    required string language = 2;
+    optional string variant = 3;
+}
+
+message LoginResponse {
+    required string sessionId = 1;
+}
+
+message LogoutRequest {
+    required string sessionId = 1;
+}
+
+message LogoutResponse {
+    required bool status = 1;
+}
+
+message HeartbeatRequest {
+    required int64 id = 1;
+}
+
+message HeartbeatResponse {
+    required int64 id = 1;
+}
+
+enum InstrumentType {
+    EQUITY = 0;
+    OPTION = 1;
+    FUTURE = 2;
+    CURRENCY = 3;
+}
+
+message Instrument {
+    required string payload = 1;
+}
+
+message MarketDataRequest {
+    required string sessionId = 1;
+    required string request = 2;
+    required bool streamEvents = 3;
+}
+
+message MarketDataResponse {
+    required int64 id = 1;
+}
+
+message LastUpdateRequest {
+    required string sessionId = 1;
+    required int64 id = 2;
+}
+
+message LastUpdateResponse {
+    required int64 timestamp = 1;
+}
+
+message CancelRequest {
+    required string sessionId = 1;
+    required int64 id = 2;
+}
+
+message CancelResponse {
+}
+
+message Event {
+    required string payload = 1;
+}
+
+message EventsRequest {
+    required string sessionId = 1;
+    required int64 id = 2;
+}
+
+message EventsResponse {
+    repeated string payload = 1;
+}
+
+service RpcClientService {
+    rpc login(LoginRequest) returns (LoginResponse);
+    rpc logout(LogoutRequest) returns (LogoutResponse);
+    rpc heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc request(MarketDataRequest) returns (MarketDataResponse);
+    rpc getLastUpdate(LastUpdateRequest) returns (LastUpdateResponse);
+    rpc cancel(CancelRequest) returns (CancelResponse);
+    rpc getEvents(EventsRequest) returns (EventsResponse);
+}

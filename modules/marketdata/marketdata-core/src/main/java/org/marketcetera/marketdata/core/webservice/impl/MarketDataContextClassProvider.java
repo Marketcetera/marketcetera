@@ -1,13 +1,33 @@
 package org.marketcetera.marketdata.core.webservice.impl;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.marketcetera.event.impl.*;
+import org.marketcetera.event.impl.ConvertibleBondAskEventImpl;
+import org.marketcetera.event.impl.ConvertibleBondBidEventImpl;
+import org.marketcetera.event.impl.ConvertibleBondImbalanceEvent;
+import org.marketcetera.event.impl.ConvertibleBondMarketstatEventImpl;
+import org.marketcetera.event.impl.ConvertibleBondTradeEventImpl;
+import org.marketcetera.event.impl.CurrencyAskEventImpl;
+import org.marketcetera.event.impl.CurrencyBidEventImpl;
+import org.marketcetera.event.impl.CurrencyImbalanceEvent;
+import org.marketcetera.event.impl.CurrencyMarketstatEventImpl;
+import org.marketcetera.event.impl.CurrencyTradeEventImpl;
+import org.marketcetera.event.impl.DividendEventImpl;
+import org.marketcetera.event.impl.EquityAskEventImpl;
+import org.marketcetera.event.impl.EquityBidEventImpl;
+import org.marketcetera.event.impl.EquityImbalanceEvent;
+import org.marketcetera.event.impl.EquityMarketstatEventImpl;
+import org.marketcetera.event.impl.EquityTradeEventImpl;
+import org.marketcetera.event.impl.FutureAskEventImpl;
+import org.marketcetera.event.impl.FutureBidEventImpl;
+import org.marketcetera.event.impl.FutureImbalanceEvent;
+import org.marketcetera.event.impl.FutureMarketstatEventImpl;
+import org.marketcetera.event.impl.FutureTradeEventImpl;
+import org.marketcetera.event.impl.OptionAskEventImpl;
+import org.marketcetera.event.impl.OptionBidEventImpl;
+import org.marketcetera.event.impl.OptionImbalanceEvent;
+import org.marketcetera.event.impl.OptionMarketstatEventImpl;
+import org.marketcetera.event.impl.OptionTradeEventImpl;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
-
-import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -28,35 +48,12 @@ public class MarketDataContextClassProvider
     @Override
     public Class<?>[] getContextClasses()
     {
-        if(additionalClasses != null && !additionalClasses.isEmpty()) {
-            List<Class<?>> allClasses = Lists.newArrayList(additionalClasses);
-            allClasses.addAll(Arrays.asList(EVENT_CLASSES));
-            return allClasses.toArray(new Class<?>[allClasses.size()]);
-        }
         return EVENT_CLASSES;
     }
     /**
-     * Get the additionalClasses value.
-     *
-     * @return a <code>List&lt;Class&lt;?&gt;&gt;</code> value
+     * static instance
      */
-    public List<Class<?>> getAdditionalClasses()
-    {
-        return additionalClasses;
-    }
-    /**
-     * Sets the additionalClasses value.
-     *
-     * @param inAdditionalClasses a <code>List&lt;Class&lt;?&gt;&gt;</code> value
-     */
-    public void setAdditionalClasses(List<Class<?>> inAdditionalClasses)
-    {
-        additionalClasses = inAdditionalClasses;
-    }
-    /**
-     * additional classes to provide, may be empty
-     */
-    private List<Class<?>> additionalClasses = Lists.newArrayList();
+    public static final MarketDataContextClassProvider INSTANCE = new MarketDataContextClassProvider();
     /**
      * list of event classes
      */
