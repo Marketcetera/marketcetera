@@ -3,6 +3,7 @@
 
 package org.marketcetera.marketdata.core.rpc;
 
+@SuppressWarnings("unused")
 public final class RpcMarketdata {
   private RpcMarketdata() {}
   public static void registerAllExtensions(
@@ -106,6 +107,196 @@ public final class RpcMarketdata {
     }
 
     // @@protoc_insertion_point(enum_scope:InstrumentType)
+  }
+
+  /**
+   * Protobuf enum {@code ContentAndCapability}
+   */
+  public enum ContentAndCapability
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>TOP_OF_BOOK = 0;</code>
+     */
+    TOP_OF_BOOK(0, 0),
+    /**
+     * <code>OPEN_BOOK = 1;</code>
+     */
+    OPEN_BOOK(1, 1),
+    /**
+     * <code>MARKET_STAT = 2;</code>
+     */
+    MARKET_STAT(2, 2),
+    /**
+     * <code>TOTAL_VIEW = 3;</code>
+     */
+    TOTAL_VIEW(3, 3),
+    /**
+     * <code>LEVEL_2 = 4;</code>
+     */
+    LEVEL_2(4, 4),
+    /**
+     * <code>LATEST_TICK = 5;</code>
+     */
+    LATEST_TICK(5, 5),
+    /**
+     * <code>BBO10 = 6;</code>
+     */
+    BBO10(6, 6),
+    /**
+     * <code>NBBO = 7;</code>
+     */
+    NBBO(7, 7),
+    /**
+     * <code>DIVIDEND = 8;</code>
+     */
+    DIVIDEND(8, 8),
+    /**
+     * <code>AGGREGATED_DEPTH = 9;</code>
+     */
+    AGGREGATED_DEPTH(9, 9),
+    /**
+     * <code>UNAGGREGATED_DEPTH = 10;</code>
+     */
+    UNAGGREGATED_DEPTH(10, 10),
+    /**
+     * <code>IMBALANCE = 11;</code>
+     */
+    IMBALANCE(11, 11),
+    /**
+     * <code>UNKNOWN = 12;</code>
+     */
+    UNKNOWN(12, 12),
+    /**
+     * <code>EVENT_BOUNDARY = 13;</code>
+     */
+    EVENT_BOUNDARY(13, 13),
+    ;
+
+    /**
+     * <code>TOP_OF_BOOK = 0;</code>
+     */
+    public static final int TOP_OF_BOOK_VALUE = 0;
+    /**
+     * <code>OPEN_BOOK = 1;</code>
+     */
+    public static final int OPEN_BOOK_VALUE = 1;
+    /**
+     * <code>MARKET_STAT = 2;</code>
+     */
+    public static final int MARKET_STAT_VALUE = 2;
+    /**
+     * <code>TOTAL_VIEW = 3;</code>
+     */
+    public static final int TOTAL_VIEW_VALUE = 3;
+    /**
+     * <code>LEVEL_2 = 4;</code>
+     */
+    public static final int LEVEL_2_VALUE = 4;
+    /**
+     * <code>LATEST_TICK = 5;</code>
+     */
+    public static final int LATEST_TICK_VALUE = 5;
+    /**
+     * <code>BBO10 = 6;</code>
+     */
+    public static final int BBO10_VALUE = 6;
+    /**
+     * <code>NBBO = 7;</code>
+     */
+    public static final int NBBO_VALUE = 7;
+    /**
+     * <code>DIVIDEND = 8;</code>
+     */
+    public static final int DIVIDEND_VALUE = 8;
+    /**
+     * <code>AGGREGATED_DEPTH = 9;</code>
+     */
+    public static final int AGGREGATED_DEPTH_VALUE = 9;
+    /**
+     * <code>UNAGGREGATED_DEPTH = 10;</code>
+     */
+    public static final int UNAGGREGATED_DEPTH_VALUE = 10;
+    /**
+     * <code>IMBALANCE = 11;</code>
+     */
+    public static final int IMBALANCE_VALUE = 11;
+    /**
+     * <code>UNKNOWN = 12;</code>
+     */
+    public static final int UNKNOWN_VALUE = 12;
+    /**
+     * <code>EVENT_BOUNDARY = 13;</code>
+     */
+    public static final int EVENT_BOUNDARY_VALUE = 13;
+
+
+    public final int getNumber() { return value; }
+
+    public static ContentAndCapability valueOf(int value) {
+      switch (value) {
+        case 0: return TOP_OF_BOOK;
+        case 1: return OPEN_BOOK;
+        case 2: return MARKET_STAT;
+        case 3: return TOTAL_VIEW;
+        case 4: return LEVEL_2;
+        case 5: return LATEST_TICK;
+        case 6: return BBO10;
+        case 7: return NBBO;
+        case 8: return DIVIDEND;
+        case 9: return AGGREGATED_DEPTH;
+        case 10: return UNAGGREGATED_DEPTH;
+        case 11: return IMBALANCE;
+        case 12: return UNKNOWN;
+        case 13: return EVENT_BOUNDARY;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<ContentAndCapability>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<ContentAndCapability>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<ContentAndCapability>() {
+            public ContentAndCapability findValueByNumber(int number) {
+              return ContentAndCapability.valueOf(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final ContentAndCapability[] VALUES = values();
+
+    public static ContentAndCapability valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int index;
+    private final int value;
+
+    private ContentAndCapability(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:ContentAndCapability)
   }
 
   public interface LoginRequestOrBuilder
@@ -8934,22 +9125,32 @@ public final class RpcMarketdata {
   public interface EventsResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // repeated string payload = 1;
+    // required int64 id = 1;
     /**
-     * <code>repeated string payload = 1;</code>
+     * <code>required int64 id = 1;</code>
+     */
+    boolean hasId();
+    /**
+     * <code>required int64 id = 1;</code>
+     */
+    long getId();
+
+    // repeated string payload = 2;
+    /**
+     * <code>repeated string payload = 2;</code>
      */
     java.util.List<java.lang.String>
     getPayloadList();
     /**
-     * <code>repeated string payload = 1;</code>
+     * <code>repeated string payload = 2;</code>
      */
     int getPayloadCount();
     /**
-     * <code>repeated string payload = 1;</code>
+     * <code>repeated string payload = 2;</code>
      */
     java.lang.String getPayload(int index);
     /**
-     * <code>repeated string payload = 1;</code>
+     * <code>repeated string payload = 2;</code>
      */
     com.google.protobuf.ByteString
         getPayloadBytes(int index);
@@ -9005,10 +9206,15 @@ public final class RpcMarketdata {
               }
               break;
             }
-            case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+            case 8: {
+              bitField0_ |= 0x00000001;
+              id_ = input.readInt64();
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                 payload_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
+                mutable_bitField0_ |= 0x00000002;
               }
               payload_.add(input.readBytes());
               break;
@@ -9021,7 +9227,7 @@ public final class RpcMarketdata {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
           payload_ = new com.google.protobuf.UnmodifiableLazyStringList(payload_);
         }
         this.unknownFields = unknownFields.build();
@@ -9055,30 +9261,47 @@ public final class RpcMarketdata {
       return PARSER;
     }
 
-    // repeated string payload = 1;
-    public static final int PAYLOAD_FIELD_NUMBER = 1;
+    private int bitField0_;
+    // required int64 id = 1;
+    public static final int ID_FIELD_NUMBER = 1;
+    private long id_;
+    /**
+     * <code>required int64 id = 1;</code>
+     */
+    public boolean hasId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int64 id = 1;</code>
+     */
+    public long getId() {
+      return id_;
+    }
+
+    // repeated string payload = 2;
+    public static final int PAYLOAD_FIELD_NUMBER = 2;
     private com.google.protobuf.LazyStringList payload_;
     /**
-     * <code>repeated string payload = 1;</code>
+     * <code>repeated string payload = 2;</code>
      */
     public java.util.List<java.lang.String>
         getPayloadList() {
       return payload_;
     }
     /**
-     * <code>repeated string payload = 1;</code>
+     * <code>repeated string payload = 2;</code>
      */
     public int getPayloadCount() {
       return payload_.size();
     }
     /**
-     * <code>repeated string payload = 1;</code>
+     * <code>repeated string payload = 2;</code>
      */
     public java.lang.String getPayload(int index) {
       return payload_.get(index);
     }
     /**
-     * <code>repeated string payload = 1;</code>
+     * <code>repeated string payload = 2;</code>
      */
     public com.google.protobuf.ByteString
         getPayloadBytes(int index) {
@@ -9086,6 +9309,7 @@ public final class RpcMarketdata {
     }
 
     private void initFields() {
+      id_ = 0L;
       payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     }
     private byte memoizedIsInitialized = -1;
@@ -9093,6 +9317,10 @@ public final class RpcMarketdata {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
+      if (!hasId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -9100,8 +9328,11 @@ public final class RpcMarketdata {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt64(1, id_);
+      }
       for (int i = 0; i < payload_.size(); i++) {
-        output.writeBytes(1, payload_.getByteString(i));
+        output.writeBytes(2, payload_.getByteString(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -9112,6 +9343,10 @@ public final class RpcMarketdata {
       if (size != -1) return size;
 
       size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(1, id_);
+      }
       {
         int dataSize = 0;
         for (int i = 0; i < payload_.size(); i++) {
@@ -9237,8 +9472,10 @@ public final class RpcMarketdata {
 
       public Builder clear() {
         super.clear();
-        payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        id_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000001);
+        payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -9266,12 +9503,18 @@ public final class RpcMarketdata {
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse buildPartial() {
         org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse(this);
         int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.id_ = id_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           payload_ = new com.google.protobuf.UnmodifiableLazyStringList(
               payload_);
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.payload_ = payload_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -9287,6 +9530,2806 @@ public final class RpcMarketdata {
 
       public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse other) {
         if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.getDefaultInstance()) return this;
+        if (other.hasId()) {
+          setId(other.getId());
+        }
+        if (!other.payload_.isEmpty()) {
+          if (payload_.isEmpty()) {
+            payload_ = other.payload_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensurePayloadIsMutable();
+            payload_.addAll(other.payload_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasId()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required int64 id = 1;
+      private long id_ ;
+      /**
+       * <code>required int64 id = 1;</code>
+       */
+      public boolean hasId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required int64 id = 1;</code>
+       */
+      public long getId() {
+        return id_;
+      }
+      /**
+       * <code>required int64 id = 1;</code>
+       */
+      public Builder setId(long value) {
+        bitField0_ |= 0x00000001;
+        id_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int64 id = 1;</code>
+       */
+      public Builder clearId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // repeated string payload = 2;
+      private com.google.protobuf.LazyStringList payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensurePayloadIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          payload_ = new com.google.protobuf.LazyStringArrayList(payload_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public java.util.List<java.lang.String>
+          getPayloadList() {
+        return java.util.Collections.unmodifiableList(payload_);
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public int getPayloadCount() {
+        return payload_.size();
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public java.lang.String getPayload(int index) {
+        return payload_.get(index);
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPayloadBytes(int index) {
+        return payload_.getByteString(index);
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public Builder setPayload(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePayloadIsMutable();
+        payload_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public Builder addPayload(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePayloadIsMutable();
+        payload_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public Builder addAllPayload(
+          java.lang.Iterable<java.lang.String> values) {
+        ensurePayloadIsMutable();
+        super.addAll(values, payload_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public Builder clearPayload() {
+        payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string payload = 2;</code>
+       */
+      public Builder addPayloadBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePayloadIsMutable();
+        payload_.add(value);
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:EventsResponse)
+    }
+
+    static {
+      defaultInstance = new EventsResponse(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:EventsResponse)
+  }
+
+  public interface AllEventsRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string sessionId = 1;
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    boolean hasSessionId();
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    java.lang.String getSessionId();
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getSessionIdBytes();
+
+    // repeated int64 id = 2;
+    /**
+     * <code>repeated int64 id = 2;</code>
+     */
+    java.util.List<java.lang.Long> getIdList();
+    /**
+     * <code>repeated int64 id = 2;</code>
+     */
+    int getIdCount();
+    /**
+     * <code>repeated int64 id = 2;</code>
+     */
+    long getId(int index);
+  }
+  /**
+   * Protobuf type {@code AllEventsRequest}
+   */
+  public static final class AllEventsRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements AllEventsRequestOrBuilder {
+    // Use AllEventsRequest.newBuilder() to construct.
+    private AllEventsRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private AllEventsRequest(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final AllEventsRequest defaultInstance;
+    public static AllEventsRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public AllEventsRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private AllEventsRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              sessionId_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                id_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              id_.add(input.readInt64());
+              break;
+            }
+            case 18: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002) && input.getBytesUntilLimit() > 0) {
+                id_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                id_.add(input.readInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          id_ = java.util.Collections.unmodifiableList(id_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsRequest_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<AllEventsRequest> PARSER =
+        new com.google.protobuf.AbstractParser<AllEventsRequest>() {
+      public AllEventsRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new AllEventsRequest(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<AllEventsRequest> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string sessionId = 1;
+    public static final int SESSIONID_FIELD_NUMBER = 1;
+    private java.lang.Object sessionId_;
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public boolean hasSessionId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public java.lang.String getSessionId() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sessionId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSessionIdBytes() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sessionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // repeated int64 id = 2;
+    public static final int ID_FIELD_NUMBER = 2;
+    private java.util.List<java.lang.Long> id_;
+    /**
+     * <code>repeated int64 id = 2;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getIdList() {
+      return id_;
+    }
+    /**
+     * <code>repeated int64 id = 2;</code>
+     */
+    public int getIdCount() {
+      return id_.size();
+    }
+    /**
+     * <code>repeated int64 id = 2;</code>
+     */
+    public long getId(int index) {
+      return id_.get(index);
+    }
+
+    private void initFields() {
+      sessionId_ = "";
+      id_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasSessionId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getSessionIdBytes());
+      }
+      for (int i = 0; i < id_.size(); i++) {
+        output.writeInt64(2, id_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getSessionIdBytes());
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < id_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt64SizeNoTag(id_.get(i));
+        }
+        size += dataSize;
+        size += 1 * getIdList().size();
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code AllEventsRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsRequest_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        sessionId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        id_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsRequest_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.sessionId_ = sessionId_;
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          id_ = java.util.Collections.unmodifiableList(id_);
+          bitField0_ = (bitField0_ & ~0x00000002);
+        }
+        result.id_ = id_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.getDefaultInstance()) return this;
+        if (other.hasSessionId()) {
+          bitField0_ |= 0x00000001;
+          sessionId_ = other.sessionId_;
+          onChanged();
+        }
+        if (!other.id_.isEmpty()) {
+          if (id_.isEmpty()) {
+            id_ = other.id_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureIdIsMutable();
+            id_.addAll(other.id_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasSessionId()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string sessionId = 1;
+      private java.lang.Object sessionId_ = "";
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public boolean hasSessionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public java.lang.String getSessionId() {
+        java.lang.Object ref = sessionId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sessionId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSessionIdBytes() {
+        java.lang.Object ref = sessionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sessionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder setSessionId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder clearSessionId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        sessionId_ = getDefaultInstance().getSessionId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder setSessionIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+
+      // repeated int64 id = 2;
+      private java.util.List<java.lang.Long> id_ = java.util.Collections.emptyList();
+      private void ensureIdIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          id_ = new java.util.ArrayList<java.lang.Long>(id_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+      /**
+       * <code>repeated int64 id = 2;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getIdList() {
+        return java.util.Collections.unmodifiableList(id_);
+      }
+      /**
+       * <code>repeated int64 id = 2;</code>
+       */
+      public int getIdCount() {
+        return id_.size();
+      }
+      /**
+       * <code>repeated int64 id = 2;</code>
+       */
+      public long getId(int index) {
+        return id_.get(index);
+      }
+      /**
+       * <code>repeated int64 id = 2;</code>
+       */
+      public Builder setId(
+          int index, long value) {
+        ensureIdIsMutable();
+        id_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 id = 2;</code>
+       */
+      public Builder addId(long value) {
+        ensureIdIsMutable();
+        id_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 id = 2;</code>
+       */
+      public Builder addAllId(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureIdIsMutable();
+        super.addAll(values, id_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 id = 2;</code>
+       */
+      public Builder clearId() {
+        id_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:AllEventsRequest)
+    }
+
+    static {
+      defaultInstance = new AllEventsRequest(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:AllEventsRequest)
+  }
+
+  public interface AllEventsResponseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // repeated .EventsResponse events = 1;
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> 
+        getEventsList();
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse getEvents(int index);
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    int getEventsCount();
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    java.util.List<? extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder> 
+        getEventsOrBuilderList();
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder getEventsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code AllEventsResponse}
+   */
+  public static final class AllEventsResponse extends
+      com.google.protobuf.GeneratedMessage
+      implements AllEventsResponseOrBuilder {
+    // Use AllEventsResponse.newBuilder() to construct.
+    private AllEventsResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private AllEventsResponse(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final AllEventsResponse defaultInstance;
+    public static AllEventsResponse getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public AllEventsResponse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private AllEventsResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                events_ = new java.util.ArrayList<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              events_.add(input.readMessage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.PARSER, extensionRegistry));
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          events_ = java.util.Collections.unmodifiableList(events_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsResponse_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<AllEventsResponse> PARSER =
+        new com.google.protobuf.AbstractParser<AllEventsResponse>() {
+      public AllEventsResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new AllEventsResponse(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<AllEventsResponse> getParserForType() {
+      return PARSER;
+    }
+
+    // repeated .EventsResponse events = 1;
+    public static final int EVENTS_FIELD_NUMBER = 1;
+    private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> events_;
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    public java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> getEventsList() {
+      return events_;
+    }
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    public java.util.List<? extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder> 
+        getEventsOrBuilderList() {
+      return events_;
+    }
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    public int getEventsCount() {
+      return events_.size();
+    }
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse getEvents(int index) {
+      return events_.get(index);
+    }
+    /**
+     * <code>repeated .EventsResponse events = 1;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder getEventsOrBuilder(
+        int index) {
+      return events_.get(index);
+    }
+
+    private void initFields() {
+      events_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      for (int i = 0; i < getEventsCount(); i++) {
+        if (!getEvents(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < events_.size(); i++) {
+        output.writeMessage(1, events_.get(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < events_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, events_.get(i));
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code AllEventsResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsResponse_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getEventsFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        if (eventsBuilder_ == null) {
+          events_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          eventsBuilder_.clear();
+        }
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AllEventsResponse_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse(this);
+        int from_bitField0_ = bitField0_;
+        if (eventsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            events_ = java.util.Collections.unmodifiableList(events_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.events_ = events_;
+        } else {
+          result.events_ = eventsBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.getDefaultInstance()) return this;
+        if (eventsBuilder_ == null) {
+          if (!other.events_.isEmpty()) {
+            if (events_.isEmpty()) {
+              events_ = other.events_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEventsIsMutable();
+              events_.addAll(other.events_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.events_.isEmpty()) {
+            if (eventsBuilder_.isEmpty()) {
+              eventsBuilder_.dispose();
+              eventsBuilder_ = null;
+              events_ = other.events_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              eventsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getEventsFieldBuilder() : null;
+            } else {
+              eventsBuilder_.addAllMessages(other.events_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        for (int i = 0; i < getEventsCount(); i++) {
+          if (!getEvents(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // repeated .EventsResponse events = 1;
+      private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> events_ =
+        java.util.Collections.emptyList();
+      private void ensureEventsIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          events_ = new java.util.ArrayList<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse>(events_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder> eventsBuilder_;
+
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> getEventsList() {
+        if (eventsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(events_);
+        } else {
+          return eventsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public int getEventsCount() {
+        if (eventsBuilder_ == null) {
+          return events_.size();
+        } else {
+          return eventsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse getEvents(int index) {
+        if (eventsBuilder_ == null) {
+          return events_.get(index);
+        } else {
+          return eventsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder setEvents(
+          int index, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse value) {
+        if (eventsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventsIsMutable();
+          events_.set(index, value);
+          onChanged();
+        } else {
+          eventsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder setEvents(
+          int index, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder builderForValue) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          events_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          eventsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder addEvents(org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse value) {
+        if (eventsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventsIsMutable();
+          events_.add(value);
+          onChanged();
+        } else {
+          eventsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder addEvents(
+          int index, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse value) {
+        if (eventsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventsIsMutable();
+          events_.add(index, value);
+          onChanged();
+        } else {
+          eventsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder addEvents(
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder builderForValue) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          events_.add(builderForValue.build());
+          onChanged();
+        } else {
+          eventsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder addEvents(
+          int index, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder builderForValue) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          events_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          eventsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder addAllEvents(
+          java.lang.Iterable<? extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> values) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          super.addAll(values, events_);
+          onChanged();
+        } else {
+          eventsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder clearEvents() {
+        if (eventsBuilder_ == null) {
+          events_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          eventsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public Builder removeEvents(int index) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          events_.remove(index);
+          onChanged();
+        } else {
+          eventsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder getEventsBuilder(
+          int index) {
+        return getEventsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder getEventsOrBuilder(
+          int index) {
+        if (eventsBuilder_ == null) {
+          return events_.get(index);  } else {
+          return eventsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public java.util.List<? extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder> 
+           getEventsOrBuilderList() {
+        if (eventsBuilder_ != null) {
+          return eventsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(events_);
+        }
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder addEventsBuilder() {
+        return getEventsFieldBuilder().addBuilder(
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder addEventsBuilder(
+          int index) {
+        return getEventsFieldBuilder().addBuilder(
+            index, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .EventsResponse events = 1;</code>
+       */
+      public java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder> 
+           getEventsBuilderList() {
+        return getEventsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder> 
+          getEventsFieldBuilder() {
+        if (eventsBuilder_ == null) {
+          eventsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder>(
+                  events_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          events_ = null;
+        }
+        return eventsBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:AllEventsResponse)
+    }
+
+    static {
+      defaultInstance = new AllEventsResponse(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:AllEventsResponse)
+  }
+
+  public interface SnapshotRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string sessionId = 1;
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    boolean hasSessionId();
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    java.lang.String getSessionId();
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getSessionIdBytes();
+
+    // required .Instrument instrument = 2;
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    boolean hasInstrument();
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument getInstrument();
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder getInstrumentOrBuilder();
+
+    // required .ContentAndCapability content = 3;
+    /**
+     * <code>required .ContentAndCapability content = 3;</code>
+     */
+    boolean hasContent();
+    /**
+     * <code>required .ContentAndCapability content = 3;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent();
+
+    // optional string provider = 4;
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    boolean hasProvider();
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    java.lang.String getProvider();
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getProviderBytes();
+  }
+  /**
+   * Protobuf type {@code SnapshotRequest}
+   */
+  public static final class SnapshotRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements SnapshotRequestOrBuilder {
+    // Use SnapshotRequest.newBuilder() to construct.
+    private SnapshotRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private SnapshotRequest(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final SnapshotRequest defaultInstance;
+    public static SnapshotRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public SnapshotRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SnapshotRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              sessionId_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                subBuilder = instrument_.toBuilder();
+              }
+              instrument_ = input.readMessage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(instrument_);
+                instrument_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000002;
+              break;
+            }
+            case 24: {
+              int rawValue = input.readEnum();
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(3, rawValue);
+              } else {
+                bitField0_ |= 0x00000004;
+                content_ = value;
+              }
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              provider_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotRequest_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<SnapshotRequest> PARSER =
+        new com.google.protobuf.AbstractParser<SnapshotRequest>() {
+      public SnapshotRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SnapshotRequest(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SnapshotRequest> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string sessionId = 1;
+    public static final int SESSIONID_FIELD_NUMBER = 1;
+    private java.lang.Object sessionId_;
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public boolean hasSessionId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public java.lang.String getSessionId() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sessionId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSessionIdBytes() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sessionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required .Instrument instrument = 2;
+    public static final int INSTRUMENT_FIELD_NUMBER = 2;
+    private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument instrument_;
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    public boolean hasInstrument() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument getInstrument() {
+      return instrument_;
+    }
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder getInstrumentOrBuilder() {
+      return instrument_;
+    }
+
+    // required .ContentAndCapability content = 3;
+    public static final int CONTENT_FIELD_NUMBER = 3;
+    private org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability content_;
+    /**
+     * <code>required .ContentAndCapability content = 3;</code>
+     */
+    public boolean hasContent() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required .ContentAndCapability content = 3;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent() {
+      return content_;
+    }
+
+    // optional string provider = 4;
+    public static final int PROVIDER_FIELD_NUMBER = 4;
+    private java.lang.Object provider_;
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    public boolean hasProvider() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    public java.lang.String getProvider() {
+      java.lang.Object ref = provider_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          provider_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getProviderBytes() {
+      java.lang.Object ref = provider_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        provider_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      sessionId_ = "";
+      instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
+      content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+      provider_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasSessionId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasInstrument()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasContent()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getInstrument().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getSessionIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, instrument_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeEnum(3, content_.getNumber());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getProviderBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getSessionIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, instrument_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(3, content_.getNumber());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getProviderBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code SnapshotRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotRequest_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getInstrumentFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        sessionId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (instrumentBuilder_ == null) {
+          instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
+        } else {
+          instrumentBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        provider_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotRequest_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.sessionId_ = sessionId_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (instrumentBuilder_ == null) {
+          result.instrument_ = instrument_;
+        } else {
+          result.instrument_ = instrumentBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.content_ = content_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.provider_ = provider_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.getDefaultInstance()) return this;
+        if (other.hasSessionId()) {
+          bitField0_ |= 0x00000001;
+          sessionId_ = other.sessionId_;
+          onChanged();
+        }
+        if (other.hasInstrument()) {
+          mergeInstrument(other.getInstrument());
+        }
+        if (other.hasContent()) {
+          setContent(other.getContent());
+        }
+        if (other.hasProvider()) {
+          bitField0_ |= 0x00000008;
+          provider_ = other.provider_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasSessionId()) {
+          
+          return false;
+        }
+        if (!hasInstrument()) {
+          
+          return false;
+        }
+        if (!hasContent()) {
+          
+          return false;
+        }
+        if (!getInstrument().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string sessionId = 1;
+      private java.lang.Object sessionId_ = "";
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public boolean hasSessionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public java.lang.String getSessionId() {
+        java.lang.Object ref = sessionId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sessionId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSessionIdBytes() {
+        java.lang.Object ref = sessionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sessionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder setSessionId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder clearSessionId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        sessionId_ = getDefaultInstance().getSessionId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder setSessionIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required .Instrument instrument = 2;
+      private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder> instrumentBuilder_;
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public boolean hasInstrument() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument getInstrument() {
+        if (instrumentBuilder_ == null) {
+          return instrument_;
+        } else {
+          return instrumentBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public Builder setInstrument(org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument value) {
+        if (instrumentBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          instrument_ = value;
+          onChanged();
+        } else {
+          instrumentBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public Builder setInstrument(
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder builderForValue) {
+        if (instrumentBuilder_ == null) {
+          instrument_ = builderForValue.build();
+          onChanged();
+        } else {
+          instrumentBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public Builder mergeInstrument(org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument value) {
+        if (instrumentBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              instrument_ != org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance()) {
+            instrument_ =
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.newBuilder(instrument_).mergeFrom(value).buildPartial();
+          } else {
+            instrument_ = value;
+          }
+          onChanged();
+        } else {
+          instrumentBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public Builder clearInstrument() {
+        if (instrumentBuilder_ == null) {
+          instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
+          onChanged();
+        } else {
+          instrumentBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder getInstrumentBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getInstrumentFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder getInstrumentOrBuilder() {
+        if (instrumentBuilder_ != null) {
+          return instrumentBuilder_.getMessageOrBuilder();
+        } else {
+          return instrument_;
+        }
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder> 
+          getInstrumentFieldBuilder() {
+        if (instrumentBuilder_ == null) {
+          instrumentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder>(
+                  instrument_,
+                  getParentForChildren(),
+                  isClean());
+          instrument_ = null;
+        }
+        return instrumentBuilder_;
+      }
+
+      // required .ContentAndCapability content = 3;
+      private org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+      /**
+       * <code>required .ContentAndCapability content = 3;</code>
+       */
+      public boolean hasContent() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required .ContentAndCapability content = 3;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent() {
+        return content_;
+      }
+      /**
+       * <code>required .ContentAndCapability content = 3;</code>
+       */
+      public Builder setContent(org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000004;
+        content_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .ContentAndCapability content = 3;</code>
+       */
+      public Builder clearContent() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+        onChanged();
+        return this;
+      }
+
+      // optional string provider = 4;
+      private java.lang.Object provider_ = "";
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public boolean hasProvider() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public java.lang.String getProvider() {
+        java.lang.Object ref = provider_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          provider_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getProviderBytes() {
+        java.lang.Object ref = provider_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          provider_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public Builder setProvider(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        provider_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public Builder clearProvider() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        provider_ = getDefaultInstance().getProvider();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public Builder setProviderBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        provider_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:SnapshotRequest)
+    }
+
+    static {
+      defaultInstance = new SnapshotRequest(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:SnapshotRequest)
+  }
+
+  public interface SnapshotResponseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // repeated string payload = 1;
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    java.util.List<java.lang.String>
+    getPayloadList();
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    int getPayloadCount();
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    java.lang.String getPayload(int index);
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getPayloadBytes(int index);
+  }
+  /**
+   * Protobuf type {@code SnapshotResponse}
+   */
+  public static final class SnapshotResponse extends
+      com.google.protobuf.GeneratedMessage
+      implements SnapshotResponseOrBuilder {
+    // Use SnapshotResponse.newBuilder() to construct.
+    private SnapshotResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private SnapshotResponse(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final SnapshotResponse defaultInstance;
+    public static SnapshotResponse getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public SnapshotResponse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SnapshotResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                payload_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              payload_.add(input.readBytes());
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(payload_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotResponse_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<SnapshotResponse> PARSER =
+        new com.google.protobuf.AbstractParser<SnapshotResponse>() {
+      public SnapshotResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SnapshotResponse(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SnapshotResponse> getParserForType() {
+      return PARSER;
+    }
+
+    // repeated string payload = 1;
+    public static final int PAYLOAD_FIELD_NUMBER = 1;
+    private com.google.protobuf.LazyStringList payload_;
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    public java.util.List<java.lang.String>
+        getPayloadList() {
+      return payload_;
+    }
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    public int getPayloadCount() {
+      return payload_.size();
+    }
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    public java.lang.String getPayload(int index) {
+      return payload_.get(index);
+    }
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPayloadBytes(int index) {
+      return payload_.getByteString(index);
+    }
+
+    private void initFields() {
+      payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < payload_.size(); i++) {
+        output.writeBytes(1, payload_.getByteString(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < payload_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(payload_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getPayloadList().size();
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code SnapshotResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotResponse_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotResponse_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse(this);
+        int from_bitField0_ = bitField0_;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              payload_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.payload_ = payload_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.getDefaultInstance()) return this;
         if (!other.payload_.isEmpty()) {
           if (payload_.isEmpty()) {
             payload_ = other.payload_;
@@ -9309,11 +12352,11 @@ public final class RpcMarketdata {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse parsedMessage = null;
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse) e.getUnfinishedMessage();
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -9417,15 +12460,3119 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // @@protoc_insertion_point(builder_scope:EventsResponse)
+      // @@protoc_insertion_point(builder_scope:SnapshotResponse)
     }
 
     static {
-      defaultInstance = new EventsResponse(true);
+      defaultInstance = new SnapshotResponse(true);
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:EventsResponse)
+    // @@protoc_insertion_point(class_scope:SnapshotResponse)
+  }
+
+  public interface SnapshotPageRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string sessionId = 1;
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    boolean hasSessionId();
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    java.lang.String getSessionId();
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getSessionIdBytes();
+
+    // required .Instrument instrument = 2;
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    boolean hasInstrument();
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument getInstrument();
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder getInstrumentOrBuilder();
+
+    // required .ContentAndCapability content = 3;
+    /**
+     * <code>required .ContentAndCapability content = 3;</code>
+     */
+    boolean hasContent();
+    /**
+     * <code>required .ContentAndCapability content = 3;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent();
+
+    // optional string provider = 4;
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    boolean hasProvider();
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    java.lang.String getProvider();
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getProviderBytes();
+
+    // required .PageRequest page = 5;
+    /**
+     * <code>required .PageRequest page = 5;</code>
+     */
+    boolean hasPage();
+    /**
+     * <code>required .PageRequest page = 5;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest getPage();
+    /**
+     * <code>required .PageRequest page = 5;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder getPageOrBuilder();
+  }
+  /**
+   * Protobuf type {@code SnapshotPageRequest}
+   */
+  public static final class SnapshotPageRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements SnapshotPageRequestOrBuilder {
+    // Use SnapshotPageRequest.newBuilder() to construct.
+    private SnapshotPageRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private SnapshotPageRequest(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final SnapshotPageRequest defaultInstance;
+    public static SnapshotPageRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public SnapshotPageRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SnapshotPageRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              sessionId_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000002) == 0x00000002)) {
+                subBuilder = instrument_.toBuilder();
+              }
+              instrument_ = input.readMessage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(instrument_);
+                instrument_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000002;
+              break;
+            }
+            case 24: {
+              int rawValue = input.readEnum();
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(3, rawValue);
+              } else {
+                bitField0_ |= 0x00000004;
+                content_ = value;
+              }
+              break;
+            }
+            case 34: {
+              bitField0_ |= 0x00000008;
+              provider_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                subBuilder = page_.toBuilder();
+              }
+              page_ = input.readMessage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(page_);
+                page_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000010;
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageRequest_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<SnapshotPageRequest> PARSER =
+        new com.google.protobuf.AbstractParser<SnapshotPageRequest>() {
+      public SnapshotPageRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SnapshotPageRequest(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SnapshotPageRequest> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string sessionId = 1;
+    public static final int SESSIONID_FIELD_NUMBER = 1;
+    private java.lang.Object sessionId_;
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public boolean hasSessionId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public java.lang.String getSessionId() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sessionId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSessionIdBytes() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sessionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required .Instrument instrument = 2;
+    public static final int INSTRUMENT_FIELD_NUMBER = 2;
+    private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument instrument_;
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    public boolean hasInstrument() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument getInstrument() {
+      return instrument_;
+    }
+    /**
+     * <code>required .Instrument instrument = 2;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder getInstrumentOrBuilder() {
+      return instrument_;
+    }
+
+    // required .ContentAndCapability content = 3;
+    public static final int CONTENT_FIELD_NUMBER = 3;
+    private org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability content_;
+    /**
+     * <code>required .ContentAndCapability content = 3;</code>
+     */
+    public boolean hasContent() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required .ContentAndCapability content = 3;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent() {
+      return content_;
+    }
+
+    // optional string provider = 4;
+    public static final int PROVIDER_FIELD_NUMBER = 4;
+    private java.lang.Object provider_;
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    public boolean hasProvider() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    public java.lang.String getProvider() {
+      java.lang.Object ref = provider_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          provider_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string provider = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getProviderBytes() {
+      java.lang.Object ref = provider_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        provider_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required .PageRequest page = 5;
+    public static final int PAGE_FIELD_NUMBER = 5;
+    private org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest page_;
+    /**
+     * <code>required .PageRequest page = 5;</code>
+     */
+    public boolean hasPage() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required .PageRequest page = 5;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest getPage() {
+      return page_;
+    }
+    /**
+     * <code>required .PageRequest page = 5;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder getPageOrBuilder() {
+      return page_;
+    }
+
+    private void initFields() {
+      sessionId_ = "";
+      instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
+      content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+      provider_ = "";
+      page_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasSessionId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasInstrument()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasContent()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasPage()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getInstrument().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getPage().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getSessionIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeMessage(2, instrument_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeEnum(3, content_.getNumber());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getProviderBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeMessage(5, page_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getSessionIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, instrument_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(3, content_.getNumber());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getProviderBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, page_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code SnapshotPageRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageRequest_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getInstrumentFieldBuilder();
+          getPageFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        sessionId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (instrumentBuilder_ == null) {
+          instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
+        } else {
+          instrumentBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        provider_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
+        if (pageBuilder_ == null) {
+          page_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance();
+        } else {
+          pageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageRequest_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.sessionId_ = sessionId_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        if (instrumentBuilder_ == null) {
+          result.instrument_ = instrument_;
+        } else {
+          result.instrument_ = instrumentBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.content_ = content_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.provider_ = provider_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        if (pageBuilder_ == null) {
+          result.page_ = page_;
+        } else {
+          result.page_ = pageBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.getDefaultInstance()) return this;
+        if (other.hasSessionId()) {
+          bitField0_ |= 0x00000001;
+          sessionId_ = other.sessionId_;
+          onChanged();
+        }
+        if (other.hasInstrument()) {
+          mergeInstrument(other.getInstrument());
+        }
+        if (other.hasContent()) {
+          setContent(other.getContent());
+        }
+        if (other.hasProvider()) {
+          bitField0_ |= 0x00000008;
+          provider_ = other.provider_;
+          onChanged();
+        }
+        if (other.hasPage()) {
+          mergePage(other.getPage());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasSessionId()) {
+          
+          return false;
+        }
+        if (!hasInstrument()) {
+          
+          return false;
+        }
+        if (!hasContent()) {
+          
+          return false;
+        }
+        if (!hasPage()) {
+          
+          return false;
+        }
+        if (!getInstrument().isInitialized()) {
+          
+          return false;
+        }
+        if (!getPage().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string sessionId = 1;
+      private java.lang.Object sessionId_ = "";
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public boolean hasSessionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public java.lang.String getSessionId() {
+        java.lang.Object ref = sessionId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sessionId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSessionIdBytes() {
+        java.lang.Object ref = sessionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sessionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder setSessionId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder clearSessionId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        sessionId_ = getDefaultInstance().getSessionId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder setSessionIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required .Instrument instrument = 2;
+      private org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder> instrumentBuilder_;
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public boolean hasInstrument() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument getInstrument() {
+        if (instrumentBuilder_ == null) {
+          return instrument_;
+        } else {
+          return instrumentBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public Builder setInstrument(org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument value) {
+        if (instrumentBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          instrument_ = value;
+          onChanged();
+        } else {
+          instrumentBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public Builder setInstrument(
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder builderForValue) {
+        if (instrumentBuilder_ == null) {
+          instrument_ = builderForValue.build();
+          onChanged();
+        } else {
+          instrumentBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public Builder mergeInstrument(org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument value) {
+        if (instrumentBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002) &&
+              instrument_ != org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance()) {
+            instrument_ =
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.newBuilder(instrument_).mergeFrom(value).buildPartial();
+          } else {
+            instrument_ = value;
+          }
+          onChanged();
+        } else {
+          instrumentBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000002;
+        return this;
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public Builder clearInstrument() {
+        if (instrumentBuilder_ == null) {
+          instrument_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.getDefaultInstance();
+          onChanged();
+        } else {
+          instrumentBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder getInstrumentBuilder() {
+        bitField0_ |= 0x00000002;
+        onChanged();
+        return getInstrumentFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder getInstrumentOrBuilder() {
+        if (instrumentBuilder_ != null) {
+          return instrumentBuilder_.getMessageOrBuilder();
+        } else {
+          return instrument_;
+        }
+      }
+      /**
+       * <code>required .Instrument instrument = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder> 
+          getInstrumentFieldBuilder() {
+        if (instrumentBuilder_ == null) {
+          instrumentBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument, org.marketcetera.marketdata.core.rpc.RpcMarketdata.Instrument.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.InstrumentOrBuilder>(
+                  instrument_,
+                  getParentForChildren(),
+                  isClean());
+          instrument_ = null;
+        }
+        return instrumentBuilder_;
+      }
+
+      // required .ContentAndCapability content = 3;
+      private org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+      /**
+       * <code>required .ContentAndCapability content = 3;</code>
+       */
+      public boolean hasContent() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required .ContentAndCapability content = 3;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getContent() {
+        return content_;
+      }
+      /**
+       * <code>required .ContentAndCapability content = 3;</code>
+       */
+      public Builder setContent(org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000004;
+        content_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .ContentAndCapability content = 3;</code>
+       */
+      public Builder clearContent() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        content_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.TOP_OF_BOOK;
+        onChanged();
+        return this;
+      }
+
+      // optional string provider = 4;
+      private java.lang.Object provider_ = "";
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public boolean hasProvider() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public java.lang.String getProvider() {
+        java.lang.Object ref = provider_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          provider_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public com.google.protobuf.ByteString
+          getProviderBytes() {
+        java.lang.Object ref = provider_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          provider_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public Builder setProvider(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        provider_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public Builder clearProvider() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        provider_ = getDefaultInstance().getProvider();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string provider = 4;</code>
+       */
+      public Builder setProviderBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000008;
+        provider_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required .PageRequest page = 5;
+      private org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest page_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder> pageBuilder_;
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      public boolean hasPage() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest getPage() {
+        if (pageBuilder_ == null) {
+          return page_;
+        } else {
+          return pageBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      public Builder setPage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest value) {
+        if (pageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          page_ = value;
+          onChanged();
+        } else {
+          pageBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      public Builder setPage(
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder builderForValue) {
+        if (pageBuilder_ == null) {
+          page_ = builderForValue.build();
+          onChanged();
+        } else {
+          pageBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      public Builder mergePage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest value) {
+        if (pageBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+              page_ != org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance()) {
+            page_ =
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.newBuilder(page_).mergeFrom(value).buildPartial();
+          } else {
+            page_ = value;
+          }
+          onChanged();
+        } else {
+          pageBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      public Builder clearPage() {
+        if (pageBuilder_ == null) {
+          page_ = org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance();
+          onChanged();
+        } else {
+          pageBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder getPageBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return getPageFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder getPageOrBuilder() {
+        if (pageBuilder_ != null) {
+          return pageBuilder_.getMessageOrBuilder();
+        } else {
+          return page_;
+        }
+      }
+      /**
+       * <code>required .PageRequest page = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder> 
+          getPageFieldBuilder() {
+        if (pageBuilder_ == null) {
+          pageBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder>(
+                  page_,
+                  getParentForChildren(),
+                  isClean());
+          page_ = null;
+        }
+        return pageBuilder_;
+      }
+
+      // @@protoc_insertion_point(builder_scope:SnapshotPageRequest)
+    }
+
+    static {
+      defaultInstance = new SnapshotPageRequest(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:SnapshotPageRequest)
+  }
+
+  public interface SnapshotPageResponseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // repeated string payload = 1;
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    java.util.List<java.lang.String>
+    getPayloadList();
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    int getPayloadCount();
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    java.lang.String getPayload(int index);
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getPayloadBytes(int index);
+  }
+  /**
+   * Protobuf type {@code SnapshotPageResponse}
+   */
+  public static final class SnapshotPageResponse extends
+      com.google.protobuf.GeneratedMessage
+      implements SnapshotPageResponseOrBuilder {
+    // Use SnapshotPageResponse.newBuilder() to construct.
+    private SnapshotPageResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private SnapshotPageResponse(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final SnapshotPageResponse defaultInstance;
+    public static SnapshotPageResponse getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public SnapshotPageResponse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SnapshotPageResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                payload_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              payload_.add(input.readBytes());
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(payload_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageResponse_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<SnapshotPageResponse> PARSER =
+        new com.google.protobuf.AbstractParser<SnapshotPageResponse>() {
+      public SnapshotPageResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SnapshotPageResponse(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SnapshotPageResponse> getParserForType() {
+      return PARSER;
+    }
+
+    // repeated string payload = 1;
+    public static final int PAYLOAD_FIELD_NUMBER = 1;
+    private com.google.protobuf.LazyStringList payload_;
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    public java.util.List<java.lang.String>
+        getPayloadList() {
+      return payload_;
+    }
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    public int getPayloadCount() {
+      return payload_.size();
+    }
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    public java.lang.String getPayload(int index) {
+      return payload_.get(index);
+    }
+    /**
+     * <code>repeated string payload = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPayloadBytes(int index) {
+      return payload_.getByteString(index);
+    }
+
+    private void initFields() {
+      payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < payload_.size(); i++) {
+        output.writeBytes(1, payload_.getByteString(i));
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < payload_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(payload_.getByteString(i));
+        }
+        size += dataSize;
+        size += 1 * getPayloadList().size();
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code SnapshotPageResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageResponse_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_SnapshotPageResponse_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse(this);
+        int from_bitField0_ = bitField0_;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          payload_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              payload_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.payload_ = payload_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.getDefaultInstance()) return this;
+        if (!other.payload_.isEmpty()) {
+          if (payload_.isEmpty()) {
+            payload_ = other.payload_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensurePayloadIsMutable();
+            payload_.addAll(other.payload_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // repeated string payload = 1;
+      private com.google.protobuf.LazyStringList payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensurePayloadIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          payload_ = new com.google.protobuf.LazyStringArrayList(payload_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public java.util.List<java.lang.String>
+          getPayloadList() {
+        return java.util.Collections.unmodifiableList(payload_);
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public int getPayloadCount() {
+        return payload_.size();
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public java.lang.String getPayload(int index) {
+        return payload_.get(index);
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPayloadBytes(int index) {
+        return payload_.getByteString(index);
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public Builder setPayload(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePayloadIsMutable();
+        payload_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public Builder addPayload(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePayloadIsMutable();
+        payload_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public Builder addAllPayload(
+          java.lang.Iterable<java.lang.String> values) {
+        ensurePayloadIsMutable();
+        super.addAll(values, payload_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public Builder clearPayload() {
+        payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string payload = 1;</code>
+       */
+      public Builder addPayloadBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensurePayloadIsMutable();
+        payload_.add(value);
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:SnapshotPageResponse)
+    }
+
+    static {
+      defaultInstance = new SnapshotPageResponse(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:SnapshotPageResponse)
+  }
+
+  public interface PageRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required int32 page = 1;
+    /**
+     * <code>required int32 page = 1;</code>
+     */
+    boolean hasPage();
+    /**
+     * <code>required int32 page = 1;</code>
+     */
+    int getPage();
+
+    // required int32 size = 2;
+    /**
+     * <code>required int32 size = 2;</code>
+     */
+    boolean hasSize();
+    /**
+     * <code>required int32 size = 2;</code>
+     */
+    int getSize();
+  }
+  /**
+   * Protobuf type {@code PageRequest}
+   */
+  public static final class PageRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements PageRequestOrBuilder {
+    // Use PageRequest.newBuilder() to construct.
+    private PageRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private PageRequest(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final PageRequest defaultInstance;
+    public static PageRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public PageRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private PageRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              page_ = input.readInt32();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              size_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_PageRequest_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_PageRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<PageRequest> PARSER =
+        new com.google.protobuf.AbstractParser<PageRequest>() {
+      public PageRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new PageRequest(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<PageRequest> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required int32 page = 1;
+    public static final int PAGE_FIELD_NUMBER = 1;
+    private int page_;
+    /**
+     * <code>required int32 page = 1;</code>
+     */
+    public boolean hasPage() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int32 page = 1;</code>
+     */
+    public int getPage() {
+      return page_;
+    }
+
+    // required int32 size = 2;
+    public static final int SIZE_FIELD_NUMBER = 2;
+    private int size_;
+    /**
+     * <code>required int32 size = 2;</code>
+     */
+    public boolean hasSize() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int32 size = 2;</code>
+     */
+    public int getSize() {
+      return size_;
+    }
+
+    private void initFields() {
+      page_ = 0;
+      size_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasPage()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSize()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, page_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, size_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, page_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, size_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code PageRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_PageRequest_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_PageRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        page_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        size_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_PageRequest_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.page_ = page_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.size_ = size_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest.getDefaultInstance()) return this;
+        if (other.hasPage()) {
+          setPage(other.getPage());
+        }
+        if (other.hasSize()) {
+          setSize(other.getSize());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasPage()) {
+          
+          return false;
+        }
+        if (!hasSize()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.PageRequest) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required int32 page = 1;
+      private int page_ ;
+      /**
+       * <code>required int32 page = 1;</code>
+       */
+      public boolean hasPage() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required int32 page = 1;</code>
+       */
+      public int getPage() {
+        return page_;
+      }
+      /**
+       * <code>required int32 page = 1;</code>
+       */
+      public Builder setPage(int value) {
+        bitField0_ |= 0x00000001;
+        page_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 page = 1;</code>
+       */
+      public Builder clearPage() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        page_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required int32 size = 2;
+      private int size_ ;
+      /**
+       * <code>required int32 size = 2;</code>
+       */
+      public boolean hasSize() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required int32 size = 2;</code>
+       */
+      public int getSize() {
+        return size_;
+      }
+      /**
+       * <code>required int32 size = 2;</code>
+       */
+      public Builder setSize(int value) {
+        bitField0_ |= 0x00000002;
+        size_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 size = 2;</code>
+       */
+      public Builder clearSize() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        size_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:PageRequest)
+    }
+
+    static {
+      defaultInstance = new PageRequest(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:PageRequest)
+  }
+
+  public interface AvailableCapabilityRequestOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string sessionId = 1;
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    boolean hasSessionId();
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    java.lang.String getSessionId();
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getSessionIdBytes();
+  }
+  /**
+   * Protobuf type {@code AvailableCapabilityRequest}
+   */
+  public static final class AvailableCapabilityRequest extends
+      com.google.protobuf.GeneratedMessage
+      implements AvailableCapabilityRequestOrBuilder {
+    // Use AvailableCapabilityRequest.newBuilder() to construct.
+    private AvailableCapabilityRequest(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private AvailableCapabilityRequest(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final AvailableCapabilityRequest defaultInstance;
+    public static AvailableCapabilityRequest getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public AvailableCapabilityRequest getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private AvailableCapabilityRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              sessionId_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityRequest_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<AvailableCapabilityRequest> PARSER =
+        new com.google.protobuf.AbstractParser<AvailableCapabilityRequest>() {
+      public AvailableCapabilityRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new AvailableCapabilityRequest(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<AvailableCapabilityRequest> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string sessionId = 1;
+    public static final int SESSIONID_FIELD_NUMBER = 1;
+    private java.lang.Object sessionId_;
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public boolean hasSessionId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public java.lang.String getSessionId() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sessionId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string sessionId = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSessionIdBytes() {
+      java.lang.Object ref = sessionId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sessionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    private void initFields() {
+      sessionId_ = "";
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasSessionId()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getSessionIdBytes());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getSessionIdBytes());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code AvailableCapabilityRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityRequest_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        sessionId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityRequest_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.sessionId_ = sessionId_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.getDefaultInstance()) return this;
+        if (other.hasSessionId()) {
+          bitField0_ |= 0x00000001;
+          sessionId_ = other.sessionId_;
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasSessionId()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string sessionId = 1;
+      private java.lang.Object sessionId_ = "";
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public boolean hasSessionId() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public java.lang.String getSessionId() {
+        java.lang.Object ref = sessionId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sessionId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSessionIdBytes() {
+        java.lang.Object ref = sessionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sessionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder setSessionId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder clearSessionId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        sessionId_ = getDefaultInstance().getSessionId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string sessionId = 1;</code>
+       */
+      public Builder setSessionIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sessionId_ = value;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:AvailableCapabilityRequest)
+    }
+
+    static {
+      defaultInstance = new AvailableCapabilityRequest(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:AvailableCapabilityRequest)
+  }
+
+  public interface AvailableCapabilityResponseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // repeated .ContentAndCapability capability = 1;
+    /**
+     * <code>repeated .ContentAndCapability capability = 1;</code>
+     */
+    java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> getCapabilityList();
+    /**
+     * <code>repeated .ContentAndCapability capability = 1;</code>
+     */
+    int getCapabilityCount();
+    /**
+     * <code>repeated .ContentAndCapability capability = 1;</code>
+     */
+    org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getCapability(int index);
+  }
+  /**
+   * Protobuf type {@code AvailableCapabilityResponse}
+   */
+  public static final class AvailableCapabilityResponse extends
+      com.google.protobuf.GeneratedMessage
+      implements AvailableCapabilityResponseOrBuilder {
+    // Use AvailableCapabilityResponse.newBuilder() to construct.
+    private AvailableCapabilityResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private AvailableCapabilityResponse(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final AvailableCapabilityResponse defaultInstance;
+    public static AvailableCapabilityResponse getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public AvailableCapabilityResponse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private AvailableCapabilityResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              int rawValue = input.readEnum();
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                  capability_ = new java.util.ArrayList<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability>();
+                  mutable_bitField0_ |= 0x00000001;
+                }
+                capability_.add(value);
+              }
+              break;
+            }
+            case 10: {
+              int length = input.readRawVarint32();
+              int oldLimit = input.pushLimit(length);
+              while(input.getBytesUntilLimit() > 0) {
+                int rawValue = input.readEnum();
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value = org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability.valueOf(rawValue);
+                if (value == null) {
+                  unknownFields.mergeVarintField(1, rawValue);
+                } else {
+                  if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                    capability_ = new java.util.ArrayList<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability>();
+                    mutable_bitField0_ |= 0x00000001;
+                  }
+                  capability_.add(value);
+                }
+              }
+              input.popLimit(oldLimit);
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          capability_ = java.util.Collections.unmodifiableList(capability_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityResponse_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<AvailableCapabilityResponse> PARSER =
+        new com.google.protobuf.AbstractParser<AvailableCapabilityResponse>() {
+      public AvailableCapabilityResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new AvailableCapabilityResponse(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<AvailableCapabilityResponse> getParserForType() {
+      return PARSER;
+    }
+
+    // repeated .ContentAndCapability capability = 1;
+    public static final int CAPABILITY_FIELD_NUMBER = 1;
+    private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> capability_;
+    /**
+     * <code>repeated .ContentAndCapability capability = 1;</code>
+     */
+    public java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> getCapabilityList() {
+      return capability_;
+    }
+    /**
+     * <code>repeated .ContentAndCapability capability = 1;</code>
+     */
+    public int getCapabilityCount() {
+      return capability_.size();
+    }
+    /**
+     * <code>repeated .ContentAndCapability capability = 1;</code>
+     */
+    public org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getCapability(int index) {
+      return capability_.get(index);
+    }
+
+    private void initFields() {
+      capability_ = java.util.Collections.emptyList();
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < capability_.size(); i++) {
+        output.writeEnum(1, capability_.get(i).getNumber());
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < capability_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeEnumSizeNoTag(capability_.get(i).getNumber());
+        }
+        size += dataSize;
+        size += 1 * capability_.size();
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code AvailableCapabilityResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityResponse_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.class, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.Builder.class);
+      }
+
+      // Construct using org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        capability_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.internal_static_AvailableCapabilityResponse_descriptor;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse getDefaultInstanceForType() {
+        return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.getDefaultInstance();
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse build() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse buildPartial() {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse(this);
+        int from_bitField0_ = bitField0_;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          capability_ = java.util.Collections.unmodifiableList(capability_);
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.capability_ = capability_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse) {
+          return mergeFrom((org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse other) {
+        if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.getDefaultInstance()) return this;
+        if (!other.capability_.isEmpty()) {
+          if (capability_.isEmpty()) {
+            capability_ = other.capability_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureCapabilityIsMutable();
+            capability_.addAll(other.capability_);
+          }
+          onChanged();
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // repeated .ContentAndCapability capability = 1;
+      private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> capability_ =
+        java.util.Collections.emptyList();
+      private void ensureCapabilityIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          capability_ = new java.util.ArrayList<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability>(capability_);
+          bitField0_ |= 0x00000001;
+        }
+      }
+      /**
+       * <code>repeated .ContentAndCapability capability = 1;</code>
+       */
+      public java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> getCapabilityList() {
+        return java.util.Collections.unmodifiableList(capability_);
+      }
+      /**
+       * <code>repeated .ContentAndCapability capability = 1;</code>
+       */
+      public int getCapabilityCount() {
+        return capability_.size();
+      }
+      /**
+       * <code>repeated .ContentAndCapability capability = 1;</code>
+       */
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getCapability(int index) {
+        return capability_.get(index);
+      }
+      /**
+       * <code>repeated .ContentAndCapability capability = 1;</code>
+       */
+      public Builder setCapability(
+          int index, org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureCapabilityIsMutable();
+        capability_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .ContentAndCapability capability = 1;</code>
+       */
+      public Builder addCapability(org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureCapabilityIsMutable();
+        capability_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .ContentAndCapability capability = 1;</code>
+       */
+      public Builder addAllCapability(
+          java.lang.Iterable<? extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> values) {
+        ensureCapabilityIsMutable();
+        super.addAll(values, capability_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .ContentAndCapability capability = 1;</code>
+       */
+      public Builder clearCapability() {
+        capability_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:AvailableCapabilityResponse)
+    }
+
+    static {
+      defaultInstance = new AvailableCapabilityResponse(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:AvailableCapabilityResponse)
   }
 
   /**
@@ -9492,6 +15639,38 @@ public final class RpcMarketdata {
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest request,
           com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> done);
 
+      /**
+       * <code>rpc getAllEvents(.AllEventsRequest) returns (.AllEventsResponse);</code>
+       */
+      public abstract void getAllEvents(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest request,
+          com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse> done);
+
+      /**
+       * <code>rpc getSnapshot(.SnapshotRequest) returns (.SnapshotResponse);</code>
+       */
+      public abstract void getSnapshot(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest request,
+          com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse> done);
+
+      /**
+       * <code>rpc getSnapshotPage(.SnapshotPageRequest) returns (.SnapshotPageResponse);</code>
+       */
+      public abstract void getSnapshotPage(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest request,
+          com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse> done);
+
+      /**
+       * <code>rpc getAvailableCapability(.AvailableCapabilityRequest) returns (.AvailableCapabilityResponse);</code>
+       */
+      public abstract void getAvailableCapability(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest request,
+          com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse> done);
+
     }
 
     public static com.google.protobuf.Service newReflectiveService(
@@ -9553,6 +15732,38 @@ public final class RpcMarketdata {
           impl.getEvents(controller, request, done);
         }
 
+        @java.lang.Override
+        public  void getAllEvents(
+            com.google.protobuf.RpcController controller,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest request,
+            com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse> done) {
+          impl.getAllEvents(controller, request, done);
+        }
+
+        @java.lang.Override
+        public  void getSnapshot(
+            com.google.protobuf.RpcController controller,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest request,
+            com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse> done) {
+          impl.getSnapshot(controller, request, done);
+        }
+
+        @java.lang.Override
+        public  void getSnapshotPage(
+            com.google.protobuf.RpcController controller,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest request,
+            com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse> done) {
+          impl.getSnapshotPage(controller, request, done);
+        }
+
+        @java.lang.Override
+        public  void getAvailableCapability(
+            com.google.protobuf.RpcController controller,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest request,
+            com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse> done) {
+          impl.getAvailableCapability(controller, request, done);
+        }
+
       };
     }
 
@@ -9589,6 +15800,14 @@ public final class RpcMarketdata {
               return impl.cancel(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequest)request);
             case 6:
               return impl.getEvents(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest)request);
+            case 7:
+              return impl.getAllEvents(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest)request);
+            case 8:
+              return impl.getSnapshot(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest)request);
+            case 9:
+              return impl.getSnapshotPage(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest)request);
+            case 10:
+              return impl.getAvailableCapability(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest)request);
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -9617,6 +15836,14 @@ public final class RpcMarketdata {
               return org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequest.getDefaultInstance();
             case 6:
               return org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest.getDefaultInstance();
+            case 7:
+              return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.getDefaultInstance();
+            case 8:
+              return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.getDefaultInstance();
+            case 9:
+              return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.getDefaultInstance();
+            case 10:
+              return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.getDefaultInstance();
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -9645,6 +15872,14 @@ public final class RpcMarketdata {
               return org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponse.getDefaultInstance();
             case 6:
               return org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.getDefaultInstance();
+            case 7:
+              return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.getDefaultInstance();
+            case 8:
+              return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.getDefaultInstance();
+            case 9:
+              return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.getDefaultInstance();
+            case 10:
+              return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.getDefaultInstance();
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -9709,6 +15944,38 @@ public final class RpcMarketdata {
         org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest request,
         com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> done);
 
+    /**
+     * <code>rpc getAllEvents(.AllEventsRequest) returns (.AllEventsResponse);</code>
+     */
+    public abstract void getAllEvents(
+        com.google.protobuf.RpcController controller,
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest request,
+        com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse> done);
+
+    /**
+     * <code>rpc getSnapshot(.SnapshotRequest) returns (.SnapshotResponse);</code>
+     */
+    public abstract void getSnapshot(
+        com.google.protobuf.RpcController controller,
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest request,
+        com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse> done);
+
+    /**
+     * <code>rpc getSnapshotPage(.SnapshotPageRequest) returns (.SnapshotPageResponse);</code>
+     */
+    public abstract void getSnapshotPage(
+        com.google.protobuf.RpcController controller,
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest request,
+        com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse> done);
+
+    /**
+     * <code>rpc getAvailableCapability(.AvailableCapabilityRequest) returns (.AvailableCapabilityResponse);</code>
+     */
+    public abstract void getAvailableCapability(
+        com.google.protobuf.RpcController controller,
+        org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest request,
+        com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse> done);
+
     public static final
         com.google.protobuf.Descriptors.ServiceDescriptor
         getDescriptor() {
@@ -9766,6 +16033,26 @@ public final class RpcMarketdata {
             com.google.protobuf.RpcUtil.<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse>specializeCallback(
               done));
           return;
+        case 7:
+          this.getAllEvents(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest)request,
+            com.google.protobuf.RpcUtil.<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse>specializeCallback(
+              done));
+          return;
+        case 8:
+          this.getSnapshot(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest)request,
+            com.google.protobuf.RpcUtil.<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse>specializeCallback(
+              done));
+          return;
+        case 9:
+          this.getSnapshotPage(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest)request,
+            com.google.protobuf.RpcUtil.<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse>specializeCallback(
+              done));
+          return;
+        case 10:
+          this.getAvailableCapability(controller, (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest)request,
+            com.google.protobuf.RpcUtil.<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse>specializeCallback(
+              done));
+          return;
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -9794,6 +16081,14 @@ public final class RpcMarketdata {
           return org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequest.getDefaultInstance();
         case 6:
           return org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest.getDefaultInstance();
+        case 7:
+          return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest.getDefaultInstance();
+        case 8:
+          return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest.getDefaultInstance();
+        case 9:
+          return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest.getDefaultInstance();
+        case 10:
+          return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest.getDefaultInstance();
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -9822,6 +16117,14 @@ public final class RpcMarketdata {
           return org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponse.getDefaultInstance();
         case 6:
           return org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.getDefaultInstance();
+        case 7:
+          return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.getDefaultInstance();
+        case 8:
+          return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.getDefaultInstance();
+        case 9:
+          return org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.getDefaultInstance();
+        case 10:
+          return org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.getDefaultInstance();
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -9947,6 +16250,66 @@ public final class RpcMarketdata {
             org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.class,
             org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.getDefaultInstance()));
       }
+
+      public  void getAllEvents(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest request,
+          com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse> done) {
+        channel.callMethod(
+          getDescriptor().getMethods().get(7),
+          controller,
+          request,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.getDefaultInstance(),
+          com.google.protobuf.RpcUtil.generalizeCallback(
+            done,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.class,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.getDefaultInstance()));
+      }
+
+      public  void getSnapshot(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest request,
+          com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse> done) {
+        channel.callMethod(
+          getDescriptor().getMethods().get(8),
+          controller,
+          request,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.getDefaultInstance(),
+          com.google.protobuf.RpcUtil.generalizeCallback(
+            done,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.class,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.getDefaultInstance()));
+      }
+
+      public  void getSnapshotPage(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest request,
+          com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse> done) {
+        channel.callMethod(
+          getDescriptor().getMethods().get(9),
+          controller,
+          request,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.getDefaultInstance(),
+          com.google.protobuf.RpcUtil.generalizeCallback(
+            done,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.class,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.getDefaultInstance()));
+      }
+
+      public  void getAvailableCapability(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest request,
+          com.google.protobuf.RpcCallback<org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse> done) {
+        channel.callMethod(
+          getDescriptor().getMethods().get(10),
+          controller,
+          request,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.getDefaultInstance(),
+          com.google.protobuf.RpcUtil.generalizeCallback(
+            done,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.class,
+            org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.getDefaultInstance()));
+      }
     }
 
     public static BlockingInterface newBlockingStub(
@@ -9988,6 +16351,26 @@ public final class RpcMarketdata {
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse getEvents(
           com.google.protobuf.RpcController controller,
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest request)
+          throws com.google.protobuf.ServiceException;
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse getAllEvents(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest request)
+          throws com.google.protobuf.ServiceException;
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse getSnapshot(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest request)
+          throws com.google.protobuf.ServiceException;
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse getSnapshotPage(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest request)
+          throws com.google.protobuf.ServiceException;
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse getAvailableCapability(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest request)
           throws com.google.protobuf.ServiceException;
     }
 
@@ -10081,6 +16464,54 @@ public final class RpcMarketdata {
           org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.getDefaultInstance());
       }
 
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse getAllEvents(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest request)
+          throws com.google.protobuf.ServiceException {
+        return (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse) channel.callBlockingMethod(
+          getDescriptor().getMethods().get(7),
+          controller,
+          request,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse.getDefaultInstance());
+      }
+
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse getSnapshot(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest request)
+          throws com.google.protobuf.ServiceException {
+        return (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse) channel.callBlockingMethod(
+          getDescriptor().getMethods().get(8),
+          controller,
+          request,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse.getDefaultInstance());
+      }
+
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse getSnapshotPage(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest request)
+          throws com.google.protobuf.ServiceException {
+        return (org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse) channel.callBlockingMethod(
+          getDescriptor().getMethods().get(9),
+          controller,
+          request,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse.getDefaultInstance());
+      }
+
+
+      public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse getAvailableCapability(
+          com.google.protobuf.RpcController controller,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest request)
+          throws com.google.protobuf.ServiceException {
+        return (org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse) channel.callBlockingMethod(
+          getDescriptor().getMethods().get(10),
+          controller,
+          request,
+          org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse.getDefaultInstance());
+      }
+
     }
 
     // @@protoc_insertion_point(class_scope:RpcClientService)
@@ -10171,6 +16602,51 @@ public final class RpcMarketdata {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_EventsResponse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_AllEventsRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_AllEventsRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_AllEventsResponse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_AllEventsResponse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_SnapshotRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_SnapshotRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_SnapshotResponse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_SnapshotResponse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_SnapshotPageRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_SnapshotPageRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_SnapshotPageResponse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_SnapshotPageResponse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_PageRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_PageRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_AvailableCapabilityRequest_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_AvailableCapabilityRequest_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_AvailableCapabilityResponse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_AvailableCapabilityResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -10198,20 +16674,49 @@ public final class RpcMarketdata {
       "\ttimestamp\030\001 \002(\003\".\n\rCancelRequest\022\021\n\tses" +
       "sionId\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"\020\n\016CancelRespon" +
       "se\"\030\n\005Event\022\017\n\007payload\030\001 \002(\t\".\n\rEventsRe" +
-      "quest\022\021\n\tsessionId\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"!\n\016" +
-      "EventsResponse\022\017\n\007payload\030\001 \003(\t*B\n\016Instr",
-      "umentType\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUT" +
-      "URE\020\002\022\014\n\010CURRENCY\020\0032\340\002\n\020RpcClientService" +
-      "\022&\n\005login\022\r.LoginRequest\032\016.LoginResponse" +
-      "\022)\n\006logout\022\016.LogoutRequest\032\017.LogoutRespo" +
-      "nse\0222\n\theartbeat\022\021.HeartbeatRequest\032\022.He" +
-      "artbeatResponse\0222\n\007request\022\022.MarketDataR" +
-      "equest\032\023.MarketDataResponse\0228\n\rgetLastUp" +
-      "date\022\022.LastUpdateRequest\032\023.LastUpdateRes" +
-      "ponse\022)\n\006cancel\022\016.CancelRequest\032\017.Cancel" +
-      "Response\022,\n\tgetEvents\022\016.EventsRequest\032\017.",
-      "EventsResponseB8\n$org.marketcetera.marke" +
-      "tdata.core.rpcB\rRpcMarketdata\210\001\001"
+      "quest\022\021\n\tsessionId\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"-\n\016" +
+      "EventsResponse\022\n\n\002id\030\001 \002(\003\022\017\n\007payload\030\002 ",
+      "\003(\t\"1\n\020AllEventsRequest\022\021\n\tsessionId\030\001 \002" +
+      "(\t\022\n\n\002id\030\002 \003(\003\"4\n\021AllEventsResponse\022\037\n\006e" +
+      "vents\030\001 \003(\0132\017.EventsResponse\"\177\n\017Snapshot" +
+      "Request\022\021\n\tsessionId\030\001 \002(\t\022\037\n\ninstrument" +
+      "\030\002 \002(\0132\013.Instrument\022&\n\007content\030\003 \002(\0162\025.C" +
+      "ontentAndCapability\022\020\n\010provider\030\004 \001(\t\"#\n" +
+      "\020SnapshotResponse\022\017\n\007payload\030\001 \003(\t\"\237\001\n\023S" +
+      "napshotPageRequest\022\021\n\tsessionId\030\001 \002(\t\022\037\n" +
+      "\ninstrument\030\002 \002(\0132\013.Instrument\022&\n\007conten" +
+      "t\030\003 \002(\0162\025.ContentAndCapability\022\020\n\010provid",
+      "er\030\004 \001(\t\022\032\n\004page\030\005 \002(\0132\014.PageRequest\"\'\n\024" +
+      "SnapshotPageResponse\022\017\n\007payload\030\001 \003(\t\")\n" +
+      "\013PageRequest\022\014\n\004page\030\001 \002(\005\022\014\n\004size\030\002 \002(\005" +
+      "\"/\n\032AvailableCapabilityRequest\022\021\n\tsessio" +
+      "nId\030\001 \002(\t\"H\n\033AvailableCapabilityResponse" +
+      "\022)\n\ncapability\030\001 \003(\0162\025.ContentAndCapabil" +
+      "ity*B\n\016InstrumentType\022\n\n\006EQUITY\020\000\022\n\n\006OPT" +
+      "ION\020\001\022\n\n\006FUTURE\020\002\022\014\n\010CURRENCY\020\003*\366\001\n\024Cont" +
+      "entAndCapability\022\017\n\013TOP_OF_BOOK\020\000\022\r\n\tOPE" +
+      "N_BOOK\020\001\022\017\n\013MARKET_STAT\020\002\022\016\n\nTOTAL_VIEW\020",
+      "\003\022\013\n\007LEVEL_2\020\004\022\017\n\013LATEST_TICK\020\005\022\t\n\005BBO10" +
+      "\020\006\022\010\n\004NBBO\020\007\022\014\n\010DIVIDEND\020\010\022\024\n\020AGGREGATED" +
+      "_DEPTH\020\t\022\026\n\022UNAGGREGATED_DEPTH\020\n\022\r\n\tIMBA" +
+      "LANCE\020\013\022\013\n\007UNKNOWN\020\014\022\022\n\016EVENT_BOUNDARY\020\r" +
+      "2\340\004\n\020RpcClientService\022&\n\005login\022\r.LoginRe" +
+      "quest\032\016.LoginResponse\022)\n\006logout\022\016.Logout" +
+      "Request\032\017.LogoutResponse\0222\n\theartbeat\022\021." +
+      "HeartbeatRequest\032\022.HeartbeatResponse\0222\n\007" +
+      "request\022\022.MarketDataRequest\032\023.MarketData" +
+      "Response\0228\n\rgetLastUpdate\022\022.LastUpdateRe",
+      "quest\032\023.LastUpdateResponse\022)\n\006cancel\022\016.C" +
+      "ancelRequest\032\017.CancelResponse\022,\n\tgetEven" +
+      "ts\022\016.EventsRequest\032\017.EventsResponse\0225\n\014g" +
+      "etAllEvents\022\021.AllEventsRequest\032\022.AllEven" +
+      "tsResponse\0222\n\013getSnapshot\022\020.SnapshotRequ" +
+      "est\032\021.SnapshotResponse\022>\n\017getSnapshotPag" +
+      "e\022\024.SnapshotPageRequest\032\025.SnapshotPageRe" +
+      "sponse\022S\n\026getAvailableCapability\022\033.Avail" +
+      "ableCapabilityRequest\032\034.AvailableCapabil" +
+      "ityResponseB8\n$org.marketcetera.marketda",
+      "ta.core.rpcB\rRpcMarketdata\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -10319,7 +16824,61 @@ public final class RpcMarketdata {
           internal_static_EventsResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EventsResponse_descriptor,
+              new java.lang.String[] { "Id", "Payload", });
+          internal_static_AllEventsRequest_descriptor =
+            getDescriptor().getMessageTypes().get(17);
+          internal_static_AllEventsRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_AllEventsRequest_descriptor,
+              new java.lang.String[] { "SessionId", "Id", });
+          internal_static_AllEventsResponse_descriptor =
+            getDescriptor().getMessageTypes().get(18);
+          internal_static_AllEventsResponse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_AllEventsResponse_descriptor,
+              new java.lang.String[] { "Events", });
+          internal_static_SnapshotRequest_descriptor =
+            getDescriptor().getMessageTypes().get(19);
+          internal_static_SnapshotRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_SnapshotRequest_descriptor,
+              new java.lang.String[] { "SessionId", "Instrument", "Content", "Provider", });
+          internal_static_SnapshotResponse_descriptor =
+            getDescriptor().getMessageTypes().get(20);
+          internal_static_SnapshotResponse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_SnapshotResponse_descriptor,
               new java.lang.String[] { "Payload", });
+          internal_static_SnapshotPageRequest_descriptor =
+            getDescriptor().getMessageTypes().get(21);
+          internal_static_SnapshotPageRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_SnapshotPageRequest_descriptor,
+              new java.lang.String[] { "SessionId", "Instrument", "Content", "Provider", "Page", });
+          internal_static_SnapshotPageResponse_descriptor =
+            getDescriptor().getMessageTypes().get(22);
+          internal_static_SnapshotPageResponse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_SnapshotPageResponse_descriptor,
+              new java.lang.String[] { "Payload", });
+          internal_static_PageRequest_descriptor =
+            getDescriptor().getMessageTypes().get(23);
+          internal_static_PageRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_PageRequest_descriptor,
+              new java.lang.String[] { "Page", "Size", });
+          internal_static_AvailableCapabilityRequest_descriptor =
+            getDescriptor().getMessageTypes().get(24);
+          internal_static_AvailableCapabilityRequest_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_AvailableCapabilityRequest_descriptor,
+              new java.lang.String[] { "SessionId", });
+          internal_static_AvailableCapabilityResponse_descriptor =
+            getDescriptor().getMessageTypes().get(25);
+          internal_static_AvailableCapabilityResponse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_AvailableCapabilityResponse_descriptor,
+              new java.lang.String[] { "Capability", });
           return null;
         }
       };

@@ -33,6 +33,34 @@ import org.marketcetera.trade.SecurityType;
 public class EventTestBase
 {
     /**
+     * Generates an <code>AskEvent</code> for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateAskEvent(Instrument inInstrument)
+    {
+        return QuoteEventBuilder.askEvent(inInstrument)
+                .withExchange(generateExchange())
+                .withPrice(generateDecimalValue())
+                .withSize(generateDecimalValue())
+                .withQuoteDate(generateQuoteDate()).create();
+    }
+    /**
+     * Generates a <code>BidEvent</code> for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>BidEvent</code> value
+     */
+    public static BidEvent generateBidEvent(Instrument inInstrument)
+    {
+        return QuoteEventBuilder.bidEvent(inInstrument)
+                .withExchange(generateExchange())
+                .withPrice(generateDecimalValue())
+                .withSize(generateDecimalValue())
+                .withQuoteDate(generateQuoteDate()).create();
+    }
+    /**
      * Generates an <code>AskEvent</code> for the given <code>Equity</code>.
      *
      * @param inInstrument an <code>Equity</code> value
@@ -652,6 +680,20 @@ public class EventTestBase
                                         generateDecimalValue());
     }
     /**
+     * Generates a <code>TradeEvent</code> with the given value.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>TradeEvent</code> value
+     */
+    public static TradeEvent generateTradeEvent(Instrument inInstrument)
+    {
+        return TradeEventBuilder.tradeEvent(inInstrument)
+                .withExchange(generateExchange())
+                .withPrice(generateDecimalValue())
+                .withSize(generateDecimalValue())
+                .withTradeDate(generateQuoteDate()).create();
+    }
+    /**
      * Generates an equity <code>TradeEvent</code> with the given value.
      *
      * @param inInstrument an <code>Equity</code> value
@@ -876,6 +918,32 @@ public class EventTestBase
                                                         .withHighExchange("H")
                                                         .withLowExchange("L")
                                                         .withCloseExchange("C").create();
+    }
+    /**
+     * Generates a <code>MarketstatEvent</code> for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @return a <code>MarketstatEvent</code>
+     */
+    public static MarketstatEvent generateMarketstatEvent(Instrument inInstrument)
+    {
+        long startMillis = System.currentTimeMillis();
+        long oneDay = 1000 * 60 * 60 * 24;
+        int counter = 0;
+        return MarketstatEventBuilder.marketstat(inInstrument).withOpenPrice(generateDecimalValue())
+                                                              .withHighPrice(generateDecimalValue())
+                                                              .withLowPrice(generateDecimalValue())
+                                                              .withClosePrice(generateDecimalValue())
+                                                              .withPreviousClosePrice(generateDecimalValue())
+                                                              .withVolume(generateDecimalValue())
+                                                              .withCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                              .withPreviousCloseDate(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                              .withTradeHighTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                              .withTradeLowTime(DateUtils.dateToString(new Date(startMillis  + (counter++ * oneDay))))
+                                                              .withOpenExchange("O")
+                                                              .withHighExchange("H")
+                                                              .withLowExchange("L")
+                                                              .withCloseExchange("C").create();
     }
     /**
      * Generates an option <code>MarketstatEvent</code> value. 

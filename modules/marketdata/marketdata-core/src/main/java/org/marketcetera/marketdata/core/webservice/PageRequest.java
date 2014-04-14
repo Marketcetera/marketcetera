@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * Indicates the desired page for a multi-record request.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -27,8 +27,8 @@ public class PageRequest
     /**
      * Create a new MyPageRequest instance.
      *
-     * @param inPage
-     * @param inSize
+     * @param inPage an <code>int</code> value
+     * @param inSize an <code>int</code> value
      */
     public PageRequest(int inPage,
                        int inSize)
@@ -78,12 +78,12 @@ public class PageRequest
     @SuppressWarnings("unused")
     private PageRequest() {}
     /**
-     * 
+     * page number, 1-indexed
      */
     @XmlAttribute
     private int page;
     /**
-     * 
+     * page size
      */
     @XmlAttribute
     private int size;

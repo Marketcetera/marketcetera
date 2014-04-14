@@ -87,7 +87,70 @@ message EventsRequest {
 }
 
 message EventsResponse {
+    required int64 id = 1;
+    repeated string payload = 2;
+}
+
+message AllEventsRequest {
+    required string sessionId = 1;
+    repeated int64 id = 2;
+}
+
+message AllEventsResponse {
+    repeated EventsResponse events = 1;
+}
+
+message SnapshotRequest {
+    required string sessionId = 1;
+    required Instrument instrument = 2;
+    required ContentAndCapability content = 3;
+    optional string provider = 4;
+}
+
+message SnapshotResponse {
     repeated string payload = 1;
+}
+
+message SnapshotPageRequest {
+    required string sessionId = 1;
+    required Instrument instrument = 2;
+    required ContentAndCapability content = 3;
+    optional string provider = 4;
+    required PageRequest page = 5;
+}
+
+message SnapshotPageResponse {
+    repeated string payload = 1;
+}
+
+enum ContentAndCapability {
+    TOP_OF_BOOK = 0;
+    OPEN_BOOK = 1;
+    MARKET_STAT = 2;
+    TOTAL_VIEW = 3;
+    LEVEL_2 = 4;
+    LATEST_TICK = 5;
+    BBO10 = 6;
+    NBBO = 7;
+    DIVIDEND = 8;
+    AGGREGATED_DEPTH = 9;
+    UNAGGREGATED_DEPTH = 10;
+    IMBALANCE = 11;
+    UNKNOWN = 12;
+    EVENT_BOUNDARY = 13;
+}
+
+message PageRequest {
+    required int32 page = 1;
+    required int32 size = 2;
+}
+
+message AvailableCapabilityRequest {
+    required string sessionId = 1;
+}
+
+message AvailableCapabilityResponse {
+    repeated ContentAndCapability capability = 1;
 }
 
 service RpcClientService {
@@ -98,4 +161,8 @@ service RpcClientService {
     rpc getLastUpdate(LastUpdateRequest) returns (LastUpdateResponse);
     rpc cancel(CancelRequest) returns (CancelResponse);
     rpc getEvents(EventsRequest) returns (EventsResponse);
+    rpc getAllEvents(AllEventsRequest) returns (AllEventsResponse);
+    rpc getSnapshot(SnapshotRequest) returns (SnapshotResponse);
+    rpc getSnapshotPage(SnapshotPageRequest) returns (SnapshotPageResponse);
+    rpc getAvailableCapability(AvailableCapabilityRequest) returns (AvailableCapabilityResponse);
 }

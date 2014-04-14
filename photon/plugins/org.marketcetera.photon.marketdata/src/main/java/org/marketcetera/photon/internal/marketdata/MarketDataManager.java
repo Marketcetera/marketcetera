@@ -8,12 +8,12 @@ import org.eclipse.core.runtime.ListenerList;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.core.rpc.MarketDataRpcClientFactory;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.CredentialsException;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
 import org.marketcetera.marketdata.core.webservice.UnknownHostException;
 import org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider;
-import org.marketcetera.marketdata.core.webservice.impl.MarketDataServiceClientFactoryImpl;
 import org.marketcetera.photon.core.ICredentials;
 import org.marketcetera.photon.core.ICredentialsService;
 import org.marketcetera.photon.core.ICredentialsService.IAuthenticationHelper;
@@ -133,7 +133,6 @@ public final class MarketDataManager
         try {
             if(marketDataClient != null) {
                 marketDataClient.stop();
-                marketDataClient = null;
             }
             connect();
             mMarketData.resubmit();
@@ -239,12 +238,11 @@ public final class MarketDataManager
                     @Override
                     public boolean authenticate(ICredentials inCredentials)
                     {
-                        marketDataClient = new MarketDataServiceClientFactoryImpl().create(inCredentials.getUsername(),
-                                                                                           inCredentials.getPassword(),
-                                                                                           hostname,
-                                                                                           port,
-                                                                                           new MarketDataContextClassProvider());
-                        marketDataClient.addServerStatusListener(MarketDataManager.this);
+                        marketDataClient = new MarketDataRpcClientFactory().create(inCredentials.getUsername(),
+                                                                                   inCredentials.getPassword(),
+                                                                                   hostname,
+                                                                                   port,
+                                                                                   new MarketDataContextClassProvider());
                         marketDataClient.start();
                         return marketDataClient.isRunning();
                     }
@@ -257,6 +255,9 @@ public final class MarketDataManager
                 update.newFeedStatus = FeedStatus.ERROR;
                 throw e;
             } finally {
+                if(marketDataClient != null) {
+                    marketDataClient.addServerStatusListener(MarketDataManager.this);
+                }
                 notifyListeners(update);
             }
         }

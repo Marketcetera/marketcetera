@@ -53,7 +53,7 @@ public class RetrieveTradingHistoryJob
     protected IStatus run(IProgressMonitor monitor)
     {
         try {
-            String timeString = PhotonPlugin.getDefault().getPreferenceStore().getString(PhotonPreferences.TRADING_HISTORY_START_TIME);
+            String timeString = StringUtils.trimToNull(PhotonPlugin.getDefault().getPreferenceStore().getString(PhotonPreferences.TRADING_HISTORY_START_TIME));
             // this collection will hold the reports that we're going to return - the goal is to collect all reports
             //  since the lastOccurrence date plus any open orders that predate the lastOccurrence
             final Set<ReportBase> allReports = new LinkedHashSet<ReportBase>();
@@ -61,7 +61,7 @@ public class RetrieveTradingHistoryJob
             Client client = ClientManager.getInstance();
             List<ReportBaseImpl> openReports = client.getOpenOrders();
             Date positionDate = new Date();
-            if(StringUtils.isNotEmpty(timeString)) {
+            if(timeString != null) {
                 TimeOfDay time = TimeOfDay.create(timeString);
                 if(time != null) {
                     // trade history is enabled, fetch reports since last occurrence

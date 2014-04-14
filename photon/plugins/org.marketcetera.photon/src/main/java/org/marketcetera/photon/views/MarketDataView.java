@@ -239,20 +239,21 @@ public final class MarketDataView
                 createCompositeMap(
                         domain,
                         "topOfBook", MDPackage.Literals.MD_TOP_OF_BOOK__ASK_SIZE), //$NON-NLS-1$
-                createCompositeMap(
-                        domain,
-                        "marketStat", MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE), //$NON-NLS-1$
-                createCompositeMap(
-                        domain,
-                        "marketStat", MDPackage.Literals.MD_MARKETSTAT__OPEN_PRICE), //$NON-NLS-1$
-                createCompositeMap(
-                        domain,
-                        "marketStat", MDPackage.Literals.MD_MARKETSTAT__HIGH_PRICE), //$NON-NLS-1$
-                createCompositeMap(
-                        domain,
-                        "marketStat", MDPackage.Literals.MD_MARKETSTAT__LOW_PRICE), //$NON-NLS-1$				
                 createCompositeMap(domain,
-                        "marketStat", MDPackage.Literals.MD_MARKETSTAT__VOLUME) //$NON-NLS-1$
+                                   "marketStat", //$NON-NLS-1$
+                                   MDPackage.Literals.MD_MARKETSTAT__PREVIOUS_CLOSE_PRICE),
+                createCompositeMap(domain,
+                                   "marketStat", //$NON-NLS-1$
+                                   MDPackage.Literals.MD_MARKETSTAT__OPEN_PRICE),
+                createCompositeMap(domain,
+                                   "marketStat", //$NON-NLS-1$
+                                   MDPackage.Literals.MD_MARKETSTAT__HIGH_PRICE),
+                createCompositeMap(domain,
+                                   "marketStat", //$NON-NLS-1$
+                                   MDPackage.Literals.MD_MARKETSTAT__LOW_PRICE),
+                createCompositeMap(domain,
+                                   "marketStat", //$NON-NLS-1$
+                                   MDPackage.Literals.MD_MARKETSTAT__VOLUME)
         };
         mViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
         mViewer.setUseHashlookup(true);

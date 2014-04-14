@@ -82,7 +82,7 @@
   <!--  SA RPC Service -->
   <bean id="rpcService" class="org.marketcetera.util.rpc.RpcServer">
     <property name="contextClassProvider">
-      <bean class="org.marketcetera.trade.TradeContextClassProvider"/>
+      <bean class="org.marketcetera.marketdata.core.webservice.impl.MarketDataContextClassProvider"/>
     </property>
     <property name="hostname" value="${metc.sa.ws.host}"/>
     <property name="port" value ="${metc.sa.rpc.port}"/>
@@ -91,7 +91,9 @@
     <property name="serviceSpecs">
       <list>
         <!-- Market Data RPC Service -->
-        <bean id="mdataRpcService" class="org.marketcetera.marketdata.core.rpc.MarketdataRpcService"/>
+        <bean id="mdataRpcService" class="org.marketcetera.marketdata.core.rpc.MarketdataRpcService">
+            <property name="serviceAdapter" ref="marketdataWebService"/>
+        </bean>
       </list>
     </property>
   </bean>

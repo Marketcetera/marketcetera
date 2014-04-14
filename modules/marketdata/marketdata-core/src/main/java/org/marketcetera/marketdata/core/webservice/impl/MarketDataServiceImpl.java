@@ -93,6 +93,14 @@ public class MarketDataServiceImpl
         }.execute(inContext);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getAvailableCapability()
+     */
+    @Override
+    public Set<Capability> getAvailableCapability()
+    {
+        return marketDataManager.getAvailableCapability();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataService#request(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.marketdata.MarketDataRequest, boolean)
      */
     @Override
@@ -161,6 +169,20 @@ public class MarketDataServiceImpl
                 return eventsToReturn;
             }
         }.execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getAllEvents(java.util.List)
+     */
+    @Override
+    public Map<Long,LinkedList<Event>> getAllEvents(List<Long> inRequestIds)
+    {
+        Map<Long,LinkedList<Event>> eventsToReturn = Maps.newLinkedHashMap();
+        for(Long requestId : inRequestIds) {
+            LinkedList<Event> events = Lists.newLinkedList(doGetEvents(requestId));
+            eventsToReturn.put(requestId,
+                               events);
+        }
+        return eventsToReturn;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataWebService#getEvents(org.marketcetera.util.ws.stateful.ClientContext, long)
@@ -276,21 +298,23 @@ public class MarketDataServiceImpl
                                        inInstrument,
                                        inProvider);
                 checkConnection();
-                Event event = marketDataManager.requestMarketDataSnapshot(inInstrument,
-                                                                          inContent,
-                                                                          inProvider);
-                if(event == null) {
-                    return null;
-                }
-                Deque<Event> eventsToReturn = Lists.newLinkedList();
-                if(event instanceof AggregateEvent) {
-                    eventsToReturn.addAll(((AggregateEvent)event).decompose());
-                } else {
-                    eventsToReturn.add(event);
-                }
-                return eventsToReturn;
+                return doGetSnapshot(inInstrument,
+                                     inContent,
+                                     inProvider);
             }
         }.execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
+     */
+    @Override
+    public Deque<Event> getSnapshot(Instrument inInstrument,
+                                    Content inContent,
+                                    String inProvider)
+    {
+        return doGetSnapshot(inInstrument,
+                             inContent,
+                             inProvider);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataService#getSnapshotPage(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.springframework.data.domain.PageRequest)
@@ -317,22 +341,26 @@ public class MarketDataServiceImpl
                                        inInstrument,
                                        inProvider);
                 checkConnection();
-                Event event = marketDataManager.requestMarketDataSnapshot(inInstrument,
-                                                                          inContent,
-                                                                          inProvider);
-                if(event == null) {
-                    return null;
-                }
-                Deque<Event> eventsToReturn = Lists.newLinkedList();
-                if(event instanceof AggregateEvent) {
-                    eventsToReturn.addAll(((AggregateEvent)event).decompose());
-                } else {
-                    eventsToReturn.add(event);
-                }
-                // TODO pick out page
-                return eventsToReturn;
+                return doGetSnapshotPage(inInstrument,
+                                         inContent,
+                                         inProvider,
+                                         inPage);
             }
         }.execute(inContext);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.rpc.MarketDataServiceAdapter#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
+     */
+    @Override
+    public Deque<Event> getSnapshotPage(Instrument inInstrument,
+                                        Content inContent,
+                                        String inProvider,
+                                        PageRequest inPageRequest)
+    {
+        return doGetSnapshotPage(inInstrument,
+                                 inContent,
+                                 inProvider,
+                                 inPageRequest);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataWebService#cancel(org.marketcetera.util.ws.stateful.ClientContext, long)
@@ -481,12 +509,11 @@ public class MarketDataServiceImpl
         maxSubscriptionInterval = inMaxSubscriptionInterval;
     }
     /**
-     * 
+     * Executes the given market data request.
      *
-     *
-     * @param inRequest
-     * @param inStreamEvents
-     * @return
+     * @param inRequest a <code>MarketDataRequest</code> value
+     * @param inStreamEvents a <code>boolean</code> value
+     * @return a <code>long</code> value
      */
     private long doRequest(MarketDataRequest inRequest,
                            boolean inStreamEvents)
@@ -500,11 +527,10 @@ public class MarketDataServiceImpl
         return requestId;
     }
     /**
-     * 
+     * Executes a get last update call.
      *
-     *
-     * @param inRequestId
-     * @return
+     * @param inRequestId a <code>long</code> value
+     * @return a <code>long</code> value
      */
     private long doGetLastUpdate(long inRequestId)
     {
@@ -542,6 +568,61 @@ public class MarketDataServiceImpl
             marketDataManager.cancelMarketDataRequest(inRequestId);
             subscriber.cancel();
         }
+    }
+    /**
+     * Gets the most recent snapshot for the given attributes.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inContent a <code>Content</code> value
+     * @param inProvider a <code>String</code> value or <code>null</code>
+     * @return a <code>Deque&lt;Event&gt;</code> value or <code>null</code>
+     */
+    private Deque<Event> doGetSnapshot(Instrument inInstrument,
+                                       Content inContent,
+                                       String inProvider)
+    {
+        Event event = marketDataManager.requestMarketDataSnapshot(inInstrument,
+                                                                  inContent,
+                                                                  inProvider);
+        if(event == null) {
+            return null;
+        }
+        Deque<Event> eventsToReturn = Lists.newLinkedList();
+        if(event instanceof AggregateEvent) {
+            eventsToReturn.addAll(((AggregateEvent)event).decompose());
+        } else {
+            eventsToReturn.add(event);
+        }
+        return eventsToReturn;
+    }
+    /**
+     * Gets the requested page of the most recent snapshot for the given attribute.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inContent a <code>Content</code> value
+     * @param inProvider a <code>String</code> value or <code>null</code>
+     * @param inPageRequest a <code>PageRequest</code> value
+     * @return a <code>Deque&lt;Event&gt;</code> value or <code>null</code>
+     */
+    private Deque<Event> doGetSnapshotPage(Instrument inInstrument,
+                                           Content inContent,
+                                           String inProvider,
+                                           PageRequest inPageRequest)
+    {
+        Event event = marketDataManager.requestMarketDataSnapshot(inInstrument,
+                                                                  inContent,
+                                                                  inProvider);
+        if(event == null) {
+            return null;
+        }
+        Deque<Event> eventsToReturn = Lists.newLinkedList();
+        if(event instanceof AggregateEvent) {
+            eventsToReturn.addAll(((AggregateEvent)event).decompose());
+        } else {
+            eventsToReturn.add(event);
+        }
+        // TODO pick out page
+        return eventsToReturn;
     }
     /**
      * Checks that the connection is active.

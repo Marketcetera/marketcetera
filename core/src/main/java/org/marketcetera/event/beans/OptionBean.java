@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.marketcetera.event.Messages;
 import org.marketcetera.event.OptionEvent;
@@ -23,6 +27,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @NotThreadSafe
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public final class OptionBean
         implements Serializable, Messages
@@ -286,26 +291,32 @@ public final class OptionBean
     /**
      * the underlying instrument for the option
      */
+    @XmlElement
     private Instrument underlyingInstrument;
     /**
      * the expiration type of the option
      */
+    @XmlAttribute
     private ExpirationType expirationType;
     /**
      * the multiplier of the option
      */
+    @XmlAttribute
     private BigDecimal multiplier;
     /**
      * indicates if the option includes deliverables
      */
+    @XmlAttribute
     private boolean hasDeliverable;
     /**
      * the provider symbol of the option, if available
      */
+    @XmlAttribute
     private String providerSymbol;
     /**
      * the instrument of the option
      */
+    @XmlElement
     private Instrument instrument;
     private final static long serialVersionUID = 1L;
 }

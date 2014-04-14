@@ -631,15 +631,6 @@ public class ClientTest
             Thread.sleep(5000);
             //Verify received response (in the form of a logged message)
             assertNull(mReplies.peekReport());
-            assertSingleEvent
-                (Level.WARN,category,
-                 "Received a fix report that was neither an execution report "+
-                 "nor an order cancel reject: '"+
-                 response.toString()+
-                 "'. Client applications do "+
-                 "not yet support this message type, so it was not forwarded "+
-                 "to the application or its embedded strategies.",
-                 category);
         }
     }
 
@@ -761,6 +752,7 @@ public class ClientTest
         //Add it to the client
         getClient().addServerStatusListener(chitChat);
         try {
+            triggerServerStatus();
             boolean status = triggerServerStatus();
             //Verify our listener got it.
             boolean receivedStatus = chitChat.getStatus();

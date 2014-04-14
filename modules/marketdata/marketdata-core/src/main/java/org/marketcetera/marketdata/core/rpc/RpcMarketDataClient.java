@@ -28,8 +28,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.marketcetera.client.ClientVersion;
+import org.marketcetera.core.ApplicationVersion;
 import org.marketcetera.core.CloseableLock;
+import org.marketcetera.core.Util;
+import org.marketcetera.core.VersionInfo;
 import org.marketcetera.core.notifications.ServerStatusListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
@@ -50,11 +52,13 @@ import org.marketcetera.trade.Instrument;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
+import org.marketcetera.util.ws.tags.AppId;
 import org.marketcetera.util.ws.tags.NodeId;
 import org.marketcetera.util.ws.tags.SessionId;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.protobuf.RpcController;
 import com.google.protobuf.ServiceException;
 import com.googlecode.protobuf.pro.duplex.PeerInfo;
@@ -104,11 +108,13 @@ public class RpcMarketDataClient
     @Override
     public synchronized void start()
     {
+        shutdownRequested.set(false);
         try {
-            // TODO sort out sync
-            context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
-            marshaller = context.createMarshaller();
-            unmarshaller = context.createUnmarshaller();
+            synchronized(contextLock) {
+                context = JAXBContext.newInstance(contextClassProvider==null?new Class<?>[0]:contextClassProvider.getContextClasses());
+                marshaller = context.createMarshaller();
+                unmarshaller = context.createUnmarshaller();
+            }
             startService();
             heartbeatFuture = heartbeatService.scheduleAtFixedRate(new HeartbeatMonitor(),
                                                                    heartbeatInterval,
@@ -124,7 +130,7 @@ public class RpcMarketDataClient
     @Override
     public synchronized void stop()
     {
-        exit.set(true);
+        shutdownRequested.set(true);
         try {
             if(heartbeatFuture != null) {
                 try {
@@ -154,7 +160,7 @@ public class RpcMarketDataClient
                         boolean inStreamEvents)
     {
         SLF4JLoggerProxy.debug(this,
-                               "MarketDataRequest: {}",
+                               "MarketDataRequest: {}", //$NON-NLS-1$
                                inRequest);
         try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
             requestLock.lock();
@@ -163,7 +169,7 @@ public class RpcMarketDataClient
                                                                               .setRequest(inRequest.toString())
                                                                               .setStreamEvents(inStreamEvents).build());
             SLF4JLoggerProxy.debug(this,
-                                   "MarketDataResponse: {}",
+                                   "MarketDataResponse: {}", //$NON-NLS-1$
                                    response.getId());
             return response.getId();
         } catch (ServiceException e) {
@@ -177,7 +183,7 @@ public class RpcMarketDataClient
     public long getLastUpdate(long inRequestId)
     {
         SLF4JLoggerProxy.debug(this,
-                               "GetLastUpdate: {}",
+                               "GetLastUpdate: {}", //$NON-NLS-1$
                                inRequestId);
         try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
             requestLock.lock();
@@ -185,7 +191,7 @@ public class RpcMarketDataClient
                                                                                     RpcMarketdata.LastUpdateRequest.newBuilder().setSessionId(sessionId.getValue())
                                                                                         .setId(inRequestId).build());
             SLF4JLoggerProxy.debug(this,
-                                   "GetLastUpdateResponse: {}",
+                                   "GetLastUpdateResponse: {}", //$NON-NLS-1$
                                    response.getTimestamp());
             return response.getTimestamp();
         } catch (ServiceException e) {
@@ -199,7 +205,7 @@ public class RpcMarketDataClient
     public void cancel(long inRequestId)
     {
         SLF4JLoggerProxy.debug(this,
-                               "Cancel: {}",
+                               "Cancel: {}", //$NON-NLS-1$
                                inRequestId);
         try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
             requestLock.lock();
@@ -207,7 +213,7 @@ public class RpcMarketDataClient
                                                                          RpcMarketdata.CancelRequest.newBuilder().setSessionId(sessionId.getValue())
                                                                              .setId(inRequestId).build());
             SLF4JLoggerProxy.debug(this,
-                                   "Cancel Response: {}",
+                                   "Cancel Response: {}", //$NON-NLS-1$
                                    response);
             return;
         } catch (ServiceException e) {
@@ -221,7 +227,7 @@ public class RpcMarketDataClient
     public Deque<Event> getEvents(long inRequestId)
     {
         SLF4JLoggerProxy.debug(this,
-                               "GetEvents: {}",
+                               "GetEvents: {}", //$NON-NLS-1$
                                inRequestId);
         try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
             requestLock.lock();
@@ -233,7 +239,7 @@ public class RpcMarketDataClient
                 events.add((Event)unmarshall(payload));
             }
             SLF4JLoggerProxy.debug(this,
-                                   "GetEventsResponse: {}",
+                                   "GetEventsResponse: {}", //$NON-NLS-1$
                                    events);
             return events;
         } catch (ServiceException | JAXBException e) {
@@ -246,7 +252,30 @@ public class RpcMarketDataClient
     @Override
     public Map<Long,LinkedList<Event>> getAllEvents(List<Long> inRequestIds)
     {
-        throw new UnsupportedOperationException(); // TODO
+        SLF4JLoggerProxy.debug(this,
+                               "GetAllEvents: {}", //$NON-NLS-1$
+                               inRequestIds);
+        try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
+            requestLock.lock();
+            RpcMarketdata.AllEventsResponse response = clientService.getAllEvents(controller,
+                                                                                  RpcMarketdata.AllEventsRequest.newBuilder().setSessionId(sessionId.getValue())
+                                                                                      .addAllId(inRequestIds).build());
+            Map<Long,LinkedList<Event>> events = Maps.newHashMap();
+            for(RpcMarketdata.EventsResponse eventResponse : response.getEventsList()) {
+                LinkedList<Event> eventList = new LinkedList<>();
+                for(String payload : eventResponse.getPayloadList()) {
+                    eventList.add((Event)unmarshall(payload));
+                }
+                events.put(eventResponse.getId(),
+                           eventList);
+            }
+            SLF4JLoggerProxy.debug(this,
+                                   "GetAllEventsResponse: {}", //$NON-NLS-1$
+                                   events);
+            return events;
+        } catch (ServiceException | JAXBException e) {
+            throw new ConnectionException(e);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshot(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String)
@@ -256,7 +285,32 @@ public class RpcMarketDataClient
                                     Content inContent,
                                     String inProvider)
     {
-        throw new UnsupportedOperationException(); // TODO
+        SLF4JLoggerProxy.debug(this,
+                               "GetSnapshot: {}/{}/{}", //$NON-NLS-1$
+                               inInstrument,
+                               inContent,
+                               inProvider);
+        try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
+            requestLock.lock();
+            RpcMarketdata.SnapshotRequest.Builder requestBuilder = RpcMarketdata.SnapshotRequest.newBuilder().setSessionId(sessionId.getValue());
+            requestBuilder.setContent(RpcMarketdata.ContentAndCapability.valueOf(inContent.name()))
+                .setInstrument(RpcMarketdata.Instrument.newBuilder().setPayload(marshall(inInstrument)));
+            if(inProvider != null){
+                requestBuilder.setProvider(inProvider);
+            }
+            RpcMarketdata.SnapshotResponse response = clientService.getSnapshot(controller,
+                                                                                requestBuilder.build());
+            Deque<Event> events = Lists.newLinkedList();
+            for(String payload : response.getPayloadList()) {
+                events.add((Event)unmarshall(payload));
+            }
+            SLF4JLoggerProxy.debug(this,
+                                   "GetSnapshotResponse: {}", //$NON-NLS-1$
+                                   events);
+            return events;
+        } catch (ServiceException | JAXBException e) {
+            throw new ConnectionException(e);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getSnapshotPage(org.marketcetera.trade.Instrument, org.marketcetera.marketdata.Content, java.lang.String, org.marketcetera.marketdata.core.webservice.PageRequest)
@@ -267,7 +321,58 @@ public class RpcMarketDataClient
                                         String inProvider,
                                         PageRequest inPage)
     {
-        throw new UnsupportedOperationException(); // TODO
+        SLF4JLoggerProxy.debug(this,
+                               "GetSnapshotPage: {}/{}/{}/{}", //$NON-NLS-1$
+                               inInstrument,
+                               inContent,
+                               inProvider,
+                               inPage);
+        try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
+            requestLock.lock();
+            RpcMarketdata.SnapshotPageRequest.Builder requestBuilder = RpcMarketdata.SnapshotPageRequest.newBuilder().setSessionId(sessionId.getValue());
+            requestBuilder.setContent(RpcMarketdata.ContentAndCapability.valueOf(inContent.name()))
+                .setInstrument(RpcMarketdata.Instrument.newBuilder().setPayload(marshall(inInstrument)))
+                .setPage(RpcMarketdata.PageRequest.newBuilder().setPage(inPage.getPage()).setSize(inPage.getSize()));
+            if(inProvider != null){
+                requestBuilder.setProvider(inProvider);
+            }
+            RpcMarketdata.SnapshotPageResponse response = clientService.getSnapshotPage(controller,
+                                                                                        requestBuilder.build());
+            Deque<Event> events = Lists.newLinkedList();
+            for(String payload : response.getPayloadList()) {
+                events.add((Event)unmarshall(payload));
+            }
+            SLF4JLoggerProxy.debug(this,
+                                   "GetSnapshotPageResponse: {}", //$NON-NLS-1$
+                                   events);
+            return events;
+        } catch (ServiceException | JAXBException e) {
+            throw new ConnectionException(e);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getAvailableCapability()
+     */
+    @Override
+    public Set<Capability> getAvailableCapability()
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "GetAvailableCapability"); //$NON-NLS-1$
+        try(CloseableLock requestLock = CloseableLock.create(serviceLock.readLock())) {
+            requestLock.lock();
+            RpcMarketdata.AvailableCapabilityResponse response = clientService.getAvailableCapability(controller,
+                                                                                                      RpcMarketdata.AvailableCapabilityRequest.newBuilder().setSessionId(sessionId.getValue()).build());
+            Set<Capability> capabilities = Sets.newHashSet();
+            for(RpcMarketdata.ContentAndCapability capability : response.getCapabilityList()) {
+                capabilities.add(Capability.valueOf(capability.name()));
+            }
+            SLF4JLoggerProxy.debug(this,
+                                   "GetAvailableCapability: {}", //$NON-NLS-1$
+                                   capabilities);
+            return capabilities;
+        } catch (ServiceException e) {
+            throw new ConnectionException(e);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#addServerStatusListener(org.marketcetera.core.notifications.ServerStatusListener)
@@ -306,14 +411,6 @@ public class RpcMarketDataClient
             }
         }
     }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClient#getAvailableCapability()
-     */
-    @Override
-    public Set<Capability> getAvailableCapability()
-    {
-        throw new UnsupportedOperationException(); // TODO
-    }
     /**
      * Get the contextClassProvider value.
      *
@@ -333,43 +430,41 @@ public class RpcMarketDataClient
         contextClassProvider = inContextClassProvider;
     }
     /**
-     * 
+     * Marshals the given object to an XML stream.
      *
-     *
-     * @param inObject
-     * @return
-     * @throws JAXBException
+     * @param inObject an <code>Object</code> value
+     * @return a <code>String</code> value
+     * @throws JAXBException if an error occurs marshalling the data
      */
     private String marshall(Object inObject)
             throws JAXBException
     {
         StringWriter output = new StringWriter();
-        synchronized(marshaller) {
+        synchronized(contextLock) {
             marshaller.marshal(inObject,
                                output);
         }
         return output.toString();
     }
     /**
-     * 
+     * Unmarshals an object from the given XML stream.
      *
-     *
-     * @param inData
-     * @return
-     * @throws JAXBException
+     * @param inData a <code>String</code> value
+     * @return a <code>Clazz</code> value
+     * @throws JAXBException if an error occurs unmarshalling the data
      */
     @SuppressWarnings("unchecked")
     private <Clazz> Clazz unmarshall(String inData)
             throws JAXBException
     {
-        synchronized(unmarshaller) {
+        synchronized(contextLock) {
             return (Clazz)unmarshaller.unmarshal(new StringReader(inData));
         }
     }
     /**
-     * 
+     * Sets the server status to the given value.
      *
-     *
+     * <p>This method also notifies subscribers if there is a change in status.
      */
     private void setServerStatus(boolean inStatus)
     {
@@ -386,9 +481,7 @@ public class RpcMarketDataClient
         }
     }
     /**
-     * 
-     *
-     *
+     * Stops the remote service.
      */
     private void stopService()
     {
@@ -418,11 +511,10 @@ public class RpcMarketDataClient
         }
     }
     /**
-     * 
+     * Starts the remote service.
      *
-     *
-     * @throws IOException
-     * @throws ServiceException
+     * @throws IOException if an error occurs starting the service
+     * @throws ServiceException if an error occurs starting the service
      */
     private void startService()
             throws IOException, ServiceException
@@ -430,7 +522,7 @@ public class RpcMarketDataClient
         try(CloseableLock startLock = CloseableLock.create(serviceLock.writeLock())) {
             startLock.lock();
             SLF4JLoggerProxy.debug(this,
-                                   "Connecting to RPC server at {}:{}",
+                                   "Connecting to RPC server at {}:{}", //$NON-NLS-1$
                                    hostname,
                                    port);
             PeerInfo server = new PeerInfo(hostname,
@@ -459,13 +551,13 @@ public class RpcMarketDataClient
             controller = channel.newRpcController();
             java.util.Locale currentLocale = java.util.Locale.getDefault();
             LoginRequest loginRequest = LoginRequest.newBuilder()
-                    .setAppId(ClientVersion.APP_ID.getValue())
-                    .setVersionId(ClientVersion.APP_ID_VERSION.getVersionInfo())
+                    .setAppId(APP_ID.getValue())
+                    .setVersionId(APP_ID_VERSION.getVersionInfo())
                     .setClientId(NodeId.generate().getValue())
                     .setLocale(Locale.newBuilder()
-                               .setCountry(currentLocale.getCountry()==null?"":currentLocale.getCountry())
-                               .setLanguage(currentLocale.getLanguage()==null?"":currentLocale.getLanguage())
-                               .setVariant(currentLocale.getVariant()==null?"":currentLocale.getVariant()).build())
+                               .setCountry(currentLocale.getCountry()==null?"":currentLocale.getCountry()) //$NON-NLS-1$
+                               .setLanguage(currentLocale.getLanguage()==null?"":currentLocale.getLanguage()) //$NON-NLS-1$
+                               .setVariant(currentLocale.getVariant()==null?"":currentLocale.getVariant()).build()) //$NON-NLS-1$
                                .setUsername(username)
                                .setPassword(new String(password)).build();
             LoginResponse loginResponse = clientService.login(controller,
@@ -475,7 +567,9 @@ public class RpcMarketDataClient
         }
     }
     /**
-     *
+     * Sends heartbeats and monitors the responses.
+     * 
+     * <p>This class also manages reconnection, if necessary.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
@@ -491,7 +585,7 @@ public class RpcMarketDataClient
         @Override
         public void run()
         {
-            if(!isRunning() && !exit.get()) {
+            if(!isRunning() && !shutdownRequested.get()) {
                 try {
                     stopService();
                     startService();
@@ -505,34 +599,34 @@ public class RpcMarketDataClient
                 // heartbeat failed for some reason
                 SLF4JLoggerProxy.debug(RpcMarketDataClient.this,
                                        e,
-                                       "Heartbeat failed");
+                                       "Heartbeat failed"); //$NON-NLS-1$
                 setServerStatus(false);
             }
         }
     }
     /**
-     * 
+     * indicates that a shutdown has been requested
      */
-    private final AtomicBoolean exit = new AtomicBoolean(false);
+    private final AtomicBoolean shutdownRequested = new AtomicBoolean(false);
     /**
-     * 
+     * stores a handle to the heartbeat scheduled job
      */
     private ScheduledFuture<?> heartbeatFuture;
     /**
-     * 
+     * executes heartbeats
      */
-    private ScheduledExecutorService heartbeatService = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService heartbeatService = Executors.newScheduledThreadPool(1);
     /**
-     * 
+     * tracks subscribers to connection status changes
      */
     @GuardedBy("serverStatusSubscribers")
     private final Map<ServerStatusListener,ISubscriber> serverStatusSubscribers = Maps.newHashMap();
     /**
-     * 
+     * publishes notifications of connection status changes
      */
     private final PublisherEngine publisher = new PublisherEngine(true);
     /**
-     * 
+     * indicates if the connection is up and running or not
      */
     private final AtomicBoolean running = new AtomicBoolean(false);
     /**
@@ -556,23 +650,23 @@ public class RpcMarketDataClient
      */
     private RpcController controller;
     /**
-     * 
+     * username with which to connect
      */
     private String username;
     /**
-     * 
+     * password with which to connect
      */
     private String password;
     /**
-     * 
+     * hostname to which to connect
      */
     private String hostname;
     /**
-     * 
+     * port to which to connect
      */
     private int port;
     /**
-     * 
+     * provides context classes for marshalling/unmarshalling, may be <code>null</code>
      */
     private ContextClassProvider contextClassProvider;
     /**
@@ -599,7 +693,19 @@ public class RpcMarketDataClient
     @GuardedBy("contextLock")
     private Unmarshaller unmarshaller;
     /**
-     * 
+     * interval at which to execute heartbeats
      */
     private long heartbeatInterval = 10000;
+    /**
+     * The client's application ID: the application name.
+     */
+    public static final String APP_ID_NAME = "RpcClient"; //$NON-NLS-1$
+    /**
+     * The client's application ID: the version.
+     */
+    public static final VersionInfo APP_ID_VERSION = ApplicationVersion.getVersion(RpcMarketDataClient.class);
+    /**
+     * The client's application ID: the ID.
+     */
+    public static final AppId APP_ID = Util.getAppId(APP_ID_NAME,APP_ID_VERSION.getVersionInfo());
 }

@@ -3,6 +3,10 @@ package org.marketcetera.event.impl;
 import java.math.BigDecimal;
 
 import javax.annotation.concurrent.ThreadSafe;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.OptionEvent;
@@ -23,6 +27,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since 2.0.0
  */
 @ThreadSafe
+@XmlRootElement(name="optionBid")
+@XmlAccessorType(XmlAccessType.NONE)
 @ClassVersion("$Id$")
 public class OptionBidEventImpl
         extends AbstractQuoteEventImpl
@@ -124,6 +130,7 @@ public class OptionBidEventImpl
     /**
      * the option attributes 
      */
+    @XmlElement
     private final OptionBean option;
     private static final long serialVersionUID = 1L;
 }
