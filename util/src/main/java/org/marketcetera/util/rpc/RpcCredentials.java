@@ -2,24 +2,36 @@ package org.marketcetera.util.rpc;
 
 import java.util.Locale;
 
+import org.marketcetera.util.misc.ClassVersion;
+
+/* $License$ */
+
+/**
+ * Provides credentials to authenticate with an {@link RpcServer}.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$")
 public class RpcCredentials
 {
     /**
      * Create a new Credentials instance.
      *
-     * @param inUsername
-     * @param inPassword
-     * @param inAppId
-     * @param inClientId
-     * @param inVersionId
-     * @param inLocale
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>String</code> value
+     * @param inAppId a <code>String</code> value
+     * @param inClientId a <code>String</code> value
+     * @param inVersionId a <code>String</code> value
+     * @param inLocale a <code>Locale</code> value
      */
     public RpcCredentials(String inUsername,
-                       String inPassword,
-                       String inAppId,
-                       String inClientId,
-                       String inVersionId,
-                       Locale inLocale)
+                          String inPassword,
+                          String inAppId,
+                          String inClientId,
+                          String inVersionId,
+                          Locale inLocale)
     {
         username = inUsername;
         password = inPassword;
@@ -137,27 +149,27 @@ public class RpcCredentials
         locale = inLocale;
     }
     /**
-     * 
+     * username value
      */
     private String username;
     /**
-     * 
+     * password value
      */
     private String password;
     /**
-     * 
+     * app ID value
      */
     private String appId;
     /**
-     * 
+     * client ID value
      */
     private String clientId;
     /**
-     * 
+     * version ID value
      */
     private String versionId;
     /**
-     * 
+     * locale value
      */
     private Locale locale;
 }

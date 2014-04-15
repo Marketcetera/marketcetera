@@ -31,7 +31,7 @@ import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutRequest;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutResponse;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataRequest;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataResponse;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService;
+import org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest;
@@ -60,10 +60,10 @@ import com.google.protobuf.ServiceException;
  */
 @ClassVersion("$Id$")
 public class MarketDataRpcService<SessionClazz>
-        implements RpcServiceSpec<SessionClazz>,RpcClientService.BlockingInterface
+        implements RpcServiceSpec<SessionClazz>,RpcMarketDataService.BlockingInterface
 {
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#login(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#login(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginRequest)
      */
     @Override
     public LoginResponse login(RpcController inController,
@@ -89,7 +89,7 @@ public class MarketDataRpcService<SessionClazz>
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#logout(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#logout(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutRequest)
      */
     @Override
     public LogoutResponse logout(RpcController inController,
@@ -104,7 +104,7 @@ public class MarketDataRpcService<SessionClazz>
         return LogoutResponse.newBuilder().setStatus(true).build();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#heartbeat(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#heartbeat(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatRequest)
      */
     @Override
     public HeartbeatResponse heartbeat(RpcController inController,
@@ -114,7 +114,7 @@ public class MarketDataRpcService<SessionClazz>
         return RpcMarketdata.HeartbeatResponse.newBuilder().setId(inRequest.getId()).build();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#request(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#request(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataRequest)
      */
     @Override
     public MarketDataResponse request(RpcController inController,
@@ -126,7 +126,7 @@ public class MarketDataRpcService<SessionClazz>
                                                                                           inRequest.getStreamEvents())).build();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#getLastUpdate(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getLastUpdate(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateRequest)
      */
     @Override
     public LastUpdateResponse getLastUpdate(RpcController inController,
@@ -137,7 +137,7 @@ public class MarketDataRpcService<SessionClazz>
         return RpcMarketdata.LastUpdateResponse.newBuilder().setTimestamp(serviceAdapter.getLastUpdate(inRequest.getId())).build();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#cancel(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#cancel(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelRequest)
      */
     @Override
     public CancelResponse cancel(RpcController inController,
@@ -149,7 +149,7 @@ public class MarketDataRpcService<SessionClazz>
         return RpcMarketdata.CancelResponse.newBuilder().build();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#getEvents(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getEvents(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsRequest)
      */
     @Override
     public EventsResponse getEvents(RpcController inController,
@@ -161,7 +161,7 @@ public class MarketDataRpcService<SessionClazz>
         RpcMarketdata.EventsResponse.Builder responseBuilder = RpcMarketdata.EventsResponse.newBuilder().setId(inRequest.getId());
         for(Event event : events) {
             try {
-                responseBuilder.addPayload(serverServices.marshall(event));
+                responseBuilder.addPayload(serverServices.marshal(event));
             } catch (JAXBException e) {
                 throw new ServiceException(e);
             }
@@ -169,7 +169,7 @@ public class MarketDataRpcService<SessionClazz>
         return responseBuilder.build();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#getAllEvents(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getAllEvents(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsRequest)
      */
     @Override
     public AllEventsResponse getAllEvents(RpcController inController,
@@ -183,7 +183,7 @@ public class MarketDataRpcService<SessionClazz>
             RpcMarketdata.EventsResponse.Builder entryBuilder = RpcMarketdata.EventsResponse.newBuilder().setId(entry.getKey());
             for(Event event : entry.getValue()) {
                 try {
-                    entryBuilder.addPayload(serverServices.marshall(event));
+                    entryBuilder.addPayload(serverServices.marshal(event));
                 } catch (JAXBException e) {
                     throw new ServiceException(e);
                 }
@@ -193,7 +193,7 @@ public class MarketDataRpcService<SessionClazz>
         return responseBuilder.build();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#getSnapshot(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getSnapshot(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotRequest)
      */
     @Override
     public SnapshotResponse getSnapshot(RpcController inController,
@@ -213,7 +213,7 @@ public class MarketDataRpcService<SessionClazz>
                                                              provider);
             RpcMarketdata.SnapshotResponse.Builder responseBuilder = RpcMarketdata.SnapshotResponse.newBuilder();
             for(Event event : events) {
-                responseBuilder.addPayload(serverServices.marshall(event));
+                responseBuilder.addPayload(serverServices.marshal(event));
             }
             return responseBuilder.build();
         } catch (JAXBException e) {
@@ -221,7 +221,7 @@ public class MarketDataRpcService<SessionClazz>
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#getSnapshotPage(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getSnapshotPage(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageRequest)
      */
     @Override
     public SnapshotPageResponse getSnapshotPage(RpcController inController,
@@ -243,7 +243,7 @@ public class MarketDataRpcService<SessionClazz>
                                                                                  inRequest.getPage().getSize()));
             RpcMarketdata.SnapshotPageResponse.Builder responseBuilder = RpcMarketdata.SnapshotPageResponse.newBuilder();
             for(Event event : events) {
-                responseBuilder.addPayload(serverServices.marshall(event));
+                responseBuilder.addPayload(serverServices.marshal(event));
             }
             return responseBuilder.build();
         } catch (JAXBException e) {
@@ -251,7 +251,7 @@ public class MarketDataRpcService<SessionClazz>
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface#getAvailableCapability(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest)
+     * @see org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface#getAvailableCapability(com.google.protobuf.RpcController, org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityRequest)
      */
     @Override
     public AvailableCapabilityResponse getAvailableCapability(RpcController inController,
@@ -280,7 +280,7 @@ public class MarketDataRpcService<SessionClazz>
     @Override
     public BlockingService generateService()
     {
-        return RpcClientService.newReflectiveBlockingService(this);
+        return RpcMarketDataService.newReflectiveBlockingService(this);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.util.rpc.RpcServiceSpec#setRpcServerServices(org.marketcetera.util.rpc.RpcServerServices)

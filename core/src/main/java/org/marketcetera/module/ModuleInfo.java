@@ -1,8 +1,11 @@
 package org.marketcetera.module;
 
 import org.marketcetera.util.misc.ClassVersion;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -16,8 +19,9 @@ import java.util.Date;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
+@XmlRootElement(name="moduleInfo")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ClassVersion("$Id$")
 public final class ModuleInfo implements Serializable {
 
     /**

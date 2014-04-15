@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 /* $License$ */
 /**
- * Tests {@link SAClientFactory}.
+ * Tests {@link SAClientFactoryImpl}.
  *
  * @author anshul@marketcetera.com
  * @version $Id$
@@ -31,8 +31,8 @@ public class SAClientFactoryTest {
      */
     @Test
     public void singleton() {
-        assertNotNull(SAClientFactory.getInstance());
-        assertSame(SAClientFactory.getInstance(), SAClientFactory.getInstance());
+        assertNotNull(SAClientFactoryImpl.getInstance());
+        assertSame(SAClientFactoryImpl.getInstance(), SAClientFactoryImpl.getInstance());
     }
 
     /**
@@ -50,7 +50,8 @@ public class SAClientFactoryTest {
             new ExpectedFailure<NullPointerException>(){
                 @Override
                 protected void run() throws Exception {
-                    SAClientFactory.getInstance().create(null);
+                    SAClient client = SAClientFactoryImpl.getInstance().create(null);
+                    client.start();
                 }
             };
             //WS failure
@@ -58,9 +59,12 @@ public class SAClientFactoryTest {
                     MockStrategyAgent.WS_HOSTNAME, "9009", creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClientFactory.getInstance().create(new SAClientParameters(creds,
-                            creds.toCharArray(), MockStrategyAgent.DEFAULT_URL,
-                            MockStrategyAgent.WS_HOSTNAME, 9009));
+                    SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
+                                                                                                      creds.toCharArray(),
+                                                                                                      MockStrategyAgent.DEFAULT_URL,
+                                                                                                      MockStrategyAgent.WS_HOSTNAME,
+                                                                                                      9009));
+                    client.start();
                 }
             };
             //JMS failure
@@ -69,9 +73,10 @@ public class SAClientFactoryTest {
                     url, creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClientFactory.getInstance().create(new SAClientParameters(creds,
+                    SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
                             creds.toCharArray(), url,
                             MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
+                    client.start();
                 }
             };
             //Credential failure:  wrong password
@@ -80,9 +85,10 @@ public class SAClientFactoryTest {
                     String.valueOf(MockStrategyAgent.WS_PORT), creds) {
                 @Override
                 protected void run() throws Exception {
-                    SAClientFactory.getInstance().create(new SAClientParameters(creds,
+                    SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
                             "bleh".toCharArray(), MockStrategyAgent.DEFAULT_URL,
                             MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
+                    client.start();
                 }
             };
             //Credential failure:  incorrect username, passes WS but fails at JMS
@@ -91,17 +97,19 @@ public class SAClientFactoryTest {
                     url, username) {
                 @Override
                 protected void run() throws Exception {
-                    SAClientFactory.getInstance().create(new SAClientParameters(username,
+                    SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(username,
                             username.toCharArray(), url,
                             MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
+                    client.start();
                 }
             };
             assertTrue(ClientManager.getInstance().isCredentialsMatch(creds, creds.toCharArray()));
             //Success
-            SAClientFactory.getInstance().create(new SAClientParameters(creds,
+            SAClient client = SAClientFactoryImpl.getInstance().create(new SAClientParameters(creds,
                     creds.toCharArray(), MockStrategyAgent.DEFAULT_URL,
-                    MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT))
-                    .close();
+                    MockStrategyAgent.WS_HOSTNAME, MockStrategyAgent.WS_PORT));
+            client.start();
+            client.close();
 
         } finally {
             MockStrategyAgent.closeServerAndClient();

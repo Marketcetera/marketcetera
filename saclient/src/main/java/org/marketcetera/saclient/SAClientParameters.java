@@ -15,7 +15,7 @@ import org.marketcetera.util.ws.ContextClassProvider;
  * @author anshul@marketcetera.com
  * @version $Id$
  * @since 2.0.0
- * @see org.marketcetera.saclient.SAClientFactory#create(SAClientParameters)
+ * @see org.marketcetera.saclient.SAClientFactoryImpl#create(SAClientParameters)
  */
 @ClassVersion("$Id$")
 public class SAClientParameters {
@@ -70,7 +70,15 @@ public class SAClientParameters {
     {
         return contextClassProvider;
     }
-
+    /**
+     * Get the useJms value.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean getUseJms()
+    {
+        return useJms;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -105,14 +113,13 @@ public class SAClientParameters {
      * @param inHostname the host name
      * @param inPort the port number
      */
-    @ConstructorProperties(
-            {"username",
-            "password",
-            "URL",
-            "hostname",
-            "port"})
-    public SAClientParameters(String inUsername, char[] inPassword,
-                              String inURL, String inHostname, int inPort) {
+    @ConstructorProperties({ "username","password","URL","hostname","port" })
+    public SAClientParameters(String inUsername,
+                              char[] inPassword,
+                              String inURL,
+                              String inHostname,
+                              int inPort)
+    {
         this(inUsername,
              inPassword,
              inURL,
@@ -138,16 +145,42 @@ public class SAClientParameters {
                               int inPort,
                               ContextClassProvider inContextClassProvider)
     {
+        this(inUsername,
+             inPassword,
+             inURL,
+             inHostname,
+             inPort,
+             inContextClassProvider,
+             true);
+    }
+    /**
+     * Create a new SAClientParameters instance.
+     *
+     * @param inUsername a <code>String</code> value
+     * @param inPassword a <code>char[]</code> value
+     * @param inURL a <code>String</code> value
+     * @param inHostname a <code>String</code> value
+     * @param inPort an <code>int</code> value
+     * @param inContextClassProvider a <code>ContextClassProvider</code> value
+     * @param inUseJms a <code>boolean</code> value
+     */
+    @ConstructorProperties({ "username","password","URL","hostname","port","contextClasses","useJms" })
+    public SAClientParameters(String inUsername,
+                              char[] inPassword,
+                              String inURL,
+                              String inHostname,
+                              int inPort,
+                              ContextClassProvider inContextClassProvider,
+                              boolean inUseJms)
+    {
         mUsername = inUsername;
-        mPassword = inPassword == null
-                ? null
-                : Arrays.copyOf(inPassword, inPassword.length);
+        mPassword = inPassword == null ? null : Arrays.copyOf(inPassword,inPassword.length);
         mURL = inURL;
         mHostname = inHostname;
         mPort = inPort;
         contextClassProvider = inContextClassProvider;
+        useJms = inUseJms;
     }
-
     @Override
     public String toString() {
         return "ClientParameters{" +  //$NON-NLS-1$
@@ -158,7 +191,7 @@ public class SAClientParameters {
                 ", Port='" + mPort + '\'' +  //$NON-NLS-1$ $NON-NLS-2$
                 '}';  //$NON-NLS-1$
     }
-
+    private final boolean useJms;
     private final String mUsername;
     private final char[] mPassword;
     private final String mHostname;

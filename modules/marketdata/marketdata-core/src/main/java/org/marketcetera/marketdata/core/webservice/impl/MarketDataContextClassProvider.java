@@ -26,6 +26,8 @@ import org.marketcetera.event.impl.OptionBidEventImpl;
 import org.marketcetera.event.impl.OptionImbalanceEvent;
 import org.marketcetera.event.impl.OptionMarketstatEventImpl;
 import org.marketcetera.event.impl.OptionTradeEventImpl;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.RequestID;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
 
@@ -63,5 +65,5 @@ public class MarketDataContextClassProvider
         EquityAskEventImpl.class,EquityBidEventImpl.class,EquityMarketstatEventImpl.class,EquityTradeEventImpl.class,EquityImbalanceEvent.class,
         FutureAskEventImpl.class,FutureBidEventImpl.class,FutureMarketstatEventImpl.class,FutureTradeEventImpl.class,FutureImbalanceEvent.class,
         OptionAskEventImpl.class,OptionBidEventImpl.class,OptionMarketstatEventImpl.class,OptionTradeEventImpl.class,OptionImbalanceEvent.class,
-        DividendEventImpl.class };
+        DividendEventImpl.class,RequestID.class,DataFlowID.class };
 }

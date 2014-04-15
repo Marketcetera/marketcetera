@@ -163,7 +163,9 @@ class MockStrategyAgent {
     static SAClient connectTo(SAClientParameters inParameters)
             throws ConnectionException
     {
-        return SAClientFactory.getInstance().create(inParameters);
+        SAClient client = SAClientFactoryImpl.getInstance().create(inParameters);
+        client.start();
+        return client;
     }
 
     /**

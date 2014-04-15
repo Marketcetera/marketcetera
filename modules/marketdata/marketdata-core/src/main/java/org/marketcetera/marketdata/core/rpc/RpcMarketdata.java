@@ -15576,11 +15576,11 @@ public final class RpcMarketdata {
   }
 
   /**
-   * Protobuf service {@code RpcClientService}
+   * Protobuf service {@code RpcMarketDataService}
    */
-  public static abstract class RpcClientService
+  public static abstract class RpcMarketDataService
       implements com.google.protobuf.Service {
-    protected RpcClientService() {}
+    protected RpcMarketDataService() {}
 
     public interface Interface {
       /**
@@ -15675,7 +15675,7 @@ public final class RpcMarketdata {
 
     public static com.google.protobuf.Service newReflectiveService(
         final Interface impl) {
-      return new RpcClientService() {
+      return new RpcMarketDataService() {
         @java.lang.Override
         public  void login(
             com.google.protobuf.RpcController controller,
@@ -16135,7 +16135,7 @@ public final class RpcMarketdata {
       return new Stub(channel);
     }
 
-    public static final class Stub extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService implements Interface {
+    public static final class Stub extends org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService implements Interface {
       private Stub(com.google.protobuf.RpcChannel channel) {
         this.channel = channel;
       }
@@ -16514,7 +16514,7 @@ public final class RpcMarketdata {
 
     }
 
-    // @@protoc_insertion_point(class_scope:RpcClientService)
+    // @@protoc_insertion_point(class_scope:RpcMarketDataService)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
@@ -16700,23 +16700,23 @@ public final class RpcMarketdata {
       "\020\006\022\010\n\004NBBO\020\007\022\014\n\010DIVIDEND\020\010\022\024\n\020AGGREGATED" +
       "_DEPTH\020\t\022\026\n\022UNAGGREGATED_DEPTH\020\n\022\r\n\tIMBA" +
       "LANCE\020\013\022\013\n\007UNKNOWN\020\014\022\022\n\016EVENT_BOUNDARY\020\r" +
-      "2\340\004\n\020RpcClientService\022&\n\005login\022\r.LoginRe" +
-      "quest\032\016.LoginResponse\022)\n\006logout\022\016.Logout" +
-      "Request\032\017.LogoutResponse\0222\n\theartbeat\022\021." +
-      "HeartbeatRequest\032\022.HeartbeatResponse\0222\n\007" +
-      "request\022\022.MarketDataRequest\032\023.MarketData" +
-      "Response\0228\n\rgetLastUpdate\022\022.LastUpdateRe",
-      "quest\032\023.LastUpdateResponse\022)\n\006cancel\022\016.C" +
-      "ancelRequest\032\017.CancelResponse\022,\n\tgetEven" +
-      "ts\022\016.EventsRequest\032\017.EventsResponse\0225\n\014g" +
-      "etAllEvents\022\021.AllEventsRequest\032\022.AllEven" +
-      "tsResponse\0222\n\013getSnapshot\022\020.SnapshotRequ" +
-      "est\032\021.SnapshotResponse\022>\n\017getSnapshotPag" +
-      "e\022\024.SnapshotPageRequest\032\025.SnapshotPageRe" +
-      "sponse\022S\n\026getAvailableCapability\022\033.Avail" +
-      "ableCapabilityRequest\032\034.AvailableCapabil" +
-      "ityResponseB8\n$org.marketcetera.marketda",
-      "ta.core.rpcB\rRpcMarketdata\210\001\001"
+      "2\344\004\n\024RpcMarketDataService\022&\n\005login\022\r.Log" +
+      "inRequest\032\016.LoginResponse\022)\n\006logout\022\016.Lo" +
+      "goutRequest\032\017.LogoutResponse\0222\n\theartbea" +
+      "t\022\021.HeartbeatRequest\032\022.HeartbeatResponse" +
+      "\0222\n\007request\022\022.MarketDataRequest\032\023.Market" +
+      "DataResponse\0228\n\rgetLastUpdate\022\022.LastUpda",
+      "teRequest\032\023.LastUpdateResponse\022)\n\006cancel" +
+      "\022\016.CancelRequest\032\017.CancelResponse\022,\n\tget" +
+      "Events\022\016.EventsRequest\032\017.EventsResponse\022" +
+      "5\n\014getAllEvents\022\021.AllEventsRequest\032\022.All" +
+      "EventsResponse\0222\n\013getSnapshot\022\020.Snapshot" +
+      "Request\032\021.SnapshotResponse\022>\n\017getSnapsho" +
+      "tPage\022\024.SnapshotPageRequest\032\025.SnapshotPa" +
+      "geResponse\022S\n\026getAvailableCapability\022\033.A" +
+      "vailableCapabilityRequest\032\034.AvailableCap" +
+      "abilityResponseB8\n$org.marketcetera.mark",
+      "etdata.core.rpcB\rRpcMarketdata\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {

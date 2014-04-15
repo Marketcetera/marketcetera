@@ -141,7 +141,7 @@ public class MarketDataRpcClientServerTest
         assertTrue(status.get());
     }
     /**
-     * Tests {@link RpcMarketDataClient#request(org.marketcetera.marketdata.MarketDataRequest, boolean)}.
+     * Tests {@link MarketDataRpcClient#request(org.marketcetera.marketdata.MarketDataRequest, boolean)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -157,7 +157,7 @@ public class MarketDataRpcClientServerTest
                      serviceAdapter.getRequests().size());
     }
     /**
-     * Tests {@link RpcMarketDataClient#getLastUpdate(long)}.
+     * Tests {@link MarketDataRpcClient#getLastUpdate(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -174,7 +174,7 @@ public class MarketDataRpcClientServerTest
                      serviceAdapter.getLastUpdateRequests().size());
     }
     /**
-     * Tests {@link RpcMarketDataClient#cancel(long)}.
+     * Tests {@link MarketDataRpcClient#cancel(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -189,7 +189,7 @@ public class MarketDataRpcClientServerTest
                      serviceAdapter.getCanceledIds().size());
     }
     /**
-     * Tests {@link RpcMarketDataClient#getEvents(long)}.
+     * Tests {@link MarketDataRpcClient#getEvents(long)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -231,7 +231,7 @@ public class MarketDataRpcClientServerTest
                      events.size());
     }
     /**
-     * Tests {@link RpcMarketDataClient#getAllEvents(java.util.List)}.
+     * Tests {@link MarketDataRpcClient#getAllEvents(java.util.List)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -304,7 +304,7 @@ public class MarketDataRpcClientServerTest
                      events.get(id2).size());
     }
     /**
-     * Tests {@link RpcMarketDataClient#getSnapshot(Instrument, org.marketcetera.marketdata.Content, String)}.
+     * Tests {@link MarketDataRpcClient#getSnapshot(Instrument, org.marketcetera.marketdata.Content, String)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -345,7 +345,7 @@ public class MarketDataRpcClientServerTest
         }
     }
     /**
-     * Tests {@link RpcMarketDataClient#getSnapshotPage(Instrument, Content, String, PageRequest)}.
+     * Tests {@link MarketDataRpcClient#getSnapshotPage(Instrument, Content, String, PageRequest)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -388,7 +388,7 @@ public class MarketDataRpcClientServerTest
         }
     }
     /**
-     * Tests {@link RpcMarketDataClient#getAvailableCapability()}.
+     * Tests {@link MarketDataRpcClient#getAvailableCapability()}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -458,7 +458,7 @@ public class MarketDataRpcClientServerTest
         service.setServiceAdapter(serviceAdapter);
         server.setContextClassProvider(MarketDataContextClassProvider.INSTANCE);
         server.start();
-        client = new RpcMarketDataClient("username",
+        client = new MarketDataRpcClient("username",
                                          "password",
                                          hostname,
                                          port,
@@ -515,7 +515,7 @@ public class MarketDataRpcClientServerTest
     /**
      * test client value
      */
-    private RpcMarketDataClient client;
+    private MarketDataRpcClient client;
     /**
      * tests server value
      */

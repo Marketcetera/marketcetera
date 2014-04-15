@@ -124,9 +124,9 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactory.getInstance().create(
+                SAClientFactoryImpl.getInstance().create(
                         new SAClientParameters(DEFAULT_CREDENTIAL, null,
-                                RECEIVER_URL, WS_HOST, WS_PORT));
+                                RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
         //empty password
@@ -134,9 +134,9 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactory.getInstance().create(
+                SAClientFactoryImpl.getInstance().create(
                         new SAClientParameters(DEFAULT_CREDENTIAL, "".toCharArray(),
-                                RECEIVER_URL, WS_HOST, WS_PORT));
+                                RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
         //incorrect password
@@ -144,9 +144,9 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactory.getInstance().create(
+                SAClientFactoryImpl.getInstance().create(
                         new SAClientParameters(DEFAULT_CREDENTIAL, "what?".toCharArray(),
-                                RECEIVER_URL, WS_HOST, WS_PORT));
+                                RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
         //incorrect username
@@ -154,9 +154,9 @@ public class StrategyAgentRemotingTest
                 org.marketcetera.saclient.Messages.ERROR_WS_CONNECT){
             @Override
             protected void run() throws Exception {
-                SAClientFactory.getInstance().create(
+                SAClientFactoryImpl.getInstance().create(
                         new SAClientParameters("who", DEFAULT_CREDENTIAL.toCharArray(),
-                                RECEIVER_URL, WS_HOST, WS_PORT));
+                                RECEIVER_URL, WS_HOST, WS_PORT)).start();
             }
         };
         //finally a successful login
@@ -719,11 +719,13 @@ public class StrategyAgentRemotingTest
     private static SAClient createClient()
             throws ConnectionException
     {
-        return sSAClient = SAClientFactory.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
-                                                                                       DEFAULT_CREDENTIAL.toCharArray(),
-                                                                                       RECEIVER_URL,
-                                                                                       WS_HOST,
-                                                                                       WS_PORT));
+        sSAClient = SAClientFactoryImpl.getInstance().create(new SAClientParameters(DEFAULT_CREDENTIAL,
+                                                                                    DEFAULT_CREDENTIAL.toCharArray(),
+                                                                                    RECEIVER_URL,
+                                                                                    WS_HOST,
+                                                                                    WS_PORT));
+        sSAClient.start();
+        return sSAClient;
     }
 
     /**

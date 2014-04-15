@@ -21,13 +21,13 @@ public class MarketDataRpcClientFactory
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int, org.marketcetera.util.ws.ContextClassProvider)
      */
     @Override
-    public RpcMarketDataClient create(String inUsername,
+    public MarketDataRpcClient create(String inUsername,
                                       String inPassword,
                                       String inHostname,
                                       int inPort,
                                       ContextClassProvider inContextClassProvider)
     {
-        return new RpcMarketDataClient(inUsername,
+        return new MarketDataRpcClient(inUsername,
                                        inPassword,
                                        inHostname,
                                        inPort,
@@ -37,12 +37,12 @@ public class MarketDataRpcClientFactory
      * @see org.marketcetera.marketdata.core.webservice.MarketDataServiceClientFactory#create(java.lang.String, java.lang.String, java.lang.String, int)
      */
     @Override
-    public RpcMarketDataClient create(String inUsername,
+    public MarketDataRpcClient create(String inUsername,
                                       String inPassword,
                                       String inHostname,
                                       int inPort)
     {
-        return new RpcMarketDataClient(inUsername,
+        return new MarketDataRpcClient(inUsername,
                                        inPassword,
                                        inHostname,
                                        inPort,

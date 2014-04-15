@@ -10,6 +10,7 @@ Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional,
  org.marketcetera.client;resolution:=optional,
  org.marketcetera.modules.remote.receiver;resolution:=optional
-Export-Package: org.marketcetera.saclient
+Export-Package: org.marketcetera.saclient,
+ org.marketcetera.saclient.rpc
 Import-Package: org.hamcrest;resolution:=optional,
  org.junit;resolution:=optional

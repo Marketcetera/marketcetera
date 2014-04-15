@@ -23,24 +23,20 @@ import java.util.List;
  * @version $Id$
  * @since 2.0.0
  */
-@ClassVersion("$Id$")
 @WebService(targetNamespace="strategyengine")
-public interface SAService extends ServiceBase {
+@ClassVersion("$Id$")
+public interface SAService
+        extends ServiceBase
+{
     /**
      * Returns the list of providers available at the strategy agent.
      *
-     * @param inCtx the context
-     *
-     * @return the list of providers.
-     *
-     * @throws RemoteException if there were errors communicating with the
-     * remote strategy agent.
-     *
+     * @param inContext a <code>ClientContext</code> value
+     * @return a List&lt;ModuleURN&gt;</code> value
+     * @throws RemoteException if there were errors communicating with the remote strategy agent.
      */
-    public List<ModuleURN> getProviders(
-            @WebParam(name = "context") ClientContext inCtx)
+    public List<ModuleURN> getProviders(@WebParam(name="context")ClientContext inContext)
             throws RemoteException;
-
     /**
      * Returns the list of module instances available at the strategy agent.
      *
@@ -148,12 +144,10 @@ public interface SAService extends ServiceBase {
      * @throws RemoteException if there were errors communicating with the
      * remote strategy agent.
      */
-    public MapWrapper<String, Object> setProperties(
-            @WebParam(name = "context") ClientContext inCtx,
-            @WebParam(name = "urn") ModuleURN inURN,
-            @WebParam(name = "properties") MapWrapper<String, Object> inProperties)
+    public MapWrapper<String,Object> setProperties(@WebParam(name="context")ClientContext inCtx,
+                                                   @WebParam(name="urn")ModuleURN inURN,
+                                                   @WebParam(name="properties")MapWrapper<String,Object> inProperties)
             throws RemoteException;
-
     /**
      * Creates a strategy.
      *

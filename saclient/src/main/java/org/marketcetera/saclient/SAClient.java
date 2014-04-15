@@ -1,11 +1,12 @@
 package org.marketcetera.saclient;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.module.ModuleURN;
-import org.marketcetera.module.ModuleInfo;
-
 import java.util.List;
 import java.util.Map;
+
+import org.marketcetera.module.ModuleInfo;
+import org.marketcetera.module.ModuleURN;
+import org.marketcetera.util.misc.ClassVersion;
+import org.springframework.context.Lifecycle;
 
 /* $License$ */
 /**
@@ -21,81 +22,72 @@ import java.util.Map;
  * @since 2.0.0
  */
 @ClassVersion("$Id$")
-public interface SAClient {
+public interface SAClient
+        extends Lifecycle
+{
     /**
      * Returns the list of providers available.
-     * <p>
-     * If no providers are available this list is empty.
+     * 
+     * <p>If no providers are available this list is empty.
      * 
      * @return the list of providers available.
-     *
      * @throws ConnectionException if there were errors completing the operation.
      */
-    public List<ModuleURN> getProviders() throws ConnectionException;
-
+    public List<ModuleURN> getProviders()
+            throws ConnectionException;
     /**
      * Returns the list of module instances available.
      *
-     * @param inProviderURN the URN of the provider whose instances
-     * should be returned. If null, all available instances are returned.
-     * <p>
-     * If no instances are found, an empty list is returned.
+     * <p>If no instances are found, an empty list is returned.
      *
+     * @param inProviderURN the URN of the provider whose instances should be returned. If null, all available instances are returned.
      * @return the list of module instances available.
-     *
      * @throws ConnectionException if there were errors completing the operation.
-     *
      */
     public List<ModuleURN> getInstances(ModuleURN inProviderURN)
             throws ConnectionException;
-
     /**
-     * Returns the module information for the module instance with the
-     * supplied URN.
+     * Returns the module information for the module instance with the supplied URN.
      *
      * @param inURN the module instance URN. Cannot be null.
-     *
      * @return the module info.
-     *
      * @throws ConnectionException if there were errors completing the operation.
      */
-    public ModuleInfo getModuleInfo(ModuleURN inURN) throws ConnectionException;
-
+    public ModuleInfo getModuleInfo(ModuleURN inURN)
+            throws ConnectionException;
     /**
      * Starts the module instance having the supplied URN.
-     * <p>
-     * Only strategy module instances can be started. Attempts to start
+     * 
+     * <p>Only strategy module instances can be started. Attempts to start
      * modules that are not strategy modules will fail.
      *
      * @param inURN the URN of the module that needs to be started. Cannot be null.
-     *
      * @throws ConnectionException if there were errors completing the operation.
      */
-    public void start(ModuleURN inURN) throws ConnectionException;
-
+    public void start(ModuleURN inURN)
+            throws ConnectionException;
     /**
      * Stops the module instance having the supplied URN.
-     * <p>
-     * Only strategy module instances can be stopped. Attempts to stop
+     * 
+     * <p>Only strategy module instances can be stopped. Attempts to stop
      * modules that are not strategy modules will fail.
      *
      * @param inURN the URN of the module that needs to be stopped. Cannot be null.
-     *
      * @throws ConnectionException if there were errors completing the operation.
      */
-    public void stop(ModuleURN inURN) throws ConnectionException;
+    public void stop(ModuleURN inURN)
+            throws ConnectionException;
     /**
      * Deletes the module instance having the supplied URN.
-     * <p>
-     * Only strategy module instances can be deleted. Attempts to delete
+     * 
+     * <p>Only strategy module instances can be deleted. Attempts to delete
      * modules that are not strategy modules will fail.
      *
      * @param inURN the URN of the module that needs to be deleted. Cannot be null.
-     *
      * @throws ConnectionException if there were errors completing the operation.
      */
-    public void delete(ModuleURN inURN) throws ConnectionException;
-
+    public void delete(ModuleURN inURN)
+            throws ConnectionException;
     /**
      * Fetches all the available properties of the module with the supplied URN.
      * <p>
@@ -113,7 +105,6 @@ public interface SAClient {
      */
     public Map<String,Object> getProperties(ModuleURN inURN)
             throws ConnectionException;
-
     /**
      * Sets the supplied properties of the module.
      * <p>
@@ -142,10 +133,9 @@ public interface SAClient {
      *
      * @throws ConnectionException if there were errors completing the operation.
      */
-    public Map<String, Object> setProperties(ModuleURN inURN,
-                                             Map<String,Object> inProperties)
+    public Map<String,Object> setProperties(ModuleURN inURN,
+                                            Map<String,Object> inProperties)
             throws ConnectionException;
-
     /**
      * Creates a new strategy module using the given strategy creation parameters.
      *

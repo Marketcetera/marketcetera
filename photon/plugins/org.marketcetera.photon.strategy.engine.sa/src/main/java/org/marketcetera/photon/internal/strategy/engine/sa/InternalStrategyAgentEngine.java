@@ -8,8 +8,8 @@ import org.marketcetera.photon.commons.ExceptionUtils;
 import org.marketcetera.photon.commons.Validate;
 import org.marketcetera.photon.core.ICredentials;
 import org.marketcetera.photon.core.ICredentialsService;
-import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.core.ICredentialsService.IAuthenticationHelper;
+import org.marketcetera.photon.core.ILogoutService;
 import org.marketcetera.photon.module.ISinkDataManager;
 import org.marketcetera.photon.strategy.engine.model.core.ConnectionState;
 import org.marketcetera.photon.strategy.engine.model.sa.StrategyAgentEngine;
@@ -21,6 +21,7 @@ import org.marketcetera.saclient.DataReceiver;
 import org.marketcetera.saclient.SAClient;
 import org.marketcetera.saclient.SAClientFactory;
 import org.marketcetera.saclient.SAClientParameters;
+import org.marketcetera.saclient.rpc.SAClientContextClassProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -60,28 +61,21 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
     /**
      * Constructor.
      * 
-     * @param engine
-     *            the desired engine configuration
-     * @param guiExecutor
-     *            the executor to run tasks that change the model state
-     * @param credentialsService
-     *            the service to use to authenticate connections
-     * @param logoutService
-     *            the service used to disconnect remote connections on logout
-     * @param factory
-     *            the SAClient factory
-     * @param sinkDataManager
-     *            manager to send data received from remote agent, may be null
-     *            to ignore data
-     * @throws IllegalArgumentException
-     *             if engine, guiExecutor, credentialsService, logoutService, or
-     *             factory is null
+     * @param engine the desired engine configuration
+     * @param guiExecutor the executor to run tasks that change the model state
+     * @param credentialsService the service to use to authenticate connections
+     * @param logoutService the service used to disconnect remote connections on logout
+     * @param factory the SAClient factory
+     * @param sinkDataManager manager to send data received from remote agent, may be null to ignore data
+     * @throws IllegalArgumentException if engine, guiExecutor, credentialsService, logoutService, or factory is null
      */
     public InternalStrategyAgentEngine(StrategyAgentEngine engine,
-            ExecutorService guiExecutor,
-            ICredentialsService credentialsService,
-            ILogoutService logoutService, SAClientFactory factory,
-            ISinkDataManager sinkDataManager) {
+                                       ExecutorService guiExecutor,
+                                       ICredentialsService credentialsService,
+                                       ILogoutService logoutService,
+                                       SAClientFactory factory,
+                                       ISinkDataManager sinkDataManager)
+    {
         Validate.notNull(engine, "engine", //$NON-NLS-1$
                 guiExecutor, "guiExecutor", //$NON-NLS-1$
                 credentialsService, "credentialsService", //$NON-NLS-1$
@@ -106,13 +100,14 @@ public class InternalStrategyAgentEngine extends StrategyAgentEngineImpl {
                     @Override
                     public boolean authenticate(ICredentials credentials) {
                         try {
-                            mClient.set(mClientFactory
-                                    .create(new SAClientParameters(credentials
-                                            .getUsername(), credentials
-                                            .getPassword().toCharArray(),
-                                            getJmsUrl(),
-                                            getWebServiceHostname(),
-                                            getWebServicePort())));
+                            SAClient client = mClientFactory.create(new SAClientParameters(credentials.getUsername(),
+                                                                                           credentials.getPassword().toCharArray(),
+                                                                                           getJmsUrl(),
+                                                                                           getWebServiceHostname(),
+                                                                                           getWebServicePort(),
+                                                                                           SAClientContextClassProvider.INSTANCE));
+                            client.start();
+                            mClient.set(client);
                             return true;
                         } catch (ConnectionException e) {
                             exception.set(e);

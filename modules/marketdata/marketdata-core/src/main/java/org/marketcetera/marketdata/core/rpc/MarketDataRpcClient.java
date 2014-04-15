@@ -43,8 +43,8 @@ import org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginRequest;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginResponse;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutRequest;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService;
-import org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcClientService.BlockingInterface;
+import org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService;
+import org.marketcetera.marketdata.core.rpc.RpcMarketdata.RpcMarketDataService.BlockingInterface;
 import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
 import org.marketcetera.marketdata.core.webservice.PageRequest;
@@ -78,7 +78,7 @@ import com.googlecode.protobuf.pro.duplex.execute.ThreadPoolCallExecutor;
  */
 @ThreadSafe
 @ClassVersion("$Id$")
-public class RpcMarketDataClient
+public class MarketDataRpcClient
         implements MarketDataServiceClient
 {
     /**
@@ -90,7 +90,7 @@ public class RpcMarketDataClient
      * @param inPort an <code>int</code> value
      * @param inContextClassProvider a <code>ContextClassProvider</code> value
      */
-    public RpcMarketDataClient(String inUsername,
+    public MarketDataRpcClient(String inUsername,
                                String inPassword,
                                String inHostname,
                                int inPort,
@@ -547,7 +547,7 @@ public class RpcMarketDataClient
                              1048576);
             channel = clientFactory.peerWith(server,
                                              bootstrap);
-            clientService = RpcClientService.newBlockingStub(channel);
+            clientService = RpcMarketDataService.newBlockingStub(channel);
             controller = channel.newRpcController();
             java.util.Locale currentLocale = java.util.Locale.getDefault();
             LoginRequest loginRequest = LoginRequest.newBuilder()
@@ -597,7 +597,7 @@ public class RpcMarketDataClient
                                         RpcMarketdata.HeartbeatRequest.newBuilder().setId(System.nanoTime()).build());
             } catch (Exception e) {
                 // heartbeat failed for some reason
-                SLF4JLoggerProxy.debug(RpcMarketDataClient.this,
+                SLF4JLoggerProxy.debug(MarketDataRpcClient.this,
                                        e,
                                        "Heartbeat failed"); //$NON-NLS-1$
                 setServerStatus(false);
@@ -703,7 +703,7 @@ public class RpcMarketDataClient
     /**
      * The client's application ID: the version.
      */
-    public static final VersionInfo APP_ID_VERSION = ApplicationVersion.getVersion(RpcMarketDataClient.class);
+    public static final VersionInfo APP_ID_VERSION = ApplicationVersion.getVersion(MarketDataRpcClient.class);
     /**
      * The client's application ID: the ID.
      */

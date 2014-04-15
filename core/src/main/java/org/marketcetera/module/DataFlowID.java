@@ -4,6 +4,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 import java.io.Serializable;
@@ -17,8 +18,9 @@ import java.beans.ConstructorProperties;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")   //$NON-NLS-1$
+@XmlRootElement(name="dataFlowId")
 @XmlAccessorType(XmlAccessType.FIELD)
+@ClassVersion("$Id$")
 public final class DataFlowID implements Serializable {
     /**
      * Creates an instance.
@@ -73,7 +75,6 @@ public final class DataFlowID implements Serializable {
                 : mValue.equals(that.mValue); 
 
     }
-
     @XmlValue
     private String mValue;
     private static final long serialVersionUID = -117964306857928984L;

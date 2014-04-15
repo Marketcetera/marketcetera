@@ -31,11 +31,29 @@ public class ContextClassAggregator
     }
     /**
      * Create a new ContextClassAggregator instance.
+     */
+    public ContextClassAggregator() {}
+    /**
+     * Create a new ContextClassAggregator instance.
      *
      * @param inProviders a <code>ContextClassProvider...</code> value
      */
     public ContextClassAggregator(ContextClassProvider...inProviders)
     {
+        if(inProviders != null) {
+            for(ContextClassProvider provider : inProviders) {
+                allClasses.addAll(Arrays.asList(provider.getContextClasses()));
+            }
+        }
+    }
+    /**
+     * Sets the context class providers to aggregate.
+     *
+     * @param inProviders a <code>List&lt;ContextClassProvider&gt;</code> value
+     */
+    public void setContextClassProviders(List<ContextClassProvider> inProviders)
+    {
+        allClasses.clear();
         if(inProviders != null) {
             for(ContextClassProvider provider : inProviders) {
                 allClasses.addAll(Arrays.asList(provider.getContextClasses()));

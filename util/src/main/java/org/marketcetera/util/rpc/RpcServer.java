@@ -72,8 +72,8 @@ public class RpcServer<SessionClazz>
     @PostConstruct
     public synchronized void start()
     {
-        Validate.notNull(rpcHostname);
-        Validate.isTrue(rpcPort > 0 && rpcPort < 65536);
+        Validate.notNull(hostname);
+        Validate.isTrue(port > 0 && port < 65536);
         Validate.notNull(sessionManager);
         Validate.notNull(authenticator);
         Validate.isTrue(threadPoolCore > 0);
@@ -83,8 +83,8 @@ public class RpcServer<SessionClazz>
         Validate.isTrue(receiveBufferSize > 0);
         Validate.notEmpty(serviceSpecs);
         Messages.SERVER_STARTING.info(this,
-                                      rpcHostname,
-                                      rpcPort);
+                                      hostname,
+                                      port);
         if(isRunning()) {
             stop();
         }
@@ -295,7 +295,7 @@ public class RpcServer<SessionClazz>
      */
     public String getRpcHostname()
     {
-        return rpcHostname;
+        return hostname;
     }
     /**
      * Sets the rpcHostname value.
@@ -304,7 +304,7 @@ public class RpcServer<SessionClazz>
      */
     public void setHostname(String inRpcHostname)
     {
-        rpcHostname = inRpcHostname;
+        hostname = inRpcHostname;
     }
     /**
      * Get the rpcPort value.
@@ -313,7 +313,7 @@ public class RpcServer<SessionClazz>
      */
     public int getRpcPort()
     {
-        return rpcPort;
+        return port;
     }
     /**
      * Sets the rpcPort value.
@@ -322,7 +322,7 @@ public class RpcServer<SessionClazz>
      */
     public void setPort(int inRpcPort)
     {
-        rpcPort = inRpcPort;
+        port = inRpcPort;
     }
     /**
      * Get the authenticator value.
@@ -429,7 +429,7 @@ public class RpcServer<SessionClazz>
      * @see org.marketcetera.client.rpc.RpcServerServices#marshall(java.lang.Object)
      */
     @Override
-    public String marshall(Object inObject)
+    public String marshal(Object inObject)
             throws JAXBException
     {
         StringWriter output = new StringWriter();
@@ -452,75 +452,75 @@ public class RpcServer<SessionClazz>
         }
     }
     /**
-     * 
+     * manages sessions
      */
     private SessionManager<SessionClazz> sessionManager;
     /**
-     * 
+     * provides authentication services
      */
     private Authenticator authenticator;
     /**
-     * 
+     * indicates if the server is running
      */
     private final AtomicBoolean running = new AtomicBoolean(false);
     /**
-     * 
+     * manages server calls
      */
     private RpcServerCallExecutor executor;
     /**
-     * 
+     * channel handle
      */
     private ChannelFuture channelToken;
     /**
-     * 
+     * authenticated RPC sessions
      */
     private final Map<SessionId,String> rpcSessions = Maps.newConcurrentMap();
     /**
-     * 
+     * hostname to bind
      */
-    private String rpcHostname;
+    private String hostname;
     /**
-     * 
+     * port to bind
      */
-    private int rpcPort;
+    private int port;
     /**
-     * 
+     * send buffer size
      */
     private int sendBufferSize = 1048576;
     /**
-     * 
+     * receive buffer size
      */
     private int receiveBufferSize = 1048576;
     /**
-     * 
+     * indicates whether to employ Nagle's algorithm
      */
     private boolean noDelay = true;
     /**
-     * 
+     * minimum size for the RCP server thread pool
      */
     private int threadPoolCore = 10;
     /**
-     * 
+     * maximum size for the RCP server thread pool
      */
     private int threadPoolMax = 200;
     /**
-     * 
+     * provides context classes for marshalling and unmarshalling
      */
     private ContextClassProvider contextClassProvider;
     /**
-     * 
+     * context used to control the marshaller and unmarshaller
      */
     private JAXBContext reportContext;
     /**
-     * 
+     * marshals data for JAXB
      */
     private Marshaller marshaller;
     /**
-     * 
+     * unmarshals data for JAXB
      */
     private Unmarshaller unmarshaller;
     /**
-     * 
+     * RPC services to manage
      */
     private final List<RpcServiceSpec<SessionClazz>> serviceSpecs = Lists.newArrayList();
 }
