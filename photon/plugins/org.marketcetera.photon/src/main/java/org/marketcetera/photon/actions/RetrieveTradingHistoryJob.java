@@ -107,7 +107,7 @@ public class RetrieveTradingHistoryJob
                     long startTime = System.currentTimeMillis();
                     while(!marketDataManager.isRunning()) {
                         Thread.sleep(250);
-                        if(System.currentTimeMillis()-30000>startTime) {
+                        if(System.currentTimeMillis()-60000>startTime) {
                             // forget it, I (kinda) quietly give up
                             break;
                         }
