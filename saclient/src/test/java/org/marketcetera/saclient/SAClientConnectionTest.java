@@ -38,96 +38,75 @@ public class SAClientConnectionTest {
         //Close the connection
         saclient.close();
         //verify that the saclient fails all API invocations
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.createStrategy(null);
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.delete(null);
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.getInstances(null);
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.getModuleInfo(null);
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.getProperties(null);
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.getProviders();
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.getStrategyCreateParms(null);
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.setProperties(null, null);
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.start(null);
             }
         };
-        new ClosedFailure() {
+        new DisconnectedFailure() {
             @Override
             protected void run() throws Exception {
                 saclient.stop(null);
             }
         };
-        final SAClientTestBase.MyConnectionStatusListener listener =
-                new SAClientTestBase.MyConnectionStatusListener();
-        new ClosedFailure() {
-            @Override
-            protected void run() throws Exception {
-                saclient.addConnectionStatusListener(listener);
-            }
-        };
-        new ClosedFailure(){
-            @Override
-            protected void run() throws Exception {
-                saclient.removeConnectionStatusListener(listener);
-            }
-        };
-        final SAClientTestBase.MyDataReceiver receiver = new SAClientTestBase.MyDataReceiver();
-        new ClosedFailure(){
-            @Override
-            protected void run() throws Exception {
-                saclient.addDataReceiver(receiver);
-            }
-        };
-        new ClosedFailure(){
-            @Override
-            protected void run() throws Exception {
-                saclient.removeDataReciever(receiver);
-            }
-        };
         //These methods can be invoked even when the client is not connected.
+        SAClientTestBase.MyConnectionStatusListener listener = new SAClientTestBase.MyConnectionStatusListener();
+        saclient.addConnectionStatusListener(listener);
+        saclient.removeConnectionStatusListener(listener);
+        SAClientTestBase.MyDataReceiver receiver = new SAClientTestBase.MyDataReceiver();
+        saclient.addDataReceiver(receiver);
+        saclient.removeDataReciever(receiver);
         verifyParameters(MockStrategyAgent.DEFAULT_PARAMETERS,
-                saclient.getParameters());
+                         saclient.getParameters());
         //We can close it again if we want
         saclient.close();
     }
@@ -143,6 +122,7 @@ public class SAClientConnectionTest {
         SAClientTestBase.MyConnectionStatusListener listener =
                 new SAClientTestBase.MyConnectionStatusListener();
         saclient.addConnectionStatusListener(listener);
+        listener.reset();
         //stop the agent to force disconnection
         stopAgent();
         //wait until the notification has been processed
@@ -251,9 +231,9 @@ public class SAClientConnectionTest {
     @Test(timeout = 100000)
     public void connectionNotifications() throws Exception {
         SAClient client = MockStrategyAgent.connectTo();
-        SAClientTestBase.MyConnectionStatusListener listener =
-                new SAClientTestBase.MyConnectionStatusListener();
+        SAClientTestBase.MyConnectionStatusListener listener = new SAClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener);
+        listener.reset();
         assertFalse(listener.hasData());
         //close the connection
         client.close();
@@ -267,6 +247,7 @@ public class SAClientConnectionTest {
         //Connect again
         client = MockStrategyAgent.connectTo();
         client.addConnectionStatusListener(listener);
+        listener.reset();
         //but this time kill the server
         stopAgent();
         //See if we get a notification
@@ -294,10 +275,12 @@ public class SAClientConnectionTest {
         SAClientTestBase.MyConnectionStatusListener listener2 =
                 new SAClientTestBase.MyConnectionStatusListener();
         //configure both listeners to fail
-        listener1.setFail(true);
-        listener2.setFail(true);
         client.addConnectionStatusListener(listener1);
         client.addConnectionStatusListener(listener2);
+        listener1.reset();
+        listener2.reset();
+        listener1.setFail(true);
+        listener2.setFail(true);
         assertFalse(listener1.hasData());
         assertFalse(listener2.hasData());
         //close the connection
@@ -327,6 +310,7 @@ public class SAClientConnectionTest {
         client.addConnectionStatusListener(listener);
         //Add listener twice
         client.addConnectionStatusListener(listener);
+        listener.reset();
         assertFalse(listener.hasData());
         //close the connection
         client.close();
@@ -351,6 +335,8 @@ public class SAClientConnectionTest {
                 new SAClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener1);
         client.addConnectionStatusListener(listener2);
+        listener1.reset();
+        listener2.reset();
         assertFalse(listener1.hasData());
         assertFalse(listener2.hasData());
         //close the connection
@@ -376,6 +362,8 @@ public class SAClientConnectionTest {
                 new SAClientTestBase.MyConnectionStatusListener();
         client.addConnectionStatusListener(listener1);
         client.addConnectionStatusListener(listener2);
+        listener1.reset();
+        listener2.reset();
         assertFalse(listener1.hasData());
         assertFalse(listener2.hasData());
         //Remove listener2
@@ -413,6 +401,9 @@ public class SAClientConnectionTest {
         client.addConnectionStatusListener(listener2);
         //add listener1 twice
         client.addConnectionStatusListener(listener1);
+        listener0.reset();
+        listener1.reset();
+        listener2.reset();
         assertFalse(listener0.hasData());
         assertFalse(listener1.hasData());
         assertFalse(listener2.hasData());
@@ -481,18 +472,6 @@ public class SAClientConnectionTest {
         assertFalse(String.valueOf(inActual.getPassword()),
                 Arrays.equals(inExpected.getPassword(), inActual.getPassword()));
     }
-
-    /**
-     * Closure for testing saclient failures after it has been closed.
-     */
-    private static abstract class ClosedFailure
-            extends ExpectedFailure<IllegalStateException> {
-
-        protected ClosedFailure() throws Exception {
-            super(Messages.CLIENT_CLOSED.getText(), true);
-        }
-    }
-
     /**
      * Closure for testing saclient failures after it has been
      * disconnected.

@@ -148,13 +148,14 @@ public class SAClientTestBase {
      */
     protected static class MyConnectionStatusListener
             extends ObjectQueue<Boolean>
-            implements ConnectionStatusListener {
+            implements ConnectionStatusListener
+    {
         @Override
-        public void receiveConnectionStatus(boolean inStatus) {
+        public void receiveConnectionStatus(boolean inStatus)
+        {
             add(inStatus);
         }
     }
-
     protected volatile static MockStrategyAgent sMockSA;
     protected volatile static SAClient sClient;
 

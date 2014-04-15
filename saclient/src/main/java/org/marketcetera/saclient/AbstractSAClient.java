@@ -131,7 +131,6 @@ public abstract class AbstractSAClient
         if(inReceiver == null) {
             throw new NullPointerException();
         }
-        failIfClosed();
         synchronized (receivers) {
             receivers.addFirst(inReceiver);
         }
@@ -145,7 +144,6 @@ public abstract class AbstractSAClient
         if(inReceiver == null) {
             throw new NullPointerException();
         }
-        failIfClosed();
         synchronized (receivers) {
             receivers.removeFirstOccurrence(inReceiver);
         }
@@ -159,7 +157,6 @@ public abstract class AbstractSAClient
         if(inListener == null) {
             throw new NullPointerException();
         }
-        failIfClosed();
         synchronized (listeners) {
             listeners.addFirst(inListener);
         }
@@ -174,7 +171,6 @@ public abstract class AbstractSAClient
         if(inListener == null) {
             throw new NullPointerException();
         }
-        failIfClosed();
         synchronized (listeners) {
             listeners.removeFirstOccurrence(inListener);
         }
@@ -240,7 +236,6 @@ public abstract class AbstractSAClient
     protected void failIfDisconnected()
             throws ConnectionException
     {
-        failIfClosed();
         if(!isRunning()) {
             throw new ConnectionException(Messages.CLIENT_DISCONNECTED);
         }
