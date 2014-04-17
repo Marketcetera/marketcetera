@@ -175,7 +175,8 @@ public class ReconnectServerJob
                     try {
                         new ProgressMonitorDialog(getDisplay().getActiveShell()).run(true, false, op);
                         // CD 20130820 commented out in lieu of replacing the call below in receiveServerStatus (one or the other, not both)
-//                        new RetrieveTradingHistoryJob().schedule();
+                        // CD 20140416 restored
+                        new RetrieveTradingHistoryJob().schedule();
                         return true;
                     } catch (InterruptedException e) {
                         // Intentionally not restoring the interrupt status since this is the main UI thread where it will be ignored.
@@ -292,8 +293,9 @@ public class ReconnectServerJob
                     // CD 20120915 Fix rolled back due to performance problems for high
                     //  volume installations
                     // CD 20130820 Replaced (still vulnerable to high-volume problems)
-                    PhotonPlugin.getDefault().disposePositionEngine();
-                    new RetrieveTradingHistoryJob().schedule();
+                    // CD 20140416 Removed
+                    // PhotonPlugin.getDefault().disposePositionEngine();
+                    // new RetrieveTradingHistoryJob().schedule();
                 } else {
                     ServerStatusIndicator.setDisconnected();
                     text = Messages.SERVER_NOTIFICATION_SERVER_DEAD.getText();

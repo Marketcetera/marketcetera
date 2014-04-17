@@ -1,10 +1,8 @@
 package org.marketcetera.trade;
 
-import org.marketcetera.util.misc.ClassVersion;
+import java.util.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Collections;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Enumeration of Sides of an order.
@@ -36,7 +34,24 @@ public enum Side {
      * A Sell Short Exempt Order.
      */
     SellShortExempt(quickfix.field.Side.SELL_SHORT_EXEMPT);
-
+    /**
+     * Indicates if this is a buy side.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isBuy()
+    {
+        return equals(Buy);
+    }
+    /**
+     * Indicates if this is a sell side.
+     *
+     * @return a <code>boolean</code> value
+     */
+    public boolean isSell()
+    {
+        return SELL_SIDES.contains(this);
+    }
     /**
      * Gets the Side instance.
      *
@@ -58,7 +73,6 @@ public enum Side {
     public char getFIXValue() {
         return mFIXValue;
     }
-
     /**
      * Creates an instance.
      *
@@ -67,9 +81,18 @@ public enum Side {
     private Side(char inFIXValue) {
         mFIXValue = inFIXValue;
     }
-
+    /**
+     * FIX char of this value
+     */
     private final char mFIXValue;
-    private static final Map<Character, Side> mFIXValueMap;
+    /**
+     * sell side values
+     */
+    private static final Set<Side> SELL_SIDES = EnumSet.of(Sell,SellShort,SellShortExempt);
+    /**
+     * side values by FIX value
+     */
+    private static final Map<Character,Side> mFIXValueMap;
     static {
         Map<Character, Side> table = new HashMap<Character, Side>();
         for(Side s:values()) {

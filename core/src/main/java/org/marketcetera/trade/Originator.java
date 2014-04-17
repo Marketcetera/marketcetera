@@ -19,5 +19,9 @@ public enum Originator {
     /**
      * Indicates that the report was originated by the FIX broker. 
      */
-    Broker;
+    Broker,
+    /**
+     * Indicates that the report is a parent of child orders
+     */
+    Parent;
 }
