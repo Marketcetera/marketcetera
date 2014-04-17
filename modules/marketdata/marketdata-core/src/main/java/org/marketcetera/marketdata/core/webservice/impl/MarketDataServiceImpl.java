@@ -575,7 +575,7 @@ public class MarketDataServiceImpl
      * @param inInstrument an <code>Instrument</code> value
      * @param inContent a <code>Content</code> value
      * @param inProvider a <code>String</code> value or <code>null</code>
-     * @return a <code>Deque&lt;Event&gt;</code> value or <code>null</code>
+     * @return a <code>Deque&lt;Event&gt;</code> value
      */
     private Deque<Event> doGetSnapshot(Instrument inInstrument,
                                        Content inContent,
@@ -585,7 +585,7 @@ public class MarketDataServiceImpl
                                                                   inContent,
                                                                   inProvider);
         if(event == null) {
-            return null;
+            return new LinkedList<>();
         }
         Deque<Event> eventsToReturn = Lists.newLinkedList();
         if(event instanceof AggregateEvent) {
@@ -602,7 +602,7 @@ public class MarketDataServiceImpl
      * @param inContent a <code>Content</code> value
      * @param inProvider a <code>String</code> value or <code>null</code>
      * @param inPageRequest a <code>PageRequest</code> value
-     * @return a <code>Deque&lt;Event&gt;</code> value or <code>null</code>
+     * @return a <code>Deque&lt;Event&gt;</code> value
      */
     private Deque<Event> doGetSnapshotPage(Instrument inInstrument,
                                            Content inContent,
@@ -613,7 +613,7 @@ public class MarketDataServiceImpl
                                                                   inContent,
                                                                   inProvider);
         if(event == null) {
-            return null;
+            return new LinkedList<>();
         }
         Deque<Event> eventsToReturn = Lists.newLinkedList();
         if(event instanceof AggregateEvent) {
