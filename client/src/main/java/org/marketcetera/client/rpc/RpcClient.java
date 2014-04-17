@@ -3,7 +3,6 @@
 
 package org.marketcetera.client.rpc;
 
-@SuppressWarnings("unused")
 public final class RpcClient {
   private RpcClient() {}
   public static void registerAllExtensions(
@@ -19283,17 +19282,17 @@ public final class RpcClient {
   public interface UnderlyingResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required string symbol = 1;
+    // optional string symbol = 1;
     /**
-     * <code>required string symbol = 1;</code>
+     * <code>optional string symbol = 1;</code>
      */
     boolean hasSymbol();
     /**
-     * <code>required string symbol = 1;</code>
+     * <code>optional string symbol = 1;</code>
      */
     java.lang.String getSymbol();
     /**
-     * <code>required string symbol = 1;</code>
+     * <code>optional string symbol = 1;</code>
      */
     com.google.protobuf.ByteString
         getSymbolBytes();
@@ -19394,17 +19393,17 @@ public final class RpcClient {
     }
 
     private int bitField0_;
-    // required string symbol = 1;
+    // optional string symbol = 1;
     public static final int SYMBOL_FIELD_NUMBER = 1;
     private java.lang.Object symbol_;
     /**
-     * <code>required string symbol = 1;</code>
+     * <code>optional string symbol = 1;</code>
      */
     public boolean hasSymbol() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string symbol = 1;</code>
+     * <code>optional string symbol = 1;</code>
      */
     public java.lang.String getSymbol() {
       java.lang.Object ref = symbol_;
@@ -19421,7 +19420,7 @@ public final class RpcClient {
       }
     }
     /**
-     * <code>required string symbol = 1;</code>
+     * <code>optional string symbol = 1;</code>
      */
     public com.google.protobuf.ByteString
         getSymbolBytes() {
@@ -19445,10 +19444,6 @@ public final class RpcClient {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasSymbol()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -19648,10 +19643,6 @@ public final class RpcClient {
       }
 
       public final boolean isInitialized() {
-        if (!hasSymbol()) {
-          
-          return false;
-        }
         return true;
       }
 
@@ -19674,16 +19665,16 @@ public final class RpcClient {
       }
       private int bitField0_;
 
-      // required string symbol = 1;
+      // optional string symbol = 1;
       private java.lang.Object symbol_ = "";
       /**
-       * <code>required string symbol = 1;</code>
+       * <code>optional string symbol = 1;</code>
        */
       public boolean hasSymbol() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string symbol = 1;</code>
+       * <code>optional string symbol = 1;</code>
        */
       public java.lang.String getSymbol() {
         java.lang.Object ref = symbol_;
@@ -19697,7 +19688,7 @@ public final class RpcClient {
         }
       }
       /**
-       * <code>required string symbol = 1;</code>
+       * <code>optional string symbol = 1;</code>
        */
       public com.google.protobuf.ByteString
           getSymbolBytes() {
@@ -19713,7 +19704,7 @@ public final class RpcClient {
         }
       }
       /**
-       * <code>required string symbol = 1;</code>
+       * <code>optional string symbol = 1;</code>
        */
       public Builder setSymbol(
           java.lang.String value) {
@@ -19726,7 +19717,7 @@ public final class RpcClient {
         return this;
       }
       /**
-       * <code>required string symbol = 1;</code>
+       * <code>optional string symbol = 1;</code>
        */
       public Builder clearSymbol() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -19735,7 +19726,7 @@ public final class RpcClient {
         return this;
       }
       /**
-       * <code>required string symbol = 1;</code>
+       * <code>optional string symbol = 1;</code>
        */
       public Builder setSymbolBytes(
           com.google.protobuf.ByteString value) {
@@ -22707,17 +22698,17 @@ public final class RpcClient {
   public interface RootOrderIdResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required string orderId = 1;
+    // optional string orderId = 1;
     /**
-     * <code>required string orderId = 1;</code>
+     * <code>optional string orderId = 1;</code>
      */
     boolean hasOrderId();
     /**
-     * <code>required string orderId = 1;</code>
+     * <code>optional string orderId = 1;</code>
      */
     java.lang.String getOrderId();
     /**
-     * <code>required string orderId = 1;</code>
+     * <code>optional string orderId = 1;</code>
      */
     com.google.protobuf.ByteString
         getOrderIdBytes();
@@ -22818,17 +22809,17 @@ public final class RpcClient {
     }
 
     private int bitField0_;
-    // required string orderId = 1;
+    // optional string orderId = 1;
     public static final int ORDERID_FIELD_NUMBER = 1;
     private java.lang.Object orderId_;
     /**
-     * <code>required string orderId = 1;</code>
+     * <code>optional string orderId = 1;</code>
      */
     public boolean hasOrderId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required string orderId = 1;</code>
+     * <code>optional string orderId = 1;</code>
      */
     public java.lang.String getOrderId() {
       java.lang.Object ref = orderId_;
@@ -22845,7 +22836,7 @@ public final class RpcClient {
       }
     }
     /**
-     * <code>required string orderId = 1;</code>
+     * <code>optional string orderId = 1;</code>
      */
     public com.google.protobuf.ByteString
         getOrderIdBytes() {
@@ -22869,10 +22860,6 @@ public final class RpcClient {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasOrderId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -23072,10 +23059,6 @@ public final class RpcClient {
       }
 
       public final boolean isInitialized() {
-        if (!hasOrderId()) {
-          
-          return false;
-        }
         return true;
       }
 
@@ -23098,16 +23081,16 @@ public final class RpcClient {
       }
       private int bitField0_;
 
-      // required string orderId = 1;
+      // optional string orderId = 1;
       private java.lang.Object orderId_ = "";
       /**
-       * <code>required string orderId = 1;</code>
+       * <code>optional string orderId = 1;</code>
        */
       public boolean hasOrderId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required string orderId = 1;</code>
+       * <code>optional string orderId = 1;</code>
        */
       public java.lang.String getOrderId() {
         java.lang.Object ref = orderId_;
@@ -23121,7 +23104,7 @@ public final class RpcClient {
         }
       }
       /**
-       * <code>required string orderId = 1;</code>
+       * <code>optional string orderId = 1;</code>
        */
       public com.google.protobuf.ByteString
           getOrderIdBytes() {
@@ -23137,7 +23120,7 @@ public final class RpcClient {
         }
       }
       /**
-       * <code>required string orderId = 1;</code>
+       * <code>optional string orderId = 1;</code>
        */
       public Builder setOrderId(
           java.lang.String value) {
@@ -23150,7 +23133,7 @@ public final class RpcClient {
         return this;
       }
       /**
-       * <code>required string orderId = 1;</code>
+       * <code>optional string orderId = 1;</code>
        */
       public Builder clearOrderId() {
         bitField0_ = (bitField0_ & ~0x00000001);
@@ -23159,7 +23142,7 @@ public final class RpcClient {
         return this;
       }
       /**
-       * <code>required string orderId = 1;</code>
+       * <code>optional string orderId = 1;</code>
        */
       public Builder setOrderIdBytes(
           com.google.protobuf.ByteString value) {
@@ -28787,7 +28770,7 @@ public final class RpcClient {
       "\n\006active\030\003 \002(\010\022\021\n\tsuperuser\030\004 \002(\010\022\020\n\010use" +
       "rdata\030\005 \001(\t\"6\n\021UnderlyingRequest\022\021\n\tsess" +
       "ionId\030\001 \002(\t\022\016\n\006symbol\030\002 \002(\t\"$\n\022Underlyin" +
-      "gResponse\022\016\n\006symbol\030\001 \002(\t\"7\n\022OptionRoots" +
+      "gResponse\022\016\n\006symbol\030\001 \001(\t\"7\n\022OptionRoots" +
       "Request\022\021\n\tsessionId\030\001 \002(\t\022\016\n\006symbol\030\002 \002" +
       "(\t\"%\n\023OptionRootsResponse\022\016\n\006symbol\030\001 \003(" +
       "\t\"9\n\024ResolveSymbolRequest\022\021\n\tsessionId\030\001" +
@@ -28795,7 +28778,7 @@ public final class RpcClient {
       "ponse\022\037\n\ninstrument\030\001 \001(\0132\013.Instrument\"8" +
       "\n\022RootOrderIdRequest\022\021\n\tsessionId\030\001 \002(\t\022" +
       "\017\n\007orderId\030\002 \002(\t\"&\n\023RootOrderIdResponse\022" +
-      "\017\n\007orderId\030\001 \002(\t\"\'\n\022GetUserDataRequest\022\021" +
+      "\017\n\007orderId\030\001 \001(\t\"\'\n\022GetUserDataRequest\022\021" +
       "\n\tsessionId\030\001 \002(\t\"\'\n\023GetUserDataResponse" +
       "\022\020\n\010userData\030\001 \001(\t\"9\n\022SetUserDataRequest" +
       "\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010userData\030\002 \001(\t\"\025\n" +

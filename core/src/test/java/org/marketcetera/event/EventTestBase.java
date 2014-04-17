@@ -40,9 +40,22 @@ public class EventTestBase
      */
     public static AskEvent generateAskEvent(Instrument inInstrument)
     {
+        return generateAskEvent(inInstrument,
+                                generateDecimalValue());
+    }
+    /**
+     * Generates an <code>AskEvent</code> for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inAskPrice a <code>BigDecimal</code> value
+     * @return an <code>AskEvent</code> value
+     */
+    public static AskEvent generateAskEvent(Instrument inInstrument,
+                                            BigDecimal inAskPrice)
+    {
         return QuoteEventBuilder.askEvent(inInstrument)
                 .withExchange(generateExchange())
-                .withPrice(generateDecimalValue())
+                .withPrice(inAskPrice)
                 .withSize(generateDecimalValue())
                 .withQuoteDate(generateQuoteDate()).create();
     }
@@ -54,9 +67,22 @@ public class EventTestBase
      */
     public static BidEvent generateBidEvent(Instrument inInstrument)
     {
+        return generateBidEvent(inInstrument,
+                                generateDecimalValue());
+    }
+    /**
+     * Generates a <code>BidEvent</code> for the given instrument.
+     *
+     * @param inInstrument an <code>Instrument</code> value
+     * @param inBidPrice a <code>BigDecimal</code> value
+     * @return a <code>BidEvent</code> value
+     */
+    public static BidEvent generateBidEvent(Instrument inInstrument,
+                                            BigDecimal inBidPrice)
+    {
         return QuoteEventBuilder.bidEvent(inInstrument)
                 .withExchange(generateExchange())
-                .withPrice(generateDecimalValue())
+                .withPrice(inBidPrice)
                 .withSize(generateDecimalValue())
                 .withQuoteDate(generateQuoteDate()).create();
     }

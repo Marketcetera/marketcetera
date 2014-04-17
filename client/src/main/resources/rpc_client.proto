@@ -158,7 +158,7 @@ message UnderlyingRequest {
 }
 
 message UnderlyingResponse {
-    required string symbol = 1;
+    optional string symbol = 1;
 }
 
 message OptionRootsRequest {
@@ -185,7 +185,7 @@ message RootOrderIdRequest {
 }
 
 message RootOrderIdResponse {
-    required string orderId = 1;
+    optional string orderId = 1;
 }
 
 message GetUserDataRequest {

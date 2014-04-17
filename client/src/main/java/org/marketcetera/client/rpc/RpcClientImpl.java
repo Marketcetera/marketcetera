@@ -211,8 +211,9 @@ public class RpcClientImpl
     {
         RpcClient.UnderlyingRequest request = RpcClient.UnderlyingRequest.newBuilder().setSessionId(sessionId.getValue()).setSymbol(inOptionRoot).build();
         try {
-            return clientService.getUnderlying(controller,
-                                               request).getSymbol();
+            RpcClient.UnderlyingResponse response = clientService.getUnderlying(controller,
+                                                                                request);
+            return response.hasSymbol()?response.getSymbol():null;
         } catch (ServiceException e) {
             throw new ConnectionException(e,
                                           Messages.ERROR_REMOTE_EXECUTION);
@@ -227,8 +228,9 @@ public class RpcClientImpl
     {
         RpcClient.OptionRootsRequest request = RpcClient.OptionRootsRequest.newBuilder().setSessionId(sessionId.getValue()).setSymbol(inUnderlying).build();
         try {
-            return clientService.getOptionRoots(controller,
-                                                request).getSymbolList();
+            RpcClient.OptionRootsResponse response = clientService.getOptionRoots(controller,
+                                                                                  request);
+            return response.getSymbolList();
         } catch (ServiceException e) {
             throw new ConnectionException(e,
                                           Messages.ERROR_REMOTE_EXECUTION);
