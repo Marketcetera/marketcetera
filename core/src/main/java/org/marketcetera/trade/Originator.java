@@ -21,6 +21,10 @@ public enum Originator {
      */
     Broker,
     /**
+     * Indicates that the report is a child of parent orders
+     */
+    Child,
+    /**
      * Indicates that the report is a parent of child orders
      */
     Parent;
