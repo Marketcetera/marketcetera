@@ -2,6 +2,7 @@ package org.marketcetera.messagehistory;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +12,7 @@ import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -72,29 +74,28 @@ final class OpenOrderListFunction implements Function<List<ReportHolder>, Report
             if (report instanceof OrderCancelReject) {
                 // the cancel or cancel-replace was rejected
                 obsolete.add(orderId);
-            } else if (report instanceof ExecutionReport) {
-                ExecutionReport ereport = (ExecutionReport) report;
-                if (ereport.getOrderStatus() == OrderStatus.Filled
-                        || ereport.getOrderStatus() == OrderStatus.Canceled
-                        || ereport.getOrderStatus() == OrderStatus.Rejected
-                        || ereport.getOrderStatus() == OrderStatus.Expired) {
+            } else if(report instanceof ExecutionReport) {
+                ExecutionReport eReport = (ExecutionReport) report;
+                if(CLOSED.contains(eReport.getOrderStatus())) {
                     // order has been filled, canceled, or rejected, whole chain is obsolete
                     return null;
-                } else if (ereport.isCancelable()) {
-                    if (out != null) {
+                } else if(eReport.isCancelable()) {
+                    if(out != null) {
                         // we have a placeholder already, only override it if we find a
                         // broker report with the same order id, e.g. the NEW for a PENDING_NEW
-                        if (ereport.getOriginator().forOrders() && ereport.getHierarchy().forOrders() && out.getReport().getOrderID().equals(orderId)) {
+                        if(eReport.getOriginator().forOrders() && eReport.getHierarchy().forOrders() && out.getReport().getOrderID().equals(orderId)) {
                             return reportHolder;
                         }
-                    } else if (!obsolete.contains(orderId)) {
+                    } else if(!obsolete.contains(orderId)) {
                         // this is the latest non-obsolete execution report, return it if it
                         // is from the broker, otherwise set the placeholder and keep iterating
                         // to find a broker report if one exists
-                        if (ereport.getOriginator().forOrders() && ereport.getHierarchy().forOrders()) {
+                        if(eReport.getOriginator().forOrders() && eReport.getHierarchy().forOrders()) {
                             return reportHolder;
                         } else {
-                            out = reportHolder;
+                            if(eReport.getOriginator() == Originator.Server) {
+                                out = reportHolder;
+                            }
                         }
                     }
                 }
@@ -105,4 +106,8 @@ final class OpenOrderListFunction implements Function<List<ReportHolder>, Report
         // report of the same id was found.
         return out;
     }
+    /**
+     * indicates status values that are to be considered closed
+     */
+    private static final Set<OrderStatus> CLOSED = EnumSet.of(OrderStatus.Filled,OrderStatus.Canceled,OrderStatus.Rejected,OrderStatus.Expired);
 }
