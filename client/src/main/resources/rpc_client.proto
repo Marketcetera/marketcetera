@@ -208,6 +208,13 @@ message AddReportRequest {
     required string sessionId = 1;
     required string brokerId = 2;
     required string message = 3;
+    required Hierarchy hierarchy = 4;
+}
+
+enum Hierarchy {
+    Parent = 0;
+    Child = 1;
+    Flat = 2;
 }
 
 message AddReportResponse {

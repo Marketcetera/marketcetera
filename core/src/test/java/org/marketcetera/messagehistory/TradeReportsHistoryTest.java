@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Vector;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,18 +21,53 @@ import org.marketcetera.core.instruments.InstrumentToMessage;
 import org.marketcetera.core.instruments.MockUnderlyingSymbolSupport;
 import org.marketcetera.core.instruments.UnderlyingSymbolSupport;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportImpl;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.FutureExpirationMonth;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderStatus;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.ReportID;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.CxlRejReason;
+import quickfix.field.CxlRejResponseTo;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.SendingTime;
 import quickfix.field.Side;
+import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+
+import com.google.common.collect.Lists;
 
 /* $License$ */
 
@@ -356,6 +391,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                         "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
 
         ListEventListener<ReportHolder> fixMessageListener = new ListEventListener<ReportHolder>() {
+            @SuppressWarnings("unused")
             public int numIncomingMessages = 0;
 
             @SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -398,6 +434,7 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                         "1", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new Equity("ASDF"), null, null);
 
         ListEventListener<ReportHolder> fixMessageListener = new ListEventListener<ReportHolder>() {
+            @SuppressWarnings("unused")
             public int numIncomingMessages = 0;
 
             public void listChanged(ListEvent<ReportHolder> event) {
@@ -466,9 +503,6 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 .getAveragePricesList();
 
         assertEquals(0, averagePriceList.size());
-        ReportHolder holder;
-        Message returnedMessage;
-        BigDecimal returnedAvgPrice;
         
         orderID1 = "1"; //$NON-NLS-1$
         clOrderID1 = "1"; //$NON-NLS-1$
@@ -780,39 +814,63 @@ public class TradeReportsHistoryTest extends FIXVersionedTestCase {
                 new org.marketcetera.trade.OrderID("1")).getMessage());
     }
 
-    public void testVisitOpenExecReports() throws Exception {
+    public void testVisitOpenExecReports()
+            throws Exception
+    {
         TradeReportsHistory history = createMessageHistory();
-        history
-                .addIncomingMessage(createServerReport(msgFactory
-                        .newExecutionReport(
-                                "1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                new BigDecimal(789), null, null,
-                                BigDecimal.ZERO, BigDecimal.ZERO, new Equity(
-										        "ASDF"), null, null))); //$NON-NLS-1$
-        history
-                .addIncomingMessage(createServerReport(msgFactory
-                        .newExecutionReport(
-                                "1002", "2", "2002", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                new BigDecimal(789), null, null,
-                                BigDecimal.ZERO, BigDecimal.ZERO, new Equity(
-										        "LERA"), null, null))); //$NON-NLS-1$
-        history
-                .addIncomingMessage(createServerReport(msgFactory
-                        .newExecutionReport(
-                                "1003", "3", "2003", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                new BigDecimal(789), null, null,
-                                BigDecimal.ZERO, BigDecimal.ZERO, new Equity(
-										        "FRED"), null, null))); //$NON-NLS-1$
-
-        final Vector<ReportBase> visited = new Vector<ReportBase>();
+        history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport("1001",
+                                                                                    "1",
+                                                                                    "2001",
+                                                                                    OrdStatus.NEW,
+                                                                                    Side.BUY,
+                                                                                    new BigDecimal(1000),
+                                                                                    new BigDecimal(789),
+                                                                                    null,
+                                                                                    null,
+                                                                                    BigDecimal.ZERO,
+                                                                                    BigDecimal.ZERO,
+                                                                                    new Equity("ASDF"),
+                                                                                    null,
+                                                                                    null)));
+        history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport("1002",
+                                                                                    "2",
+                                                                                    "2002",
+                                                                                    OrdStatus.NEW,
+                                                                                    Side.BUY,
+                                                                                    new BigDecimal(1000),
+                                                                                    new BigDecimal(789),
+                                                                                    null,
+                                                                                    null,
+                                                                                    BigDecimal.ZERO,
+                                                                                    BigDecimal.ZERO,
+                                                                                    new Equity("LERA"),
+                                                                                    null,
+                                                                                    null)));
+        history.addIncomingMessage(createServerReport(msgFactory.newExecutionReport("1003",
+                                                                                    "3",
+                                                                                    "2003",
+                                                                                    OrdStatus.NEW,
+                                                                                    Side.BUY,
+                                                                                    new BigDecimal(1000),
+                                                                                    new BigDecimal(789),
+                                                                                    null,
+                                                                                    null,
+                                                                                    BigDecimal.ZERO,
+                                                                                    BigDecimal.ZERO,
+                                                                                    new Equity("FRED"),
+                                                                                    null,
+                                                                                    null)));
+        final List<ReportBase> visited = Lists.newArrayList();
         MessageVisitor visitor = new MessageVisitor() {
-        	@Override
-            public void visitOpenOrderExecutionReports(ReportBase report) {
+            @Override
+            public void visitOpenOrderExecutionReports(ReportBase report)
+            {
                 visited.add(report);
             }
         };
         history.visitOpenOrdersExecutionReports(visitor);
-        assertEquals(3, visited.size());
+        assertEquals(3,
+                     visited.size());
     }
 
     public void testOpenOrderDupes() throws Exception {

@@ -56,6 +56,7 @@ import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.ExecutionReportImpl;
 import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.OrderID;
@@ -282,11 +283,12 @@ public class RpcClientImpl
         }
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.ClientImpl#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID)
+     * @see org.marketcetera.client.ClientImpl#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID, org.marketcetera.trade.Hierarchy)
      */
     @Override
     public void addReport(FIXMessageWrapper inReport,
-                          BrokerID inBrokerID)
+                          BrokerID inBrokerID,
+                          Hierarchy inHierarchy)
             throws ConnectionException
     {
         StringWriter output = new StringWriter();
@@ -299,7 +301,8 @@ public class RpcClientImpl
             RpcClient.AddReportRequest request = RpcClient.AddReportRequest.newBuilder()
                     .setSessionId(sessionId.getValue())
                     .setBrokerId(inBrokerID.getValue())
-                    .setMessage(output.toString()).build();
+                    .setMessage(output.toString())
+                    .setHierarchy(RpcClient.Hierarchy.valueOf(inHierarchy.name())).build();
             SLF4JLoggerProxy.debug(this,
                                    "AddReport request: {}",
                                    request);

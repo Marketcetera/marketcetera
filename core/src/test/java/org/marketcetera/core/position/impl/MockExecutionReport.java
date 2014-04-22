@@ -6,6 +6,7 @@ import java.util.Date;
 import org.marketcetera.trade.BrokerID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.ExecutionType;
+import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.OrderCapacity;
 import org.marketcetera.trade.OrderID;
@@ -27,9 +28,11 @@ import org.marketcetera.trade.UserID;
  * @version $Id$
  * @since 1.5.0
  */
-public class MockExecutionReport implements ExecutionReport {
+public class MockExecutionReport
+        implements ExecutionReport
+{
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	private final String mAccount;
 	private final Instrument mInstrument;
 	private final Side mSide;
@@ -38,6 +41,7 @@ public class MockExecutionReport implements ExecutionReport {
 	private final OrderStatus mStatus;
 	private final ExecutionType executionType;
 	private final Originator originator;
+    private final Hierarchy hierarchy;
 	private final ReportID mId;
 	private UserID mViewer;	
 	/**
@@ -75,6 +79,7 @@ public class MockExecutionReport implements ExecutionReport {
 		mViewer = new UserID(trader);
 		executionType = inExecutionType;
 		originator = inOriginator;
+        hierarchy = Hierarchy.Flat;
 	}
 
 	@Override
@@ -181,7 +186,14 @@ public class MockExecutionReport implements ExecutionReport {
 	public Originator getOriginator() {
 		return originator;
 	}
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ReportBase#getHierarchy()
+     */
+    @Override
+    public Hierarchy getHierarchy()
+    {
+        return hierarchy;
+    }
 	@Override
 	public UserID getActorID() {
 		return null;

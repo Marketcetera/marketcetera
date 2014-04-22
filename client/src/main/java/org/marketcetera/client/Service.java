@@ -385,11 +385,13 @@ public interface Service
      * @param inContext a <code>ClientContent</code> value
      * @param inReport a <code>FIXMessageWrapper</code> value
      * @param inBrokerID a <code>BrokerID</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
      * @throws RemoteException if an error occurs
      */
     void addReport(@WebParam(name="context")ClientContext inContext,
                    @WebParam(name="report")FIXMessageWrapper inReport,
-                   @WebParam(name="brokerID")BrokerID inBrokerID)
+                   @WebParam(name="brokerID")BrokerID inBrokerID,
+                   @WebParam(name="hierarchy")Hierarchy inHierarchy)
             throws RemoteException;
     /**
      * Removes the given report from the persistent report store.

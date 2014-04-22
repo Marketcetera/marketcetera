@@ -82,7 +82,12 @@ public interface ReportBase extends Serializable {
      * @return the originator of this message.
      */
     Originator getOriginator();
-
+    /**
+     * The hierarchy of the report.
+     *
+     * @return a <code>Hierarchy</code> value
+     */
+    Hierarchy getHierarchy();
     /**
      * The ID of the actor user of this message.
      *

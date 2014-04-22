@@ -11,7 +11,6 @@ import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderID;
 import org.marketcetera.trade.OrderStatus;
-import org.marketcetera.trade.Originator;
 import org.marketcetera.trade.ReportBase;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -85,15 +84,14 @@ final class OpenOrderListFunction implements Function<List<ReportHolder>, Report
                     if (out != null) {
                         // we have a placeholder already, only override it if we find a
                         // broker report with the same order id, e.g. the NEW for a PENDING_NEW
-                        if (ereport.getOriginator() == Originator.Broker
-                                && out.getReport().getOrderID().equals(orderId)) {
+                        if (ereport.getOriginator().forOrders() && ereport.getHierarchy().forOrders() && out.getReport().getOrderID().equals(orderId)) {
                             return reportHolder;
                         }
                     } else if (!obsolete.contains(orderId)) {
                         // this is the latest non-obsolete execution report, return it if it
                         // is from the broker, otherwise set the placeholder and keep iterating
                         // to find a broker report if one exists
-                        if (ereport.getOriginator() == Originator.Broker) {
+                        if (ereport.getOriginator().forOrders() && ereport.getHierarchy().forOrders()) {
                             return reportHolder;
                         } else {
                             out = reportHolder;

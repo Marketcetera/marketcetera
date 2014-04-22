@@ -19,8 +19,11 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlSeeAlso
     ({ExecutionReportImpl.class,
       OrderCancelRejectImpl.class})
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
+@ClassVersion("$Id$")
+public class ReportBaseImpl
+        extends FIXMessageWrapper
+        implements ReportBase
+{
 
     @Override
     public synchronized OrderID getOrderID() {
@@ -66,7 +69,14 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
     public Originator getOriginator() {
         return mOriginator;
     }
-
+    /* (non-Javadoc)
+     * @see org.marketcetera.trade.ReportBase#getHierarchy()
+     */
+    @Override
+    public Hierarchy getHierarchy()
+    {
+        return hierarchy;
+    }
     @Override
     public UserID getActorID() {
         return mActorID;
@@ -96,17 +106,20 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
      * @param inMessage the FIX Message.
      * @param inBrokerID the brokerID from which this report originated.
      * @param inOriginator the originator of this report.
+     * @param inHierarchy a <code>Hierarchy</code> value
      * @param inActorID the ID of the actor user of this report. It may be null.
      * @param inViewerID the ID of the viewer user of this report. It may be null.
      */
     protected ReportBaseImpl(Message inMessage,
                              BrokerID inBrokerID,
                              Originator inOriginator,
+                             Hierarchy inHierarchy,
                              UserID inActorID,
                              UserID inViewerID) {
         super(inMessage);
         mBrokerID = inBrokerID;
         mOriginator = inOriginator;
+        hierarchy = inHierarchy;
         mActorID = inActorID;
         mViewerID = inViewerID;
     }
@@ -119,14 +132,16 @@ public class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
     protected ReportBaseImpl() {
         mBrokerID = null;
         mOriginator = null;
+        hierarchy = null;
         mActorID = null;
         mViewerID = null;
     }
 
     private ReportID mReportID = null;
     private final BrokerID mBrokerID;
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
     private final Originator mOriginator;
+    private final Hierarchy hierarchy;
     private final UserID mActorID;
     private final UserID mViewerID;
 }

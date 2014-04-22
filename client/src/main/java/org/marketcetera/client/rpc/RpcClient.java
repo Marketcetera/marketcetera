@@ -3,6 +3,7 @@
 
 package org.marketcetera.client.rpc;
 
+@SuppressWarnings("unused")
 public final class RpcClient {
   private RpcClient() {}
   public static void registerAllExtensions(
@@ -106,6 +107,97 @@ public final class RpcClient {
     }
 
     // @@protoc_insertion_point(enum_scope:InstrumentType)
+  }
+
+  /**
+   * Protobuf enum {@code Hierarchy}
+   */
+  public enum Hierarchy
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>Parent = 0;</code>
+     */
+    Parent(0, 0),
+    /**
+     * <code>Child = 1;</code>
+     */
+    Child(1, 1),
+    /**
+     * <code>Flat = 2;</code>
+     */
+    Flat(2, 2),
+    ;
+
+    /**
+     * <code>Parent = 0;</code>
+     */
+    public static final int Parent_VALUE = 0;
+    /**
+     * <code>Child = 1;</code>
+     */
+    public static final int Child_VALUE = 1;
+    /**
+     * <code>Flat = 2;</code>
+     */
+    public static final int Flat_VALUE = 2;
+
+
+    public final int getNumber() { return value; }
+
+    public static Hierarchy valueOf(int value) {
+      switch (value) {
+        case 0: return Parent;
+        case 1: return Child;
+        case 2: return Flat;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<Hierarchy>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<Hierarchy>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Hierarchy>() {
+            public Hierarchy findValueByNumber(int number) {
+              return Hierarchy.valueOf(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return org.marketcetera.client.rpc.RpcClient.getDescriptor().getEnumTypes().get(1);
+    }
+
+    private static final Hierarchy[] VALUES = values();
+
+    public static Hierarchy valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int index;
+    private final int value;
+
+    private Hierarchy(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:Hierarchy)
   }
 
   public interface LoginRequestOrBuilder
@@ -25107,6 +25199,16 @@ public final class RpcClient {
      */
     com.google.protobuf.ByteString
         getMessageBytes();
+
+    // required .Hierarchy hierarchy = 4;
+    /**
+     * <code>required .Hierarchy hierarchy = 4;</code>
+     */
+    boolean hasHierarchy();
+    /**
+     * <code>required .Hierarchy hierarchy = 4;</code>
+     */
+    org.marketcetera.client.rpc.RpcClient.Hierarchy getHierarchy();
   }
   /**
    * Protobuf type {@code AddReportRequest}
@@ -25172,6 +25274,17 @@ public final class RpcClient {
             case 26: {
               bitField0_ |= 0x00000004;
               message_ = input.readBytes();
+              break;
+            }
+            case 32: {
+              int rawValue = input.readEnum();
+              org.marketcetera.client.rpc.RpcClient.Hierarchy value = org.marketcetera.client.rpc.RpcClient.Hierarchy.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(4, rawValue);
+              } else {
+                bitField0_ |= 0x00000008;
+                hierarchy_ = value;
+              }
               break;
             }
           }
@@ -25343,10 +25456,27 @@ public final class RpcClient {
       }
     }
 
+    // required .Hierarchy hierarchy = 4;
+    public static final int HIERARCHY_FIELD_NUMBER = 4;
+    private org.marketcetera.client.rpc.RpcClient.Hierarchy hierarchy_;
+    /**
+     * <code>required .Hierarchy hierarchy = 4;</code>
+     */
+    public boolean hasHierarchy() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required .Hierarchy hierarchy = 4;</code>
+     */
+    public org.marketcetera.client.rpc.RpcClient.Hierarchy getHierarchy() {
+      return hierarchy_;
+    }
+
     private void initFields() {
       sessionId_ = "";
       brokerId_ = "";
       message_ = "";
+      hierarchy_ = org.marketcetera.client.rpc.RpcClient.Hierarchy.Parent;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -25365,6 +25495,10 @@ public final class RpcClient {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasHierarchy()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -25380,6 +25514,9 @@ public final class RpcClient {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBytes(3, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeEnum(4, hierarchy_.getNumber());
       }
       getUnknownFields().writeTo(output);
     }
@@ -25401,6 +25538,10 @@ public final class RpcClient {
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(4, hierarchy_.getNumber());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -25524,6 +25665,8 @@ public final class RpcClient {
         bitField0_ = (bitField0_ & ~0x00000002);
         message_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
+        hierarchy_ = org.marketcetera.client.rpc.RpcClient.Hierarchy.Parent;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -25564,6 +25707,10 @@ public final class RpcClient {
           to_bitField0_ |= 0x00000004;
         }
         result.message_ = message_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.hierarchy_ = hierarchy_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -25595,6 +25742,9 @@ public final class RpcClient {
           message_ = other.message_;
           onChanged();
         }
+        if (other.hasHierarchy()) {
+          setHierarchy(other.getHierarchy());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -25609,6 +25759,10 @@ public final class RpcClient {
           return false;
         }
         if (!hasMessage()) {
+          
+          return false;
+        }
+        if (!hasHierarchy()) {
           
           return false;
         }
@@ -25852,6 +26006,42 @@ public final class RpcClient {
   }
   bitField0_ |= 0x00000004;
         message_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required .Hierarchy hierarchy = 4;
+      private org.marketcetera.client.rpc.RpcClient.Hierarchy hierarchy_ = org.marketcetera.client.rpc.RpcClient.Hierarchy.Parent;
+      /**
+       * <code>required .Hierarchy hierarchy = 4;</code>
+       */
+      public boolean hasHierarchy() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required .Hierarchy hierarchy = 4;</code>
+       */
+      public org.marketcetera.client.rpc.RpcClient.Hierarchy getHierarchy() {
+        return hierarchy_;
+      }
+      /**
+       * <code>required .Hierarchy hierarchy = 4;</code>
+       */
+      public Builder setHierarchy(org.marketcetera.client.rpc.RpcClient.Hierarchy value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        bitField0_ |= 0x00000008;
+        hierarchy_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required .Hierarchy hierarchy = 4;</code>
+       */
+      public Builder clearHierarchy() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        hierarchy_ = org.marketcetera.client.rpc.RpcClient.Hierarchy.Parent;
         onChanged();
         return this;
       }
@@ -28782,39 +28972,41 @@ public final class RpcClient {
       "\n\tsessionId\030\001 \002(\t\"\'\n\023GetUserDataResponse" +
       "\022\020\n\010userData\030\001 \001(\t\"9\n\022SetUserDataRequest" +
       "\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010userData\030\002 \001(\t\"\025\n" +
-      "\023SetUserDataResponse\"H\n\020AddReportRequest" +
+      "\023SetUserDataResponse\"g\n\020AddReportRequest" +
       "\022\021\n\tsessionId\030\001 \002(\t\022\020\n\010brokerId\030\002 \002(\t\022\017\n" +
-      "\007message\030\003 \002(\t\"\023\n\021AddReportResponse\"9\n\023D",
-      "eleteReportRequest\022\021\n\tsessionId\030\001 \002(\t\022\017\n" +
-      "\007message\030\002 \002(\t\"\026\n\024DeleteReportResponse*B" +
-      "\n\016InstrumentType\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001" +
-      "\022\n\n\006FUTURE\020\002\022\014\n\010CURRENCY\020\0032\330\007\n\020RpcClient" +
-      "Service\022&\n\005login\022\r.LoginRequest\032\016.LoginR" +
-      "esponse\022)\n\006logout\022\016.LogoutRequest\032\017.Logo" +
-      "utResponse\022;\n\016getNextOrderID\022\023.NextOrder" +
-      "IdRequest\032\024.NextOrderIdResponse\022A\n\020getBr" +
-      "okersStatus\022\025.BrokersStatusRequest\032\026.Bro" +
-      "kersStatusResponse\0228\n\rgetOpenOrders\022\022.Op",
-      "enOrdersRequest\032\023.OpenOrdersResponse\022>\n\017" +
-      "getReportsSince\022\024.ReportsSinceRequest\032\025." +
-      "ReportsSinceResponse\0223\n\014getPositions\022\020.P" +
-      "ositionRequest\032\021.PositionResponse\0222\n\thea" +
-      "rtbeat\022\021.HeartbeatRequest\032\022.HeartbeatRes" +
-      "ponse\0222\n\013getUserInfo\022\020.UserInfoRequest\032\021" +
-      ".UserInfoResponse\0228\n\rgetUnderlying\022\022.Und" +
-      "erlyingRequest\032\023.UnderlyingResponse\022;\n\016g" +
-      "etOptionRoots\022\023.OptionRootsRequest\032\024.Opt" +
-      "ionRootsResponse\022>\n\rresolveSymbol\022\025.Reso",
-      "lveSymbolRequest\032\026.ResolveSymbolResponse" +
-      "\022>\n\021getRootOrderIdFor\022\023.RootOrderIdReque" +
-      "st\032\024.RootOrderIdResponse\0228\n\013getUserData\022" +
-      "\023.GetUserDataRequest\032\024.GetUserDataRespon" +
-      "se\0228\n\013setUserData\022\023.SetUserDataRequest\032\024" +
-      ".SetUserDataResponse\0222\n\taddReport\022\021.AddR" +
-      "eportRequest\032\022.AddReportResponse\022;\n\014dele" +
-      "teReport\022\024.DeleteReportRequest\032\025.DeleteR" +
-      "eportResponseB+\n\033org.marketcetera.client" +
-      ".rpcB\tRpcClient\210\001\001"
+      "\007message\030\003 \002(\t\022\035\n\thierarchy\030\004 \002(\0162\n.Hier",
+      "archy\"\023\n\021AddReportResponse\"9\n\023DeleteRepo" +
+      "rtRequest\022\021\n\tsessionId\030\001 \002(\t\022\017\n\007message\030" +
+      "\002 \002(\t\"\026\n\024DeleteReportResponse*B\n\016Instrum" +
+      "entType\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTUR" +
+      "E\020\002\022\014\n\010CURRENCY\020\003*,\n\tHierarchy\022\n\n\006Parent" +
+      "\020\000\022\t\n\005Child\020\001\022\010\n\004Flat\020\0022\330\007\n\020RpcClientSer" +
+      "vice\022&\n\005login\022\r.LoginRequest\032\016.LoginResp" +
+      "onse\022)\n\006logout\022\016.LogoutRequest\032\017.LogoutR" +
+      "esponse\022;\n\016getNextOrderID\022\023.NextOrderIdR" +
+      "equest\032\024.NextOrderIdResponse\022A\n\020getBroke",
+      "rsStatus\022\025.BrokersStatusRequest\032\026.Broker" +
+      "sStatusResponse\0228\n\rgetOpenOrders\022\022.OpenO" +
+      "rdersRequest\032\023.OpenOrdersResponse\022>\n\017get" +
+      "ReportsSince\022\024.ReportsSinceRequest\032\025.Rep" +
+      "ortsSinceResponse\0223\n\014getPositions\022\020.Posi" +
+      "tionRequest\032\021.PositionResponse\0222\n\theartb" +
+      "eat\022\021.HeartbeatRequest\032\022.HeartbeatRespon" +
+      "se\0222\n\013getUserInfo\022\020.UserInfoRequest\032\021.Us" +
+      "erInfoResponse\0228\n\rgetUnderlying\022\022.Underl" +
+      "yingRequest\032\023.UnderlyingResponse\022;\n\016getO",
+      "ptionRoots\022\023.OptionRootsRequest\032\024.Option" +
+      "RootsResponse\022>\n\rresolveSymbol\022\025.Resolve" +
+      "SymbolRequest\032\026.ResolveSymbolResponse\022>\n" +
+      "\021getRootOrderIdFor\022\023.RootOrderIdRequest\032" +
+      "\024.RootOrderIdResponse\0228\n\013getUserData\022\023.G" +
+      "etUserDataRequest\032\024.GetUserDataResponse\022" +
+      "8\n\013setUserData\022\023.SetUserDataRequest\032\024.Se" +
+      "tUserDataResponse\0222\n\taddReport\022\021.AddRepo" +
+      "rtRequest\032\022.AddReportResponse\022;\n\014deleteR" +
+      "eport\022\024.DeleteReportRequest\032\025.DeleteRepo",
+      "rtResponseB+\n\033org.marketcetera.client.rp" +
+      "cB\tRpcClient\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -29066,7 +29258,7 @@ public final class RpcClient {
           internal_static_AddReportRequest_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_AddReportRequest_descriptor,
-              new java.lang.String[] { "SessionId", "BrokerId", "Message", });
+              new java.lang.String[] { "SessionId", "BrokerId", "Message", "Hierarchy", });
           internal_static_AddReportResponse_descriptor =
             getDescriptor().getMessageTypes().get(41);
           internal_static_AddReportResponse_fieldAccessorTable = new

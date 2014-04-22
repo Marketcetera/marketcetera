@@ -1,8 +1,12 @@
 package org.marketcetera.trade;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.Message;
+
+/* $License$ */
 
 /**
  * An ORS response that wraps a generic FIX message which cannot be
@@ -13,9 +17,6 @@ import quickfix.Message;
  * @since 2.0.0
  * @version $Id$
  */
-
-/* $License$ */
-
 @XmlRootElement
 @ClassVersion("$Id$")
 public class FIXResponseImpl
@@ -25,13 +26,14 @@ public class FIXResponseImpl
 
     // CLASS DATA.
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID=2L;
 
 
     // INSTANCE DATA.
 
     private final BrokerID mBrokerID;
     private final Originator mOriginator;
+    private final Hierarchy hierarchy;
     private final UserID mActorID;
     private final UserID mViewerID;
 
@@ -51,38 +53,59 @@ public class FIXResponseImpl
      * @param viewerID The ID of the viewer user. It may be null.
      */
 
-    FIXResponseImpl
-        (Message msg,
-         BrokerID brokerID,
-         Originator originator,
-         UserID actorID,
-         UserID viewerID)
+    FIXResponseImpl(Message msg,
+                    BrokerID brokerID,
+                    Originator originator,
+                    UserID actorID,
+                    UserID viewerID)
      {
-         super(msg);
-         if (originator==null) {
-             throw new NullPointerException();
-         }
-         mBrokerID=brokerID;
-         mOriginator=originator;
-         mActorID=actorID;
-         mViewerID=viewerID;
+        this(msg,
+             brokerID,
+             originator,
+             Hierarchy.Flat,
+             actorID,
+             viewerID);
     }
-
+    /**
+     * Create a new FIXResponseImpl instance.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inOriginator an <code>Originator</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     */
+    FIXResponseImpl(Message inMessage,
+                    BrokerID inBrokerID,
+                    Originator inOriginator,
+                    Hierarchy inHierarchy,
+                    UserID inActorID,
+                    UserID inViewerID)
+    {
+        super(inMessage);
+        if(inOriginator == null) {
+            throw new NullPointerException();
+        }
+        mBrokerID=inBrokerID;
+        mOriginator=inOriginator;
+        hierarchy = inHierarchy;
+        mActorID=inActorID;
+        mViewerID=inViewerID;
+    }
     /**
      * Creates a new empty ORS response. This empty constructor is
      * intended for use by JAXB.
      */
-
     @SuppressWarnings("unused")
     private FIXResponseImpl()
     {
         mBrokerID=null;
         mOriginator=null;
+        hierarchy = null;
         mActorID=null;
         mViewerID=null;
     }
-
-
     // FIXResponse.
 
     @Override
@@ -96,7 +119,15 @@ public class FIXResponseImpl
     {
         return mOriginator;
     }
-
+    /**
+     * Get the hierarchy value.
+     *
+     * @return a <code>Hierarchy</code> value
+     */
+    public Hierarchy getHierarchy()
+    {
+        return hierarchy;
+    }
     @Override
     public UserID getActorID()
     {
@@ -112,11 +143,11 @@ public class FIXResponseImpl
     @Override
     public synchronized String toString()
     {
-        return Messages.FIX_RESPONSE_TO_STRING.getText
-            (String.valueOf(getBrokerID()),
-             String.valueOf(getOriginator()),
-             String.valueOf(getMessage()),
-             String.valueOf(getActorID()),
-             String.valueOf(getViewerID()));
+        return Messages.FIX_RESPONSE_TO_STRING.getText(String.valueOf(getBrokerID()),
+                                                       String.valueOf(getOriginator()),
+                                                       String.valueOf(getHierarchy()),
+                                                       String.valueOf(getMessage()),
+                                                       String.valueOf(getActorID()),
+                                                       String.valueOf(getViewerID()));
     }
 }
