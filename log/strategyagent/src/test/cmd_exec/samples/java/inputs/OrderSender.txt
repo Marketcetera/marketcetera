@@ -1,0 +1,11 @@
+#
+# author:anshul@marketcetera.com
+# since 2.0.0
+# version: $Id: OrderSender.txt 16154 2012-07-14 16:34:05Z colin $
+#
+# Create the Order Sender strategy
+createModule;metc:strategy:system;orderSender,OrderSender,JAVA,samples/java/scripts/OrderSender.java,,true,metc:sink:system
+# Start the market data module
+startModule;metc:mdata:marketcetera:single
+# Start the strategy
+startModule;metc:strategy:system:orderSender

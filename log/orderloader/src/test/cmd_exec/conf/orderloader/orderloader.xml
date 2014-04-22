@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  - OrderLoader base configuration file.
+  -
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id: orderloader.xml 16614 2013-07-03 22:35:32Z colin $
+  - $License$
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+  <!-- Orderloader App -->
+  <bean id="orderloaderApp" class="org.marketcetera.orderloader.OrderLoaderMain" init-method="start" destroy-method="stop">
+    <property name="clientUsername" value="${metc.client.user}"/>
+    <property name="clientPassword" value="${metc.client.password}"/>
+    <property name="clientURL" value="${metc.client.url}"/>
+    <property name="clientWsHost" value="${metc.client.ws.host}"/>
+    <property name="clientWsPort" value="${metc.client.ws.port}"/>
+    <property name="clientIdPrefix" value="${metc.client.idprefix}"/>
+  </bean>
+</beans>

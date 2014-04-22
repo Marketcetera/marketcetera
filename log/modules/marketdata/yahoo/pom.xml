@@ -1,0 +1,27 @@
+<?xml version="1.0"?><project>
+  <parent>
+    <artifactId>marketdata</artifactId>
+    <groupId>org.marketcetera</groupId>
+    <version>2.4.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.marketcetera</groupId>
+  <artifactId>marketdata-yahoo</artifactId>
+  <name>marketdata-yahoo</name>
+  <version>2.4.0</version>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  </dependencies>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+</project>

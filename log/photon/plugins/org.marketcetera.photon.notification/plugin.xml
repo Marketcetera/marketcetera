@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+	     point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.marketcetera.photon.notification.preferences.DesktopNotificationPreferencesPage"
+            id="org.marketcetera.photon.preferences.DesktopNotificationsPreferencesPage"
+            name="%desktopNotificationPreferences.name">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.marketcetera.photon.notification.preferences.NotificationPreferences">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.marketcetera.photon.notification.NotificationPlugin$NotificationPluginStartup"></startup>
+   </extension>
+</plugin>
