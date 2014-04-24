@@ -862,7 +862,24 @@
 	      <prefix>svn</prefix>
             </entry>
 	  </entries>
-	</configuration>                    
+	</configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.tmatesoft.svnkit</groupId>
+            <artifactId>svnkit</artifactId>
+            <version>1.8.3-1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.tmatesoft.sqljet</groupId>
+            <artifactId>sqljet</artifactId>
+            <version>1.1.6</version>
+          </dependency>
+          <dependency>
+            <groupId>de.regnis.q.sequence</groupId>
+            <artifactId>sequence-library</artifactId>
+            <version>1.0.2</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
     <extensions>
