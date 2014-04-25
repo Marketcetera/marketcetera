@@ -2458,6 +2458,31 @@ public final class RpcMarketdata {
      */
     com.google.protobuf.ByteString
         getSessionIdBytes();
+
+    // optional bool failed = 2;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean getFailed();
+
+    // optional string message = 3;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
   }
   /**
    * Protobuf type {@code LoginResponse}
@@ -2513,6 +2538,16 @@ public final class RpcMarketdata {
             case 10: {
               bitField0_ |= 0x00000001;
               sessionId_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              message_ = input.readBytes();
               break;
             }
           }
@@ -2598,8 +2633,69 @@ public final class RpcMarketdata {
       }
     }
 
+    // optional bool failed = 2;
+    public static final int FAILED_FIELD_NUMBER = 2;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
+    // optional string message = 3;
+    public static final int MESSAGE_FIELD_NUMBER = 3;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       sessionId_ = "";
+      failed_ = false;
+      message_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2620,6 +2716,12 @@ public final class RpcMarketdata {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(1, getSessionIdBytes());
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, failed_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getMessageBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -2632,6 +2734,14 @@ public final class RpcMarketdata {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(1, getSessionIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, failed_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getMessageBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2751,6 +2861,10 @@ public final class RpcMarketdata {
         super.clear();
         sessionId_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -2783,6 +2897,14 @@ public final class RpcMarketdata {
           to_bitField0_ |= 0x00000001;
         }
         result.sessionId_ = sessionId_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.message_ = message_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2802,6 +2924,14 @@ public final class RpcMarketdata {
         if (other.hasSessionId()) {
           bitField0_ |= 0x00000001;
           sessionId_ = other.sessionId_;
+          onChanged();
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000004;
+          message_ = other.message_;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -2905,6 +3035,113 @@ public final class RpcMarketdata {
   }
   bitField0_ |= 0x00000001;
         sessionId_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 2;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000002;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 3;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
         onChanged();
         return this;
       }
@@ -3402,15 +3639,30 @@ public final class RpcMarketdata {
   public interface LogoutResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required bool status = 1;
+    // optional bool failed = 1;
     /**
-     * <code>required bool status = 1;</code>
+     * <code>optional bool failed = 1;</code>
      */
-    boolean hasStatus();
+    boolean hasFailed();
     /**
-     * <code>required bool status = 1;</code>
+     * <code>optional bool failed = 1;</code>
      */
-    boolean getStatus();
+    boolean getFailed();
+
+    // optional string message = 2;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
   }
   /**
    * Protobuf type {@code LogoutResponse}
@@ -3465,7 +3717,12 @@ public final class RpcMarketdata {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              status_ = input.readBool();
+              failed_ = input.readBool();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              message_ = input.readBytes();
               break;
             }
           }
@@ -3508,34 +3765,74 @@ public final class RpcMarketdata {
     }
 
     private int bitField0_;
-    // required bool status = 1;
-    public static final int STATUS_FIELD_NUMBER = 1;
-    private boolean status_;
+    // optional bool failed = 1;
+    public static final int FAILED_FIELD_NUMBER = 1;
+    private boolean failed_;
     /**
-     * <code>required bool status = 1;</code>
+     * <code>optional bool failed = 1;</code>
      */
-    public boolean hasStatus() {
+    public boolean hasFailed() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required bool status = 1;</code>
+     * <code>optional bool failed = 1;</code>
      */
-    public boolean getStatus() {
-      return status_;
+    public boolean getFailed() {
+      return failed_;
+    }
+
+    // optional string message = 2;
+    public static final int MESSAGE_FIELD_NUMBER = 2;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     private void initFields() {
-      status_ = false;
+      failed_ = false;
+      message_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasStatus()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -3544,7 +3841,10 @@ public final class RpcMarketdata {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBool(1, status_);
+        output.writeBool(1, failed_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, getMessageBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -3557,7 +3857,11 @@ public final class RpcMarketdata {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(1, status_);
+          .computeBoolSize(1, failed_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getMessageBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3675,8 +3979,10 @@ public final class RpcMarketdata {
 
       public Builder clear() {
         super.clear();
-        status_ = false;
+        failed_ = false;
         bitField0_ = (bitField0_ & ~0x00000001);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -3708,7 +4014,11 @@ public final class RpcMarketdata {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.status_ = status_;
+        result.failed_ = failed_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.message_ = message_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3725,18 +4035,19 @@ public final class RpcMarketdata {
 
       public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutResponse other) {
         if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.LogoutResponse.getDefaultInstance()) return this;
-        if (other.hasStatus()) {
-          setStatus(other.getStatus());
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000002;
+          message_ = other.message_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
-        if (!hasStatus()) {
-          
-          return false;
-        }
         return true;
       }
 
@@ -3759,35 +4070,109 @@ public final class RpcMarketdata {
       }
       private int bitField0_;
 
-      // required bool status = 1;
-      private boolean status_ ;
+      // optional bool failed = 1;
+      private boolean failed_ ;
       /**
-       * <code>required bool status = 1;</code>
+       * <code>optional bool failed = 1;</code>
        */
-      public boolean hasStatus() {
+      public boolean hasFailed() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required bool status = 1;</code>
+       * <code>optional bool failed = 1;</code>
        */
-      public boolean getStatus() {
-        return status_;
+      public boolean getFailed() {
+        return failed_;
       }
       /**
-       * <code>required bool status = 1;</code>
+       * <code>optional bool failed = 1;</code>
        */
-      public Builder setStatus(boolean value) {
+      public Builder setFailed(boolean value) {
         bitField0_ |= 0x00000001;
-        status_ = value;
+        failed_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required bool status = 1;</code>
+       * <code>optional bool failed = 1;</code>
        */
-      public Builder clearStatus() {
+      public Builder clearFailed() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        status_ = false;
+        failed_ = false;
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 2;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
         onChanged();
         return this;
       }
@@ -4219,6 +4604,31 @@ public final class RpcMarketdata {
      * <code>required int64 id = 1;</code>
      */
     long getId();
+
+    // optional bool failed = 2;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean getFailed();
+
+    // optional string message = 3;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
   }
   /**
    * Protobuf type {@code HeartbeatResponse}
@@ -4274,6 +4684,16 @@ public final class RpcMarketdata {
             case 8: {
               bitField0_ |= 0x00000001;
               id_ = input.readInt64();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              message_ = input.readBytes();
               break;
             }
           }
@@ -4332,8 +4752,69 @@ public final class RpcMarketdata {
       return id_;
     }
 
+    // optional bool failed = 2;
+    public static final int FAILED_FIELD_NUMBER = 2;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
+    // optional string message = 3;
+    public static final int MESSAGE_FIELD_NUMBER = 3;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       id_ = 0L;
+      failed_ = false;
+      message_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -4354,6 +4835,12 @@ public final class RpcMarketdata {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeInt64(1, id_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, failed_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getMessageBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -4366,6 +4853,14 @@ public final class RpcMarketdata {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, failed_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getMessageBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4485,6 +4980,10 @@ public final class RpcMarketdata {
         super.clear();
         id_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000001);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -4517,6 +5016,14 @@ public final class RpcMarketdata {
           to_bitField0_ |= 0x00000001;
         }
         result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.message_ = message_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -4535,6 +5042,14 @@ public final class RpcMarketdata {
         if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.HeartbeatResponse.getDefaultInstance()) return this;
         if (other.hasId()) {
           setId(other.getId());
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000004;
+          message_ = other.message_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4596,6 +5111,113 @@ public final class RpcMarketdata {
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
         id_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 2;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000002;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 3;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
         onChanged();
         return this;
       }
@@ -5123,13 +5745,13 @@ public final class RpcMarketdata {
     com.google.protobuf.ByteString
         getRequestBytes();
 
-    // required bool streamEvents = 3;
+    // optional bool streamEvents = 3;
     /**
-     * <code>required bool streamEvents = 3;</code>
+     * <code>optional bool streamEvents = 3;</code>
      */
     boolean hasStreamEvents();
     /**
-     * <code>required bool streamEvents = 3;</code>
+     * <code>optional bool streamEvents = 3;</code>
      */
     boolean getStreamEvents();
   }
@@ -5325,17 +5947,17 @@ public final class RpcMarketdata {
       }
     }
 
-    // required bool streamEvents = 3;
+    // optional bool streamEvents = 3;
     public static final int STREAMEVENTS_FIELD_NUMBER = 3;
     private boolean streamEvents_;
     /**
-     * <code>required bool streamEvents = 3;</code>
+     * <code>optional bool streamEvents = 3;</code>
      */
     public boolean hasStreamEvents() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>required bool streamEvents = 3;</code>
+     * <code>optional bool streamEvents = 3;</code>
      */
     public boolean getStreamEvents() {
       return streamEvents_;
@@ -5356,10 +5978,6 @@ public final class RpcMarketdata {
         return false;
       }
       if (!hasRequest()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasStreamEvents()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -5604,10 +6222,6 @@ public final class RpcMarketdata {
           
           return false;
         }
-        if (!hasStreamEvents()) {
-          
-          return false;
-        }
         return true;
       }
 
@@ -5778,22 +6392,22 @@ public final class RpcMarketdata {
         return this;
       }
 
-      // required bool streamEvents = 3;
+      // optional bool streamEvents = 3;
       private boolean streamEvents_ ;
       /**
-       * <code>required bool streamEvents = 3;</code>
+       * <code>optional bool streamEvents = 3;</code>
        */
       public boolean hasStreamEvents() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>required bool streamEvents = 3;</code>
+       * <code>optional bool streamEvents = 3;</code>
        */
       public boolean getStreamEvents() {
         return streamEvents_;
       }
       /**
-       * <code>required bool streamEvents = 3;</code>
+       * <code>optional bool streamEvents = 3;</code>
        */
       public Builder setStreamEvents(boolean value) {
         bitField0_ |= 0x00000004;
@@ -5802,7 +6416,7 @@ public final class RpcMarketdata {
         return this;
       }
       /**
-       * <code>required bool streamEvents = 3;</code>
+       * <code>optional bool streamEvents = 3;</code>
        */
       public Builder clearStreamEvents() {
         bitField0_ = (bitField0_ & ~0x00000004);
@@ -5834,6 +6448,31 @@ public final class RpcMarketdata {
      * <code>required int64 id = 1;</code>
      */
     long getId();
+
+    // optional bool failed = 2;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean getFailed();
+
+    // optional string message = 3;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
   }
   /**
    * Protobuf type {@code MarketDataResponse}
@@ -5889,6 +6528,16 @@ public final class RpcMarketdata {
             case 8: {
               bitField0_ |= 0x00000001;
               id_ = input.readInt64();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              message_ = input.readBytes();
               break;
             }
           }
@@ -5947,8 +6596,69 @@ public final class RpcMarketdata {
       return id_;
     }
 
+    // optional bool failed = 2;
+    public static final int FAILED_FIELD_NUMBER = 2;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
+    // optional string message = 3;
+    public static final int MESSAGE_FIELD_NUMBER = 3;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       id_ = 0L;
+      failed_ = false;
+      message_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -5969,6 +6679,12 @@ public final class RpcMarketdata {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeInt64(1, id_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, failed_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getMessageBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -5981,6 +6697,14 @@ public final class RpcMarketdata {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(1, id_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, failed_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getMessageBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -6100,6 +6824,10 @@ public final class RpcMarketdata {
         super.clear();
         id_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000001);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -6132,6 +6860,14 @@ public final class RpcMarketdata {
           to_bitField0_ |= 0x00000001;
         }
         result.id_ = id_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.message_ = message_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -6150,6 +6886,14 @@ public final class RpcMarketdata {
         if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.MarketDataResponse.getDefaultInstance()) return this;
         if (other.hasId()) {
           setId(other.getId());
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000004;
+          message_ = other.message_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -6211,6 +6955,113 @@ public final class RpcMarketdata {
       public Builder clearId() {
         bitField0_ = (bitField0_ & ~0x00000001);
         id_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 2;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000002;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 3;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
         onChanged();
         return this;
       }
@@ -6806,6 +7657,31 @@ public final class RpcMarketdata {
      * <code>required int64 timestamp = 1;</code>
      */
     long getTimestamp();
+
+    // optional bool failed = 2;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean getFailed();
+
+    // optional string message = 3;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
   }
   /**
    * Protobuf type {@code LastUpdateResponse}
@@ -6861,6 +7737,16 @@ public final class RpcMarketdata {
             case 8: {
               bitField0_ |= 0x00000001;
               timestamp_ = input.readInt64();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000004;
+              message_ = input.readBytes();
               break;
             }
           }
@@ -6919,8 +7805,69 @@ public final class RpcMarketdata {
       return timestamp_;
     }
 
+    // optional bool failed = 2;
+    public static final int FAILED_FIELD_NUMBER = 2;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
+    // optional string message = 3;
+    public static final int MESSAGE_FIELD_NUMBER = 3;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private void initFields() {
       timestamp_ = 0L;
+      failed_ = false;
+      message_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -6941,6 +7888,12 @@ public final class RpcMarketdata {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeInt64(1, timestamp_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, failed_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, getMessageBytes());
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -6953,6 +7906,14 @@ public final class RpcMarketdata {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(1, timestamp_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, failed_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getMessageBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -7072,6 +8033,10 @@ public final class RpcMarketdata {
         super.clear();
         timestamp_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000001);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -7104,6 +8069,14 @@ public final class RpcMarketdata {
           to_bitField0_ |= 0x00000001;
         }
         result.timestamp_ = timestamp_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.message_ = message_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -7122,6 +8095,14 @@ public final class RpcMarketdata {
         if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.LastUpdateResponse.getDefaultInstance()) return this;
         if (other.hasTimestamp()) {
           setTimestamp(other.getTimestamp());
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000004;
+          message_ = other.message_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -7183,6 +8164,113 @@ public final class RpcMarketdata {
       public Builder clearTimestamp() {
         bitField0_ = (bitField0_ & ~0x00000001);
         timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 2;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000002;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 3;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
         onChanged();
         return this;
       }
@@ -7768,6 +8856,31 @@ public final class RpcMarketdata {
 
   public interface CancelResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
+
+    // optional string message = 1;
+    /**
+     * <code>optional string message = 1;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 1;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
+
+    // optional bool failed = 2;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    boolean getFailed();
   }
   /**
    * Protobuf type {@code CancelResponse}
@@ -7802,6 +8915,7 @@ public final class RpcMarketdata {
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
+      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -7817,6 +8931,16 @@ public final class RpcMarketdata {
                                      extensionRegistry, tag)) {
                 done = true;
               }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              message_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
               break;
             }
           }
@@ -7858,7 +8982,69 @@ public final class RpcMarketdata {
       return PARSER;
     }
 
+    private int bitField0_;
+    // optional string message = 1;
+    public static final int MESSAGE_FIELD_NUMBER = 1;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 1;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string message = 1;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional bool failed = 2;
+    public static final int FAILED_FIELD_NUMBER = 2;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 2;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
     private void initFields() {
+      message_ = "";
+      failed_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -7872,6 +9058,12 @@ public final class RpcMarketdata {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(2, failed_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -7881,6 +9073,14 @@ public final class RpcMarketdata {
       if (size != -1) return size;
 
       size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, failed_);
+      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -7997,6 +9197,10 @@ public final class RpcMarketdata {
 
       public Builder clear() {
         super.clear();
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -8023,6 +9227,17 @@ public final class RpcMarketdata {
 
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponse buildPartial() {
         org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.message_ = message_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -8038,6 +9253,14 @@ public final class RpcMarketdata {
 
       public Builder mergeFrom(org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponse other) {
         if (other == org.marketcetera.marketdata.core.rpc.RpcMarketdata.CancelResponse.getDefaultInstance()) return this;
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000001;
+          message_ = other.message_;
+          onChanged();
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -8061,6 +9284,114 @@ public final class RpcMarketdata {
             mergeFrom(parsedMessage);
           }
         }
+        return this;
+      }
+      private int bitField0_;
+
+      // optional string message = 1;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 1;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional string message = 1;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 1;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 1;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 1;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 2;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000002;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 2;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        onChanged();
         return this;
       }
 
@@ -9154,6 +10485,31 @@ public final class RpcMarketdata {
      */
     com.google.protobuf.ByteString
         getPayloadBytes(int index);
+
+    // optional string message = 3;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
+
+    // optional bool failed = 4;
+    /**
+     * <code>optional bool failed = 4;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 4;</code>
+     */
+    boolean getFailed();
   }
   /**
    * Protobuf type {@code EventsResponse}
@@ -9217,6 +10573,16 @@ public final class RpcMarketdata {
                 mutable_bitField0_ |= 0x00000002;
               }
               payload_.add(input.readBytes());
+              break;
+            }
+            case 26: {
+              bitField0_ |= 0x00000002;
+              message_ = input.readBytes();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000004;
+              failed_ = input.readBool();
               break;
             }
           }
@@ -9308,9 +10674,70 @@ public final class RpcMarketdata {
       return payload_.getByteString(index);
     }
 
+    // optional string message = 3;
+    public static final int MESSAGE_FIELD_NUMBER = 3;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional bool failed = 4;
+    public static final int FAILED_FIELD_NUMBER = 4;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 4;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional bool failed = 4;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
     private void initFields() {
       id_ = 0L;
       payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      message_ = "";
+      failed_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -9334,6 +10761,12 @@ public final class RpcMarketdata {
       for (int i = 0; i < payload_.size(); i++) {
         output.writeBytes(2, payload_.getByteString(i));
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(3, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeBool(4, failed_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -9355,6 +10788,14 @@ public final class RpcMarketdata {
         }
         size += dataSize;
         size += 1 * getPayloadList().size();
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(3, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(4, failed_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -9476,6 +10917,10 @@ public final class RpcMarketdata {
         bitField0_ = (bitField0_ & ~0x00000001);
         payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -9514,6 +10959,14 @@ public final class RpcMarketdata {
           bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.payload_ = payload_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.message_ = message_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.failed_ = failed_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -9542,6 +10995,14 @@ public final class RpcMarketdata {
             payload_.addAll(other.payload_);
           }
           onChanged();
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000004;
+          message_ = other.message_;
+          onChanged();
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -9696,6 +11157,113 @@ public final class RpcMarketdata {
   }
   ensurePayloadIsMutable();
         payload_.add(value);
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 3;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 3;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 4;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 4;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional bool failed = 4;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 4;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000008;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 4;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        failed_ = false;
         onChanged();
         return this;
       }
@@ -10374,6 +11942,31 @@ public final class RpcMarketdata {
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponseOrBuilder getEventsOrBuilder(
         int index);
+
+    // optional string message = 2;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
+
+    // optional bool failed = 3;
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    boolean getFailed();
   }
   /**
    * Protobuf type {@code AllEventsResponse}
@@ -10434,6 +12027,16 @@ public final class RpcMarketdata {
               events_.add(input.readMessage(org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse.PARSER, extensionRegistry));
               break;
             }
+            case 18: {
+              bitField0_ |= 0x00000001;
+              message_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -10476,6 +12079,7 @@ public final class RpcMarketdata {
       return PARSER;
     }
 
+    private int bitField0_;
     // repeated .EventsResponse events = 1;
     public static final int EVENTS_FIELD_NUMBER = 1;
     private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.EventsResponse> events_;
@@ -10512,8 +12116,69 @@ public final class RpcMarketdata {
       return events_.get(index);
     }
 
+    // optional string message = 2;
+    public static final int MESSAGE_FIELD_NUMBER = 2;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional bool failed = 3;
+    public static final int FAILED_FIELD_NUMBER = 3;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
     private void initFields() {
       events_ = java.util.Collections.emptyList();
+      message_ = "";
+      failed_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -10536,6 +12201,12 @@ public final class RpcMarketdata {
       for (int i = 0; i < events_.size(); i++) {
         output.writeMessage(1, events_.get(i));
       }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(2, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(3, failed_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -10548,6 +12219,14 @@ public final class RpcMarketdata {
       for (int i = 0; i < events_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, events_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, failed_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -10672,6 +12351,10 @@ public final class RpcMarketdata {
         } else {
           eventsBuilder_.clear();
         }
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -10699,6 +12382,7 @@ public final class RpcMarketdata {
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse buildPartial() {
         org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.AllEventsResponse(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (eventsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
             events_ = java.util.Collections.unmodifiableList(events_);
@@ -10708,6 +12392,15 @@ public final class RpcMarketdata {
         } else {
           result.events_ = eventsBuilder_.build();
         }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.message_ = message_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -10748,6 +12441,14 @@ public final class RpcMarketdata {
               eventsBuilder_.addAllMessages(other.events_);
             }
           }
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000002;
+          message_ = other.message_;
+          onChanged();
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -11020,6 +12721,113 @@ public final class RpcMarketdata {
           events_ = null;
         }
         return eventsBuilder_;
+      }
+
+      // optional string message = 2;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 3;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000004;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        failed_ = false;
+        onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:AllEventsResponse)
@@ -11996,6 +13804,31 @@ public final class RpcMarketdata {
      */
     com.google.protobuf.ByteString
         getPayloadBytes(int index);
+
+    // optional string message = 2;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
+
+    // optional bool failed = 3;
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    boolean getFailed();
   }
   /**
    * Protobuf type {@code SnapshotResponse}
@@ -12056,6 +13889,16 @@ public final class RpcMarketdata {
               payload_.add(input.readBytes());
               break;
             }
+            case 18: {
+              bitField0_ |= 0x00000001;
+              message_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -12098,6 +13941,7 @@ public final class RpcMarketdata {
       return PARSER;
     }
 
+    private int bitField0_;
     // repeated string payload = 1;
     public static final int PAYLOAD_FIELD_NUMBER = 1;
     private com.google.protobuf.LazyStringList payload_;
@@ -12128,8 +13972,69 @@ public final class RpcMarketdata {
       return payload_.getByteString(index);
     }
 
+    // optional string message = 2;
+    public static final int MESSAGE_FIELD_NUMBER = 2;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional bool failed = 3;
+    public static final int FAILED_FIELD_NUMBER = 3;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
     private void initFields() {
       payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      message_ = "";
+      failed_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -12145,6 +14050,12 @@ public final class RpcMarketdata {
       getSerializedSize();
       for (int i = 0; i < payload_.size(); i++) {
         output.writeBytes(1, payload_.getByteString(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(2, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(3, failed_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -12163,6 +14074,14 @@ public final class RpcMarketdata {
         }
         size += dataSize;
         size += 1 * getPayloadList().size();
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, failed_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -12282,6 +14201,10 @@ public final class RpcMarketdata {
         super.clear();
         payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -12309,12 +14232,22 @@ public final class RpcMarketdata {
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse buildPartial() {
         org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotResponse(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           payload_ = new com.google.protobuf.UnmodifiableLazyStringList(
               payload_);
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.payload_ = payload_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.message_ = message_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -12339,6 +14272,14 @@ public final class RpcMarketdata {
             payload_.addAll(other.payload_);
           }
           onChanged();
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000002;
+          message_ = other.message_;
+          onChanged();
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -12456,6 +14397,113 @@ public final class RpcMarketdata {
   }
   ensurePayloadIsMutable();
         payload_.add(value);
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 2;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 3;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000004;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        failed_ = false;
         onChanged();
         return this;
       }
@@ -13642,6 +15690,31 @@ public final class RpcMarketdata {
      */
     com.google.protobuf.ByteString
         getPayloadBytes(int index);
+
+    // optional string message = 2;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
+
+    // optional bool failed = 3;
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    boolean getFailed();
   }
   /**
    * Protobuf type {@code SnapshotPageResponse}
@@ -13702,6 +15775,16 @@ public final class RpcMarketdata {
               payload_.add(input.readBytes());
               break;
             }
+            case 18: {
+              bitField0_ |= 0x00000001;
+              message_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -13744,6 +15827,7 @@ public final class RpcMarketdata {
       return PARSER;
     }
 
+    private int bitField0_;
     // repeated string payload = 1;
     public static final int PAYLOAD_FIELD_NUMBER = 1;
     private com.google.protobuf.LazyStringList payload_;
@@ -13774,8 +15858,69 @@ public final class RpcMarketdata {
       return payload_.getByteString(index);
     }
 
+    // optional string message = 2;
+    public static final int MESSAGE_FIELD_NUMBER = 2;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional bool failed = 3;
+    public static final int FAILED_FIELD_NUMBER = 3;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
     private void initFields() {
       payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      message_ = "";
+      failed_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -13791,6 +15936,12 @@ public final class RpcMarketdata {
       getSerializedSize();
       for (int i = 0; i < payload_.size(); i++) {
         output.writeBytes(1, payload_.getByteString(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(2, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(3, failed_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -13809,6 +15960,14 @@ public final class RpcMarketdata {
         }
         size += dataSize;
         size += 1 * getPayloadList().size();
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, failed_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -13928,6 +16087,10 @@ public final class RpcMarketdata {
         super.clear();
         payload_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -13955,12 +16118,22 @@ public final class RpcMarketdata {
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse buildPartial() {
         org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.SnapshotPageResponse(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           payload_ = new com.google.protobuf.UnmodifiableLazyStringList(
               payload_);
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.payload_ = payload_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.message_ = message_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -13985,6 +16158,14 @@ public final class RpcMarketdata {
             payload_.addAll(other.payload_);
           }
           onChanged();
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000002;
+          message_ = other.message_;
+          onChanged();
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -14102,6 +16283,113 @@ public final class RpcMarketdata {
   }
   ensurePayloadIsMutable();
         payload_.add(value);
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 2;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 3;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000004;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        failed_ = false;
         onChanged();
         return this;
       }
@@ -15105,6 +17393,31 @@ public final class RpcMarketdata {
      * <code>repeated .ContentAndCapability capability = 1;</code>
      */
     org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability getCapability(int index);
+
+    // optional string message = 2;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    boolean hasMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    java.lang.String getMessage();
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMessageBytes();
+
+    // optional bool failed = 3;
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    boolean hasFailed();
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    boolean getFailed();
   }
   /**
    * Protobuf type {@code AvailableCapabilityResponse}
@@ -15190,6 +17503,16 @@ public final class RpcMarketdata {
               input.popLimit(oldLimit);
               break;
             }
+            case 18: {
+              bitField0_ |= 0x00000001;
+              message_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              failed_ = input.readBool();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -15232,6 +17555,7 @@ public final class RpcMarketdata {
       return PARSER;
     }
 
+    private int bitField0_;
     // repeated .ContentAndCapability capability = 1;
     public static final int CAPABILITY_FIELD_NUMBER = 1;
     private java.util.List<org.marketcetera.marketdata.core.rpc.RpcMarketdata.ContentAndCapability> capability_;
@@ -15254,8 +17578,69 @@ public final class RpcMarketdata {
       return capability_.get(index);
     }
 
+    // optional string message = 2;
+    public static final int MESSAGE_FIELD_NUMBER = 2;
+    private java.lang.Object message_;
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public boolean hasMessage() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public java.lang.String getMessage() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          message_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string message = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMessageBytes() {
+      java.lang.Object ref = message_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        message_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional bool failed = 3;
+    public static final int FAILED_FIELD_NUMBER = 3;
+    private boolean failed_;
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    public boolean hasFailed() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional bool failed = 3;</code>
+     */
+    public boolean getFailed() {
+      return failed_;
+    }
+
     private void initFields() {
       capability_ = java.util.Collections.emptyList();
+      message_ = "";
+      failed_ = false;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -15271,6 +17656,12 @@ public final class RpcMarketdata {
       getSerializedSize();
       for (int i = 0; i < capability_.size(); i++) {
         output.writeEnum(1, capability_.get(i).getNumber());
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(2, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBool(3, failed_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -15289,6 +17680,14 @@ public final class RpcMarketdata {
         }
         size += dataSize;
         size += 1 * capability_.size();
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(3, failed_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -15408,6 +17807,10 @@ public final class RpcMarketdata {
         super.clear();
         capability_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
+        message_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        failed_ = false;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -15435,11 +17838,21 @@ public final class RpcMarketdata {
       public org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse buildPartial() {
         org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse result = new org.marketcetera.marketdata.core.rpc.RpcMarketdata.AvailableCapabilityResponse(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (((bitField0_ & 0x00000001) == 0x00000001)) {
           capability_ = java.util.Collections.unmodifiableList(capability_);
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.capability_ = capability_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.message_ = message_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.failed_ = failed_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -15464,6 +17877,14 @@ public final class RpcMarketdata {
             capability_.addAll(other.capability_);
           }
           onChanged();
+        }
+        if (other.hasMessage()) {
+          bitField0_ |= 0x00000002;
+          message_ = other.message_;
+          onChanged();
+        }
+        if (other.hasFailed()) {
+          setFailed(other.getFailed());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -15560,6 +17981,113 @@ public final class RpcMarketdata {
       public Builder clearCapability() {
         capability_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+
+      // optional string message = 2;
+      private java.lang.Object message_ = "";
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public boolean hasMessage() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public java.lang.String getMessage() {
+        java.lang.Object ref = message_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          message_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getMessageBytes() {
+        java.lang.Object ref = message_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          message_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessage(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder clearMessage() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string message = 2;</code>
+       */
+      public Builder setMessageBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        message_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional bool failed = 3;
+      private boolean failed_ ;
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public boolean hasFailed() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public boolean getFailed() {
+        return failed_;
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public Builder setFailed(boolean value) {
+        bitField0_ |= 0x00000004;
+        failed_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional bool failed = 3;</code>
+       */
+      public Builder clearFailed() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        failed_ = false;
         onChanged();
         return this;
       }
@@ -16661,62 +19189,71 @@ public final class RpcMarketdata {
       "(\0132\007.Locale\022\021\n\tversionId\030\004 \002(\t\022\020\n\010userna" +
       "me\030\005 \002(\t\022\020\n\010password\030\006 \002(\t\"<\n\006Locale\022\017\n\007" +
       "country\030\001 \002(\t\022\020\n\010language\030\002 \002(\t\022\017\n\007varia" +
-      "nt\030\003 \001(\t\"\"\n\rLoginResponse\022\021\n\tsessionId\030\001" +
-      " \002(\t\"\"\n\rLogoutRequest\022\021\n\tsessionId\030\001 \002(\t" +
-      "\" \n\016LogoutResponse\022\016\n\006status\030\001 \002(\010\"\036\n\020He" +
-      "artbeatRequest\022\n\n\002id\030\001 \002(\003\"\037\n\021HeartbeatR" +
-      "esponse\022\n\n\002id\030\001 \002(\003\"\035\n\nInstrument\022\017\n\007pay",
-      "load\030\001 \002(\t\"M\n\021MarketDataRequest\022\021\n\tsessi" +
-      "onId\030\001 \002(\t\022\017\n\007request\030\002 \002(\t\022\024\n\014streamEve" +
-      "nts\030\003 \002(\010\" \n\022MarketDataResponse\022\n\n\002id\030\001 " +
-      "\002(\003\"2\n\021LastUpdateRequest\022\021\n\tsessionId\030\001 " +
-      "\002(\t\022\n\n\002id\030\002 \002(\003\"\'\n\022LastUpdateResponse\022\021\n" +
-      "\ttimestamp\030\001 \002(\003\".\n\rCancelRequest\022\021\n\tses" +
-      "sionId\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"\020\n\016CancelRespon" +
-      "se\"\030\n\005Event\022\017\n\007payload\030\001 \002(\t\".\n\rEventsRe" +
-      "quest\022\021\n\tsessionId\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"-\n\016" +
-      "EventsResponse\022\n\n\002id\030\001 \002(\003\022\017\n\007payload\030\002 ",
-      "\003(\t\"1\n\020AllEventsRequest\022\021\n\tsessionId\030\001 \002" +
-      "(\t\022\n\n\002id\030\002 \003(\003\"4\n\021AllEventsResponse\022\037\n\006e" +
-      "vents\030\001 \003(\0132\017.EventsResponse\"\177\n\017Snapshot" +
-      "Request\022\021\n\tsessionId\030\001 \002(\t\022\037\n\ninstrument" +
-      "\030\002 \002(\0132\013.Instrument\022&\n\007content\030\003 \002(\0162\025.C" +
-      "ontentAndCapability\022\020\n\010provider\030\004 \001(\t\"#\n" +
-      "\020SnapshotResponse\022\017\n\007payload\030\001 \003(\t\"\237\001\n\023S" +
-      "napshotPageRequest\022\021\n\tsessionId\030\001 \002(\t\022\037\n" +
-      "\ninstrument\030\002 \002(\0132\013.Instrument\022&\n\007conten" +
-      "t\030\003 \002(\0162\025.ContentAndCapability\022\020\n\010provid",
-      "er\030\004 \001(\t\022\032\n\004page\030\005 \002(\0132\014.PageRequest\"\'\n\024" +
-      "SnapshotPageResponse\022\017\n\007payload\030\001 \003(\t\")\n" +
-      "\013PageRequest\022\014\n\004page\030\001 \002(\005\022\014\n\004size\030\002 \002(\005" +
-      "\"/\n\032AvailableCapabilityRequest\022\021\n\tsessio" +
-      "nId\030\001 \002(\t\"H\n\033AvailableCapabilityResponse" +
-      "\022)\n\ncapability\030\001 \003(\0162\025.ContentAndCapabil" +
-      "ity*B\n\016InstrumentType\022\n\n\006EQUITY\020\000\022\n\n\006OPT" +
-      "ION\020\001\022\n\n\006FUTURE\020\002\022\014\n\010CURRENCY\020\003*\366\001\n\024Cont" +
-      "entAndCapability\022\017\n\013TOP_OF_BOOK\020\000\022\r\n\tOPE" +
-      "N_BOOK\020\001\022\017\n\013MARKET_STAT\020\002\022\016\n\nTOTAL_VIEW\020",
-      "\003\022\013\n\007LEVEL_2\020\004\022\017\n\013LATEST_TICK\020\005\022\t\n\005BBO10" +
-      "\020\006\022\010\n\004NBBO\020\007\022\014\n\010DIVIDEND\020\010\022\024\n\020AGGREGATED" +
-      "_DEPTH\020\t\022\026\n\022UNAGGREGATED_DEPTH\020\n\022\r\n\tIMBA" +
-      "LANCE\020\013\022\013\n\007UNKNOWN\020\014\022\022\n\016EVENT_BOUNDARY\020\r" +
-      "2\344\004\n\024RpcMarketDataService\022&\n\005login\022\r.Log" +
-      "inRequest\032\016.LoginResponse\022)\n\006logout\022\016.Lo" +
-      "goutRequest\032\017.LogoutResponse\0222\n\theartbea" +
-      "t\022\021.HeartbeatRequest\032\022.HeartbeatResponse" +
-      "\0222\n\007request\022\022.MarketDataRequest\032\023.Market" +
-      "DataResponse\0228\n\rgetLastUpdate\022\022.LastUpda",
-      "teRequest\032\023.LastUpdateResponse\022)\n\006cancel" +
-      "\022\016.CancelRequest\032\017.CancelResponse\022,\n\tget" +
-      "Events\022\016.EventsRequest\032\017.EventsResponse\022" +
-      "5\n\014getAllEvents\022\021.AllEventsRequest\032\022.All" +
-      "EventsResponse\0222\n\013getSnapshot\022\020.Snapshot" +
-      "Request\032\021.SnapshotResponse\022>\n\017getSnapsho" +
-      "tPage\022\024.SnapshotPageRequest\032\025.SnapshotPa" +
-      "geResponse\022S\n\026getAvailableCapability\022\033.A" +
-      "vailableCapabilityRequest\032\034.AvailableCap" +
-      "abilityResponseB8\n$org.marketcetera.mark",
-      "etdata.core.rpcB\rRpcMarketdata\210\001\001"
+      "nt\030\003 \001(\t\"C\n\rLoginResponse\022\021\n\tsessionId\030\001" +
+      " \002(\t\022\016\n\006failed\030\002 \001(\010\022\017\n\007message\030\003 \001(\t\"\"\n" +
+      "\rLogoutRequest\022\021\n\tsessionId\030\001 \002(\t\"1\n\016Log" +
+      "outResponse\022\016\n\006failed\030\001 \001(\010\022\017\n\007message\030\002" +
+      " \001(\t\"\036\n\020HeartbeatRequest\022\n\n\002id\030\001 \002(\003\"@\n\021",
+      "HeartbeatResponse\022\n\n\002id\030\001 \002(\003\022\016\n\006failed\030" +
+      "\002 \001(\010\022\017\n\007message\030\003 \001(\t\"\035\n\nInstrument\022\017\n\007" +
+      "payload\030\001 \002(\t\"M\n\021MarketDataRequest\022\021\n\tse" +
+      "ssionId\030\001 \002(\t\022\017\n\007request\030\002 \002(\t\022\024\n\014stream" +
+      "Events\030\003 \001(\010\"A\n\022MarketDataResponse\022\n\n\002id" +
+      "\030\001 \002(\003\022\016\n\006failed\030\002 \001(\010\022\017\n\007message\030\003 \001(\t\"" +
+      "2\n\021LastUpdateRequest\022\021\n\tsessionId\030\001 \002(\t\022" +
+      "\n\n\002id\030\002 \002(\003\"H\n\022LastUpdateResponse\022\021\n\ttim" +
+      "estamp\030\001 \002(\003\022\016\n\006failed\030\002 \001(\010\022\017\n\007message\030" +
+      "\003 \001(\t\".\n\rCancelRequest\022\021\n\tsessionId\030\001 \002(",
+      "\t\022\n\n\002id\030\002 \002(\003\"1\n\016CancelResponse\022\017\n\007messa" +
+      "ge\030\001 \001(\t\022\016\n\006failed\030\002 \001(\010\"\030\n\005Event\022\017\n\007pay" +
+      "load\030\001 \002(\t\".\n\rEventsRequest\022\021\n\tsessionId" +
+      "\030\001 \002(\t\022\n\n\002id\030\002 \002(\003\"N\n\016EventsResponse\022\n\n\002" +
+      "id\030\001 \002(\003\022\017\n\007payload\030\002 \003(\t\022\017\n\007message\030\003 \001" +
+      "(\t\022\016\n\006failed\030\004 \001(\010\"1\n\020AllEventsRequest\022\021" +
+      "\n\tsessionId\030\001 \002(\t\022\n\n\002id\030\002 \003(\003\"U\n\021AllEven" +
+      "tsResponse\022\037\n\006events\030\001 \003(\0132\017.EventsRespo" +
+      "nse\022\017\n\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010\"\177\n\017" +
+      "SnapshotRequest\022\021\n\tsessionId\030\001 \002(\t\022\037\n\nin",
+      "strument\030\002 \002(\0132\013.Instrument\022&\n\007content\030\003" +
+      " \002(\0162\025.ContentAndCapability\022\020\n\010provider\030" +
+      "\004 \001(\t\"D\n\020SnapshotResponse\022\017\n\007payload\030\001 \003" +
+      "(\t\022\017\n\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010\"\237\001\n\023" +
+      "SnapshotPageRequest\022\021\n\tsessionId\030\001 \002(\t\022\037" +
+      "\n\ninstrument\030\002 \002(\0132\013.Instrument\022&\n\007conte" +
+      "nt\030\003 \002(\0162\025.ContentAndCapability\022\020\n\010provi" +
+      "der\030\004 \001(\t\022\032\n\004page\030\005 \002(\0132\014.PageRequest\"H\n" +
+      "\024SnapshotPageResponse\022\017\n\007payload\030\001 \003(\t\022\017" +
+      "\n\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010\")\n\013PageR",
+      "equest\022\014\n\004page\030\001 \002(\005\022\014\n\004size\030\002 \002(\005\"/\n\032Av" +
+      "ailableCapabilityRequest\022\021\n\tsessionId\030\001 " +
+      "\002(\t\"i\n\033AvailableCapabilityResponse\022)\n\nca" +
+      "pability\030\001 \003(\0162\025.ContentAndCapability\022\017\n" +
+      "\007message\030\002 \001(\t\022\016\n\006failed\030\003 \001(\010*B\n\016Instru" +
+      "mentType\022\n\n\006EQUITY\020\000\022\n\n\006OPTION\020\001\022\n\n\006FUTU" +
+      "RE\020\002\022\014\n\010CURRENCY\020\003*\366\001\n\024ContentAndCapabil" +
+      "ity\022\017\n\013TOP_OF_BOOK\020\000\022\r\n\tOPEN_BOOK\020\001\022\017\n\013M" +
+      "ARKET_STAT\020\002\022\016\n\nTOTAL_VIEW\020\003\022\013\n\007LEVEL_2\020" +
+      "\004\022\017\n\013LATEST_TICK\020\005\022\t\n\005BBO10\020\006\022\010\n\004NBBO\020\007\022",
+      "\014\n\010DIVIDEND\020\010\022\024\n\020AGGREGATED_DEPTH\020\t\022\026\n\022U" +
+      "NAGGREGATED_DEPTH\020\n\022\r\n\tIMBALANCE\020\013\022\013\n\007UN" +
+      "KNOWN\020\014\022\022\n\016EVENT_BOUNDARY\020\r2\344\004\n\024RpcMarke" +
+      "tDataService\022&\n\005login\022\r.LoginRequest\032\016.L" +
+      "oginResponse\022)\n\006logout\022\016.LogoutRequest\032\017" +
+      ".LogoutResponse\0222\n\theartbeat\022\021.Heartbeat" +
+      "Request\032\022.HeartbeatResponse\0222\n\007request\022\022" +
+      ".MarketDataRequest\032\023.MarketDataResponse\022" +
+      "8\n\rgetLastUpdate\022\022.LastUpdateRequest\032\023.L" +
+      "astUpdateResponse\022)\n\006cancel\022\016.CancelRequ",
+      "est\032\017.CancelResponse\022,\n\tgetEvents\022\016.Even" +
+      "tsRequest\032\017.EventsResponse\0225\n\014getAllEven" +
+      "ts\022\021.AllEventsRequest\032\022.AllEventsRespons" +
+      "e\0222\n\013getSnapshot\022\020.SnapshotRequest\032\021.Sna" +
+      "pshotResponse\022>\n\017getSnapshotPage\022\024.Snaps" +
+      "hotPageRequest\032\025.SnapshotPageResponse\022S\n" +
+      "\026getAvailableCapability\022\033.AvailableCapab" +
+      "ilityRequest\032\034.AvailableCapabilityRespon" +
+      "seB8\n$org.marketcetera.marketdata.core.r" +
+      "pcB\rRpcMarketdata\210\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -16740,7 +19277,7 @@ public final class RpcMarketdata {
           internal_static_LoginResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_LoginResponse_descriptor,
-              new java.lang.String[] { "SessionId", });
+              new java.lang.String[] { "SessionId", "Failed", "Message", });
           internal_static_LogoutRequest_descriptor =
             getDescriptor().getMessageTypes().get(3);
           internal_static_LogoutRequest_fieldAccessorTable = new
@@ -16752,7 +19289,7 @@ public final class RpcMarketdata {
           internal_static_LogoutResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_LogoutResponse_descriptor,
-              new java.lang.String[] { "Status", });
+              new java.lang.String[] { "Failed", "Message", });
           internal_static_HeartbeatRequest_descriptor =
             getDescriptor().getMessageTypes().get(5);
           internal_static_HeartbeatRequest_fieldAccessorTable = new
@@ -16764,7 +19301,7 @@ public final class RpcMarketdata {
           internal_static_HeartbeatResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_HeartbeatResponse_descriptor,
-              new java.lang.String[] { "Id", });
+              new java.lang.String[] { "Id", "Failed", "Message", });
           internal_static_Instrument_descriptor =
             getDescriptor().getMessageTypes().get(7);
           internal_static_Instrument_fieldAccessorTable = new
@@ -16782,7 +19319,7 @@ public final class RpcMarketdata {
           internal_static_MarketDataResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_MarketDataResponse_descriptor,
-              new java.lang.String[] { "Id", });
+              new java.lang.String[] { "Id", "Failed", "Message", });
           internal_static_LastUpdateRequest_descriptor =
             getDescriptor().getMessageTypes().get(10);
           internal_static_LastUpdateRequest_fieldAccessorTable = new
@@ -16794,7 +19331,7 @@ public final class RpcMarketdata {
           internal_static_LastUpdateResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_LastUpdateResponse_descriptor,
-              new java.lang.String[] { "Timestamp", });
+              new java.lang.String[] { "Timestamp", "Failed", "Message", });
           internal_static_CancelRequest_descriptor =
             getDescriptor().getMessageTypes().get(12);
           internal_static_CancelRequest_fieldAccessorTable = new
@@ -16806,7 +19343,7 @@ public final class RpcMarketdata {
           internal_static_CancelResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_CancelResponse_descriptor,
-              new java.lang.String[] { });
+              new java.lang.String[] { "Message", "Failed", });
           internal_static_Event_descriptor =
             getDescriptor().getMessageTypes().get(14);
           internal_static_Event_fieldAccessorTable = new
@@ -16824,7 +19361,7 @@ public final class RpcMarketdata {
           internal_static_EventsResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_EventsResponse_descriptor,
-              new java.lang.String[] { "Id", "Payload", });
+              new java.lang.String[] { "Id", "Payload", "Message", "Failed", });
           internal_static_AllEventsRequest_descriptor =
             getDescriptor().getMessageTypes().get(17);
           internal_static_AllEventsRequest_fieldAccessorTable = new
@@ -16836,7 +19373,7 @@ public final class RpcMarketdata {
           internal_static_AllEventsResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_AllEventsResponse_descriptor,
-              new java.lang.String[] { "Events", });
+              new java.lang.String[] { "Events", "Message", "Failed", });
           internal_static_SnapshotRequest_descriptor =
             getDescriptor().getMessageTypes().get(19);
           internal_static_SnapshotRequest_fieldAccessorTable = new
@@ -16848,7 +19385,7 @@ public final class RpcMarketdata {
           internal_static_SnapshotResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SnapshotResponse_descriptor,
-              new java.lang.String[] { "Payload", });
+              new java.lang.String[] { "Payload", "Message", "Failed", });
           internal_static_SnapshotPageRequest_descriptor =
             getDescriptor().getMessageTypes().get(21);
           internal_static_SnapshotPageRequest_fieldAccessorTable = new
@@ -16860,7 +19397,7 @@ public final class RpcMarketdata {
           internal_static_SnapshotPageResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SnapshotPageResponse_descriptor,
-              new java.lang.String[] { "Payload", });
+              new java.lang.String[] { "Payload", "Message", "Failed", });
           internal_static_PageRequest_descriptor =
             getDescriptor().getMessageTypes().get(23);
           internal_static_PageRequest_fieldAccessorTable = new
@@ -16878,7 +19415,7 @@ public final class RpcMarketdata {
           internal_static_AvailableCapabilityResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_AvailableCapabilityResponse_descriptor,
-              new java.lang.String[] { "Capability", });
+              new java.lang.String[] { "Capability", "Message", "Failed", });
           return null;
         }
       };

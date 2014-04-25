@@ -1,6 +1,7 @@
 package org.marketcetera.marketdata.marketcetera;
 
 import static org.marketcetera.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.Content.MARKET_STAT;
 import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
 import static org.marketcetera.marketdata.Messages.UNSUPPORTED_REQUEST;
 
@@ -50,7 +51,7 @@ public class MarketceteraFeedMessageTranslator
     public Request fromDataRequest(MarketDataRequest inRequest)
             throws CoreException
     {
-        if(inRequest.validateWithCapabilities(TOP_OF_BOOK,LATEST_TICK)) {
+        if(inRequest.validateWithCapabilities(TOP_OF_BOOK,LATEST_TICK,MARKET_STAT)) {
             return fixMessageFromMarketDataRequest((MarketDataRequest)inRequest);
         }
         throw new CoreException(new I18NBoundMessage1P(UNSUPPORTED_REQUEST,
