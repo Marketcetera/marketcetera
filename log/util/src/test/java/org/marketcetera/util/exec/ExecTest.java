@@ -1,11 +1,19 @@
 package org.marketcetera.util.exec;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.marketcetera.util.test.RegExAssert.assertMatches;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Locale;
+
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
@@ -15,9 +23,6 @@ import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.RegExAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -30,8 +35,6 @@ import static org.marketcetera.util.test.RegExAssert.*;
 public class ExecTest
     extends TestCaseBase
 {
-    private static final String TEST_CATEGORY=
-        InputThread.class.getName();
     private static final String TEST_OUT=
         "out";
     private static final String TEST_ERR=
@@ -233,7 +236,6 @@ public class ExecTest
     public void setupExecTest()
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        setLevel(TEST_CATEGORY,Level.TRACE);
     }
 
 

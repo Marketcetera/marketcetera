@@ -1,13 +1,16 @@
 package org.marketcetera.client;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.ws.stateless.Node;
-import org.marketcetera.module.*;
-import org.marketcetera.core.LoggerConfiguration;
-import org.junit.Test;
-import org.junit.BeforeClass;
-
 import javax.management.JMX;
+
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.module.ExpectedFailure;
+import org.marketcetera.module.ModuleCreationException;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.util.ws.stateless.Node;
 
 /* $License$ */
 /**
@@ -17,7 +20,6 @@ import javax.management.JMX;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
 public class ModuleFailuresTest extends ModuleTestBase {
     @BeforeClass
     public static void setup() {

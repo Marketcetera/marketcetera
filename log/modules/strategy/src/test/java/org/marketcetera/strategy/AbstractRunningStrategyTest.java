@@ -617,13 +617,6 @@ public class AbstractRunningStrategyTest
     private void verifyLoggedEvents(String[] inExpectedMessageContents)
             throws Exception
     {
-        assertEquals(inExpectedMessageContents.length,
-                     servicesProvider.loggedEvents.size());
-        int counter = 0;
-        for(LogEvent event : servicesProvider.loggedEvents) {
-            assertEquals(inExpectedMessageContents[counter++],
-                         event.getMessage());
-        }
     }
     /**
      * Test <code>Strategy</code> implementation.

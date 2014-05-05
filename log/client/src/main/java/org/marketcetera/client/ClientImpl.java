@@ -38,6 +38,7 @@ import org.marketcetera.trade.FIXMessageWrapper;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Hierarchy;
 import org.marketcetera.trade.Instrument;
 import org.marketcetera.trade.Option;
 import org.marketcetera.trade.Order;
@@ -407,11 +408,12 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         return result;
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Client#addReport(quickfix.Message)
+     * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID, org.marketcetera.trade.Hierarchy)
      */
     @Override
     public void addReport(FIXMessageWrapper inReport,
-                          BrokerID inBrokerID)
+                          BrokerID inBrokerID,
+                          Hierarchy inHierarchy)
             throws ConnectionException
     {
         failIfClosed();
@@ -419,7 +421,8 @@ public class ClientImpl implements Client, javax.jms.ExceptionListener {
         try {
             mService.addReport(getServiceContext(),
                                inReport,
-                               inBrokerID);
+                               inBrokerID,
+                               inHierarchy);
         } catch (RemoteException ex) {
             throw new ConnectionException(ex,
                                           Messages.ERROR_REMOTE_EXECUTION);

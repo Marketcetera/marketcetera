@@ -1,10 +1,10 @@
 package org.marketcetera.options;
 
-import org.marketcetera.util.misc.ClassVersion;
 import static org.junit.Assert.assertEquals;
-import org.apache.log4j.Level;
 
 import java.net.URL;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -24,9 +24,6 @@ public class CustomExpiryNormalizerTest extends CustomExpiryNormalizerTestBase {
         assertEquals("20091001", OptionUtils.normalizeEquityOptionExpiry("200910"));
         assertEquals("20091010", OptionUtils.normalizeEquityOptionExpiry("20091010"));
         assertEquals("2009", OptionUtils.normalizeEquityOptionExpiry("2009"));
-        sLogAssist.assertLastEvent(Level.INFO, OptionUtils.class.getName(),
-                Messages.LOG_OPTION_EXPIRY_NORMALIZER_CUSTOMIZED.getText(
-                        CustomExpiryNormalizer.class.getName()), null);
     }
 
     @Override

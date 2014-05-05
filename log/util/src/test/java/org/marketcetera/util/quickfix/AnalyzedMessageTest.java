@@ -1,10 +1,13 @@
 package org.marketcetera.util.quickfix;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.log4j.Level;
 import org.junit.Test;
+
 import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.ClOrdID;
@@ -30,8 +33,6 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import quickfix.fix42.MassQuote;
 import quickfix.fix42.NewOrderSingle;
 
-import static org.junit.Assert.*;
-
 /**
  * @author tlerios@marketcetera.com
  * @since 1.0.0
@@ -50,7 +51,6 @@ public class AnalyzedMessageTest
         NewOrderSingle msg=new NewOrderSingle();
         msg.toString();
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
-        assertNoEvents();
         assertEquals(3,msgA.getHeader().size());
         assertEquals(0,msgA.getBody().size());
         assertEquals(1,msgA.getTrailer().size());
@@ -84,7 +84,6 @@ public class AnalyzedMessageTest
         msg.set(new Account("metc"));
         msg.toString();
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
-        assertNoEvents();
         assertEquals(7,msgA.getHeader().size());
         assertEquals(7,msgA.getBody().size());
         assertEquals(1,msgA.getTrailer().size());
@@ -146,7 +145,6 @@ public class AnalyzedMessageTest
         msg.addGroup(group);
         msg.toString();
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
-        assertNoEvents();
         assertEquals(3,msgA.getHeader().size());
         assertEquals(2,msgA.getBody().size());
         assertEquals(4,msgA.getBody().get(1).getGroups().
@@ -219,7 +217,6 @@ public class AnalyzedMessageTest
         msg.addGroup(topGroup);
         msg.toString();
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
-        assertNoEvents();
         assertEquals(3,msgA.getHeader().size());
         assertEquals(1,msgA.getBody().size());
         assertEquals(3,msgA.getBody().get(0).getGroups().
@@ -297,10 +294,6 @@ public class AnalyzedMessageTest
         Message msg=new Message();
         msg.toString();
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
-        assertSingleEvent
-            (Level.ERROR,TEST_MESSAGE_CATEGORY,
-             "Message type is missing from message '9=0"+SOH+"10=167"+SOH+"'",
-             TEST_MESSAGE_CATEGORY);
         assertEquals(0,msgA.getHeader().size());
         assertEquals(0,msgA.getBody().size());
         assertEquals(0,msgA.getTrailer().size());
@@ -315,7 +308,6 @@ public class AnalyzedMessageTest
         msg.set(new Side('?'));
         msg.toString();
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
-        assertNoEvents();
         assertEquals(3,msgA.getHeader().size());
         assertEquals(1,msgA.getBody().size());
         assertEquals(1,msgA.getTrailer().size());
@@ -339,11 +331,6 @@ public class AnalyzedMessageTest
         msg.set(new NoMDEntries(1));
         msg.toString();
         AnalyzedMessage msgA=new AnalyzedMessage(TEST_DICTIONARY,msg);
-        assertSingleEvent
-            (Level.ERROR,TEST_FIELD_CATEGORY,
-             "Group 1 is missing from message scope '8=FIX.4.2"+SOH+"9=11"+SOH+
-             "35=W"+SOH+"55=QF"+SOH+"10=052"+SOH+"'",
-             TEST_FIELD_CATEGORY);
         assertEquals(3,msgA.getHeader().size());
         assertEquals(2,msgA.getBody().size());
         assertEquals(1,msgA.getTrailer().size());

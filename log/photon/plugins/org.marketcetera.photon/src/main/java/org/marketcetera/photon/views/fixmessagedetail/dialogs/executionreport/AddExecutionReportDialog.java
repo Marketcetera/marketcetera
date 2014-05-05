@@ -38,6 +38,7 @@ import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.pr
 import org.marketcetera.photon.views.fixmessagedetail.dialogs.executionreport.providers.ExecutionReportFieldLabelProvider;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.FIXMessageWrapper;
+import org.marketcetera.trade.Hierarchy;
 
 import quickfix.Message;
 
@@ -387,10 +388,11 @@ public class AddExecutionReportDialog extends ReportDialog
 			messageBox.open();
 			return;
 		}
-		try 
-		{
-			ClientManager.getInstance().addReport(new FIXMessageWrapper(executionReport), new org.marketcetera.trade.BrokerID(BrokerID));
-		} catch (ConnectionException e) 
+        try {
+            ClientManager.getInstance().addReport(new FIXMessageWrapper(executionReport),
+                                                  new org.marketcetera.trade.BrokerID(BrokerID),
+                                                  Hierarchy.Flat);
+        } catch (ConnectionException e) 
 		{
 			MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK);
 			messageBox.setText(ADD_EXECUTION_REPORT_MXBOX_TITLE_ERROR.getText());

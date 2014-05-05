@@ -39,6 +39,9 @@ import org.marketcetera.event.Event;
 import org.marketcetera.marketdata.Capability;
 import org.marketcetera.marketdata.Content;
 import org.marketcetera.marketdata.MarketDataRequest;
+import org.marketcetera.marketdata.core.Messages;
+import org.marketcetera.marketdata.core.manager.MarketDataRequestFailed;
+import org.marketcetera.marketdata.core.manager.NoMarketDataProvidersAvailable;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.Locale;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginRequest;
 import org.marketcetera.marketdata.core.rpc.RpcMarketdata.LoginResponse;
@@ -49,6 +52,7 @@ import org.marketcetera.marketdata.core.webservice.ConnectionException;
 import org.marketcetera.marketdata.core.webservice.MarketDataServiceClient;
 import org.marketcetera.marketdata.core.webservice.PageRequest;
 import org.marketcetera.trade.Instrument;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.ws.ContextClassProvider;
@@ -166,11 +170,13 @@ public class MarketDataRpcClient
             requestLock.lock();
             RpcMarketdata.MarketDataResponse response = clientService.request(controller,
                                                                               RpcMarketdata.MarketDataRequest.newBuilder().setSessionId(sessionId.getValue())
-                                                                              .setRequest(inRequest.toString())
-                                                                              .setStreamEvents(inStreamEvents).build());
+                                                                                  .setRequest(inRequest.toString())
+                                                                                  .setStreamEvents(inStreamEvents).build());
             SLF4JLoggerProxy.debug(this,
                                    "MarketDataResponse: {}", //$NON-NLS-1$
                                    response.getId());
+            validateResponse(response.getFailed(),
+                             response.getMessage());
             return response.getId();
         } catch (ServiceException e) {
             throw new ConnectionException(e);
@@ -564,6 +570,23 @@ public class MarketDataRpcClient
                                                               loginRequest);
             sessionId = new SessionId(loginResponse.getSessionId());
             setServerStatus(true);
+        }
+    }
+    /**
+     * Changes the response and throws an exception if there was a problem.
+     *
+     * @param inFailed a <code>boolean</code> value
+     * @param inMessage a <code>String</code> value
+     */
+    private void validateResponse(boolean inFailed,
+                                  String inMessage)
+    {
+        if(inFailed) {
+            if(inMessage.contains(NoMarketDataProvidersAvailable.class.getSimpleName())) {
+                throw new NoMarketDataProvidersAvailable();
+            }
+            throw new MarketDataRequestFailed(new I18NBoundMessage1P(Messages.MARKETDATA_ERROR_MESSAGE,
+                                                                     inMessage));
         }
     }
     /**

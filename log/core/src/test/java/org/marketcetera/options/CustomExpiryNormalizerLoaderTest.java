@@ -1,9 +1,10 @@
 package org.marketcetera.options;
 
-import org.marketcetera.util.misc.ClassVersion;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URL;
+
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -22,7 +23,6 @@ public class CustomExpiryNormalizerLoaderTest extends CustomExpiryNormalizerTest
         //verify that the default normalization happens
         assertEquals("20091121", OptionUtils.normalizeEquityOptionExpiry("200911"));
         //verify that no events were generated in the log
-        sLogAssist.assertNoEvents();
     }
 
     @Override

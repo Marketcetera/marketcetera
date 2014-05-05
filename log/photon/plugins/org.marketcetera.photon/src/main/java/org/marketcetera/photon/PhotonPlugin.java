@@ -6,13 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
-import java.util.logging.LogManager;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -22,7 +26,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
@@ -35,10 +43,28 @@ import org.marketcetera.photon.core.ISymbolResolver;
 import org.marketcetera.photon.marketdata.IMarketDataManager;
 import org.marketcetera.photon.marketdata.ui.ReconnectMarketDataJob;
 import org.marketcetera.photon.preferences.PhotonPage;
-import org.marketcetera.photon.views.*;
-import org.marketcetera.quickfix.*;
+import org.marketcetera.photon.views.CurrencyOrderTicketController;
+import org.marketcetera.photon.views.CurrencyOrderTicketModel;
+import org.marketcetera.photon.views.FutureOrderTicketController;
+import org.marketcetera.photon.views.FutureOrderTicketModel;
+import org.marketcetera.photon.views.IOrderTicketController;
+import org.marketcetera.photon.views.OptionOrderTicketController;
+import org.marketcetera.photon.views.OptionOrderTicketModel;
+import org.marketcetera.photon.views.SecondaryIDCreator;
+import org.marketcetera.photon.views.StockOrderTicketController;
+import org.marketcetera.photon.views.StockOrderTicketModel;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.Strategy;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.Currency;
+import org.marketcetera.trade.Future;
+import org.marketcetera.trade.Instrument;
+import org.marketcetera.trade.NewOrReplaceOrder;
+import org.marketcetera.trade.Option;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
@@ -138,7 +164,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
 
         configureLogs();
 
-        mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
+        mainConsoleLogger = LogManager.getLogger(MAIN_CONSOLE_LOGGER_NAME);
 
         new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -610,7 +636,7 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
                 FileInputStream fis = null;
                 try {
                     fis = new FileInputStream(logConfig);
-                    LogManager.getLogManager().readConfiguration(fis);
+//                    LogManager.getLogManager().readConfiguration(fis);
                     logConfigured = true;
                 } catch (Exception ignored) {
                 } finally {
@@ -625,11 +651,11 @@ public class PhotonPlugin extends AbstractUIPlugin implements Messages,
             }
         }
         // Do default configuration, if its not already done.
-        if (!logConfigured) {
-            LogManager.getLogManager().readConfiguration(
-                    getClass().getClassLoader().getResourceAsStream(
-                            JAVA_LOGGING_CONFIG));
-        }
+//        if (!logConfigured) {
+//            LogManager.getLogManager().readConfiguration(
+//                    getClass().getClassLoader().getResourceAsStream(
+//                            JAVA_LOGGING_CONFIG));
+//        }
 
         // Configure Log4j
         // Remove default configuration done via log4j.properties file

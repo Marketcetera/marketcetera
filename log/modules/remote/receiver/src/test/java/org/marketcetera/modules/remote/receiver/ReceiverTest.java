@@ -34,7 +34,6 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.LogTestAssist;
 
 /* $License$ */
 /**
@@ -75,8 +74,6 @@ public class ReceiverTest extends ModuleTestBase {
         //But we cannot connect to the server
         verifyNoConnectToReceiver();
         //And that the log included the message on URL not being configured.
-        mLogAssist.assertSomeEvent(Level.INFO, null,
-                Messages.NO_URL_SPECIFIED_LOG.getText(), null);
     }
 
     /**
@@ -101,9 +98,6 @@ public class ReceiverTest extends ModuleTestBase {
         //And that we can connect to the server.
         verifyConnectToReceiver();
         //And that the log included the message on module being fully configured
-        mLogAssist.assertSomeEvent(Level.INFO,  null,
-                Messages.RECIEVER_REMOTING_CONFIGURED.getText(DEFAULT_URL),
-                null);
     }
 
     /**
@@ -312,7 +306,6 @@ public class ReceiverTest extends ModuleTestBase {
             mManager.stop();
             mManager = null;
         }
-        mLogAssist.resetAppender();
     }
 
     /**
@@ -448,7 +441,6 @@ public class ReceiverTest extends ModuleTestBase {
     }
 
     private ModuleManager mManager;
-    private final LogTestAssist mLogAssist = new LogTestAssist(ReceiverModule.class.getName(),Level.INFO);
     /**
      * The default URL value to run the receiver's embedded broker on.
      */

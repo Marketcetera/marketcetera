@@ -1,7 +1,12 @@
 package org.marketcetera.util.ws.stateful;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Locale;
-import org.apache.log4j.Level;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.log.ActiveLocale;
@@ -9,8 +14,6 @@ import org.marketcetera.util.test.TestCaseBase;
 import org.marketcetera.util.ws.stateless.StatelessClientContext;
 import org.marketcetera.util.ws.tags.NodeId;
 import org.marketcetera.util.ws.tags.SessionId;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -39,8 +42,6 @@ public class SessionManagerTest
         new Integer(1);
     private static final Integer TEST_SESSION_D=
         new Integer(2);
-    private static final String TEST_CATEGORY=
-        SessionManager.Reaper.class.getName();
 
 
     private static class TestFactory
@@ -98,7 +99,6 @@ public class SessionManagerTest
     public void setupSessionManagerTest()
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        setLevel(TEST_CATEGORY,Level.INFO);
     }
 
 
@@ -189,11 +189,6 @@ public class SessionManagerTest
             assertSame(h,s.get(TEST_SESSION_ID));
         }
         Thread.sleep(TEST_LIFESPAN*2);
-        assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,
-             "Session "+TEST_SESSION_ID.toString()+
-             " has expired; creation context: "+TEST_CONTEXT.toString(),
-             TEST_CATEGORY);
         assertNull(s.get(TEST_SESSION_ID));
         assertEquals(TEST_SESSION,f.getLastRemovedSession());
     }
@@ -214,11 +209,6 @@ public class SessionManagerTest
             assertSame(h,s.get(TEST_SESSION_ID));
         }
         Thread.sleep(TEST_LIFESPAN*2);
-        assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,
-             "Session "+TEST_SESSION_ID.toString()+
-             " has expired; creation context: "+TEST_CONTEXT.toString(),
-             TEST_CATEGORY);
         assertNull(s.get(TEST_SESSION_ID));
     }
 
@@ -240,9 +230,5 @@ public class SessionManagerTest
         group.interrupt();
         Thread.sleep(TEST_LIFESPAN*2);
         assertEquals(0,group.activeCount());
-        assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,
-             "Reaper for server "+TEST_SERVER_ID.toString()+" was terminated",
-             TEST_CATEGORY);
     }
 }

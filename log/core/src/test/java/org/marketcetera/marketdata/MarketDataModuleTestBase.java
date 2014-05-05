@@ -255,12 +255,12 @@ public abstract class MarketDataModuleTestBase
             }});
         // reconnect and wait for more data
         // TODO - need to figure out how to make this magic incantation work
-        ObjectName objectName = getInstanceURN().toObjectName();
-        MBeanServerConnection mMBeanServer = null;
-        AbstractMarketDataModuleMXBean mMBeanProxy = JMX.newMXBeanProxy(mMBeanServer,
-                                                                        objectName,
-                                                                        AbstractMarketDataModuleMXBean.class,
-                                                                        true);
+//        ObjectName objectName = getInstanceURN().toObjectName();
+//        MBeanServerConnection mMBeanServer = null;
+//        AbstractMarketDataModuleMXBean mMBeanProxy = JMX.newMXBeanProxy(mMBeanServer,
+//                                                                        objectName,
+//                                                                        AbstractMarketDataModuleMXBean.class,
+//                                                                        true);
     }
     /**
      * Starts the module to be tested and verifies that it has started.

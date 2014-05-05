@@ -1102,16 +1102,6 @@ public class StrategyTestBase
             return result;
         }
         /* (non-Javadoc)
-         * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.ExecutionReport)
-         */
-        @Override
-        public void addReport(FIXMessageWrapper inReport,
-                              BrokerID inBrokerID)
-                throws ConnectionException
-        {
-            throw new UnsupportedOperationException();
-        }
-        /* (non-Javadoc)
          * @see org.marketcetera.client.Client#deleteReport(org.marketcetera.trade.ExecutionReportImpl)
          */
         @Override
@@ -1154,6 +1144,17 @@ public class StrategyTestBase
          */
         @Override
         public OrderID findRootOrderIdFor(OrderID inOrderID)
+        {
+            throw new UnsupportedOperationException(); // TODO
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.client.Client#addReport(org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID, org.marketcetera.trade.Hierarchy)
+         */
+        @Override
+        public void addReport(FIXMessageWrapper inReport,
+                              BrokerID inBrokerID,
+                              Hierarchy inHierarchy)
+                throws ConnectionException
         {
             throw new UnsupportedOperationException(); // TODO
         }

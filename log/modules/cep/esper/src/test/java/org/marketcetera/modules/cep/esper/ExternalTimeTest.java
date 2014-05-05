@@ -2,10 +2,12 @@ package org.marketcetera.modules.cep.esper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import java.math.BigDecimal;
 import java.util.Calendar;
+
 import javax.management.JMX;
-import org.apache.log4j.Level;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -14,11 +16,16 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.EventTestBase;
-import org.marketcetera.module.*;
+import org.marketcetera.module.BlockingSinkDataListener;
+import org.marketcetera.module.CopierModuleFactory;
+import org.marketcetera.module.DataFlowID;
+import org.marketcetera.module.DataRequest;
+import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.trade.Equity;
 import org.marketcetera.trade.Factory;
 import org.marketcetera.trade.Suggestion;
-import org.marketcetera.util.test.LogTestAssist;
 
 /**
  * Test the external time functionality
@@ -47,7 +54,6 @@ public class ExternalTimeTest extends ModuleTestBase {
         sManager = new ModuleManager();
         sManager.init();
         sManager.addSinkListener(sSink);
-        sLogAssist.resetAppender();
     }
 
     @After
@@ -153,8 +159,5 @@ public class ExternalTimeTest extends ModuleTestBase {
         });
         sManager.cancel(flowID);
         //There should be no warning when canceling the data flow.
-        sLogAssist.assertNoEvents();
     }
-    private static final LogTestAssist sLogAssist = new LogTestAssist(
-            "org.marketcetera.module.SyncCoupler", Level.WARN);
 }

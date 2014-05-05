@@ -2,6 +2,7 @@ package org.marketcetera.marketdata.marketcetera;
 
 import static org.junit.Assert.assertEquals;
 import static org.marketcetera.marketdata.Content.LATEST_TICK;
+import static org.marketcetera.marketdata.Content.MARKET_STAT;
 import static org.marketcetera.marketdata.Content.TOP_OF_BOOK;
 
 import java.util.Arrays;
@@ -18,7 +19,11 @@ import org.marketcetera.quickfix.FIXVersion;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.MsgType;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.SecurityExchange;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
 
 
 /* $License$ */
@@ -40,7 +45,7 @@ public class MarketceteraFeedMessageTranslatorTest
     @Override
     protected Set<Content> getCapabilities()
     {
-        return new HashSet<Content>(Arrays.asList(TOP_OF_BOOK,LATEST_TICK));
+        return new HashSet<Content>(Arrays.asList(TOP_OF_BOOK,LATEST_TICK,MARKET_STAT));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataMessageTranslatorTestBase#getTranslator()

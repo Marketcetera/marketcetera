@@ -41,4 +41,5 @@ public interface Messages
     static final I18NMessage2P UNABLE_TO_REQUEST_MARKETDATA = new I18NMessage2P(LOGGER,"unable_to_request_marketdata"); //$NON-NLS-1$
     static final I18NMessage1P MARKETDATA_REQUEST_INTERRUPTED = new I18NMessage1P(LOGGER,"marketdata_request_interrupted"); //$NON-NLS-1$
     static final I18NMessage0P MARKETDATA_NEXUS_CONNECTION_LOST = new I18NMessage0P(LOGGER,"marketdata_nexus_connection_lost"); //$NON-NLS-1$
+    static final I18NMessage1P MARKETDATA_ERROR_MESSAGE = new I18NMessage1P(LOGGER,"marketdata_error_message"); //$NON-NLS-1$
 }

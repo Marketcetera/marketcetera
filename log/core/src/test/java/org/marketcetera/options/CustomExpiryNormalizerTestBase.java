@@ -1,19 +1,17 @@
 package org.marketcetera.options;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.test.LogTestAssist;
-import org.marketcetera.util.file.CopyCharsUtils;
-import org.marketcetera.core.LoggerConfiguration;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.apache.log4j.Level;
-
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Collections;
-import java.util.Arrays;
-import java.io.IOException;
-import java.io.File;
+import org.marketcetera.core.LoggerConfiguration;
+import org.marketcetera.util.file.CopyCharsUtils;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -111,9 +109,6 @@ public abstract class CustomExpiryNormalizerTestBase {
             return super.findResources(name);
         }
     }
-    protected static final LogTestAssist sLogAssist =
-            new LogTestAssist(OptionUtils.class.getName(), Level.INFO);
-
     private static final String SERVICES_FILE_NAME = "META-INF/services/" +
             OptionExpiryNormalizer.class.getName();
 }

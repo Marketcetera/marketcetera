@@ -15,10 +15,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Id$
  * @since 1.0.0
  */
-@ClassVersion("$Id$")
 @XmlRootElement
-public class OrderCancelRejectImpl extends ReportBaseImpl
-        implements OrderCancelReject {
+@ClassVersion("$Id$")
+public class OrderCancelRejectImpl
+        extends ReportBaseImpl
+        implements OrderCancelReject
+{
     /**
      * Creates an instance.
      *
@@ -33,9 +35,37 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
                           Originator inOriginator,
                           UserID inActorID,
                           UserID inViewerID) {
-        super(inMessage, inBrokerID, inOriginator, inActorID, inViewerID);
+        this(inMessage,
+             inBrokerID,
+             inOriginator,
+             Hierarchy.Flat,
+             inActorID,
+             inViewerID);
     }
-
+    /**
+     * Create a new OrderCancelRejectImpl instance.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inOriginator an <code>Originator</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     */
+    OrderCancelRejectImpl(Message inMessage,
+                          BrokerID inBrokerID,
+                          Originator inOriginator,
+                          Hierarchy inHierarchy,
+                          UserID inActorID,
+                          UserID inViewerID)
+    {
+        super(inMessage,
+              inBrokerID,
+              inOriginator,
+              inHierarchy,
+              inActorID,
+              inViewerID);
+    }
     /**
      * Creates an instance. This empty constructor is intended for use
      * by JAXB.
@@ -45,19 +75,19 @@ public class OrderCancelRejectImpl extends ReportBaseImpl
 
     @Override
     public synchronized String toString() {
-        return Messages.ORDER_CANCEL_REJECT_TO_STRING.getText(
-                String.valueOf(getBrokerID()),
-                String.valueOf(getOrderID()),
-                String.valueOf(getOrderStatus()),
-                String.valueOf(getOriginalOrderID()),
-                String.valueOf(getReportID()),
-                String.valueOf(getSendingTime()),
-                String.valueOf(getText()),
-                String.valueOf(getBrokerOrderID()),
-                String.valueOf(getOriginator()),
-                String.valueOf(getActorID()),
-                String.valueOf(getViewerID()),
-                String.valueOf(getMessage())
+        return Messages.ORDER_CANCEL_REJECT_TO_STRING.getText(String.valueOf(getBrokerID()),
+                                                              String.valueOf(getOrderID()),
+                                                              String.valueOf(getOrderStatus()),
+                                                              String.valueOf(getOriginalOrderID()),
+                                                              String.valueOf(getReportID()),
+                                                              String.valueOf(getSendingTime()),
+                                                              String.valueOf(getText()),
+                                                              String.valueOf(getBrokerOrderID()),
+                                                              String.valueOf(getOriginator()),
+                                                              String.valueOf(getHierarchy()),
+                                                              String.valueOf(getActorID()),
+                                                              String.valueOf(getViewerID()),
+                                                              String.valueOf(getMessage())
         );
     }
 

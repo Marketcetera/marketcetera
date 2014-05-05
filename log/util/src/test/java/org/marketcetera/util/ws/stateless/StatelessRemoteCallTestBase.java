@@ -1,10 +1,12 @@
 package org.marketcetera.util.ws.stateless;
 
-import java.util.Iterator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
 import java.util.Locale;
+
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.ActiveLocale;
@@ -17,8 +19,6 @@ import org.marketcetera.util.ws.tags.VersionId;
 import org.marketcetera.util.ws.tags.VersionIdTest;
 import org.marketcetera.util.ws.wrappers.LocaleWrapper;
 import org.marketcetera.util.ws.wrappers.RemoteException;
-
-import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -53,10 +53,6 @@ public class StatelessRemoteCallTestBase
         NumberUtils.INTEGER_ONE;
     protected static final RuntimeException TEST_EXCEPTION=
         new IllegalArgumentException();
-
-    private static final String TEST_LOCATION=
-        StatelessRemoteCall.class.getName();
-
 
     protected static Object sSetByRunner;
 
@@ -100,26 +96,6 @@ public class StatelessRemoteCallTestBase
                                StatelessRemoteCall call,
                                boolean success)
     {
-        String contextStr=context.toString();
-        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
-        assertEvent
-            (events.next(),Level.DEBUG,call.getClass().getName(),
-             "Remote call is starting; context: "+contextStr,
-             TEST_LOCATION);
-        if (success) {
-            assertEvent
-                (events.next(),Level.DEBUG,call.getClass().getName(),
-                 "Remote call ended successfully; context: "+contextStr,
-                 TEST_LOCATION);
-        } else {
-            assertEvent
-                (events.next(),Level.DEBUG,call.getClass().getName(),
-                 "Remote call ended with failure; context: "+contextStr,
-                 TEST_LOCATION);
-            events.next();
-        }
-        assertFalse(events.hasNext());
-        getAppender().clear();
     }
 
     private <T> void singleSuccess
@@ -128,7 +104,6 @@ public class StatelessRemoteCallTestBase
          T value)
         throws Exception
     {
-        setLevel(caller.getClass().getName(),Level.DEBUG);
         assertEquals(value,caller.execute(context));
         checkEvents(context,caller,true);
     }
@@ -138,7 +113,6 @@ public class StatelessRemoteCallTestBase
          StatelessRemoteCaller<?> caller,
          Class<?> exceptionClass)
     {
-        setLevel(caller.getClass().getName(),Level.DEBUG);
         setRunnerData(null);
         try {
             caller.execute(context);
@@ -162,7 +136,6 @@ public class StatelessRemoteCallTestBase
          Object value)
         throws Exception
     {
-        setLevel(runner.getClass().getName(),Level.DEBUG);
         setRunnerData(null);
         runner.execute(context);
         assertEquals(value,sSetByRunner);
@@ -174,7 +147,6 @@ public class StatelessRemoteCallTestBase
          StatelessRemoteRunner runner,
          Class<?> exceptionClass)
     {
-        setLevel(runner.getClass().getName(),Level.DEBUG);
         setRunnerData(null);
         try {
             runner.execute(context);

@@ -2,18 +2,35 @@ package org.marketcetera.client;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.*;
-import static org.marketcetera.trade.TypesTestBase.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.marketcetera.trade.TypesTestBase.assertCancelRejectEquals;
+import static org.marketcetera.trade.TypesTestBase.assertExecReportEquals;
+import static org.marketcetera.trade.TypesTestBase.assertOrderCancelEquals;
+import static org.marketcetera.trade.TypesTestBase.assertOrderFIXEquals;
+import static org.marketcetera.trade.TypesTestBase.assertOrderReplaceEquals;
+import static org.marketcetera.trade.TypesTestBase.assertOrderSingleEquals;
 
 import java.beans.ExceptionListener;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.log4j.Level;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -31,7 +48,30 @@ import org.marketcetera.core.position.PositionKeyFactory;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.trade.*;
+import org.marketcetera.trade.BrokerID;
+import org.marketcetera.trade.Equity;
+import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.ExecutionReportImpl;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.FIXResponse;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MessageCreationException;
+import org.marketcetera.trade.Option;
+import org.marketcetera.trade.OptionType;
+import org.marketcetera.trade.OrderCancel;
+import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.OrderCancelRejectImpl;
+import org.marketcetera.trade.OrderID;
+import org.marketcetera.trade.OrderReplace;
+import org.marketcetera.trade.OrderSingle;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Originator;
+import org.marketcetera.trade.ReportBase;
+import org.marketcetera.trade.ReportBaseImpl;
+import org.marketcetera.trade.ReportID;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TimeInForce;
+import org.marketcetera.trade.UserID;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
@@ -615,10 +655,6 @@ public class ClientTest
     public void sendAnyGetFIXResponse() throws Exception {
         initClient();
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        String category=ClientImpl.TradeMessageReceiver.class.getName();
-        setDefaultLevel(Level.OFF);
-        setLevel(category,Level.WARN);
-        getAppender().clear();
             
         for (int i = 0; i < NUM_REPEAT; i++) {
             //Create a response for the mock server to send back

@@ -143,6 +143,7 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                 String.valueOf(getOrderType()),
                 String.valueOf(getOriginalOrderID()),
                 String.valueOf(getOriginator()),
+                String.valueOf(getHierarchy()),
                 String.valueOf(getActorID()),
                 String.valueOf(getViewerID()),
                 String.valueOf(getPositionEffect()),
@@ -158,7 +159,6 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                 String.valueOf(getMessage())
         );
     }
-
     /**
      * Creates an instance.
      *
@@ -173,9 +173,37 @@ public class ExecutionReportImpl extends ReportBaseImpl implements ExecutionRepo
                         Originator inOriginator,
                         UserID inActorID,
                         UserID inViewerID) {
-        super(inMessage, inBrokerID, inOriginator, inActorID, inViewerID);
+        this(inMessage,
+             inBrokerID,
+             inOriginator,
+             Hierarchy.Flat,
+             inActorID,
+             inViewerID);
     }
-
+    /**
+     * Create a new ExecutionReportImpl instance.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inBrokerID a <code>BrokerID</code> value
+     * @param inOriginator an <code>Originator</code> value
+     * @param inHierarchy a <code>Hierarchy</code> value
+     * @param inActorID a <code>UserID</code> value
+     * @param inViewerID a <code>UserID</code> value
+     */
+    ExecutionReportImpl(Message inMessage,
+                        BrokerID inBrokerID,
+                        Originator inOriginator,
+                        Hierarchy inHierarchy,
+                        UserID inActorID,
+                        UserID inViewerID)
+    {
+        super(inMessage,
+              inBrokerID,
+              inOriginator,
+              inHierarchy,
+              inActorID,
+              inViewerID);
+    }
     /**
      * Creates an instance. This empty constructor is intended for use
      * by JAXB.

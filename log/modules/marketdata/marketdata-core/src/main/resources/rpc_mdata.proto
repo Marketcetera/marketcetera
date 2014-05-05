@@ -21,6 +21,8 @@ message Locale {
 
 message LoginResponse {
     required string sessionId = 1;
+    optional bool failed = 2;
+    optional string message = 3;
 }
 
 message LogoutRequest {
@@ -28,7 +30,8 @@ message LogoutRequest {
 }
 
 message LogoutResponse {
-    required bool status = 1;
+    optional bool failed = 1;
+    optional string message = 2;
 }
 
 message HeartbeatRequest {
@@ -37,6 +40,8 @@ message HeartbeatRequest {
 
 message HeartbeatResponse {
     required int64 id = 1;
+    optional bool failed = 2;
+    optional string message = 3;
 }
 
 enum InstrumentType {
@@ -53,11 +58,13 @@ message Instrument {
 message MarketDataRequest {
     required string sessionId = 1;
     required string request = 2;
-    required bool streamEvents = 3;
+    optional bool streamEvents = 3;
 }
 
 message MarketDataResponse {
     required int64 id = 1;
+    optional bool failed = 2;
+    optional string message = 3;
 }
 
 message LastUpdateRequest {
@@ -67,6 +74,8 @@ message LastUpdateRequest {
 
 message LastUpdateResponse {
     required int64 timestamp = 1;
+    optional bool failed = 2;
+    optional string message = 3;
 }
 
 message CancelRequest {
@@ -75,6 +84,8 @@ message CancelRequest {
 }
 
 message CancelResponse {
+    optional string message = 1;
+    optional bool failed = 2;
 }
 
 message Event {
@@ -89,6 +100,8 @@ message EventsRequest {
 message EventsResponse {
     required int64 id = 1;
     repeated string payload = 2;
+    optional string message = 3;
+    optional bool failed = 4;
 }
 
 message AllEventsRequest {
@@ -98,6 +111,8 @@ message AllEventsRequest {
 
 message AllEventsResponse {
     repeated EventsResponse events = 1;
+    optional string message = 2;
+    optional bool failed = 3;
 }
 
 message SnapshotRequest {
@@ -109,6 +124,8 @@ message SnapshotRequest {
 
 message SnapshotResponse {
     repeated string payload = 1;
+    optional string message = 2;
+    optional bool failed = 3;
 }
 
 message SnapshotPageRequest {
@@ -121,6 +138,8 @@ message SnapshotPageRequest {
 
 message SnapshotPageResponse {
     repeated string payload = 1;
+    optional string message = 2;
+    optional bool failed = 3;
 }
 
 enum ContentAndCapability {
@@ -151,6 +170,8 @@ message AvailableCapabilityRequest {
 
 message AvailableCapabilityResponse {
     repeated ContentAndCapability capability = 1;
+    optional string message = 2;
+    optional bool failed = 3;
 }
 
 service RpcMarketDataService {

@@ -1,15 +1,16 @@
 package org.marketcetera.util.log;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.marketcetera.util.test.EqualityAssert.assertEquality;
+import static org.marketcetera.util.test.SerializableAssert.assertSerializable;
+
 import java.io.Serializable;
 import java.util.Locale;
-import org.apache.log4j.Level;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.EqualityAssert.*;
-import static org.marketcetera.util.test.SerializableAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -53,15 +54,11 @@ public class I18NMessageTestBase
     protected static final Exception TEST_THROWABLE=
         new IllegalArgumentException("Test exception (expected)");
 
-    private static final String TEST_LOCATION=
-        I18NMessageTestBase.class.getName();
-
 
     @Before
     public void setupI18NMessageXPTestBase()
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        setLevel(TEST_CATEGORY,Level.TRACE);
     }
 
 
@@ -114,28 +111,18 @@ public class I18NMessageTestBase
         assertEquals(textEn,m.toString());
 
         m.error(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,textEn,TEST_LOCATION);
         m.error(TEST_CATEGORY);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,textEn,TEST_LOCATION);
 
         m.warn(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,textEn,TEST_LOCATION);
         m.warn(TEST_CATEGORY);
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,textEn,TEST_LOCATION);
 
         m.info(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.INFO,TEST_CATEGORY,textEn,TEST_LOCATION);
         m.info(TEST_CATEGORY);
-        assertSingleEvent(Level.INFO,TEST_CATEGORY,textEn,TEST_LOCATION);
 
         m.debug(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.DEBUG,TEST_CATEGORY,textEn,TEST_LOCATION);
         m.debug(TEST_CATEGORY);
-        assertSingleEvent(Level.DEBUG,TEST_CATEGORY,textEn,TEST_LOCATION);
 
         m.trace(TEST_CATEGORY,TEST_THROWABLE);
-        assertSingleEvent(Level.TRACE,TEST_CATEGORY,textEn,TEST_LOCATION);
         m.trace(TEST_CATEGORY);
-        assertSingleEvent(Level.TRACE,TEST_CATEGORY,textEn,TEST_LOCATION);
     }
 }

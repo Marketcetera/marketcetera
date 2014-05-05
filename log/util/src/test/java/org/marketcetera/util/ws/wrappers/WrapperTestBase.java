@@ -1,17 +1,25 @@
 package org.marketcetera.util.ws.wrappers;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.marketcetera.util.test.EqualityAssert.assertEquality;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Locale;
+
 import javax.xml.bind.JAXBContext;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.Level;
 import org.junit.Before;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NThrowable;
@@ -22,9 +30,6 @@ import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.EqualityAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -177,7 +182,6 @@ public class WrapperTestBase
     public void setupWrapperTestBase()
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
-        setDefaultLevel(Level.OFF);
     }
 
 
@@ -267,8 +271,6 @@ public class WrapperTestBase
     protected void prepareSerWrapperFailure
         (String category)
     {
-        setLevel(category,Level.WARN);
-        getAppender().clear();
     }
 
     protected void prepareSerWrapperFailure()
@@ -281,9 +283,6 @@ public class WrapperTestBase
          String category)
     {
         assertNotNull(wrapper.getDeserializationException());
-        assertSomeEvent(Level.WARN,category,
-             "A deserialization error has occured; the object will be assumed "+
-             "to have a null value",SerWrapper.class.getName());
         assertNull(wrapper.getRaw());
         assertNull(wrapper.getMarshalled());
     }
@@ -299,9 +298,6 @@ public class WrapperTestBase
          String category)
     {
         assertNotNull(wrapper.getSerializationException());
-        assertSomeEvent(Level.WARN,category,
-             "A serialization error has occured; the object will be assumed "+
-             "to have a null value",SerWrapper.class.getName());
         assertNull(wrapper.getRaw());
         assertNull(wrapper.getMarshalled());
     }

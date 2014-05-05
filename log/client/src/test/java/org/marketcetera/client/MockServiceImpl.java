@@ -475,17 +475,6 @@ public class MockServiceImpl
 		return null;
 	}
     /* (non-Javadoc)
-     * @see org.marketcetera.client.Service#addReport(org.marketcetera.util.ws.stateful.ClientContext, quickfix.Message)
-     */
-    @Override
-    public void addReport(ClientContext inContext,
-                          FIXMessageWrapper inReport,
-                          BrokerID inBrokerID)
-            throws RemoteException
-    {
-        throw new UnsupportedOperationException();
-    }
-    /* (non-Javadoc)
      * @see org.marketcetera.client.Service#deleteReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.ExecutionReportImpl)
      */
     @Override
@@ -523,6 +512,18 @@ public class MockServiceImpl
     @Override
     public OrderID getRootOrderIdFor(ClientContext inServiceContext,
                                       OrderID inOrderID)
+            throws RemoteException
+    {
+        throw new UnsupportedOperationException(); // TODO
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.client.Service#addReport(org.marketcetera.util.ws.stateful.ClientContext, org.marketcetera.trade.FIXMessageWrapper, org.marketcetera.trade.BrokerID, org.marketcetera.trade.Hierarchy)
+     */
+    @Override
+    public void addReport(ClientContext inContext,
+                          FIXMessageWrapper inReport,
+                          BrokerID inBrokerID,
+                          Hierarchy inHierarchy)
             throws RemoteException
     {
         throw new UnsupportedOperationException(); // TODO

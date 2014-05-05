@@ -103,9 +103,9 @@ public class AveragePriceReportList extends AbstractEventList<ReportHolder> impl
                             continue;
                         }
                         
-                        if(execReport.getOriginator() != Originator.Broker ) {
+                        if(!execReport.getOriginator().forOrders() || !execReport.getHierarchy().forOrders()) {
                             SLF4JLoggerProxy.debug(AveragePriceReportList.class,
-                                                   "Skipping {} because it came from the ORS", //$NON-NLS-1$
+                                                   "Skipping {} because it's not appropriate for FIX Message Views", //$NON-NLS-1$
                                                    execReport);
                             continue;
                         }

@@ -140,7 +140,7 @@ public class OrderHistoryManagerTest
                            expectedReports);
     }
     /**
-     * Tests {@link OrderHistoryManager#getReportHistoryFor(OrderID)}.
+     * Tests {@link OrderHistoryManager#getReportHistoryFor(OrderID)} and {@link OrderHistoryManager#getRootOrderIdFor(OrderID)}.
      *
      * @throws Exception if an unexpected error occurs
      */
@@ -157,19 +157,34 @@ public class OrderHistoryManagerTest
                 orderManager.getReportHistoryFor(null);
             }
         };
+        new ExpectedFailure<NullPointerException>() {
+            @Override
+            protected void run()
+                    throws Exception
+            {
+                orderManager.getRootOrderIdFor(null);
+            }
+        };
         assertTrue(orderManager.getReportHistoryFor(new OrderID("this-order-doesn't-exist")).isEmpty());
+        assertNull(orderManager.getRootOrderIdFor(new OrderID("this-order-doesn't-exist")));
         ExecutionReport report1 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
         orderManager.add(report1);
         CollectionAssert.assertArrayPermutation(new ExecutionReport[] { report1 },
                                                 orderManager.getReportHistoryFor(report1.getOrderID()).toArray(new ExecutionReport[0]));
+        assertEquals(report1.getOrderID(),
+                     orderManager.getRootOrderIdFor(report1.getOrderID()));
         ExecutionReport report2 = generateExecutionReport(report1.getOrderID().toString(),
                                                           null,
                                                           OrderStatus.PartiallyFilled);
         orderManager.add(report2);
         CollectionAssert.assertArrayPermutation(new ExecutionReport[] { report2, report1 },
                                                 orderManager.getReportHistoryFor(report1.getOrderID()).toArray(new ExecutionReport[0]));
+        assertEquals(report1.getOrderID(),
+                     orderManager.getRootOrderIdFor(report1.getOrderID()));
+        assertEquals(report1.getOrderID(),
+                     orderManager.getRootOrderIdFor(report2.getOrderID()));
         ExecutionReport report3 = generateExecutionReport("order-" + counter.incrementAndGet(),
                                                           null,
                                                           OrderStatus.New);
@@ -179,6 +194,12 @@ public class OrderHistoryManagerTest
                                                 orderManager.getReportHistoryFor(report1.getOrderID()).toArray(new ExecutionReport[0]));
         CollectionAssert.assertArrayPermutation(new ExecutionReport[] { report3 },
                                                 orderManager.getReportHistoryFor(report3.getOrderID()).toArray(new ExecutionReport[0]));
+        assertEquals(report1.getOrderID(),
+                     orderManager.getRootOrderIdFor(report1.getOrderID()));
+        assertEquals(report1.getOrderID(),
+                     orderManager.getRootOrderIdFor(report2.getOrderID()));
+        assertEquals(report3.getOrderID(),
+                     orderManager.getRootOrderIdFor(report3.getOrderID()));
     }
     /**
      * Tests {@link OrderHistoryManager#getOrderIds()}.
