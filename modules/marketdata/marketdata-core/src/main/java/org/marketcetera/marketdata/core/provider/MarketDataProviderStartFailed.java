@@ -10,7 +10,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataProviderStartFailed.java 16422 2013-01-03 19:43:24Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 public class MarketDataProviderStartFailed
         extends CoreException

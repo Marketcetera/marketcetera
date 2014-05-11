@@ -51,7 +51,7 @@ import com.googlecode.protobuf.pro.duplex.util.RenamingThreadFactoryProxy;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class RpcServer<SessionClazz>

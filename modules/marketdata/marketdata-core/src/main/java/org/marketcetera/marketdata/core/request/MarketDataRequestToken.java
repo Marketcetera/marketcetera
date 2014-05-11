@@ -13,7 +13,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataRequestToken.java 16344 2012-11-01 20:24:40Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public interface MarketDataRequestToken

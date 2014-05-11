@@ -52,7 +52,7 @@ import com.google.common.collect.Multimap;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @ThreadSafe
 @ClassVersion("$Id$")
@@ -509,7 +509,7 @@ public abstract class AbstractMarketDataProvider
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
-     * @since $Release$
+     * @since 2.4.0
      */
     @Immutable
     private static class MarketDataRequestAtomImpl
@@ -632,7 +632,7 @@ public abstract class AbstractMarketDataProvider
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private class EventNotifier
@@ -768,7 +768,7 @@ public abstract class AbstractMarketDataProvider
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private static class EventNotification

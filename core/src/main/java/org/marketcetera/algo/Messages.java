@@ -9,7 +9,7 @@ import org.marketcetera.util.log.*;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: Messages.java 16604 2013-06-26 14:49:42Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id: Messages.java 16604 2013-06-26 14:49:42Z colin $")
 public interface Messages

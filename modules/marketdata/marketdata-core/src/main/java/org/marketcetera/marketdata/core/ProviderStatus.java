@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: FeedStatus.java 16325 2012-10-25 23:13:12Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public enum ProviderStatus

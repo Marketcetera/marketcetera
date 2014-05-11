@@ -15,7 +15,7 @@ import quickfix.field.SecurityType;
  * Extracts a <code>ConvertibleBond</code> instrument from a FIX Message.
  * 
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class ConvertibleBondFromMessage

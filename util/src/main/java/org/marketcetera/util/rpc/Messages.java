@@ -9,7 +9,7 @@ import org.marketcetera.util.log.*;
  *
  * @author anshul@marketcetera.com
  * @version $Id: Messages.java 16154 2012-07-14 16:34:05Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public interface Messages

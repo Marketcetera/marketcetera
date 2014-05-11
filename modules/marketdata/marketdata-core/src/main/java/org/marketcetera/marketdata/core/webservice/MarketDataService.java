@@ -22,7 +22,7 @@ import org.marketcetera.util.ws.wrappers.RemoteException;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @WebService(targetNamespace="marketdata")
 @ClassVersion("$Id$")

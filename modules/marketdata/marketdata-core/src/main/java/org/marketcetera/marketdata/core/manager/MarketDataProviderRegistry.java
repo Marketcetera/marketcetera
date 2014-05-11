@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataProviderRegistry.java 16422 2013-01-03 19:43:24Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public interface MarketDataProviderRegistry

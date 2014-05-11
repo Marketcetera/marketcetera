@@ -44,7 +44,7 @@ import org.marketcetera.util.ws.stateful.SessionManager;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 public class RpcSAClientImplTest
 {

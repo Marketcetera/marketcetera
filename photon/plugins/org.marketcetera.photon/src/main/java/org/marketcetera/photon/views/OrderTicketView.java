@@ -1038,7 +1038,7 @@ public abstract class OrderTicketView<M extends OrderTicketModel, T extends IOrd
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     public final static class AlgoLabelProvider

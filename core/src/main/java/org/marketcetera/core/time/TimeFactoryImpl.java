@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: TimeFactoryImpl.java 83355 2013-06-26 18:21:12Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @Component
 @ClassVersion("$Id$")

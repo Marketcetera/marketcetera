@@ -16,7 +16,7 @@ import org.springframework.context.Lifecycle;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class StrategyAgentWebServicesProvider

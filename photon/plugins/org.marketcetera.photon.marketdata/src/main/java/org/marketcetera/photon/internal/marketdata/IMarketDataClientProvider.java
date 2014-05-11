@@ -11,7 +11,7 @@ import com.google.inject.ImplementedBy;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ImplementedBy(MarketDataManager.class)
 public interface IMarketDataClientProvider

@@ -53,7 +53,7 @@ import com.google.common.collect.Sets;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: MarketDataManagerImpl.java 16454 2013-01-17 01:55:01Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @ThreadSafe
 @ClassVersion("$Id$")
@@ -355,7 +355,7 @@ public class MarketDataManagerImpl
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: MarketDataManagerImpl.java 16454 2013-01-17 01:55:01Z colin $
-     * @since $Release$
+     * @since 2.4.0
      */
     @Immutable
     @ClassVersion("$Id$")
@@ -451,7 +451,7 @@ public class MarketDataManagerImpl
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private class ModuleProvider
@@ -573,7 +573,7 @@ public class MarketDataManagerImpl
          *
          * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id$
-         * @since $Release$
+         * @since 2.4.0
          */
         @ClassVersion("$Id$")
         private class Request
@@ -671,7 +671,7 @@ public class MarketDataManagerImpl
          *
          * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
          * @version $Id$
-         * @since $Release$
+         * @since 2.4.0
          */
         @ClassVersion("$Id$")
         private class Processor
@@ -766,7 +766,7 @@ public class MarketDataManagerImpl
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private static class SnapshotComparator
@@ -800,7 +800,7 @@ public class MarketDataManagerImpl
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private static class ProviderComparator

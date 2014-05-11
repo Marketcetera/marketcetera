@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: TimeFactory.java 83355 2013-06-26 18:21:12Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public interface TimeFactory

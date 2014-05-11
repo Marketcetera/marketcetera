@@ -10,7 +10,7 @@ import org.marketcetera.trade.ConvertibleBond;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: HasConvertibleSecurity.java 16598 2013-06-25 13:27:58Z colin $
- * @since $Release$
+ * @since 2.4.0
  */
 public interface HasConvertibleBond
         extends HasInstrument
