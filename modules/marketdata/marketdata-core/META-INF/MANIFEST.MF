@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.marketcetera.modules.mdata.core;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Core Marketdata Module
-Bundle-Version: 2.4.0
+Bundle-Version: 2.4.0-SNAPSHOT
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.marketcetera.core,
  org.marketcetera.core.tests;resolution:=optional
