@@ -9,7 +9,7 @@ import org.marketcetera.marketdata.Content;
  * Strategy that processes market data via CEP.
  *
  * @author anshul@marketcetera.com
- * @version $Id: ProcessData.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class ProcessData extends Strategy {

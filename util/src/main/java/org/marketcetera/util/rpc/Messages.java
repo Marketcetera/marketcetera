@@ -8,7 +8,7 @@ import org.marketcetera.util.log.*;
  * Internationalized messages used by this package.
  *
  * @author anshul@marketcetera.com
- * @version $Id: Messages.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 @ClassVersion("$Id$")

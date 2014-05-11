@@ -9,7 +9,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Indicates that a market data request could not be executed in a reasonable amount of time.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRequestTimedOut.java 16375 2012-11-19 21:02:22Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 @ClassVersion("$Id$")

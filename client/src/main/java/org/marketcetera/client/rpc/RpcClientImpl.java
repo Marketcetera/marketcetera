@@ -93,7 +93,7 @@ import com.googlecode.protobuf.pro.duplex.execute.ThreadPoolCallExecutor;
  * @since 2.4.0
  */
 @ThreadSafe
-@ClassVersion("$Id: UserInfo.java 16488 2013-02-26 02:54:25Z colin $")
+@ClassVersion("$Id$")
 public class RpcClientImpl
         extends ClientImpl
 {

@@ -9,7 +9,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * Indicates that a market data provider could not be started.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataProviderStartFailed.java 16422 2013-01-03 19:43:24Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 public class MarketDataProviderStartFailed

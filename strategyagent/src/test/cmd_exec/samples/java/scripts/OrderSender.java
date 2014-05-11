@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Order Sender Strategy
  *
  * @author anshul@marketcetera.com
- * @version $Id: OrderSender.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class OrderSender extends Strategy {

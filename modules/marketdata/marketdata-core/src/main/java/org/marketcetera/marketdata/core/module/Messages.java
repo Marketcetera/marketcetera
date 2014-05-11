@@ -12,7 +12,7 @@ import org.marketcetera.util.log.*;
  * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: Messages.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public interface Messages {
     /**
      * The message provider

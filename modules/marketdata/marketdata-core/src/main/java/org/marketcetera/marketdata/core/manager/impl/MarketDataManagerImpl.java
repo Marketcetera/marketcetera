@@ -52,7 +52,7 @@ import com.google.common.collect.Sets;
  * Routes market data requests to available providers.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataManagerImpl.java 16454 2013-01-17 01:55:01Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 @ThreadSafe
@@ -354,7 +354,7 @@ public class MarketDataManagerImpl
      * Identifies a particular market data request.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: MarketDataManagerImpl.java 16454 2013-01-17 01:55:01Z colin $
+     * @version $Id$
      * @since 2.4.0
      */
     @Immutable

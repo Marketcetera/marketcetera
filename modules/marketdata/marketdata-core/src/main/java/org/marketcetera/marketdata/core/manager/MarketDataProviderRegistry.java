@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Tracks feed status of market data providers.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataProviderRegistry.java 16422 2013-01-03 19:43:24Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 @ClassVersion("$Id$")

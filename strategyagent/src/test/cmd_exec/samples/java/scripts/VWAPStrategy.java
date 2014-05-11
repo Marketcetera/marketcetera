@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * and at some "random" point in the future, sends an order at that price.
  *
  * @author anshul@marketcetera.com
- * @version $Id: VWAPStrategy.java 16154 2012-07-14 16:34:05Z colin $
+ * @version $Id$
  * @since 2.0.0
  */
 public class VWAPStrategy extends Strategy {

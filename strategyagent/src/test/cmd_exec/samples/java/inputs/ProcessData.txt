@@ -1,7 +1,7 @@
 #
 # author:anshul@marketcetera.com
 # since 2.0.0
-# version: $Id: ProcessData.txt 16154 2012-07-14 16:34:05Z colin $
+# version: $Id$
 #
 # Create the Process Data strategy
 createModule;metc:strategy:system;processData,ProcessData,JAVA,samples/java/scripts/ProcessData.java,,true,metc:sink:system

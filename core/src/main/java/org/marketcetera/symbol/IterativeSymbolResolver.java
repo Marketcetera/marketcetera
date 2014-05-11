@@ -18,7 +18,7 @@ import com.google.common.collect.Lists;
  * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: SpringConfig.java 16663 2013-08-23 14:40:19Z colin $")
+@ClassVersion("$Id$")
 public class IterativeSymbolResolver
         implements SymbolResolverService, InitializingBean
 {

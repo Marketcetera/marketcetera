@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: ServiceImpl.java 16661 2013-08-22 17:51:57Z colin $")
+@ClassVersion("$Id$")
 public class PatternSymbolResolver
         implements SymbolResolver
 {

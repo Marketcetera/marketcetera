@@ -1,4 +1,4 @@
-<%@ jet package="org.eclipse.emf.codegen.ecore.templates.edit" imports="java.util.* org.eclipse.emf.codegen.ecore.genmodel.*" class="ItemProviderAdapterFactory" version="$Id: ItemProviderAdapterFactory.javajet,v 1.13 2008/12/31 15:50:36 davidms Exp $" %>
+<%@ jet package="org.eclipse.emf.codegen.ecore.templates.edit" imports="java.util.* org.eclipse.emf.codegen.ecore.genmodel.*" class="ItemProviderAdapterFactory" version="$Id$" %>
 <%
 /**
  * <copyright>

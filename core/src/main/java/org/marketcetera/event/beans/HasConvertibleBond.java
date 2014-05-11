@@ -9,7 +9,7 @@ import org.marketcetera.trade.ConvertibleBond;
  * Has a {@link org.marketcetera.trade.ConvertibleBond} attribute.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: HasConvertibleSecurity.java 16598 2013-06-25 13:27:58Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 public interface HasConvertibleBond

@@ -51,7 +51,7 @@ import com.google.common.collect.Multimap;
  * <p>To create a market data provider, extend this class.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 @ThreadSafe
@@ -508,7 +508,7 @@ public abstract class AbstractMarketDataProvider
      * Represents a single market data request item.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
+     * @version $Id$
      * @since 2.4.0
      */
     @Immutable
@@ -631,7 +631,7 @@ public abstract class AbstractMarketDataProvider
      * Processes events returned by the provider and publishes them to interested subscribers.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
+     * @version $Id$
      * @since 2.4.0
      */
     @ClassVersion("$Id$")
@@ -767,7 +767,7 @@ public abstract class AbstractMarketDataProvider
      * Represents an event notification to be published.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: AbstractMarketDataProvider.java 16483 2013-02-10 20:11:01Z colin $
+     * @version $Id$
      * @since 2.4.0
      */
     @ClassVersion("$Id$")

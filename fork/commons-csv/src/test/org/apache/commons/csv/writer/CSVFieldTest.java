@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 /**
  * 
- * @version $Id: CSVFieldTest.java 73490 2008-05-14 23:59:36Z tlerios $
+ * @version $Id$
  */
 public class CSVFieldTest extends TestCase {
 

@@ -3,7 +3,7 @@
 #
 # author:anshul@marketcetera.com
 # since 1.0.0
-# version: $Id: order_sender.rb 16633 2013-07-17 01:26:26Z colin $
+# version: $Id$
 #
 #
 require 'java'

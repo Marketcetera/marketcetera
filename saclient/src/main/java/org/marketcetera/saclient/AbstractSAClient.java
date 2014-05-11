@@ -23,7 +23,7 @@ import org.springframework.context.Lifecycle;
  * @version $Id$
  * @since 2.4.0
  */
-@ClassVersion("$Id: SAClientImpl.java 16853 2014-03-06 02:10:11Z colin $")
+@ClassVersion("$Id$")
 public abstract class AbstractSAClient
         implements SAClient,EmitterAdapter,Lifecycle
 {

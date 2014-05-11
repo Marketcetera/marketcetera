@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Indicates an error related to market data operation.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataException.java 16375 2012-11-19 21:02:22Z colin $
+ * @version $Id$
  * @since 2.4.0
  */
 @ClassVersion("$Id$")
