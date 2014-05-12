@@ -61,7 +61,7 @@ import com.googlecode.protobuf.pro.duplex.execute.ThreadPoolCallExecutor;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class RpcSAClientImpl
@@ -483,7 +483,7 @@ public class RpcSAClientImpl
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private class HeartbeatMonitor

@@ -16,9 +16,9 @@ import com.google.common.collect.Lists;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
-@ClassVersion("$Id: SpringConfig.java 16663 2013-08-23 14:40:19Z colin $")
+@ClassVersion("$Id$")
 public class IterativeSymbolResolver
         implements SymbolResolverService, InitializingBean
 {

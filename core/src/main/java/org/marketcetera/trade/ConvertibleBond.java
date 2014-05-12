@@ -19,8 +19,8 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Represents a Convertible Security instrument.
  *
- * @version $Id: ConvertibleSecurityImpl.java 16327 2012-10-26 21:14:08Z colin $
- * @since $Release$
+ * @version $Id$
+ * @since 2.4.0
  */
 @ThreadSafe
 @XmlRootElement(name="convertibleBond")

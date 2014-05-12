@@ -10,7 +10,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * Compares positions of <code>ConvertibleBond</code> instruments.
  *
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class ConvertibleBondPositionKeyComparator

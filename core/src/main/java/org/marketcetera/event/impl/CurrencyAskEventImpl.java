@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ThreadSafe
 @XmlRootElement(name="currencyAsk")
 @XmlAccessorType(XmlAccessType.NONE)
-@ClassVersion("$Id: CurrencyAskEventImpl.java 16154 2012-07-14 16:34:05Z colin $")
+@ClassVersion("$Id$")
 public class CurrencyAskEventImpl
         extends AbstractQuoteEventImpl
         implements AskEvent, CurrencyEvent

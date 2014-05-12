@@ -18,12 +18,12 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ThreadSafe
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name="equityImbalance")
-@ClassVersion("$Id: EquityMarketstatEventImpl.java 16854 2014-03-12 01:54:42Z colin $")
+@ClassVersion("$Id$")
 public class EquityImbalanceEvent
         extends AbstractImbalanceEvent
         implements EquityEvent

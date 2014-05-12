@@ -14,11 +14,11 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @XmlRootElement(name="valueWrapper")
 @XmlAccessorType(XmlAccessType.NONE)
-@ClassVersion("$Id: SAServiceImpl.java 16841 2014-02-20 19:59:04Z colin $")
+@ClassVersion("$Id$")
 public class XmlValue
 {
     /**

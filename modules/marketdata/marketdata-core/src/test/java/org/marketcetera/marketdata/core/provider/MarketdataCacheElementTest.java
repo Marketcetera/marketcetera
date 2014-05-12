@@ -26,7 +26,7 @@ import org.marketcetera.trade.Instrument;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 public class MarketdataCacheElementTest
 {

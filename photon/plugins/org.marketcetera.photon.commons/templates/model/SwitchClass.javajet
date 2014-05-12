@@ -1,4 +1,4 @@
-<%@ jet package="org.eclipse.emf.codegen.ecore.templates.model" imports="java.util.* org.eclipse.emf.codegen.ecore.genmodel.*" class="SwitchClass" version="$Id: SwitchClass.javajet,v 1.22 2008/06/04 21:42:39 emerks Exp $" %>
+<%@ jet package="org.eclipse.emf.codegen.ecore.templates.model" imports="java.util.* org.eclipse.emf.codegen.ecore.genmodel.*" class="SwitchClass" version="$Id$" %>
 <%
 /**
  * <copyright>

@@ -245,7 +245,7 @@ public class MarketData
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private class SubscriptionRefreshJob<MDType extends MDItem,MDMutableType extends MDType>
@@ -367,7 +367,7 @@ public class MarketData
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private static class MarketDataReferenceKey
@@ -424,7 +424,7 @@ public class MarketData
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private class MarketDataDetails<MDType extends MDItem,MDMutableItemType extends MDType>
@@ -655,7 +655,7 @@ public class MarketData
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private interface ItemFactory<MDType extends MDItem>
@@ -672,7 +672,7 @@ public class MarketData
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private interface ItemUpdater<MDType extends MDItem>
@@ -697,7 +697,7 @@ public class MarketData
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     @ClassVersion("$Id$")
     private abstract static class AbstractDepthUpdater

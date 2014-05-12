@@ -862,7 +862,7 @@ public final class MarketDataView
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 2.4.0
      */
     private class AddInstrumentAgent
             implements Runnable

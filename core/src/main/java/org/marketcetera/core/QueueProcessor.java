@@ -16,8 +16,8 @@ import org.springframework.context.Lifecycle;
  * Provides a framework for processing data in a separate thread.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: QueueProcessor.java 83655 2013-12-06 01:42:01Z colin $
- * @since $Release$
+ * @version $Id$
+ * @since 2.4.0
  */
 @ThreadSafe
 @ClassVersion("$Id$")

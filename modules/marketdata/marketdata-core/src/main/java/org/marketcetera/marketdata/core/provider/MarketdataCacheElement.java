@@ -25,7 +25,7 @@ import com.google.common.collect.Maps;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class MarketdataCacheElement

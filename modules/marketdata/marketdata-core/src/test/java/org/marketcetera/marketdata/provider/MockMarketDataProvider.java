@@ -18,7 +18,7 @@ import org.marketcetera.marketdata.core.request.MarketDataRequestAtom;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 public class MockMarketDataProvider
         extends AbstractMarketDataProvider

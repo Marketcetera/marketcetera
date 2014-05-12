@@ -16,8 +16,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * Manages market data providers and provides a central access point for market data services.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataManager.java 16403 2012-12-14 05:04:07Z colin $
- * @since $Release$
+ * @version $Id$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public interface MarketDataManager

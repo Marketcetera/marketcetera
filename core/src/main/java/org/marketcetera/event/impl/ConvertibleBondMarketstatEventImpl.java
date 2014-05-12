@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * Provides a ConvertibleBond implementation of {@link MarketstatEvent}.
  *
- * @version $Id: ConvertibleBondMarketstatEventImpl.java 16598 2013-06-25 13:27:58Z colin $
+ * @version $Id$
  * @since 2.1.0
  */
 @ThreadSafe

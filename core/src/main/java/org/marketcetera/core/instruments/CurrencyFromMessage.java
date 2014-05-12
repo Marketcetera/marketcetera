@@ -16,7 +16,7 @@ import quickfix.field.Symbol;
  *
  * @author <a href="mailto:richard.obrien@qmscapital.com">Richard O'Brien</a>
  * @version $Id$
- * @since $Release$
+ * @since 2.4.0
  */
 @ClassVersion("$Id$")
 public class CurrencyFromMessage extends InstrumentFromMessage

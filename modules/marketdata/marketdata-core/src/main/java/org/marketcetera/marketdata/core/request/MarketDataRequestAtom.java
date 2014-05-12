@@ -10,8 +10,8 @@ import org.marketcetera.marketdata.Content;
  * Represents the most basic market data request element.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketDataRequestAtom.java 16375 2012-11-19 21:02:22Z colin $
- * @since $Release$
+ * @version $Id$
+ * @since 2.4.0
  */
 @XmlRootElement
 public interface MarketDataRequestAtom
